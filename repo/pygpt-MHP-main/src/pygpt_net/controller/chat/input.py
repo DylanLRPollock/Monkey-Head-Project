@@ -6,7 +6,7 @@
 # GitHub:  https://github.com/szczyglis-dev/py-gpt   #
 # MIT License                                        #
 # Created By  : Marcin Szczygliński                  #
-# Updated Date: 2024.12.14 08:00:00                  #
+# Updated Date: 2025.02.02 02:00:00                  #
 # ================================================== #
 
 from typing import Optional, Any, Dict
@@ -17,6 +17,7 @@ from pygpt_net.core.events import Event, AppEvent, KernelEvent, RenderEvent
 from pygpt_net.core.types import (
     MODE_AGENT,
     MODE_AGENT_LLAMA,
+    MODE_LLAMA_INDEX,
     MODE_ASSISTANT,
     MODE_IMAGE,
 )
@@ -72,6 +73,23 @@ class Input:
             if self.window.controller.agent.common.is_infinity_loop(mode):
                 self.window.controller.agent.common.display_infinity_loop_confirm()
                 return
+
+            # check ollama model
+            model = self.window.core.config.get('model')
+            if mode == MODE_LLAMA_INDEX and model is not None:
+                model_data = self.window.core.models.get(model)
+                if model_data is not None and model_data.is_ollama():
+                    model_id = model_data.get_ollama_model()
+                    status = self.window.core.models.ollama.check_model(model_id)
+                    is_installed = status.get('is_installed', False)
+                    is_model = status.get('is_model', False)
+                    if not is_installed:
+                        self.window.ui.dialogs.alert(trans("dialog.ollama.not_installed"))
+                        return
+                    if not is_model:
+                        self.window.ui.dialogs.alert(
+                            trans("dialog.ollama.model_not_found").replace("{model}", model_id))
+                        return
 
         # listen for stop command
         if self.generating \

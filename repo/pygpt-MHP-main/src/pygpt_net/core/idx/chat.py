@@ -6,7 +6,7 @@
 # GitHub:  https://github.com/szczyglis-dev/py-gpt   #
 # MIT License                                        #
 # Created By  : Marcin Szczygliński                  #
-# Updated Date: 2025.01.16 01:00:00                  #
+# Updated Date: 2025.01.31 19:00:00                  #
 # ================================================== #
 
 import json
@@ -37,6 +37,11 @@ class Chat:
         self.window = window
         self.storage = storage
         self.context = Context(window)
+        self.tool_calls_not_allowed_providers = [
+            "ollama",
+            "hugging_face_api",
+            "deepseek_api",
+        ]
 
     def call(
             self,
@@ -231,8 +236,18 @@ class Chat:
         chat_mode = self.window.core.config.get("llama.idx.chat.mode")
         use_index = True
         verbose = self.window.core.config.get("log.llama", False)
+        allow_native_tool_calls = True
+        if ('provider' in model.llama_index
+                and model.llama_index['provider'] in self.tool_calls_not_allowed_providers):
+            allow_native_tool_calls = False
 
         if idx is None or idx == "_":
+            chat_mode = "simple"  # do not use query engine if no index
+            use_index = False
+
+        # disable index if no api key
+        if self.window.core.config.get("api_key") == "" and self.window.core.config.get("llama.idx.embeddings.provider") == "openai":
+            print("Warning: no api key! Disabling index...")
             chat_mode = "simple"  # do not use query engine if no index
             use_index = False
 
@@ -254,7 +269,13 @@ class Chat:
         else:
             llm = self.window.core.idx.llm.get(model)
 
-        # if multimodal support, try to get multimodal provider
+        # check if index is empty
+        if index:
+            nodes = index.docstore.docs.values()
+            if not nodes:
+                use_index = False
+
+        # TODO: if multimodal support, try to get multimodal provider
         # if model.is_multimodal():
             # llm = self.window.core.idx.llm.get(model, multimodal=True)  # get multimodal LLM model
 
@@ -272,7 +293,7 @@ class Chat:
         )
 
         if use_index:
-            # CMD: commands are applied to system prompt here
+            # TOOLS: commands are applied to system prompt here
             # index as query engine
             chat_engine = index.as_chat_engine(
                 llm=llm,
@@ -286,7 +307,7 @@ class Chat:
             else:
                 response = chat_engine.chat(query)
         else:
-            # CMD: commands are applied to system prompt here
+            # TOOLS: commands are applied to system prompt here
             # prepare tools (native calls if enabled)
             tools = self.window.core.agents.tools.prepare(context, extra)
 
@@ -294,7 +315,8 @@ class Chat:
             history.insert(0, self.context.add_system(system_prompt))
             history.append(self.context.add_user(query))
             if stream:
-                if hasattr(llm, "stream_chat_with_tools"):
+                # IMPORTANT: stream chat with tools not supported by all providers
+                if allow_native_tool_calls and hasattr(llm, "stream_chat_with_tools"):
                     response = llm.stream_chat_with_tools(
                         tools=tools,
                         messages=history,
@@ -304,7 +326,8 @@ class Chat:
                         messages=history,
                     )
             else:
-                if hasattr(llm, "chat_with_tools"):
+                # IMPORTANT: stream chat with tools not supported by all providers
+                if allow_native_tool_calls and hasattr(llm, "chat_with_tools"):
                     response = llm.chat_with_tools(
                         tools=tools,
                         messages=history,
@@ -336,16 +359,17 @@ class Chat:
                     ctx.set_output(output, "")
                     ctx.add_doc_meta(self.get_metadata(response.source_nodes))  # store metadata
             else:
-                # from LLM directly
+                # from LLM directly, no index
                 if stream:
-                    # tools handled in stream output controller
+                    # tools are handled in stream output controller
                     ctx.stream = response  # chunk is in response.delta
                     ctx.input_tokens = input_tokens
                     ctx.set_output("", "")
                 else:
                     # unpack tool calls
                     tool_calls = llm.get_tool_calls_from_response(
-                        response, error_on_no_tool_call=False
+                        response,
+                        error_on_no_tool_call=False,
                     )
                     ctx.tool_calls = self.window.core.command.unpack_tool_calls_from_llama(tool_calls)
                     output = response.message.content
@@ -625,7 +649,7 @@ class Chat:
             if idx is None:
                 # create empty in memory idx
                 llm, embed_model = self.window.core.idx.llm.get_service_context(model=model)
-                index = self.storage.index_from_empty()
+                index = self.storage.index_from_empty(embed_model)
                 return index, llm
             # raise Exception("Index not prepared")
 

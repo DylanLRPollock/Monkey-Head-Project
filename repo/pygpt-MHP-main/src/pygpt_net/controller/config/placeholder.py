@@ -6,7 +6,7 @@
 # GitHub:  https://github.com/szczyglis-dev/py-gpt   #
 # MIT License                                        #
 # Created By  : Marcin Szczygliński                  #
-# Updated Date: 2024.12.16 01:00:00                  #
+# Updated Date: 2025.02.26 23:00:00                  #
 # ================================================== #
 
 from typing import Dict, Any, List
@@ -267,7 +267,12 @@ class Placeholder:
         models = self.window.core.models.get_all()
         data = []
         for id in models:
-            data.append({id: id})  # TODO: name
+            model = models[id]
+            suffix = ""
+            if "provider" in model.llama_index and model.llama_index["provider"] == "ollama":
+                suffix = " [Ollama]"
+            name = model.name + suffix
+            data.append({id: name})
         return data
 
     def get_agent_modes(self) -> List[Dict[str, str]]:
@@ -320,7 +325,8 @@ class Placeholder:
         styles.sort()
         data = []
         for id in styles:
-            data.append({id: id})
+            name = id
+            data.append({id: name})
         return data
 
     def get_keys(self) -> List[Dict[str, str]]:

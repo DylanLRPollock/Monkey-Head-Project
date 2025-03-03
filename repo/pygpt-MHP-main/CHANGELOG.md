@@ -1,5 +1,62 @@
 # CHANGELOG
 
+## 2.5.8 (2025-03-02)
+
+- Added a new mode: Research (Perplexity) powered by: https://perplexity.ai - beta.
+- Added Perplexity models: sonar, sonar-pro, sonar-deep-research, sonar-reasoning, sonar-reasoning-pro, r1-1776.
+- Added a new OpenAI model: gpt-4.5-preview.
+
+## 2.5.7 (2025-02-26)
+
+- Stream mode has been enabled in o1 models.
+- CSS styling for <think> tags (reasoning models) has been added.
+- The search input has been moved to the top.
+- The ChatGPT-based style is now set as default.
+- Fix: Display of max tokens in models with a context window greater than 128k.
+
+## 2.5.6 (2025-02-03)
+
+- Fix: disabled index initialization if embedding provider is OpenAI and no API KEY is provided.
+- Fix: embedding provider initialization on empty index.
+
+## 2.5.5 (2025-02-02)
+
+- Fix: system prompt apply.
+- Added calendar live update on tab change.
+- Added API Key monit at launch displayed only once.
+
+## 2.5.4 (2025-02-02)
+
+- Added new models: `o3-mini` and `gpt-4o-mini-audio-preview`.
+- Enabled tool calls in Chat with Audio mode.
+- Added a check to verify if Ollama is running and if the model is available.
+
+## 2.5.3 (2025-02-01)
+
+- Fix: Snap permission denied bug.
+- Fix: column focus on tab change.
+- Datetime separators in groups moved to right side.
+
+## 2.5.2 (2025-02-01)
+
+- Fix: spinner update after inline image generation.
+- Added Ollama suffix to Ollama-models in models list.
+
+## 2.5.1 (2025-02-01)
+
+- PySide6 upgraded to 6.6.2.
+- Disabled Transformers startup warnings.
+
+## 2.5.0 (2025-01-31)
+
+- Added provider for DeepSeek (in Chat with Files mode, beta).
+- Added new models: OpenAI o1, Llama 3.3, DeepSeek V3 and R1 (API + local, with Ollama).
+- Added tool calls for OpenAI o1.
+- Added native vision for OpenAI o1.
+- Fix: tool calls in Ollama provider.
+- Fix: error handling in stream mode.
+- Fix: added check for active plugin tools before tool call.
+
 ## 2.4.57 (2025-01-19)
 
 - Logging fix.

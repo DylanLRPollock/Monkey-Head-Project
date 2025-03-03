@@ -2,7 +2,7 @@
 
 [![pygpt](https://snapcraft.io/pygpt/badge.svg)](https://snapcraft.io/pygpt)
 
-Release: **2.4.57** | build: **2025.01.19** | Python: **>=3.10, <3.13**
+Release: **2.5.8** | build: **2025.03.02** | Python: **>=3.10, <3.13**
 
 > Official website: https://pygpt.net | Documentation: https://pygpt.readthedocs.io
 > 
@@ -14,7 +14,7 @@ Release: **2.4.57** | build: **2025.01.19** | Python: **>=3.10, <3.13**
 
 ## Overview
 
-**PyGPT** is **all-in-one** Desktop AI Assistant that provides direct interaction with OpenAI language models, including `o1`, `gpt-4o`, `gpt-4`, `gpt-4 Vision`, and `gpt-3.5`, through the `OpenAI API`. By utilizing `LangChain` and `LlamaIndex`, the application also supports alternative LLMs, like those available on `HuggingFace`, locally available models (like `Llama 3`,`Mistral` or `Bielik`), `Google Gemini` and `Anthropic Claude`.
+**PyGPT** is **all-in-one** Desktop AI Assistant that provides direct interaction with OpenAI language models, including `o1`, `gpt-4o`, `gpt-4`, `gpt-4 Vision`, and `gpt-3.5`, through the `OpenAI API`. By utilizing `LangChain` and `LlamaIndex`, the application also supports alternative LLMs, like those available on `HuggingFace`, locally available models (like `Llama 3`,`Mistral`, `DeepSeek V3/R1` or `Bielik`), `Google Gemini` and `Anthropic Claude`.
 
 This assistant offers multiple modes of operation such as chat, assistants, completions, and image-related tasks using `DALL-E 3` for generation and `gpt-4 Vision` for image analysis. **PyGPT** has filesystem capabilities for file I/O, can generate and run Python code, execute system commands, execute custom commands and manage file transfers. It also allows models to perform web searches with the `Google` and `Microsoft Bing`.
 
@@ -38,8 +38,8 @@ You can download compiled 64-bit versions for Windows and Linux here: https://py
 
 - Desktop AI Assistant for `Linux`, `Windows` and `Mac`, written in Python.
 - Works similarly to `ChatGPT`, but locally (on a desktop computer).
-- 11 modes of operation: Chat, Vision, Completion, Assistant, Image generation, LangChain, Chat with Files, Chat with Audio, Experts, Autonomous Mode and Agents.
-- Supports multiple models: `o1`, `GPT-4o`, `GPT-4`, `GPT-3.5`, and any model accessible through `LangChain`, `LlamaIndex` and `Ollama` such as `Llama 3`, `Mistral`, `Google Gemini`, `Anthropic Claude`, `Bielik`, etc.
+- 12 modes of operation: Chat, Vision, Completion, Assistant, Image generation, LangChain, Chat with Files, Chat with Audio, Research (Perplexity), Experts, Autonomous Mode and Agents.
+- Supports multiple models: `o1`, `GPT-4o`, `GPT-4`, `GPT-3.5`, and any model accessible through `LangChain`, `LlamaIndex` and `Ollama` such as `Llama 3`, `Mistral`, `Google Gemini`, `Anthropic Claude`, `DeepSeek V3/R1`, `Bielik`, etc.
 - Chat with your own Files: integrated `LlamaIndex` support: chat with data such as: `txt`, `pdf`, `csv`, `html`, `md`, `docx`, `json`, `epub`, `xlsx`, `xml`, webpages, `Google`, `GitHub`, video/audio, images and other data types, or use conversation history as additional context provided to the model.
 - Built-in vector databases support and automated files and data embedding.
 - Included support features for individuals with disabilities: customizable keyboard shortcuts, voice control, and translation of on-screen actions into audio via speech synthesis.
@@ -284,6 +284,10 @@ To use microphone in Snap version you must connect the microphone with:
 sudo snap connect pygpt:audio-record :audio-record
 ```
 
+**Access to microphone and audio in Windows version:**
+
+If you have a problems with audio or microphone in the non-binary PIP/Python version on Windows, check to see if FFmpeg is installed. If it's not, install it and add it to the PATH. You can find a tutorial on how to do this here: https://phoenixnap.com/kb/ffmpeg-windows. The binary version already includes FFmpeg.
+
 **Windows and VC++ Redistributable**
 
 On Windows, the proper functioning requires the installation of the `VC++ Redistributable`, which can be found on the Microsoft website:
@@ -394,7 +398,15 @@ More info: https://platform.openai.com/docs/guides/audio/quickstart
 
 Currently, in beta. Tool and function calls are not enabled in this mode.
 
-**INFO:** The execution of commands and tools in this mode is temporarily unavailable.
+## Research (Perplexity)
+
+2025-03-02: currently in beta.
+
+Mode operates using the Perplexity API: https://perplexity.ai.
+
+It allows for deep web searching and utilizes Sonar models, available in `Perplexity AI`.
+
+It requires a Perplexity API key, which can be generated at: https://perplexity.ai.
 
 ## Completion
 
@@ -3959,6 +3971,63 @@ may consume additional tokens that are not displayed in the main window.
 # CHANGELOG
 
 ## Recent changes:
+
+**2.5.8 (2025-03-02)**
+
+- Added a new mode: Research (Perplexity) powered by: https://perplexity.ai - beta.
+- Added Perplexity models: sonar, sonar-pro, sonar-deep-research, sonar-reasoning, sonar-reasoning-pro, r1-1776.
+- Added a new OpenAI model: gpt-4.5-preview.
+
+**2.5.7 (2025-02-26)**
+
+- Stream mode has been enabled in o1 models.
+- CSS styling for <think> tags (reasoning models) has been added.
+- The search input has been moved to the top.
+- The ChatGPT-based style is now set as default.
+- Fix: Display of max tokens in models with a context window greater than 128k.
+
+**2.5.6 (2025-02-03)**
+
+- Fix: disabled index initialization if embedding provider is OpenAI and no API KEY is provided.
+- Fix: embedding provider initialization on empty index.
+
+**2.5.5 (2025-02-02)**
+
+- Fix: system prompt apply.
+- Added calendar live update on tab change.
+- Added API Key monit at launch displayed only once.
+
+**2.5.4 (2025-02-02)**
+
+- Added new models: `o3-mini` and `gpt-4o-mini-audio-preview`.
+- Enabled tool calls in Chat with Audio mode.
+- Added a check to verify if Ollama is running and if the model is available.
+
+**2.5.3 (2025-02-01)**
+
+- Fix: Snap permission denied bug.
+- Fix: column focus on tab change.
+- Datetime separators in groups moved to right side.
+
+**2.5.2 (2025-02-01)**
+
+- Fix: spinner update after inline image generation.
+- Added Ollama suffix to Ollama-models in models list.
+
+**2.5.1 (2025-02-01)**
+
+- PySide6 upgraded to 6.6.2.
+- Disabled Transformers startup warnings.
+
+**2.5.0 (2025-01-31)**
+
+- Added provider for DeepSeek (in Chat with Files mode, beta).
+- Added new models: OpenAI o1, Llama 3.3, DeepSeek V3 and R1 (API + local, with Ollama).
+- Added tool calls for OpenAI o1.
+- Added native vision for OpenAI o1.
+- Fix: tool calls in Ollama provider.
+- Fix: error handling in stream mode.
+- Fix: added check for active plugin tools before tool call.
 
 **2.4.57 (2025-01-19)**
 

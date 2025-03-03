@@ -6,7 +6,7 @@
 # GitHub:  https://github.com/szczyglis-dev/py-gpt   #
 # MIT License                                        #
 # Created By  : Marcin Szczygliński                  #
-# Updated Date: 2024.12.14 00:00:00                  #
+# Updated Date: 2025.03.02 19:00:00                  #
 # ================================================== #
 
 from typing import Any
@@ -35,6 +35,7 @@ class Stream:
         output = ""
         output_tokens = 0
         begin = True
+        error = None
 
         # chunks: stream begin
         data = {
@@ -55,6 +56,9 @@ class Stream:
                     # if force stop then break
                     if self.window.controller.kernel.stopped():
                         break
+
+                    if error is not None:
+                        break  # break if error
 
                     response = None
                     chunk_type = "raw"
@@ -77,7 +81,12 @@ class Stream:
 
                     # OpenAI chat completion
                     if chunk_type == "api_chat":
+                        citations = None
                         if chunk.choices[0].delta and chunk.choices[0].delta.content is not None:
+                            if citations is None:
+                                if chunk and hasattr(chunk, 'citations') and chunk.citations is not None:
+                                    citations = chunk.citations
+                                    ctx.urls = citations
                             response = chunk.choices[0].delta.content
                         if chunk.choices[0].delta and chunk.choices[0].delta.tool_calls:
                             tool_chunks = chunk.choices[0].delta.tool_calls
@@ -159,6 +168,7 @@ class Stream:
 
         except Exception as e:
             self.window.core.debug.log(e)
+            error = e
 
         self.window.controller.ui.update_tokens()  # update UI tokens
 
@@ -176,6 +186,9 @@ class Stream:
 
         # log
         self.log("[chat] Stream end.")
+
+        if error is not None:
+            raise error  # raise error if any, to display in UI
 
     def log(self, data: Any):
         """

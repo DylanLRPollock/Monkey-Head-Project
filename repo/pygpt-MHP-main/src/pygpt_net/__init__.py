@@ -6,15 +6,15 @@
 # GitHub:  https://github.com/szczyglis-dev/py-gpt   #
 # MIT License                                        #
 # Created By  : Marcin Szczygliński                  #
-# Updated Date: 2025.01.19 16:00:00                  #
+# Updated Date: 2025.03.02 19:00:00                  #
 # ================================================== #
 
 __author__ = "Marcin Szczygliński"
 __copyright__ = "Copyright 2025, Marcin Szczygliński"
 __credits__ = ["Marcin Szczygliński"]
 __license__ = "MIT"
-__version__ = "2.4.57"
-__build__ = "2025.01.19"
+__version__ = "2.5.8"
+__build__ = "2025-03-02"
 __maintainer__ = "Marcin Szczygliński"
 __github__ = "https://github.com/szczyglis-dev/py-gpt"
 __report__ = "https://github.com/szczyglis-dev/py-gpt/issues"
@@ -24,6 +24,7 @@ __snap__ = "https://snapcraft.io/pygpt"
 __donate__ = "https://pygpt.net/#donate"
 __documentation__ = "https://pygpt.readthedocs.io"
 __discord__ = "https://pygpt.net/discord"
+__ms_store__ = "https://apps.microsoft.com/detail/xp99r4mx3x65vq"
 __email__ = "info@pygpt.net"
 __donate_coffee__ = "https://pygpt.net/donate/buymeacoffee"
 __donate_paypal__ = "https://pygpt.net/donate/paypal"

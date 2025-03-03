@@ -1,6 +1,0 @@
-id: "@default/workspaces-named"
-icon: TbAbc
-target: "@seelen/fancy-toolbar"
-plugin:
-  type: workspaces
-  mode: named

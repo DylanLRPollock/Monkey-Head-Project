@@ -6,7 +6,7 @@
 # GitHub:  https://github.com/szczyglis-dev/py-gpt   #
 # MIT License                                        #
 # Created By  : Marcin Szczygliński                  #
-# Updated Date: 2025.01.17 13:00:00                  #
+# Updated Date: 2025.02.01 16:00:00                  #
 # ================================================== #
 
 from typing import Any, Optional
@@ -176,6 +176,9 @@ class Tabs:
         elif tab.type == Tab.TAB_TOOL_PAINTER:
             if self.window.core.config.get('vision.capture.enabled'):
                 self.window.controller.camera.enable_capture()
+        elif tab.type == Tab.TAB_TOOL_CALENDAR:
+            self.window.controller.calendar.update()
+            self.window.controller.calendar.update_ctx_counters()
 
         if prev_tab != idx or prev_column != column_idx:
             self.window.dispatch(AppEvent(AppEvent.TAB_SELECTED))  # app event
@@ -307,6 +310,8 @@ class Tabs:
 
         :param idx: column index
         """
+        if self.column_idx == idx:
+            return
         self.column_idx = idx
         self.on_column_changed()
         self.on_changed()

@@ -6,7 +6,7 @@
 # GitHub:  https://github.com/szczyglis-dev/py-gpt   #
 # MIT License                                        #
 # Created By  : Marcin Szczygliński                  #
-# Updated Date: 2024.12.14 22:00:00                  #
+# Updated Date: 2025.03.02 19:00:00                  #
 # ================================================== #
 
 from typing import Tuple, List
@@ -22,6 +22,7 @@ from pygpt_net.core.types import (
     MODE_ASSISTANT,
     MODE_AUDIO,
     MODE_CHAT,
+    MODE_RESEARCH,
     MODE_COMPLETION,
     MODE_EXPERT,
     MODE_LANGCHAIN,
@@ -40,6 +41,7 @@ CHAT_MODES = [
     MODE_AGENT_LLAMA,
     MODE_EXPERT,
     MODE_AUDIO,
+    MODE_RESEARCH,
 ]
 
 class Tokens:
@@ -320,7 +322,10 @@ class Tokens:
                sum_tokens, max_current, threshold)
         """
         model = self.window.core.config.get('model')
-        model_id = self.window.core.models.get_id(model)
+        model_id = ""
+        model_data = self.window.core.models.get(model)
+        if model_data is not None:
+            model_id = model_data.id
         mode = self.window.core.config.get('mode')
         user_name = self.window.core.config.get('user_name')
         ai_name = self.window.core.config.get('ai_name')
@@ -334,7 +339,7 @@ class Tokens:
         if mode in CHAT_MODES:
             # system prompt (without extra tokens)
             system_prompt = str(self.window.core.config.get('prompt')).strip()
-            system_prompt = self.window.core.prompt.build_final_system_prompt(system_prompt)  # add addons
+            system_prompt = self.window.core.prompt.build_final_system_prompt(system_prompt, mode, model_data)  # add addons
 
             if system_prompt is not None and system_prompt != "":
                 system_tokens = self.from_prompt(system_prompt, "", model_id)
@@ -347,7 +352,7 @@ class Tokens:
         elif mode == MODE_COMPLETION:
             # system prompt (without extra tokens)
             system_prompt = str(self.window.core.config.get('prompt')).strip()
-            system_prompt = self.window.core.prompt.build_final_system_prompt(system_prompt)  # add addons
+            system_prompt = self.window.core.prompt.build_final_system_prompt(system_prompt, mode, model_data)  # add addons
             system_tokens = self.from_text(system_prompt, model_id)
 
             # input prompt
@@ -372,7 +377,7 @@ class Tokens:
 
         # check model max allowed ctx tokens
         max_current = max_total_tokens
-        model_ctx = self.window.core.models.get_num_ctx(model_id)
+        model_ctx = self.window.core.models.get_num_ctx(model)
         if max_current > model_ctx:
             max_current = model_ctx
 
@@ -411,7 +416,7 @@ class Tokens:
         model_id = self.window.core.models.get_id(model)
         mode = self.window.core.config.get('mode')
         tokens = 0
-        if mode in [MODE_CHAT, MODE_VISION, MODE_AUDIO]:
+        if mode in [MODE_CHAT, MODE_VISION, MODE_AUDIO, MODE_RESEARCH]:
             tokens += self.from_prompt(system_prompt, "", model_id)  # system prompt
             tokens += self.from_text("system", model_id)
             tokens += self.from_prompt(input_prompt, "", model_id)  # input prompt

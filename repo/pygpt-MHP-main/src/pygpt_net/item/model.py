@@ -6,7 +6,7 @@
 # GitHub:  https://github.com/szczyglis-dev/py-gpt   #
 # MIT License                                        #
 # Created By  : Marcin Szczygliński                  #
-# Updated Date: 2024.11.15 00:00:00                  #
+# Updated Date: 2025.02.02 02:00:00                  #
 # ================================================== #
 
 import json
@@ -28,6 +28,7 @@ class ModelItem:
         self.ctx = 0
         self.tokens = 0
         self.default = False
+        self.extra = {}
 
     def from_dict(self, data: dict):
         """
@@ -48,6 +49,8 @@ class ModelItem:
             self.tokens = data['tokens']
         if 'default' in data:
             self.default = data['default']
+        if 'extra' in data:
+            self.extra = data['extra']
 
         # multimodal
         if 'multimodal' in data:
@@ -97,6 +100,7 @@ class ModelItem:
         data['tokens'] = self.tokens
         data['default'] = self.default
         data['multimodal'] = ','.join(self.multimodal)
+        data['extra'] = self.extra
 
         data['langchain.provider'] = None
         data['langchain.mode'] = ""
@@ -179,6 +183,28 @@ class ModelItem:
         :return: True if multimodal
         """
         return len(self.multimodal) > 0
+
+    def is_ollama(self) -> bool:
+        """
+        Check if model is Ollama
+
+        :return: True if Ollama
+        """
+        if self.llama_index is None:
+            return False
+        return "ollama" in self.llama_index.get("provider", "")
+
+    def get_ollama_model(self) -> str:
+        """
+        Get Ollama model ID
+
+        :return: model ID
+        """
+        if "args" in self.llama_index:
+            for arg in self.llama_index["args"]:
+                if arg["name"] == "model":
+                    return arg["value"]
+        return ""
 
     def has_mode(self, mode: str) -> bool:
         """

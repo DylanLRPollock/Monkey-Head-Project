@@ -6,7 +6,7 @@
 # GitHub:  https://github.com/szczyglis-dev/py-gpt   #
 # MIT License                                        #
 # Created By  : Marcin Szczygliński                  #
-# Updated Date: 2025.01.19 02:00:00                  #
+# Updated Date: 2025.03.02 19:00:00                  #
 # ================================================== #
 
 import copy
@@ -1829,6 +1829,30 @@ class Patch:
                             item['key_modifier'] = 'Ctrl'
                         elif 'key_modifier' in item and item['key_modifier'] in remove_modifiers:
                             item['key_modifier'] = ''
+                updated = True
+
+            # < 2.5.0
+            if old < parse_version("2.5.0"):
+                print("Migrating config from < 2.5.0...")
+                if 'api_key_deepseek' not in data:
+                    data["api_key_deepseek"] = ""
+                updated = True
+
+            # < 2.5.7
+            if old < parse_version("2.5.7"):
+                print("Migrating config from < 2.5.7...")
+                self.window.core.updater.patch_css('web-blocks.css', True)  # force update
+                self.window.core.updater.patch_css('web-chatgpt.css', True)  # force update
+                self.window.core.updater.patch_css('web-chatgpt_wide.css', True)  # force update
+                updated = True
+
+            # < 2.5.8
+            if old < parse_version("2.5.8"):
+                print("Migrating config from < 2.5.8...")
+                if 'api_key_perplexity' not in data:
+                    data["api_key_perplexity"] = ""
+                if 'api_endpoint_perplexity' not in data:
+                    data["api_endpoint_perplexity"] = "https://api.perplexity.ai"
                 updated = True
 
         # update file

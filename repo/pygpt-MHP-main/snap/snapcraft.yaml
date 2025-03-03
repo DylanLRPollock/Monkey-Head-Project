@@ -1,6 +1,6 @@
 name: pygpt
 base: core22  # Ubuntu 22.04
-version: '2.4.57'
+version: '2.5.8'
 summary: Desktop AI Assistant - o1, gpt-4, gpt-4-vision, chat, assistant, vision.
 description: |
   **PyGPT** is **all-in-one** Desktop AI Assistant that provides direct interaction with OpenAI language models, including GPT-4, GPT-4 Vision, and GPT-3.5, through the OpenAI API. The application also integrates with alternative LLMs.
@@ -40,8 +40,11 @@ parts:
       - libgtk-3-0
       - libpng16-16
       - libfontconfig1
-      - libxi6
+      - libxi6        
       - xkb-data
+      - xapp
+      - libatomic1
+      - packagekit-gtk3-module
     build-packages:
       - execstack
       - portaudio19-dev
@@ -57,8 +60,6 @@ parts:
 layout:
   /usr/share/alsa:
     bind: $SNAP/usr/share/alsa
-  /usr/share/qt5:
-    bind: $SNAP/usr/share/qt5
 
 plugs:
   docker:
@@ -81,6 +82,8 @@ apps:
       "QML_IMPORT_PATH": "$SNAP/qml"
       "QML2_IMPORT_PATH": "$SNAP/qml"
       PATH: $SNAP_COMMON/docker-executables/bin:$PATH
+      QTWEBENGINE_DISABLE_SANDBOX: "1"
+      QTWEBENGINE_CHROMIUM_FLAGS: "--no-sandbox --disable-gpu-sandbox"
     plugs:
     - alsa
     - audio-playback

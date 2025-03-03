@@ -6,7 +6,7 @@
 # GitHub:  https://github.com/szczyglis-dev/py-gpt   #
 # MIT License                                        #
 # Created By  : Marcin Szczygliński                  #
-# Updated Date: 2024.12.16 20:00:00                  #
+# Updated Date: 2025.02.26 23:00:00                  #
 # ================================================== #
 
 from typing import Optional
@@ -86,7 +86,7 @@ class Text:
         idx_mode = self.window.core.config.get('llama.idx.mode')
 
         # o1 models: disable stream mode
-        if model.startswith("o1") or mode in [MODE_AGENT_LLAMA, MODE_AUDIO]:
+        if mode in [MODE_AGENT_LLAMA, MODE_AUDIO]:
             stream_mode = False
         if mode in [MODE_LLAMA_INDEX] and idx_mode == "retrieval":
             stream_mode = False
@@ -161,6 +161,7 @@ class Text:
         # build final prompt (+plugins)
         sys_prompt = self.window.core.prompt.prepare_sys_prompt(
             mode=mode,
+            model=model_data,
             sys_prompt=sys_prompt,
             ctx=ctx,
             reply=reply,

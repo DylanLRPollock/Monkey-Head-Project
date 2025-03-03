@@ -1,7 +1,0 @@
-id: "@default/quick-settings"
-icon: "LuSettings2"
-target: "@seelen/fancy-toolbar"
-plugin:
-  type: settings
-  template: icon.LuSettings2
-  tooltip: t("placeholder.settings")
