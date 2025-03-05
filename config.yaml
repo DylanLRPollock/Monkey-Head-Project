@@ -5,13 +5,13 @@ logging:
 database:
   host: 'localhost'
   port: 3306
-  user: 'username'
-  password: 'password'
+  user: 'dlrp'
+  password: 'dlrp'
   database: 'huey_db'
 
 system:
-  os: 'debian-bookworm'
-  python_version: '3.11'
+  os: 'debian-trixie'
+  python_version: '3.12'
   virtual_env: '/workspace/venv'
   dependencies:
     - pygpt-net
@@ -19,3 +19,4 @@ system:
     - kubernetes
     - fastapi
     - redis
+    - celery

@@ -1,64 +1,68 @@
 # Networking and HTTP
 requests==2.32.3
 httpx==0.27.2
-aiohttp==3.11.11
+aiohttp==3.8.6
 websockets==11.0.3
 
 # Numerical & Machine Learning
 numpy==1.26.4
-scipy==1.10.1
-scikit-learn==1.3.0
-torch==2.0.1
-tensorflow==2.13.0
-transformers==4.29.0
+scipy==1.12.1
+scikit-learn==1.3.2
+torch==2.1.0
+tensorflow==2.13.1
+transformers==4.30.0
 
 # Data Analysis & Visualization
 pandas==2.2.3
-matplotlib==3.7.1
+matplotlib==3.7.2
 seaborn==0.12.2
-plotly==5.14.1
+plotly==5.15.0
 openpyxl==3.1.2
 
 # Databases & Storage
-sqlalchemy==2.0.37
-pymongo==4.3.3
-redis==5.2.1
+sqlalchemy==2.0.40
+pymongo==4.3.4
+redis==5.0.0
 
 # Security & Authentication
-cryptography==44.0.0
-pyjwt==2.7.0
+cryptography==45.0.0
+pyjwt==2.8.0
 bcrypt==4.0.1
-paramiko==3.1.0
+paramiko==3.2.0
 
 # Container & Cluster Management
-docker==7.1.0
-kubernetes==31.0.0
+docker==7.1.2
+kubernetes==31.1.0
 
 # Web Frameworks
 fastapi==0.115.6
 uvicorn==0.23.2
-starlette==0.41.3
+starlette==0.27.1
 
 # System Utilities
 psutil==5.9.5
-platformdirs==3.5.1
+platformdirs==3.10.0
 py-cpuinfo==9.0.0
 
 # Graphical User Interface (choose one binding)
-PyQt6==6.5.1
+PyQt6==6.5.3
 # PySide6==6.6.1  # Uncomment if you prefer PySide6 over PyQt6
-PySimpleGUI==4.60.4
+PySimpleGUI==4.65.0
 
 # Development Tools (often used in development, not production)
-black==23.7.0
-flake8==6.0.0
-mypy==1.5.1
-pytest==7.4.0
+black==23.9.1
+flake8==6.1.0
+mypy==1.6.0
+pytest==7.4.2
 
 # Cloud & Search Services
-boto3==1.36.0
-google-auth==2.37.0
-elasticsearch==8.17.0
+boto3==1.28.0
+google-auth==2.21.0
+elasticsearch==8.10.0
 
 # Custom or additional package
-pygpt-net==<desired_version>
+pygpt-net==2.5.9
+
+# Packaging and Build Tools (optional)
+setuptools>=68.0.0
+wheel>=0.40.0

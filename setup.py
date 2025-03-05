@@ -1,7 +1,6 @@
 import os
 from setuptools import setup, find_packages
 
-# Safely read the long description from README.md
 here = os.path.abspath(os.path.dirname(__file__))
 try:
     with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
@@ -15,9 +14,9 @@ setup(
     description='A project integrating diverse functionalities including ML, web frameworks, and more.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    author='Your Name',
-    author_email='your.email@example.com',
-    url='https://github.com/yourusername/MonkeyHeadProject',
+    author='Dylan L.R. Pollock',
+    author_email='admin@dlrp.ca',
+    url='https://github.com/DylanLRPollokc/Monkey-Head-Project',
     packages=find_packages(),
     install_requires=[
         'requests==2.32.3',
@@ -55,7 +54,7 @@ setup(
         'boto3==1.36.0',
         'google-auth==2.37.0',
         'elasticsearch==8.17.0',
-        'pygpt-net==<desired_version>'
+        'pygpt-net>=0.1.0'
     ],
     extras_require={
         'dev': [
@@ -68,7 +67,7 @@ setup(
     python_requires='>=3.11',
     classifiers=[
         'Programming Language :: Python :: 3.11',
-        'Operating System :: POSIX :: Linux',
+        'Operating System :: Microsoft :: Windows',
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
