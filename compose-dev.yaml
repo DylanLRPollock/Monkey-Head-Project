@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   dev-env:
     container_name: Monkey-Head-Project

@@ -1,2 +1,2 @@
-pygpt-net
+pygpt
 pause
