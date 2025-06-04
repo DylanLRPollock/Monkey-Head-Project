@@ -5,11 +5,17 @@ from .utils import setup_logging, calculate_sum, validate_input
 from .config import load_config
 from .exceptions import InvalidInputError
 
-def main():
-    """Main function for the Huey project."""
+def main(config_file: str = "config.yaml"):
+    """Main function for the Huey project.
+
+    Parameters
+    ----------
+    config_file: str, optional
+        Path to the configuration YAML file. Defaults to ``"config.yaml"``.
+    """
     try:
         # Load configuration
-        config = load_config()
+        config = load_config(config_file)
         # Set up logging with configuration
         setup_logging(config)
         logging.info("Huey application started.")
