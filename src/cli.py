@@ -1,3 +1,7 @@
+from .config_manager import ConfigManager
+from .file_manager import FileManager
+
+
 class CLI:
     def __init__(self):
         self.config_manager = ConfigManager("config.json")
