@@ -106,6 +106,12 @@ detects your operating system and invokes the appropriate setup script:
 python installer.py
 ```
 
+### macOS Installation
+
+Running the installer on macOS executes `setup/macOS/install.sh`. This script
+ensures Homebrew is available, installs Git, Python 3, Docker, and sets up the
+project's Python virtual environment automatically.
+
 ### Windows 10 & 11 Installation
 
 Ensure that **Python 3** is available on your system (download from
@@ -118,8 +124,9 @@ python installer.py
 ```
 
 This launches `setup/Windows11/01-FULL.bat`, which installs Chocolatey, Git,
-Docker Desktop, and other required tools. The batch script supports both Windows
-10 and Windows 11.
+Docker Desktop, and other required tools on Windows. On macOS the installer
+invokes `setup/macOS/install.sh` to configure Homebrew and the Python
+environment. The batch script supports both Windows 10 and Windows 11.
 
 ### Directory Structure
 
