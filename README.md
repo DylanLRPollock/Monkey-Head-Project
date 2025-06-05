@@ -158,6 +158,15 @@ When adding new modules, format the code with `black` and run
 
 - Preset placeholders now show the preset name instead of the file ID for better readability.
 
+### Utilities
+
+Use `src/utils/list_by_mtime.py` to list files in any directory from oldest
+to newest:
+
+```bash
+python src/utils/list_by_mtime.py path/to/dir
+```
+
 ---
 
 ## 🔬 Test Hardware
