@@ -3046,7 +3046,7 @@ The configuration is stored in JSON files for easy manual modification outside o
 These configuration files are located in the user's work directory within the following subdirectory:
 
 ``` ini
-{HOME_DIR}/.config/pygpt-net/
+{PROJECT_DIR}/
 ```
 
 ## Manual configuration
@@ -3054,7 +3054,7 @@ These configuration files are located in the user's work directory within the fo
 You can manually edit the configuration files in this directory (this is your work directory):
 
 ``` ini
-{HOME_DIR}/.config/pygpt-net/
+{PROJECT_DIR}/
 ```
 
 - `assistants.json` - stores the list of assistants.
@@ -3114,7 +3114,7 @@ This allows you to overwrite language files or CSS styles in a very simple way -
 
 
 ``` ini
-{HOME_DIR}/.config/pygpt-net/
+{PROJECT_DIR}/
 ```
 
 - `locale` - a directory for locales in `.ini` format.
@@ -3385,7 +3385,7 @@ In `Settings -> Developer` dialog, you can enable the `Show debug menu` option t
 By default, all errors and exceptions are logged to the file:
 
 ```ini
-{HOME_DIR}/.config/pygpt-net/app.log
+{PROJECT_DIR}/app.log
 ```
 
 To increase the logging level (`ERROR` level is default), run the application with `--debug` argument:
