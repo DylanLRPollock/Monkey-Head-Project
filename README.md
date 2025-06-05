@@ -106,6 +106,21 @@ detects your operating system and invokes the appropriate setup script:
 python installer.py
 ```
 
+### Windows 10 & 11 Installation
+
+Ensure that **Python 3** is available on your system (download from
+[python.org](https://www.python.org/) if needed). Open **Command Prompt** or
+**PowerShell** as **Administrator** and run the installer from the project
+root:
+
+```bash
+python installer.py
+```
+
+This launches `setup/Windows11/01-FULL.bat`, which installs Chocolatey, Git,
+Docker Desktop, and other required tools. The batch script supports both Windows
+10 and Windows 11.
+
 ### Directory Structure
 
 Legacy scripts from the `py/` folder were consolidated and updated in
