@@ -54,6 +54,14 @@ A multi-tiered ethical governance system ensuring responsible AI use:
 
 ---
 
+## 🧩 Modular Architecture
+
+GenCore follows a layered design that separates strategic planning, operational control, and real-time hardware interaction. HostOS acts as the "brain," overseeing resource governance and system-wide decisions. SubOS instances manage specialized tasks, scaling resources on demand. NanoOS containers handle direct hardware interaction and time-critical operations. By keeping these tiers loosely coupled, contributors can extend or replace individual layers without disrupting the entire system.
+
+Huey exposes clear integration points for sensors, actuators, and experimental modules. Custom hardware can be added by mapping device drivers to the appropriate NanoOS, while HostOS provides unified monitoring and logging. This modular approach encourages experimentation and simplifies long-term maintenance.
+
+---
+
 ## 📚 Project History and Phases
 
 | Phase | Title                         | Date         | Highlights                                                                |
@@ -134,6 +142,15 @@ Legacy scripts from the `py/` folder were consolidated and updated in
 the `src/` directory. All utilities and modules live under `src/` to
 keep the project organized.
 
+### Development Setup
+
+For day-to-day development it is recommended to work in a Python virtual environment.
+Create one with `python -m venv venv` and install dependencies using
+`pip install -r requirements.txt`. Docker users can spin up
+`docker-compose up` for an isolated environment that mirrors production.
+When adding new modules, format the code with `black` and run
+`flake8` and `pytest` before opening a pull request.
+
 ---
 
 ## 🔬 Test Hardware
@@ -161,6 +178,13 @@ Your contributions are crucial! You can help by reporting bugs, suggesting featu
 * Provide clear commit messages and detailed PR descriptions.
 
 Visit the [GitHub Repository](https://github.com/DylanLRPollock/Monkey-Head-Project) to contribute or learn more.
+
+---
+
+## 🔗 Additional Resources
+
+The `docs/` directory contains extended documentation on the project’s architecture, historical phases, and governance design. New contributors should start with [docs/README.md](docs/README.md) and [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed guidelines.
+For an introductory overview, see [docs/New-To-AI.md](docs/New-To-AI.md).
 
 ---
 
