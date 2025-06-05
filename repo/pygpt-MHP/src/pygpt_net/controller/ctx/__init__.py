@@ -705,12 +705,15 @@ class Ctx:
 
     def selection_change(self):
         """Select ctx on list change"""
-        # TODO: implement this
-        # idx = self.window.ui.nodes['ctx.list'].currentIndex().row()
-        # self.select(idx)
+        if self.context_change_locked():
+            self.window.ui.nodes['ctx.list'].lockSelection()
+            return
+
         selected_idx = self.window.ui.nodes['ctx.list'].currentIndex()
         if selected_idx.isValid():
-            id = self.window.core.ctx.get_id_by_idx(selected_idx.row())
+            ctx_id = self.window.core.ctx.get_id_by_idx(selected_idx.row())
+            self.select_by_id(ctx_id)
+
         self.window.ui.nodes['ctx.list'].lockSelection()
 
     def search_string_change(self, text: str):

@@ -184,8 +184,18 @@ class Editor:
 
     def show_hide_by_mode(self):
         """Show or hide fields by mode"""
-        # TODO: implement this!
-        return
+        mode = self.window.core.config.get('mode')
+        for key in self.options:
+            visible = True
+            if mode in self.hidden_by_mode and key in self.hidden_by_mode[mode]:
+                visible = False
+
+            if key in self.window.ui.config[self.id]:
+                self.window.ui.config[self.id][key].setVisible(visible)
+
+            label = 'preset.' + key + '.label'
+            if label in self.window.ui.nodes:
+                self.window.ui.nodes[label].setVisible(visible)
         mode = self.window.core.config.get('mode')
         for key in self.options:
             if mode in self.hidden_by_mode:

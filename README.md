@@ -151,6 +151,10 @@ Create one with `python -m venv venv` and install dependencies using
 When adding new modules, format the code with `black` and run
 `flake8` and `pytest` before opening a pull request.
 
+### Recent Updates
+
+- Preset placeholders now show the preset name instead of the file ID for better readability.
+
 ---
 
 ## 🔬 Test Hardware
