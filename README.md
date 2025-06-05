@@ -90,7 +90,7 @@ cd Monkey-Head-Project
 python3 -m venv venv
 source venv/bin/activate  # Linux/macOS
 venv\Scripts\activate     # Windows
- pip install -r requirements.txt
+pip install -r requirements.txt
 python src/main.py
 ```
 
