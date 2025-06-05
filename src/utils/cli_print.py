@@ -7,48 +7,59 @@ import logging
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 
+
 def valid_types():
-    return ['status', 'alert', 'error', 'debug', 'user_input', 'info', 'warning']
+    return ["status", "alert", "error", "debug", "user_input", "info", "warning"]
+
 
 class CLI:
     valid_message_types = valid_types()
-    
-    def __init__(self, config_file='cli_config.json'):
+
+    def __init__(self, config_file="cli_config.json"):
         self.load_config(config_file)
         self.setup_logging()
-    
+
     def load_config(self, config_file):
         try:
-            with open(config_file, 'r') as file:
+            with open(config_file, "r") as file:
                 config = json.load(file)
-                self.log_file = config.get('log_file', 'CLI_LOG.json')
-                self.valid_message_types = config.get('valid_message_types', valid_types())
+                self.log_file = config.get("log_file", "CLI_LOG.json")
+                self.valid_message_types = config.get(
+                    "valid_message_types", valid_types()
+                )
         except FileNotFoundError:
-            self.log_file = 'CLI_LOG.json'
+            self.log_file = "CLI_LOG.json"
             self.valid_message_types = valid_types()
-    
+
     def setup_logging(self):
-        logging.basicConfig(filename=self.log_file, level=logging.INFO,
-                            format='{"timestamp": "%(asctime)s", "message": "%(message)s", "type": "%(levelname)s"}')
-    
+        logging.basicConfig(
+            filename=self.log_file,
+            level=logging.INFO,
+            format='{"timestamp": "%(asctime)s", "message": "%(message)s", "type": "%(levelname)s"}',
+        )
+
     def log_message(self, message, message_type):
-        logging.log(level=getattr(logging, message_type.upper(), logging.INFO), msg=message)
+        logging.log(
+            level=getattr(logging, message_type.upper(), logging.INFO), msg=message
+        )
 
     def print_message(self, output_message, message_type):
         self.validate_print_message_input(output_message, message_type)
-        
+
         prefixes = {
             "alert": "Alert has been triggered & program may fail!",
             "user_input": "> {}",
-            "default": "> {}"
+            "default": "> {}",
         }
-        
+
         prefix = prefixes.get(message_type.lower(), prefixes["default"])
-        
-        formatted_message = prefix.format(f"{message_type.capitalize()}: {output_message}")
-        
+
+        formatted_message = prefix.format(
+            f"{message_type.capitalize()}: {output_message}"
+        )
+
         self.log_message(formatted_message, message_type)
-        
+
         if message_type.lower() == "user_input":
             return input(formatted_message)
         else:
@@ -56,7 +67,9 @@ class CLI:
             return None
 
     def handle_exception(self, error_type, function_name):
-        self.print_message(f"Function '{function_name}' encountered a {error_type.__name__}.", "debug")
+        self.print_message(
+            f"Function '{function_name}' encountered a {error_type.__name__}.", "debug"
+        )
         self.print_message("Manual oversight required!", "alert")
         self.graceful_exit()
 
@@ -76,7 +89,9 @@ class CLI:
             if not message_type.strip():
                 raise ValueError("message_type cannot be an empty string.")
             if message_type.lower() not in self.valid_message_types:
-                raise ValueError(f"Invalid message_type provided. Valid types are {', '.join(self.valid_message_types)}")
+                raise ValueError(
+                    f"Invalid message_type provided. Valid types are {', '.join(self.valid_message_types)}"
+                )
         except (TypeError, ValueError) as e:
             self.print_message(str(e), "error")
             self.graceful_exit()
@@ -87,6 +102,8 @@ class CLI:
                 executor.submit(self.print_message, message, message_type)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli = CLI()
-    cli.print_message(f"DO NOT RUN THIS APPLICATION ON ITS OWN! ('{sys.argv[0]}')", "alert")
+    cli.print_message(
+        f"DO NOT RUN THIS APPLICATION ON ITS OWN! ('{sys.argv[0]}')", "alert"
+    )

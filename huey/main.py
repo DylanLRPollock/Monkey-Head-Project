@@ -5,6 +5,7 @@ from .utils import setup_logging, calculate_sum, validate_input
 from .config import load_config
 from .exceptions import InvalidInputError
 
+
 def main(config_file: str = "config.yaml"):
     """Main function for the Huey project.
 
@@ -35,5 +36,6 @@ def main(config_file: str = "config.yaml"):
         logging.error(f"An unexpected error occurred: {e}")
         print(f"An unexpected error occurred: {e}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

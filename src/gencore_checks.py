@@ -11,14 +11,17 @@ def check_core_data(core_data):
     try:
         if not isinstance(core_data, dict):
             raise ValueError("Core data must be a dictionary.")
-        if 'processed' not in core_data or not core_data['processed']:
+        if "processed" not in core_data or not core_data["processed"]:
             raise ValueError("Core data is not processed.")
-        if 'input_length' not in core_data or not isinstance(core_data['input_length'], int):
+        if "input_length" not in core_data or not isinstance(
+            core_data["input_length"], int
+        ):
             raise ValueError("Invalid input length in core data.")
         return True
     except Exception as e:
         print(f"Error checking core data: {e}")
         return False
+
 
 if __name__ == "__main__":
     import argparse
