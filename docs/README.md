@@ -177,7 +177,7 @@ Legacy System Support Files: Contains all scripts and configurations necessary f
 
 Installation and Usage: GenCore AI/OS
 
-GenCore AI/OS, part of the Monkey Head Project, integrates advanced adaptability and dynamic interaction across varied hardware environments. The installation instructions detail setting up HostOS, SubOS, NanoOS, and AtomOS environments for modular deployment.
+GenCore AI/OS, part of the Monkey Head Project, integrates advanced adaptability and dynamic interaction across varied hardware environments. The installation instructions detail setting up HostOS, SubOS, NanoOS, and NanoOS environments for modular deployment.
 
 GenCore HostOS Requirements and Installation
 ![Zap-4](https://github.com/user-attachments/assets/7806606a-f7c1-4cb5-ac66-04031e028763)
@@ -206,7 +206,7 @@ SubOS: Requires 128GB storage and 8GB RAM per instance, configured through Hyper
 
 NanoOS: A lighter version, utilizing Docker for containerized operations, allowing efficient task execution with minimal resource demands.
 
-AtomOS: Deployed using Python virtual environments, allocating fractional core processing power. Ideal for lightweight, background tasks that require minimal computational effort.
+NanoOS: Deployed using Python virtual environments, allocating fractional core processing power. Ideal for lightweight, background tasks that require minimal computational effort.
 
 Document Library: Key Summaries
 
