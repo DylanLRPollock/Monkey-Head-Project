@@ -10,9 +10,19 @@ MAC_INSTALL = os.path.join(SCRIPT_DIR, "setup", "macOS", "install.sh")
 WINDOWS_INSTALL = os.path.join(SCRIPT_DIR, "setup", "Windows11", "01-FULL.bat")
 
 
+def update_submodules() -> None:
+    """Ensure git submodules are initialized."""
+    try:
+        subprocess.run(["git", "submodule", "update", "--init", "--recursive"], check=True)
+    except subprocess.CalledProcessError as exc:
+        print(f"Failed to update submodules: {exc.returncode}")
+        raise
+
+
 def run_installer():
     system = platform.system()
     try:
+        update_submodules()
         if system == "Linux":
             subprocess.run(["bash", LINUX_INSTALL], check=True)
         elif system == "Darwin":

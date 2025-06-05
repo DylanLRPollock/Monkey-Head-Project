@@ -91,12 +91,14 @@ python3 -m venv venv
 source venv/bin/activate  # Linux/macOS
 venv\Scripts\activate     # Windows
 pip install -r requirements.txt
+git submodule update --init --recursive
+pip install -e repo/pygpt-MHP
 python src/main.py
 ```
 
 ### Submodule
 
-This project uses the [pygpt-MHP](https://github.com/DylanLRPollock/pygpt-MHP) submodule located in `repo/pygpt-MHP`. It provides advanced GPT-based capabilities leveraged by GenCore. Clone the repository with `--recurse-submodules` or run `git submodule update --init --recursive` after cloning to ensure it is available.
+This project uses the [pygpt-MHP](https://github.com/DylanLRPollock/pygpt-MHP) submodule located in `repo/pygpt-MHP`. It provides advanced GPT-based capabilities leveraged by GenCore. Clone the repository with `--recurse-submodules` or run `git submodule update --init --recursive` after cloning to ensure it is available. The installer performs this step automatically and installs the package with `pip install -e repo/pygpt-MHP`.
 
 ### Running Tests
 
@@ -108,7 +110,8 @@ pytest tests
 ```
 
 You can also use the provided cross-platform installer, which automatically
-detects your operating system and invokes the appropriate setup script:
+initializes git submodules, installs the `pygpt-MHP` package, and detects your
+operating system to invoke the appropriate setup script:
 
 ```bash
 python installer.py
