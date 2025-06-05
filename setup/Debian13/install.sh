@@ -41,12 +41,20 @@ function setup_python_env {
     pip install --upgrade pip || error_exit "Failed to upgrade pip."
     echo "Installing dependencies..."
     pip install -r requirements.txt || error_exit "Failed to install dependencies."
+    echo "Installing local pygpt-MHP package..."
+    pip install -e repo/pygpt-MHP || error_exit "Failed to install pygpt-MHP."
+}
+
+function update_submodules {
+    echo "Initializing git submodules..."
+    git submodule update --init --recursive || error_exit "Failed to update submodules."
 }
 
 ensure_root
 update_system
 install_common_tools
 install_additional_tools
+update_submodules
 setup_python_env
 
 echo "Installation completed successfully."

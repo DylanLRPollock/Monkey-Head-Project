@@ -32,10 +32,18 @@ function setup_python_env() {
     pip install --upgrade pip
     echo "Installing dependencies..."
     pip install -r requirements.txt
+    echo "Installing local pygpt-MHP package..."
+    pip install -e repo/pygpt-MHP
+}
+
+function update_submodules() {
+    echo "Initializing git submodules..."
+    git submodule update --init --recursive
 }
 
 install_homebrew
 install_packages
+update_submodules
 setup_python_env
 
 echo "Installation completed successfully."
