@@ -16,14 +16,22 @@ def print_message(message, message_type="info"):
     elif message_type == "error":
         print(f"[ERROR] {message}")
     else:
-        raise ValueError(f"Invalid message_type '{message_type}'. Expected 'info', 'warning', or 'error'.")
+        raise ValueError(
+            f"Invalid message_type '{message_type}'. Expected 'info', 'warning', or 'error'."
+        )
+
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Print a message to the console.")
     parser.add_argument("message", help="The message to print.")
-    parser.add_argument("--type", choices=["info", "warning", "error"], default="info", help="The type of message.")
+    parser.add_argument(
+        "--type",
+        choices=["info", "warning", "error"],
+        default="info",
+        help="The type of message.",
+    )
     args = parser.parse_args()
 
     try:

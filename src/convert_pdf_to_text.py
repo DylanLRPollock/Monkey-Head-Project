@@ -1,6 +1,7 @@
 import os
 from PyPDF2 import PdfFileReader
 
+
 def convert_pdf_to_text(pdf_file, output_file):
     """
     Converts a PDF file to a text file.
@@ -17,21 +18,22 @@ def convert_pdf_to_text(pdf_file, output_file):
         raise FileNotFoundError(f"PDF file '{pdf_file}' not found.")
 
     try:
-        with open(pdf_file, 'rb') as file:
+        with open(pdf_file, "rb") as file:
             reader = PdfFileReader(file)
             text = ""
             for page_num in range(reader.numPages):
                 text += reader.getPage(page_num).extract_text() + "\n"
     except OSError as e:
-        raise OSError(f"Error reading PDF file '{pdf_file}": {e}")
+        raise OSError(f"Error reading PDF file '{pdf_file}': {e}")
 
     try:
-        with open(output_file, 'w', encoding='utf-8') as file:
+        with open(output_file, "w", encoding="utf-8") as file:
             file.write(text)
     except OSError as e:
-        raise OSError(f"Error writing text file '{output_file}": {e}")
+        raise OSError(f"Error writing text file '{output_file}': {e}")
 
     print(f"PDF converted to text and saved to '{output_file}'")
+
 
 if __name__ == "__main__":
     import argparse

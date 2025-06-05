@@ -11,19 +11,22 @@ def generate_core_data(input_data):
     core_data = {}
     try:
         # Example logic for generating core data
-        core_data['processed'] = True
-        core_data['input_length'] = len(input_data)
-        core_data['details'] = input_data
+        core_data["processed"] = True
+        core_data["input_length"] = len(input_data)
+        core_data["details"] = input_data
     except Exception as e:
         raise ValueError(f"Error generating core data: {e}")
 
     return core_data
 
+
 if __name__ == "__main__":
     import argparse
     import json
 
-    parser = argparse.ArgumentParser(description="Generate core data based on the input data.")
+    parser = argparse.ArgumentParser(
+        description="Generate core data based on the input data."
+    )
     parser.add_argument("input_data", help="The input data in JSON format.")
     args = parser.parse_args()
 

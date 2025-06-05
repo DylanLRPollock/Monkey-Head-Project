@@ -1,7 +1,8 @@
 import logging
 
+
 class ErrorHandler:
-    def __init__(self, log_file='app.log'):
+    def __init__(self, log_file="app.log"):
         logging.basicConfig(filename=log_file, level=logging.INFO)
 
     def log_error(self, error_message):

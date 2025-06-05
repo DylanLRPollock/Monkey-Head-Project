@@ -22,12 +22,17 @@ def format_text(text, line_length=80):
     formatted_text += line.strip()
     return formatted_text
 
+
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Format a text string to a specified line length.")
+    parser = argparse.ArgumentParser(
+        description="Format a text string to a specified line length."
+    )
     parser.add_argument("text", help="The text to format.")
-    parser.add_argument("--line_length", type=int, default=80, help="The maximum length of each line.")
+    parser.add_argument(
+        "--line_length", type=int, default=80, help="The maximum length of each line."
+    )
     args = parser.parse_args()
 
     try:

@@ -82,8 +82,21 @@ cd Monkey-Head-Project
 python3 -m venv venv
 source venv/bin/activate  # Linux/macOS
 venv\Scripts\activate     # Windows
+ pip install -r requirements.txt
+python src/main.py
+```
+
+### Submodule
+
+This project uses the [pygpt-MHP](https://github.com/DylanLRPollock/pygpt-MHP) submodule located in `repo/pygpt-MHP`. It provides advanced GPT-based capabilities leveraged by GenCore. Clone the repository with `--recurse-submodules` or run `git submodule update --init --recursive` after cloning to ensure it is available.
+
+### Running Tests
+
+```bash
+python -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
-python py/main.py
+pytest tests
 ```
 
 You can also use the provided cross-platform installer, which automatically
@@ -92,6 +105,12 @@ detects your operating system and invokes the appropriate setup script:
 ```bash
 python installer.py
 ```
+
+### Directory Structure
+
+Legacy scripts from the `py/` folder were consolidated and updated in
+the `src/` directory. All utilities and modules live under `src/` to
+keep the project organized.
 
 ---
 
@@ -116,7 +135,7 @@ python installer.py
 
 Your contributions are crucial! You can help by reporting bugs, suggesting features, submitting pull requests, or participating in discussions.
 
-* Follow standard Python practices (`black`, `flake8`).
+* Follow standard Python practices. Formatting and style are checked with `black` and `flake8` in CI.
 * Provide clear commit messages and detailed PR descriptions.
 
 Visit the [GitHub Repository](https://github.com/DylanLRPollock/Monkey-Head-Project) to contribute or learn more.

@@ -1,5 +1,6 @@
 import os
 
+
 def remove_files(directory, extension):
     """
     Removes files with a specific extension from a directory.
@@ -24,10 +25,13 @@ def remove_files(directory, extension):
     except OSError as e:
         raise OSError(f"Error removing files in '{directory}': {e}")
 
+
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Remove files with a specific extension from a directory.")
+    parser = argparse.ArgumentParser(
+        description="Remove files with a specific extension from a directory."
+    )
     parser.add_argument("directory", help="The directory to remove files from.")
     parser.add_argument("extension", help="The file extension to remove.")
     args = parser.parse_args()

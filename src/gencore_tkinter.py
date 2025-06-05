@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 
+
 def create_tkinter_window():
     """
     Creates a simple Tkinter window with a button that shows a message box.
@@ -15,6 +16,7 @@ def create_tkinter_window():
     button.pack(pady=20)
 
     root.mainloop()
+
 
 if __name__ == "__main__":
     create_tkinter_window()

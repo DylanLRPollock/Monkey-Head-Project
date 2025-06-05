@@ -6,9 +6,10 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from nltk.tokenize import sent_tokenize
 
+
 # Define Formatter class
 class Formatter:
-    def __init__(self, encoding='utf-8', config_file='formatter_config.json'):
+    def __init__(self, encoding="utf-8", config_file="formatter_config.json"):
         self.encoding = encoding
         self.load_config(config_file)
         self.setup_logging()
@@ -20,20 +21,23 @@ class Formatter:
     # Load configuration from file
     def load_config(self, config_file):
         try:
-            with open(config_file, 'r') as file:
+            with open(config_file, "r") as file:
                 config = json.load(file)
-                self.books_folder = config.get('books_folder', 'BOOKS')
-                self.memory_folder = config.get('memory_folder', 'MEMORY')
-                self.splitter_folder = config.get('splitter_folder', 'SPLITTER')
+                self.books_folder = config.get("books_folder", "BOOKS")
+                self.memory_folder = config.get("memory_folder", "MEMORY")
+                self.splitter_folder = config.get("splitter_folder", "SPLITTER")
         except FileNotFoundError:
-            self.books_folder = 'BOOKS'
-            self.memory_folder = 'MEMORY'
-            self.splitter_folder = 'SPLITTER'
+            self.books_folder = "BOOKS"
+            self.memory_folder = "MEMORY"
+            self.splitter_folder = "SPLITTER"
 
     # Setup logging configuration
     def setup_logging(self):
-        logging.basicConfig(filename='formatter.log', level=logging.DEBUG,
-                            format='%(asctime)s - %(levelname)s - %(message)s')
+        logging.basicConfig(
+            filename="formatter.log",
+            level=logging.DEBUG,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+        )
 
     # Initialize important variables
     def initial_variable(self):
@@ -61,8 +65,10 @@ class Formatter:
 
     # Display initial messages
     def initial_message(self):
-        program_name = os.path.basename(__file__).replace('.py', '')
-        formatted_program_name = ' '.join(word.capitalize() for word in program_name.split('_'))
+        program_name = os.path.basename(__file__).replace(".py", "")
+        formatted_program_name = " ".join(
+            word.capitalize() for word in program_name.split("_")
+        )
         title_message = f"[Initialization] Monkey Head Project: {formatted_program_name} Initialized"
         init_message = (f"Starting '{formatted_program_name}.py'...", "initialization")
         print(f"Monkey Head Project: GenCore / BananaBrain - {formatted_program_name}")
@@ -75,7 +81,9 @@ class Formatter:
         self.validate_print_message_input(output_message, message_type)
         # Actual message printing
         if message_type.lower() == "alert":
-            output_message = f"Alert has been triggered & program may fail!' {output_message}'"
+            output_message = (
+                f"Alert has been triggered & program may fail!' {output_message}'"
+            )
         if message_type.lower() == "user_input":
             return input(f"> {message_type.capitalize()}: {output_message}")
         else:
@@ -89,13 +97,26 @@ class Formatter:
                 raise TypeError("Invalid input types for print_message function.")
             elif not output_message.strip() or not message_type.strip():
                 raise ValueError("Empty strings are not allowed.")
-            valid_message_types = ["initialization", "status", "info", "error", "debug", "alert", "user_input", "query", "summary", "warning", "fatal_error", "shutdown"]
+            valid_message_types = [
+                "initialization",
+                "status",
+                "info",
+                "error",
+                "debug",
+                "alert",
+                "user_input",
+                "query",
+                "summary",
+                "warning",
+                "fatal_error",
+                "shutdown",
+            ]
             if message_type.lower() not in valid_message_types:
                 raise ValueError("Invalid message_type provided.")
         except (TypeError, ValueError) as e:
             self.print_message(str(e), "error")
             self.graceful_exit()
-            
+
     # Check if a folder exists, and create it if it doesn't
     def ensure_folder_exists(self, folder_name):
         folder_path = os.path.join(self.parent_folder, folder_name)
@@ -106,7 +127,8 @@ class Formatter:
     def main(self):
         print("end")
 
+
 # Create instance and run the main loop
-if __name__ == '__main__':
+if __name__ == "__main__":
     formatter = Formatter()
     formatter.main()
