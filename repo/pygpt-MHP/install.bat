@@ -1,5 +1,15 @@
-:: This script is used to install the app dependencies and run the app using the virtual environment
-call python -m venv venv
+@echo off
+setlocal
+
+:: Create the virtual environment if it doesn't exist
+if not exist venv (
+    python -m venv venv || exit /b 1
+)
+
 call venv\Scripts\activate
-call pip install -r requirements.txt
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+
 call python run.py %*
+
+endlocal
