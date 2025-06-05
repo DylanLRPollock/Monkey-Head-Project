@@ -6,6 +6,7 @@ import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 LINUX_INSTALL = os.path.join(SCRIPT_DIR, "setup", "Debian13", "install.sh")
+MAC_INSTALL = os.path.join(SCRIPT_DIR, "setup", "macOS", "install.sh")
 WINDOWS_INSTALL = os.path.join(SCRIPT_DIR, "setup", "Windows11", "01-FULL.bat")
 
 
@@ -14,6 +15,8 @@ def run_installer():
     try:
         if system == "Linux":
             subprocess.run(["bash", LINUX_INSTALL], check=True)
+        elif system == "Darwin":
+            subprocess.run(["bash", MAC_INSTALL], check=True)
         elif system == "Windows":
             subprocess.run(["cmd", "/c", WINDOWS_INSTALL], check=True)
         else:
