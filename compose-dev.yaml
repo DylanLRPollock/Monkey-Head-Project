@@ -19,6 +19,7 @@ services:
     environment:
       - ENV_VAR=dev
       - OTHER_VAR=value
+      - APP_ENV=development
     ports:
       - "3000:3000"
       - "8000:8000"
@@ -36,11 +37,11 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 90s
-      timeout: 10s
-      retries: 3
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:3000"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
 
   db:
     image: postgres:latest

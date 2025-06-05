@@ -13,6 +13,7 @@ services:
       # Optional: Add any runtime environment variables here
       - VIRTUAL_ENV=/workspace/venv
       - PATH=/workspace/venv/bin:$PATH
+      - APP_ENV=production
     ports:
       - "8000:8000"  # Example port mapping if a web service is exposed
     restart: unless-stopped  # Optional: Helps with resiliency on failures or reboots

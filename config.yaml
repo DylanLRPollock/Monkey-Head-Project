@@ -20,3 +20,6 @@ system:
     - fastapi
     - redis
     - celery
+
+app:
+  environment: development
