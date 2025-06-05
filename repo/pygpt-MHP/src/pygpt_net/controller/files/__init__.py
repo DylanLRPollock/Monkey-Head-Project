@@ -36,8 +36,13 @@ class Files:
 
     def selection_change(self):
         """Select on list change"""
-        # TODO: implement this
-        pass
+        explorer = self.window.ui.nodes.get('output_files')
+        if explorer is None:
+            return
+        indexes = explorer.treeView.selectedIndexes()
+        if indexes:
+            path = explorer.model.filePath(indexes[0])
+            explorer.path_label.setText(path)
 
     def delete_recursive(
             self,

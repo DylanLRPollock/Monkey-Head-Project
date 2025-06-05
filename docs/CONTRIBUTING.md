@@ -4,7 +4,7 @@
 We're thrilled you're interested in contributing to the Monkey Head Project! This document provides comprehensive guidelines for contributing to our groundbreaking AI/OS initiative. Your contributions are invaluable to us, and we appreciate your commitment to making the Monkey Head Project better.
 
 ## Code of Conduct
-Please review our [Code of Conduct](link_to_code_of_conduct), which outlines our expectations for participant behavior. By participating, you are expected to uphold this code to ensure a welcoming and productive environment for everyone.
+Please review our [Code of Conduct](https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/CODE_OF_CONDUCT.md), which outlines our expectations for participant behavior. By participating, you are expected to uphold this code to ensure a welcoming and productive environment for everyone.
 
 ## How to Contribute
 We welcome various types of contributions, including coding, documentation improvements, bug reports, and feature suggestions. Here’s how you can get started:
