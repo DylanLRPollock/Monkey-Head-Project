@@ -54,6 +54,7 @@ setup(
         'boto3==1.36.0',
         'google-auth==2.37.0',
         'elasticsearch==8.17.0',
+        'pyyaml==6.0.2',
         'pygpt-net>=0.1.0'
     ],
     extras_require={
