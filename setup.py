@@ -10,13 +10,13 @@ except FileNotFoundError:
 
 setup(
     name='MonkeyHeadProject',
-    version='1.0.0',
+    version='1.0.1',
     description='A project integrating diverse functionalities including ML, web frameworks, and more.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Dylan L.R. Pollock',
     author_email='admin@dlrp.ca',
-    url='https://github.com/DylanLRPollokc/Monkey-Head-Project',
+    url='https://github.com/DylanLRPollock/Monkey-Head-Project',
     packages=find_packages(),
     install_requires=[
         'requests==2.32.3',
@@ -64,9 +64,9 @@ setup(
             'pytest==7.4.0'
         ]
     },
-    python_requires='>=3.11',
+    python_requires='>=3.12',
     classifiers=[
-        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         'Operating System :: Microsoft :: Windows',
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -74,7 +74,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'monkeyhead=monkeyhead.cli:main'
+            'monkeyhead=huey.cli:run_cli'
         ]
     },
 )

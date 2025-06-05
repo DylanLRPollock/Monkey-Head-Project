@@ -32,7 +32,9 @@ def mini_setup():
     clear_screen()
     print("[GenCore]: Running 'mini' setup...")
     subprocess.run(["python", "-m", "pip", "install", "--upgrade", "pip"])
-    subprocess.run(["python", "-m", "pip", "install", "python3.11-slim", "python3.11-venv"])
+    subprocess.run(["apt-get", "update"])
+    subprocess.run(["apt-get", "install", "-y", "portaudio19-dev", "libasound2", "libasound2-dev"])
+    subprocess.run(["python", "-m", "pip", "install", "python3.12-slim", "python3.12-venv"])
     print("[GenCore]: 'Mini' setup completed.")
 
 def cleanup_files():
