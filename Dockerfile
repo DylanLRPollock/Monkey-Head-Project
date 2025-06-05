@@ -2,12 +2,15 @@
 FROM debian:trixie
 
 # Install system dependencies and Python 3.12
-RUN apt update && apt install -y \
-    python3.12 \
-    python3.12-venv \
-    python3.12-dev \
-    python3-pip \
-    build-essential \
+RUN apt update && apt install -y 
+    python3.12 
+    python3.12-venv 
+    python3.12-dev 
+    python3-pip 
+    build-essential 
+    portaudio19-dev 
+    libasound2 
+    libasound2-dev 
     && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables
