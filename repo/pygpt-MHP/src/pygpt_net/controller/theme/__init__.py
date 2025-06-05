@@ -173,13 +173,13 @@ class Theme:
 
     def apply(
             self,
-            theme: str = 'dark_teal.xml',
+            theme: str = 'dark_purple.xml',
             custom: Optional[str] = None
     ):
         """
         Update material theme and apply custom CSS
 
-        :param theme: material theme filename (e.g. dark_teal.xml)
+        :param theme: material theme filename (e.g. dark_purple.xml)
         :param custom: additional custom stylesheet filename (e.g. style.css)
         """
         inverse = False

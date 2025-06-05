@@ -69,7 +69,7 @@ class Patch:
                     if key in data:
                         del data[key]
                 if 'theme' not in data:
-                    data['theme'] = "dark_teal"
+                    data['theme'] = "dark_purple"
                 updated = True
 
             # < 0.9.4
@@ -90,7 +90,7 @@ class Patch:
             # < 2.0.0
             if old < parse_version("2.0.0"):
                 print("Migrating config from < 2.0.0...")
-                data['theme'] = 'dark_teal'  # force, because removed light themes!
+                data['theme'] = 'dark_purple'  # force, because removed light themes!
                 if 'cmd' not in data:
                     data['cmd'] = True
                 if 'stream' not in data:
