@@ -1,6 +1,6 @@
 import logging
 import subprocess
-from system_checks import check_error
+from core.system_checks import check_error
 
 logger = logging.getLogger(__name__)
 
