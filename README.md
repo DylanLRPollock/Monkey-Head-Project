@@ -86,6 +86,13 @@ pip install -r requirements.txt
 python py/main.py
 ```
 
+You can also use the provided cross-platform installer, which automatically
+detects your operating system and invokes the appropriate setup script:
+
+```bash
+python installer.py
+```
+
 ---
 
 ## 🔬 Test Hardware
