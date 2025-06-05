@@ -117,6 +117,18 @@ operating system to invoke the appropriate setup script:
 python installer.py
 ```
 
+### Docker and Kubernetes Utilities
+
+The `scripts/` directory contains helper scripts for container management:
+
+```bash
+./scripts/docker_setup.sh    # build image and start compose stack
+./scripts/docker_cleanup.sh  # stop containers and prune resources
+./scripts/k8s_setup.sh       # apply manifests in k8s/
+./scripts/k8s_cleanup.sh     # remove Kubernetes resources
+```
+
+
 ### macOS Installation
 
 Running the installer on macOS executes `setup/macOS/install.sh`. This script
