@@ -2,6 +2,7 @@
 
 import unittest
 from unittest.mock import patch
+from pathlib import Path
 
 _missing_dep = ""
 try:
@@ -10,9 +11,14 @@ except ModuleNotFoundError as e:
     main = None
     _missing_dep = e.name
 
+# Determine if the config file exists. Tests requiring the YAML
+# configuration should be skipped when it is absent.
+_config_missing = not (Path(__file__).resolve().parents[1] / "config.yaml").is_file()
+
 
 class TestMain(unittest.TestCase):
     @unittest.skipIf(main is None, "Required dependency missing: %s" % _missing_dep)
+    @unittest.skipIf(_config_missing, "config.yaml not found")
     def test_main_runs(self):
         # Test that main() runs without errors and prints the expected sum
         try:
