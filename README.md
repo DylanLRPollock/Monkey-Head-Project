@@ -11,6 +11,8 @@ The **Monkey Head Project** is dedicated to developing a robust, modular, and et
 **Vision:**
 Creating a universally accessible platform that democratizes cutting-edge robotics and AI, enhancing human-machine collaboration and ethical technological innovation.
 
+For a quick summary, see [New-To-AI.md](docs/New-To-AI.md).
+
 ---
 
 ## 🛠️ Core Components
