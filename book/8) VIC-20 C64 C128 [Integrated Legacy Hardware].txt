@@ -55,8 +55,8 @@ In the **Monkey Head Project**, incorporating **VIC-20**, **C64**, and **Commodo
 
 ### Community Engagement and Contributions
 
-1. **Open Source Development**  
-   - **GNU GPL V3 License**: Integration software is released under an open license, encouraging enthusiasts to refine and expand its capabilities.  
+1. **Open Source Development**
+   - **MIT License**: Integration software is released under an open license, encouraging enthusiasts to refine and expand its capabilities.
    - **Community Contributions**: From improved serial communication drivers for the C64 to augmented network features for the VIC-20, user-driven enhancements propel the Project’s adaptability.
 
 2. **Workshops and Hackathons**  
