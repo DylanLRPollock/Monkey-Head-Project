@@ -1,6 +1,7 @@
 import os
 import subprocess
 
+
 def check_linux_service(service_name):
     """
     Checks the status of a Linux service.
@@ -15,18 +16,23 @@ def check_linux_service(service_name):
         OSError: If there is an error checking the service status.
     """
     try:
-        result = subprocess.run(['systemctl', 'is-active', service_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        status = result.stdout.decode('utf-8').strip()
-        if status == 'active':
-            return 'active'
-        elif status == 'inactive':
-            return 'inactive'
-        elif status == 'failed':
-            return 'failed'
+        result = subprocess.run(
+            ["systemctl", "is-active", service_name],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        status = result.stdout.decode("utf-8").strip()
+        if status == "active":
+            return "active"
+        elif status == "inactive":
+            return "inactive"
+        elif status == "failed":
+            return "failed"
         else:
-            return 'unknown'
+            return "unknown"
     except OSError as e:
         raise OSError(f"Error checking service '{service_name}': {e}")
+
 
 if __name__ == "__main__":
     import argparse

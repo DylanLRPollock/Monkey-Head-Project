@@ -1,5 +1,6 @@
 import os
 
+
 def split_chapters(input_file, output_dir):
     """
     Splits a text file into chapters based on a delimiter and saves each chapter as a separate file.
@@ -22,21 +23,22 @@ def split_chapters(input_file, output_dir):
             raise OSError(f"Error creating output directory '{output_dir}': {e}")
 
     try:
-        with open(input_file, 'r', encoding='utf-8') as file:
+        with open(input_file, "r", encoding="utf-8") as file:
             content = file.read()
     except OSError as e:
         raise OSError(f"Error reading input file '{input_file}': {e}")
 
-    chapters = content.split('CHAPTER')
+    chapters = content.split("CHAPTER")
     for i, chapter in enumerate(chapters):
-        chapter_file = os.path.join(output_dir, f'chapter_{i + 1}.txt')
+        chapter_file = os.path.join(output_dir, f"chapter_{i + 1}.txt")
         try:
-            with open(chapter_file, 'w', encoding='utf-8') as file:
+            with open(chapter_file, "w", encoding="utf-8") as file:
                 file.write(chapter.strip())
         except OSError as e:
             raise OSError(f"Error writing chapter file '{chapter_file}': {e}")
 
     print(f"Chapters split and saved to '{output_dir}'")
+
 
 if __name__ == "__main__":
     import argparse

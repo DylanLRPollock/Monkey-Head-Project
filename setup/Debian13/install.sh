@@ -1,33 +1,52 @@
 #!/bin/bash
 
-# Define the directory for the virtual environment
+set -e
+
 VENV_DIR="venv"
 
-# Function to display error messages
 function error_exit {
-    echo "$1" 1>&2
+    echo "$1" >&2
     exit 1
 }
 
-# Check if Python is installed
-if ! command -v python3 &> /dev/null
-then
-    error_exit "Python3 is not installed. Please install Python3 and try again."
-fi
+function ensure_root {
+    if [ "$EUID" -ne 0 ]; then
+        echo "Please run this script with sudo or as root." >&2
+        exit 1
+    fi
+}
 
-# Create a virtual environment
-echo "Creating virtual environment..."
-python3 -m venv $VENV_DIR || error_exit "Failed to create virtual environment."
+function update_system {
+    echo "Updating system..."
+    apt-get update -y || error_exit "apt-get update failed."
+    apt-get upgrade -y || error_exit "apt-get upgrade failed."
+}
 
-# Activate the virtual environment
-source $VENV_DIR/bin/activate || error_exit "Failed to activate virtual environment."
+function install_common_tools {
+    echo "Installing common tools..."
+    apt-get install -y git nodejs || error_exit "Failed to install common tools."
+}
 
-# Upgrade pip
-echo "Upgrading pip..."
-pip install --upgrade pip || error_exit "Failed to upgrade pip."
+function install_additional_tools {
+    echo "Installing additional tools..."
+    apt-get install -y python3 python3-venv docker.io || error_exit "Failed to install additional tools."
+}
 
-# Install dependencies
-echo "Installing dependencies..."
-pip install -r requirements.txt || error_exit "Failed to install dependencies."
+function setup_python_env {
+    echo "Creating virtual environment..."
+    python3 -m venv "$VENV_DIR" || error_exit "Failed to create virtual environment."
+    echo "Activating virtual environment..."
+    source "$VENV_DIR/bin/activate" || error_exit "Failed to activate virtual environment."
+    echo "Upgrading pip..."
+    pip install --upgrade pip || error_exit "Failed to upgrade pip."
+    echo "Installing dependencies..."
+    pip install -r requirements.txt || error_exit "Failed to install dependencies."
+}
+
+ensure_root
+update_system
+install_common_tools
+install_additional_tools
+setup_python_env
 
 echo "Installation completed successfully."
