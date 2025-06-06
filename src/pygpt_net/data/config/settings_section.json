@@ -1,0 +1,47 @@
+{
+    "general": {
+        "label": "settings.section.general"
+    },
+    "api_keys": {
+        "label": "settings.section.api_keys"
+    },
+    "layout": {
+        "label": "settings.section.layout"
+    },
+    "files": {
+        "label": "settings.section.files"
+    },
+    "ctx": {
+        "label": "settings.section.ctx"
+    },
+    "model": {
+        "label": "settings.section.model"
+    },
+    "prompts": {
+        "label": "settings.section.prompts"
+    },
+    "images": {
+        "label": "settings.section.images"
+    },
+    "vision": {
+        "label": "settings.section.vision"
+    },
+    "audio": {
+        "label": "settings.section.audio"
+    },
+    "llama-index": {
+        "label": "settings.section.llama_index"
+    },
+    "agent": {
+        "label": "settings.section.agent"
+    },
+    "access": {
+        "label": "settings.section.access"
+    },
+    "updates": {
+        "label": "settings.section.updates"
+    },
+    "developer": {
+        "label": "settings.section.developer"
+    }
+}
