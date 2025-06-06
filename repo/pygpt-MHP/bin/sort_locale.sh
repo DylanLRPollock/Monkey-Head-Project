@@ -1,4 +1,12 @@
 #!/bin/bash
+# ==================================================
+# This file is a part of the 'Monkey Head Project'
+# Website:   https://dlrp.ca
+# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
+# License:   https://opensource.org/license/gpl-3-0
+# Overseen By:   Dylan L.R. Pollock
+# Updated:   06.05.2025
+# ==================================================
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 INI_FILES_DIR="$SCRIPT_DIR/../src/pygpt_net/data/locale"
