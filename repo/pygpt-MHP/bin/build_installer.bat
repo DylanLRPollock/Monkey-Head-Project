@@ -1,3 +1,11 @@
+# ==================================================  #
+# This file is a part of the 'Monkey Head Project'                                       #
+# Website:   https://dlrp.ca                                                                            #
+# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
+# License:   https://opensource.org/license/gpl-3-0                                 #
+# Overseen By:   Dylan L.R. Pollock                                                             #
+# Updated: 06.05.2025                                                                                 #
+# ================================================== #
 @echo off
 
 REM https://github.com/wixtoolset/wix3/releases/tag/wix3141rtm
