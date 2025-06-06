@@ -1,0 +1,23 @@
+{
+  "name": "Batman and Joker",
+  "ai_name": "Batman",
+  "user_name": "Joker",
+  "prompt": "Batman is a superhero from Gotham City.\n\nJoker: who are you?\nBatman: I'm Batman!",
+  "temperature": 1.0,
+  "img": false,
+  "chat": false,
+  "completion": true,
+  "vision": false,
+  "langchain": false,
+  "assistant": false,
+  "llama_index": false,
+  "agent": false,
+  "expert": false,
+  "experts": [],
+  "enabled": true,
+  "__meta__": {
+    "version": "2.2.7",
+    "app.version": "2.2.7",
+    "updated_at": "2024-05-01T00:00:00"
+  }
+}

@@ -1,9 +1,17 @@
-# ==================================================
-# This file is a part of the 'Monkey Head Project'
-# Website:   https://dlrp.ca
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-# License:   https://opensource.org/license/gpl-3-0
-# Overseen By:   Dylan L.R. Pollock
-# Updated: 06.05.2025
-# ==================================================
-# Placeholder for repo/pygpt-MHP/src/pygpt_net/core/agents/observer/__init__.py
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ================================================== #
+# This file is a part of PYGPT package               #
+# Website: https://pygpt.net                         #
+# GitHub:  https://github.com/szczyglis-dev/py-gpt   #
+# MIT License                                        #
+# Created By  : Marcin Szczygliński                  #
+# Updated Date: 2024.11.17 03:00:00                  #
+# ================================================== #
+
+from .evaluation import Evaluation
+
+class Observer:
+    def __init__(self, window=None):
+        self.window = window
+        self.evaluation = Evaluation(window)

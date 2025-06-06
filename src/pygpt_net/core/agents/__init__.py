@@ -1,9 +1,32 @@
-# ==================================================
-# This file is a part of the 'Monkey Head Project'
-# Website:   https://dlrp.ca
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-# License:   https://opensource.org/license/gpl-3-0
-# Overseen By:   Dylan L.R. Pollock
-# Updated: 06.05.2025
-# ==================================================
-# Placeholder for repo/pygpt-MHP/src/pygpt_net/core/agents/__init__.py
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# ================================================== #
+# This file is a part of PYGPT package               #
+# Website: https://pygpt.net                         #
+# GitHub:  https://github.com/szczyglis-dev/py-gpt   #
+# MIT License                                        #
+# Created By  : Marcin Szczygliński                  #
+# Updated Date: 2024.11.17 03:00:00                  #
+# ================================================== #
+
+from .legacy import Legacy
+from .memory import Memory
+from .observer import Observer
+from .provider import Provider
+from .runner import Runner
+from .tools import Tools
+
+class Agents:
+    def __init__(self, window=None):
+        """
+        Agents core
+
+        :param window: Window instance
+        """
+        self.window = window
+        self.legacy = Legacy(window)
+        self.memory = Memory(window)
+        self.observer = Observer(window)
+        self.provider = Provider(window)
+        self.runner = Runner(window)
+        self.tools = Tools(window)
