@@ -1,3 +1,11 @@
+# ==================================================
+# This file is a part of the 'Monkey Head Project'
+# Website:   https://dlrp.ca
+# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
+# License:   https://opensource.org/license/gpl-3-0
+# Overseen By:   Dylan L.R. Pollock
+# Updated: 06.05.2025
+# ==================================================
 def print_message(message, message_type="info"):
     """
     Prints a message to the console with a specific format based on the message type.
