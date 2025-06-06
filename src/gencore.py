@@ -1,3 +1,11 @@
+# ==================================================
+# This file is a part of the 'Monkey Head Project'
+# Website:   https://dlrp.ca
+# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
+# License:   https://opensource.org/license/gpl-3-0
+# Overseen By:   Dylan L.R. Pollock
+# Updated: 06.05.2025
+# ==================================================
 def generate_core_data(input_data):
     """
     Generates core data based on the input data.
