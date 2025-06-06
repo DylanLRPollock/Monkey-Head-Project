@@ -2,7 +2,7 @@
 
 [![pygpt](https://snapcraft.io/pygpt/badge.svg)](https://snapcraft.io/pygpt)
 
-Release: **2.5.8** | build: **2025.03.02** | Python: **>=3.10, <3.13**
+Release: **2.5.10** | build: **2025.03.06** | Python: **>=3.10, <3.13**
 
 > Official website: https://pygpt.net | Documentation: https://pygpt.readthedocs.io
 > 
@@ -3046,7 +3046,7 @@ The configuration is stored in JSON files for easy manual modification outside o
 These configuration files are located in the user's work directory within the following subdirectory:
 
 ``` ini
-{HOME_DIR}/.config/pygpt-net/
+{PROJECT_DIR}/
 ```
 
 ## Manual configuration
@@ -3054,7 +3054,7 @@ These configuration files are located in the user's work directory within the fo
 You can manually edit the configuration files in this directory (this is your work directory):
 
 ``` ini
-{HOME_DIR}/.config/pygpt-net/
+{PROJECT_DIR}/
 ```
 
 - `assistants.json` - stores the list of assistants.
@@ -3114,7 +3114,7 @@ This allows you to overwrite language files or CSS styles in a very simple way -
 
 
 ``` ini
-{HOME_DIR}/.config/pygpt-net/
+{PROJECT_DIR}/
 ```
 
 - `locale` - a directory for locales in `.ini` format.
@@ -3385,7 +3385,7 @@ In `Settings -> Developer` dialog, you can enable the `Show debug menu` option t
 By default, all errors and exceptions are logged to the file:
 
 ```ini
-{HOME_DIR}/.config/pygpt-net/app.log
+{PROJECT_DIR}/app.log
 ```
 
 To increase the logging level (`ERROR` level is default), run the application with `--debug` argument:
@@ -3971,6 +3971,19 @@ may consume additional tokens that are not displayed in the main window.
 # CHANGELOG
 
 ## Recent changes:
+
+**2.5.10 (2025-03-06)**
+
+- Added a new model: Claude 3.7 Sonnet.
+- Fixed the context switch issue when the column changed and the tab is not a chat tab.
+- LlamaIndex upgraded to 0.12.22.
+- LlamaIndex LLMs upgraded to recent versions.
+
+**2.5.9 (2025-03-05)**
+
+- Improved formatting of HTML code in the output.
+- Disabled automatic indentation parsing as code blocks.
+- Disabled automatic scrolling of the notepad when opening a tab.
 
 **2.5.8 (2025-03-02)**
 

@@ -103,20 +103,24 @@ goto :eof
 echo Cloning repository...
 if not exist "%USERPROFILE%\Source" mkdir "%USERPROFILE%\Source"
 cd "%USERPROFILE%\Source"
-git clone https://github.com/your/repo.git
+git clone --recurse-submodules https://github.com/DylanLRPollock/Monkey-Head-Project.git
 call :checkError "Git Clone"
+cd Monkey-Head-Project
+git submodule update --init --recursive
 goto :eof
 
 :: Function to set up Python environment
 :setupPythonEnv
 echo Setting up Python environment...
-cd "%USERPROFILE%\Source\repo"
+cd "%USERPROFILE%\Source\Monkey-Head-Project"
 python -m venv venv
 call :checkError "Python Virtual Environment Setup"
 venv\Scripts\activate
 call :checkError "Activate Python Virtual Environment"
 pip install -r requirements.txt
 call :checkError "Install Python Requirements"
+pip install -e repo\pygpt-MHP
+call :checkError "Install pygpt-MHP"
 goto :eof
 
 :: Function to configure Git

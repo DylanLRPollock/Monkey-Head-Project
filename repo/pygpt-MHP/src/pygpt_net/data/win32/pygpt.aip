@@ -342,7 +342,7 @@
     <ROW File="dark_pink.xml" Component_="dark_amber.xml" FileName="DARK_P~1.XML|dark_pink.xml" Attributes="0" SourcePath="..\..\dist\Windows\qt_material\themes\dark_pink.xml" SelfReg="false"/>
     <ROW File="dark_purple.xml" Component_="dark_amber.xml" FileName="DARK_P~2.XML|dark_purple.xml" Attributes="0" SourcePath="..\..\dist\Windows\qt_material\themes\dark_purple.xml" SelfReg="false"/>
     <ROW File="dark_red.xml" Component_="dark_amber.xml" FileName="dark_red.xml" Attributes="0" SourcePath="..\..\dist\Windows\qt_material\themes\dark_red.xml" SelfReg="false"/>
-    <ROW File="dark_teal.xml" Component_="dark_amber.xml" FileName="DARK_T~1.XML|dark_teal.xml" Attributes="0" SourcePath="..\..\dist\Windows\qt_material\themes\dark_teal.xml" SelfReg="false"/>
+    <ROW File="dark_purple.xml" Component_="dark_amber.xml" FileName="DARK_T~1.XML|dark_purple.xml" Attributes="0" SourcePath="..\..\dist\Windows\qt_material\themes\dark_purple.xml" SelfReg="false"/>
     <ROW File="dark_yellow.xml" Component_="dark_amber.xml" FileName="DARK_Y~1.XML|dark_yellow.xml" Attributes="0" SourcePath="..\..\dist\Windows\qt_material\themes\dark_yellow.xml" SelfReg="false"/>
     <ROW File="light_amber.xml" Component_="dark_amber.xml" FileName="LIGHT_~1.XML|light_amber.xml" Attributes="0" SourcePath="..\..\dist\Windows\qt_material\themes\light_amber.xml" SelfReg="false"/>
     <ROW File="light_blue.xml" Component_="dark_amber.xml" FileName="LIGHT_~2.XML|light_blue.xml" Attributes="0" SourcePath="..\..\dist\Windows\qt_material\themes\light_blue.xml" SelfReg="false"/>

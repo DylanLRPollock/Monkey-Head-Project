@@ -3,6 +3,7 @@ import sys
 import glob
 import atexit
 import logging
+import json
 from concurrent.futures import ThreadPoolExecutor
 from nltk.tokenize import sent_tokenize
 

@@ -252,10 +252,11 @@ class Placeholder:
         presets = self.window.core.presets.get_all()
         data = []
         data.append({'_': '---'})
-        for id in presets:
+        for id, preset in presets.items():
             if id.startswith("current."):  # ignore "current" preset
                 continue
-            data.append({id: id})  # TODO: name
+            name = getattr(preset, "name", id)
+            data.append({id: name})
         return data
 
     def get_models(self) -> List[Dict[str, str]]:

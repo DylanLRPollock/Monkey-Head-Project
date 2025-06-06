@@ -1,3 +1,21 @@
 [submodule "repo"]
 	path = repo/pygpt-MHP
 	url = https://github.com/DylanLRPollock/pygpt-MHP.git
+[submodule "repo/rufus-MHP"]
+	path = repo/rufus-MHP
+	url = https://github.com/DylanLRPollock/rufus-MHP
+[submodule "repo/terminal-MHP"]
+	path = repo/terminal-MHP
+	url = https://github.com/DylanLRPollock/terminal-MHP
+[submodule "repo/powershell-MHP"]
+	path = repo/powershell-MHP
+	url = https://github.com/DylanLRPollock/powershell-MHP
+[submodule "repo/bmc64-MHP"]
+	path = repo/bmc64-MHP
+	url = https://github.com/DylanLRPollock/bmc64-MHP
+[submodule "repo/qbittorrent-MHP"]
+	path = repo/qbittorrent-MHP
+	url = https://github.com/DylanLRPollock/qbittorrent-MHP
+[submodule "repo/codex-MHP"]
+	path = repo/codex-MHP
+	url = https://github.com/DylanLRPollock/codex-MHP

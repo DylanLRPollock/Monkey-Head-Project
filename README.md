@@ -54,6 +54,14 @@ A multi-tiered ethical governance system ensuring responsible AI use:
 
 ---
 
+## 🧩 Modular Architecture
+
+GenCore follows a layered design that separates strategic planning, operational control, and real-time hardware interaction. HostOS acts as the "brain," overseeing resource governance and system-wide decisions. SubOS instances manage specialized tasks, scaling resources on demand. NanoOS containers handle direct hardware interaction and time-critical operations. By keeping these tiers loosely coupled, contributors can extend or replace individual layers without disrupting the entire system.
+
+Huey exposes clear integration points for sensors, actuators, and experimental modules. Custom hardware can be added by mapping device drivers to the appropriate NanoOS, while HostOS provides unified monitoring and logging. This modular approach encourages experimentation and simplifies long-term maintenance.
+
+---
+
 ## 📚 Project History and Phases
 
 | Phase | Title                         | Date         | Highlights                                                                |
@@ -82,13 +90,15 @@ cd Monkey-Head-Project
 python3 -m venv venv
 source venv/bin/activate  # Linux/macOS
 venv\Scripts\activate     # Windows
- pip install -r requirements.txt
+pip install -r requirements.txt
+git submodule update --init --recursive
+pip install -e repo/pygpt-MHP
 python src/main.py
 ```
 
 ### Submodule
 
-This project uses the [pygpt-MHP](https://github.com/DylanLRPollock/pygpt-MHP) submodule located in `repo/pygpt-MHP`. It provides advanced GPT-based capabilities leveraged by GenCore. Clone the repository with `--recurse-submodules` or run `git submodule update --init --recursive` after cloning to ensure it is available.
+This project uses the [pygpt-MHP](https://github.com/DylanLRPollock/pygpt-MHP) submodule located in `repo/pygpt-MHP`. It provides advanced GPT-based capabilities leveraged by GenCore. Clone the repository with `--recurse-submodules` or run `git submodule update --init --recursive` after cloning to ensure it is available. The installer performs this step automatically and installs the package with `pip install -e repo/pygpt-MHP`.
 
 ### Running Tests
 
@@ -100,11 +110,30 @@ pytest tests
 ```
 
 You can also use the provided cross-platform installer, which automatically
-detects your operating system and invokes the appropriate setup script:
+initializes git submodules, installs the `pygpt-MHP` package, and detects your
+operating system to invoke the appropriate setup script:
 
 ```bash
 python installer.py
 ```
+
+### Docker and Kubernetes Utilities
+
+The `scripts/` directory contains helper scripts for container management:
+
+```bash
+./scripts/docker_setup.sh    # build image and start compose stack
+./scripts/docker_cleanup.sh  # stop containers and prune resources
+./scripts/k8s_setup.sh       # apply manifests in k8s/
+./scripts/k8s_cleanup.sh     # remove Kubernetes resources
+```
+
+
+### macOS Installation
+
+Running the installer on macOS executes `setup/macOS/install.sh`. This script
+ensures Homebrew is available, installs Git, Python 3, Docker, and sets up the
+project's Python virtual environment automatically.
 
 ### Windows 10 & 11 Installation
 
@@ -118,14 +147,37 @@ python installer.py
 ```
 
 This launches `setup/Windows11/01-FULL.bat`, which installs Chocolatey, Git,
-Docker Desktop, and other required tools. The batch script supports both Windows
-10 and Windows 11.
+Docker Desktop, and other required tools on Windows. On macOS the installer
+invokes `setup/macOS/install.sh` to configure Homebrew and the Python
+environment. The batch script supports both Windows 10 and Windows 11.
 
 ### Directory Structure
 
 Legacy scripts from the `py/` folder were consolidated and updated in
 the `src/` directory. All utilities and modules live under `src/` to
 keep the project organized.
+
+### Development Setup
+
+For day-to-day development it is recommended to work in a Python virtual environment.
+Create one with `python -m venv venv` and install dependencies using
+`pip install -r requirements.txt`. Docker users can spin up
+`docker-compose up` for an isolated environment that mirrors production.
+When adding new modules, format the code with `black` and run
+`flake8` and `pytest` before opening a pull request.
+
+### Recent Updates
+
+- Preset placeholders now show the preset name instead of the file ID for better readability.
+
+### Utilities
+
+Use `src/utils/list_by_mtime.py` to list files in any directory from oldest
+to newest:
+
+```bash
+python src/utils/list_by_mtime.py path/to/dir
+```
 
 ---
 
@@ -154,6 +206,13 @@ Your contributions are crucial! You can help by reporting bugs, suggesting featu
 * Provide clear commit messages and detailed PR descriptions.
 
 Visit the [GitHub Repository](https://github.com/DylanLRPollock/Monkey-Head-Project) to contribute or learn more.
+
+---
+
+## 🔗 Additional Resources
+
+The `docs/` directory contains extended documentation on the project’s architecture, historical phases, and governance design. New contributors should start with [docs/README.md](docs/README.md) and [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed guidelines.
+For an introductory overview, see [docs/New-To-AI.md](docs/New-To-AI.md).
 
 ---
 

@@ -1,5 +1,7 @@
 import shutil
 
+from .error_handler import ErrorHandler
+
 
 class FileManager:
     def move_file(self, src, dst):

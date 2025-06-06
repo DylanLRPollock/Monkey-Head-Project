@@ -1,16 +1,20 @@
 # Use Debian Trixie as base image
 FROM debian:trixie
 
+# Avoid interactive prompts during package installation
+ARG DEBIAN_FRONTEND=noninteractive
+
 # Install system dependencies and Python 3.12
-RUN apt update && apt install -y 
-    python3.12 
-    python3.12-venv 
-    python3.12-dev 
-    python3-pip 
-    build-essential 
-    portaudio19-dev 
-    libasound2 
-    libasound2-dev 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.12 \
+    python3.12-venv \
+    python3.12-dev \
+    python3-pip \
+    build-essential \
+    portaudio19-dev \
+    libasound2 \
+    libasound2-dev \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables

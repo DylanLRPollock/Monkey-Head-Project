@@ -1,8 +1,15 @@
-import os
 import logging
+import os
 import subprocess
 
 logger = logging.getLogger(__name__)
+
+
+def ensure_admin() -> None:
+    """Raise PermissionError if the current user is not root."""
+    if os.geteuid() != 0:
+        logger.error("Please run this script as root or with sudo.")
+        raise PermissionError("Please run this script as root or with sudo.")
 
 
 def log_error(description):

@@ -104,7 +104,7 @@ class Config:
 
         :return: base workdir path
         """
-        path = os.path.join(Path.home(), '.config', Config.CONFIG_DIR)
+        path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
         if "PYGPT_WORKDIR" in os.environ and os.environ["PYGPT_WORKDIR"] != "":
             print("FORCE using workdir: {}".format(os.environ["PYGPT_WORKDIR"]))
             # convert relative path to absolute path if needed

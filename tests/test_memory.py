@@ -14,6 +14,14 @@ class TestMemory(unittest.TestCase):
         self.assertEqual(history[1]["role"], "assistant")
         self.assertEqual(history[1]["content"], "hello")
 
+    def test_get_returns_copy(self):
+        mem = Memory()
+        mem.add_user_message("hi")
+        history = mem.get_messages()
+        history.append({"role": "assistant", "content": "changed"})
+        # internal history should not change
+        self.assertEqual(len(mem.get_messages()), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
