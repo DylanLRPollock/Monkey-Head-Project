@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -6,10 +7,8 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated:   06.05.2025
 # ==================================================
-FILES=*.rst
-for f in $FILES
-do
+for f in *.rst; do
   filename="${f%.*}"
   echo "Converting $f to $filename.md"
-  `pandoc $f -f rst -t markdown -o $filename.md`
+  pandoc "$f" -f rst -t markdown -o "$filename.md"
 done

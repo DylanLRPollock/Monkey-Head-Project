@@ -8,6 +8,6 @@
 # Updated:   06.05.2025
 # ==================================================
 # This script is used to run the app using the virtual environment
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit
 source ./venv/bin/activate
 python3 run.py "$@"
