@@ -392,7 +392,7 @@ echo 17. Restore Configurations
 echo 18. Check Dependencies
 echo E. Exit
 echo.
-set /p choice=Enter your choice: 
+set /p choice=Enter your choice:
 if /i "%choice%"=="1" goto full_setup
 if /i "%choice%"=="2" goto mini_setup
 if /i "%choice%"=="3" goto cleanup

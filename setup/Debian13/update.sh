@@ -23,7 +23,7 @@ if [ ! -d "$VENV_DIR" ]; then
 fi
 
 # Activate the virtual environment
-source $VENV_DIR/bin/activate || error_exit "Failed to activate virtual environment."
+source "$VENV_DIR"/bin/activate || error_exit "Failed to activate virtual environment."
 
 # Upgrade pip
 echo "Upgrading pip..."
