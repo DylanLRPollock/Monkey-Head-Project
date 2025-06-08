@@ -61,7 +61,7 @@ class Memory:
             )
             # extract only input and output messages, skip step messages
             for item in items:
-                if item.extra is not None and type(item.extra) == dict:
+                if item.extra is not None and isinstance(item.extra, dict):
                     # agent input
                     if item.extra.get("agent_input", False):
                         if item.final_input is not None and item.final_input != "":
