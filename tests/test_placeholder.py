@@ -10,20 +10,21 @@ import unittest
 import os
 import sys
 import importlib.util
+from pathlib import Path
 
-ROOT = os.path.dirname(os.path.dirname(__file__))
-MODULE_PATH = os.path.join(
-    ROOT,
-    'repo',
-    'pygpt-MHP',
-    'src',
-    'pygpt_net',
-    'controller',
-    'config',
-    'placeholder.py',
-)
+ROOT = Path(__file__).resolve().parent.parent
+LOCAL_SRC = ROOT / 'src'
+SUBMODULE_SRC = ROOT / 'repo' / 'pygpt-MHP' / 'src'
 
-sys.path.append(os.path.join(ROOT, 'repo', 'pygpt-MHP', 'src'))
+local_module = LOCAL_SRC / 'pygpt_net' / 'controller' / 'config' / 'placeholder.py'
+if local_module.exists():
+    MODULE_PATH = str(local_module)
+    sys.path.append(str(LOCAL_SRC))
+else:
+    MODULE_PATH = str(
+        SUBMODULE_SRC / 'pygpt_net' / 'controller' / 'config' / 'placeholder.py'
+    )
+    sys.path.append(str(SUBMODULE_SRC))
 
 spec = importlib.util.spec_from_file_location('placeholder_module', MODULE_PATH)
 placeholder_module = importlib.util.module_from_spec(spec)

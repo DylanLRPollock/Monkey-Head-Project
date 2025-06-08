@@ -98,7 +98,14 @@ python src/main.py
 
 ### Submodule
 
-This project uses the [pygpt-MHP](https://github.com/DylanLRPollock/pygpt-MHP) submodule located in `repo/pygpt-MHP`. It provides advanced GPT-based capabilities leveraged by GenCore. Clone the repository with `--recurse-submodules` or run `git submodule update --init --recursive` after cloning to ensure it is available. The installer performs this step automatically and installs the package with `pip install -e repo/pygpt-MHP`.
+This project uses the [pygpt-MHP](https://github.com/DylanLRPollock/pygpt-MHP) submodule located in `repo/pygpt-MHP`. Clone with `--recurse-submodules` or run `git submodule update --init --recursive` to fetch it. After cloning, run the helper script below to mirror the submodule into the main repository so you can work entirely from the local `src` directory:
+
+```bash
+python sync_pygpt_structure.py  # copy entire pygpt tree
+# python sync_pygpt_structure.py --depth 2  # limit recursion if desired
+```
+
+Once copied, prefer importing modules from the project root instead of the `repo/pygpt-MHP` path. The installer performs the submodule update and installation with `pip install -e repo/pygpt-MHP` automatically.
 
 ### Running Tests
 
