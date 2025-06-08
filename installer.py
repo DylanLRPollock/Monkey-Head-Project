@@ -21,7 +21,9 @@ WINDOWS_INSTALL = os.path.join(SCRIPT_DIR, "setup", "Windows11", "01-FULL.bat")
 def update_submodules() -> None:
     """Ensure git submodules are initialized."""
     try:
-        subprocess.run(["git", "submodule", "update", "--init", "--recursive"], check=True)
+        subprocess.run(
+            ["git", "submodule", "update", "--init", "--recursive"], check=True
+        )
     except subprocess.CalledProcessError as exc:
         print(f"Failed to update submodules: {exc.returncode}")
         raise

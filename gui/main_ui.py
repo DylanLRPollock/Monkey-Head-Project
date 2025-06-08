@@ -6,17 +6,39 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-import tkinter as tk
-from tkinter import messagebox, scrolledtext, ttk
+import platform
 import subprocess
 import threading
+from pathlib import Path
+
+import tkinter as tk
+from tkinter import messagebox, scrolledtext, ttk
+
 
 class MainUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Program Manager")
+        self.setup_paths()
         self.create_menu()
         self.create_widgets()
+
+    def setup_paths(self):
+        """Determine installer paths based on the current platform."""
+        base = Path(__file__).resolve().parents[1] / "setup"
+        system = platform.system()
+        if system == "Linux":
+            self.install_path = base / "Debian13" / "install.sh"
+            self.update_path = base / "Debian13" / "update.sh"
+        elif system == "Darwin":
+            self.install_path = base / "macOS" / "install.sh"
+            self.update_path = base / "Debian13" / "update.sh"
+        elif system == "Windows":
+            self.install_path = base / "Windows11" / "01-FULL.bat"
+            self.update_path = base / "Windows11" / "01-FULL.bat"
+        else:
+            self.install_path = None
+            self.update_path = None
 
     def create_menu(self):
         menu_bar = tk.Menu(self.root)
@@ -33,10 +55,14 @@ class MainUI:
         self.log_text = scrolledtext.ScrolledText(self.root, width=80, height=20)
         self.log_text.pack(pady=10)
 
-        self.progress = ttk.Progressbar(self.root, orient=tk.HORIZONTAL, length=400, mode='determinate')
+        self.progress = ttk.Progressbar(
+            self.root, orient=tk.HORIZONTAL, length=400, mode="determinate"
+        )
         self.progress.pack(pady=10)
 
-        self.status_label = tk.Label(self.root, text="Status: Ready", bd=1, relief=tk.SUNKEN, anchor=tk.W)
+        self.status_label = tk.Label(
+            self.root, text="Status: Ready", bd=1, relief=tk.SUNKEN, anchor=tk.W
+        )
         self.status_label.pack(fill=tk.X, side=tk.BOTTOM, ipady=2)
 
         self.install_button = tk.Button(self.root, text="Install", command=self.install)
@@ -50,14 +76,27 @@ class MainUI:
         self.log_text.see(tk.END)
 
     def run_script(self, script_path):
+        if script_path is None or not Path(script_path).exists():
+            messagebox.showerror(
+                "Error", "Installer script not found for this platform."
+            )
+            return
         try:
-            process = subprocess.Popen(["bash", script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            for line in iter(process.stdout.readline, b''):
-                self.log_message(line.decode('utf-8').strip())
+            if str(script_path).endswith(".bat"):
+                cmd = ["cmd", "/c", str(script_path)]
+            else:
+                cmd = ["bash", str(script_path)]
+            process = subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+            for line in iter(process.stdout.readline, b""):
+                self.log_message(line.decode("utf-8").strip())
             process.stdout.close()
             process.wait()
             if process.returncode != 0:
-                self.log_message(f"Error: {process.stderr.read().decode('utf-8').strip()}")
+                self.log_message(
+                    f"Error: {process.stderr.read().decode('utf-8').strip()}"
+                )
             else:
                 self.log_message("Operation completed successfully.")
         except Exception as e:
@@ -70,13 +109,14 @@ class MainUI:
         self.log_message("Starting installation...")
         self.status_label.config(text="Status: Installing")
         self.progress.start()
-        threading.Thread(target=self.run_script, args=("H:\\setup\\install.sh",)).start()
+        threading.Thread(target=self.run_script, args=(self.install_path,)).start()
 
     def update(self):
         self.log_message("Starting update...")
         self.status_label.config(text="Status: Updating")
         self.progress.start()
-        threading.Thread(target=self.run_script, args=("H:\\setup\\update.sh",)).start()
+        threading.Thread(target=self.run_script, args=(self.update_path,)).start()
+
 
 if __name__ == "__main__":
     root = tk.Tk()

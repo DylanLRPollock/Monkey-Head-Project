@@ -126,6 +126,17 @@ python installer.py
 The installer now displays the license agreement using a small Tkinter
 dialog. You must accept these terms before the setup can finish.
 
+### Optional GUI
+
+For a minimal graphical interface you can launch the Tkinter GUI:
+
+```bash
+python -m gui.main_ui
+```
+
+This window lets you run the install or update scripts directly and
+automatically chooses the correct script for your platform.
+
 ### Docker and Kubernetes Utilities
 
 The `scripts/` directory contains helper scripts for container management:
