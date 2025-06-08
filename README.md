@@ -123,6 +123,8 @@ operating system to invoke the appropriate setup script:
 ```bash
 python installer.py
 ```
+The installer now displays the license agreement using a small Tkinter
+dialog. You must accept these terms before the setup can finish.
 
 ### Docker and Kubernetes Utilities
 
@@ -152,6 +154,7 @@ root:
 ```bash
 python installer.py
 ```
+The license dialog will appear during this installation step as well.
 
 This launches `setup/Windows11/01-FULL.bat`, which installs Chocolatey, Git,
 Docker Desktop, and other required tools on Windows. On macOS the installer

@@ -53,6 +53,12 @@ function setup_python_env {
     pip install -e repo/pygpt-MHP || error_exit "Failed to install pygpt-MHP."
 }
 
+function show_license_gui {
+    echo "Displaying license agreement..."
+    source "$VENV_DIR/bin/activate" || error_exit "Failed to activate virtual environment."
+    python src/license_gui.py || echo "License dialog could not be displayed"
+}
+
 function update_submodules {
     echo "Initializing git submodules..."
     git submodule update --init --recursive || error_exit "Failed to update submodules."
@@ -64,5 +70,6 @@ install_common_tools
 install_additional_tools
 update_submodules
 setup_python_env
+show_license_gui
 
 echo "Installation completed successfully."
