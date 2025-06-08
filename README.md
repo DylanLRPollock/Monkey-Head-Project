@@ -218,7 +218,7 @@ For an introductory overview, see [docs/New-To-AI.md](docs/New-To-AI.md).
 
 ## 📖 License
 
-This project is open-source under the **MIT License**, allowing free use, modification, and redistribution.
+This project is open-source under the **GNU General Public License v3.0 (GPL-3.0)**, allowing free use, modification, and redistribution under its terms.
 
 ---
 
@@ -233,3 +233,75 @@ Special thanks to the global open-source community, the creators of foundational
 The Monkey Head Project is more than technology; it's a vision for responsible and adaptive collaboration between humans and AI. Join us as we explore the exciting possibilities where ethical AI innovation meets practical, real-world applications.
 
 **Welcome to the future with the Monkey Head Project! 🧠🚀**
+
+---
+
+## ⚙️ Advanced Configuration
+
+GenCore offers extensive customization through the `config.yaml` file at the
+project root and the JSON profiles found under `config/pygpt_net/`. You can
+add your own YAML files in `config/` to override default behaviors, define
+hardware profiles, or enable experimental modules. After editing a
+configuration file, restart the system with `python run.py` or
+`docker-compose restart` to apply the changes.
+
+### Sample Configuration Snippet
+
+The example below illustrates how you might extend `config.yaml` or create a
+`config/custom.yaml` file to describe extra hardware. Use it as a guideline and
+adapt the keys to match your system:
+
+```yaml
+# config/custom.yaml (example)
+hardware:
+  sensors:
+    - name: depth_cam
+      type: realsense
+  actuators:
+    - name: arm_joint
+      type: servo
+ai:
+  planning:
+    strategy: hierarchical
+```
+
+## 💬 Community and Support
+
+Join the conversation on our
+[Discussion Board](https://github.com/DylanLRPollock/Monkey-Head-Project/discussions)
+or drop into the Matrix chat at `#monkey-head:matrix.org`. Start by searching
+the issue tracker if you encounter problems. If your question isn't answered,
+open a new topic or reach out on social media.
+
+## ❓ Frequently Asked Questions (FAQ)
+
+**Q: Do I need previous robotics experience?**  
+A: No. Beginners can explore the software in simulation or on entry-level
+hardware using the provided tutorials.
+
+**Q: Is the project suitable for educational use?**  
+A: Absolutely. The modular design is perfect for classroom demonstrations and
+research labs.
+
+**Q: Can I integrate GenCore into my own product?**
+A: Yes. The software is released under the GPL-3.0 license, which allows
+commercial and non-commercial use as long as the license terms are respected.
+
+## 🛠️ Troubleshooting
+
+If the application fails to start, try the following steps:
+
+1. Remove any old virtual environments and reinstall dependencies.
+2. Run `python -m pip install --upgrade pip` to update Python tooling.
+3. Verify that your `docker-compose` version meets the requirements.
+4. Check the logs in the `logs/` directory for detailed error messages.
+
+For persistent issues, open a bug report with your system details and
+the steps needed to reproduce the error.
+
+## 🌟 Related Projects and Inspirations
+
+The Monkey Head Project is built on top of numerous open-source efforts,
+from the ROS robotics framework to cutting-edge language models. We
+collaborate closely with the community to integrate the best tools
+available and appreciate everyone who helps advance ethical AI research.
