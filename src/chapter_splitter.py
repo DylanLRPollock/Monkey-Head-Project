@@ -6,6 +6,7 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
+"""Utility for splitting a text file into individual chapter files."""
 import os
 
 

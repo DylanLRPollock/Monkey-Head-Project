@@ -6,4 +6,4 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-Placeholder for `repo/pygpt-MHP/bin/resources.py` from the pygpt-MHP repo.
+# Placeholder for `repo/pygpt-MHP/bin/resources.py` from the pygpt-MHP repo.

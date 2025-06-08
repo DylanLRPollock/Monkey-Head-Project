@@ -15,6 +15,7 @@ from llama_index.agent.openai import OpenAIAgent as Agent
 
 from .base import BaseAgent
 
+
 class OpenAIAgent(BaseAgent):
     def __init__(self, *args, **kwargs):
         super(OpenAIAgent, self).__init__(*args, **kwargs)

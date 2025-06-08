@@ -39,8 +39,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        input_data = json.loads(args.input_data)
-        core_data = process_core_data(input_data)
+        input_json = json.loads(args.input_data)
+        core_data = process_core_data(input_json)
         print(json.dumps(core_data, indent=4))
     except Exception as e:
         print(f"Error: {e}")

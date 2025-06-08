@@ -31,7 +31,9 @@ def remove_files(directory, extension):
                 os.remove(file_path)
                 print(f"Removed file: {file_path}")
     except OSError as e:
-        raise OSError(f"Error removing files in '{directory}': {e}")
+        raise OSError(
+            f"Error removing files in '{directory}': {e}"
+        ) from e
 
 
 if __name__ == "__main__":
