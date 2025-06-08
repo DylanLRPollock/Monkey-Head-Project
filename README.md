@@ -135,7 +135,9 @@ python -m gui.main_ui
 ```
 
 This window lets you run the install or update scripts directly and
-automatically chooses the correct script for your platform.
+automatically chooses the correct script for your platform. A "Run" option
+is also provided to launch `run.bat` or `run.sh` so you can start the
+application without opening a terminal.
 
 ### Docker and Kubernetes Utilities
 

@@ -25,20 +25,25 @@ class MainUI:
 
     def setup_paths(self):
         """Determine installer paths based on the current platform."""
-        base = Path(__file__).resolve().parents[1] / "setup"
+        root = Path(__file__).resolve().parents[1]
+        setup_dir = root / "setup"
         system = platform.system()
         if system == "Linux":
-            self.install_path = base / "Debian13" / "install.sh"
-            self.update_path = base / "Debian13" / "update.sh"
+            self.install_path = setup_dir / "Debian13" / "install.sh"
+            self.update_path = setup_dir / "Debian13" / "update.sh"
+            self.run_path = root / "run.sh"
         elif system == "Darwin":
-            self.install_path = base / "macOS" / "install.sh"
-            self.update_path = base / "Debian13" / "update.sh"
+            self.install_path = setup_dir / "macOS" / "install.sh"
+            self.update_path = setup_dir / "Debian13" / "update.sh"
+            self.run_path = root / "run.sh"
         elif system == "Windows":
-            self.install_path = base / "Windows11" / "01-FULL.bat"
-            self.update_path = base / "Windows11" / "01-FULL.bat"
+            self.install_path = setup_dir / "Windows11" / "01-FULL.bat"
+            self.update_path = setup_dir / "Windows11" / "01-FULL.bat"
+            self.run_path = root / "run.bat"
         else:
             self.install_path = None
             self.update_path = None
+            self.run_path = None
 
     def create_menu(self):
         menu_bar = tk.Menu(self.root)
@@ -46,6 +51,7 @@ class MainUI:
 
         file_menu = tk.Menu(menu_bar, tearoff=0)
         file_menu.add_command(label="Install", command=self.install)
+        file_menu.add_command(label="Run", command=self.run)
         file_menu.add_command(label="Update", command=self.update)
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.root.quit)
@@ -68,8 +74,11 @@ class MainUI:
         self.install_button = tk.Button(self.root, text="Install", command=self.install)
         self.install_button.pack(side=tk.LEFT, padx=10, pady=10)
 
+        self.run_button = tk.Button(self.root, text="Run", command=self.run)
+        self.run_button.pack(side=tk.LEFT, padx=10, pady=10)
+
         self.update_button = tk.Button(self.root, text="Update", command=self.update)
-        self.update_button.pack(side=tk.RIGHT, padx=10, pady=10)
+        self.update_button.pack(side=tk.LEFT, padx=10, pady=10)
 
     def log_message(self, message):
         self.log_text.insert(tk.END, message + "\n")
@@ -110,6 +119,12 @@ class MainUI:
         self.status_label.config(text="Status: Installing")
         self.progress.start()
         threading.Thread(target=self.run_script, args=(self.install_path,)).start()
+
+    def run(self):
+        self.log_message("Launching application...")
+        self.status_label.config(text="Status: Running")
+        self.progress.start()
+        threading.Thread(target=self.run_script, args=(self.run_path,)).start()
 
     def update(self):
         self.log_message("Starting update...")
