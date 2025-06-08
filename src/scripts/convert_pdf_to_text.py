@@ -23,10 +23,12 @@ logging.basicConfig(
 def convert_pdf_to_text(path):
     try:
         with open(path, "rb") as file:
-            reader = PyPDF2.PdfFileReader(file)
+            reader = PyPDF2.PdfReader(file)
             text = ""
-            for page_num in range(reader.numPages):
-                text += reader.getPage(page_num).extractText()
+            for page in reader.pages:
+                extracted = page.extract_text()
+                if extracted:
+                    text += extracted
             logging.info(f"Successfully converted {path} to text.")
             return text
     except Exception as e:

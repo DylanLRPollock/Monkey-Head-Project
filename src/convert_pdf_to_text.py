@@ -7,7 +7,7 @@
 # Updated: 06.05.2025
 # ==================================================
 import os
-from PyPDF2 import PdfFileReader
+from PyPDF2 import PdfReader
 
 
 def convert_pdf_to_text(pdf_file, output_file):
@@ -27,10 +27,12 @@ def convert_pdf_to_text(pdf_file, output_file):
 
     try:
         with open(pdf_file, "rb") as file:
-            reader = PdfFileReader(file)
+            reader = PdfReader(file)
             text = ""
-            for page_num in range(reader.numPages):
-                text += reader.getPage(page_num).extract_text() + "\n"
+            for page in reader.pages:
+                extracted = page.extract_text()
+                if extracted:
+                    text += extracted + "\n"
     except OSError as e:
         raise OSError(f"Error reading PDF file '{pdf_file}': {e}")
 
