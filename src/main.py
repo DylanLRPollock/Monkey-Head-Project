@@ -47,7 +47,8 @@ def readiness_check():
     return jsonify(status="ready"), 200
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Run full setup and start the health service."""
     ensure_admin()
     system_check()
     update_system()
@@ -68,3 +69,7 @@ if __name__ == "__main__":
     restore_config()
 
     app.run(host="0.0.0.0", port=4488)
+
+
+if __name__ == "__main__":
+    main()
