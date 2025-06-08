@@ -126,18 +126,18 @@ python installer.py
 The installer now displays the license agreement using a small Tkinter
 dialog. You must accept these terms before the setup can finish.
 
-### Optional GUI
+### GUI Interface (Default)
 
-For a minimal graphical interface you can launch the Tkinter GUI:
+The GUI is now the primary way to install and control the project. Simply run:
 
 ```bash
-python -m gui.main_ui
+python run.py
 ```
 
-This window lets you run the install or update scripts directly and
-automatically chooses the correct script for your platform. A "Run" option
-is also provided to launch `run.bat` or `run.sh` so you can start the
-application without opening a terminal.
+This launches a Tkinter window where you can install, update, or run the
+application. The correct setup script is chosen automatically. A "Run" button
+lets you start the program without opening a terminal. For the original
+command‑line behaviour use `python run.py --cli`.
 
 ### Docker and Kubernetes Utilities
 
@@ -265,8 +265,9 @@ GenCore offers extensive customization through the `config.yaml` file at the
 project root and the JSON profiles found under `config/pygpt_net/`. You can
 add your own YAML files in `config/` to override default behaviors, define
 hardware profiles, or enable experimental modules. After editing a
-configuration file, restart the system with `python run.py` or
-`docker-compose restart` to apply the changes.
+configuration file, restart the system with `python run.py` (or
+`python run.py --cli` for command-line mode) or `docker-compose restart` to
+apply the changes.
 
 ### Sample Configuration Snippet
 

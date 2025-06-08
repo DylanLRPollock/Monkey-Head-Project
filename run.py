@@ -17,13 +17,39 @@
 # Updated Date: 2023.12.05 22:00:00                  #
 # ================================================== #
 
+import argparse
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str((Path(__file__).parent / 'src').resolve()))
+sys.path.insert(0, str((Path(__file__).parent / "src").resolve()))
 
-from pygpt_net.app import run
+from pygpt_net.app import run as cli_run
 
-if __name__ == '__main__':
-    run()
+
+def main() -> None:
+    """Launch the GUI by default with an optional CLI mode."""
+
+    parser = argparse.ArgumentParser(description="Launch the Monkey Head Project")
+    parser.add_argument(
+        "--cli",
+        action="store_true",
+        help="Run in command-line mode instead of the GUI",
+    )
+    args = parser.parse_args()
+
+    if args.cli:
+        cli_run()
+        return
+
+    import tkinter as tk
+
+    from gui.main_ui import MainUI
+
+    root = tk.Tk()
+    app = MainUI(root)
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    main()
 
