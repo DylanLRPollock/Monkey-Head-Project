@@ -14,6 +14,9 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import messagebox, scrolledtext, ttk
 
+from monkey_head.license_gui import show_license_gui
+from monkey_head.scripts.preload_data import preload_all
+
 
 class MainUI:
     def __init__(self, root):
@@ -22,6 +25,7 @@ class MainUI:
         self.setup_paths()
         self.create_menu()
         self.create_widgets()
+        self.check_license()
 
     def setup_paths(self):
         """Determine installer paths based on the current platform."""
@@ -56,6 +60,11 @@ class MainUI:
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.root.quit)
         menu_bar.add_cascade(label="File", menu=file_menu)
+
+        tools_menu = tk.Menu(menu_bar, tearoff=0)
+        tools_menu.add_command(label="License", command=self.show_license)
+        tools_menu.add_command(label="Data Summary", command=self.show_data_summary)
+        menu_bar.add_cascade(label="Tools", menu=tools_menu)
 
     def create_widgets(self):
         self.log_text = scrolledtext.ScrolledText(self.root, width=80, height=20)
@@ -131,6 +140,24 @@ class MainUI:
         self.status_label.config(text="Status: Updating")
         self.progress.start()
         threading.Thread(target=self.run_script, args=(self.update_path,)).start()
+
+    def check_license(self):
+        """Display the license agreement if not yet accepted."""
+        show_license_gui()
+
+    def show_license(self):
+        """Manually open the license dialog."""
+        show_license_gui()
+
+    def show_data_summary(self):
+        """Display counts of bundled prompts and memory files."""
+        data = preload_all()
+        prompts = len(data.get("prompts", []))
+        memory_files = sum(len(v) for v in data.get("memory", {}).values())
+        messagebox.showinfo(
+            "Data Summary",
+            f"Prompts: {prompts}\nMemory files: {memory_files}"
+        )
 
 
 if __name__ == "__main__":
