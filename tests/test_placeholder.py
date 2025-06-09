@@ -7,7 +7,6 @@
 # Updated: 06.05.2025
 # ==================================================
 import unittest
-import os
 import sys
 import importlib.util
 from pathlib import Path
@@ -30,7 +29,7 @@ spec = importlib.util.spec_from_file_location("placeholder_module", MODULE_PATH)
 placeholder_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(placeholder_module)
 Placeholder = placeholder_module.Placeholder
-from pygpt_net.item.preset import PresetItem
+from pygpt_net.item.preset import PresetItem  # noqa: E402
 
 
 class DummyWindow:

@@ -6,14 +6,21 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-import tkinter as tk
-from tkinter import messagebox
+try:  # pragma: no cover - optional dependency
+    import tkinter as tk
+    from tkinter import messagebox
+except Exception:  # pragma: no cover - can't import GUI libs
+    tk = None
+    messagebox = None
 
 
 def create_tkinter_window():
     """
     Creates a simple Tkinter window with a button that shows a message box.
     """
+    if tk is None:
+        raise RuntimeError("tkinter is not available")
+
     root = tk.Tk()
     root.title("Tkinter Window")
 

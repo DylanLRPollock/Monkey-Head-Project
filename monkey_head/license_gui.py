@@ -6,9 +6,15 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-import tkinter as tk
 from pathlib import Path
-from tkinter import messagebox, scrolledtext
+
+try:  # pragma: no cover - optional dependency
+    import tkinter as tk
+    from tkinter import messagebox, scrolledtext
+except Exception:  # pragma: no cover - can't import GUI libs
+    tk = None
+    messagebox = None
+    scrolledtext = None
 
 from .config_manager import ConfigManager
 
@@ -21,6 +27,9 @@ def accept_license(config_path: str | Path) -> None:
 
 def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -> None:
     """Display a simple license agreement dialog."""
+    if tk is None:
+        raise RuntimeError("tkinter is not available")
+
     manager = ConfigManager(str(config_path))
     if manager.get_setting("license.accepted"):
         return

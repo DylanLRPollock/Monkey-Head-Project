@@ -1,10 +1,5 @@
-import os
-import shutil
-import tempfile
-from pathlib import Path
 from unittest.mock import patch
 
-import pytest
 
 from monkey_head.ai_processor import AIProcessor
 from monkey_head.chapter_splitter import split_chapters
@@ -94,19 +89,23 @@ def test_error_handler(tmp_path):
 
 
 def test_create_tkinter_window():
+
     class DummyRoot:
         def title(self, t):
             self.t = t
+
         def mainloop(self):
             self.ran = True
+
     class DummyButton:
         def __init__(self, root, text, command):
             self.command = command
+
         def pack(self, pady=0):
+
             self.command()
-    with patch('tkinter.Tk', return_value=DummyRoot()) as mtk, \
+    with patch('tkinter.Tk', return_value=DummyRoot()), \
          patch('tkinter.Button', DummyButton), \
          patch('tkinter.messagebox.showinfo') as mbox:
         create_tkinter_window()
         mbox.assert_called_once()
-
