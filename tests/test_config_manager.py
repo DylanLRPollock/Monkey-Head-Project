@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from src.config_manager import ConfigManager
+from monkey_head.config_manager import ConfigManager
 
 
 def test_config_manager_roundtrip(tmp_path):

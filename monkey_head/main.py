@@ -8,27 +8,27 @@
 # ==================================================
 import logging
 from flask import Flask, jsonify
-from core.system_checks import system_check, ensure_admin
-from modules.updates import update_system, update_python_packages
-from core.installations import (
+from .core.system_checks import system_check, ensure_admin
+from .modules.updates import update_system, update_python_packages
+from .core.installations import (
     install_common_tools,
     install_additional_tools,
     install_optional_tools,
 )
-from services.environment_setup import (
+from .services.environment_setup import (
     clone_repository,
     setup_python_env,
     configure_git,
     create_directories,
     update_env_variables,
 )
-from services.container_management import (
+from .services.container_management import (
     manage_containers,
     manage_volumes,
     deploy_kubernetes,
     kubernetes_management,
 )
-from scripts.backup_restore import backup_config, restore_config
+from .scripts.backup_restore import backup_config, restore_config
 
 app = Flask(__name__)
 

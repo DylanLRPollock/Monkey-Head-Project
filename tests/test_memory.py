@@ -7,7 +7,7 @@
 # Updated: 06.05.2025
 # ==================================================
 import unittest
-from src.pygpt_memory import Memory
+from monkey_head.pygpt_memory import Memory
 
 
 class TestMemory(unittest.TestCase):

@@ -7,7 +7,7 @@
 # Updated: 06.05.2025
 # ==================================================
 import unittest
-from src.gencore import generate_core_data
+from monkey_head.gencore import generate_core_data
 
 
 class TestGencore(unittest.TestCase):

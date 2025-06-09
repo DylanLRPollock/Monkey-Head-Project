@@ -1,14 +1,6 @@
-# ==================================================
-# This file is a part of the 'Monkey Head Project'
-# Website:   https://dlrp.ca
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-# License:   https://opensource.org/license/gpl-3-0
-# Overseen By:   Dylan L.R. Pollock
-# Updated: 06.05.2025
-# ==================================================
-"""Utilities exposed for convenient imports."""
+import importlib
+import sys
 
-from .formatter import format_text
-from .gencore import generate_core_data
-
-__all__ = ["format_text", "generate_core_data"]
+_pkg = importlib.import_module('monkey_head')
+__path__ = _pkg.__path__
+sys.modules[__name__] = _pkg
