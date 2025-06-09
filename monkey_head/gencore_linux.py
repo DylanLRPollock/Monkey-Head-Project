@@ -6,6 +6,9 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
+from .logger import get_logger
+
+logger = get_logger(__name__)
 import subprocess
 
 
@@ -30,14 +33,19 @@ def check_linux_service(service_name):
         )
         status = result.stdout.decode("utf-8").strip()
         if status == "active":
+            logger.debug(f"Service {service_name} is active")
             return "active"
         elif status == "inactive":
+            logger.debug(f"Service {service_name} is inactive")
             return "inactive"
         elif status == "failed":
+            logger.debug(f"Service {service_name} has failed")
             return "failed"
         else:
+            logger.debug(f"Service {service_name} status unknown: {status}")
             return "unknown"
     except OSError as e:
+        logger.exception("Error checking linux service")
         raise OSError(f"Error checking service '{service_name}': {e}")
 
 
@@ -50,6 +58,9 @@ if __name__ == "__main__":
 
     try:
         status = check_linux_service(args.service_name)
-        print(f"Service '{args.service_name}' is {status}.")
+        message = f"Service '{args.service_name}' is {status}."
+        print(message)
+        logger.info(message)
     except Exception as e:
+        logger.exception("Error checking linux service from CLI")
         print(f"Error: {e}")

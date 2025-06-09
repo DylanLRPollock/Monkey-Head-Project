@@ -6,6 +6,9 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
+from .logger import get_logger
+
+logger = get_logger(__name__)
 def check_core_data(core_data):
     """
     Checks the validity of core data.
@@ -25,8 +28,10 @@ def check_core_data(core_data):
             core_data["input_length"], int
         ):
             raise ValueError("Invalid input length in core data.")
+        logger.debug("Core data validated successfully")
         return True
     except Exception as e:
+        logger.exception("Error checking core data")
         print(f"Error checking core data: {e}")
         return False
 
@@ -42,6 +47,9 @@ if __name__ == "__main__":
     try:
         core_data = json.loads(args.core_data)
         is_valid = check_core_data(core_data)
-        print(f"Core data is valid: {is_valid}")
+        message = f"Core data is valid: {is_valid}"
+        print(message)
+        logger.info(message)
     except Exception as e:
+        logger.exception("Error validating core data from CLI")
         print(f"Error: {e}")

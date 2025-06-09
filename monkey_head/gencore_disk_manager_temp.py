@@ -6,6 +6,9 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
+from .logger import get_logger
+
+logger = get_logger(__name__)
 import os
 import shutil
 
@@ -32,13 +35,18 @@ def manage_temp_files(temp_dir, action):
         if action == "delete":
             shutil.rmtree(temp_dir)
             os.makedirs(temp_dir)
+            logger.info(f"Temporary files in '{temp_dir}' deleted.")
             print(f"Temporary files in '{temp_dir}' deleted.")
         elif action == "archive":
             archive_dir = temp_dir + "_archive"
             shutil.move(temp_dir, archive_dir)
             os.makedirs(temp_dir)
+            logger.info(
+                f"Temporary files in '{temp_dir}' archived to '{archive_dir}'."
+            )
             print(f"Temporary files in '{temp_dir}' archived to '{archive_dir}'.")
     except OSError as e:
+        logger.exception("Error managing temporary files")
         raise OSError(f"Error managing temporary files in '{temp_dir}': {e}")
 
 
@@ -59,4 +67,5 @@ if __name__ == "__main__":
     try:
         manage_temp_files(args.temp_dir, args.action)
     except Exception as e:
+        logger.exception("Error managing temporary files from CLI")
         print(f"Error: {e}")

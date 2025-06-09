@@ -7,13 +7,13 @@
 # Updated: 06.05.2025
 # ==================================================
 import os
-import logging
 import subprocess
+from .logger import get_logger
 import pwd
 
 from .core.system_checks import check_error, ensure_admin
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def update_system() -> None:

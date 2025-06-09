@@ -6,6 +6,9 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
+from ..logger import get_logger
+
+logger = get_logger(__name__)
 import os
 from typing import List
 
@@ -34,3 +37,4 @@ if __name__ == "__main__":
 
     for file_path in list_files_by_mtime(args.directory):
         print(file_path)
+        logger.info(f"Listed file: {file_path}")

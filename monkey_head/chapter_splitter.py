@@ -6,6 +6,9 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
+from .logger import get_logger
+
+logger = get_logger(__name__)
 """Utility for splitting a text file into individual chapter files."""
 import os
 
@@ -46,7 +49,9 @@ def split_chapters(input_file, output_dir):
         except OSError as e:
             raise OSError(f"Error writing chapter file '{chapter_file}': {e}")
 
-    print(f"Chapters split and saved to '{output_dir}'")
+    message = f"Chapters split and saved to '{output_dir}'"
+    print(message)
+    logger.info(message)
 
 
 if __name__ == "__main__":
@@ -60,4 +65,5 @@ if __name__ == "__main__":
     try:
         split_chapters(args.input_file, args.output_dir)
     except Exception as e:
+        logger.exception("Error splitting chapters from CLI")
         print(f"Error: {e}")

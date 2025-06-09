@@ -6,11 +6,11 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-import logging
 import subprocess
+from ..logger import get_logger
 from ..core.system_checks import check_error
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def update_system():

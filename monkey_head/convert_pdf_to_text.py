@@ -6,6 +6,9 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
+from .logger import get_logger
+
+logger = get_logger(__name__)
 import os
 from PyPDF2 import PdfReader
 
@@ -42,7 +45,9 @@ def convert_pdf_to_text(pdf_file, output_file):
     except OSError as e:
         raise OSError(f"Error writing text file '{output_file}': {e}")
 
-    print(f"PDF converted to text and saved to '{output_file}'")
+    message = f"PDF converted to text and saved to '{output_file}'"
+    print(message)
+    logger.info(message)
 
 
 if __name__ == "__main__":
@@ -56,4 +61,5 @@ if __name__ == "__main__":
     try:
         convert_pdf_to_text(args.pdf_file, args.output_file)
     except Exception as e:
+        logger.exception("Error converting PDF from CLI")
         print(f"Error: {e}")

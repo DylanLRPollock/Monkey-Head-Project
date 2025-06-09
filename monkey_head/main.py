@@ -6,8 +6,8 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-import logging
 from flask import Flask, jsonify
+from .logger import get_logger
 from .core.system_checks import system_check, ensure_admin
 from .modules.updates import update_system, update_python_packages
 from .core.installations import (
@@ -33,8 +33,7 @@ from .scripts.backup_restore import backup_config, restore_config
 app = Flask(__name__)
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @app.route("/health", methods=["GET"])

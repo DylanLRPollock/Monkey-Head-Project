@@ -7,7 +7,7 @@
 # Updated: 06.05.2025
 # ==================================================
 import os
-import logging
+from .logger import get_logger
 import subprocess
 from flask import Flask, jsonify
 
@@ -37,8 +37,7 @@ from .scripts.backup_restore import backup_config, restore_config
 app = Flask(__name__)
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @app.route("/health", methods=["GET"])

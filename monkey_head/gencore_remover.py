@@ -6,6 +6,9 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
+from .logger import get_logger
+
+logger = get_logger(__name__)
 import os
 
 
@@ -29,8 +32,10 @@ def remove_files(directory, extension):
             if filename.endswith(extension):
                 file_path = os.path.join(directory, filename)
                 os.remove(file_path)
+                logger.info(f"Removed file: {file_path}")
                 print(f"Removed file: {file_path}")
     except OSError as e:
+        logger.exception("Error removing files")
         raise OSError(
             f"Error removing files in '{directory}': {e}"
         ) from e
@@ -49,4 +54,5 @@ if __name__ == "__main__":
     try:
         remove_files(args.directory, args.extension)
     except Exception as e:
+        logger.exception("Error removing files from CLI")
         print(f"Error: {e}")
