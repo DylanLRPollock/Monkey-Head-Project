@@ -203,6 +203,17 @@ Docker Desktop, and other required tools on Windows. On macOS the installer
 invokes `setup/macOS/install.sh` to configure Homebrew and the Python
 environment. The batch script supports both Windows 10 and Windows 11.
 
+### Uninstallation and Cleanup
+
+Run the cross-platform uninstaller to remove the project and optional packages:
+
+```bash
+sudo python uninstaller.py  # Linux/macOS
+python uninstaller.py       # Windows
+```
+The script calls OS-specific cleanup scripts to delete the virtual environment, uninstall packages, and prune Docker resources.
+
+
 ### Directory Structure
 
 Legacy scripts from the `py/` folder were consolidated and updated in
