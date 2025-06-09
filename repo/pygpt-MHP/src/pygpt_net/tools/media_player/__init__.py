@@ -98,8 +98,12 @@ class MediaPlayer(BaseTool):
         now = datetime.datetime.now()
         dt = now.strftime("%Y-%m-%d_%H-%M-%S")
         name = 'cap-' + dt
-        path = os.path.join(self.window.controller.painter.common.get_capture_dir(), name + '.png')
-        # TODO: implement grab screenshot
+        path = os.path.join(
+            self.window.controller.painter.common.get_capture_dir(),
+            name + '.png'
+        )
+        pixmap = self.window.video_player.video.grab()
+        pixmap.save(path)
         return path
 
     def save_as_file(self):
