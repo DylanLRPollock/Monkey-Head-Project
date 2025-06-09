@@ -1,3 +1,4 @@
+#!/bin/bash
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -6,4 +7,7 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated:   06.05.2025
 # ==================================================
-Placeholder for `repo/pygpt-MHP/shortcut.sh` from the pygpt-MHP repo.
+# This script is used to run the app using the virtual environment
+cd "$(dirname "$0")" || exit
+source ./venv/bin/activate
+python3 run.py "$@"

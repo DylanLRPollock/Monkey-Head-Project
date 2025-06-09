@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -6,4 +7,4 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated:   06.05.2025
 # ==================================================
-Placeholder for `repo/pygpt-MHP/docs/update.sh` from the pygpt-MHP repo.
+sphinx-intl update -p build/gettext
