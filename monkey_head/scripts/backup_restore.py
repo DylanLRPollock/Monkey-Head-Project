@@ -7,13 +7,11 @@
 # Updated: 06.05.2025
 # ==================================================
 import os
-import logging
-from ..logging_setup import configure_logging
+from ..utils.logger import get_logger
 import subprocess
 from ..core.system_checks import check_error
 
-configure_logging()
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def backup_config():

@@ -6,7 +6,7 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-import logging
+from monkey_head.utils.logger import get_logger
 from flask import Flask, jsonify
 from .core.system_checks import system_check, ensure_admin
 from .modules.updates import update_system, update_python_packages
@@ -33,9 +33,9 @@ from .logging_setup import configure_logging
 
 app = Flask(__name__)
 
-# Configure logging using project settings
+# Configure centralized logging
 configure_logging()
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @app.route("/health", methods=["GET"])

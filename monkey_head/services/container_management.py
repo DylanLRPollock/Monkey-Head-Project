@@ -6,15 +6,13 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-import logging
 import os
 import subprocess
-from ..logging_setup import configure_logging
+from ..utils.logger import get_logger
 
 from ..core.system_checks import check_error
 
-configure_logging()
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def manage_containers():
