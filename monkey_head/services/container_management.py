@@ -71,3 +71,38 @@ def kubernetes_management():
         ["kubectl", "get", "services"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     check_error(get_services, "Get Kubernetes Services")
+
+
+def cleanup_kubernetes(manifest: str = "deployment.yaml") -> None:
+    """Delete resources defined in the given manifest."""
+    logger.info("Cleaning up Kubernetes resources...")
+    os.chdir(os.path.expanduser("~/Source/repo"))
+    delete = subprocess.run(
+        ["kubectl", "delete", "-f", manifest],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(delete, "Delete Kubernetes Resources")
+
+
+def scale_deployment(name: str, replicas: int) -> None:
+    """Scale a deployment to the specified replica count."""
+    logger.info("Scaling deployment %s to %d replicas...", name, replicas)
+    scale = subprocess.run(
+        ["kubectl", "scale", "deployment", name, f"--replicas={replicas}"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(scale, "Scale Kubernetes Deployment")
+
+
+def get_pod_logs(pod_name: str) -> str:
+    """Return logs for the specified pod."""
+    logger.info("Fetching logs for pod %s...", pod_name)
+    logs = subprocess.run(
+        ["kubectl", "logs", pod_name],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(logs, "Get Pod Logs")
+    return logs.stdout.decode()
