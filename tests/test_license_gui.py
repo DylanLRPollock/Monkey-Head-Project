@@ -11,7 +11,7 @@ import os
 import unittest
 from pathlib import Path
 
-from src.license_gui import accept_license
+from monkey_head.license_gui import accept_license
 
 
 class TestLicenseGui(unittest.TestCase):

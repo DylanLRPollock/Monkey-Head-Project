@@ -25,7 +25,8 @@ setup(
     author='Dylan L.R. Pollock',
     author_email='admin@dlrp.ca',
     url='https://github.com/DylanLRPollock/Monkey-Head-Project',
-    packages=find_packages(),
+    packages=find_packages(where="monkey_head"),
+    package_dir={"": "monkey_head"},
     install_requires=[
         'requests==2.32.3',
         'httpx==0.27.2',

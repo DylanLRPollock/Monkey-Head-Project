@@ -93,7 +93,7 @@ venv\Scripts\activate     # Windows
 pip install -r requirements.txt
 git submodule update --init --recursive
 pip install -e repo/pygpt-MHP
-python src/main.py
+python monkey_head/main.py
 ```
 
 ### Submodule
@@ -179,7 +179,7 @@ environment. The batch script supports both Windows 10 and Windows 11.
 ### Directory Structure
 
 Legacy scripts from the `py/` folder were consolidated and updated in
-the `src/` directory. All utilities and modules live under `src/` to
+the `monkey_head/` directory. All utilities and modules live under `monkey_head/` to
 keep the project organized.
 
 ### Development Setup
@@ -197,11 +197,11 @@ When adding new modules, format the code with `black` and run
 
 ### Utilities
 
-Use `src/utils/list_by_mtime.py` to list files in any directory from oldest
+Use `monkey_head/utils/list_by_mtime.py` to list files in any directory from oldest
 to newest:
 
 ```bash
-python src/utils/list_by_mtime.py path/to/dir
+python monkey_head/utils/list_by_mtime.py path/to/dir
 ```
 
 ---

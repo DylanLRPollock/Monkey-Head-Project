@@ -7,7 +7,7 @@
 # Updated: 06.05.2025
 # ==================================================
 import unittest
-from src.formatter import format_text
+from monkey_head.formatter import format_text
 
 
 class TestFormatter(unittest.TestCase):
