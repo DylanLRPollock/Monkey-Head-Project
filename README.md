@@ -24,6 +24,9 @@ A hierarchical adaptive OS divided into specialized layers:
 * **HostOS:** Strategic oversight, system-wide governance, and high-level decision-making, inspired by conductor models and centralized strategic systems.
 * **SubOS:** Operational resource allocation, task management, and dynamic adaptability, inspired by biological resilience and technological redundancy.
 * **NanoOS:** Real-time precision control at the hardware interaction level, optimizing immediate responsiveness and reliability.
+* **HostOS Environment:** Runs on either **Windows 10**, **Windows 11**, or **macOS Ventura** (or newer), providing a familiar desktop operating system for overall system control.
+* **SubOS Environment:** A **Debian Trixie** installation with **Python 3.12** preloaded, handling mid-level coordination and task scheduling.
+* **NanoOS Environment:** A lightweight **Python 3.12** runtime used for granular execution of hardware-level tasks.
 
 ### 2. Huey Robotic Shell
 
