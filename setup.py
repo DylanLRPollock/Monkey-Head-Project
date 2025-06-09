@@ -17,7 +17,7 @@ except FileNotFoundError:
     long_description = "Long description could not be read from README.md"
 
 setup(
-    name='MonkeyHeadProject',
+    name='monkey-head-project',
     version='1.0.1',
     description='A project integrating diverse functionalities including ML, web frameworks, and more.',
     long_description=long_description,
@@ -84,7 +84,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'monkeyhead=huey.cli:run_cli'
+            'monkey-head=huey.cli:run_cli'
         ]
     },
 )
