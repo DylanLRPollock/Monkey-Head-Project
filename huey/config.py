@@ -8,16 +8,20 @@
 # ==================================================
 # huey/config.py
 
-import yaml
-
-
-def load_config(config_file="config.yaml"):
+def load_config(config_file: str = "config.yaml"):
     """Load configuration settings from a YAML file."""
     try:
-        with open(config_file, "r") as file:
+        import yaml
+    except ImportError as exc:
+        raise ImportError("PyYAML is required to load configuration.") from exc
+
+    try:
+        with open(config_file, "r", encoding="utf-8") as file:
             config = yaml.safe_load(file)
         return config
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
-    except yaml.YAMLError as e:
-        raise Exception(f"Error parsing configuration file: {e}")
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(
+            f"Configuration file '{config_file}' not found."
+        ) from exc
+    except yaml.YAMLError as exc:
+        raise Exception(f"Error parsing configuration file: {exc}") from exc
