@@ -178,10 +178,11 @@ project's Python virtual environment automatically.
 Ensure that **Python 3** is available on your system (download from
 [python.org](https://www.python.org/) if needed). Open **Command Prompt** or
 **PowerShell** as **Administrator** and run the installer from the project
-root:
+root. You can use the provided Python script or the convenience batch file:
 
 ```bash
-python installer.py
+python installer.py      # cross-platform installer
+install.bat              # Windows helper that runs the same script
 ```
 The license dialog will appear during this installation step as well.
 
