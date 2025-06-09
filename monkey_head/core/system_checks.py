@@ -7,9 +7,11 @@
 # Updated: 06.05.2025
 # ==================================================
 import logging
+from ..logging_setup import configure_logging
 import os
 import subprocess
 
+configure_logging()
 logger = logging.getLogger(__name__)
 
 

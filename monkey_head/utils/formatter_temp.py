@@ -11,6 +11,7 @@ import sys
 import glob
 import atexit
 import logging
+from ..logging_setup import configure_logging
 import json
 from concurrent.futures import ThreadPoolExecutor
 from nltk.tokenize import sent_tokenize
@@ -42,11 +43,11 @@ class Formatter:
 
     # Setup logging configuration
     def setup_logging(self):
-        logging.basicConfig(
-            filename="formatter.log",
-            level=logging.DEBUG,
-            format="%(asctime)s - %(levelname)s - %(message)s",
-        )
+        """Configure logging for the formatter utility."""
+        logger = configure_logging()
+        for handler in logger.handlers:
+            if isinstance(handler, logging.FileHandler):
+                handler.baseFilename = "formatter.log"
 
     # Initialize important variables
     def initial_variable(self):

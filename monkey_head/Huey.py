@@ -33,11 +33,12 @@ from .services.container_management import (
 )
 from . import subos_manager
 from .scripts.backup_restore import backup_config, restore_config
+from .logging_setup import configure_logging
 
 app = Flask(__name__)
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure logging using project settings
+configure_logging()
 logger = logging.getLogger(__name__)
 
 

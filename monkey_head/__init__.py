@@ -11,5 +11,9 @@
 from .formatter import format_text
 from .gencore import generate_core_data
 from . import subos_manager
+from .logging_setup import configure_logging
+
+# Initialize project-wide logging as soon as the package is imported
+configure_logging()
 
 __all__ = ["format_text", "generate_core_data", "subos_manager"]
