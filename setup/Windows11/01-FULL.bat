@@ -46,9 +46,9 @@ goto :eof
 :: Function to perform initial system checks
 :systemCheck
 echo Performing system checks...
-REM Check for Windows version
-ver | find "10" >nul
-call :checkError "Windows 11 Check"
+REM Check for Windows version (Windows 10 or 11)
+ver | find "10.0" >nul
+call :checkError "Windows version check"
 REM Check for available disk space
 for /f "tokens=3" %%a in ('dir /-C %SystemDrive% ^| findstr /R "bytes free$"') do set FreeSpace=%%a
 echo Free space on %SystemDrive%: %FreeSpace%
