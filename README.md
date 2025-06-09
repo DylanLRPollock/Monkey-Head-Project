@@ -156,6 +156,12 @@ The `scripts/` directory contains helper scripts for container management:
 ./scripts/k8s_cleanup.sh     # remove Kubernetes resources
 ```
 
+Programmatic helpers for Kubernetes lives in
+`monkey_head.services.container_management`. Functions like
+`scale_deployment`, `get_pod_logs`, and `cleanup_kubernetes` provide a
+Python interface for scaling deployments, retrieving pod logs, and cleaning up
+resources.
+
 
 ### macOS Installation
 
