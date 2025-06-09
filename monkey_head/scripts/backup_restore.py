@@ -8,9 +8,11 @@
 # ==================================================
 import os
 import logging
+from ..logging_setup import configure_logging
 import subprocess
 from ..core.system_checks import check_error
 
+configure_logging()
 logger = logging.getLogger(__name__)
 
 

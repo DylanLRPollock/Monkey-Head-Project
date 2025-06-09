@@ -10,13 +10,10 @@ import os
 import PyPDF2
 import logging
 from concurrent.futures import ThreadPoolExecutor
+from ..logging_setup import configure_logging
 
-# Setup logging configuration
-logging.basicConfig(
-    filename="convert_pdf_to_text.log",
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
+# Setup logging configuration using shared settings
+configure_logging()
 
 
 # Convert PDF to text

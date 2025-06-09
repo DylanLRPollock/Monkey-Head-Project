@@ -12,6 +12,7 @@ import os
 import sys
 import json
 import logging
+from ..logging_setup import configure_logging
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 
@@ -40,11 +41,11 @@ class CLI:
             self.valid_message_types = valid_types()
 
     def setup_logging(self):
-        logging.basicConfig(
-            filename=self.log_file,
-            level=logging.INFO,
-            format='{"timestamp": "%(asctime)s", "message": "%(message)s", "type": "%(levelname)s"}',
-        )
+        """Configure logging for CLI output."""
+        logger = configure_logging()
+        for handler in logger.handlers:
+            if isinstance(handler, logging.FileHandler):
+                handler.baseFilename = self.log_file
 
     def log_message(self, message, message_type):
         logging.log(

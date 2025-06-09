@@ -9,9 +9,11 @@
 import os
 import logging
 import subprocess
+from ..logging_setup import configure_logging
 
 from ..core.system_checks import check_error
 
+configure_logging()
 logger = logging.getLogger(__name__)
 
 

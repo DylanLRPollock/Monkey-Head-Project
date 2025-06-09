@@ -7,11 +7,21 @@
 # Updated: 06.05.2025
 # ==================================================
 import logging
+from .logging_setup import configure_logging
 
 
 class ErrorHandler:
     def __init__(self, log_file="app.log"):
-        logging.basicConfig(filename=log_file, level=logging.INFO)
+        # Initialize logging if not already configured
+        logger = configure_logging()
+        if log_file:
+            file_handler = logging.FileHandler(log_file)
+            file_handler.setFormatter(
+                logging.Formatter(
+                    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+                )
+            )
+            logger.addHandler(file_handler)
 
     def log_error(self, error_message):
         logging.error(error_message)
