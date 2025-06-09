@@ -83,7 +83,7 @@ class DbSqliteProvider(BaseProvider):
             search_content: bool = False,
     ) -> Dict[int, CtxMeta]:
         """
-        Return dict of ctx meta, TODO: add order, limit, offset, etc.
+        Return dict of ctx meta.
 
         :param search_string: search string
         :param order_by: order by column
