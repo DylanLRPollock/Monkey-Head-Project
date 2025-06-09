@@ -190,7 +190,7 @@ RAM: Minimum 16 GB DDR4 to handle multiple simultaneous processes efficiently, s
 
 Processor: At least 4 physical cores (2.5 GHz recommended) to manage the demands of the AIOS and its real-time data processing capabilities.
 
-Operating System: Supports Windows 11 or Windows 10 Pro (64-bit), ensuring wide compatibility and ease of use.
+Operating System: Supports **Windows 10**, **Windows 11**, or **macOS Ventura** (or newer) for full HostOS functionality.
 
 Installation Process
 
@@ -202,11 +202,9 @@ Allocate Resources: Dedicate full processor capabilities to HostOS for optimal p
 
 Virtual Environment Setups
 
-SubOS: Requires 128GB storage and 8GB RAM per instance, configured through Hyper-V. Suitable for running isolated, specialized tasks alongside the primary AIOS environment.
+SubOS: A **Debian Trixie** environment with **Python 3.12** preinstalled. Requires 128GB storage and 8GB RAM per instance, suitable for running isolated, specialized tasks alongside the primary AIOS environment.
 
-NanoOS: A lighter version, utilizing Docker for containerized operations, allowing efficient task execution with minimal resource demands.
-
-NanoOS: Deployed using Python virtual environments, allocating fractional core processing power. Ideal for lightweight, background tasks that require minimal computational effort.
+NanoOS: A lightweight **Python 3.12** environment used for granular hardware interaction. It can run in Docker containers or Python virtual environments, allocating fractional core processing power for minimal overhead.
 
 Document Library: Key Summaries
 
