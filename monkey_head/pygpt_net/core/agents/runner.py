@@ -348,7 +348,7 @@ class Runner:
 
             # this can be the last step in current sub-task, so send it first
             step_ctx = self.add_ctx(ctx)
-            step_ctx.set_input(str(tools_output)) # TODO: tool_outputs?
+            step_ctx.set_input(str(tools_output))
             step_ctx.set_output("`{sub_task_label} {i}/{c}, {step_label} {j}`\n{task_header}".format(
                 sub_task_label=trans('msg.agent.plan.subtask'),
                 i=str(i),

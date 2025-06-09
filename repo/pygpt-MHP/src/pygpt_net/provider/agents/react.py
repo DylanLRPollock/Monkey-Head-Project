@@ -42,8 +42,6 @@ class ReactAgent(BaseAgent):
         chat_history = kwargs.get("chat_history", [])
         max_iterations = kwargs.get("max_iterations", 10)
 
-        """
-        # TODO: multimodal support
         model = kwargs.get("model", None)
         modes = model.mode if model is not None else None
         is_multimodal = False
@@ -58,7 +56,6 @@ class ReactAgent(BaseAgent):
                 verbose=True,
             )
             return step_engine.as_agent()
-        """
         return Agent.from_tools(
             tools=tools,
             llm=llm,
