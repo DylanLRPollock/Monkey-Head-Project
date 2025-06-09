@@ -46,7 +46,22 @@ def system_check():
 
 def install_tools():
     logger.info("Installing tools for HostOS...")
-    tools_install = subprocess.run(['apt-get', 'install', '-y', 'git', 'docker.io', 'python3', 'python3-venv'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    tools_install = subprocess.run(
+        [
+            'apt-get',
+            'install',
+            '-y',
+            'git',
+            'docker.io',
+            'python3',
+            'python3-venv',
+            'qemu-kvm',
+            'libvirt-daemon-system',
+            'libvirt-clients',
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
     check_error(tools_install, "Tools Installation")
 
 def configure_environment():
@@ -56,14 +71,52 @@ def configure_environment():
     with open(os.path.expanduser("~/.bashrc"), "a") as bashrc:
         bashrc.write("\nexport HOSTOS_PATH=$HOME/HostOS\n")
 
+def enable_services():
+    logger.info("Enabling Docker service...")
+    enable_docker = subprocess.run(
+        ["systemctl", "enable", "--now", "docker"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(enable_docker, "Enable Docker Service")
+
+def check_virtualization():
+    logger.info("Checking virtualization support...")
+    try:
+        output = subprocess.check_output(["grep", "-E", "vmx|svm", "/proc/cpuinfo"])
+    except subprocess.CalledProcessError:
+        output = b""
+    if not output.strip():
+        error_message = "Virtualization support not detected"
+        logger.error(error_message)
+        raise RuntimeError(error_message)
+
+def configure_firewall(port: int = 5901):
+    logger.info("Configuring firewall for port %d...", port)
+    ufw_allow = subprocess.run(
+        ["ufw", "allow", str(port)], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    check_error(ufw_allow, "Configure Firewall")
+
 def deploy_hostos():
     logger.info("Deploying HostOS environment...")
     os.chdir(os.path.expanduser("~/HostOS"))
-    deploy = subprocess.run(['docker-compose', 'up', '-d'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    deploy = subprocess.run(
+        ["docker-compose", "up", "-d"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
     check_error(deploy, "HostOS Deployment")
+    kubectl = subprocess.run(
+        ["kubectl", "apply", "-f", "HostOS.yaml"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(kubectl, "Kubernetes Deployment")
 
 if __name__ == '__main__':
     system_check()
     install_tools()
     configure_environment()
+    enable_services()
+    check_virtualization()
+    configure_firewall()
     deploy_hostos()
