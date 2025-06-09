@@ -72,4 +72,12 @@ update_submodules
 setup_python_env
 show_license_gui
 
+function preload_data {
+    echo "Preloading bundled data..."
+    source "$VENV_DIR/bin/activate" || error_exit "Failed to activate virtual environment."
+    python -m monkey_head.scripts.preload_data --summary || echo "Data preload failed"
+}
+
+preload_data
+
 echo "Installation completed successfully."
