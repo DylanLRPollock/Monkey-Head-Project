@@ -1,11 +1,11 @@
-# CONFIG.txt - Monkey Head Project Configuration
+# CONFIG.txt - Monkey Head Application Configuration
 
 ######################################################
 # General Settings
 ######################################################
 [general]
 # The name of the application
-app_name = Monkey Head Project
+app_name = Monkey Head Application
 
 # The environment in which the application is running
 # Options: development, testing, production
@@ -37,7 +37,7 @@ db_pool_max_size = 10
 ######################################################
 [logging]
 # Logging level: Options are DEBUG, INFO, WARNING, ERROR, CRITICAL
-log_level = DEBUG
+log_level = INFO
 
 # Log file location
 log_file = /var/log/monkey_head_project/app.log

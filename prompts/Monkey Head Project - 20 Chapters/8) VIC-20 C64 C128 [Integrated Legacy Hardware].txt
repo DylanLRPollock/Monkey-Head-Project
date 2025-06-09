@@ -1,3 +1,4 @@
+### Monkey Head Project Prompt
 Below is a **refined, cohesive** version of your text on integrating the **VIC-20**, **Commodore 64**, and **Commodore 128** within the **Monkey Head Project**’s GenCore AI/OS. It retains the original structure and details, clarifying the importance, technical steps, and future directions of this legacy integration.
 
 ---
