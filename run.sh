@@ -8,5 +8,9 @@
 # Updated:   06.05.2025
 # ==================================================
 # This script is used to run the app using the virtual environment
+if [ ! -f "venv/bin/activate" ]; then
+  echo "Virtual environment not found. Please run install.sh first." >&2
+  exit 1
+fi
 source ./venv/bin/activate
 python3 run.py "$@"
