@@ -145,6 +145,14 @@ The GUI now checks whether you've accepted the license on startup and
 offers a **Tools** menu. From there you can reopen the license dialog or
 view a summary of bundled prompts and memory files.
 
+### CLI Helper Scripts
+
+Two convenience wrappers simplify common tasks on Unix systems. `run.sh`
+activates the project's virtual environment and launches `run.py`. The
+`run-tests.sh` script performs the same activation step before executing
+the test suite with `pytest -vv`. Both scripts report an error if the
+`venv` directory is missing, reminding you to run `install.sh` first.
+
 ### Docker and Kubernetes Utilities
 
 The `scripts/` directory contains helper scripts for container management:
