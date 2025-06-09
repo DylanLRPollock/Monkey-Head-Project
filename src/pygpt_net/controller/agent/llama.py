@@ -130,11 +130,15 @@ class Llama:
 
     def on_stop(self):
         """Stop agent"""
-        pass
+        self.window.controller.kernel.stop()
+        self.reset_eval_step()
+        self.window.update_status(trans("status.finished"))
 
     def update(self):
         """Update agent status"""
-        pass
+        status = f"{self.get_eval_step()}"
+        self.window.ui.nodes["status.agent"].setText(status)
+        self.window.controller.agent.common.toggle_status()
 
     def hook_update(self, key: str, value: Any, caller, *args, **kwargs):
         """
