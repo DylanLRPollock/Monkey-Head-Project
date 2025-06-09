@@ -31,6 +31,7 @@ from .services.container_management import (
     deploy_kubernetes,
     kubernetes_management,
 )
+from . import subos_manager
 from .scripts.backup_restore import backup_config, restore_config
 
 app = Flask(__name__)
@@ -90,8 +91,7 @@ def setup_hostos() -> None:
 
 def setup_subos() -> None:
     logger.info("Setting up SubOS...")
-    logger.info("SubOS setup is a placeholder.")
-    check_error(subprocess.CompletedProcess(args=[], returncode=0), "Setup SubOS")
+    subos_manager.run()
 
 
 def setup_nanoos() -> None:

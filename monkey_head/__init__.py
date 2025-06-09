@@ -10,5 +10,6 @@
 
 from .formatter import format_text
 from .gencore import generate_core_data
+from . import subos_manager
 
-__all__ = ["format_text", "generate_core_data"]
+__all__ = ["format_text", "generate_core_data", "subos_manager"]
