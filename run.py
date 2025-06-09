@@ -17,13 +17,60 @@
 # Updated Date: 2023.12.05 22:00:00                  #
 # ================================================== #
 
+import argparse
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str((Path(__file__).parent / 'src').resolve()))
+sys.path.insert(0, str((Path(__file__).parent / "src").resolve()))
 
-from pygpt_net.app import run
+from pygpt_net.app import run as cli_run
 
-if __name__ == '__main__':
-    run()
+
+def launch_gui() -> None:
+    """Start the Tkinter GUI."""
+    try:
+        import tkinter as tk
+        from gui.main_ui import MainUI
+    except Exception as exc:
+        raise RuntimeError(f"Unable to load GUI modules: {exc}") from exc
+
+    root = tk.Tk()
+    app = MainUI(root)
+    root.mainloop()
+
+
+def main() -> None:
+    """Launch the GUI by default with an optional CLI mode."""
+
+    parser = argparse.ArgumentParser(description="Launch the Monkey Head Project")
+    parser.add_argument(
+        "--cli",
+        action="store_true",
+        help="Run in command-line mode instead of the GUI",
+    )
+    parser.add_argument(
+        "--version",
+        action="store_true",
+        help="Print pygpt_net version and exit",
+    )
+    args = parser.parse_args()
+
+    if args.version:
+        from pygpt_net import __version__
+        print(f"pygpt_net version: {__version__}")
+        return
+
+    if args.cli:
+        cli_run()
+        return
+
+    try:
+        launch_gui()
+    except Exception as exc:
+        print(f"GUI failed to launch: {exc}\nFalling back to CLI mode.")
+        cli_run()
+
+
+if __name__ == "__main__":
+    main()
 

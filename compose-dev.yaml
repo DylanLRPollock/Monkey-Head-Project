@@ -1,6 +1,6 @@
 services:
   dev-env:
-    container_name: Monkey-Head-Project
+    container_name: monkey-head
     # Build options
     build:
       context: .

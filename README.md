@@ -93,12 +93,19 @@ venv\Scripts\activate     # Windows
 pip install -r requirements.txt
 git submodule update --init --recursive
 pip install -e repo/pygpt-MHP
-python src/main.py
+python monkey_head/main.py
 ```
 
 ### Submodule
 
-This project uses the [pygpt-MHP](https://github.com/DylanLRPollock/pygpt-MHP) submodule located in `repo/pygpt-MHP`. It provides advanced GPT-based capabilities leveraged by GenCore. Clone the repository with `--recurse-submodules` or run `git submodule update --init --recursive` after cloning to ensure it is available. The installer performs this step automatically and installs the package with `pip install -e repo/pygpt-MHP`.
+This project uses the [pygpt-MHP](https://github.com/DylanLRPollock/pygpt-MHP) submodule located in `repo/pygpt-MHP`. Clone with `--recurse-submodules` or run `git submodule update --init --recursive` to fetch it. After cloning, run the helper script below to mirror the submodule into the main repository so you can work entirely from the local `src` directory:
+
+```bash
+python sync_pygpt_structure.py  # copy entire pygpt tree
+# python sync_pygpt_structure.py --depth 2  # limit recursion if desired
+```
+
+Once copied, prefer importing modules from the project root instead of the `repo/pygpt-MHP` path. The installer performs the submodule update and installation with `pip install -e repo/pygpt-MHP` automatically.
 
 ### Running Tests
 
@@ -116,6 +123,27 @@ operating system to invoke the appropriate setup script:
 ```bash
 python installer.py
 ```
+The installer now displays the license agreement using a small Tkinter
+dialog. You must accept these terms before the setup can finish.
+
+### GUI Interface (Default)
+
+The GUI is now the primary way to install and control the project. Simply run:
+
+```bash
+python run.py
+```
+
+This launches a Tkinter window where you can install, update, or run the
+application. The correct setup script is chosen automatically. A "Run" button
+lets you start the program without opening a terminal. If the GUI cannot be
+displayed (for example on a headless server), the launcher automatically falls
+back to the command-line interface. You can also force CLI mode with
+`python run.py --cli`.
+
+The GUI now checks whether you've accepted the license on startup and
+offers a **Tools** menu. From there you can reopen the license dialog or
+view a summary of bundled prompts and memory files.
 
 ### Docker and Kubernetes Utilities
 
@@ -128,33 +156,68 @@ The `scripts/` directory contains helper scripts for container management:
 ./scripts/k8s_cleanup.sh     # remove Kubernetes resources
 ```
 
+Programmatic helpers for Kubernetes lives in
+`monkey_head.services.container_management`. Functions like
+`scale_deployment`, `get_pod_logs`, and `cleanup_kubernetes` provide a
+Python interface for scaling deployments, retrieving pod logs, and cleaning up
+resources.
+
+Additional helpers now include `build_docker_image`, `stop_containers`,
+`cleanup_images`, and `manage_networks` for end-to-end Docker lifecycle
+management.
+
+### Linux (Debian 13) Installation
+
+Run the cross-platform installer with root privileges:
+
+```bash
+sudo python installer.py
+```
+
+This invokes `setup/Debian13/install.sh`, which updates `/etc/apt/sources.list` to Debian **Trixie**, installs Git, Node.js, Python 3, and Docker, then creates a virtual environment and preloads bundled data. Accept the license agreement when prompted.
+
 
 ### macOS Installation
 
 Running the installer on macOS executes `setup/macOS/install.sh`. This script
 ensures Homebrew is available, installs Git, Python 3, Docker, and sets up the
-project's Python virtual environment automatically.
+project's Python virtual environment automatically. During setup it also
+initializes git submodules, displays the license agreement, and preloads bundled
+data.
 
 ### Windows 10 & 11 Installation
 
 Ensure that **Python 3** is available on your system (download from
 [python.org](https://www.python.org/) if needed). Open **Command Prompt** or
 **PowerShell** as **Administrator** and run the installer from the project
-root:
+root. You can use the provided Python script or the convenience batch file:
 
 ```bash
-python installer.py
+python installer.py      # cross-platform installer
+install.bat              # Windows helper that runs the same script
 ```
+The license dialog will appear during this installation step as well.
 
 This launches `setup/Windows11/01-FULL.bat`, which installs Chocolatey, Git,
 Docker Desktop, and other required tools on Windows. On macOS the installer
 invokes `setup/macOS/install.sh` to configure Homebrew and the Python
 environment. The batch script supports both Windows 10 and Windows 11.
 
+### Uninstallation and Cleanup
+
+Run the cross-platform uninstaller to remove the project and optional packages:
+
+```bash
+sudo python uninstaller.py  # Linux/macOS
+python uninstaller.py       # Windows
+```
+The script calls OS-specific cleanup scripts to delete the virtual environment, uninstall packages, and prune Docker resources.
+
+
 ### Directory Structure
 
 Legacy scripts from the `py/` folder were consolidated and updated in
-the `src/` directory. All utilities and modules live under `src/` to
+the `monkey_head/` directory. All utilities and modules live under `monkey_head/` to
 keep the project organized.
 
 ### Development Setup
@@ -169,14 +232,16 @@ When adding new modules, format the code with `black` and run
 ### Recent Updates
 
 - Preset placeholders now show the preset name instead of the file ID for better readability.
+- Added `--version` flag to `run.py` for quick version checks.
+- Implemented centralized logging and video screenshot capabilities for multimodal workflows.
 
 ### Utilities
 
-Use `src/utils/list_by_mtime.py` to list files in any directory from oldest
+Use `monkey_head/utils/list_by_mtime.py` to list files in any directory from oldest
 to newest:
 
 ```bash
-python src/utils/list_by_mtime.py path/to/dir
+python monkey_head/utils/list_by_mtime.py path/to/dir
 ```
 
 ---
@@ -218,7 +283,7 @@ For an introductory overview, see [docs/New-To-AI.md](docs/New-To-AI.md).
 
 ## 📖 License
 
-This project is open-source under the **MIT License**, allowing free use, modification, and redistribution.
+This project is open-source under the **GNU General Public License v3.0 (GPL-3.0)**, allowing free use, modification, and redistribution under its terms.
 
 ---
 
@@ -233,3 +298,76 @@ Special thanks to the global open-source community, the creators of foundational
 The Monkey Head Project is more than technology; it's a vision for responsible and adaptive collaboration between humans and AI. Join us as we explore the exciting possibilities where ethical AI innovation meets practical, real-world applications.
 
 **Welcome to the future with the Monkey Head Project! 🧠🚀**
+
+---
+
+## ⚙️ Advanced Configuration
+
+GenCore offers extensive customization through the `config.yaml` file at the
+project root and the JSON profiles found under `config/pygpt_net/`. You can
+add your own YAML files in `config/` to override default behaviors, define
+hardware profiles, or enable experimental modules. After editing a
+configuration file, restart the system with `python run.py` (or
+`python run.py --cli` for command-line mode) or `docker-compose restart` to
+apply the changes.
+
+### Sample Configuration Snippet
+
+The example below illustrates how you might extend `config.yaml` or create a
+`config/custom.yaml` file to describe extra hardware. Use it as a guideline and
+adapt the keys to match your system:
+
+```yaml
+# config/custom.yaml (example)
+hardware:
+  sensors:
+    - name: depth_cam
+      type: realsense
+  actuators:
+    - name: arm_joint
+      type: servo
+ai:
+  planning:
+    strategy: hierarchical
+```
+
+## 💬 Community and Support
+
+Join the conversation on our
+[Discussion Board](https://github.com/DylanLRPollock/Monkey-Head-Project/discussions)
+or drop into the Matrix chat at `#monkey-head:matrix.org`. Start by searching
+the issue tracker if you encounter problems. If your question isn't answered,
+open a new topic or reach out on social media.
+
+## ❓ Frequently Asked Questions (FAQ)
+
+**Q: Do I need previous robotics experience?**  
+A: No. Beginners can explore the software in simulation or on entry-level
+hardware using the provided tutorials.
+
+**Q: Is the project suitable for educational use?**  
+A: Absolutely. The modular design is perfect for classroom demonstrations and
+research labs.
+
+**Q: Can I integrate GenCore into my own product?**
+A: Yes. The software is released under the GPL-3.0 license, which allows
+commercial and non-commercial use as long as the license terms are respected.
+
+## 🛠️ Troubleshooting
+
+If the application fails to start, try the following steps:
+
+1. Remove any old virtual environments and reinstall dependencies.
+2. Run `python -m pip install --upgrade pip` to update Python tooling.
+3. Verify that your `docker-compose` version meets the requirements.
+4. Check the logs in the `logs/` directory for detailed error messages.
+
+For persistent issues, open a bug report with your system details and
+the steps needed to reproduce the error.
+
+## 🌟 Related Projects and Inspirations
+
+The Monkey Head Project is built on top of numerous open-source efforts,
+from the ROS robotics framework to cutting-edge language models. We
+collaborate closely with the community to integrate the best tools
+available and appreciate everyone who helps advance ethical AI research.

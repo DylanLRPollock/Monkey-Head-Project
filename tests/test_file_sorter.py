@@ -6,10 +6,9 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-import os
 import time
 
-from src.utils.list_by_mtime import list_files_by_mtime
+from monkey_head.utils.list_by_mtime import list_files_by_mtime
 
 
 def test_list_files_by_mtime(tmp_path):

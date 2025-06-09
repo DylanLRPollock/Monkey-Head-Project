@@ -6,34 +6,68 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-import os
+"""Synchronize pygpt-MHP submodule files with the local project.
 
-PYGPT_DIR = os.path.join('repo', 'pygpt-MHP')
+The script copies files from ``repo/pygpt-MHP`` into the main repository so
+modules can be imported directly from ``src``. Existing files will only be
+overwritten if they contain a ``Placeholder for`` header. The ``--depth``
+option controls how deep into the submodule the copy process recurses. By
+default the entire tree is mirrored.
+"""
+import os
+import shutil
+import argparse
+
+
+PYGPT_DIR = os.path.join("repo", "pygpt-MHP")
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def mirror(src, dst):
-    if os.path.exists(dst):
+def _should_copy_file(dst: str) -> bool:
+    """Return True if file should be copied from the source."""
+    if not os.path.exists(dst):
+        return True
+    try:
+        with open(dst, "r", errors="ignore") as f:
+            first = f.readline().strip()
+        return first.startswith("Placeholder for")
+    except Exception:
         return False
+
+
+def sync(src: str, dst: str, depth: int | None = None) -> None:
+    """Copy file or directory from src to dst if missing or placeholder."""
     if os.path.isdir(src):
         os.makedirs(dst, exist_ok=True)
-        placeholder = os.path.join(dst, 'README_PLACEHOLDER.md')
-        with open(placeholder, 'w') as f:
-            f.write(f'This directory mirrors `{src}` from the pygpt-MHP repo.')
+        if depth is None or depth > 0:
+            for item in os.listdir(src):
+                sync(
+                    os.path.join(src, item),
+                    os.path.join(dst, item),
+                    None if depth is None else depth - 1,
+                )
     else:
-        with open(dst, 'w') as f:
-            f.write(f'Placeholder for `{src}` from the pygpt-MHP repo.')
-    return True
+        if _should_copy_file(dst):
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copy2(src, dst)
 
 
-def mirror_tree(src_root, dst_root, depth=1):
+def mirror_tree(src_root: str, dst_root: str, depth: int | None = None) -> None:
     for item in os.listdir(src_root):
         src_path = os.path.join(src_root, item)
         dst_path = os.path.join(dst_root, item)
-        created = mirror(src_path, dst_path)
-        if depth > 1 and os.path.isdir(src_path) and created:
-            mirror_tree(src_path, dst_path, depth=depth-1)
+        sync(src_path, dst_path, None if depth is None else depth - 1)
 
 if __name__ == "__main__":
-    mirror_tree(PYGPT_DIR, ROOT_DIR, depth=2)
+    parser = argparse.ArgumentParser(
+        description="Copy files from the pygpt-MHP submodule into the main project"
+    )
+    parser.add_argument(
+        "--depth",
+        type=int,
+        default=None,
+        help="Limit recursion depth when copying (default: unlimited)",
+    )
+    args = parser.parse_args()
+    mirror_tree(PYGPT_DIR, ROOT_DIR, depth=args.depth)
 

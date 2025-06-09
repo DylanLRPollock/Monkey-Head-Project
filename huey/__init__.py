@@ -8,6 +8,7 @@
 # ==================================================
 # huey/__init__.py
 
+# flake8: noqa
 from .main import main
 from .utils import *
 from .exceptions import *

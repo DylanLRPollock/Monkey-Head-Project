@@ -10,6 +10,9 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
 VENV_DIR="venv"
 
 function error_exit {
@@ -25,6 +28,8 @@ function ensure_root {
 }
 
 function update_system {
+    echo "Updating apt sources to Debian Trixie..."
+    python3 "$PROJECT_ROOT/scripts/update_sources_to_trixie.py" || error_exit "Failed to update sources list."
     echo "Updating system..."
     apt-get update -y || error_exit "apt-get update failed."
     apt-get upgrade -y || error_exit "apt-get upgrade failed."
@@ -53,6 +58,12 @@ function setup_python_env {
     pip install -e repo/pygpt-MHP || error_exit "Failed to install pygpt-MHP."
 }
 
+function show_license_gui {
+    echo "Displaying license agreement..."
+    source "$VENV_DIR/bin/activate" || error_exit "Failed to activate virtual environment."
+    python src/license_gui.py || echo "License dialog could not be displayed"
+}
+
 function update_submodules {
     echo "Initializing git submodules..."
     git submodule update --init --recursive || error_exit "Failed to update submodules."
@@ -64,5 +75,14 @@ install_common_tools
 install_additional_tools
 update_submodules
 setup_python_env
+show_license_gui
+
+function preload_data {
+    echo "Preloading bundled data..."
+    source "$VENV_DIR/bin/activate" || error_exit "Failed to activate virtual environment."
+    python -m monkey_head.scripts.preload_data --summary || echo "Data preload failed"
+}
+
+preload_data
 
 echo "Installation completed successfully."

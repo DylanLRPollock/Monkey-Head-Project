@@ -13,6 +13,7 @@ import copy
 import os
 import shutil
 import uuid
+from pathlib import Path
 
 from shutil import copyfile
 from typing import Optional, List, Dict, Any, Tuple
@@ -159,6 +160,23 @@ class Context:
                             context += f.read() + "\n\n"
                     except Exception as e:
                         print("Attachments: read error: {}".format(e))
+
+        # append content from globally preloaded PDFs
+        global_items = self.window.core.attachments.get_all(
+            self.window.controller.chat.attachment.MODE_FULL_CONTEXT
+        )
+        for item in global_items.values():
+            if not item.path or not item.path.lower().endswith(".pdf"):
+                continue
+            if filename:
+                context += f"Filename: {item.name}\n"
+            try:
+                text, _ = self.window.core.idx.indexing.read_text_content(item.path)
+                context += text + "\n\n"
+                if item.path not in self.last_files:
+                    self.last_files.append(item.path)
+            except Exception as e:
+                print(f"Attachments: preload read error: {e}")
 
         self.last_used_content = context
         self.last_used_context = context
@@ -307,6 +325,27 @@ class Context:
                 history_data = history_data[-num_items:]
 
         return history_data
+
+    def search_preloaded_pdfs(self, query: str, limit: int = 3) -> str:
+        """Search preloaded PDF files for the given query."""
+        base = Path(__file__).resolve().parents[3]
+        pdf_dir = base / "memory" / "PDF"
+        if not pdf_dir.is_dir():
+            return ""
+
+        results = []
+        for entry in pdf_dir.glob("*.txt"):
+            try:
+                with open(entry, "r", encoding="utf-8") as f:
+                    content = f.read()
+                if query.lower() in content.lower():
+                    results.append(f"[{entry.stem}] {content.strip()}")
+                    if len(results) >= limit:
+                        break
+            except Exception as e:
+                print(f"PDF search error: {e}")
+
+        return "\n\n".join(results)
 
     def upload(
             self,

@@ -78,7 +78,7 @@ if %errorlevel% neq 0 (
     echo %1 version check failed.
     call :logError "%1 Version Check"
 ) else (
-    echo %1 version: 
+    echo %1 version:
     %1 --version
 )
 goto :eof

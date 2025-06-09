@@ -1,9 +1,14 @@
-# ==================================================  #
-# This file is a part of the 'Monkey Head Project'                                       #
-# Website:   https://dlrp.ca                                                                            #
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
-# License:   https://opensource.org/license/gpl-3-0                                 #
-# Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.05.2025                                                                                 #
-# ================================================== #
-Placeholder for `repo/pygpt-MHP/install.bat` from the pygpt-MHP repo.
+@echo off
+REM ==================================================
+REM This file is a part of the 'Monkey Head Project'
+REM Website:   https://dlrp.ca
+REM GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
+REM License:   https://opensource.org/license/gpl-3-0
+REM Overseen By:   Dylan L.R. Pollock
+REM Updated: 06.05.2025
+REM ==================================================
+
+set SCRIPT_DIR=%~dp0
+set INSTALL_SCRIPT=%SCRIPT_DIR%setup\Windows11\01-FULL.bat
+
+call "%INSTALL_SCRIPT%"

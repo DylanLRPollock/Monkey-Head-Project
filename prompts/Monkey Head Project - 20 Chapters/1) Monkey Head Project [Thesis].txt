@@ -1,3 +1,4 @@
+### Monkey Head Project Prompt
 ## **Thesis: The Monkey Head Project**
 
 The **Monkey Head Project** is founded on the proposition that, given adequate **resources**, **time**, and **determination**, an individual can develop a **robotic system** embodying **autonomy**, **modularity**, and **expandability**. By **leveraging existing technologies**, combining them with **state-of-the-art software**, and employing a **systematic engineering approach**, the Project aims to prove that sophisticated **robotics** and **artificial intelligence** are within reach for dedicated technologists and enthusiasts—not solely for large research institutions.

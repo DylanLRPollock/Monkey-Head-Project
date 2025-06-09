@@ -7,7 +7,7 @@
 # Updated: 06.05.2025
 # ==================================================
 import unittest
-from src.formatter import format_text
+from monkey_head.formatter import format_text
 
 
 class TestFormatter(unittest.TestCase):
@@ -15,6 +15,16 @@ class TestFormatter(unittest.TestCase):
         text = "one two three four"
         formatted = format_text(text, line_length=7)
         self.assertEqual(formatted, "one\ntwo\nthree\nfour")
+
+
+def test_format_text_line_lengths():
+    """Validate that no line exceeds the specified length."""
+    text = "one two three four five six seven eight"
+    for length in [5, 10, 15]:
+        formatted = format_text(text, line_length=length)
+        for line in formatted.splitlines():
+            assert len(line) <= length
+        assert "".join(formatted.split()) == text.replace(" ", "")
 
 
 if __name__ == "__main__":

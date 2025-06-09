@@ -219,8 +219,6 @@ class VideoPlayerWidget(QWidget):
         if not self.path or not self.player.source():
             return
 
-        # TODO: implement grab screenshot
-        """
         use_actions = []
         action_as_attachment = QAction(
             QIcon(":/icons/attachment.svg"),
@@ -241,35 +239,30 @@ class VideoPlayerWidget(QWidget):
         use_actions.append(action_as_image)
         use_actions.append(action_as_attachment)
 
-        # use by type
-        if use_actions:
-            # use menu
-            use_menu = QMenu(trans('action.use'), self)
-            for action in use_actions:
-                use_menu.addAction(action)
-            context_menu.addMenu(use_menu)
-        """
         context_menu = QMenu(self)
         save_as_action = QAction(QIcon(":/icons/save.svg"), trans("action.save_as"), self)
         save_as_action.triggered.connect(
             lambda: self.window.tools.get("player").save_as_file()
         )
-        # full_screen_action = QAction('Fullscreen', self)
-        # full_screen_action.triggered.connect(self.toggle_fullscreen)
-        context_menu.addAction(save_as_action)
+        full_screen_action = QAction('Fullscreen', self)
+        full_screen_action.triggered.connect(self.toggle_fullscreen)
 
-        # context_menu.addAction(full_screen_action)
+        context_menu.addAction(save_as_action)
+        if use_actions:
+            use_menu = QMenu(trans('action.use'), self)
+            for action in use_actions:
+                use_menu.addAction(action)
+            context_menu.addMenu(use_menu)
+        context_menu.addAction(full_screen_action)
         context_menu.exec(self.mapToGlobal(point))
 
     def use_as_attachment(self):
-        """Use as attachment"""
-        # TODO: implement grab screenshot
+        """Use current frame as attachment"""
         path = self.window.tools.get("player").grab_frame()
         self.window.controller.files.use_attachment(path)
 
     def use_as_image(self):
-        """Use as image"""
-        # TODO: implement grab screenshot
+        """Open current frame in image viewer"""
         path = self.window.tools.get("player").grab_frame()
         self.window.controller.painter.open_external(path)
 
@@ -305,7 +298,6 @@ class VideoPlayerWidget(QWidget):
 
     def toggle_fullscreen(self):
         """Toggle fullscreen"""
-        # TODO: implement fullscreen
         if self.window.ui.dialog['video_player'].isFullScreen():
             self.window.ui.dialog['video_player'].showNormal()
         else:

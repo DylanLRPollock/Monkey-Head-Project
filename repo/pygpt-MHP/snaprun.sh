@@ -34,4 +34,4 @@ else
     export LIBGL_DRIVERS_PATH=$SNAP/usr/lib/$ARCH/dri
 fi
 
-python3 $SNAP/src/pygpt_net/app.py "$@"
+python3 "$SNAP"/src/pygpt_net/app.py "$@"

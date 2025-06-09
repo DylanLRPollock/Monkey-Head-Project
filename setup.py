@@ -17,7 +17,7 @@ except FileNotFoundError:
     long_description = "Long description could not be read from README.md"
 
 setup(
-    name='MonkeyHeadProject',
+    name='monkey-head-project',
     version='1.0.1',
     description='A project integrating diverse functionalities including ML, web frameworks, and more.',
     long_description=long_description,
@@ -25,7 +25,8 @@ setup(
     author='Dylan L.R. Pollock',
     author_email='admin@dlrp.ca',
     url='https://github.com/DylanLRPollock/Monkey-Head-Project',
-    packages=find_packages(),
+    packages=find_packages(where="monkey_head"),
+    package_dir={"": "monkey_head"},
     install_requires=[
         'requests==2.32.3',
         'httpx==0.27.2',
@@ -83,7 +84,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'monkeyhead=huey.cli:run_cli'
+            'monkey-head=huey.cli:run_cli'
         ]
     },
 )

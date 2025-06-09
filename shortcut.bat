@@ -6,4 +6,8 @@
 # Overseen By:   Dylan L.R. Pollock                                                             #
 # Updated: 06.05.2025                                                                                 #
 # ================================================== #
-Placeholder for `repo/pygpt-MHP/shortcut.bat` from the pygpt-MHP repo.
+:: This script is used to run the app using the virtual environment
+@echo off
+cd /d "%~dp0"
+call venv\Scripts\activate
+call python run.py %*

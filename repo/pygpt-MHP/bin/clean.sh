@@ -9,7 +9,7 @@
 # ==================================================
 # This script is used to recursive remove the __pycache__ directories
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit
 DIR_CURRENT="$(pwd)"
 DIR_PARENT="$(dirname "$DIR_CURRENT")"
 TARGET_DIR="$DIR_PARENT/src" # clear '__pycache__'

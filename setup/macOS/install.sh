@@ -44,6 +44,12 @@ function setup_python_env() {
     pip install -e repo/pygpt-MHP
 }
 
+function show_license_gui() {
+    echo "Displaying license agreement..."
+    source "$VENV_DIR/bin/activate"
+    python src/license_gui.py || echo "License dialog could not be displayed"
+}
+
 function update_submodules() {
     echo "Initializing git submodules..."
     git submodule update --init --recursive
@@ -53,5 +59,14 @@ install_homebrew
 install_packages
 update_submodules
 setup_python_env
+show_license_gui
+
+function preload_data() {
+    echo "Preloading bundled data..."
+    source "$VENV_DIR/bin/activate"
+    python -m monkey_head.scripts.preload_data --summary || echo "Data preload failed"
+}
+
+preload_data
 
 echo "Installation completed successfully."

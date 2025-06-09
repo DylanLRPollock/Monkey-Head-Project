@@ -7,7 +7,7 @@
 # Updated: 06.05.2025
 # ==================================================
 import unittest
-from src.gencore import generate_core_data
+from monkey_head.gencore import generate_core_data
 
 
 class TestGencore(unittest.TestCase):
@@ -17,6 +17,10 @@ class TestGencore(unittest.TestCase):
         self.assertTrue(result["processed"])
         self.assertEqual(result["input_length"], 2)
         self.assertEqual(result["details"], data)
+
+    def test_generate_core_data_invalid_input(self):
+        with self.assertRaises(ValueError):
+            generate_core_data(123)
 
 
 if __name__ == "__main__":
