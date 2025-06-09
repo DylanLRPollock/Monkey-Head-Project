@@ -96,8 +96,35 @@ def setup_subos() -> None:
 
 def setup_nanoos() -> None:
     logger.info("Setting up NanoOS...")
-    logger.info("NanoOS setup is a placeholder.")
-    check_error(subprocess.CompletedProcess(args=[], returncode=0), "Setup NanoOS")
+
+    install = subprocess.run(
+        [
+            "apt-get",
+            "install",
+            "-y",
+            "git",
+            "docker.io",
+            "python3",
+            "python3-venv",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(install, "Install NanoOS tools")
+
+    nanoos_dir = os.path.expanduser("~/NanoOS")
+    os.makedirs(nanoos_dir, exist_ok=True)
+    os.environ["NANOOS_PATH"] = nanoos_dir
+    with open(os.path.expanduser("~/.bashrc"), "a") as bashrc:
+        bashrc.write("\nexport NANOOS_PATH=$HOME/NanoOS\n")
+
+    deploy = subprocess.run(
+        ["docker-compose", "up", "-d"],
+        cwd=nanoos_dir,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(deploy, "Deploy NanoOS")
 
 
 def status() -> None:
