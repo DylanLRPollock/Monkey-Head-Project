@@ -1,6 +1,6 @@
 services:
   dev-env:
-    container_name: monkey-head-app
+    container_name: monkey-head
     build:
       context: .
       args:
