@@ -169,9 +169,21 @@ management.
 
 ### macOS Installation
 
-Running the installer on macOS executes `setup/macOS/install.sh`. This script
-ensures Homebrew is available, installs Git, Python 3, Docker, and sets up the
-project's Python virtual environment automatically.
+Install [Homebrew](https://brew.sh) and Git if they are not already
+available:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew install git
+```
+
+Then run the installer script which sets up Python 3, Docker, and the virtual
+environment automatically. During setup it also initializes git submodules,
+displays the license agreement, and preloads bundled data:
+
+```bash
+./setup/macOS/install.sh
+```
 
 ### Windows 10 & 11 Installation
 
