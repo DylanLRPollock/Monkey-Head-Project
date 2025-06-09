@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -6,4 +7,5 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated:   06.05.2025
 # ==================================================
-Placeholder for `repo/pygpt-MHP/docs/build-en.sh` from the pygpt-MHP repo.
+make -e SPHINXOPTS="-D language='en'" html
+make latexpdf -e SPHINXOPTS="-D language='en'"
