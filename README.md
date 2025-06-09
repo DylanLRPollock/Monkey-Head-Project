@@ -141,6 +141,10 @@ displayed (for example on a headless server), the launcher automatically falls
 back to the command-line interface. You can also force CLI mode with
 `python run.py --cli`.
 
+The GUI now checks whether you've accepted the license on startup and
+offers a **Tools** menu. From there you can reopen the license dialog or
+view a summary of bundled prompts and memory files.
+
 ### Docker and Kubernetes Utilities
 
 The `scripts/` directory contains helper scripts for container management:
