@@ -5,6 +5,10 @@ from monkey_head.services.container_management import (
     scale_deployment,
     get_pod_logs,
     cleanup_kubernetes,
+    build_docker_image,
+    stop_containers,
+    cleanup_images,
+    manage_networks,
 )
 
 
@@ -30,3 +34,24 @@ def test_cleanup_kubernetes():
     with patch("subprocess.run", return_value=DummyCompleted()):
         with patch("os.chdir"):
             cleanup_kubernetes("deployment.yaml")
+
+
+def test_build_docker_image():
+    with patch("subprocess.run", return_value=DummyCompleted()):
+        build_docker_image()
+
+
+def test_stop_containers():
+    with patch("subprocess.run", return_value=DummyCompleted()):
+        with patch("os.chdir"):
+            stop_containers()
+
+
+def test_cleanup_images():
+    with patch("subprocess.run", return_value=DummyCompleted()):
+        cleanup_images()
+
+
+def test_manage_networks():
+    with patch("subprocess.run", return_value=DummyCompleted()):
+        manage_networks()

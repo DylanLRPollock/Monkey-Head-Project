@@ -162,6 +162,10 @@ Programmatic helpers for Kubernetes lives in
 Python interface for scaling deployments, retrieving pod logs, and cleaning up
 resources.
 
+Additional helpers now include `build_docker_image`, `stop_containers`,
+`cleanup_images`, and `manage_networks` for end-to-end Docker lifecycle
+management.
+
 
 ### macOS Installation
 
