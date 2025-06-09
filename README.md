@@ -136,8 +136,10 @@ python run.py
 
 This launches a Tkinter window where you can install, update, or run the
 application. The correct setup script is chosen automatically. A "Run" button
-lets you start the program without opening a terminal. For the original
-command‑line behaviour use `python run.py --cli`.
+lets you start the program without opening a terminal. If the GUI cannot be
+displayed (for example on a headless server), the launcher automatically falls
+back to the command-line interface. You can also force CLI mode with
+`python run.py --cli`.
 
 ### Docker and Kubernetes Utilities
 

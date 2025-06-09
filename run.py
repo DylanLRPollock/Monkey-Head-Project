@@ -26,6 +26,19 @@ sys.path.insert(0, str((Path(__file__).parent / "src").resolve()))
 from pygpt_net.app import run as cli_run
 
 
+def launch_gui() -> None:
+    """Start the Tkinter GUI."""
+    try:
+        import tkinter as tk
+        from gui.main_ui import MainUI
+    except Exception as exc:
+        raise RuntimeError(f"Unable to load GUI modules: {exc}") from exc
+
+    root = tk.Tk()
+    app = MainUI(root)
+    root.mainloop()
+
+
 def main() -> None:
     """Launch the GUI by default with an optional CLI mode."""
 
@@ -41,13 +54,11 @@ def main() -> None:
         cli_run()
         return
 
-    import tkinter as tk
-
-    from gui.main_ui import MainUI
-
-    root = tk.Tk()
-    app = MainUI(root)
-    root.mainloop()
+    try:
+        launch_gui()
+    except Exception as exc:
+        print(f"GUI failed to launch: {exc}\nFalling back to CLI mode.")
+        cli_run()
 
 
 if __name__ == "__main__":
