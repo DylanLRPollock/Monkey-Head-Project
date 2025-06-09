@@ -7,14 +7,12 @@
 # Updated: 06.05.2025
 # ==================================================
 import os
-import logging
 import subprocess
-from ..logging_setup import configure_logging
+from ..utils.logger import get_logger
 
 from ..core.system_checks import check_error
 
-configure_logging()
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 DEFAULT_REPO_URL = "https://github.com/DylanLRPollock/Monkey-Head-Project.git"
