@@ -232,6 +232,8 @@ When adding new modules, format the code with `black` and run
 ### Recent Updates
 
 - Preset placeholders now show the preset name instead of the file ID for better readability.
+- Added `--version` flag to `run.py` for quick version checks.
+- Implemented centralized logging and video screenshot capabilities for multimodal workflows.
 
 ### Utilities
 

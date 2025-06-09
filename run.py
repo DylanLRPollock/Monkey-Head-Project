@@ -48,7 +48,17 @@ def main() -> None:
         action="store_true",
         help="Run in command-line mode instead of the GUI",
     )
+    parser.add_argument(
+        "--version",
+        action="store_true",
+        help="Print pygpt_net version and exit",
+    )
     args = parser.parse_args()
+
+    if args.version:
+        from pygpt_net import __version__
+        print(f"pygpt_net version: {__version__}")
+        return
 
     if args.cli:
         cli_run()
