@@ -1,3 +1,4 @@
+# Kubernetes resources for NanoOS
 apiVersion: v1
 kind: PersistentVolume
 metadata:

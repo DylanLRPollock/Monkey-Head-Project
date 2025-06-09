@@ -1,13 +1,13 @@
 logging:
-  level: DEBUG
-  file: 'huey.log'
+  level: INFO
+  file: 'logs/app.log'
 
 database:
-  host: 'localhost'
-  port: 3306
-  user: 'dlrp'
-  password: 'dlrp'
-  database: 'huey_db'
+  host: 'db'
+  port: 5432
+  user: 'postgres'
+  password: 'postgres'
+  database: 'monkey_head'
 
 system:
   os: 'debian-trixie'

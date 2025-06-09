@@ -1,3 +1,4 @@
+# Kubernetes resources for SubOS
 apiVersion: v1
 kind: PersistentVolume
 metadata:
