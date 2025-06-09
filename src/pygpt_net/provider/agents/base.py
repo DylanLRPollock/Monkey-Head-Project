@@ -33,4 +33,6 @@ class BaseAgent:
         :param kwargs: keyword arguments
         :return: Agent provider instance
         """
-        pass
+        raise NotImplementedError(
+            "BaseAgent.get_agent() must be implemented in subclasses"
+        )
