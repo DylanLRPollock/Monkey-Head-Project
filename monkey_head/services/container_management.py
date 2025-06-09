@@ -106,3 +106,55 @@ def get_pod_logs(pod_name: str) -> str:
     )
     check_error(logs, "Get Pod Logs")
     return logs.stdout.decode()
+
+
+def build_docker_image(tag: str = "monkey-head-project:latest") -> None:
+    """Build the project's Docker image."""
+    logger.info("Building Docker image %s...", tag)
+    build = subprocess.run(
+        ["docker", "build", "-t", tag, "."],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(build, "Build Docker Image")
+
+
+def stop_containers() -> None:
+    """Stop and remove running containers."""
+    logger.info("Stopping Docker containers...")
+    os.chdir(os.path.expanduser("~/Source/repo"))
+    stop = subprocess.run(
+        ["docker-compose", "down"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(stop, "Stop Docker Containers")
+
+
+def cleanup_images() -> None:
+    """Remove dangling Docker images."""
+    logger.info("Pruning unused Docker images...")
+    prune_images = subprocess.run(
+        ["docker", "image", "prune", "-f"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(prune_images, "Prune Docker Images")
+
+
+def manage_networks() -> None:
+    """List and prune Docker networks."""
+    logger.info("Managing Docker networks...")
+    list_networks = subprocess.run(
+        ["docker", "network", "ls"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(list_networks, "List Docker Networks")
+
+    prune_networks = subprocess.run(
+        ["docker", "network", "prune", "-f"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(prune_networks, "Prune Docker Networks")
