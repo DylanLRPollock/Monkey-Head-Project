@@ -11,8 +11,14 @@ import subprocess
 import threading
 from pathlib import Path
 
-import tkinter as tk
-from tkinter import messagebox, scrolledtext, ttk
+try:  # pragma: no cover - optional dependency
+    import tkinter as tk
+    from tkinter import messagebox, scrolledtext, ttk
+except Exception:  # pragma: no cover - can't import GUI libs
+    tk = None
+    messagebox = None
+    scrolledtext = None
+    ttk = None
 
 from monkey_head.license_gui import show_license_gui
 from monkey_head.scripts.preload_data import preload_all
@@ -20,6 +26,9 @@ from monkey_head.scripts.preload_data import preload_all
 
 class MainUI:
     def __init__(self, root):
+        if tk is None:
+            raise RuntimeError("tkinter is not available")
+
         self.root = root
         self.root.title("Program Manager")
         self.setup_paths()

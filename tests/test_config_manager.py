@@ -1,6 +1,3 @@
-import json
-from pathlib import Path
-
 from monkey_head.config_manager import ConfigManager
 
 
@@ -17,4 +14,3 @@ def test_config_manager_default(tmp_path):
     cfg = tmp_path / "missing.json"
     manager = ConfigManager(str(cfg))
     assert manager.get_setting("unknown", "default") == "default"
-

@@ -1,4 +1,3 @@
-import subprocess
 from unittest.mock import patch
 
 from monkey_head.services.container_management import (
