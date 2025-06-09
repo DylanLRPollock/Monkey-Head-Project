@@ -166,6 +166,16 @@ Additional helpers now include `build_docker_image`, `stop_containers`,
 `cleanup_images`, and `manage_networks` for end-to-end Docker lifecycle
 management.
 
+### Linux (Debian 13) Installation
+
+Run the cross-platform installer with root privileges:
+
+```bash
+sudo python installer.py
+```
+
+This invokes `setup/Debian13/install.sh`, which updates `/etc/apt/sources.list` to Debian **Trixie**, installs Git, Node.js, Python 3, and Docker, then creates a virtual environment and preloads bundled data. Accept the license agreement when prompted.
+
 
 ### macOS Installation
 

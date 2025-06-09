@@ -10,6 +10,9 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
 VENV_DIR="venv"
 
 function error_exit {
@@ -25,6 +28,8 @@ function ensure_root {
 }
 
 function update_system {
+    echo "Updating apt sources to Debian Trixie..."
+    python3 "$PROJECT_ROOT/scripts/update_sources_to_trixie.py" || error_exit "Failed to update sources list."
     echo "Updating system..."
     apt-get update -y || error_exit "apt-get update failed."
     apt-get upgrade -y || error_exit "apt-get upgrade failed."
