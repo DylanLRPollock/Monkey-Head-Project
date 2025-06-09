@@ -18,6 +18,10 @@ class TestGencore(unittest.TestCase):
         self.assertEqual(result["input_length"], 2)
         self.assertEqual(result["details"], data)
 
+    def test_generate_core_data_invalid_input(self):
+        with self.assertRaises(ValueError):
+            generate_core_data(123)
+
 
 if __name__ == "__main__":
     unittest.main()
