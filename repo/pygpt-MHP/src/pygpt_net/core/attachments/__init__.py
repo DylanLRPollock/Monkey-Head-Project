@@ -14,6 +14,8 @@ import os
 from pathlib import Path
 from typing import Optional, List, Dict
 
+import PyPDF2
+
 from packaging.version import Version
 
 from pygpt_net.item.attachment import AttachmentItem
@@ -511,6 +513,20 @@ class Attachments:
                 path=abs_path,
                 auto_save=False,
             )
+            txt_path = pdf_dir / (entry.stem + ".txt")
+            if not txt_path.exists():
+                try:
+                    with open(abs_path, "rb") as f:
+                        reader = PyPDF2.PdfReader(f)
+                        text = ""
+                        for page in reader.pages:
+                            extracted = page.extract_text()
+                            if extracted:
+                                text += extracted + "\n"
+                    with open(txt_path, "w", encoding="utf-8") as out:
+                        out.write(text)
+                except Exception as e:
+                    print(f"PDF preload error: {e}")
             changed = True
 
         if changed:
