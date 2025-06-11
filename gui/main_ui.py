@@ -22,6 +22,7 @@ except Exception:  # pragma: no cover - can't import GUI libs
 
 from monkey_head.license_gui import show_license_gui
 from monkey_head.scripts.preload_data import preload_all
+from monkey_head.gui_scaling import apply_scaling
 
 
 class MainUI:
@@ -30,6 +31,7 @@ class MainUI:
             raise RuntimeError("tkinter is not available")
 
         self.root = root
+        apply_scaling(self.root)
         self.root.title("Program Manager")
         self.setup_paths()
         self.create_menu()

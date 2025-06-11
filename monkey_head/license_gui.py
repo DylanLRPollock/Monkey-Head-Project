@@ -17,6 +17,7 @@ except Exception:  # pragma: no cover - can't import GUI libs
     scrolledtext = None
 
 from .config_manager import ConfigManager
+from .gui_scaling import apply_scaling
 
 
 def accept_license(config_path: str | Path) -> None:
@@ -35,6 +36,7 @@ def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -
         return
 
     root = tk.Tk()
+    apply_scaling(root)
     root.title("License Agreement")
 
     text = scrolledtext.ScrolledText(root, width=80, height=20, wrap=tk.WORD)
