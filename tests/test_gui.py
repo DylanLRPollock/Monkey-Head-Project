@@ -23,3 +23,20 @@ def test_show_data_summary_displays_info():
          patch('gui.main_ui.messagebox.showinfo') as info:
         MainUI.show_data_summary(ui)
         info.assert_called_once()
+
+
+def test_choose_screen_mode_env(monkeypatch):
+    ui = MainUI.__new__(MainUI)
+    monkeypatch.setenv("SCREEN_MODE", "1080p")
+    with patch('gui.main_ui.messagebox.askquestion') as ask:
+        mode = MainUI.choose_screen_mode(ui)
+        ask.assert_not_called()
+        assert mode == "1080p"
+
+
+def test_choose_screen_mode_prompt():
+    ui = MainUI.__new__(MainUI)
+    with patch.dict('os.environ', {}, clear=True), \
+         patch('gui.main_ui.messagebox.askquestion', return_value='yes'):
+        mode = MainUI.choose_screen_mode(ui)
+        assert mode == "4k"
