@@ -501,9 +501,11 @@ class Attachments:
         }
 
         changed = False
+        pdf_files = []
         for entry in sorted(pdf_dir.iterdir()):
             if entry.suffix.lower() != ".pdf":
                 continue
+            pdf_files.append(entry.name)
             abs_path = str(entry.resolve())
             if abs_path in existing:
                 continue
@@ -531,3 +533,14 @@ class Attachments:
 
         if changed:
             self.save()
+
+        if pdf_files:
+            msg = "Available PDF files: " + ", ".join(pdf_files)
+            try:
+                if self.window and hasattr(self.window, "core") \
+                        and hasattr(self.window.core, "debug"):
+                    self.window.core.debug.info(msg)
+                else:
+                    print(msg)
+            except Exception:
+                pass
