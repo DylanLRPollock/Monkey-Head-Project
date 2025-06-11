@@ -9,6 +9,7 @@
 try:  # pragma: no cover - optional dependency
     import tkinter as tk
     from tkinter import messagebox
+    from .gui_scaling import apply_scaling
 except Exception:  # pragma: no cover - can't import GUI libs
     tk = None
     messagebox = None
@@ -22,6 +23,7 @@ def create_tkinter_window():
         raise RuntimeError("tkinter is not available")
 
     root = tk.Tk()
+    apply_scaling(root)
     root.title("Tkinter Window")
 
     def show_message():
