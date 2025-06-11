@@ -94,15 +94,11 @@ def get_app_meta() -> dict:
         'pypi': get_init_value("__pypi__"),
         'snap': get_init_value("__snap__"),
         'ms_store': get_init_value("__ms_store__"),
-        'donate': get_init_value("__donate__"),
         'discord': get_init_value("__discord__"),
         'version': get_init_value("__version__"),
         'build': get_init_value("__build__"),
         'author': get_init_value("__author__"),
         'email': get_init_value("__email__"),
-        'donate_coffee': get_init_value("__donate_coffee__"),
-        'donate_paypal': get_init_value("__donate_paypal__"),
-        'donate_github': get_init_value("__donate_github__"),
         'report': get_init_value("__report__"),
     }
 
