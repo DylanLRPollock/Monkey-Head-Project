@@ -6,6 +6,7 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
+import os
 import platform
 import subprocess
 import threading
@@ -31,12 +32,26 @@ class MainUI:
             raise RuntimeError("tkinter is not available")
 
         self.root = root
-        apply_scaling(self.root)
+        mode = self.choose_screen_mode()
+        apply_scaling(self.root, mode)
         self.root.title("Program Manager")
         self.setup_paths()
         self.create_menu()
         self.create_widgets()
         self.check_license()
+
+    def choose_screen_mode(self) -> str:
+        """Ask the user which display mode to use or read from ``SCREEN_MODE``."""
+        env_mode = os.environ.get("SCREEN_MODE")
+        if env_mode in {"1080p", "4k"}:
+            return env_mode
+        if messagebox is not None:
+            resp = messagebox.askquestion(
+                "Display Mode",
+                "Use 4K display scaling?",
+            )
+            return "4k" if resp == "yes" else "1080p"
+        return "1080p"
 
     def setup_paths(self):
         """Determine installer paths based on the current platform."""

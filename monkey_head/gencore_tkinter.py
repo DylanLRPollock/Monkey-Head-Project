@@ -15,7 +15,7 @@ except Exception:  # pragma: no cover - can't import GUI libs
     messagebox = None
 
 
-def create_tkinter_window():
+def create_tkinter_window(mode: str = "4k"):
     """
     Creates a simple Tkinter window with a button that shows a message box.
     """
@@ -23,7 +23,7 @@ def create_tkinter_window():
         raise RuntimeError("tkinter is not available")
 
     root = tk.Tk()
-    apply_scaling(root)
+    apply_scaling(root, mode)
     root.title("Tkinter Window")
 
     def show_message():

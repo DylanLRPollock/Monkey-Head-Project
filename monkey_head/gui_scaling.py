@@ -8,20 +8,27 @@ except Exception:  # pragma: no cover - can't import GUI libs
     tkfont = None
 
 
-def apply_scaling(root: "tk.Tk", factor: float = 2.0, font_size: int = 14) -> None:
-    """Apply global scaling and increase default font sizes.
+def apply_scaling(root: "tk.Tk", mode: str = "4k") -> None:
+    """Apply global scaling based on the selected display mode.
 
     Parameters
     ----------
     root: tk.Tk
         The root window instance.
-    factor: float, optional
-        Scaling factor for HiDPI displays. Default is ``2.0``.
-    font_size: int, optional
-        Base font size to apply. Default is ``14``.
+    mode: str, optional
+        ``"1080p"`` or ``"4k"`` to adjust scaling appropriately. Defaults to
+        ``"4k"``.
     """
     if tk is None or tkfont is None:
         return
+
+    mode = (mode or "4k").lower()
+    if mode == "1080p":
+        factor = 1.0
+        font_size = 10
+    else:
+        factor = 2.0
+        font_size = 14
 
     try:
         root.tk.call("tk", "scaling", factor)
