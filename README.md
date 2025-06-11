@@ -148,6 +148,19 @@ The GUI now checks whether you've accepted the license on startup and
 offers a **Tools** menu. From there you can reopen the license dialog or
 view a summary of bundled prompts and memory files.
 
+### Customizing prompts and personalities
+
+Prompt templates live in `prompts/pygpt_prompts.csv`. You can add new
+rows to extend the list of actions the AI can assume. Each row contains
+the name of the prompt, the instruction text, and a flag used by the
+project. After updating the CSV file, copy the additions into
+`monkey_head/pygpt_net/data/prompts.csv` so they are included at runtime.
+
+Predefined character presets are stored under
+`monkey_head/pygpt_net/data/config/presets`. These JSON files define the
+AI and user names along with a short starter prompt. Adding your own
+file here makes the new personality available in the interface.
+
 ### CLI Helper Scripts
 
 Two convenience wrappers simplify common tasks on Unix systems. `run.sh`
