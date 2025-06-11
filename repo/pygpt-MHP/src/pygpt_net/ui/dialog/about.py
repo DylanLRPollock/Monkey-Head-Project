@@ -123,12 +123,7 @@ class About:
         self.window.ui.nodes['dialog.about.btn.github'].clicked.connect(lambda: self.window.controller.dialogs.info.goto_github())
         self.window.ui.nodes['dialog.about.btn.github'].setCursor(Qt.PointingHandCursor)
 
-        self.window.ui.nodes['dialog.about.btn.support'] = QPushButton(QIcon(":/icons/favorite.svg"), trans('about.btn.support'))
-        self.window.ui.nodes['dialog.about.btn.support'].clicked.connect(lambda: self.window.controller.dialogs.info.goto_donate())
-        self.window.ui.nodes['dialog.about.btn.support'].setCursor(Qt.PointingHandCursor)
-
         buttons_layout = QHBoxLayout()
-        buttons_layout.addWidget(self.window.ui.nodes['dialog.about.btn.support'])
         buttons_layout.addWidget(self.window.ui.nodes['dialog.about.btn.website'])
         buttons_layout.addWidget(self.window.ui.nodes['dialog.about.btn.github'])
 
