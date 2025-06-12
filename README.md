@@ -13,6 +13,40 @@ Creating a universally accessible platform that democratizes cutting-edge roboti
 
 For a quick summary, see [New-To-AI.md](docs/New-To-AI.md).
 
+## 📑 Table of Contents
+
+- [Advanced Configuration](#-advanced-configuration)
+- [Acknowledgements](#-acknowledgements)
+- [Additional Resources](#-additional-resources)
+- [Community and Support](#-community-and-support)
+- [Contributing](#-contributing)
+- [Core Components](#-core-components)
+- [Development Setup](#development-setup)
+- [Directory Structure](#directory-structure)
+- [Docker and Kubernetes Utilities](#docker-and-kubernetes-utilities)
+- [FAQ](#-frequently-asked-questions-faq)
+- [Final Thoughts](#-final-thoughts)
+- [Future Directions](#-future-directions)
+- [GUI Interface (Default)](#gui-interface-default)
+- [Installation and Usage](#-installation-and-usage)
+- [Key Features](#-key-features)
+- [License](#-license)
+- [Linux (Debian 13) Installation](#linux-debian-13-installation)
+- [macOS Installation](#macos-installation)
+- [Modular Architecture](#-modular-architecture)
+- [Project History and Phases](#-project-history-and-phases)
+- [Project Overview](#-project-overview)
+- [Recent Updates](#-recent-updates)
+- [Related Projects and Inspirations](#-related-projects-and-inspirations)
+- [Running Tests](#running-tests)
+- [Software Requirements](#software-requirements)
+- [Submodule](#submodule)
+- [Test Hardware](#-test-hardware)
+- [Troubleshooting](#-troubleshooting)
+- [Uninstallation and Cleanup](#uninstallation-and-cleanup)
+- [Utilities](#utilities)
+- [Windows 10 & 11 Installation](#windows-10--11-installation)
+
 ---
 
 ## 🛠️ Core Components
@@ -51,11 +85,11 @@ A multi-tiered ethical governance system ensuring responsible AI use:
 ## 🌐 Key Features
 
 * **Adaptive User Interfaces:** Supports multiple input methods including voice, gesture, and AR/VR.
-* **PyGPT-net Integration:** Advanced AI-driven interactions enabling intuitive communication, analysis, and adaptive learning.
 * **Broad Compatibility:** Seamlessly integrates with Windows, Linux, macOS, and legacy computing environments.
 * **Eco-Smart Design:** Prioritizes energy efficiency, modular upgrades, and sustainable technology solutions.
 * **Nature-Inspired Engineering:** Leverages lessons from biological systems (carpenter ants, fungal networks, honeycombs) for optimized structural design and resilience.
 * **Philosophical Grounding:** Guided by ethical considerations inspired by literature (Ozymandias), philosophical scenarios (McCoy’s transporter dilemma), and reflective practices.
+* **PyGPT-net Integration:** Advanced AI-driven interactions enabling intuitive communication, analysis, and adaptive learning.
 
 ---
 
@@ -81,10 +115,10 @@ Huey exposes clear integration points for sensors, actuators, and experimental m
 
 Ensure the following tools are installed before running the project:
 
-- **Python 3.12+** and `pip`
-- **Git**
 - **Docker** and **Docker Compose**
+- **Git**
 - **Kubernetes** (`kubectl` CLI)
+- **Python 3.12+** and `pip`
 
 ## 🖥️ Installation and Usage
 
@@ -287,9 +321,9 @@ When adding new modules, format the code with `black` and run
 
 ### Recent Updates
 
-- Preset placeholders now show the preset name instead of the file ID for better readability.
 - Added `--version` flag to `run.py` for quick version checks.
 - Implemented centralized logging and video screenshot capabilities for multimodal workflows.
+- Preset placeholders now show the preset name instead of the file ID for better readability.
 
 ### Utilities
 
@@ -305,17 +339,17 @@ python monkey_head/utils/list_by_mtime.py path/to/dir
 ## 🔬 Test Hardware
 
 * **Development:** MacBook Pro 2019, Lenovo Legion Go.
-* **Legacy Support:** MacBook Pro 2012, Commodore 64/128, VIC-20.
 * **Edge Computing:** Raspberry Pi 3 B+.
+* **Legacy Support:** MacBook Pro 2012, Commodore 64/128, VIC-20.
 * **Multimedia & Gaming:** PlayStation 2 & 3.
 
 ---
 
 ## 🌱 Future Directions
 
-* Expansion into environmental monitoring and interdisciplinary scientific collaborations.
 * Advanced autonomous energy solutions and sustainable system management.
 * Continued ethical governance refinements, ensuring transparency and accountability.
+* Expansion into environmental monitoring and interdisciplinary scientific collaborations.
 
 ---
 
