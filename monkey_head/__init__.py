@@ -25,6 +25,7 @@ from .media_conversion import (
     convert_file,
 )
 from .chat_learning import train_from_chat_and_pdfs
+from .tensorflow_feed import train_from_project_sources
 
 # Initialize project-wide logging as soon as the package is imported
 configure_logging()
@@ -40,4 +41,5 @@ __all__ = [
     "convert_video",
     "convert_file",
     "train_from_chat_and_pdfs",
+    "train_from_project_sources",
 ]
