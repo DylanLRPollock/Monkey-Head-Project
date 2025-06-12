@@ -217,6 +217,9 @@ the test suite with `pytest -vv`. Both scripts report an error if the
 `update_memory_pdfs.py` regenerates text versions of the bundled PDF files
 under `memory/PDF`. Run this script whenever you add or edit PDF documents
 to keep the preloaded dataset up to date.
+`set_api_keys.py` walks you through entering API credentials. Choose
+which services to connect (OpenAI, Google, or DeepSeek) or select the
+auto option to configure all of them at once.
 
 The `huey` package also provides a small CLI. Use `huey convert` to
 convert image files between formats at maximum quality. Supply an input
