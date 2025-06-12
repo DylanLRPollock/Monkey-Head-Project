@@ -21,7 +21,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from monkey_head.core.system_checks import check_os_support
+from monkey_head.core.system_checks import check_os_support, check_python_version
 
 sys.path.insert(0, str((Path(__file__).parent / "src").resolve()))
 
@@ -59,6 +59,8 @@ def main() -> None:
 
     # Warn if running on an unsupported operating system
     check_os_support()
+    # Warn if running an experimental Python version
+    check_python_version()
 
     if args.version:
         from pygpt_net import __version__
