@@ -24,6 +24,7 @@ from .media_conversion import (
     convert_video,
     convert_file,
 )
+from .chat_learning import train_from_chat_and_pdfs
 
 # Initialize project-wide logging as soon as the package is imported
 configure_logging()
@@ -38,4 +39,5 @@ __all__ = [
     "convert_audio",
     "convert_video",
     "convert_file",
+    "train_from_chat_and_pdfs",
 ]
