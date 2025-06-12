@@ -234,6 +234,14 @@ class Settings:
         self.window.ui.config['config']['api_key'].setFocus()
         self.window.ui.dialogs.close('info.start')
 
+    def save_api_key_dialog(self, key: str):
+        """Save API key provided in start dialog"""
+        if key:
+            self.window.core.config.set('api_key', key)
+            self.window.core.config.save()
+            self.window.update_status(trans('status.saved'))
+        self.window.ui.dialogs.close('info.start')
+
     def reload(self):
         """Reload settings"""
         self.setup()
