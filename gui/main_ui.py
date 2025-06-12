@@ -32,8 +32,8 @@ class MainUI:
             raise RuntimeError("tkinter is not available")
 
         self.root = root
-        mode = self.choose_screen_mode()
-        apply_scaling(self.root, mode)
+        self.mode = self.choose_screen_mode()
+        apply_scaling(self.root, self.mode)
         self.root.title("Program Manager")
         self.setup_paths()
         self.create_menu()
@@ -93,6 +93,20 @@ class MainUI:
         menu_bar.add_cascade(label="Tools", menu=tools_menu)
 
     def create_widgets(self):
+        logo_path = (
+            Path(__file__).resolve().parents[1] / "memory" / "PNG" / "LOGO.png"
+        )
+        if logo_path.exists():
+            try:
+                logo = tk.PhotoImage(file=str(logo_path))
+                if self.mode == "1080p":
+                    logo = logo.subsample(4, 4)
+                else:
+                    logo = logo.subsample(2, 2)
+                self.logo_image = logo
+                tk.Label(self.root, image=self.logo_image).pack(pady=10)
+            except Exception:
+                pass
         self.log_text = scrolledtext.ScrolledText(self.root, width=80, height=20)
         self.log_text.pack(pady=10)
 
