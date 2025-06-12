@@ -8,7 +8,9 @@ def test_configure_logging_creates_log(tmp_path):
     cfg = tmp_path / "cfg.ini"
     log_file = tmp_path / "app.log"
     cfg.write_text(
-        "[logging]\nlog_level = INFO\nlog_file = {}\nlog_max_bytes = 1024\nlog_backup_count = 1\n".format(log_file)
+        "[logging]\nlog_level = INFO\nlog_file = {}\nlog_max_bytes = 1024\nlog_backup_count = 1\n".format(
+            log_file
+        )
     )
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):

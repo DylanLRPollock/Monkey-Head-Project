@@ -15,77 +15,78 @@ from monkey_head.error_handler import ErrorHandler
 
 def test_ai_processor():
     proc = AIProcessor()
-    assert proc.process_data('abc') == 'ABC'
-    assert proc.analyze_data('123')['length'] == 3
+    assert proc.process_data("abc") == "ABC"
+    assert proc.analyze_data("123")["length"] == 3
 
 
 def test_process_and_check_core_data():
-    data = {'x': 1, 'y': 2}
+    data = {"x": 1, "y": 2}
     processed = process_core_data(data)
     assert check_core_data(processed)
-    assert processed['input_length'] == 2
+    assert processed["input_length"] == 2
 
 
 def test_manage_temp_files_delete(tmp_path):
-    temp_dir = tmp_path / 'tmp'
+    temp_dir = tmp_path / "tmp"
     temp_dir.mkdir()
-    (temp_dir / 'a.txt').write_text('data')
-    manage_temp_files(str(temp_dir), 'delete')
+    (temp_dir / "a.txt").write_text("data")
+    manage_temp_files(str(temp_dir), "delete")
     assert temp_dir.exists() and not any(temp_dir.iterdir())
 
 
 def test_manage_temp_files_archive(tmp_path):
-    temp_dir = tmp_path / 'tmp'
+    temp_dir = tmp_path / "tmp"
     temp_dir.mkdir()
-    (temp_dir / 'a.txt').write_text('data')
-    manage_temp_files(str(temp_dir), 'archive')
-    archive = tmp_path / 'tmp_archive'
+    (temp_dir / "a.txt").write_text("data")
+    manage_temp_files(str(temp_dir), "archive")
+    archive = tmp_path / "tmp_archive"
     assert archive.is_dir()
     assert temp_dir.is_dir()
 
 
 def test_check_linux_service_active():
     class R:
-        stdout = b'active\n'
-    with patch('subprocess.run', return_value=R()):
-        assert check_linux_service('svc') == 'active'
+        stdout = b"active\n"
+
+    with patch("subprocess.run", return_value=R()):
+        assert check_linux_service("svc") == "active"
 
 
 def test_remove_files(tmp_path):
-    f1 = tmp_path / 'a.txt'
-    f2 = tmp_path / 'b.log'
-    f1.write_text('x')
-    f2.write_text('y')
-    remove_files(str(tmp_path), '.txt')
+    f1 = tmp_path / "a.txt"
+    f2 = tmp_path / "b.log"
+    f1.write_text("x")
+    f2.write_text("y")
+    remove_files(str(tmp_path), ".txt")
     assert not f1.exists() and f2.exists()
 
 
 def test_split_chapters(tmp_path):
-    text = 'intro\nCHAPTERfirst\nCHAPTERsecond'
-    infile = tmp_path / 'book.txt'
+    text = "intro\nCHAPTERfirst\nCHAPTERsecond"
+    infile = tmp_path / "book.txt"
     infile.write_text(text)
-    outdir = tmp_path / 'chapters'
+    outdir = tmp_path / "chapters"
     split_chapters(str(infile), str(outdir))
     files = list(outdir.iterdir())
     assert len(files) == 3
 
 
 def test_file_manager(tmp_path):
-    src = tmp_path / 'src.txt'
-    dest = tmp_path / 'dest.txt'
+    src = tmp_path / "src.txt"
+    dest = tmp_path / "dest.txt"
     fm = FileManager()
-    fm.write_file(str(src), 'hi')
-    assert fm.read_file(str(src)) == 'hi'
+    fm.write_file(str(src), "hi")
+    assert fm.read_file(str(src)) == "hi"
     fm.move_file(str(src), str(dest))
-    assert dest.read_text() == 'hi'
+    assert dest.read_text() == "hi"
 
 
 def test_error_handler(tmp_path):
-    log = tmp_path / 'log.txt'
+    log = tmp_path / "log.txt"
     handler = ErrorHandler(str(log))
-    handler.log_info('info')
-    handler.log_error('error')
-    handler.handle_exception(Exception('boom'))
+    handler.log_info("info")
+    handler.log_error("error")
+    handler.handle_exception(Exception("boom"))
 
 
 def test_create_tkinter_window():
@@ -104,8 +105,9 @@ def test_create_tkinter_window():
         def pack(self, pady=0):
 
             self.command()
-    with patch('tkinter.Tk', return_value=DummyRoot()), \
-         patch('tkinter.Button', DummyButton), \
-         patch('tkinter.messagebox.showinfo') as mbox:
+
+    with patch("tkinter.Tk", return_value=DummyRoot()), patch(
+        "tkinter.Button", DummyButton
+    ), patch("tkinter.messagebox.showinfo") as mbox:
         create_tkinter_window()
         mbox.assert_called_once()

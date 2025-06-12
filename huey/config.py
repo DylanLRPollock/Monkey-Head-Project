@@ -8,6 +8,7 @@
 # ==================================================
 # huey/config.py
 
+
 def load_config(config_file: str = "config.yaml"):
     """Load configuration settings from a YAML file."""
     try:
