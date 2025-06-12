@@ -69,29 +69,29 @@ class Legacy:
     def reload(self):
         """Reload agent toolbox options"""
         # auto-stop checkbox
-        if self.window.core.config.get('agent.auto_stop'):
-            self.window.ui.config['global']['agent.auto_stop'].setChecked(True)
+        if self.window.core.config.get("agent.auto_stop"):
+            self.window.ui.config["global"]["agent.auto_stop"].setChecked(True)
         else:
-            self.window.ui.config['global']['agent.auto_stop'].setChecked(False)
+            self.window.ui.config["global"]["agent.auto_stop"].setChecked(False)
 
         # continuous mode checkbox
-        if self.window.core.config.get('agent.continue.always'):
-            self.window.ui.config['global']['agent.continue'].setChecked(True)
+        if self.window.core.config.get("agent.continue.always"):
+            self.window.ui.config["global"]["agent.continue"].setChecked(True)
         else:
-            self.window.ui.config['global']['agent.continue'].setChecked(False)
+            self.window.ui.config["global"]["agent.continue"].setChecked(False)
 
         # iterations slider
         self.window.controller.config.apply_value(
             parent_id="global",
             key="agent.iterations",
             option=self.options["agent.iterations"],
-            value=self.window.core.config.get('agent.iterations'),
+            value=self.window.core.config.get("agent.iterations"),
         )
 
     def update(self):
         """Update agent status"""
         iterations = "-"
-        mode = self.window.core.config.get('mode')
+        mode = self.window.core.config.get("mode")
 
         # get iterations from plugin or from agent mode
         if mode in [
@@ -101,14 +101,16 @@ class Legacy:
             iterations = int(self.window.core.config.get("agent.iterations"))
         elif self.is_inline():
             if self.window.controller.plugins.is_enabled("agent"):
-                iterations = int(self.window.core.plugins.get_option("agent", "iterations"))
+                iterations = int(
+                    self.window.core.plugins.get_option("agent", "iterations")
+                )
         if iterations == 0:
             iterations_str = "∞"  # infinity loop
         else:
             iterations_str = str(iterations)
 
         status = str(self.iteration) + " / " + iterations_str
-        self.window.ui.nodes['status.agent'].setText(status)
+        self.window.ui.nodes["status.agent"].setText(status)
         self.window.controller.agent.common.toggle_status()
 
     def get_functions(self) -> List[Dict[str, Any]]:
@@ -129,18 +131,18 @@ class Legacy:
                         "type": "str",
                         "enum": {
                             "status": ["finished", "pause", "failed", "wait"],
-                        }
+                        },
                     }
-                ]
+                ],
             }
         ]
         return cmds
 
     def on_system_prompt(
-            self,
-            prompt: str,
-            append_prompt: Optional[str] = "",
-            auto_stop: bool = True,
+        self,
+        prompt: str,
+        append_prompt: Optional[str] = "",
+        auto_stop: bool = True,
     ) -> str:
         """
         Event: On prepare system prompt
@@ -153,7 +155,9 @@ class Legacy:
         stop_cmd = ""
         if auto_stop:
             if not self.window.core.command.is_native_enabled():
-                stop_cmd = "\n\n" + self.window.core.prompt.get("agent.goal")  # use ### commands
+                stop_cmd = "\n\n" + self.window.core.prompt.get(
+                    "agent.goal"
+                )  # use ### commands
             else:
                 stop_cmd = "\n\n" + self.prompt_goal_native  # use API native functions
         if append_prompt is not None and append_prompt.strip() != "":
@@ -188,9 +192,9 @@ class Legacy:
         self.window.controller.agent.legacy.update()  # update status
 
     def on_ctx_end(
-            self,
-            ctx: CtxItem,
-            iterations: int = 0,
+        self,
+        ctx: CtxItem,
+        iterations: int = 0,
     ):
         """
         Event: On context end
@@ -233,10 +237,13 @@ class Legacy:
                     context = BridgeContext()
                     context.ctx = ctx
                     context.reply_context = reply
-                    event = KernelEvent(KernelEvent.AGENT_CONTINUE, {
-                        'context': context,
-                        'extra': {},
-                    })
+                    event = KernelEvent(
+                        KernelEvent.AGENT_CONTINUE,
+                        {
+                            "context": context,
+                            "extra": {},
+                        },
+                    )
                     self.window.dispatch(event)
 
         # internal call will not trigger async mode and will hide the message from previous iteration
@@ -249,9 +256,9 @@ class Legacy:
                 )
 
     def on_ctx_before(
-            self,
-            ctx: CtxItem,
-            reverse_roles: bool = False,
+        self,
+        ctx: CtxItem,
+        reverse_roles: bool = False,
     ):
         """
         Event: Before ctx
@@ -265,9 +272,7 @@ class Legacy:
             ctx.first = True
 
         # reverse roles in ctx
-        if self.iteration > 0 \
-                and self.iteration % 2 != 0 \
-                and reverse_roles:
+        if self.iteration > 0 and self.iteration % 2 != 0 and reverse_roles:
             tmp_input_name = ctx.input_name
             tmp_output_name = ctx.output_name
             ctx.input_name = tmp_output_name
@@ -279,16 +284,20 @@ class Legacy:
 
         :param ctx: CtxItem
         """
-        self.prev_output = self.window.core.prompt.get("agent.continue")  # continue if needed...
-        if self.window.core.config.get('agent.continue.always'):
-            self.prev_output = self.window.core.prompt.get("agent.continue.always")  # continue reasoning...
+        self.prev_output = self.window.core.prompt.get(
+            "agent.continue"
+        )  # continue if needed...
+        if self.window.core.config.get("agent.continue.always"):
+            self.prev_output = self.window.core.prompt.get(
+                "agent.continue.always"
+            )  # continue reasoning...
         if ctx.extra_ctx is not None and ctx.extra_ctx != "":
             self.prev_output = ctx.extra_ctx
 
     def on_cmd(
-            self,
-            ctx: CtxItem,
-            cmds: List[Dict[str, Any]],
+        self,
+        ctx: CtxItem,
+        cmds: List[Dict[str, Any]],
     ):
         """
         Event: On commands
@@ -296,13 +305,13 @@ class Legacy:
         :param ctx: CtxItem
         :param cmds: commands dict
         """
-        if self.window.core.config.get('agent.auto_stop'):
+        if self.window.core.config.get("agent.auto_stop"):
             self.cmd(ctx, cmds)
 
     def cmd(
-            self,
-            ctx: CtxItem,
-            cmds: List[Dict[str, Any]],
+        self,
+        ctx: CtxItem,
+        cmds: List[Dict[str, Any]],
     ):
         """
         Event: On command
@@ -325,7 +334,7 @@ class Legacy:
                 if item["cmd"] == "goal_update":
                     if item["params"]["status"] == "finished":
                         self.on_stop(auto=True)
-                        self.window.update_status(trans('status.finished'))  # show info
+                        self.window.update_status(trans("status.finished"))  # show info
                         self.finished = True
                         if self.window.core.config.get("agent.goal.notify"):
                             self.window.ui.tray.show_msg(
@@ -334,7 +343,7 @@ class Legacy:
                             )
                     elif item["params"]["status"] in self.pause_status:
                         self.on_stop(auto=True)
-                        self.window.update_status(trans('status.finished'))  # show info
+                        self.window.update_status(trans("status.finished"))  # show info
                         self.finished = True
             except Exception as e:
                 self.window.core.debug.error(e)
@@ -354,7 +363,7 @@ class Legacy:
 
         :return: True if enabled
         """
-        return self.window.core.config.get('mode') == MODE_AGENT or self.is_inline()
+        return self.window.core.config.get("mode") == MODE_AGENT or self.is_inline()
 
     def add_run(self):
         """Increment agent iteration"""
@@ -392,7 +401,9 @@ class Legacy:
         """
         if self.window.core.config.get(key) == value:
             return
-        if key == 'agent.iterations':
-            self.window.core.config.set(key, int(value))  # cast to int, if from text input
+        if key == "agent.iterations":
+            self.window.core.config.set(
+                key, int(value)
+            )  # cast to int, if from text input
             self.window.core.config.save()
             self.update()

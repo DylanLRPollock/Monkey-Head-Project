@@ -62,4 +62,3 @@ if __name__ == "__main__":
         convert_png_to_jpeg(args.png_file, args.output_file, args.quality)
     except Exception as e:
         print(f"Error: {e}")
-

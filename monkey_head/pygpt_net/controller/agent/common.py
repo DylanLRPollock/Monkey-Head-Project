@@ -26,12 +26,12 @@ class Common:
 
     def enable_auto_stop(self):
         """Enable auto stop (Legacy)"""
-        self.window.core.config.set('agent.auto_stop', True)
+        self.window.core.config.set("agent.auto_stop", True)
         self.window.core.config.save()
 
     def disable_auto_stop(self):
         """Disable auto stop (Legacy)"""
-        self.window.core.config.set('agent.auto_stop', False)
+        self.window.core.config.set("agent.auto_stop", False)
         self.window.core.config.save()
 
     def toggle_auto_stop(self, state: bool):
@@ -47,12 +47,12 @@ class Common:
 
     def enable_continue(self):
         """Enable always continue (Legacy)"""
-        self.window.core.config.set('agent.continue.always', True)
+        self.window.core.config.set("agent.continue.always", True)
         self.window.core.config.save()
 
     def disable_continue(self):
         """Disable always continue (Legacy)"""
-        self.window.core.config.set('agent.continue.always', False)
+        self.window.core.config.set("agent.continue.always", False)
         self.window.core.config.save()
 
     def toggle_continue(self, state: bool):
@@ -74,9 +74,12 @@ class Common:
         :return: True if infinity loop is enabled
         """
         # legacy
-        if (mode == MODE_AGENT and self.window.core.config.get('agent.iterations') == 0) or \
-            (self.window.controller.plugins.is_enabled("agent")
-             and self.window.core.plugins.get_option("agent", "iterations") == 0):
+        if (
+            mode == MODE_AGENT and self.window.core.config.get("agent.iterations") == 0
+        ) or (
+            self.window.controller.plugins.is_enabled("agent")
+            and self.window.core.plugins.get_option("agent", "iterations") == 0
+        ):
             return True
         return False
 
@@ -90,15 +93,15 @@ class Common:
 
     def show_status(self):
         """Show agent status (Legacy)"""
-        self.window.ui.nodes['status.agent'].setVisible(True)
+        self.window.ui.nodes["status.agent"].setVisible(True)
 
     def hide_status(self):
         """Hide agent status (Legacy)"""
-        self.window.ui.nodes['status.agent'].setVisible(False)
+        self.window.ui.nodes["status.agent"].setVisible(False)
 
     def toggle_status(self):
         """Toggle agent status (Legacy)"""
-        mode = self.window.core.config.get('mode')
+        mode = self.window.core.config.get("mode")
         if mode in [MODE_AGENT] or self.window.controller.agent.legacy.is_inline():
             self.show_status()
         else:
@@ -106,12 +109,12 @@ class Common:
 
     def enable_loop(self):
         """Enable loop (Llama)"""
-        self.window.core.config.set('agent.llama.loop.enabled', True)
+        self.window.core.config.set("agent.llama.loop.enabled", True)
         self.window.core.config.save()
 
     def disable_loop(self):
         """Disable loop (Llama)"""
-        self.window.core.config.set('agent.llama.loop.enabled', False)
+        self.window.core.config.set("agent.llama.loop.enabled", False)
         self.window.core.config.save()
 
     def toggle_loop(self, state: bool):

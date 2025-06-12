@@ -24,21 +24,28 @@ def run_repair(repo_url: str = REPO_URL) -> int:
 
     with tempfile.TemporaryDirectory() as tmpdir:
         print(f"Cloning repository from {repo_url}...")
-        clone = subprocess.run([
-            "git",
-            "clone",
-            repo_url,
-            tmpdir,
-        ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        clone = subprocess.run(
+            [
+                "git",
+                "clone",
+                repo_url,
+                tmpdir,
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
         if clone.returncode != 0:
             sys.stderr.write(clone.stderr.decode())
             return clone.returncode
 
         print("Running installer from fresh clone...")
-        rc = subprocess.run([
-            sys.executable,
-            "installer.py",
-        ], cwd=tmpdir).returncode
+        rc = subprocess.run(
+            [
+                sys.executable,
+                "installer.py",
+            ],
+            cwd=tmpdir,
+        ).returncode
         if rc != 0:
             print(f"Installer failed with code {rc}")
         return rc

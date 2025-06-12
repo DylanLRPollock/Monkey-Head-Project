@@ -40,14 +40,11 @@ class OpenAIAssistantAgent(BaseAgent):
         thread_id = None
         assistant_id = None
         name = "Assistant"
-        if (ctx is not None
-                and ctx.output_name is not None
-                and ctx.output_name != ""):
+        if ctx is not None and ctx.output_name is not None and ctx.output_name != "":
             name = ctx.output_name
 
         # get assistant_id and thread_id from ctx
-        if (ctx is not None
-                and ctx.meta is not None):
+        if ctx is not None and ctx.meta is not None:
             if ctx.meta.assistant is not None:
                 assistant_id = ctx.meta.assistant
             if ctx.meta.thread is not None:
@@ -55,8 +52,7 @@ class OpenAIAssistantAgent(BaseAgent):
 
         # get assistant_id from preset
         preset_assistant_id = context.assistant_id
-        if (preset_assistant_id is not None
-                and preset_assistant_id != ""):
+        if preset_assistant_id is not None and preset_assistant_id != "":
             assistant_id = preset_assistant_id  # override assistant_id from ctx
 
         kwargs = {
@@ -72,6 +68,9 @@ class OpenAIAssistantAgent(BaseAgent):
         else:
             kwargs["name"] = name
             kwargs["instructions"] = system_prompt
-            kwargs["openai_tools"] = [{"type": "code_interpreter"}, {"type": "file_search"}]
+            kwargs["openai_tools"] = [
+                {"type": "code_interpreter"},
+                {"type": "file_search"},
+            ]
             kwargs["model"] = model.id
             return Agent.from_new(**kwargs)

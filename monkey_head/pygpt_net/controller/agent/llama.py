@@ -42,23 +42,27 @@ class Llama:
     def setup(self):
         """Setup agent controller"""
         # register hooks
-        self.window.ui.add_hook("update.global.agent.llama.loop.score", self.hook_update)
+        self.window.ui.add_hook(
+            "update.global.agent.llama.loop.score", self.hook_update
+        )
         self.reload()  # restore config
 
     def reload(self):
         """Reload agent toolbox options"""
         # loop enable checkbox
-        if self.window.core.config.get('agent.llama.loop.enabled'):
-            self.window.ui.config['global']['agent.llama.loop.enabled'].setChecked(True)
+        if self.window.core.config.get("agent.llama.loop.enabled"):
+            self.window.ui.config["global"]["agent.llama.loop.enabled"].setChecked(True)
         else:
-            self.window.ui.config['global']['agent.llama.loop.enabled'].setChecked(False)
+            self.window.ui.config["global"]["agent.llama.loop.enabled"].setChecked(
+                False
+            )
 
         # loop score slider
         self.window.controller.config.apply_value(
             parent_id="global",
             key="agent.llama.loop.score",
             option=self.options["agent.llama.loop.score"],
-            value=self.window.core.config.get('agent.llama.loop.score'),
+            value=self.window.core.config.get("agent.llama.loop.score"),
         )
 
     def reset_eval_step(self):
@@ -121,11 +125,14 @@ class Llama:
         context = BridgeContext()
         context.ctx = ctx
         context.history = self.window.core.ctx.all(meta_id=ctx.meta.id)
-        self.window.update_status(trans('status.evaluating'))  # show info
-        event = KernelEvent(KernelEvent.REQUEST_NEXT, {
-            'context': context,
-            'extra': {},
-        })
+        self.window.update_status(trans("status.evaluating"))  # show info
+        event = KernelEvent(
+            KernelEvent.REQUEST_NEXT,
+            {
+                "context": context,
+                "extra": {},
+            },
+        )
         self.window.dispatch(event)
 
     def on_stop(self):
@@ -152,7 +159,7 @@ class Llama:
         """
         if self.window.core.config.get(key) == value:
             return
-        if key == 'agent.llama.loop.score':
+        if key == "agent.llama.loop.score":
             self.window.core.config.set(key, int(value))
             self.window.core.config.save()
             self.update()

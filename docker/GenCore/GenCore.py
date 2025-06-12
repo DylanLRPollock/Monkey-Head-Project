@@ -38,13 +38,17 @@ def prepare_environment() -> None:
 def build_image(tag: str = "gencore-aios:latest") -> None:
     """Build the Docker image for GenCore."""
     logger.info("Building GenCore Docker image...")
-    build = subprocess.run([
-        "docker",
-        "build",
-        "-t",
-        tag,
-        ".",
-    ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    build = subprocess.run(
+        [
+            "docker",
+            "build",
+            "-t",
+            tag,
+            ".",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
     check_error(build, "Build GenCore Docker Image")
 
 
@@ -52,19 +56,27 @@ def deploy_gencore() -> None:
     """Deploy GenCore using Docker Compose and Kubernetes."""
     logger.info("Deploying GenCore environment...")
     os.chdir(os.path.expanduser("~/GenCore"))
-    deploy = subprocess.run([
-        "docker-compose",
-        "up",
-        "-d",
-    ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    deploy = subprocess.run(
+        [
+            "docker-compose",
+            "up",
+            "-d",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
     check_error(deploy, "GenCore Deployment")
 
-    kubectl = subprocess.run([
-        "kubectl",
-        "apply",
-        "-f",
-        "GenCore.yaml",
-    ], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    kubectl = subprocess.run(
+        [
+            "kubectl",
+            "apply",
+            "-f",
+            "GenCore.yaml",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
     check_error(kubectl, "Kubernetes Deployment")
 
 

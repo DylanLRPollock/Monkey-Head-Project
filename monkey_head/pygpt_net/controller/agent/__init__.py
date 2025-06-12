@@ -14,6 +14,7 @@ from .experts import Experts
 from .legacy import Legacy
 from .llama import Llama
 
+
 class Agent:
     def __init__(self, window=None):
         """

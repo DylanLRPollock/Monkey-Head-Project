@@ -31,10 +31,7 @@ class Tools:
         self.verbose = False
 
     def prepare(
-            self,
-            context: BridgeContext,
-            extra: Dict[str, Any],
-            verbose: bool = False
+        self, context: BridgeContext, extra: Dict[str, Any], verbose: bool = False
     ) -> List[BaseTool]:
         """
         Prepare tools for agent
@@ -54,7 +51,9 @@ class Tools:
         # add query engine tool if idx is provided
         idx = extra.get("agent_idx", None)
         if idx is not None and idx != "_":
-            llm, embed_model = self.window.core.idx.llm.get_service_context(model=context.model)
+            llm, embed_model = self.window.core.idx.llm.get_service_context(
+                model=context.model
+            )
             index = self.window.core.idx.storage.get(idx, llm, embed_model)  # get index
             if index is not None:
                 query_engine = index.as_query_engine(similarity_top_k=3)
@@ -72,11 +71,7 @@ class Tools:
                 tools.extend(query_engine_tools)
         return tools
 
-    def get_plugin_functions(
-            self,
-            ctx: CtxItem,
-            verbose: bool = False
-    ) -> list:
+    def get_plugin_functions(self, ctx: CtxItem, verbose: bool = False) -> list:
         """
         Parse plugin functions
 
@@ -88,12 +83,12 @@ class Tools:
         functions = self.window.core.command.get_functions()
         for func in functions:
             try:
-                name = func['name']
+                name = func["name"]
                 if name in self.cmd_blacklist:
                     continue  # skip blacklisted commands
 
-                description = func['desc']
-                schema = json.loads(func['params'])  # from JSON to dict
+                description = func["desc"]
+                schema = json.loads(func["params"])  # from JSON to dict
 
                 def make_func(name):
                     def func(**kwargs):
@@ -124,10 +119,7 @@ class Tools:
                 print(e)
         return tools
 
-    def export_sources(
-            self,
-            response: AgentChatResponse
-    ) -> List[dict]:
+    def export_sources(self, response: AgentChatResponse) -> List[dict]:
         """
         Export sources from response
 
@@ -155,6 +147,7 @@ class Tools:
         if self.verbose:
             print(msg)
             self.window.core.debug.add(msg)
+
 
 class PluginToolMetadata(ToolMetadata):
     def __init__(self, name: str, description: str):

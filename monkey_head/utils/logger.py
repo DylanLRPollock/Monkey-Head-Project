@@ -1,4 +1,5 @@
 """Centralized logging utilities for Monkey Head."""
+
 import logging
 from ..logging_setup import configure_logging
 

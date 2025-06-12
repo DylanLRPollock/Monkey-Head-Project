@@ -16,9 +16,7 @@ def configure_logging(config_path=None):
         log_level = parser.get("logging", "log_level", fallback="INFO").upper()
         log_file = parser.get("logging", "log_file", fallback="monkey_head.log")
         max_bytes = parser.get("logging", "log_max_bytes", fallback="10485760")
-        backup_count = parser.get(
-            "logging", "log_backup_count", fallback="5"
-        )
+        backup_count = parser.get("logging", "log_backup_count", fallback="5")
         max_bytes = int(str(max_bytes).split("#")[0].strip())
         backup_count = int(str(backup_count).split("#")[0].strip())
     else:

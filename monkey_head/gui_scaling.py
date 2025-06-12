@@ -42,4 +42,5 @@ def apply_scaling(root: "tk.Tk", mode: str = "4k") -> None:
         except Exception:
             continue
 
+
 __all__ = ["apply_scaling"]

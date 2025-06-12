@@ -22,15 +22,20 @@ def _make_wav(path: Path) -> None:
 
 
 def _make_video(path: Path) -> None:
-    subprocess.run([
-        "ffmpeg",
-        "-y",
-        "-f",
-        "lavfi",
-        "-i",
-        "color=c=red:s=16x16:d=1",
-        str(path),
-    ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-f",
+            "lavfi",
+            "-i",
+            "color=c=red:s=16x16:d=1",
+            str(path),
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+    )
 
 
 def test_convert_audio(tmp_path: Path) -> None:

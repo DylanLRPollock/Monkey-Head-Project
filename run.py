@@ -64,6 +64,7 @@ def main() -> None:
 
     if args.version:
         from pygpt_net import __version__
+
         print(f"pygpt_net version: {__version__}")
         return
 
@@ -80,4 +81,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
