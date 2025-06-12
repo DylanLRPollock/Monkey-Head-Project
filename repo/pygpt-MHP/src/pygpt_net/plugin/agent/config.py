@@ -109,7 +109,7 @@ class Config(BaseConfig):
         items = [
             {
                 "enabled": True,
-                "name": "Default",
+                "name": "Huey",
                 "prompt": prompt,
             },
             {

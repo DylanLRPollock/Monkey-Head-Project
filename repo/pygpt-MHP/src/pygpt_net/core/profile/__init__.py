@@ -85,7 +85,7 @@ class Profile:
         self.current = uuid
         self.profiles = {}
         self.profiles[uuid] = {
-            'name': 'Default',
+            'name': 'Huey',
             'workdir': path.replace(str(Path.home()), "%HOME%")
         }
         self.save()
