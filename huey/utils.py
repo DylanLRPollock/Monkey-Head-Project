@@ -9,6 +9,11 @@
 # huey/utils.py
 
 import logging
+from pathlib import Path
+from typing import Optional
+
+from PIL import Image
+
 from .exceptions import InvalidInputError
 
 
@@ -37,3 +42,35 @@ def validate_input(value, expected_type):
     if not isinstance(value, expected_type):
         raise InvalidInputError(f"Expected {expected_type}, got {type(value)} instead.")
     return True
+
+
+def convert_jpeg_to_png(jpeg_path: str, png_path: Optional[str] | None = None) -> str:
+    """Convert a JPEG image to PNG format.
+
+    Parameters
+    ----------
+    jpeg_path : str
+        Path to the input JPEG file.
+    png_path : str, optional
+        Desired output path for the PNG file. Defaults to the same base name
+        as ``jpeg_path`` with a ``.png`` extension.
+
+    Returns
+    -------
+    str
+        The path to the saved PNG image.
+    """
+
+    jpeg_file = Path(jpeg_path)
+    if not jpeg_file.is_file():
+        raise FileNotFoundError(f"{jpeg_path} does not exist")
+
+    if png_path is None:
+        png_file = jpeg_file.with_suffix(".png")
+    else:
+        png_file = Path(png_path)
+
+    with Image.open(jpeg_file) as img:
+        img.save(png_file, format="PNG")
+
+    return str(png_file)
