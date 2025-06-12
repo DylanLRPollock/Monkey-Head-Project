@@ -12,23 +12,31 @@ from .error_handler import ErrorHandler
 
 
 class FileManager:
-    def move_file(self, src, dst):
+    """Helper for basic file operations with unified error handling."""
+
+    def move_file(self, src: str, dst: str) -> None:
+        """Move a file from ``src`` to ``dst``."""
+
         try:
             shutil.move(src, dst)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover - simple wrapper
             ErrorHandler().handle_exception(e)
 
-    def read_file(self, file_path):
+    def read_file(self, file_path: str) -> str | None:
+        """Return the contents of ``file_path`` or ``None`` on error."""
+
         try:
             with open(file_path, "r") as file:
                 return file.read()
-        except Exception as e:
+        except Exception as e:  # pragma: no cover - simple wrapper
             ErrorHandler().handle_exception(e)
             return None
 
-    def write_file(self, file_path, content):
+    def write_file(self, file_path: str, content: str) -> None:
+        """Write ``content`` to ``file_path``."""
+
         try:
             with open(file_path, "w") as file:
                 file.write(content)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover - simple wrapper
             ErrorHandler().handle_exception(e)
