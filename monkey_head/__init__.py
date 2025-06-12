@@ -13,8 +13,15 @@ from .gencore import generate_core_data
 from . import subos_manager
 from .logging_setup import configure_logging
 from .utils.logger import get_logger
+from .convert_png_to_jpeg import convert_png_to_jpeg
 
 # Initialize project-wide logging as soon as the package is imported
 configure_logging()
 
-__all__ = ["format_text", "generate_core_data", "subos_manager", "get_logger"]
+__all__ = [
+    "format_text",
+    "generate_core_data",
+    "subos_manager",
+    "get_logger",
+    "convert_png_to_jpeg",
+]
