@@ -47,6 +47,7 @@ Full project documentation lives in [docs/README.md](docs/README.md).
 - [Uninstallation and Cleanup](#uninstallation-and-cleanup)
 - [Utilities](#utilities)
 - [Windows 10 & 11 Installation](#windows-10--11-installation)
+- [Heartfelt Thank You](#-heartfelt-thank-you)
 
 ---
 
@@ -506,6 +507,12 @@ research labs.
 A: Yes. The software is released under the GPL-3.0 license, which allows
 commercial and non-commercial use as long as the license terms are respected.
 
+**Q: Where can I find more documentation?**
+A: Extensive guides live in the `docs/` directory and in [docs/README.md](docs/README.md).
+
+**Q: How do I contribute or ask questions?**
+A: Join the GitHub discussions or open an issue to share feedback and contributions.
+
 ## 🛠️ Troubleshooting
 
 If the application fails to start, try the following steps:
@@ -524,3 +531,7 @@ The Monkey Head Project is built on top of numerous open-source efforts,
 from the ROS robotics framework to cutting-edge language models. We
 collaborate closely with the community to integrate the best tools
 available and appreciate everyone who helps advance ethical AI research.
+
+## ❤️ Heartfelt Thank You
+
+Thank you for taking the time to explore the Monkey Head Project. Your curiosity and support mean the world to us, and we hope this project inspires you to build amazing things.
