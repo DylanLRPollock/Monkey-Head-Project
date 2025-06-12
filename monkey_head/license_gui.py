@@ -38,8 +38,9 @@ def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -
     root = tk.Tk()
     apply_scaling(root)
     root.title("License Agreement")
+    root.minsize(800, 600)
 
-    text = scrolledtext.ScrolledText(root, width=80, height=20, wrap=tk.WORD)
+    text = scrolledtext.ScrolledText(root, width=100, height=25, wrap=tk.WORD)
     try:
         license_text = Path("docs/LICENSE").read_text(encoding="utf-8")
     except Exception:
