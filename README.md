@@ -259,6 +259,20 @@ invokes `setup/macOS/install.sh` to configure Homebrew and the Python
 environment. The batch script supports both Windows 10 and Windows 11.
 By default the repository is cloned to `%ProgramFiles%\Monkey-Head-Project`.
 
+### Headless Installation
+
+If no graphical environment is available you can run the license prompt
+from the command line using `license_cli.py`:
+
+```bash
+python monkey_head/license_cli.py
+```
+
+The script prints the license text and will keep asking for confirmation
+until you answer `yes` or `no`. Any errors are written to `app.log` and
+declining raises a `RuntimeError` without modifying the configuration
+file.
+
 ### Uninstallation and Cleanup
 
 Run the cross-platform uninstaller to remove the project and optional packages:
