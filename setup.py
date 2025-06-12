@@ -58,6 +58,8 @@ setup(
         "psutil==7.0.0",
         "platformdirs==4.3.8",
         "py-cpuinfo==9.0.0",
+        "pyttsx3==2.98",
+        "deepspeech==0.9.3",
         "PyQt6==6.9.1",  # Choose one: PyQt6 or PySide6
         "PySimpleGUI==5.0.8.3",
         "boto3==1.38.35",

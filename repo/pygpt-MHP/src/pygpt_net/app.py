@@ -104,6 +104,7 @@ from pygpt_net.provider.audio_output.openai_tts import OpenAITextToSpeech
 from pygpt_net.provider.audio_output.ms_azure_tts import MSAzureTextToSpeech
 from pygpt_net.provider.audio_output.google_tts import GoogleTextToSpeech
 from pygpt_net.provider.audio_output.eleven_labs import ElevenLabsTextToSpeech
+from pygpt_net.provider.audio_output.offline_tts import OfflineTextToSpeech
 
 # web search engine providers
 from pygpt_net.provider.web.google_custom_search import GoogleCustomSearch
@@ -248,6 +249,7 @@ def run(**kwargs):
     launcher.add_audio_output(MSAzureTextToSpeech())
     launcher.add_audio_output(GoogleTextToSpeech())
     launcher.add_audio_output(ElevenLabsTextToSpeech())
+    launcher.add_audio_output(OfflineTextToSpeech())
 
     # register custom audio providers
     providers = kwargs.get('audio_input', None)
