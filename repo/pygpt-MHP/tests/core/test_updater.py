@@ -156,9 +156,10 @@ def test_check(mock_window):
     """Test check"""
     mock_window.meta = {'version': '1.0.0', 'website': 'https://example.com'}
     fake_response_data = {
-        "version": "1.0.1",
-        "build": 101,
-        "changelog": "test",
+        "tag_name": "1.0.1",
+        "published_at": "2024-01-01",
+        "body": "test",
+        "html_url": "https://example.com/download",
     }
     fake_read = MagicMock()
     fake_read.return_value = json.dumps(fake_response_data).encode('utf-8')
