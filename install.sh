@@ -20,7 +20,12 @@ case "$(uname)" in
         ;;
 esac
 
-"$INSTALL_SCRIPT"
+cd "$SCRIPT_DIR" || exit 1
+if [ ! -f "$INSTALL_SCRIPT" ]; then
+    echo "Installation script not found: $INSTALL_SCRIPT" >&2
+    exit 1
+fi
+bash "$INSTALL_SCRIPT"
 echo ""
 echo "***********************************************"
 echo "  Thank you for supporting the Monkey Head Project!"
