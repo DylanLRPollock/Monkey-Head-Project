@@ -181,6 +181,12 @@ the test suite with `pytest -vv`. Both scripts report an error if the
 under `memory/PDF`. Run this script whenever you add or edit PDF documents
 to keep the preloaded dataset up to date.
 
+The `huey` package also provides a small CLI. Use `huey convert` to
+convert image files between formats at maximum quality. Supply an input
+file or directory with `--format` specifying the target type (e.g.
+`JPEG`, `PNG`). Converted files are saved alongside the originals or in a
+specified output directory.
+
 ### Docker and Kubernetes Utilities
 
 The `scripts/` directory contains helper scripts for container management:
