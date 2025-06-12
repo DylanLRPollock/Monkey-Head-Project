@@ -258,6 +258,7 @@ Docker Desktop, and other required tools on Windows. On macOS the installer
 invokes `setup/macOS/install.sh` to configure Homebrew and the Python
 environment. The batch script supports both Windows 10 and Windows 11.
 By default the repository is cloned to `%ProgramFiles%\Monkey-Head-Project`.
+For a lean Windows setup you can run `setup/Windows10/windows-remove-tool.bat` after installation. This optional script removes pre-installed apps, disables telemetry, and tunes settings for maximum speed.
 
 ### Headless Installation
 
@@ -348,6 +349,7 @@ Visit the [GitHub Repository](https://github.com/DylanLRPollock/Monkey-Head-Proj
 
 The `docs/` directory contains extended documentation on the project’s architecture, historical phases, and governance design. New contributors should start with [docs/README.md](docs/README.md) and [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed guidelines.
 For an introductory overview, see [docs/New-To-AI.md](docs/New-To-AI.md).
+For tips on removing unnecessary software and disabling services, see [docs/os-debloating.md](docs/os-debloating.md).
 
 ---
 
