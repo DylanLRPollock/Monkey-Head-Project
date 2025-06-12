@@ -24,13 +24,20 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def _should_copy_file(dst: str) -> bool:
-    """Return True if file should be copied from the source."""
+    """Return True if ``dst`` does not exist or contains a placeholder header."""
     if not os.path.exists(dst):
         return True
+
     try:
         with open(dst, "r", errors="ignore") as f:
-            first = f.readline().strip()
-        return first.startswith("Placeholder for")
+            for _ in range(10):
+                line = f.readline()
+                if not line:
+                    break
+                cleaned = line.lstrip("# ").strip()
+                if cleaned.startswith("Placeholder for"):
+                    return True
+        return False
     except Exception:
         return False
 
@@ -58,6 +65,7 @@ def mirror_tree(src_root: str, dst_root: str, depth: int | None = None) -> None:
         dst_path = os.path.join(dst_root, item)
         sync(src_path, dst_path, None if depth is None else depth - 1)
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Copy files from the pygpt-MHP submodule into the main project"
@@ -70,4 +78,3 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     mirror_tree(PYGPT_DIR, ROOT_DIR, depth=args.depth)
-
