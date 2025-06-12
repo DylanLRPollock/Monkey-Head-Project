@@ -56,16 +56,13 @@ class Experts:
         :return: True if experts are enabled
         """
         modes = [MODE_AGENT, MODE_EXPERT]
-        mode = self.window.core.config.get('mode')
+        mode = self.window.core.config.get("mode")
         if mode in modes or self.window.controller.plugins.is_type_enabled("expert"):
             return True
         return False
 
     def append_prompts(
-            self,
-            mode: str,
-            sys_prompt: str,
-            parent_id: Optional[str] = None
+        self, mode: str, sys_prompt: str, parent_id: Optional[str] = None
     ):
         """
         Append prompt to the window
@@ -82,9 +79,15 @@ class Experts:
                 sys_prompt = sys_prompt + "\n\n" + prev_prompt  # append previous prompt
 
         # expert or agent mode
-        if self.window.controller.agent.experts.enabled() and parent_id is None:  # master expert has special prompt
-            if self.window.controller.agent.legacy.enabled():  # if agent then leave agent prompt
-                sys_prompt += "\n\n" + self.window.core.experts.get_prompt()  # both, agent + experts
+        if (
+            self.window.controller.agent.experts.enabled() and parent_id is None
+        ):  # master expert has special prompt
+            if (
+                self.window.controller.agent.legacy.enabled()
+            ):  # if agent then leave agent prompt
+                sys_prompt += (
+                    "\n\n" + self.window.core.experts.get_prompt()
+                )  # both, agent + experts
             else:
                 sys_prompt = self.window.core.experts.get_prompt()
                 # mode = "chat"  # change mode to chat for expert
@@ -94,7 +97,7 @@ class Experts:
             sys_prompt = self.window.controller.agent.legacy.on_system_prompt(
                 sys_prompt,
                 append_prompt=None,  # sys prompt from preset is used here
-                auto_stop=self.window.core.config.get('agent.auto_stop'),
+                auto_stop=self.window.core.config.get("agent.auto_stop"),
             )
 
         return sys_prompt
@@ -105,7 +108,7 @@ class Experts:
 
         :param ctx: CtxItem
         """
-        stream_mode = self.window.core.config.get('stream')
+        stream_mode = self.window.core.config.get("stream")
         num_calls = 0
 
         # extract expert mentions
@@ -145,10 +148,13 @@ class Experts:
                             context = BridgeContext()
                             context.ctx = ctx
                             context.reply_context = reply
-                            event = KernelEvent(KernelEvent.AGENT_CALL, {
-                                'context': context,
-                                'extra': {},
-                            })
+                            event = KernelEvent(
+                                KernelEvent.AGENT_CALL,
+                                {
+                                    "context": context,
+                                    "extra": {},
+                                },
+                            )
                             self.window.dispatch(event)
 
                             num_calls += 1

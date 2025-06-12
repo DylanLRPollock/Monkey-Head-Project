@@ -71,9 +71,7 @@ def select_software() -> str:
         print("Available packages:")
         for idx, pkg in enumerate(SOFTWARE_OPTIONS, start=1):
             print(f"{idx}) {pkg}")
-        selection = input(
-            "Enter package numbers separated by spaces: "
-        ).strip()
+        selection = input("Enter package numbers separated by spaces: ").strip()
         packages: list[str] = []
         for num in selection.split():
             try:

@@ -33,42 +33,55 @@ class AgentLlama:
         """
         # loop score
         option = self.window.controller.agent.llama.options["agent.llama.loop.score"]
-        self.window.ui.nodes['agent.llama.loop.score.label'] = QLabel(trans("toolbox.agent.llama.loop.score.label"))
-        self.window.ui.nodes['agent.llama.loop.score'] = \
-            OptionSlider(
-                self.window,
-                'global',
-                'agent.llama.loop.score',
-                option,
-            )
-        self.window.ui.nodes['agent.llama.loop.score'].setToolTip(trans("toolbox.agent.llama.loop.score.tooltip"))
+        self.window.ui.nodes["agent.llama.loop.score.label"] = QLabel(
+            trans("toolbox.agent.llama.loop.score.label")
+        )
+        self.window.ui.nodes["agent.llama.loop.score"] = OptionSlider(
+            self.window,
+            "global",
+            "agent.llama.loop.score",
+            option,
+        )
+        self.window.ui.nodes["agent.llama.loop.score"].setToolTip(
+            trans("toolbox.agent.llama.loop.score.tooltip")
+        )
 
-        self.window.ui.config['global']['agent.llama.loop.score'] = self.window.ui.nodes['agent.llama.loop.score']
+        self.window.ui.config["global"]["agent.llama.loop.score"] = (
+            self.window.ui.nodes["agent.llama.loop.score"]
+        )
 
         # loop enabled
-        self.window.ui.nodes['agent.llama.loop.enabled'] = ToggleLabel(trans("toolbox.agent.llama.loop.enabled.label"))
-        self.window.ui.nodes['agent.llama.loop.enabled'].box.stateChanged.connect(
-            lambda:
-            self.window.controller.agent.common.toggle_loop(
-                self.window.ui.config['global']['agent.llama.loop.enabled'].box.isChecked())
+        self.window.ui.nodes["agent.llama.loop.enabled"] = ToggleLabel(
+            trans("toolbox.agent.llama.loop.enabled.label")
         )
-        self.window.ui.config['global']['agent.llama.loop.enabled'] = self.window.ui.nodes['agent.llama.loop.enabled']
+        self.window.ui.nodes["agent.llama.loop.enabled"].box.stateChanged.connect(
+            lambda: self.window.controller.agent.common.toggle_loop(
+                self.window.ui.config["global"][
+                    "agent.llama.loop.enabled"
+                ].box.isChecked()
+            )
+        )
+        self.window.ui.config["global"]["agent.llama.loop.enabled"] = (
+            self.window.ui.nodes["agent.llama.loop.enabled"]
+        )
 
         # label
-        self.window.ui.nodes['agent.llama.loop.label'] = QLabel(trans("toolbox.agent.llama.loop.label"))
+        self.window.ui.nodes["agent.llama.loop.label"] = QLabel(
+            trans("toolbox.agent.llama.loop.label")
+        )
 
         # options
         cols = QHBoxLayout()
-        cols.addWidget(self.window.ui.config['global']['agent.llama.loop.enabled'])
-        cols.addWidget(self.window.ui.config['global']['agent.llama.loop.score'])
+        cols.addWidget(self.window.ui.config["global"]["agent.llama.loop.enabled"])
+        cols.addWidget(self.window.ui.config["global"]["agent.llama.loop.score"])
 
         # rows
         rows = QVBoxLayout()
-        rows.addWidget(self.window.ui.nodes['agent.llama.loop.label'])
+        rows.addWidget(self.window.ui.nodes["agent.llama.loop.label"])
         rows.addLayout(cols)
 
-        self.window.ui.nodes['agent_llama.options'] = QWidget()
-        self.window.ui.nodes['agent_llama.options'].setLayout(rows)
-        self.window.ui.nodes['agent_llama.options'].setContentsMargins(0, 0, 0, 0)
+        self.window.ui.nodes["agent_llama.options"] = QWidget()
+        self.window.ui.nodes["agent_llama.options"].setLayout(rows)
+        self.window.ui.nodes["agent_llama.options"].setContentsMargins(0, 0, 0, 0)
 
-        return self.window.ui.nodes['agent_llama.options']
+        return self.window.ui.nodes["agent_llama.options"]

@@ -14,6 +14,7 @@ from . import subos_manager
 from .logging_setup import configure_logging
 from .utils.logger import get_logger
 from .convert_png_to_jpeg import convert_png_to_jpeg
+
 try:
     from .pdf_pre_digestion import pdf_pre_digestion
 except Exception:  # pragma: no cover - optional dependency

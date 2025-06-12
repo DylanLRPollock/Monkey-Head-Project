@@ -42,7 +42,9 @@ def _ensure_dirs(base: Path) -> dict[str, Path]:
     return dirs
 
 
-def pdf_pre_digestion(pdf_file: str, memory_dir: str | Path = _DEF_MEM_DIR) -> dict[str, Path]:
+def pdf_pre_digestion(
+    pdf_file: str, memory_dir: str | Path = _DEF_MEM_DIR
+) -> dict[str, Path]:
     """Convert a PDF file into formatted text, structured JSON and page images.
 
     Args:
@@ -78,7 +80,9 @@ def pdf_pre_digestion(pdf_file: str, memory_dir: str | Path = _DEF_MEM_DIR) -> d
             jpeg_out = dirs["JPEG"] / f"{stem}-{i}.jpg"
             convert_png_to_jpeg(str(png_out), str(jpeg_out))
 
-    json_path.write_text(json.dumps({"pages": pages_data}, ensure_ascii=False), encoding="utf-8")
+    json_path.write_text(
+        json.dumps({"pages": pages_data}, ensure_ascii=False), encoding="utf-8"
+    )
 
     return {
         "txt": txt_path,

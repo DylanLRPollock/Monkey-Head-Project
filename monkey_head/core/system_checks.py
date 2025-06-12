@@ -65,7 +65,10 @@ def check_os_support() -> None:
                 ver_str,
             )
     elif system == "Linux":
-        if distro.id() != "debian" or distro.codename().lower() not in {"trixie", "testing"}:
+        if distro.id() != "debian" or distro.codename().lower() not in {
+            "trixie",
+            "testing",
+        }:
             logger.warning(
                 "Unsupported Linux distribution detected (%s %s). Debian Trixie/testing is required.",
                 distro.id(),

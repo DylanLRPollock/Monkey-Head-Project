@@ -82,8 +82,10 @@ class Evaluation:
         use_prev = self.window.core.config.get("agent.llama.append_eval", False)
         for ctx in history:
             if ctx.extra is not None and "agent_input" in ctx.extra:
-                if not use_prev and "agent_evaluate" in ctx.extra:  # exclude evaluation inputs
-                        continue
+                if (
+                    not use_prev and "agent_evaluate" in ctx.extra
+                ):  # exclude evaluation inputs
+                    continue
                 if ctx.input:
                     input = ctx.input
         return input
@@ -126,11 +128,7 @@ class Evaluation:
         main_task = self.get_main_task(history)
         last_input = self.get_last_user_input(history)
         final_response = self.get_final_response(history)
-        return prompt.format(
-            task=main_task,
-            input=last_input,
-            output=final_response
-        )
+        return prompt.format(task=main_task, input=last_input, output=final_response)
 
     def get_tools(self) -> List[FunctionTool]:
         """
@@ -138,6 +136,7 @@ class Evaluation:
 
         :return: list of tools
         """
+
         def send_feedback(instructions: str, rating_percent: int) -> str:
             """Send feedback with evaluation result"""
             self.handle_evaluation(instructions, rating_percent)
@@ -148,11 +147,7 @@ class Evaluation:
         tools.append(tool)
         return tools
 
-    def handle_evaluation(
-            self,
-            instruction: str,
-            score: int
-    ):
+    def handle_evaluation(self, instruction: str, score: int):
         """
         Update the evaluation values of the agent response
 

@@ -34,10 +34,7 @@ class Runner:
         self.prev_score = -1  # evaluation score
 
     def call(
-            self,
-            context: BridgeContext,
-            extra: Dict[str, Any],
-            signals: BridgeSignals
+        self, context: BridgeContext, extra: Dict[str, Any], signals: BridgeSignals
     ) -> bool:
         """
         Call an agent
@@ -107,12 +104,12 @@ class Runner:
             return False
 
     def run_steps(
-            self,
-            agent: Any,
-            ctx: CtxItem,
-            prompt: str,
-            signals: BridgeSignals,
-            verbose: bool = False
+        self,
+        agent: Any,
+        ctx: CtxItem,
+        prompt: str,
+        signals: BridgeSignals,
+        verbose: bool = False,
     ) -> bool:
         """
         Run agent steps
@@ -139,14 +136,16 @@ class Runner:
                 break  # handle force stop
 
             if verbose:
-                print ("\n----------- BEGIN STEP {} ----------\n".format(i))
+                print("\n----------- BEGIN STEP {} ----------\n".format(i))
 
             self.set_busy(signals)
             step_output = agent.run_step(task.task_id)
             is_last = step_output.is_last
 
             # append each step to chat output, last step = final response, so we skip it
-            tools_output = self.window.core.agents.tools.export_sources(step_output.output)
+            tools_output = self.window.core.agents.tools.export_sources(
+                step_output.output
+            )
 
             # get only current step tool calls using idx
             if tools_output:
@@ -166,10 +165,11 @@ class Runner:
             if not is_last:
                 step_ctx = self.add_ctx(ctx)
                 step_ctx.set_input(str(tools_output))
-                step_ctx.set_output("`{step_label} {i}`".format(
-                    step_label=trans('msg.agent.step'),
-                    i=str(i)
-                ))
+                step_ctx.set_output(
+                    "`{step_label} {i}`".format(
+                        step_label=trans("msg.agent.step"), i=str(i)
+                    )
+                )
                 step_ctx.cmds = tools_output
                 step_ctx.results = ctx.results  # get results from base ctx
                 ctx.results = []  # reset results
@@ -205,12 +205,12 @@ class Runner:
         return True
 
     def run_assistant(
-            self,
-            agent: Any,
-            ctx: CtxItem,
-            prompt: str,
-            signals: BridgeSignals,
-            verbose: bool = False
+        self,
+        agent: Any,
+        ctx: CtxItem,
+        prompt: str,
+        signals: BridgeSignals,
+        verbose: bool = False,
     ) -> bool:
         """
         Run agent steps
@@ -253,12 +253,12 @@ class Runner:
         return True
 
     def run_plan(
-            self,
-            agent: Any,
-            ctx: CtxItem,
-            prompt: str,
-            signals: BridgeSignals,
-            verbose: bool = False
+        self,
+        agent: Any,
+        ctx: CtxItem,
+        prompt: str,
+        signals: BridgeSignals,
+        verbose: bool = False,
     ) -> bool:
         """
         Run agent sub-tasks
@@ -274,29 +274,27 @@ class Runner:
             return True  # abort if stopped
 
         self.set_busy(signals)
-        plan_id = agent.create_plan(
-            self.prepare_input(prompt)
-        )
+        plan_id = agent.create_plan(self.prepare_input(prompt))
         plan = agent.state.plan_dict[plan_id]
         c = len(plan.sub_tasks)
 
         # prepare plan description
         plan_desc = "`{current_plan}:`\n".format(
-            current_plan=trans('msg.agent.plan.current')
+            current_plan=trans("msg.agent.plan.current")
         )
         i = 1
         for sub_task in plan.sub_tasks:
             plan_desc += "\n\n"
             plan_desc += "\n**===== {sub_task_label}: {sub_task_name} =====**".format(
-                sub_task_label=trans('msg.agent.plan.subtask'),
+                sub_task_label=trans("msg.agent.plan.subtask"),
                 sub_task_name=sub_task.name,
             )
             plan_desc += "\n{expected_label}: {expected_output}".format(
-                expected_label=trans('msg.agent.plan.expected'),
+                expected_label=trans("msg.agent.plan.expected"),
                 expected_output=str(sub_task.expected_output),
             )
             plan_desc += "\n{deps_label}: {dependencies}".format(
-                deps_label=trans('msg.agent.plan.deps'),
+                deps_label=trans("msg.agent.plan.deps"),
                 dependencies=str(sub_task.dependencies),
             )
             i += 1
@@ -307,15 +305,19 @@ class Runner:
         # -----------------------------------------------------------
 
         step_ctx = self.add_ctx(ctx)
-        step_ctx.set_input("{num_subtasks_label}: {count}, {plan_label}: {plan_id}".format(
-            num_subtasks_label=trans('msg.agent.plan.num_subtasks'),
-            count=str(c),
-            plan_label=trans('msg.agent.plan'),
-            plan_id=plan_id,
-        ))
+        step_ctx.set_input(
+            "{num_subtasks_label}: {count}, {plan_label}: {plan_id}".format(
+                num_subtasks_label=trans("msg.agent.plan.num_subtasks"),
+                count=str(c),
+                plan_label=trans("msg.agent.plan"),
+                plan_id=plan_id,
+            )
+        )
         step_ctx.set_output(plan_desc)
         step_ctx.cmds = []
-        self.send_response(step_ctx, signals, KernelEvent.APPEND_DATA)  # send plan description
+        self.send_response(
+            step_ctx, signals, KernelEvent.APPEND_DATA
+        )  # send plan description
 
         i = 1
         for sub_task in plan.sub_tasks:
@@ -329,12 +331,13 @@ class Runner:
 
             self.set_status(signals, trans("status.agent.reasoning"))
             step_output = agent.run_step(task.task_id)
-            tools_output = self.window.core.agents.tools.export_sources(step_output.output)
+            tools_output = self.window.core.agents.tools.export_sources(
+                step_output.output
+            )
 
             task_header = "\n"
             task_header += "\n**===== Sub Task {index}: {sub_task_name} =====**".format(
-                index=str(i),
-                sub_task_name=sub_task.name
+                index=str(i), sub_task_name=sub_task.name
             )
             task_header += "\nExpected output: {expected_output}".format(
                 expected_output=str(sub_task.expected_output)
@@ -349,14 +352,16 @@ class Runner:
             # this can be the last step in current sub-task, so send it first
             step_ctx = self.add_ctx(ctx)
             step_ctx.set_input(str(tools_output))
-            step_ctx.set_output("`{sub_task_label} {i}/{c}, {step_label} {j}`\n{task_header}".format(
-                sub_task_label=trans('msg.agent.plan.subtask'),
-                i=str(i),
-                c=str(c),
-                step_label=trans('msg.agent.step'),
-                j=str(j),
-                task_header=task_header
-            ))
+            step_ctx.set_output(
+                "`{sub_task_label} {i}/{c}, {step_label} {j}`\n{task_header}".format(
+                    sub_task_label=trans("msg.agent.plan.subtask"),
+                    i=str(i),
+                    c=str(c),
+                    step_label=trans("msg.agent.step"),
+                    j=str(j),
+                    task_header=task_header,
+                )
+            )
             self.copy_step_results(step_ctx, ctx, tools_output)
             step_ctx.extra["agent_step"] = True
             self.send_response(step_ctx, signals, KernelEvent.APPEND_DATA)
@@ -371,20 +376,24 @@ class Runner:
                 self.set_busy(signals)
 
                 step_output = agent.run_step(task.task_id)
-                tools_output = self.window.core.agents.tools.export_sources(step_output.output)
+                tools_output = self.window.core.agents.tools.export_sources(
+                    step_output.output
+                )
 
                 # do not send again the first step (it was sent before the loop)
                 if j > 1:
                     step_ctx = self.add_ctx(ctx)
                     step_ctx.set_input(str(tools_output))
-                    step_ctx.set_output("`{sub_task_label} {i}/{c}, {step_label} {j}`\n{task_header}".format(
-                        sub_task_label=trans('msg.agent.plan.subtask'),
-                        i=str(i),
-                        c=str(c),
-                        step_label=trans('msg.agent.step'),
-                        j=str(j),
-                        task_header=task_header
-                    ))
+                    step_ctx.set_output(
+                        "`{sub_task_label} {i}/{c}, {step_label} {j}`\n{task_header}".format(
+                            sub_task_label=trans("msg.agent.plan.subtask"),
+                            i=str(i),
+                            c=str(c),
+                            step_label=trans("msg.agent.step"),
+                            j=str(j),
+                            task_header=task_header,
+                        )
+                    )
                     self.copy_step_results(step_ctx, ctx, tools_output)
                     step_ctx.extra["agent_step"] = True
                     self.send_response(step_ctx, signals, KernelEvent.APPEND_DATA)
@@ -392,7 +401,9 @@ class Runner:
 
             # finalize the response and commit to memory
             extra = {}
-            extra["agent_output"] = True,  # mark as output response (will be attached to ctx items on continue)
+            extra["agent_output"] = (
+                True,
+            )  # mark as output response (will be attached to ctx items on continue)
 
             if i == c:  # if last subtask
                 extra["agent_finish"] = True
@@ -402,21 +413,22 @@ class Runner:
 
             # the is no tool calls here, only final response
             if step_output.is_last:
-                response = agent.finalize_response(task.task_id, step_output=step_output)
+                response = agent.finalize_response(
+                    task.task_id, step_output=step_output
+                )
                 response_ctx = self.add_ctx(ctx)
                 response_ctx.set_input(str(tools_output))
                 response_ctx.set_output(str(response))
-                response_ctx.extra.update(extra)  # extend with `agent_output` and `agent_finish`
+                response_ctx.extra.update(
+                    extra
+                )  # extend with `agent_output` and `agent_finish`
                 self.send_response(response_ctx, signals, KernelEvent.APPEND_DATA)
             i += 1
 
         return True
 
     def copy_step_results(
-            self,
-            step_ctx: CtxItem,
-            ctx: CtxItem,
-            tools_output: List[Dict[str, Any]]
+        self, step_ctx: CtxItem, ctx: CtxItem, tools_output: List[Dict[str, Any]]
     ):
         """
         Copy step results from base context item
@@ -443,10 +455,7 @@ class Runner:
                 del ctx.extra[k]
 
     def run_once(
-            self,
-            input: str,
-            tools: List[FunctionTool],
-            model_name: Optional[str] = None
+        self, input: str, tools: List[FunctionTool], model_name: Optional[str] = None
     ) -> str:
         """
         Run agent once (quick call to ReAct agent)
@@ -475,10 +484,7 @@ class Runner:
         return agent.chat(self.prepare_input(input))
 
     def run_next(
-            self,
-            context: BridgeContext,
-            extra: dict,
-            signals: BridgeSignals
+        self, context: BridgeContext, extra: dict, signals: BridgeSignals
     ) -> bool:
         """
         Evaluate a response and run next step
@@ -491,7 +497,9 @@ class Runner:
             return True  # abort if stopped
 
         ctx = context.ctx
-        self.send_response(ctx, signals, KernelEvent.APPEND_BEGIN)  # lock input, show stop btn
+        self.send_response(
+            ctx, signals, KernelEvent.APPEND_BEGIN
+        )  # lock input, show stop btn
         history = context.history
         prompt = self.window.core.agents.observer.evaluation.get_prompt(history)
         tools = self.window.core.agents.observer.evaluation.get_tools()
@@ -501,14 +509,12 @@ class Runner:
         self.next_instruction = ""  # reset
         self.prev_score = -1  # reset
         self.run_once(prompt, tools, ctx.model)  # tool will update evaluation
-        return self.handle_evaluation(ctx, self.next_instruction, self.prev_score, signals)
+        return self.handle_evaluation(
+            ctx, self.next_instruction, self.prev_score, signals
+        )
 
     def handle_evaluation(
-            self,
-            ctx: CtxItem,
-            instruction: str,
-            score: int,
-            signals: BridgeSignals
+        self, ctx: CtxItem, instruction: str, score: int, signals: BridgeSignals
     ):
         """
         Handle evaluation
@@ -523,8 +529,7 @@ class Runner:
 
         score = int(score)
         msg = "{score_label}: {score}%".format(
-            score_label=trans('eval.score'),
-            score=str(score)
+            score_label=trans("eval.score"), score=str(score)
         )
         self.set_status(signals, msg)
         if score < 0:
@@ -533,9 +538,9 @@ class Runner:
         good_score = self.window.core.config.get("agent.llama.loop.score", 75)
         if score >= good_score != 0:
             msg = "{status_finished} {score_label}: {score}%".format(
-                status_finished=trans('status.finished'),
-                score_label=trans('eval.score'),
-                score=str(score)
+                status_finished=trans("status.finished"),
+                score_label=trans("eval.score"),
+                score=str(score),
             )
             self.send_response(ctx, signals, KernelEvent.APPEND_END, msg=msg)
             return True
@@ -570,13 +575,12 @@ class Runner:
             "agent_idx": preset.idx,
             "agent_provider": preset.agent_provider,
         }
-        context.model = self.window.core.models.get(self.window.core.config.get('model'))
+        context.model = self.window.core.models.get(
+            self.window.core.config.get("model")
+        )
         return self.call(context, extra, signals)
 
-    def add_ctx(
-            self,
-            from_ctx: CtxItem
-    ) -> CtxItem:
+    def add_ctx(self, from_ctx: CtxItem) -> CtxItem:
         """
         Add context item
 
@@ -592,16 +596,14 @@ class Runner:
         ctx.prev_ctx = from_ctx
         ctx.images = from_ctx.images  # copy from parent if appended from plugins
         ctx.urls = from_ctx.urls  # copy from parent if appended from plugins
-        ctx.attachments = from_ctx.attachments # copy from parent if appended from plugins
+        ctx.attachments = (
+            from_ctx.attachments
+        )  # copy from parent if appended from plugins
         ctx.live = True
         return ctx
 
     def send_response(
-            self,
-            ctx: CtxItem,
-            signals: BridgeSignals,
-            event_name: str,
-            **kwargs
+        self, ctx: CtxItem, signals: BridgeSignals, event_name: str, **kwargs
     ):
         """
         Send async response to chat window (BridgeSignals)
@@ -613,17 +615,16 @@ class Runner:
         """
         context = BridgeContext()
         context.ctx = ctx
-        event = KernelEvent(event_name, {
-            'context': context,
-            'extra': kwargs,
-        })
+        event = KernelEvent(
+            event_name,
+            {
+                "context": context,
+                "extra": kwargs,
+            },
+        )
         signals.response.emit(event)
 
-    def set_busy(
-            self,
-            signals: BridgeSignals,
-            **kwargs
-    ):
+    def set_busy(self, signals: BridgeSignals, **kwargs):
         """
         Set busy status
 
@@ -638,11 +639,7 @@ class Runner:
         data.update(kwargs)
         signals.response.emit(event)
 
-    def set_idle(
-            self,
-            signals: BridgeSignals,
-            **kwargs
-    ):
+    def set_idle(self, signals: BridgeSignals, **kwargs):
         """
         Set idle status
 
@@ -656,11 +653,7 @@ class Runner:
         data.update(kwargs)
         signals.response.emit(event)
 
-    def set_status(
-            self,
-            signals: BridgeSignals,
-            msg: str
-    ):
+    def set_status(self, signals: BridgeSignals, msg: str):
         """
         Set busy status
 
@@ -679,11 +672,14 @@ class Runner:
 
         :param prompt: input text
         """
-        event = Event(Event.AGENT_PROMPT, {
-            'value': prompt,
-        })
+        event = Event(
+            Event.AGENT_PROMPT,
+            {
+                "value": prompt,
+            },
+        )
         self.window.dispatch(event)
-        return event.data['value']
+        return event.data["value"]
 
     def is_stopped(self) -> bool:
         """

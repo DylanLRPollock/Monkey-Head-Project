@@ -11,9 +11,9 @@ class DummyCompleted:
 
 
 def test_run_repair_success(tmp_path):
-    with patch("uninstaller.run_uninstaller", return_value=0) as uninst, \
-         patch("subprocess.run") as run_mock, \
-         patch("tempfile.TemporaryDirectory") as tmpdir:
+    with patch("uninstaller.run_uninstaller", return_value=0) as uninst, patch(
+        "subprocess.run"
+    ) as run_mock, patch("tempfile.TemporaryDirectory") as tmpdir:
         tmpdir.return_value.__enter__.return_value = str(tmp_path)
         run_mock.side_effect = [DummyCompleted(), DummyCompleted()]
         rc = repair.run_repair("repo-url")
@@ -24,10 +24,13 @@ def test_run_repair_success(tmp_path):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        run_mock.assert_any_call([
-            sys.executable,
-            "installer.py",
-        ], cwd=str(tmp_path))
+        run_mock.assert_any_call(
+            [
+                sys.executable,
+                "installer.py",
+            ],
+            cwd=str(tmp_path),
+        )
 
 
 def test_run_repair_uninstall_failure():

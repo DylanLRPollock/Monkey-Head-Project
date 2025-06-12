@@ -33,47 +33,58 @@ class Agent:
         """
         # iterations
         option = self.window.controller.agent.legacy.options["agent.iterations"]
-        self.window.ui.nodes['agent.iterations.label'] = QLabel(trans("toolbox.agent.iterations.label"))
-        self.window.ui.nodes['agent.iterations'] = \
-            OptionSlider(
-                self.window,
-                'global',
-                'agent.iterations',
-                option,
-            )
-        self.window.ui.config['global']['agent.iterations'] = self.window.ui.nodes['agent.iterations']
+        self.window.ui.nodes["agent.iterations.label"] = QLabel(
+            trans("toolbox.agent.iterations.label")
+        )
+        self.window.ui.nodes["agent.iterations"] = OptionSlider(
+            self.window,
+            "global",
+            "agent.iterations",
+            option,
+        )
+        self.window.ui.config["global"]["agent.iterations"] = self.window.ui.nodes[
+            "agent.iterations"
+        ]
 
         # auto stop
-        self.window.ui.nodes['agent.auto_stop'] = ToggleLabel(trans("toolbox.agent.auto_stop.label"))
-        self.window.ui.nodes['agent.auto_stop'].box.stateChanged.connect(
-            lambda:
-            self.window.controller.agent.common.toggle_auto_stop(
-                self.window.ui.config['global']['agent.auto_stop'].box.isChecked())
+        self.window.ui.nodes["agent.auto_stop"] = ToggleLabel(
+            trans("toolbox.agent.auto_stop.label")
         )
-        self.window.ui.config['global']['agent.auto_stop'] = self.window.ui.nodes['agent.auto_stop']
+        self.window.ui.nodes["agent.auto_stop"].box.stateChanged.connect(
+            lambda: self.window.controller.agent.common.toggle_auto_stop(
+                self.window.ui.config["global"]["agent.auto_stop"].box.isChecked()
+            )
+        )
+        self.window.ui.config["global"]["agent.auto_stop"] = self.window.ui.nodes[
+            "agent.auto_stop"
+        ]
 
         # continue more
-        self.window.ui.nodes['agent.continue'] = ToggleLabel(trans("toolbox.agent.continue.label"))
-        self.window.ui.nodes['agent.continue'].box.stateChanged.connect(
-            lambda:
-            self.window.controller.agent.common.toggle_continue(
-                self.window.ui.config['global']['agent.continue'].box.isChecked())
+        self.window.ui.nodes["agent.continue"] = ToggleLabel(
+            trans("toolbox.agent.continue.label")
         )
-        self.window.ui.config['global']['agent.continue'] = self.window.ui.nodes['agent.continue']
+        self.window.ui.nodes["agent.continue"].box.stateChanged.connect(
+            lambda: self.window.controller.agent.common.toggle_continue(
+                self.window.ui.config["global"]["agent.continue"].box.isChecked()
+            )
+        )
+        self.window.ui.config["global"]["agent.continue"] = self.window.ui.nodes[
+            "agent.continue"
+        ]
 
         # options
         cols = QHBoxLayout()
-        cols.addWidget(self.window.ui.config['global']['agent.auto_stop'])
-        cols.addWidget(self.window.ui.config['global']['agent.continue'])
+        cols.addWidget(self.window.ui.config["global"]["agent.auto_stop"])
+        cols.addWidget(self.window.ui.config["global"]["agent.continue"])
 
         # rows
         rows = QVBoxLayout()
-        rows.addWidget(self.window.ui.nodes['agent.iterations.label'])
-        rows.addWidget(self.window.ui.config['global']['agent.iterations'])
+        rows.addWidget(self.window.ui.nodes["agent.iterations.label"])
+        rows.addWidget(self.window.ui.config["global"]["agent.iterations"])
         rows.addLayout(cols)
 
-        self.window.ui.nodes['agent.options'] = QWidget()
-        self.window.ui.nodes['agent.options'].setLayout(rows)
-        self.window.ui.nodes['agent.options'].setContentsMargins(0, 0, 0, 0)
+        self.window.ui.nodes["agent.options"] = QWidget()
+        self.window.ui.nodes["agent.options"].setLayout(rows)
+        self.window.ui.nodes["agent.options"].setContentsMargins(0, 0, 0, 0)
 
-        return self.window.ui.nodes['agent.options']
+        return self.window.ui.nodes["agent.options"]

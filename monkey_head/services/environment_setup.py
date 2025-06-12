@@ -17,7 +17,9 @@ logger = get_logger(__name__)
 DEFAULT_REPO_URL = "https://github.com/DylanLRPollock/Monkey-Head-Project.git"
 
 
-def clone_repository(repo_url: str = DEFAULT_REPO_URL, dest: str = "~/Source/repo") -> None:
+def clone_repository(
+    repo_url: str = DEFAULT_REPO_URL, dest: str = "~/Source/repo"
+) -> None:
     """Clone the repository to the given destination."""
     logger.info("Cloning repository...")
     dest_path = os.path.expanduser(dest)
@@ -40,22 +42,32 @@ def setup_python_env(dest: str = "~/Source/repo") -> None:
     )
 
 
-def configure_git(name: str = "Your Name", email: str = "your.email@example.com") -> None:
+def configure_git(
+    name: str = "Your Name", email: str = "your.email@example.com"
+) -> None:
     """Configure global git username and email."""
     logger.info("Configuring Git...")
-    current_name = subprocess.run(
-        ["git", "config", "--global", "user.name"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    ).stdout.decode().strip()
+    current_name = (
+        subprocess.run(
+            ["git", "config", "--global", "user.name"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        .stdout.decode()
+        .strip()
+    )
     if current_name != name:
         run_command(["git", "config", "--global", "user.name", name])
 
-    current_email = subprocess.run(
-        ["git", "config", "--global", "user.email"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    ).stdout.decode().strip()
+    current_email = (
+        subprocess.run(
+            ["git", "config", "--global", "user.email"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        .stdout.decode()
+        .strip()
+    )
     if current_email != email:
         run_command(["git", "config", "--global", "user.email", email])
 

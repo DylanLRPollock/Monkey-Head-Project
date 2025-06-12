@@ -11,6 +11,7 @@
 
 from .evaluation import Evaluation
 
+
 class Observer:
     def __init__(self, window=None):
         self.window = window

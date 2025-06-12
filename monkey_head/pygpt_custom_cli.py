@@ -6,9 +6,14 @@ class CustomPyGPT:
 
     def __init__(self, prompt_file: str | Path | None = None):
         from .pygpt_memory import Memory
+
         self.memory = Memory()
         if prompt_file is None:
-            prompt_file = Path(__file__).resolve().parent.parent / "prompts" / "huey_main_prompt.txt"
+            prompt_file = (
+                Path(__file__).resolve().parent.parent
+                / "prompts"
+                / "huey_main_prompt.txt"
+            )
         self.prompt_file = Path(prompt_file)
         self.main_prompt = self.load_main_prompt()
 
@@ -43,6 +48,7 @@ class CustomPyGPT:
             reply = self.generate_reply(user_input)
             self.memory.add_assistant_message(reply)
             print(f"Bot: {reply}")
+
 
 if __name__ == "__main__":
     CustomPyGPT().run_cli()
