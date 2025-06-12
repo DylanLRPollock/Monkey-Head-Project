@@ -23,6 +23,15 @@ function command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
+function ensure_xcode_cli() {
+    if ! xcode-select -p >/dev/null 2>&1; then
+        echo "Installing Xcode command line tools..."
+        xcode-select --install || true
+    else
+        echo "Xcode command line tools already installed."
+    fi
+}
+
 function copy_project_files() {
     if [ "$PROJECT_ROOT" != "$INSTALL_DIR" ]; then
         echo "Copying project files to $INSTALL_DIR..."
@@ -45,7 +54,7 @@ function install_homebrew() {
 function install_packages() {
     echo "Installing required packages..."
     brew update
-    brew install git python docker || true
+    brew install git python docker gcc || true
 }
 
 function setup_python_env() {
@@ -73,6 +82,7 @@ function update_submodules() {
 }
 
 install_homebrew
+ensure_xcode_cli
 copy_project_files
 install_packages
 update_submodules

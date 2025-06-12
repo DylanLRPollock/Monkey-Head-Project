@@ -119,6 +119,7 @@ Ensure the following tools are installed before running the project:
 - **Git**
 - **Kubernetes** (`kubectl` CLI)
 - **Python 3.12+** and `pip`
+- **Build tools** (`build-essential` on Debian, Xcode Command Line Tools on macOS)
 
 ## 🖥️ Installation and Usage
 
