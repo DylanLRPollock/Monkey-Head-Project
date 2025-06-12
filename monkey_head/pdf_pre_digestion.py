@@ -6,15 +6,25 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-"""Utility to convert PDF documents to plain text and images."""
+"""Utility to convert PDF documents to plain text and images.
+
+This version relies solely on :mod:`PyMuPDF` so no external ``pdftotext`` or
+``pdftoppm`` binaries are required.  The output text is formatted using the
+project's :func:`~monkey_head.formatter.format_text` helper to keep line lengths
+manageable for AI models.  Each page is rendered to a PNG and also converted to
+JPEG for compatibility with other tools.
+"""
 
 from __future__ import annotations
 
 import json
-import subprocess
+from typing import List
 from pathlib import Path
 
+import fitz  # PyMuPDF
+
 from .convert_png_to_jpeg import convert_png_to_jpeg
+from .formatter import format_text
 
 
 _DEF_MEM_DIR = Path("memory")
@@ -33,7 +43,7 @@ def _ensure_dirs(base: Path) -> dict[str, Path]:
 
 
 def pdf_pre_digestion(pdf_file: str, memory_dir: str | Path = _DEF_MEM_DIR) -> dict[str, Path]:
-    """Convert a PDF file into text, JSON, PNG and JPEG files.
+    """Convert a PDF file into formatted text, structured JSON and page images.
 
     Args:
         pdf_file: Path to the input PDF document.
@@ -52,18 +62,23 @@ def pdf_pre_digestion(pdf_file: str, memory_dir: str | Path = _DEF_MEM_DIR) -> d
 
     txt_path = dirs["TXT"] / f"{stem}.txt"
     json_path = dirs["JSON"] / f"{stem}.json"
-    png_prefix = dirs["PNG"] / stem
 
-    subprocess.run(["pdftotext", str(pdf_path), str(txt_path)], check=True)
-    text = txt_path.read_text(encoding="utf-8", errors="ignore")
+    doc = fitz.open(pdf_path)
+    pages_data: List[dict[str, object]] = []
+    with txt_path.open("w", encoding="utf-8") as txt_file:
+        for i, page in enumerate(doc, start=1):
+            raw = page.get_text()
+            pages_data.append({"page": i, "text": raw})
+            formatted = format_text(raw)
+            txt_file.write(f"----- Page {i} -----\n{formatted}\n\n")
 
-    json_path.write_text(json.dumps({"text": text}, ensure_ascii=False), encoding="utf-8")
+            pix = page.get_pixmap()
+            png_out = dirs["PNG"] / f"{stem}-{i}.png"
+            pix.save(png_out)
+            jpeg_out = dirs["JPEG"] / f"{stem}-{i}.jpg"
+            convert_png_to_jpeg(str(png_out), str(jpeg_out))
 
-    subprocess.run(["pdftoppm", "-png", str(pdf_path), str(png_prefix)], check=True)
-
-    for png in dirs["PNG"].glob(f"{stem}-*.png"):
-        jpeg_out = dirs["JPEG"] / f"{png.stem}.jpg"
-        convert_png_to_jpeg(str(png), str(jpeg_out))
+    json_path.write_text(json.dumps({"pages": pages_data}, ensure_ascii=False), encoding="utf-8")
 
     return {
         "txt": txt_path,
