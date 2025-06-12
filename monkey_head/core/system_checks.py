@@ -10,6 +10,7 @@ import logging
 import os
 import platform
 import subprocess
+import sys
 
 import distro
 from ..logging_setup import configure_logging
@@ -72,6 +73,14 @@ def check_os_support() -> None:
             )
     else:
         logger.warning("Unsupported operating system detected: %s", system)
+
+
+def check_python_version() -> None:
+    """Warn when running on experimental Python versions."""
+    if sys.version_info.major == 3 and sys.version_info.minor == 13:
+        logger.warning(
+            "Python 3.13 detected. This version is experimental and not fully supported."
+        )
 
 
 def system_check():

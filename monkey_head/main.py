@@ -8,7 +8,7 @@
 # ==================================================
 from monkey_head.utils.logger import get_logger
 from flask import Flask, jsonify
-from .core.system_checks import system_check, ensure_admin
+from .core.system_checks import system_check, ensure_admin, check_python_version
 from .modules.updates import update_system, update_python_packages
 from .core.installations import (
     install_common_tools,
@@ -51,6 +51,7 @@ def readiness_check():
 def main() -> None:
     """Run full setup and start the health service."""
     ensure_admin()
+    check_python_version()
     system_check()
     update_system()
     install_common_tools()
