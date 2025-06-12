@@ -354,6 +354,17 @@ python fresh_install.py       # Windows
 ```
 
 
+### Repair
+
+If the installation becomes corrupted, run the repair script. It clones a fresh
+copy of the repository and installs it:
+
+```bash
+sudo python repair.py  # Linux/macOS
+python repair.py       # Windows
+```
+
+
 
 ### Directory Structure
 
