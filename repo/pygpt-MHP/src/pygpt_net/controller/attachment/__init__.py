@@ -110,8 +110,14 @@ class Attachment:
         """
         Select on list change
         """
-        # TODO: implement this
-        pass
+        widget = self.window.ui.nodes.get('attachments')
+        if widget is None:
+            return
+        indexes = widget.selectedIndexes()
+        if not indexes:
+            return
+        mode = self.window.core.config.get('mode')
+        self.select(mode, indexes[0].row())
 
     def delete(
             self,
