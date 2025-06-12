@@ -11,6 +11,11 @@ REM ==================================================
 set SCRIPT_DIR=%~dp0
 set INSTALL_SCRIPT=%SCRIPT_DIR%setup\Windows11\01-FULL.bat
 
+cd /d "%SCRIPT_DIR%"
+if not exist "%INSTALL_SCRIPT%" (
+    echo Installation script not found: %INSTALL_SCRIPT%
+    exit /b 1
+)
 call "%INSTALL_SCRIPT%"
 echo.
 echo ***********************************************
