@@ -7,9 +7,12 @@
 # Updated: 06.05.2025
 # ==================================================
 import logging
-from ..logging_setup import configure_logging
 import os
+import platform
 import subprocess
+
+import distro
+from ..logging_setup import configure_logging
 
 configure_logging()
 logger = logging.getLogger(__name__)
@@ -33,6 +36,42 @@ def check_error(command, description):
         )
         log_error(error_message)
         raise RuntimeError(error_message)
+
+
+def check_os_support() -> None:
+    """Log a warning if the current OS is not officially supported."""
+    system = platform.system()
+    if system == "Windows":
+        release = platform.release()
+        try:
+            major = int(release.split(".")[0])
+        except ValueError:
+            major = 0
+        if major < 10:
+            logger.warning(
+                "Unsupported Windows version detected (%s). Windows 10 or newer is required.",
+                release,
+            )
+    elif system == "Darwin":
+        ver_str, _, _ = platform.mac_ver()
+        try:
+            major = int(ver_str.split(".")[0])
+        except ValueError:
+            major = 0
+        if major < 13:
+            logger.warning(
+                "Unsupported macOS version detected (%s). macOS Ventura or newer is required.",
+                ver_str,
+            )
+    elif system == "Linux":
+        if distro.id() != "debian" or distro.codename().lower() not in {"trixie", "testing"}:
+            logger.warning(
+                "Unsupported Linux distribution detected (%s %s). Debian Trixie/testing is required.",
+                distro.id(),
+                distro.codename(),
+            )
+    else:
+        logger.warning("Unsupported operating system detected: %s", system)
 
 
 def system_check():
