@@ -12,5 +12,11 @@ if [ ! -f "venv/bin/activate" ]; then
   echo "Virtual environment not found. Please run install.sh first." >&2
   exit 1
 fi
+
+LOG_DIR="logs"
+LOG_FILE="$LOG_DIR/test_results.log"
+mkdir -p "$LOG_DIR"
+echo "Test run started at $(date)" | tee "$LOG_FILE"
+
 source ./venv/bin/activate
-pytest -vv
+pytest -vv --cov=monkey_head --cov-report=term | tee -a "$LOG_FILE"
