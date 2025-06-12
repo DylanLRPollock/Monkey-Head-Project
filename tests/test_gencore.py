@@ -10,7 +10,7 @@ import unittest
 from monkey_head.gencore import generate_core_data
 
 
-class TestGencore(unittest.TestCase):
+class TestGenCore(unittest.TestCase):
     def test_generate_core_data(self):
         data = {"a": 1, "b": 2}
         result = generate_core_data(data)
