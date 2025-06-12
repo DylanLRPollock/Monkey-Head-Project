@@ -14,6 +14,7 @@ from . import subos_manager
 from .logging_setup import configure_logging
 from .utils.logger import get_logger
 from .convert_png_to_jpeg import convert_png_to_jpeg
+from .pdf_pre_digestion import pdf_pre_digestion
 
 # Initialize project-wide logging as soon as the package is imported
 configure_logging()
@@ -24,4 +25,5 @@ __all__ = [
     "subos_manager",
     "get_logger",
     "convert_png_to_jpeg",
+    "pdf_pre_digestion",
 ]
