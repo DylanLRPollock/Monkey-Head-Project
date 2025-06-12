@@ -40,16 +40,11 @@ def _load_cli() -> "callable":
 
 
 def launch_gui() -> None:
-    """Start the Tkinter GUI."""
-    try:
-        import tkinter as tk
-        from gui.main_ui import MainUI
-    except Exception as exc:
-        raise RuntimeError(f"Unable to load GUI modules: {exc}") from exc
+    """Start the PyGPT GUI with Monkey Head extensions."""
+    from pygpt_net.app import run as pygpt_run
+    from monkey_head.pygpt_net.tools.manager import MonkeyManager
 
-    root = tk.Tk()
-    app = MainUI(root)
-    root.mainloop()
+    pygpt_run(tools=[MonkeyManager()])
 
 
 def main() -> None:
