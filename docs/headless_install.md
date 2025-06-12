@@ -19,7 +19,12 @@ with:
 python run.py --minimal
 ```
 
-This launches a very small echo chatbot without any GUI dependencies.
+This launches a very small echo chatbot without any GUI dependencies. For a
+graphical demonstration you can instead run:
+
+```bash
+python run.py --simple-chat
+```
 
 Declining the license raises `RuntimeError` and leaves the configuration
 file unchanged.
