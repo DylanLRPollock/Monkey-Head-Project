@@ -21,6 +21,8 @@ import argparse
 import sys
 from pathlib import Path
 
+from monkey_head.core.system_checks import check_os_support
+
 sys.path.insert(0, str((Path(__file__).parent / "src").resolve()))
 
 from pygpt_net.app import run as cli_run
@@ -54,6 +56,9 @@ def main() -> None:
         help="Print pygpt_net version and exit",
     )
     args = parser.parse_args()
+
+    # Warn if running on an unsupported operating system
+    check_os_support()
 
     if args.version:
         from pygpt_net import __version__
