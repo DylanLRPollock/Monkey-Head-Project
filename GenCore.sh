@@ -14,7 +14,7 @@ set -e
 
 REPO_URL="https://github.com/DylanLRPollock/Monkey-Head-Project.git"
 INSTALL_DIR="/opt/monkey_head"
-DEFAULT_PACKAGES="git nodejs python3 python3-venv docker.io"
+DEFAULT_PACKAGES="git nodejs python3 python3-venv docker.io mate-desktop-environment-core"
 
 function ensure_root() {
     if [ "$EUID" -ne 0 ]; then

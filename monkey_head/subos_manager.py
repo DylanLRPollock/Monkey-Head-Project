@@ -35,6 +35,7 @@ def install_tools() -> None:
         "virt-manager",
         "python3",
         "python3-venv",
+        "mate-desktop-environment-core",
     ]
     run_command(["apt-get", "install", "-y", *tools])
 
