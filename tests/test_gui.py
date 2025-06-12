@@ -1,4 +1,5 @@
 from unittest.mock import patch
+from types import SimpleNamespace
 from gui.main_ui import MainUI
 
 
@@ -42,3 +43,49 @@ def test_choose_screen_mode_prompt():
     ):
         mode = MainUI.choose_screen_mode(ui)
         assert mode == "4k"
+
+
+def test_build_image_calls_runner():
+    ui = MainUI.__new__(MainUI)
+    ui.status_label = SimpleNamespace(config=lambda **_: None)
+    ui.progress = SimpleNamespace(start=lambda: None, stop=lambda: None)
+    with patch.object(MainUI, "_run_container_func") as runner, patch.object(
+        MainUI, "log_message"
+    ), patch("gui.main_ui.threading.Thread") as th:
+        th.side_effect = lambda target, args: SimpleNamespace(
+            start=lambda: target(*args)
+        )
+        MainUI.build_image(ui)
+        runner.assert_called_once()
+
+
+def test_deploy_kubernetes_calls_runner():
+    ui = MainUI.__new__(MainUI)
+    ui.status_label = SimpleNamespace(config=lambda **_: None)
+    ui.progress = SimpleNamespace(start=lambda: None, stop=lambda: None)
+    with patch.object(MainUI, "_run_container_func") as runner, patch.object(
+        MainUI, "log_message"
+    ), patch("gui.main_ui.threading.Thread") as th:
+        th.side_effect = lambda target, args: SimpleNamespace(
+            start=lambda: target(*args)
+        )
+        MainUI.deploy_kubernetes(ui)
+        runner.assert_called_once()
+
+
+def test_scale_deployment_prompt_collects_input():
+    ui = MainUI.__new__(MainUI)
+    ui.status_label = SimpleNamespace(config=lambda **_: None)
+    ui.progress = SimpleNamespace(start=lambda: None, stop=lambda: None)
+    with patch("gui.main_ui.simpledialog.askstring", return_value="demo"), patch(
+        "gui.main_ui.simpledialog.askinteger", return_value=2
+    ), patch.object(MainUI, "_run_container_func") as runner, patch.object(
+        MainUI, "log_message"
+    ), patch(
+        "gui.main_ui.threading.Thread"
+    ) as th:
+        th.side_effect = lambda target, args: SimpleNamespace(
+            start=lambda: target(*args)
+        )
+        MainUI.scale_deployment_prompt(ui)
+        runner.assert_called_once()
