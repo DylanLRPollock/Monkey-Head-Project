@@ -52,6 +52,10 @@ def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -
     def on_accept() -> None:
         accept_license(config_path)
         messagebox.showinfo("License", "License accepted")
+        messagebox.showwarning(
+            "Experimental",
+            "This is experimental software. Proceed with caution.",
+        )
         root.destroy()
 
     def on_decline() -> None:
