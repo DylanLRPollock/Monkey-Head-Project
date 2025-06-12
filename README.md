@@ -215,9 +215,11 @@ file here makes the new personality available in the interface.
 
 Two convenience wrappers simplify common tasks on Unix systems. `run.sh`
 activates the project's virtual environment and launches `run.py`. The
-`run-tests.sh` script performs the same activation step before executing
-the test suite with `pytest -vv`. Both scripts report an error if the
-`venv` directory is missing, reminding you to run `install.sh` first.
+`run-tests.sh` script now also captures coverage and logs results. It
+activates the environment, runs `pytest -vv --cov=monkey_head`, and
+saves the output to `logs/test_results.log`. Both scripts report an
+error if the `venv` directory is missing, reminding you to run
+`install.sh` first.
 `update_memory_pdfs.py` regenerates text versions of the bundled PDF files
 under `memory/PDF`. Run this script whenever you add or edit PDF documents
 to keep the preloaded dataset up to date.

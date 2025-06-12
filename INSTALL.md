@@ -69,6 +69,7 @@ Activate the virtual environment and execute:
 ```bash
 ./run-tests.sh
 ```
+Results are stored in `logs/test_results.log`.
 
 ## Uninstallation and Fresh Install
 
