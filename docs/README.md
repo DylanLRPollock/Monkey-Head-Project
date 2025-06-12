@@ -7,6 +7,8 @@ The Monkey Head Project is founded on the theory that, given enough time, resour
 
 The core of the Monkey Head Project, known as GenCore, is a versatile and evolving AI/OS capable of running across multiple hardware configurations—from vintage legacy systems to modern high-performance setups. GenCore’s adaptability is a testament to its dynamic structure, capable of learning and optimizing itself as it interacts with its environment and hardware, while also serving as the platform for Huey's intelligence.
 
+If you're new to the project, start with [New-To-AI.md](New-To-AI.md) for a concise introduction before diving into the details below.
+
 https://chatgpt.com/g/g-HMBaFrJ6b-huey
 
 🧪 Phase 1: Pre-Release - April 11, 2024
