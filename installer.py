@@ -45,6 +45,10 @@ def run_installer():
     except subprocess.CalledProcessError as exc:
         print(f"Installer failed with return code {exc.returncode}")
         return exc.returncode
+    print(
+        "\nThank you for supporting the Monkey Head Project!\n"
+        "We hope you enjoy using it."
+    )
     return 0
 
 
