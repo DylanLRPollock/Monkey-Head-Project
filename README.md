@@ -186,14 +186,14 @@ The GUI is now the primary way to install and control the project. Simply run:
 python run.py
 ```
 
-This launches a Tkinter window where you can install, update, or run the
-application. The correct setup script is chosen automatically. A "Run" button
-lets you start the program without opening a terminal. If the GUI cannot be
-displayed (for example on a headless server), the launcher automatically falls
+This opens the PyGPT-based Qt interface with integrated Monkey Head tools for
+installation, updates, running the application, and managing Docker or
+Kubernetes resources. If the GUI cannot be displayed (for example on a
+headless server), the launcher automatically falls
 back to the command-line interface. You can also force CLI mode with
 `python run.py --cli`. For an even lighter headless run you can launch the
 minimal echo chatbot with `python run.py --minimal`. A basic Tkinter chat demo
-is also available via `python run.py --simple-chat`.
+is still available via `python run.py --simple-chat`.
 
 The GUI now checks whether you've accepted the license on startup and
 offers a **Tools** menu. From there you can reopen the license dialog or
@@ -297,7 +297,8 @@ After selecting your hardware and any optional software packages, the script cal
 6. Displays the license agreement via a small Tkinter window.
 7. Preloads bundled data for faster first run.
 
-When installation finishes, change to the install directory and launch the GUI:
+When installation finishes, change to the install directory and launch the
+PyGPT interface:
 
 ```bash
 python run.py
