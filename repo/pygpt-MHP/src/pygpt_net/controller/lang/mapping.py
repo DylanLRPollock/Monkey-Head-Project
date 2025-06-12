@@ -247,6 +247,8 @@ class Mapping:
         nodes['start.title'] = 'dialog.start.title.text'
         nodes['start.settings'] = 'dialog.start.settings.text'
         nodes['start.btn'] = 'dialog.start.btn'
+        nodes['start.input'] = 'dialog.start.input.placeholder'
+        nodes['start.btn.save'] = 'dialog.start.btn.save'
 
         # input tabs
         nodes['attachments.btn.add'] = 'attachments.btn.add'

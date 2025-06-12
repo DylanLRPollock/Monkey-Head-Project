@@ -337,6 +337,7 @@ Please go to `Debugging and Logging` section for instructions on how to log and 
 **Tip:** The API key is required to work with the OpenAI API. If you wish to use custom API endpoints or local API that do not require API keys, simply enter anything into the API key field to avoid a prompt about the API key being empty.
 
 During the initial launch, you must configure your API key within the application.
+You can now enter the key directly in the welcome dialog or open the settings window.
 
 To do so, navigate to the menu:
 

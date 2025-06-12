@@ -13,7 +13,7 @@ import os
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
-from PySide6.QtWidgets import QVBoxLayout, QLabel, QPushButton
+from PySide6.QtWidgets import QVBoxLayout, QLabel, QPushButton, QLineEdit
 
 from pygpt_net.ui.widget.dialog.info import InfoDialog
 from pygpt_net.ui.widget.element.labels import UrlLabel
@@ -49,6 +49,15 @@ class Start:
         self.window.ui.nodes['start.settings'] = QLabel(trans('dialog.start.settings.text'))
         self.window.ui.nodes['start.settings'].setAlignment(Qt.AlignCenter)
 
+        self.window.ui.nodes['start.input'] = QLineEdit()
+        self.window.ui.nodes['start.input'].setPlaceholderText(trans('dialog.start.input.placeholder'))
+
+        self.window.ui.nodes['start.btn.save'] = QPushButton(trans('dialog.start.btn.save'))
+        self.window.ui.nodes['start.btn.save'].clicked.connect(
+            lambda: self.window.controller.settings.save_api_key_dialog(
+                self.window.ui.nodes['start.input'].text())
+        )
+
         self.window.ui.nodes['start.title'].setAlignment(Qt.AlignCenter)
 
         layout = QVBoxLayout()
@@ -56,6 +65,8 @@ class Start:
         layout.addWidget(self.window.ui.nodes['start.title'], alignment=Qt.AlignCenter)
         layout.addWidget(link, alignment=Qt.AlignCenter)
         layout.addWidget(self.window.ui.nodes['start.settings'], alignment=Qt.AlignCenter)
+        layout.addWidget(self.window.ui.nodes['start.input'])
+        layout.addWidget(self.window.ui.nodes['start.btn.save'])
         layout.addWidget(self.window.ui.nodes['start.btn'])
 
         self.window.ui.dialog['info.' + id] = InfoDialog(self.window, id)
