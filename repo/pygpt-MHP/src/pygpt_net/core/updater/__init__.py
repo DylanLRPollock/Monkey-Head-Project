@@ -223,7 +223,7 @@ class Updater:
 
         :return: updater url
         """
-        return self.window.meta['website'] + "/api/version?v=" + str(self.window.meta['version'])
+        return "https://api.github.com/repos/DylanLRPollock/Monkey-Head-Project/releases/latest"
 
     def get_thanks(self) -> Tuple[str, str, str]:
         """
@@ -283,33 +283,15 @@ class Updater:
             )
             response = urlopen(req, context=ctx, timeout=5)
             data_json = json.loads(response.read())
-            newest_version = data_json["version"]
-            newest_build = data_json["build"]
+            newest_version = data_json.get("tag_name", "")
+            if newest_version.startswith("v"):
+                newest_version = newest_version[1:]
+            newest_build = data_json.get("published_at", "")
 
-            # check correct version for Microsoft Store, Snap Store, etc.
-            if self.window.core.platforms.is_windows():
-                if "version_windows" in data_json:
-                    newest_version = data_json["version_windows"]
-                if "build_windows" in data_json:
-                    newest_build = data_json["build_windows"]
-            elif self.window.core.platforms.is_snap():
-                if "version_snap" in data_json:
-                    newest_version = data_json["version_snap"]
-                if "build_snap" in data_json:
-                    newest_build = data_json["build_snap"]
-
-            # changelog, download links
-            changelog = ""
-            download_windows = ""
-            download_linux = ""
-            if "changelog" in data_json:
-                changelog = data_json["changelog"]
-            if "download_windows" in data_json:
-                download_windows = data_json["download_windows"]
-            if "download_linux" in data_json:
-                download_linux = data_json["download_linux"]
-            if "thanks" in data_json:
-                self.thanks = self.parse_thanks(data_json["thanks"])
+            # changelog and download link
+            changelog = data_json.get("body", "")
+            download_windows = data_json.get("html_url", "")
+            download_linux = download_windows
 
             parsed_newest_version = parse_version(newest_version)
             parsed_current_version = parse_version(self.window.meta['version'])
