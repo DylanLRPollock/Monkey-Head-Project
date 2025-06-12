@@ -189,12 +189,15 @@ choco install -y azure-cli
 call :checkError "Azure CLI Installation"
 goto :eof
 
-:: Function to display license GUI
-:showLicenseGui
+:: Function to display license agreement
+:showLicense
 echo Displaying license agreement...
 call venv\Scripts\activate
-python src\license_gui.py
-if %errorlevel% neq 0 echo License dialog could not be displayed
+if defined HEADLESS (
+    python src\license_cli.py || exit /b 1
+) else (
+    python src\license_gui.py || python src\license_cli.py || echo License dialog could not be displayed
+)
 goto :eof
 
 :: Main Execution Flow
@@ -235,7 +238,7 @@ echo Installing optional tools...
 call :installOptionalTools
 
 echo Displaying license agreement...
-call :showLicenseGui
+call :showLicense
 
 echo [****| Full setup complete! |****]
 echo.

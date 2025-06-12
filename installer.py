@@ -10,6 +10,7 @@ import os
 import platform
 import subprocess
 import sys
+import argparse
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -67,11 +68,17 @@ def update_submodules() -> None:
         raise
 
 
-def run_installer():
+def run_installer() -> int:
+    parser = argparse.ArgumentParser(description="Cross-platform installer")
+    parser.add_argument("--headless", action="store_true", help="Run without GUI prompts")
+    args = parser.parse_args()
+
     system = platform.system()
     hardware = select_hardware()
     env = os.environ.copy()
     env["MHP_HARDWARE"] = hardware
+    if args.headless:
+        env["HEADLESS"] = "1"
     try:
         update_submodules()
         if system == "Linux":

@@ -246,6 +246,21 @@ invokes `setup/macOS/install.sh` to configure Homebrew and the Python
 environment. The batch script supports both Windows 10 and Windows 11.
 By default the repository is cloned to `%ProgramFiles%\Monkey-Head-Project`.
 
+### Headless CLI Installation
+
+If you are installing on a server without a graphical environment you can
+perform the same setup entirely in the terminal. Pass the `--headless` flag to
+the cross-platform installer so the license agreement is displayed in the
+console instead of a Tkinter window:
+
+```bash
+sudo python installer.py --headless
+```
+
+The OS-specific scripts recognize the `HEADLESS=1` environment variable and will
+run `license_cli.py` to capture your consent. All other installation steps are
+identical to the GUI workflow.
+
 ### Uninstallation and Cleanup
 
 Run the cross-platform uninstaller to remove the project and optional packages:
