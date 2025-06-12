@@ -3,6 +3,33 @@ import logging.handlers
 import os
 from configparser import ConfigParser
 
+try:  # pragma: no cover - optional GUI dependency
+    import tkinter as tk
+    from tkinter import messagebox
+except Exception:  # pragma: no cover - can't import GUI libs
+    tk = None
+    messagebox = None
+
+
+class CriticalErrorHandler(logging.Handler):
+    """Display a GUI dialog for critical log records."""
+
+    def emit(self, record: logging.LogRecord) -> None:  # pragma: no cover - GUI
+        if messagebox is None or tk is None:
+            return
+        if record.levelno >= logging.CRITICAL:
+            try:
+                root = tk.Tk()
+                root.withdraw()
+                messagebox.showerror("Critical Error", self.format(record))
+            except Exception:
+                pass
+            finally:
+                try:
+                    root.destroy()
+                except Exception:
+                    pass
+
 
 def configure_logging(config_path=None):
     """Configure root logger using settings from CONFIG.txt."""
@@ -41,7 +68,11 @@ def configure_logging(config_path=None):
     file_handler.setFormatter(formatter)
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
+    gui_handler = CriticalErrorHandler()
+    gui_handler.setLevel(logging.CRITICAL)
+    gui_handler.setFormatter(formatter)
 
     logger.addHandler(file_handler)
     logger.addHandler(stream_handler)
+    logger.addHandler(gui_handler)
     return logger
