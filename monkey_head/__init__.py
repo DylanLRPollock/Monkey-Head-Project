@@ -10,8 +10,16 @@
 
 from .formatter import format_text
 from .gencore import generate_core_data
-from . import subos_manager
 from .logging_setup import configure_logging
+import os
+
+if not os.environ.get("MONKEY_HEAD_LIGHT_IMPORTS"):
+    try:
+        from . import subos_manager
+    except Exception:  # pragma: no cover - optional dependency
+        subos_manager = None
+else:
+    subos_manager = None
 from .utils.logger import get_logger
 from .convert_png_to_jpeg import convert_png_to_jpeg
 
@@ -24,7 +32,6 @@ from .media_conversion import (
     convert_video,
     convert_file,
 )
-import os
 
 if os.environ.get("MONKEY_HEAD_LIGHT_IMPORTS"):
     train_from_chat_and_pdfs = None
