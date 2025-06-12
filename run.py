@@ -18,14 +18,25 @@
 # ================================================== #
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
-from monkey_head.core.system_checks import check_os_support, check_python_version
 
-sys.path.insert(0, str((Path(__file__).parent / "src").resolve()))
+def minimal_run() -> None:
+    """Run the lightweight CLI without GUI dependencies."""
+    os.environ["MONKEY_HEAD_LIGHT_IMPORTS"] = "1"
+    from monkey_head.pygpt_custom_cli import CustomPyGPT
 
-from pygpt_net.app import run as cli_run
+    CustomPyGPT().run_cli()
+
+
+def _load_cli() -> "callable":
+    """Import and return the standard CLI runner."""
+    sys.path.insert(0, str((Path(__file__).parent / "src").resolve()))
+    from pygpt_net.app import run as cli_run
+
+    return cli_run
 
 
 def launch_gui() -> None:
@@ -51,11 +62,23 @@ def main() -> None:
         help="Run in command-line mode instead of the GUI",
     )
     parser.add_argument(
+        "--minimal",
+        action="store_true",
+        help="Run lightweight CustomPyGPT CLI",
+    )
+    parser.add_argument(
         "--version",
         action="store_true",
         help="Print pygpt_net version and exit",
     )
     args = parser.parse_args()
+
+    if args.minimal:
+        minimal_run()
+        return
+
+    from monkey_head.core.system_checks import check_os_support, check_python_version
+    cli_run = _load_cli()
 
     # Warn if running on an unsupported operating system
     check_os_support()
