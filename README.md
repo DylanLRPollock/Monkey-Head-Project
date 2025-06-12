@@ -337,6 +337,16 @@ python uninstaller.py       # Windows
 ```
 The script calls OS-specific cleanup scripts to delete the virtual environment, uninstall packages, and prune Docker resources.
 
+### Fresh Installation
+
+To completely reset the environment and reinstall everything, run the fresh installer. It first executes the uninstaller and then launches the regular installer:
+
+```bash
+sudo python fresh_install.py  # Linux/macOS
+python fresh_install.py       # Windows
+```
+
+
 
 ### Directory Structure
 
