@@ -9,16 +9,21 @@
 # huey/cli.py
 
 import argparse
+import sys
 from pathlib import Path
 from .main import main as huey_main
 from .utils import convert_image, convert_images_in_directory
 
 
-def parse_arguments():
+def parse_arguments(argv=None):
     """Parse command-line arguments."""
+    if argv is None:
+        argv = sys.argv[1:]
+
     parser = argparse.ArgumentParser(description="Huey Project Command-Line Interface")
 
     subparsers = parser.add_subparsers(dest="command")
+    parser.set_defaults(command="run")
 
     run_parser = subparsers.add_parser("run", help="Run the Huey application")
     run_parser.add_argument(
@@ -42,7 +47,10 @@ def parse_arguments():
         help="Quality for conversion (default: 100)",
     )
 
-    return parser.parse_args()
+    if not argv or argv[0].startswith("-"):
+        argv = ["run"] + argv
+
+    return parser.parse_args(argv)
 
 
 def run_cli():
