@@ -8,10 +8,10 @@
 # ==================================================
 import os
 import logging
-import subprocess
 import pwd
 
-from .core.system_checks import check_error, ensure_admin
+from .core.system_checks import ensure_admin
+from .utils.commands import run_command
 
 logger = logging.getLogger(__name__)
 
@@ -19,16 +19,8 @@ logger = logging.getLogger(__name__)
 def update_system() -> None:
     """Update package lists and installed packages."""
     logger.info("Updating system packages...")
-    update = subprocess.run(
-        ["apt-get", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-    check_error(update, "apt-get update")
-    upgrade = subprocess.run(
-        ["apt-get", "upgrade", "-y"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    check_error(upgrade, "apt-get upgrade")
+    run_command(["apt-get", "update"])
+    run_command(["apt-get", "upgrade", "-y"])
 
 
 def install_tools() -> None:
@@ -44,12 +36,7 @@ def install_tools() -> None:
         "python3",
         "python3-venv",
     ]
-    install = subprocess.run(
-        ["apt-get", "install", "-y", *tools],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    check_error(install, "Install SubOS tools")
+    run_command(["apt-get", "install", "-y", *tools])
 
 
 def create_user(user: str = "subos") -> None:
@@ -59,12 +46,7 @@ def create_user(user: str = "subos") -> None:
         pwd.getpwnam(user)
         logger.info("User %s already exists", user)
     except KeyError:
-        add_user = subprocess.run(
-            ["useradd", "-m", user],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        check_error(add_user, f"Create user {user}")
+        run_command(["useradd", "-m", user])
 
 
 def configure_environment() -> None:
@@ -73,20 +55,23 @@ def configure_environment() -> None:
     base = os.path.expanduser("~/SubOS")
     os.makedirs(base, exist_ok=True)
     os.environ["SUBOS_PATH"] = base
-    with open(os.path.expanduser("~/.bashrc"), "a") as bashrc:
-        bashrc.write("\nexport SUBOS_PATH=$HOME/SubOS\n")
+    bashrc_path = os.path.expanduser("~/.bashrc")
+    line = "export SUBOS_PATH=$HOME/SubOS"
+    if os.path.exists(bashrc_path):
+        with open(bashrc_path) as bashrc:
+            content = bashrc.read()
+    else:
+        content = ""
+    if line not in content:
+        with open(bashrc_path, "a") as bashrc:
+            bashrc.write(f"\n{line}\n")
 
 
 def deploy_subos() -> None:
     """Deploy the SubOS Docker environment."""
     logger.info("Deploying SubOS...")
     os.chdir(os.path.expanduser("~/SubOS"))
-    deploy = subprocess.run(
-        ["docker-compose", "up", "-d"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    check_error(deploy, "SubOS deployment")
+    run_command(["docker-compose", "up", "-d"])
 
 
 def run() -> None:
