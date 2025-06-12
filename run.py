@@ -67,6 +67,11 @@ def main() -> None:
         help="Run lightweight CustomPyGPT CLI",
     )
     parser.add_argument(
+        "--simple-chat",
+        action="store_true",
+        help="Run simple chat demonstration GUI",
+    )
+    parser.add_argument(
         "--version",
         action="store_true",
         help="Print pygpt_net version and exit",
@@ -75,6 +80,11 @@ def main() -> None:
 
     if args.minimal:
         minimal_run()
+        return
+    if args.simple_chat:
+        from monkey_head.simple_chat_gui import run_simple_chat
+
+        run_simple_chat()
         return
 
     from monkey_head.core.system_checks import check_os_support, check_python_version

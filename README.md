@@ -192,7 +192,8 @@ lets you start the program without opening a terminal. If the GUI cannot be
 displayed (for example on a headless server), the launcher automatically falls
 back to the command-line interface. You can also force CLI mode with
 `python run.py --cli`. For an even lighter headless run you can launch the
-minimal echo chatbot with `python run.py --minimal`.
+minimal echo chatbot with `python run.py --minimal`. A basic Tkinter chat demo
+is also available via `python run.py --simple-chat`.
 
 The GUI now checks whether you've accepted the license on startup and
 offers a **Tools** menu. From there you can reopen the license dialog or
