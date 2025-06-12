@@ -9,6 +9,9 @@
 @echo off
 setlocal enabledelayedexpansion
 
+:: Default installation directory
+set "INSTALL_DIR=%ProgramFiles%\Monkey-Head-Project"
+
 :: Change to the script's own directory
 cd /d "%~dp0"
 
@@ -109,18 +112,20 @@ goto :eof
 :: Function to clone the repository
 :cloneRepository
 echo Cloning repository...
-if not exist "%USERPROFILE%\Source" mkdir "%USERPROFILE%\Source"
-cd "%USERPROFILE%\Source"
-git clone --recurse-submodules https://github.com/DylanLRPollock/Monkey-Head-Project.git
+if exist "%INSTALL_DIR%" (
+    rmdir /S /Q "%INSTALL_DIR%"
+)
+mkdir "%INSTALL_DIR%"
+cd "%INSTALL_DIR%"
+git clone --recurse-submodules https://github.com/DylanLRPollock/Monkey-Head-Project.git .
 call :checkError "Git Clone"
-cd Monkey-Head-Project
 git submodule update --init --recursive
 goto :eof
 
 :: Function to set up Python environment
 :setupPythonEnv
 echo Setting up Python environment...
-cd "%USERPROFILE%\Source\Monkey-Head-Project"
+cd "%INSTALL_DIR%"
 python -m venv venv
 call :checkError "Python Virtual Environment Setup"
 venv\Scripts\activate

@@ -10,10 +10,27 @@
 
 set -e
 
-VENV_DIR="venv"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# Application install location
+INSTALL_DIR="/Applications/MonkeyHeadProject"
+
+# Virtual environment inside the install directory
+VENV_DIR="$INSTALL_DIR/venv"
 
 function command_exists() {
     command -v "$1" >/dev/null 2>&1
+}
+
+function copy_project_files() {
+    if [ "$PROJECT_ROOT" != "$INSTALL_DIR" ]; then
+        echo "Copying project files to $INSTALL_DIR..."
+        mkdir -p "$INSTALL_DIR" || exit 1
+        rsync -a --exclude 'venv' "$PROJECT_ROOT/" "$INSTALL_DIR/" || exit 1
+        PROJECT_ROOT="$INSTALL_DIR"
+        cd "$PROJECT_ROOT" || exit 1
+    fi
 }
 
 function install_homebrew() {
@@ -56,6 +73,7 @@ function update_submodules() {
 }
 
 install_homebrew
+copy_project_files
 install_packages
 update_submodules
 setup_python_env

@@ -13,7 +13,11 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-VENV_DIR="venv"
+# Install location for the application
+INSTALL_DIR="/opt/monkey_head"
+
+# Virtual environment lives inside the install directory
+VENV_DIR="$INSTALL_DIR/venv"
 
 function error_exit {
     echo "$1" >&2
@@ -24,6 +28,17 @@ function ensure_root {
     if [ "$EUID" -ne 0 ]; then
         echo "Please run this script with sudo or as root." >&2
         exit 1
+    fi
+}
+
+function copy_project_files {
+    if [ "$PROJECT_ROOT" != "$INSTALL_DIR" ]; then
+        echo "Copying project files to $INSTALL_DIR..."
+        mkdir -p "$INSTALL_DIR" || error_exit "Cannot create $INSTALL_DIR"
+        rsync -a --exclude 'venv' "$PROJECT_ROOT/" "$INSTALL_DIR/" || \
+            error_exit "Failed to copy project files"
+        PROJECT_ROOT="$INSTALL_DIR"
+        cd "$PROJECT_ROOT" || error_exit "Cannot cd to $PROJECT_ROOT"
     fi
 }
 
@@ -70,6 +85,7 @@ function update_submodules {
 }
 
 ensure_root
+copy_project_files
 update_system
 install_common_tools
 install_additional_tools

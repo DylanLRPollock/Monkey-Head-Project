@@ -201,7 +201,7 @@ Run the cross-platform installer with root privileges:
 sudo python installer.py
 ```
 
-This invokes `setup/Debian13/install.sh`, which updates `/etc/apt/sources.list` to Debian **Trixie**, installs Git, Node.js, Python 3, and Docker, then creates a virtual environment and preloads bundled data. Accept the license agreement when prompted.
+This invokes `setup/Debian13/install.sh`, which updates `/etc/apt/sources.list` to Debian **Trixie**, installs Git, Node.js, Python 3, and Docker, then creates a virtual environment and preloads bundled data. Accept the license agreement when prompted. The project files are copied to `/opt/monkey_head`.
 
 
 ### macOS Installation
@@ -211,6 +211,7 @@ ensures Homebrew is available, installs Git, Python 3, Docker, and sets up the
 project's Python virtual environment automatically. During setup it also
 initializes git submodules, displays the license agreement, and preloads bundled
 data.
+All files are installed into `/Applications/MonkeyHeadProject`.
 
 ### Windows 10 & 11 Installation
 
@@ -229,6 +230,7 @@ This launches `setup/Windows11/01-FULL.bat`, which installs Chocolatey, Git,
 Docker Desktop, and other required tools on Windows. On macOS the installer
 invokes `setup/macOS/install.sh` to configure Homebrew and the Python
 environment. The batch script supports both Windows 10 and Windows 11.
+By default the repository is cloned to `%ProgramFiles%\Monkey-Head-Project`.
 
 ### Uninstallation and Cleanup
 
