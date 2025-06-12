@@ -38,9 +38,11 @@ from monkey_head.services.container_management import (
 )
 
 # Dark theme colors
-DARK_BG = "#2d2b57"  # dark purple background
-LIGHT_FG = "#e3dfff"  # light foreground text
-ACCENT_PURPLE = "#ac65ff"  # accent color
+# Updated to use a black background with green text and
+# a dark purple accent for frames and windows.
+DARK_BG = "#000000"  # black background
+LIGHT_FG = "#00ff00"  # green foreground text
+ACCENT_PURPLE = "#2d2b57"  # dark purple accent color
 
 
 class MainUI:
@@ -64,7 +66,12 @@ class MainUI:
         if tk is None:
             return
 
-        self.root.configure(bg=DARK_BG)
+        self.root.configure(
+            bg=DARK_BG,
+            highlightbackground=ACCENT_PURPLE,
+            highlightcolor=ACCENT_PURPLE,
+            highlightthickness=2,
+        )
 
         if ttk is not None:
             style = ttk.Style(self.root)
@@ -168,6 +175,9 @@ class MainUI:
             bg=DARK_BG,
             fg=LIGHT_FG,
             insertbackground=LIGHT_FG,
+            highlightbackground=ACCENT_PURPLE,
+            highlightcolor=ACCENT_PURPLE,
+            highlightthickness=2,
         )
         self.log_text.pack(pady=10)
 
@@ -184,6 +194,9 @@ class MainUI:
             anchor=tk.W,
             bg=DARK_BG,
             fg=LIGHT_FG,
+            highlightbackground=ACCENT_PURPLE,
+            highlightcolor=ACCENT_PURPLE,
+            highlightthickness=2,
         )
         self.status_label.pack(fill=tk.X, side=tk.BOTTOM, ipady=2)
 

@@ -19,6 +19,11 @@ except Exception:  # pragma: no cover - can't import GUI libs
 from .config_manager import ConfigManager
 from .gui_scaling import apply_scaling
 
+# Shared theme colors
+DARK_BG = "#000000"  # black background
+LIGHT_FG = "#00ff00"  # green text
+ACCENT_PURPLE = "#2d2b57"  # dark purple accent
+
 
 def accept_license(config_path: str | Path) -> None:
     """Set the ``license.accepted`` flag in the given config file."""
@@ -39,8 +44,25 @@ def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -
     apply_scaling(root)
     root.title("License Agreement")
     root.minsize(800, 600)
+    root.configure(
+        bg=DARK_BG,
+        highlightbackground=ACCENT_PURPLE,
+        highlightcolor=ACCENT_PURPLE,
+        highlightthickness=2,
+    )
 
-    text = scrolledtext.ScrolledText(root, width=100, height=25, wrap=tk.WORD)
+    text = scrolledtext.ScrolledText(
+        root,
+        width=100,
+        height=25,
+        wrap=tk.WORD,
+        bg=DARK_BG,
+        fg=LIGHT_FG,
+        insertbackground=LIGHT_FG,
+        highlightbackground=ACCENT_PURPLE,
+        highlightcolor=ACCENT_PURPLE,
+        highlightthickness=2,
+    )
     try:
         license_text = Path("docs/LICENSE").read_text(encoding="utf-8")
     except Exception:
@@ -62,10 +84,32 @@ def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -
         messagebox.showwarning("License", "You must accept the license to proceed")
         root.destroy()
 
-    btn_frame = tk.Frame(root)
+    btn_frame = tk.Frame(
+        root,
+        bg=DARK_BG,
+        highlightbackground=ACCENT_PURPLE,
+        highlightcolor=ACCENT_PURPLE,
+        highlightthickness=2,
+    )
     btn_frame.pack(pady=10)
-    tk.Button(btn_frame, text="Accept", command=on_accept).pack(side=tk.LEFT, padx=5)
-    tk.Button(btn_frame, text="Decline", command=on_decline).pack(side=tk.LEFT, padx=5)
+    tk.Button(
+        btn_frame,
+        text="Accept",
+        command=on_accept,
+        bg=ACCENT_PURPLE,
+        fg=LIGHT_FG,
+        activebackground=ACCENT_PURPLE,
+        activeforeground=LIGHT_FG,
+    ).pack(side=tk.LEFT, padx=5)
+    tk.Button(
+        btn_frame,
+        text="Decline",
+        command=on_decline,
+        bg=ACCENT_PURPLE,
+        fg=LIGHT_FG,
+        activebackground=ACCENT_PURPLE,
+        activeforeground=LIGHT_FG,
+    ).pack(side=tk.LEFT, padx=5)
 
     root.mainloop()
 
