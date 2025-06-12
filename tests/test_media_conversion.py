@@ -10,7 +10,20 @@ from pathlib import Path
 import wave
 import subprocess
 
-from monkey_head.media_conversion import convert_audio, convert_video, convert_file
+import importlib.util
+from types import ModuleType
+
+spec = importlib.util.spec_from_file_location(
+    "media_conversion",
+    str(Path(__file__).resolve().parents[1] / "monkey_head" / "media_conversion.py"),
+)
+mc: ModuleType = importlib.util.module_from_spec(spec)
+assert spec.loader is not None
+spec.loader.exec_module(mc)
+convert_audio = mc.convert_audio
+convert_video = mc.convert_video
+convert_file = mc.convert_file
+convert_media = mc.convert_media
 
 
 def _make_wav(path: Path) -> None:
@@ -60,3 +73,27 @@ def test_convert_file(tmp_path: Path) -> None:
     src.write_text("hello")
     convert_file(str(src), str(dst))
     assert dst.read_text() == "hello"
+
+
+def test_convert_media_audio(tmp_path: Path) -> None:
+    src = tmp_path / "snd.wav"
+    dst = tmp_path / "snd.mp3"
+    _make_wav(src)
+    convert_media(str(src), str(dst))
+    assert dst.exists() and dst.stat().st_size > 0
+
+
+def test_convert_media_video(tmp_path: Path) -> None:
+    src = tmp_path / "vid.mp4"
+    dst = tmp_path / "vid.avi"
+    _make_video(src)
+    convert_media(str(src), str(dst))
+    assert dst.exists() and dst.stat().st_size > 0
+
+
+def test_convert_media_generic(tmp_path: Path) -> None:
+    src = tmp_path / "data.bin"
+    dst = tmp_path / "copy.bin"
+    src.write_text("x")
+    convert_media(str(src), str(dst))
+    assert dst.read_text() == "x"

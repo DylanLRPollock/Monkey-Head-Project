@@ -14,11 +14,18 @@ from pathlib import Path
 
 try:  # pragma: no cover - optional dependency
     import tkinter as tk
-    from tkinter import messagebox, scrolledtext, simpledialog, ttk
+    from tkinter import (
+        messagebox,
+        scrolledtext,
+        simpledialog,
+        filedialog,
+        ttk,
+    )
 except Exception:  # pragma: no cover - can't import GUI libs
     tk = None
     messagebox = None
     scrolledtext = None
+    filedialog = None
     ttk = None
 
 from monkey_head.license_gui import show_license_gui
@@ -36,6 +43,7 @@ from monkey_head.services.container_management import (
     scale_deployment,
     stop_containers,
 )
+from monkey_head.media_conversion import convert_media
 
 # Dark theme colors
 # Updated to use a black background with green text and
@@ -147,6 +155,7 @@ class MainUI:
         tools_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
         tools_menu.add_command(label="License", command=self.show_license)
         tools_menu.add_command(label="Data Summary", command=self.show_data_summary)
+        tools_menu.add_command(label="Convert Media", command=self.convert_media_prompt)
         menu_bar.add_cascade(label="Tools", menu=tools_menu)
 
         docker_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
@@ -399,6 +408,38 @@ class MainUI:
         self.status_label.config(text="Status: Logs")
         self.progress.start()
         threading.Thread(target=self._get_logs, args=(pod,)).start()
+
+    def convert_media_prompt(self):
+        if filedialog is None:
+            messagebox.showerror("Error", "Tkinter is not available")
+            return
+        src = filedialog.askopenfilename(title="Select source file")
+        if not src:
+            return
+        dst = filedialog.asksaveasfilename(title="Select output file")
+        if not dst:
+            return
+        bitrate = simpledialog.askstring(
+            "Audio Bitrate", "Bitrate", initialvalue="192k"
+        )
+        codec = simpledialog.askstring("Video Codec", "Codec", initialvalue="libx264")
+        self.log_message(f"Converting {src} -> {dst}...")
+        self.status_label.config(text="Status: Converting")
+        self.progress.start()
+        threading.Thread(
+            target=self._convert_media_thread,
+            args=(src, dst, bitrate, codec),
+        ).start()
+
+    def _convert_media_thread(self, src, dst, bitrate, codec):
+        try:
+            convert_media(src, dst, bitrate=bitrate, codec=codec)
+            self.log_message("Operation completed successfully.")
+        except Exception as exc:  # pragma: no cover - ffmpeg errors
+            self.log_message(f"Exception: {exc}")
+        finally:
+            self.progress.stop()
+            self.status_label.config(text="Status: Ready")
 
     def _get_logs(self, pod):
         try:
