@@ -10,7 +10,12 @@
 set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-VENV_DIR="$PROJECT_ROOT/venv"
+
+# Installation directory
+INSTALL_DIR="/opt/monkey_head"
+
+# Virtual environment inside the installation directory
+VENV_DIR="$INSTALL_DIR/venv"
 
 function error_exit() {
     echo "$1" >&2
@@ -42,9 +47,17 @@ function cleanup_docker() {
     docker system prune -a -f --volumes || true
 }
 
+function remove_install_dir() {
+    if [ -d "$INSTALL_DIR" ]; then
+        echo "Removing installed files..."
+        rm -rf "$INSTALL_DIR"
+    fi
+}
+
 ensure_root
 remove_python_env
 remove_packages
 cleanup_docker
+remove_install_dir
 
 echo "Uninstallation completed successfully."
