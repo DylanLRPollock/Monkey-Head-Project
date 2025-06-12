@@ -31,6 +31,20 @@ class TestLicenseCli(unittest.TestCase):
         self.assertTrue(updated.get("license.accepted"))
         os.remove(temp_path)
 
+    def test_show_license_cli_declines(self):
+        temp_path = Path("/tmp/test_config_cli.json")
+        with temp_path.open("w", encoding="utf-8") as f:
+            json.dump({"license.accepted": False}, f)
+
+        with patch("builtins.input", side_effect=["n"]):
+            with self.assertRaises(RuntimeError):
+                show_license_cli(temp_path)
+
+        with temp_path.open(encoding="utf-8") as f:
+            data = json.load(f)
+        self.assertFalse(data.get("license.accepted"))
+        os.remove(temp_path)
+
 
 if __name__ == "__main__":
     unittest.main()

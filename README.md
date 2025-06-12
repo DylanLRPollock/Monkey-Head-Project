@@ -258,8 +258,9 @@ sudo python installer.py --headless
 ```
 
 The OS-specific scripts recognize the `HEADLESS=1` environment variable and will
-run `license_cli.py` to capture your consent. All other installation steps are
-identical to the GUI workflow.
+run `license_cli.py` to capture your consent. The CLI helper gracefully
+re-prompts on invalid input and logs any unexpected errors to `app.log`.
+All other installation steps are identical to the GUI workflow.
 
 ### Uninstallation and Cleanup
 
