@@ -193,7 +193,10 @@ back to the command-line interface. You can also force CLI mode with
 
 The GUI now checks whether you've accepted the license on startup and
 offers a **Tools** menu. From there you can reopen the license dialog or
-view a summary of bundled prompts and memory files.
+view a summary of bundled prompts and memory files. Additional **Docker** and
+**Kubernetes** menus provide one-click access to common container tasks such as
+building images, starting or stopping containers, cleaning up resources, and
+deploying or scaling Kubernetes manifests.
 
 ### Customizing prompts and personalities
 
