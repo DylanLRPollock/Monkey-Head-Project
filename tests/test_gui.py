@@ -89,3 +89,29 @@ def test_scale_deployment_prompt_collects_input():
         )
         MainUI.scale_deployment_prompt(ui)
         runner.assert_called_once()
+
+
+def test_convert_media_prompt_runs_thread():
+    ui = MainUI.__new__(MainUI)
+    ui.status_label = SimpleNamespace(config=lambda **_: None)
+    ui.progress = SimpleNamespace(start=lambda: None, stop=lambda: None)
+    with patch("gui.main_ui.filedialog.askopenfilename", return_value="in.wav"), patch(
+        "gui.main_ui.filedialog.asksaveasfilename",
+        return_value="out.mp3",
+    ), patch(
+        "gui.main_ui.simpledialog.askstring",
+        side_effect=["128k", "libx264"],
+    ), patch(
+        "gui.main_ui.convert_media"
+    ) as conv, patch(
+        "gui.main_ui.threading.Thread"
+    ) as th, patch.object(
+        MainUI, "log_message"
+    ):
+        th.side_effect = lambda target, args: SimpleNamespace(
+            start=lambda: target(*args)
+        )
+        MainUI.convert_media_prompt(ui)
+        conv.assert_called_once_with(
+            "in.wav", "out.mp3", bitrate="128k", codec="libx264"
+        )

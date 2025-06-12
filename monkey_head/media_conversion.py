@@ -18,6 +18,7 @@ __all__ = [
     "convert_audio",
     "convert_video",
     "convert_file",
+    "convert_media",
 ]
 
 
@@ -42,3 +43,37 @@ def convert_video(src: str, dst: str, codec: str = "libx264") -> None:
 def convert_file(src: str, dst: str) -> None:
     """Generic file conversion by copying to a new path."""
     shutil.copyfile(src, dst)
+
+
+AUDIO_EXTENSIONS = {".wav", ".mp3", ".flac", ".m4a", ".aac", ".ogg"}
+VIDEO_EXTENSIONS = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".flv"}
+
+
+def convert_media(
+    src: str,
+    dst: str,
+    *,
+    bitrate: str = "192k",
+    codec: str = "libx264",
+) -> None:
+    """Convert an audio or video file, falling back to copy.
+
+    Parameters
+    ----------
+    src : str
+        Path to the input file.
+    dst : str
+        Path to the output file.
+    bitrate : str, optional
+        Audio bitrate used for audio conversion.
+    codec : str, optional
+        Video codec used for video conversion.
+    """
+
+    ext = Path(src).suffix.lower()
+    if ext in AUDIO_EXTENSIONS:
+        convert_audio(src, dst, bitrate=bitrate)
+    elif ext in VIDEO_EXTENSIONS:
+        convert_video(src, dst, codec=codec)
+    else:
+        convert_file(src, dst)

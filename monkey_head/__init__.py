@@ -24,8 +24,14 @@ from .media_conversion import (
     convert_video,
     convert_file,
 )
-from .chat_learning import train_from_chat_and_pdfs
-from .tensorflow_feed import train_from_project_sources
+import os
+
+if os.environ.get("MONKEY_HEAD_LIGHT_IMPORTS"):
+    train_from_chat_and_pdfs = None
+    train_from_project_sources = None
+else:
+    from .chat_learning import train_from_chat_and_pdfs
+    from .tensorflow_feed import train_from_project_sources
 
 # Initialize project-wide logging as soon as the package is imported
 configure_logging()
