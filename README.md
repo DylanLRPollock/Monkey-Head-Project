@@ -75,6 +75,15 @@ Huey exposes clear integration points for sensors, actuators, and experimental m
 
 ---
 
+### Software Requirements
+
+Ensure the following tools are installed before running the project:
+
+- **Python 3.12+** and `pip`
+- **Git**
+- **Docker** and **Docker Compose**
+- **Kubernetes** (`kubectl` CLI)
+
 ## 🖥️ Installation and Usage
 
 ### Quick Start (Docker)

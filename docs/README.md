@@ -194,6 +194,14 @@ Processor: At least 4 physical cores (2.5 GHz recommended) to manage the demands
 
 Operating System: Supports **Windows 10**, **Windows 11**, or **macOS Ventura** (or newer) for full HostOS functionality.
 
+### Software Requirements
+
+- Python 3.12+ with `pip`
+- Git
+- Docker and Docker Compose
+- Kubernetes (`kubectl` CLI)
+- Node.js
+
 Installation Process
 
 Download: Obtain GenCore HostOS from the official repository, ensuring you have the latest stable release.
