@@ -10,11 +10,20 @@
 
 import logging
 from pathlib import Path
-from typing import Optional
+from typing import Iterable, Optional
 
 from PIL import Image
-
 from .exceptions import InvalidInputError
+
+# Supported image formats for conversion
+SUPPORTED_FORMATS: Iterable[str] = (
+    "JPEG",
+    "PNG",
+    "BMP",
+    "GIF",
+    "TIFF",
+    "WEBP",
+)
 
 
 def setup_logging(config):
@@ -74,3 +83,107 @@ def convert_jpeg_to_png(jpeg_path: str, png_path: Optional[str] | None = None) -
         img.save(png_file, format="PNG")
 
     return str(png_file)
+
+
+def convert_image(
+    image_path: str,
+    output_format: str,
+    output_path: Optional[str] | None = None,
+    quality: int = 100,
+) -> str:
+    """Convert an image to a different format with maximum quality.
+
+    Parameters
+    ----------
+    image_path : str
+        Path to the source image.
+    output_format : str
+        Desired output format (e.g. ``"PNG"`` or ``"JPEG"``).
+    output_path : str, optional
+        Desired output path. Defaults to the same base name with a new extension.
+    quality : int, optional
+        Output quality for formats that support it. Defaults to ``100``.
+
+    Returns
+    -------
+    str
+        Path to the converted image.
+    """
+
+    img_file = Path(image_path)
+    if not img_file.is_file():
+        raise FileNotFoundError(f"{image_path} does not exist")
+
+    fmt = output_format.upper()
+    if fmt not in SUPPORTED_FORMATS:
+        raise ValueError(f"Unsupported format: {output_format}")
+
+    if output_path is None:
+        suffix = ".jpg" if fmt == "JPEG" else f".{fmt.lower()}"
+        out_file = img_file.with_suffix(suffix)
+    else:
+        out_file = Path(output_path)
+
+    with Image.open(img_file) as img:
+        save_kwargs = {}
+        if fmt == "JPEG" or fmt == "WEBP":
+            save_kwargs["quality"] = quality
+        if fmt == "PNG":
+            save_kwargs["optimize"] = True
+        img.save(out_file, format=fmt, **save_kwargs)
+
+    return str(out_file)
+
+
+def convert_images_in_directory(
+    directory: str,
+    output_format: str,
+    output_directory: Optional[str] | None = None,
+    quality: int = 100,
+) -> list[str]:
+    """Convert all images in a directory to the specified format.
+
+    Parameters
+    ----------
+    directory : str
+        Directory containing images to convert.
+    output_format : str
+        Desired output format.
+    output_directory : str, optional
+        Directory to save converted images. Defaults to ``directory``.
+    quality : int, optional
+        Quality used for conversion. Defaults to ``100``.
+
+    Returns
+    -------
+    list[str]
+        Paths to converted images.
+    """
+
+    dir_path = Path(directory)
+    if not dir_path.is_dir():
+        raise NotADirectoryError(f"{directory} is not a directory")
+
+    out_dir = Path(output_directory) if output_directory else dir_path
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    converted_paths = []
+    for file in dir_path.iterdir():
+        if file.is_file():
+            try:
+                out_name = file.stem + (
+                    ".jpg"
+                    if output_format.upper() == "JPEG"
+                    else f".{output_format.lower()}"
+                )
+                new_path = convert_image(
+                    str(file),
+                    output_format,
+                    str(out_dir / out_name),
+                    quality,
+                )
+                converted_paths.append(new_path)
+            except (ValueError, FileNotFoundError):
+                continue
+
+    return converted_paths

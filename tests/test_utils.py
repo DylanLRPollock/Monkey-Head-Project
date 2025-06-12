@@ -14,7 +14,13 @@ import unittest
 
 from PIL import Image
 
-from huey.utils import calculate_sum, validate_input, convert_jpeg_to_png
+from huey.utils import (
+    calculate_sum,
+    validate_input,
+    convert_jpeg_to_png,
+    convert_image,
+    convert_images_in_directory,
+)
 from huey.exceptions import InvalidInputError
 
 
@@ -46,6 +52,42 @@ class TestUtils(unittest.TestCase):
             result_path = convert_jpeg_to_png(str(jpeg_path), str(custom_out))
             assert result_path == str(custom_out)
             assert custom_out.is_file()
+
+    def test_convert_image(self):
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            img = Image.new("RGB", (10, 10), color="blue")
+            src = tmp_path / "img.png"
+            img.save(src, "PNG")
+
+            out_jpeg = convert_image(str(src), "JPEG")
+            assert Path(out_jpeg).suffix in {".jpg", ".jpeg"}
+            assert Path(out_jpeg).is_file()
+
+            custom_out = tmp_path / "result.jpg"
+            out_custom = convert_image(str(src), "JPEG", str(custom_out), quality=90)
+            assert out_custom == str(custom_out)
+            assert custom_out.is_file()
+
+    def test_convert_images_in_directory(self):
+        from tempfile import TemporaryDirectory
+
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            for i in range(3):
+                Image.new("RGB", (10, 10), color="green").save(
+                    tmp_path / f"img_{i}.png", "PNG"
+                )
+
+            out_dir = tmp_path / "out"
+            results = convert_images_in_directory(str(tmp_path), "JPEG", str(out_dir))
+
+            assert len(results) == 3
+            for path in results:
+                assert Path(path).suffix in {".jpg", ".jpeg"}
+                assert Path(path).is_file()
 
 
 if __name__ == "__main__":
