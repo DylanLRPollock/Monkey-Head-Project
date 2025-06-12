@@ -52,6 +52,7 @@ def show_license_cli(config_path: str | Path = DEFAULT_CONFIG) -> None:
     response = prompt_response("Do you accept the license terms? [y/n]: ")
     if response == "yes":
         manager.set_setting("license.accepted", True)
+        print("WARNING: This is experimental software. Proceed with caution.")
     else:
         raise RuntimeError("License declined")
 
