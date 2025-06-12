@@ -28,6 +28,8 @@ A hierarchical adaptive OS divided into specialized layers:
 * **SubOS Environment:** A **Debian Trixie** installation with **Python 3.12** preloaded, handling mid-level coordination and task scheduling.
 * **NanoOS Environment:** A lightweight **Python 3.12** runtime used for granular execution of hardware-level tasks.
 
+#### GenCore Logic
+GenCore is a custom Debian **Trixie** distribution engineered to run bare metal on Huey. It boots directly on the robot's hardware and orchestrates containerised SubOS and NanoOS layers without an intermediary OS. Real-time patches and robotics drivers keep latency low, enabling deterministic control over sensors and actuators while maintaining the flexibility of modular containers.
 ### 2. Huey Robotic Shell
 
 The physical embodiment of GenCore:

@@ -7,6 +7,9 @@ The Monkey Head Project is founded on the theory that, given enough time, resour
 
 The core of the Monkey Head Project, known as GenCore, is a versatile and evolving AI/OS capable of running across multiple hardware configurations—from vintage legacy systems to modern high-performance setups. GenCore’s adaptability is a testament to its dynamic structure, capable of learning and optimizing itself as it interacts with its environment and hardware, while also serving as the platform for Huey's intelligence.
 
+### GenCore Logic
+GenCore is our flavor of Debian **Trixie** designed to run bare metal on Huey. It initializes directly on the robot's hardware and manages containerized SubOS and NanoOS layers without a host OS. Real-time patches and custom drivers allow precise control while keeping the system flexible for future expansion.
+
 If you're new to the project, start with [New-To-AI.md](New-To-AI.md) for a concise introduction before diving into the details below.
 
 https://chatgpt.com/g/g-HMBaFrJ6b-huey
