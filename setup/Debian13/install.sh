@@ -52,7 +52,7 @@ function update_system {
 
 
 # Default package list if MHP_SOFTWARE is set to "auto" or empty
-DEFAULT_PACKAGES="git nodejs python3 python3-venv docker.io"
+DEFAULT_PACKAGES="git build-essential g++ nodejs python3 python3-venv docker.io"
 
 function install_selected_packages {
     local packages="${MHP_SOFTWARE:-auto}"
