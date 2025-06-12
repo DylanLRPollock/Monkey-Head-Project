@@ -41,6 +41,7 @@ class MainUI:
         apply_scaling(self.root, mode)
         self.apply_dark_theme()
         self.root.title("Program Manager")
+        self.root.minsize(800, 600)
         self.setup_paths()
         self.create_menu()
         self.create_widgets()
@@ -132,8 +133,8 @@ class MainUI:
     def create_widgets(self):
         self.log_text = scrolledtext.ScrolledText(
             self.root,
-            width=80,
-            height=20,
+            width=100,
+            height=25,
             bg=DARK_BG,
             fg=LIGHT_FG,
             insertbackground=LIGHT_FG,
@@ -141,7 +142,7 @@ class MainUI:
         self.log_text.pack(pady=10)
 
         self.progress = ttk.Progressbar(
-            self.root, orient=tk.HORIZONTAL, length=400, mode="determinate"
+            self.root, orient=tk.HORIZONTAL, length=500, mode="determinate"
         )
         self.progress.pack(pady=10)
 
