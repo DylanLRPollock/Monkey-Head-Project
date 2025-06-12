@@ -26,7 +26,7 @@ db_host = localhost
 db_port = 5432
 db_name = monkey_head_db
 db_user = db_user
-db_password = securepassword
+db_password = ${DB_PASSWORD}
 
 # Connection pool settings
 db_pool_min_size = 1
@@ -53,7 +53,7 @@ log_backup_count = 5
 ######################################################
 [app]
 # Secret key for session management and other security purposes
-secret_key = your_secret_key_here
+secret_key = ${SECRET_KEY}
 
 # Path to the directory where uploaded files are stored
 upload_folder = /var/monkey_head_project/uploads
@@ -72,7 +72,7 @@ debug = True
 smtp_server = smtp.example.com
 smtp_port = 587
 smtp_username = your_email@example.com
-smtp_password = your_email_password
+smtp_password = ${SMTP_PASSWORD}
 
 # Email address for sending notifications
 notification_email = notify@example.com
@@ -114,7 +114,7 @@ cache_type = redis
 redis_host = localhost
 redis_port = 6379
 redis_db = 0
-redis_password = your_redis_password
+redis_password = ${REDIS_PASSWORD}
 
 # Cache timeout in seconds
 cache_timeout = 300
@@ -138,8 +138,8 @@ session_file_dir = /var/monkey_head_project/sessions
 [external_services]
 # Configuration for external services integration
 # Example: AWS S3 settings for file storage
-aws_access_key_id = your_aws_access_key
-aws_secret_access_key = your_aws_secret_key
+aws_access_key_id = ${AWS_ACCESS_KEY_ID}
+aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}
 aws_s3_bucket_name = your_bucket_name
 aws_region = us-west-2
 
