@@ -63,6 +63,7 @@ A hierarchical adaptive OS divided into specialized layers:
 * **HostOS Environment:** Runs on either **Windows 10**, **Windows 11**, or **macOS Ventura** (or newer), providing a familiar desktop operating system for overall system control.
 * **SubOS Environment:** A **Debian Trixie** installation with **Python 3.12** preloaded, handling mid-level coordination and task scheduling.
 * **NanoOS Environment:** A lightweight **Python 3.12** runtime used for granular execution of hardware-level tasks.
+* **Desktop Environment:** Both GenCore and SubOS use the lightweight **MATE** desktop, providing a consistent interface across layers.
 
 #### GenCore Logic
 GenCore is a custom Debian **Trixie** distribution engineered to run bare metal on Huey. It boots directly on the robot's hardware and orchestrates containerised SubOS and NanoOS layers without an intermediary OS. Real-time patches and robotics drivers keep latency low, enabling deterministic control over sensors and actuators while maintaining the flexibility of modular containers.
