@@ -4,7 +4,7 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated: 06.05.2025
+# Updated: 06.11.2025
 # ==================================================
 from monkey_head.utils.logger import get_logger
 from flask import Flask, jsonify

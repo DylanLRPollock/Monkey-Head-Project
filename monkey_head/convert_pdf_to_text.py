@@ -4,7 +4,7 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated: 06.05.2025
+# Updated: 06.08.2025
 # ==================================================
 import os
 from PyPDF2 import PdfReader
