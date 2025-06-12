@@ -50,14 +50,17 @@ function update_system {
     apt-get upgrade -y || error_exit "apt-get upgrade failed."
 }
 
-function install_common_tools {
-    echo "Installing common tools..."
-    apt-get install -y git nodejs || error_exit "Failed to install common tools."
-}
 
-function install_additional_tools {
-    echo "Installing additional tools..."
-    apt-get install -y python3 python3-venv docker.io || error_exit "Failed to install additional tools."
+# Default package list if MHP_SOFTWARE is set to "auto" or empty
+DEFAULT_PACKAGES="git nodejs python3 python3-venv docker.io"
+
+function install_selected_packages {
+    local packages="${MHP_SOFTWARE:-auto}"
+    if [ "$packages" = "auto" ] || [ -z "$packages" ]; then
+        packages="$DEFAULT_PACKAGES"
+    fi
+    echo "Installing packages: $packages..."
+    apt-get install -y $packages || error_exit "Failed to install packages."
 }
 
 function setup_python_env {
@@ -87,8 +90,7 @@ function update_submodules {
 ensure_root
 copy_project_files
 update_system
-install_common_tools
-install_additional_tools
+install_selected_packages
 update_submodules
 setup_python_env
 show_license_gui

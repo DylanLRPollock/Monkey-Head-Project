@@ -24,6 +24,15 @@ HARDWARE_OPTIONS = [
     "Lenovo Legion Go",
 ]
 
+# Software package options for manual selection
+SOFTWARE_OPTIONS = [
+    "git",
+    "nodejs",
+    "python3",
+    "python3-venv",
+    "docker.io",
+]
+
 
 def select_hardware() -> str:
     """Prompt user to select hardware configuration."""
@@ -51,6 +60,38 @@ def select_hardware() -> str:
 
     return hardware
 
+
+def select_software() -> str:
+    """Prompt user to select software packages."""
+    print("Select software installation:")
+    print("1) auto - install all default packages")
+    print("2) manual - choose packages to install")
+    mode = input("Enter choice [1/2]: ").strip()
+    if mode == "2":
+        print("Available packages:")
+        for idx, pkg in enumerate(SOFTWARE_OPTIONS, start=1):
+            print(f"{idx}) {pkg}")
+        selection = input(
+            "Enter package numbers separated by spaces: "
+        ).strip()
+        packages: list[str] = []
+        for num in selection.split():
+            try:
+                packages.append(SOFTWARE_OPTIONS[int(num) - 1])
+            except (ValueError, IndexError):
+                print(f"Invalid selection: {num}")
+        software = " ".join(packages) if packages else "auto"
+    else:
+        software = "auto"
+
+    config_dir = os.path.join(SCRIPT_DIR, "config")
+    os.makedirs(config_dir, exist_ok=True)
+    with open(os.path.join(config_dir, "software.txt"), "w", encoding="utf-8") as fh:
+        fh.write(software + "\n")
+
+    return software
+
+
 LINUX_INSTALL = os.path.join(SCRIPT_DIR, "setup", "Debian13", "install.sh")
 MAC_INSTALL = os.path.join(SCRIPT_DIR, "setup", "macOS", "install.sh")
 WINDOWS_INSTALL = os.path.join(SCRIPT_DIR, "setup", "Windows11", "01-FULL.bat")
@@ -70,8 +111,10 @@ def update_submodules() -> None:
 def run_installer():
     system = platform.system()
     hardware = select_hardware()
+    software = select_software()
     env = os.environ.copy()
     env["MHP_HARDWARE"] = hardware
+    env["MHP_SOFTWARE"] = software
     try:
         update_submodules()
         if system == "Linux":

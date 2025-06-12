@@ -212,8 +212,13 @@ sudo python installer.py
 
 During installation you'll be asked whether to use **auto** or **manual**
 hardware selection. Choosing **manual** lets you pick from common devices such
+
 as SuperMicro X9 QRI-F+, MacBook Pro 2019, iMac 5K 2017, Raspberry Pi models,
 and more. Selecting **auto** performs a general installation.
+
+Next you'll choose the software profile. Selecting **auto** installs all default
+packages, while **manual** lets you pick specific packages and programs to
+install.
 
 This invokes `setup/Debian13/install.sh`, which updates `/etc/apt/sources.list` to Debian **Trixie**, installs Git, Node.js, Python 3, and Docker, then creates a virtual environment and preloads bundled data. Accept the license agreement when prompted. The project files are copied to `/opt/monkey_head`.
 
