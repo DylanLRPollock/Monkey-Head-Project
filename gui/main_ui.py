@@ -93,6 +93,15 @@ class MainUI:
         menu_bar.add_cascade(label="Tools", menu=tools_menu)
 
     def create_widgets(self):
+        logo_path = (
+            Path(__file__).resolve().parents[1] / "memory" / "PNG" / "LOGO.png"
+        )
+        if logo_path.exists():
+            try:
+                self.logo_image = tk.PhotoImage(file=str(logo_path))
+                tk.Label(self.root, image=self.logo_image).pack(pady=10)
+            except Exception:
+                pass
         self.log_text = scrolledtext.ScrolledText(self.root, width=80, height=20)
         self.log_text.pack(pady=10)
 
