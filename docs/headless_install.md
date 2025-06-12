@@ -12,5 +12,14 @@ the terms. If you enter anything other than `yes` or `no` it asks again
 until a valid response is received. Any errors during this process are
 logged to `app.log`.
 
+Once the license is accepted you can start a lightweight headless session
+with:
+
+```bash
+python run.py --minimal
+```
+
+This launches a very small echo chatbot without any GUI dependencies.
+
 Declining the license raises `RuntimeError` and leaves the configuration
 file unchanged.
