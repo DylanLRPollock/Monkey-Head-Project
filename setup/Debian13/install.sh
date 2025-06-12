@@ -102,3 +102,8 @@ function preload_data {
 preload_data
 
 echo "Installation completed successfully."
+echo ""
+echo "***********************************************"
+echo "  Thank you for supporting the Monkey Head Project!"
+echo "  We hope you enjoy using it."
+echo "***********************************************"
