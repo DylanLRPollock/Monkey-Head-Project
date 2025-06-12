@@ -77,7 +77,9 @@ def check_os_support() -> None:
 
 def check_python_version() -> None:
     """Warn when running on experimental Python versions."""
-    if sys.version_info.major == 3 and sys.version_info.minor == 13:
+    major = getattr(sys.version_info, "major", sys.version_info[0])
+    minor = getattr(sys.version_info, "minor", sys.version_info[1])
+    if major == 3 and minor == 13:
         logger.warning(
             "Python 3.13 detected. This version is experimental and not fully supported."
         )
