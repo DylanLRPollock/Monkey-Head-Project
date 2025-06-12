@@ -256,9 +256,6 @@ You must also provide the appropriate region for Azure here. *Default:* `eastus`
 
 Here you can specify the name of the voice used for speech synthesis for English. *Default:* `en-US-AriaNeural`
 
-- ``Voice (non-English)`` *azure_voice_pl*
-
-Here you can specify the name of the voice used for speech synthesis for other non-english languages. *Default:* `pl-PL-AgnieszkaNeural`
 
 **Google Text-To-Speech**
 

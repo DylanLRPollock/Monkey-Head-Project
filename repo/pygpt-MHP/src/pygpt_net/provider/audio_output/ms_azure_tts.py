@@ -64,16 +64,6 @@ class MSAzureTextToSpeech(BaseProvider):
             description="Specify voice for English language, e.g. en-US-AriaNeural",
             tooltip="Voice (EN)",
         )
-        self.plugin.add_option(
-            "azure_voice_pl",
-            type="text",
-            value="pl-PL-AgnieszkaNeural",
-            label="Voice (non-English)",
-            tab="ms_azure",
-            description="Specify voice for non-English languages, "
-                        "e.g. pl-PL-MarekNeural or pl-PL-AgnieszkaNeural",
-            tooltip="Voice (PL)",
-        )
 
     def speech(self, text: str) -> str:
         """
@@ -84,16 +74,13 @@ class MSAzureTextToSpeech(BaseProvider):
         """
         api_key = self.plugin.get_option_value("azure_api_key")
         region = self.plugin.get_option_value("azure_region")
-        lang = self.plugin.window.core.config.get('lang')
         output_file = self.plugin.output_file
         path = os.path.join(
             self.plugin.window.core.config.path,
             output_file,
         )
-        if lang == "en":
-            voice = self.plugin.get_option_value("azure_voice_en")
-        else:
-            voice = self.plugin.get_option_value("azure_voice_pl")
+        # always use English voice
+        voice = self.plugin.get_option_value("azure_voice_en")
 
         url = f"https://{region}.tts.speech.microsoft.com/cognitiveservices/v1"
         headers = {
