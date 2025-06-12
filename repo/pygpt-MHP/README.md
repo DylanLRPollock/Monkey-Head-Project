@@ -60,7 +60,7 @@ You can download compiled 64-bit versions for Windows and Linux here: https://py
 - Provides an intuitive operation and interface.
 - Includes a notepad.
 - Includes simple painter / drawing tool.
-- Supports multiple languages.
+- Supports English (US) only.
 - Requires no previous knowledge of using AI models.
 - Simplifies image generation using `DALL-E`.
 - Fully configurable.
@@ -1307,9 +1307,6 @@ You must also provide the appropriate region for Azure here. *Default:* `eastus`
 
 Here you can specify the name of the voice used for speech synthesis for English. *Default:* `en-US-AriaNeural`
 
-- `Voice (non-English)` *azure_voice_pl*
-
-Here you can specify the name of the voice used for speech synthesis for other non-english languages. *Default:* `pl-PL-AgnieszkaNeural`
 
 **Google Text-To-Speech**
 

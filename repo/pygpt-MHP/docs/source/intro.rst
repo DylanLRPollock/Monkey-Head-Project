@@ -43,7 +43,7 @@ Features
 * Provides an intuitive operation and interface.
 * Includes a notepad.
 * Includes simple painter / drawing tool.
-* Supports multiple languages.
+* Supports English (US) only.
 * Requires no previous knowledge of using AI models.
 * Simplifies image generation using ``DALL-E``.
 * Fully configurable.
