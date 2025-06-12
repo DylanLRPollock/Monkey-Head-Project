@@ -12,6 +12,41 @@ The **Monkey Head Project** is dedicated to developing a robust, modular, and et
 Creating a universally accessible platform that democratizes cutting-edge robotics and AI, enhancing human-machine collaboration and ethical technological innovation.
 
 For a quick summary, see [New-To-AI.md](docs/New-To-AI.md).
+Full project documentation lives in [docs/README.md](docs/README.md).
+
+## 📑 Table of Contents
+
+- [Advanced Configuration](#-advanced-configuration)
+- [Acknowledgements](#-acknowledgements)
+- [Additional Resources](#-additional-resources)
+- [Community and Support](#-community-and-support)
+- [Contributing](#-contributing)
+- [Core Components](#-core-components)
+- [Development Setup](#development-setup)
+- [Directory Structure](#directory-structure)
+- [Docker and Kubernetes Utilities](#docker-and-kubernetes-utilities)
+- [FAQ](#-frequently-asked-questions-faq)
+- [Final Thoughts](#-final-thoughts)
+- [Future Directions](#-future-directions)
+- [GUI Interface (Default)](#gui-interface-default)
+- [Installation and Usage](#-installation-and-usage)
+- [Key Features](#-key-features)
+- [License](#-license)
+- [Linux (Debian 13) Installation](#linux-debian-13-installation)
+- [macOS Installation](#macos-installation)
+- [Modular Architecture](#-modular-architecture)
+- [Project History and Phases](#-project-history-and-phases)
+- [Project Overview](#-project-overview)
+- [Recent Updates](#-recent-updates)
+- [Related Projects and Inspirations](#-related-projects-and-inspirations)
+- [Running Tests](#running-tests)
+- [Software Requirements](#software-requirements)
+- [Submodule](#submodule)
+- [Test Hardware](#-test-hardware)
+- [Troubleshooting](#-troubleshooting)
+- [Uninstallation and Cleanup](#uninstallation-and-cleanup)
+- [Utilities](#utilities)
+- [Windows 10 & 11 Installation](#windows-10--11-installation)
 
 ---
 
@@ -28,6 +63,8 @@ A hierarchical adaptive OS divided into specialized layers:
 * **SubOS Environment:** A **Debian Trixie** installation with **Python 3.12** preloaded, handling mid-level coordination and task scheduling.
 * **NanoOS Environment:** A lightweight **Python 3.12** runtime used for granular execution of hardware-level tasks.
 
+#### GenCore Logic
+GenCore is a custom Debian **Trixie** distribution engineered to run bare metal on Huey. It boots directly on the robot's hardware and orchestrates containerised SubOS and NanoOS layers without an intermediary OS. Real-time patches and robotics drivers keep latency low, enabling deterministic control over sensors and actuators while maintaining the flexibility of modular containers.
 ### 2. Huey Robotic Shell
 
 The physical embodiment of GenCore:
@@ -49,11 +86,11 @@ A multi-tiered ethical governance system ensuring responsible AI use:
 ## 🌐 Key Features
 
 * **Adaptive User Interfaces:** Supports multiple input methods including voice, gesture, and AR/VR.
-* **PyGPT-net Integration:** Advanced AI-driven interactions enabling intuitive communication, analysis, and adaptive learning.
 * **Broad Compatibility:** Seamlessly integrates with Windows, Linux, macOS, and legacy computing environments.
 * **Eco-Smart Design:** Prioritizes energy efficiency, modular upgrades, and sustainable technology solutions.
 * **Nature-Inspired Engineering:** Leverages lessons from biological systems (carpenter ants, fungal networks, honeycombs) for optimized structural design and resilience.
 * **Philosophical Grounding:** Guided by ethical considerations inspired by literature (Ozymandias), philosophical scenarios (McCoy’s transporter dilemma), and reflective practices.
+* **PyGPT-net Integration:** Advanced AI-driven interactions enabling intuitive communication, analysis, and adaptive learning.
 
 ---
 
@@ -74,6 +111,16 @@ Huey exposes clear integration points for sensors, actuators, and experimental m
 | 3     | System Awakening              | Oct 31, 2024 | Full system awakening, comprehensive hardware tests, emergency protocols. |
 
 ---
+
+### Software Requirements
+
+Ensure the following tools are installed before running the project:
+
+- **Docker** and **Docker Compose**
+- **Git**
+- **Kubernetes** (`kubectl` CLI)
+- **Python 3.12+** and `pip`
+- **Build tools** (`build-essential` on Debian, Xcode Command Line Tools on macOS)
 
 ## 🖥️ Installation and Usage
 
@@ -146,7 +193,23 @@ back to the command-line interface. You can also force CLI mode with
 
 The GUI now checks whether you've accepted the license on startup and
 offers a **Tools** menu. From there you can reopen the license dialog or
-view a summary of bundled prompts and memory files.
+view a summary of bundled prompts and memory files. Additional **Docker** and
+**Kubernetes** menus provide one-click access to common container tasks such as
+building images, starting or stopping containers, cleaning up resources, and
+deploying or scaling Kubernetes manifests.
+
+### Customizing prompts and personalities
+
+Prompt templates live in `prompts/pygpt_prompts.csv`. You can add new
+rows to extend the list of actions the AI can assume. Each row contains
+the name of the prompt, the instruction text, and a flag used by the
+project. After updating the CSV file, copy the additions into
+`monkey_head/pygpt_net/data/prompts.csv` so they are included at runtime.
+
+Predefined character presets are stored under
+`monkey_head/pygpt_net/data/config/presets`. These JSON files define the
+AI and user names along with a short starter prompt. Adding your own
+file here makes the new personality available in the interface.
 
 ### CLI Helper Scripts
 
@@ -155,6 +218,18 @@ activates the project's virtual environment and launches `run.py`. The
 `run-tests.sh` script performs the same activation step before executing
 the test suite with `pytest -vv`. Both scripts report an error if the
 `venv` directory is missing, reminding you to run `install.sh` first.
+`update_memory_pdfs.py` regenerates text versions of the bundled PDF files
+under `memory/PDF`. Run this script whenever you add or edit PDF documents
+to keep the preloaded dataset up to date.
+`set_api_keys.py` walks you through entering API credentials. Choose
+which services to connect (OpenAI, Google, or DeepSeek) or select the
+auto option to configure all of them at once.
+
+The `huey` package also provides a small CLI. Use `huey convert` to
+convert image files between formats at maximum quality. Supply an input
+file or directory with `--format` specifying the target type (e.g.
+`JPEG`, `PNG`). Converted files are saved alongside the originals or in a
+specified output directory.
 
 ### Docker and Kubernetes Utilities
 
@@ -185,16 +260,45 @@ Run the cross-platform installer with root privileges:
 sudo python installer.py
 ```
 
-This invokes `setup/Debian13/install.sh`, which updates `/etc/apt/sources.list` to Debian **Trixie**, installs Git, Node.js, Python 3, and Docker, then creates a virtual environment and preloads bundled data. Accept the license agreement when prompted.
+During installation you'll be asked whether to use **auto** or **manual**
+hardware selection. Choosing **manual** lets you pick from common devices such
+
+as SuperMicro X9 QRI-F+, MacBook Pro 2019, iMac 5K 2017, Raspberry Pi models,
+and more. Selecting **auto** performs a general installation.
+
+Next you'll choose the software profile. Selecting **auto** installs all default
+packages, while **manual** lets you pick specific packages and programs to
+install.
+
+This invokes `setup/Debian13/install.sh`, which updates `/etc/apt/sources.list` to Debian **Trixie**, installs Git, Node.js, Python 3, and Docker, then creates a virtual environment and preloads bundled data. Accept the license agreement when prompted. The project files are copied to `/opt/monkey_head`.
 
 
 ### macOS Installation
 
-Running the installer on macOS executes `setup/macOS/install.sh`. This script
-ensures Homebrew is available, installs Git, Python 3, Docker, and sets up the
-project's Python virtual environment automatically. During setup it also
-initializes git submodules, displays the license agreement, and preloads bundled
-data.
+Run the cross-platform installer with administrator rights:
+
+```bash
+sudo python installer.py
+```
+
+After selecting your hardware and any optional software packages, the script calls `setup/macOS/install.sh` which:
+
+1. Installs Homebrew if it is missing.
+2. Copies the repository into `/Applications/MonkeyHeadProject`.
+3. Uses Homebrew to install Git, Python 3, and Docker.
+4. Initializes git submodules.
+5. Creates a Python virtual environment at `/Applications/MonkeyHeadProject/venv` and installs dependencies, including `pygpt-MHP`.
+6. Displays the license agreement via a small Tkinter window.
+7. Preloads bundled data for faster first run.
+
+When installation finishes, change to the install directory and launch the GUI:
+
+```bash
+python run.py
+```
+
+All files remain inside `/Applications/MonkeyHeadProject`.
+
 
 ### Windows 10 & 11 Installation
 
@@ -213,6 +317,22 @@ This launches `setup/Windows11/01-FULL.bat`, which installs Chocolatey, Git,
 Docker Desktop, and other required tools on Windows. On macOS the installer
 invokes `setup/macOS/install.sh` to configure Homebrew and the Python
 environment. The batch script supports both Windows 10 and Windows 11.
+By default the repository is cloned to `%ProgramFiles%\Monkey-Head-Project`.
+For a lean Windows setup you can run `setup/Windows10/windows-remove-tool.bat` after installation. This optional script removes pre-installed apps, disables telemetry, and tunes settings for maximum speed.
+
+### Headless Installation
+
+If no graphical environment is available you can run the license prompt
+from the command line using `license_cli.py`:
+
+```bash
+python monkey_head/license_cli.py
+```
+
+The script prints the license text and will keep asking for confirmation
+until you answer `yes` or `no`. Any errors are written to `app.log` and
+declining raises a `RuntimeError` without modifying the configuration
+file.
 
 ### Uninstallation and Cleanup
 
@@ -223,6 +343,27 @@ sudo python uninstaller.py  # Linux/macOS
 python uninstaller.py       # Windows
 ```
 The script calls OS-specific cleanup scripts to delete the virtual environment, uninstall packages, and prune Docker resources.
+
+### Fresh Installation
+
+To completely reset the environment and reinstall everything, run the fresh installer. It first executes the uninstaller and then launches the regular installer:
+
+```bash
+sudo python fresh_install.py  # Linux/macOS
+python fresh_install.py       # Windows
+```
+
+
+### Repair
+
+If the installation becomes corrupted, run the repair script. It clones a fresh
+copy of the repository and installs it:
+
+```bash
+sudo python repair.py  # Linux/macOS
+python repair.py       # Windows
+```
+
 
 
 ### Directory Structure
@@ -242,9 +383,9 @@ When adding new modules, format the code with `black` and run
 
 ### Recent Updates
 
-- Preset placeholders now show the preset name instead of the file ID for better readability.
 - Added `--version` flag to `run.py` for quick version checks.
 - Implemented centralized logging and video screenshot capabilities for multimodal workflows.
+- Preset placeholders now show the preset name instead of the file ID for better readability.
 
 ### Utilities
 
@@ -260,17 +401,17 @@ python monkey_head/utils/list_by_mtime.py path/to/dir
 ## 🔬 Test Hardware
 
 * **Development:** MacBook Pro 2019, Lenovo Legion Go.
-* **Legacy Support:** MacBook Pro 2012, Commodore 64/128, VIC-20.
 * **Edge Computing:** Raspberry Pi 3 B+.
+* **Legacy Support:** MacBook Pro 2012, Commodore 64/128, VIC-20.
 * **Multimedia & Gaming:** PlayStation 2 & 3.
 
 ---
 
 ## 🌱 Future Directions
 
-* Expansion into environmental monitoring and interdisciplinary scientific collaborations.
 * Advanced autonomous energy solutions and sustainable system management.
 * Continued ethical governance refinements, ensuring transparency and accountability.
+* Expansion into environmental monitoring and interdisciplinary scientific collaborations.
 
 ---
 
@@ -289,6 +430,7 @@ Visit the [GitHub Repository](https://github.com/DylanLRPollock/Monkey-Head-Proj
 
 The `docs/` directory contains extended documentation on the project’s architecture, historical phases, and governance design. New contributors should start with [docs/README.md](docs/README.md) and [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed guidelines.
 For an introductory overview, see [docs/New-To-AI.md](docs/New-To-AI.md).
+For tips on removing unnecessary software and disabling services, see [docs/os-debloating.md](docs/os-debloating.md).
 
 ---
 

@@ -247,6 +247,8 @@ class Mapping:
         nodes['start.title'] = 'dialog.start.title.text'
         nodes['start.settings'] = 'dialog.start.settings.text'
         nodes['start.btn'] = 'dialog.start.btn'
+        nodes['start.input'] = 'dialog.start.input.placeholder'
+        nodes['start.btn.save'] = 'dialog.start.btn.save'
 
         # input tabs
         nodes['attachments.btn.add'] = 'attachments.btn.add'
@@ -280,7 +282,6 @@ class Mapping:
         # dialog: about
         nodes['dialog.about.btn.website'] = 'about.btn.website'
         nodes['dialog.about.btn.github'] = 'about.btn.github'
-        nodes['dialog.about.btn.support'] = 'about.btn.support'
         nodes['dialog.about.thanks'] = 'about.thanks'
         nodes['dialog.about.thanks.contributors'] = 'about.thanks.contributors'
         nodes['dialog.about.thanks.supporters'] = 'about.thanks.supporters'
@@ -365,7 +366,6 @@ class Mapping:
         menu_title['menu.audio'] = 'menu.audio'
         menu_title['menu.video'] = 'menu.video'
         menu_title['menu.tools'] = 'menu.tools'
-        menu_title['menu.donate'] = 'menu.info.donate'
 
         # menu text
         menu_text = {}

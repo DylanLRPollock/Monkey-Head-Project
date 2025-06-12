@@ -4,10 +4,13 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
 # License:   https://opensource.org/license/gpl-3-0                                 #
 # Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.05.2025                                                                                 #
+# Updated: 06.11.2025                                                                                 #
 # ================================================== #
 @echo off
 setlocal enabledelayedexpansion
+
+:: Installation directory used during setup
+set "INSTALL_DIR=%ProgramFiles%\Monkey-Head-Project"
 
 :: Change to the script's own directory
 cd /d "%~dp0"
@@ -46,8 +49,8 @@ goto :eof
 :: Function to remove virtual environment
 :removeVirtualEnv
 echo Removing virtual environment...
-if exist "repository\venv" (
-    rmdir /S /Q "repository\venv"
+if exist "%INSTALL_DIR%\venv" (
+    rmdir /S /Q "%INSTALL_DIR%\venv"
     call :checkError "Removing Virtual Environment"
 ) else (
     echo No virtual environment found.
@@ -56,12 +59,12 @@ goto :eof
 
 :: Function to remove cloned repository
 :removeRepository
-echo Removing cloned repository...
-if exist "repository" (
-    rmdir /S /Q "repository"
-    call :checkError "Removing Cloned Repository"
+echo Removing installed files...
+if exist "%INSTALL_DIR%" (
+    rmdir /S /Q "%INSTALL_DIR%"
+    call :checkError "Removing Installed Files"
 ) else (
-    echo No cloned repository found.
+    echo No installation directory found.
 )
 goto :eof
 

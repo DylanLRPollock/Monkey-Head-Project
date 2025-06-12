@@ -4,13 +4,13 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated: 06.05.2025
+# Updated: 06.11.2025
 # ==================================================
 import unittest
 from monkey_head.gencore import generate_core_data
 
 
-class TestGencore(unittest.TestCase):
+class TestGenCore(unittest.TestCase):
     def test_generate_core_data(self):
         data = {"a": 1, "b": 2}
         result = generate_core_data(data)

@@ -1,7 +1,10 @@
 [tool.black]
 line-length = 88
-exclude = 'repo/pygpt-MHP'
+exclude = '''
+repo/pygpt-MHP
+|examples
+'''
 
 [tool.flake8]
 max-line-length = 88
-exclude = 'repo/pygpt-MHP'
+exclude = "repo/pygpt-MHP,examples"

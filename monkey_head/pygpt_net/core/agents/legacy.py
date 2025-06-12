@@ -21,6 +21,7 @@ from pygpt_net.core.types import (
     MODE_RESEARCH,
 )
 
+
 class Legacy:
     def __init__(self, window=None):
         """

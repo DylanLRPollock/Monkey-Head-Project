@@ -89,9 +89,6 @@ class Info:
         """Open update URL"""
         webbrowser.open(self.window.meta['website'])
 
-    def goto_donate(self):
-        """Open donate page"""
-        webbrowser.open(self.window.meta['donate'])
 
     def goto_discord(self):
         """Open discord page"""
@@ -101,18 +98,6 @@ class Info:
         """Open report a bug page"""
         webbrowser.open(self.window.meta['report'])
 
-    def donate(self, id: str):
-        """
-        Donate action
-
-        :param id: donate id
-        """
-        if id == 'coffee':
-            webbrowser.open(self.window.meta['donate_coffee'])
-        elif id == 'paypal':
-            webbrowser.open(self.window.meta['donate_paypal'])
-        elif id == 'github':
-            webbrowser.open(self.window.meta['donate_github'])
 
     def update_menu(self):
         """Update info menu"""

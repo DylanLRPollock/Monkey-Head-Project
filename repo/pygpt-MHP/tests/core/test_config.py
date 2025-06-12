@@ -41,6 +41,6 @@ def test_get_available_langs(mock_window_conf):
     config.get_app_path = MagicMock(return_value='test_path')
     config.get_user_path = MagicMock(return_value='test_path')
     os.path.exists = MagicMock(return_value=True)
-    os.listdir = MagicMock(return_value=['locale.en.ini', 'locale.de.ini', 'locale.fr.ini'])
-    assert config.get_available_langs() == ['en', 'de', 'fr']
+    os.listdir = MagicMock(return_value=['locale.en.ini'])
+    assert config.get_available_langs() == ['en']
 

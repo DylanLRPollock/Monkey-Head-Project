@@ -4,7 +4,7 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated: 06.05.2025
+# Updated: 06.08.2025
 # ==================================================
 import os
 
@@ -31,9 +31,7 @@ def remove_files(directory, extension):
                 os.remove(file_path)
                 print(f"Removed file: {file_path}")
     except OSError as e:
-        raise OSError(
-            f"Error removing files in '{directory}': {e}"
-        ) from e
+        raise OSError(f"Error removing files in '{directory}': {e}") from e
 
 
 if __name__ == "__main__":

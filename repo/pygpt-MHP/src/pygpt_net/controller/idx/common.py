@@ -23,7 +23,19 @@ class Common:
 
     def setup(self):
         """Set up UI"""
-        pass
+        checkbox = None
+        try:
+            checkbox = self.window.ui.config['global']['llama.idx.raw']
+        except Exception:
+            checkbox = None
+        if checkbox is not None:
+            value = self.window.core.config.get('llama.idx.raw', False)
+            checkbox.setChecked(value)
+
+    def toggle_raw(self, value: bool):
+        """Toggle raw query mode"""
+        self.window.core.config.set('llama.idx.raw', value)
+        self.window.core.config.save()
 
     def get_loaders_choices(self) -> List[Dict[str, str]]:
         """

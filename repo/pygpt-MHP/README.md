@@ -60,7 +60,7 @@ You can download compiled 64-bit versions for Windows and Linux here: https://py
 - Provides an intuitive operation and interface.
 - Includes a notepad.
 - Includes simple painter / drawing tool.
-- Supports multiple languages.
+- Supports English (US) only.
 - Requires no previous knowledge of using AI models.
 - Simplifies image generation using `DALL-E`.
 - Fully configurable.
@@ -337,6 +337,7 @@ Please go to `Debugging and Logging` section for instructions on how to log and 
 **Tip:** The API key is required to work with the OpenAI API. If you wish to use custom API endpoints or local API that do not require API keys, simply enter anything into the API key field to avoid a prompt about the API key being empty.
 
 During the initial launch, you must configure your API key within the application.
+You can now enter the key directly in the welcome dialog or open the settings window.
 
 To do so, navigate to the menu:
 
@@ -1307,9 +1308,6 @@ You must also provide the appropriate region for Azure here. *Default:* `eastus`
 
 Here you can specify the name of the voice used for speech synthesis for English. *Default:* `en-US-AriaNeural`
 
-- `Voice (non-English)` *azure_voice_pl*
-
-Here you can specify the name of the voice used for speech synthesis for other non-english languages. *Default:* `pl-PL-AgnieszkaNeural`
 
 **Google Text-To-Speech**
 

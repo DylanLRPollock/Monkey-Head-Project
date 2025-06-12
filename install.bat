@@ -5,10 +5,20 @@ REM Website:   https://dlrp.ca
 REM GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 REM License:   https://opensource.org/license/gpl-3-0
 REM Overseen By:   Dylan L.R. Pollock
-REM Updated: 06.05.2025
+REM Updated: 06.11.2025
 REM ==================================================
 
 set SCRIPT_DIR=%~dp0
 set INSTALL_SCRIPT=%SCRIPT_DIR%setup\Windows11\01-FULL.bat
 
+cd /d "%SCRIPT_DIR%"
+if not exist "%INSTALL_SCRIPT%" (
+    echo Installation script not found: %INSTALL_SCRIPT%
+    exit /b 1
+)
 call "%INSTALL_SCRIPT%"
+echo.
+echo ***********************************************
+echo   Thank you for supporting the Monkey Head Project!
+echo   We hope you enjoy using it.
+echo ***********************************************

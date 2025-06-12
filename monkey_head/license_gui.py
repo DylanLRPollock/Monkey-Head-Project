@@ -4,7 +4,7 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated: 06.05.2025
+# Updated: 06.11.2025
 # ==================================================
 from pathlib import Path
 
@@ -17,6 +17,7 @@ except Exception:  # pragma: no cover - can't import GUI libs
     scrolledtext = None
 
 from .config_manager import ConfigManager
+from .gui_scaling import apply_scaling
 
 
 def accept_license(config_path: str | Path) -> None:
@@ -35,9 +36,11 @@ def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -
         return
 
     root = tk.Tk()
+    apply_scaling(root)
     root.title("License Agreement")
+    root.minsize(800, 600)
 
-    text = scrolledtext.ScrolledText(root, width=80, height=20, wrap=tk.WORD)
+    text = scrolledtext.ScrolledText(root, width=100, height=25, wrap=tk.WORD)
     try:
         license_text = Path("docs/LICENSE").read_text(encoding="utf-8")
     except Exception:
@@ -49,6 +52,10 @@ def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -
     def on_accept() -> None:
         accept_license(config_path)
         messagebox.showinfo("License", "License accepted")
+        messagebox.showwarning(
+            "Experimental",
+            "This is experimental software. Proceed with caution.",
+        )
         root.destroy()
 
     def on_decline() -> None:

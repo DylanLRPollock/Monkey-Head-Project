@@ -22,6 +22,7 @@ from pygpt_net.core.types import (
 
 from .base import BaseAgent
 
+
 class ReactAgent(BaseAgent):
     def __init__(self, *args, **kwargs):
         super(ReactAgent, self).__init__(*args, **kwargs)

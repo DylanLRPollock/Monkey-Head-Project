@@ -4,17 +4,18 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated: 06.05.2025
+# Updated: 06.11.2025
 # ==================================================
 try:  # pragma: no cover - optional dependency
     import tkinter as tk
     from tkinter import messagebox
+    from .gui_scaling import apply_scaling
 except Exception:  # pragma: no cover - can't import GUI libs
     tk = None
     messagebox = None
 
 
-def create_tkinter_window():
+def create_tkinter_window(mode: str = "4k"):
     """
     Creates a simple Tkinter window with a button that shows a message box.
     """
@@ -22,6 +23,7 @@ def create_tkinter_window():
         raise RuntimeError("tkinter is not available")
 
     root = tk.Tk()
+    apply_scaling(root, mode)
     root.title("Tkinter Window")
 
     def show_message():

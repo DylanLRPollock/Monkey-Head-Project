@@ -5,7 +5,7 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated:   06.05.2025
+# Updated:   06.11.2025
 # ==================================================
 
 set -e
@@ -20,4 +20,14 @@ case "$(uname)" in
         ;;
 esac
 
-"$INSTALL_SCRIPT"
+cd "$SCRIPT_DIR" || exit 1
+if [ ! -f "$INSTALL_SCRIPT" ]; then
+    echo "Installation script not found: $INSTALL_SCRIPT" >&2
+    exit 1
+fi
+bash "$INSTALL_SCRIPT"
+echo ""
+echo "***********************************************"
+echo "  Thank you for supporting the Monkey Head Project!"
+echo "  We hope you enjoy using it."
+echo "***********************************************"

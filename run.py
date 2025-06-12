@@ -5,7 +5,7 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated: 06.05.2025
+# Updated: 06.11.2025
 # ==================================================
 # -*- coding: utf-8 -*-
 # ================================================== #
@@ -20,6 +20,8 @@
 import argparse
 import sys
 from pathlib import Path
+
+from monkey_head.core.system_checks import check_os_support, check_python_version
 
 sys.path.insert(0, str((Path(__file__).parent / "src").resolve()))
 
@@ -55,8 +57,14 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    # Warn if running on an unsupported operating system
+    check_os_support()
+    # Warn if running an experimental Python version
+    check_python_version()
+
     if args.version:
         from pygpt_net import __version__
+
         print(f"pygpt_net version: {__version__}")
         return
 
@@ -73,4 +81,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

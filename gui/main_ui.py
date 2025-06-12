@@ -4,8 +4,9 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated: 06.05.2025
+# Updated: 06.11.2025
 # ==================================================
+import os
 import platform
 import subprocess
 import threading
@@ -13,7 +14,7 @@ from pathlib import Path
 
 try:  # pragma: no cover - optional dependency
     import tkinter as tk
-    from tkinter import messagebox, scrolledtext, ttk
+    from tkinter import messagebox, scrolledtext, simpledialog, ttk
 except Exception:  # pragma: no cover - can't import GUI libs
     tk = None
     messagebox = None
@@ -22,6 +23,24 @@ except Exception:  # pragma: no cover - can't import GUI libs
 
 from monkey_head.license_gui import show_license_gui
 from monkey_head.scripts.preload_data import preload_all
+from monkey_head.gui_scaling import apply_scaling
+from monkey_head.services.container_management import (
+    build_docker_image,
+    cleanup_images,
+    cleanup_kubernetes,
+    deploy_kubernetes,
+    get_pod_logs,
+    manage_containers,
+    manage_networks,
+    manage_volumes,
+    scale_deployment,
+    stop_containers,
+)
+
+# Dark theme colors
+DARK_BG = "#2d2b57"  # dark purple background
+LIGHT_FG = "#e3dfff"  # light foreground text
+ACCENT_PURPLE = "#ac65ff"  # accent color
 
 
 class MainUI:
@@ -30,11 +49,59 @@ class MainUI:
             raise RuntimeError("tkinter is not available")
 
         self.root = root
+        mode = self.choose_screen_mode()
+        apply_scaling(self.root, mode)
+        self.apply_dark_theme()
         self.root.title("Program Manager")
+        self.root.minsize(800, 600)
         self.setup_paths()
         self.create_menu()
         self.create_widgets()
         self.check_license()
+
+    def apply_dark_theme(self) -> None:
+        """Configure Tk widgets to use a dark purple theme."""
+        if tk is None:
+            return
+
+        self.root.configure(bg=DARK_BG)
+
+        if ttk is not None:
+            style = ttk.Style(self.root)
+            try:
+                style.theme_use("clam")
+            except Exception:
+                pass
+            style.configure("TLabel", background=DARK_BG, foreground=LIGHT_FG)
+            style.configure(
+                "TButton",
+                background=ACCENT_PURPLE,
+                foreground=LIGHT_FG,
+                relief=tk.RAISED,
+            )
+            style.map(
+                "TButton",
+                background=[("active", ACCENT_PURPLE)],
+                foreground=[("active", LIGHT_FG)],
+            )
+            style.configure(
+                "TProgressbar",
+                troughcolor=DARK_BG,
+                background=ACCENT_PURPLE,
+            )
+
+    def choose_screen_mode(self) -> str:
+        """Ask the user which display mode to use or read from ``SCREEN_MODE``."""
+        env_mode = os.environ.get("SCREEN_MODE")
+        if env_mode in {"1080p", "4k"}:
+            return env_mode
+        if messagebox is not None:
+            resp = messagebox.askquestion(
+                "Display Mode",
+                "Use 4K display scaling?",
+            )
+            return "4k" if resp == "yes" else "1080p"
+        return "1080p"
 
     def setup_paths(self):
         """Determine installer paths based on the current platform."""
@@ -59,10 +126,10 @@ class MainUI:
             self.run_path = None
 
     def create_menu(self):
-        menu_bar = tk.Menu(self.root)
+        menu_bar = tk.Menu(self.root, bg=DARK_BG, fg=LIGHT_FG, tearoff=0)
         self.root.config(menu=menu_bar)
 
-        file_menu = tk.Menu(menu_bar, tearoff=0)
+        file_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
         file_menu.add_command(label="Install", command=self.install)
         file_menu.add_command(label="Run", command=self.run)
         file_menu.add_command(label="Update", command=self.update)
@@ -70,32 +137,87 @@ class MainUI:
         file_menu.add_command(label="Exit", command=self.root.quit)
         menu_bar.add_cascade(label="File", menu=file_menu)
 
-        tools_menu = tk.Menu(menu_bar, tearoff=0)
+        tools_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
         tools_menu.add_command(label="License", command=self.show_license)
         tools_menu.add_command(label="Data Summary", command=self.show_data_summary)
         menu_bar.add_cascade(label="Tools", menu=tools_menu)
 
+        docker_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
+        docker_menu.add_command(label="Build Image", command=self.build_image)
+        docker_menu.add_command(label="Start Containers", command=self.start_containers)
+        docker_menu.add_command(label="Stop Containers", command=self.stop_containers)
+        docker_menu.add_command(label="Cleanup Images", command=self.cleanup_images)
+        docker_menu.add_command(label="Manage Volumes", command=self.manage_volumes)
+        docker_menu.add_command(label="Manage Networks", command=self.manage_networks)
+        menu_bar.add_cascade(label="Docker", menu=docker_menu)
+
+        k8s_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
+        k8s_menu.add_command(label="Deploy", command=self.deploy_kubernetes)
+        k8s_menu.add_command(
+            label="Scale Deployment", command=self.scale_deployment_prompt
+        )
+        k8s_menu.add_command(label="Get Pod Logs", command=self.get_pod_logs_prompt)
+        k8s_menu.add_command(label="Cleanup", command=self.cleanup_kubernetes)
+        menu_bar.add_cascade(label="Kubernetes", menu=k8s_menu)
+
     def create_widgets(self):
-        self.log_text = scrolledtext.ScrolledText(self.root, width=80, height=20)
+        self.log_text = scrolledtext.ScrolledText(
+            self.root,
+            width=100,
+            height=25,
+            bg=DARK_BG,
+            fg=LIGHT_FG,
+            insertbackground=LIGHT_FG,
+        )
         self.log_text.pack(pady=10)
 
         self.progress = ttk.Progressbar(
-            self.root, orient=tk.HORIZONTAL, length=400, mode="determinate"
+            self.root, orient=tk.HORIZONTAL, length=500, mode="determinate"
         )
         self.progress.pack(pady=10)
 
         self.status_label = tk.Label(
-            self.root, text="Status: Ready", bd=1, relief=tk.SUNKEN, anchor=tk.W
+            self.root,
+            text="Status: Ready",
+            bd=1,
+            relief=tk.SUNKEN,
+            anchor=tk.W,
+            bg=DARK_BG,
+            fg=LIGHT_FG,
         )
         self.status_label.pack(fill=tk.X, side=tk.BOTTOM, ipady=2)
 
-        self.install_button = tk.Button(self.root, text="Install", command=self.install)
+        self.install_button = tk.Button(
+            self.root,
+            text="Install",
+            command=self.install,
+            bg=ACCENT_PURPLE,
+            fg=LIGHT_FG,
+            activebackground=ACCENT_PURPLE,
+            activeforeground=LIGHT_FG,
+        )
         self.install_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.run_button = tk.Button(self.root, text="Run", command=self.run)
+        self.run_button = tk.Button(
+            self.root,
+            text="Run",
+            command=self.run,
+            bg=ACCENT_PURPLE,
+            fg=LIGHT_FG,
+            activebackground=ACCENT_PURPLE,
+            activeforeground=LIGHT_FG,
+        )
         self.run_button.pack(side=tk.LEFT, padx=10, pady=10)
 
-        self.update_button = tk.Button(self.root, text="Update", command=self.update)
+        self.update_button = tk.Button(
+            self.root,
+            text="Update",
+            command=self.update,
+            bg=ACCENT_PURPLE,
+            fg=LIGHT_FG,
+            activebackground=ACCENT_PURPLE,
+            activeforeground=LIGHT_FG,
+        )
         self.update_button.pack(side=tk.LEFT, padx=10, pady=10)
 
     def log_message(self, message):
@@ -164,9 +286,117 @@ class MainUI:
         prompts = len(data.get("prompts", []))
         memory_files = sum(len(v) for v in data.get("memory", {}).values())
         messagebox.showinfo(
-            "Data Summary",
-            f"Prompts: {prompts}\nMemory files: {memory_files}"
+            "Data Summary", f"Prompts: {prompts}\nMemory files: {memory_files}"
         )
+
+    def _run_container_func(self, func, *args):
+        try:
+            func(*args)
+            self.log_message("Operation completed successfully.")
+        except Exception as exc:  # pragma: no cover - subprocess failures
+            self.log_message(f"Exception: {exc}")
+        finally:
+            self.progress.stop()
+            self.status_label.config(text="Status: Ready")
+
+    def build_image(self):
+        self.log_message("Building Docker image...")
+        self.status_label.config(text="Status: Building")
+        self.progress.start()
+        threading.Thread(
+            target=self._run_container_func, args=(build_docker_image,)
+        ).start()
+
+    def start_containers(self):
+        self.log_message("Starting containers...")
+        self.status_label.config(text="Status: Starting")
+        self.progress.start()
+        threading.Thread(
+            target=self._run_container_func, args=(manage_containers,)
+        ).start()
+
+    def stop_containers(self):
+        self.log_message("Stopping containers...")
+        self.status_label.config(text="Status: Stopping")
+        self.progress.start()
+        threading.Thread(
+            target=self._run_container_func, args=(stop_containers,)
+        ).start()
+
+    def cleanup_images(self):
+        self.log_message("Pruning images...")
+        self.status_label.config(text="Status: Cleaning")
+        self.progress.start()
+        threading.Thread(
+            target=self._run_container_func, args=(cleanup_images,)
+        ).start()
+
+    def manage_volumes(self):
+        self.log_message("Managing volumes...")
+        self.status_label.config(text="Status: Volumes")
+        self.progress.start()
+        threading.Thread(
+            target=self._run_container_func, args=(manage_volumes,)
+        ).start()
+
+    def manage_networks(self):
+        self.log_message("Managing networks...")
+        self.status_label.config(text="Status: Networks")
+        self.progress.start()
+        threading.Thread(
+            target=self._run_container_func, args=(manage_networks,)
+        ).start()
+
+    def deploy_kubernetes(self):
+        self.log_message("Deploying Kubernetes resources...")
+        self.status_label.config(text="Status: Deploying")
+        self.progress.start()
+        threading.Thread(
+            target=self._run_container_func, args=(deploy_kubernetes,)
+        ).start()
+
+    def cleanup_kubernetes(self):
+        self.log_message("Cleaning Kubernetes resources...")
+        self.status_label.config(text="Status: Cleaning")
+        self.progress.start()
+        threading.Thread(
+            target=self._run_container_func, args=(cleanup_kubernetes,)
+        ).start()
+
+    def scale_deployment_prompt(self):
+        name = simpledialog.askstring("Deployment", "Deployment name:")
+        if not name:
+            return
+        replicas = simpledialog.askinteger("Replicas", "Number of replicas:")
+        if replicas is None:
+            return
+        self.log_message(f"Scaling {name} to {replicas}...")
+        self.status_label.config(text="Status: Scaling")
+        self.progress.start()
+        threading.Thread(
+            target=self._run_container_func,
+            args=(scale_deployment, name, replicas),
+        ).start()
+
+    def get_pod_logs_prompt(self):
+        pod = simpledialog.askstring("Pod", "Pod name:")
+        if not pod:
+            return
+        self.log_message(f"Fetching logs for {pod}...")
+        self.status_label.config(text="Status: Logs")
+        self.progress.start()
+        threading.Thread(target=self._get_logs, args=(pod,)).start()
+
+    def _get_logs(self, pod):
+        try:
+            logs = get_pod_logs(pod)
+            self.log_message(logs)
+            self.log_message("Operation completed successfully.")
+        except Exception as exc:  # pragma: no cover - subprocess failures
+            self.log_message(f"Exception: {exc}")
+        finally:
+            self.progress.stop()
+            self.status_label.config(text="Status: Ready")
 
 
 if __name__ == "__main__":

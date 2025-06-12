@@ -156,4 +156,20 @@ class OptionCmd(QWidget):
 
     def update(self):
         """Update widget"""
-        pass
+        if self.option is None:
+            return
+
+        data = self.option.get("value", {}) or {}
+
+        # enabled checkbox
+        self.enabled.setChecked(data.get("enabled", True))
+
+        # instruction text
+        instruction = data.get("instruction", "")
+        self.instruction.setPlainText(instruction)
+
+        # params list
+        params = data.get("params", [])
+        self.params.items = list(params)
+        self.params.model.items = list(params)
+        self.params.update()

@@ -5,7 +5,7 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated:   06.05.2025
+# Updated:   06.09.2025
 # ==================================================
 """Utility to update /etc/apt/sources.list to Debian Trixie."""
 
@@ -17,7 +17,7 @@ import sys
 SOURCE_FILE = "/etc/apt/sources.list"
 BACKUP_FILE = SOURCE_FILE + ".bak"
 
-APT_LINE_RE = re.compile(r'^(\s*deb(?:-src)?(?:\s+\[.*?\])?\s+\S+\s+)(\S+)(.*)$')
+APT_LINE_RE = re.compile(r"^(\s*deb(?:-src)?(?:\s+\[.*?\])?\s+\S+\s+)(\S+)(.*)$")
 
 
 def convert_line(line: str) -> str:

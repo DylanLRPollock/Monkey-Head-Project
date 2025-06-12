@@ -268,3 +268,16 @@ def test_is_send_clear(mock_window):
     assert attachment.is_send_clear() is True
     mock_window.core.config.has.assert_called_once_with('attachments_send_clear')
     mock_window.core.config.get.assert_called_once_with('attachments_send_clear')
+
+
+def test_selection_change(mock_window):
+    attachment = Attachment(mock_window)
+    index = MagicMock()
+    index.row.return_value = 2
+    widget = MagicMock()
+    widget.selectedIndexes.return_value = [index]
+    mock_window.ui.nodes['attachments'] = widget
+    mock_window.core.config.get = MagicMock(return_value='vision')
+    attachment.select = MagicMock()
+    attachment.selection_change()
+    attachment.select.assert_called_once_with('vision', 2)

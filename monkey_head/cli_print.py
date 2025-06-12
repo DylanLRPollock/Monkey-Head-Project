@@ -4,29 +4,43 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated: 06.05.2025
+# Updated: 06.11.2025
 # ==================================================
+import logging
+from .utils.logger import get_logger
+
+
+logger = get_logger(__name__)
+
+
 def print_message(message, message_type="info"):
-    """
-    Prints a message to the console with a specific format based on the message type.
+    """Print ``message`` to stdout and log it.
 
-    Args:
-        message (str): The message to print.
-        message_type (str): The type of message ('info', 'warning', 'error'). Default is 'info'.
+    Parameters
+    ----------
+    message:
+        Text to display.
+    message_type:
+        One of ``"info"``, ``"warning"``, or ``"error"``. Defaults to ``"info"``.
 
-    Raises:
-        ValueError: If the message_type is not one of 'info', 'warning', or 'error'.
+    Raises
+    ------
+    ValueError
+        If ``message_type`` is not recognised.
     """
-    if message_type == "info":
-        print(f"[INFO] {message}")
-    elif message_type == "warning":
-        print(f"[WARNING] {message}")
-    elif message_type == "error":
-        print(f"[ERROR] {message}")
-    else:
+
+    level_map = {
+        "info": "INFO",
+        "warning": "WARNING",
+        "error": "ERROR",
+    }
+    level_name = level_map.get(message_type)
+    if level_name is None:
         raise ValueError(
             f"Invalid message_type '{message_type}'. Expected 'info', 'warning', or 'error'."
         )
+    logger.log(getattr(logging, level_name), message)
+    print(f"[{level_name}] {message}")
 
 
 if __name__ == "__main__":

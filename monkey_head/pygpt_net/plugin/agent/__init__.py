@@ -20,9 +20,11 @@ class Plugin(BasePlugin):
         super(Plugin, self).__init__(*args, **kwargs)
         self.id = "agent"
         self.name = "Autonomous Agent (inline)"
-        self.description = "Enables inline autonomous mode (Agent) in current mode. " \
-                           "WARNING: Please use with caution - this mode, when connected with other plugins, " \
-                           "may produce unexpected results!"
+        self.description = (
+            "Enables inline autonomous mode (Agent) in current mode. "
+            "WARNING: Please use with caution - this mode, when connected with other plugins, "
+            "may produce unexpected results!"
+        )
         self.prefix = "Agent"
         self.type = [
             "agent",
@@ -61,7 +63,7 @@ class Plugin(BasePlugin):
             Event.FORCE_STOP,
             Event.PLUGIN_SETTINGS_CHANGED,
             Event.ENABLE,
-            Event.DISABLE
+            Event.DISABLE,
         ]
 
         if not self.is_allowed() and name != Event.DISABLE:
@@ -80,22 +82,22 @@ class Plugin(BasePlugin):
             self.on_ctx_end(ctx)
 
         elif name == Event.USER_SEND:
-            self.on_user_send(data['value'])
+            self.on_user_send(data["value"])
 
         elif name == Event.FORCE_STOP:
             self.on_stop()
 
         elif name == Event.SYSTEM_PROMPT:
-            data['value'] = self.on_system_prompt(data['value'])
+            data["value"] = self.on_system_prompt(data["value"])
 
         elif name == Event.INPUT_BEFORE:
-            data['value'] = self.on_input_before(data['value'])
+            data["value"] = self.on_input_before(data["value"])
 
         elif name in [
             Event.ENABLE,
             Event.DISABLE,
         ]:
-            if data['value'] == self.id:
+            if data["value"] == self.id:
                 self.window.controller.agent.legacy.update()  # update agent status bar
 
         elif name == Event.PLUGIN_SETTINGS_CHANGED:
@@ -108,7 +110,7 @@ class Plugin(BasePlugin):
             if self.get_option_value("auto_stop"):
                 self.cmd(
                     ctx,
-                    data['commands'],
+                    data["commands"],
                 )
 
     def is_active_prompt(self) -> bool:
@@ -129,8 +131,10 @@ class Plugin(BasePlugin):
         :param prompt: prompt
         :return: updated prompt
         """
-        pre_prompt = ("YOU ARE NOW AN AUTONOMOUS AGENT AND YOU ARE ENTERING NOW INTO AGENT MODE.\n"
-                      "Use below instructions in every agent run iteration:\n\n")
+        pre_prompt = (
+            "YOU ARE NOW AN AUTONOMOUS AGENT AND YOU ARE ENTERING NOW INTO AGENT MODE.\n"
+            "Use below instructions in every agent run iteration:\n\n"
+        )
         return pre_prompt + self.window.controller.agent.legacy.on_system_prompt(
             prompt,
             append_prompt=self.get_first_active_prompt(),

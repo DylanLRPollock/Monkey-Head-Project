@@ -19,6 +19,7 @@ from llama_index.core.agent import (
 
 from .base import BaseAgent
 
+
 class PlannerAgent(BaseAgent):
     def __init__(self, *args, **kwargs):
         super(PlannerAgent, self).__init__(*args, **kwargs)
