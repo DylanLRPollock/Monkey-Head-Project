@@ -233,12 +233,30 @@ This invokes `setup/Debian13/install.sh`, which updates `/etc/apt/sources.list` 
 
 ### macOS Installation
 
-Running the installer on macOS executes `setup/macOS/install.sh`. This script
-ensures Homebrew is available, installs Git, Python 3, Docker, and sets up the
-project's Python virtual environment automatically. During setup it also
-initializes git submodules, displays the license agreement, and preloads bundled
-data.
-All files are installed into `/Applications/MonkeyHeadProject`.
+Run the cross-platform installer with administrator rights:
+
+```bash
+sudo python installer.py
+```
+
+After selecting your hardware and any optional software packages, the script calls `setup/macOS/install.sh` which:
+
+1. Installs Homebrew if it is missing.
+2. Copies the repository into `/Applications/MonkeyHeadProject`.
+3. Uses Homebrew to install Git, Python 3, and Docker.
+4. Initializes git submodules.
+5. Creates a Python virtual environment at `/Applications/MonkeyHeadProject/venv` and installs dependencies, including `pygpt-MHP`.
+6. Displays the license agreement via a small Tkinter window.
+7. Preloads bundled data for faster first run.
+
+When installation finishes, change to the install directory and launch the GUI:
+
+```bash
+python run.py
+```
+
+All files remain inside `/Applications/MonkeyHeadProject`.
+
 
 ### Windows 10 & 11 Installation
 
