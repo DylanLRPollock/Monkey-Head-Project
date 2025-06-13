@@ -21,7 +21,11 @@ if not os.environ.get("MONKEY_HEAD_LIGHT_IMPORTS"):
 else:
     subos_manager = None
 from .utils.logger import get_logger
-from .convert_png_to_jpeg import convert_png_to_jpeg
+
+try:
+    from .convert_png_to_jpeg import convert_png_to_jpeg
+except Exception:  # pragma: no cover - optional dependency
+    convert_png_to_jpeg = None
 
 try:
     from .pdf_pre_digestion import pdf_pre_digestion

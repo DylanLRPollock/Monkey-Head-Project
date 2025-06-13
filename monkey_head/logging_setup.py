@@ -62,6 +62,13 @@ def configure_logging(config_path=None):
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
 
+    log_dir = os.path.dirname(log_file)
+    if log_dir and not os.path.exists(log_dir):  # pragma: no cover - fs access
+        try:
+            os.makedirs(log_dir, exist_ok=True)
+        except Exception:
+            log_file = os.path.basename(log_file)
+
     file_handler = logging.handlers.RotatingFileHandler(
         log_file, maxBytes=max_bytes, backupCount=backup_count
     )
