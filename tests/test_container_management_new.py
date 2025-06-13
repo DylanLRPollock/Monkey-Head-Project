@@ -8,6 +8,8 @@ from monkey_head.services.container_management import (
     stop_containers,
     cleanup_images,
     manage_networks,
+    list_containers,
+    get_container_logs,
 )
 
 
@@ -54,3 +56,15 @@ def test_cleanup_images():
 def test_manage_networks():
     with patch("subprocess.run", return_value=DummyCompleted()):
         manage_networks()
+
+
+def test_list_containers():
+    with patch("subprocess.run", return_value=DummyCompleted(stdout=b"list")):
+        output = list_containers()
+        assert output == "list"
+
+
+def test_get_container_logs():
+    with patch("subprocess.run", return_value=DummyCompleted(stdout=b"logs")):
+        logs = get_container_logs("monkey-head")
+        assert logs == "logs"
