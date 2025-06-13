@@ -100,6 +100,11 @@ function setup_python_env {
     pip install -r requirements.txt || error_exit "Failed to install dependencies."
     echo "Installing local pygpt-MHP package..."
     pip install -e repo/pygpt-MHP || error_exit "Failed to install pygpt-MHP."
+    echo "Synchronizing submodule files..."
+    python sync_pygpt_structure.py || error_exit "Failed to sync submodule files."
+    echo "Checking inter-program connectivity..."
+    python scripts/check_inter_program_connectivity.py || \
+        error_exit "Inter-program connectivity failed."
 }
 
 function show_license_gui {
