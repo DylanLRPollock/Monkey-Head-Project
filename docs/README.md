@@ -199,7 +199,7 @@ Operating System: Supports **Windows 10**, **Windows 11**, or **macOS Ventura** 
 
 ### Software Requirements
 
-- Python 3.12+ with `pip`
+ - Python 3.12+ with `pip` (run `python -m pip install --upgrade pip` after creating your virtual environment)
 - Git
 - Docker and Docker Compose
 - Kubernetes (`kubectl` CLI)

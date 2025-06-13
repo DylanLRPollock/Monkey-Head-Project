@@ -142,6 +142,7 @@ cd Monkey-Head-Project
 python3 -m venv venv
 source venv/bin/activate  # Linux/macOS
 venv\Scripts\activate     # Windows
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 git submodule update --init --recursive
 pip install -e repo/pygpt-MHP
