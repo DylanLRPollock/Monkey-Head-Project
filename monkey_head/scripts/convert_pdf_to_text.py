@@ -7,7 +7,7 @@
 # Updated: 06.09.2025
 # ==================================================
 import os
-import PyPDF2
+from pypdf import PdfReader
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from ..logging_setup import configure_logging
@@ -20,7 +20,7 @@ configure_logging()
 def convert_pdf_to_text(path):
     try:
         with open(path, "rb") as file:
-            reader = PyPDF2.PdfReader(file)
+            reader = PdfReader(file)
             text = ""
             for page in reader.pages:
                 extracted = page.extract_text()
