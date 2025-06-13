@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: monkey-head
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: monkey-head
@@ -16,8 +16,23 @@ spec:
       containers:
       - name: monkey-head
         image: monkey-head-project:latest
+        env:
+        - name: APP_ENV
+          value: "production"
         ports:
         - containerPort: 8000
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 15
+          periodSeconds: 20
 ---
 apiVersion: v1
 kind: Service
@@ -30,3 +45,4 @@ spec:
   - port: 8000
     targetPort: 8000
   type: ClusterIP
+
