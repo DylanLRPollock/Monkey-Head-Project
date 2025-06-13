@@ -63,6 +63,23 @@ function install_selected_packages {
     apt-get install -y $packages || error_exit "Failed to install packages."
 }
 
+# Remove Firefox and install Microsoft Edge Dev
+function install_edge_dev {
+    echo "Purging Firefox..."
+    apt-get purge -y firefox || true
+    apt-get autoremove -y || true
+    echo "Adding Microsoft Edge repository..."
+    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | \
+        gpg --dearmor -o microsoft.gpg || error_exit "Failed to download key."
+    install -o root -g root -m 644 microsoft.gpg /usr/share/keyrings/ || \
+        error_exit "Failed to install key."
+    sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-dev.list'
+    rm -f microsoft.gpg
+    apt-get update -y || error_exit "apt-get update failed."
+    apt-get install -y microsoft-edge-dev || \
+        error_exit "Failed to install Microsoft Edge Dev."
+}
+
 function setup_python_env {
     echo "Creating virtual environment..."
     python3 -m venv "$VENV_DIR" || error_exit "Failed to create virtual environment."
@@ -91,6 +108,7 @@ ensure_root
 copy_project_files
 update_system
 install_selected_packages
+install_edge_dev
 update_submodules
 setup_python_env
 show_license_gui
