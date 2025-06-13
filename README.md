@@ -255,8 +255,8 @@ Python interface for scaling deployments, retrieving pod logs, and cleaning up
 resources.
 
 Additional helpers now include `build_docker_image`, `stop_containers`,
-`cleanup_images`, and `manage_networks` for end-to-end Docker lifecycle
-management.
+`cleanup_images`, `manage_networks`, `list_containers`, and `get_container_logs`
+for end-to-end Docker lifecycle management and diagnostics.
 
 ### Linux (Debian 13) Installation
 

@@ -158,3 +158,25 @@ def manage_networks() -> None:
         stderr=subprocess.PIPE,
     )
     check_error(prune_networks, "Prune Docker Networks")
+
+
+def list_containers() -> str:
+    """Return a list of running Docker containers."""
+    logger.info("Listing running containers...")
+    list_containers_cmd = subprocess.run(
+        ["docker", "ps"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    check_error(list_containers_cmd, "List Docker Containers")
+    return list_containers_cmd.stdout.decode()
+
+
+def get_container_logs(container_name: str) -> str:
+    """Return logs for the specified Docker container."""
+    logger.info("Fetching logs for container %s...", container_name)
+    logs = subprocess.run(
+        ["docker", "logs", container_name],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    check_error(logs, "Get Container Logs")
+    return logs.stdout.decode()
