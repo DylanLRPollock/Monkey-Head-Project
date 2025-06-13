@@ -24,8 +24,9 @@ function ensure_root() {
 }
 
 function update_system() {
-    echo "Updating system to Debian Trixie..."
-    python3 "$(dirname "$0")/scripts/update_sources_to_trixie.py" || true
+    local codename="${DEBIAN_CODENAME:-trixie}"
+    echo "Updating system to Debian ${codename}..."
+    python3 "$(dirname "$0")/scripts/update_sources_to_trixie.py" "$codename" || true
     apt-get update -y
     apt-get upgrade -y
 }

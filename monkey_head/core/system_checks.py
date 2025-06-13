@@ -96,8 +96,9 @@ def system_check():
     logger.info("Performing system checks...")
     # Check for Debian version
     with open("/etc/os-release") as f:
-        if "Debian GNU/Linux 13" not in f.read():
-            error_message = "Debian Trixie Check failed"
+        content = f.read().lower()
+        if "debian" not in content or not any(x in content for x in ("trixie", "testing")):
+            error_message = "Debian Trixie/Testing Check failed"
             log_error(error_message)
             raise RuntimeError(error_message)
 

@@ -61,7 +61,7 @@ A hierarchical adaptive OS divided into specialized layers:
 * **SubOS:** Operational resource allocation, task management, and dynamic adaptability, inspired by biological resilience and technological redundancy.
 * **NanoOS:** Real-time precision control at the hardware interaction level, optimizing immediate responsiveness and reliability.
 * **HostOS Environment:** Runs on either **Windows 10**, **Windows 11**, or **macOS Ventura** (or newer), providing a familiar desktop operating system for overall system control.
-* **SubOS Environment:** A **Debian Trixie** installation with **Python 3.12** preloaded, handling mid-level coordination and task scheduling.
+* **SubOS Environment:** A **Debian Trixie** (or **Testing**) installation with **Python 3.12** preloaded, handling mid-level coordination and task scheduling.
 * **NanoOS Environment:** A lightweight **Python 3.12** runtime used for granular execution of hardware-level tasks.
 * **Desktop Environment:** Both GenCore and SubOS use the lightweight **MATE** desktop, providing a consistent interface across layers.
 
@@ -281,7 +281,7 @@ Next you'll choose the software profile. Selecting **auto** installs all default
 packages, while **manual** lets you pick specific packages and programs to
 install.
 
-This invokes `setup/Debian13/install.sh`, which updates `/etc/apt/sources.list` to Debian **Trixie**, installs Git, Node.js, Python 3, and Docker, then creates a virtual environment and preloads bundled data. Accept the license agreement when prompted. The project files are copied to `/opt/monkey_head`.
+This invokes `setup/Debian13/install.sh`, which updates `/etc/apt/sources.list` to the chosen release (either **Trixie** or **Testing**), installs Git, Node.js, Python 3, and Docker, then creates a virtual environment and preloads bundled data. Accept the license agreement when prompted. The project files are copied to `/opt/monkey_head`.
 
 
 ### macOS Installation
