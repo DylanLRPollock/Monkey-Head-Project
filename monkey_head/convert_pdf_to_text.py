@@ -7,7 +7,7 @@
 # Updated: 06.08.2025
 # ==================================================
 import os
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 
 
 def convert_pdf_to_text(pdf_file, output_file):

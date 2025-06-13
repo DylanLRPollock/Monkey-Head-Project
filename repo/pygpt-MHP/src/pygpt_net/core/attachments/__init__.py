@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 from typing import Optional, List, Dict
 
-import PyPDF2
+from pypdf import PdfReader
 
 from packaging.version import Version
 
@@ -519,7 +519,7 @@ class Attachments:
             if not txt_path.exists():
                 try:
                     with open(abs_path, "rb") as f:
-                        reader = PyPDF2.PdfReader(f)
+                        reader = PdfReader(f)
                         text = ""
                         for page in reader.pages:
                             extracted = page.extract_text()

@@ -66,6 +66,7 @@ setup(
         "google-auth==2.40.3",
         "elasticsearch==9.0.2",
         "pyyaml==6.0.2",
+        "pypdf>=5.1.0,<6.0.0",
         "pygpt-net>=0.1.0",
     ],
     extras_require={
