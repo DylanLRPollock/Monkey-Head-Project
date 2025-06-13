@@ -7,7 +7,12 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated:   06.09.2025
 # ==================================================
-"""Utility to update /etc/apt/sources.list to Debian Trixie."""
+"""Utility to update /etc/apt/sources.list to a specified Debian release.
+
+By default the script switches all repository entries to ``trixie`` but a
+different release codename (e.g. ``testing``) may be supplied as the first
+command line argument.
+"""
 
 import os
 import re
@@ -17,24 +22,26 @@ import sys
 SOURCE_FILE = "/etc/apt/sources.list"
 BACKUP_FILE = SOURCE_FILE + ".bak"
 
+DEFAULT_RELEASE = "trixie"
+
 APT_LINE_RE = re.compile(r"^(\s*deb(?:-src)?(?:\s+\[.*?\])?\s+\S+\s+)(\S+)(.*)$")
 
 
-def convert_line(line: str) -> str:
-    """Replace the distribution name in a sources.list line with 'trixie'."""
+def convert_line(line: str, release: str) -> str:
+    """Replace the distribution name in a sources.list line with ``release``."""
     if line.lstrip().startswith("#"):
         return line
     m = APT_LINE_RE.match(line)
     if not m:
         return line
     prefix, dist, rest = m.groups()
-    if dist.startswith("trixie"):
+    if dist.startswith(release):
         return line
     if "-" in dist:
         _, suffix = dist.split("-", 1)
-        new_dist = f"trixie-{suffix}"
+        new_dist = f"{release}-{suffix}"
     else:
-        new_dist = "trixie"
+        new_dist = release
     return f"{prefix}{new_dist}{rest}"
 
 
@@ -50,13 +57,15 @@ def main() -> None:
     print(f"Creating backup: {BACKUP_FILE}")
     shutil.copyfile(SOURCE_FILE, BACKUP_FILE)
 
+    release = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_RELEASE
+
     with open(SOURCE_FILE, "r", encoding="utf-8") as fh:
-        lines = [convert_line(line) for line in fh]
+        lines = [convert_line(line, release) for line in fh]
 
     with open(SOURCE_FILE, "w", encoding="utf-8") as fh:
         fh.writelines(lines)
 
-    print("sources.list updated to Trixie")
+    print(f"sources.list updated to {release}")
 
 
 if __name__ == "__main__":

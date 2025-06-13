@@ -1,5 +1,6 @@
-# Use Debian Trixie slim as the base image for a lightweight container
-FROM debian:trixie-slim
+# Use Debian slim base image; release can be overridden at build time
+ARG DEBIAN_RELEASE=trixie
+FROM debian:${DEBIAN_RELEASE}-slim
 
 # Define maintainer or author of the Dockerfile
 LABEL maintainer="admin@subos.com"

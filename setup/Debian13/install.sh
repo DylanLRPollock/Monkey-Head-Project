@@ -42,9 +42,18 @@ function copy_project_files {
     fi
 }
 
+DEBIAN_CODENAME=${DEBIAN_CODENAME:-trixie}
+
+function prompt_debian_codename {
+    read -rp "Select Debian release for SubOS (trixie/testing) [${DEBIAN_CODENAME}]: " input
+    if [[ $input =~ ^(trixie|testing)$ ]]; then
+        DEBIAN_CODENAME=$input
+    fi
+}
+
 function update_system {
-    echo "Updating apt sources to Debian Trixie..."
-    python3 "$PROJECT_ROOT/scripts/update_sources_to_trixie.py" || error_exit "Failed to update sources list."
+    echo "Updating apt sources to Debian ${DEBIAN_CODENAME}..."
+    python3 "$PROJECT_ROOT/scripts/update_sources_to_trixie.py" "$DEBIAN_CODENAME" || error_exit "Failed to update sources list."
     echo "Updating system..."
     apt-get update -y || error_exit "apt-get update failed."
     apt-get upgrade -y || error_exit "apt-get upgrade failed."
@@ -105,6 +114,7 @@ function update_submodules {
 }
 
 ensure_root
+prompt_debian_codename
 copy_project_files
 update_system
 install_selected_packages

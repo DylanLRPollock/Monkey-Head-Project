@@ -215,7 +215,7 @@ Allocate Resources: Dedicate full processor capabilities to HostOS for optimal p
 
 Virtual Environment Setups
 
-SubOS: A **Debian Trixie** environment with **Python 3.12** preinstalled. Requires 128GB storage and 8GB RAM per instance, suitable for running isolated, specialized tasks alongside the primary AIOS environment.
+SubOS: A **Debian Trixie** or **Testing** environment with **Python 3.12** preinstalled. Requires 128GB storage and 8GB RAM per instance, suitable for running isolated, specialized tasks alongside the primary AIOS environment.
 
 NanoOS: A lightweight **Python 3.12** environment used for granular hardware interaction. It can run in Docker containers or Python virtual environments, allocating fractional core processing power for minimal overhead.
 
