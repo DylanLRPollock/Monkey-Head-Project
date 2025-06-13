@@ -7,10 +7,17 @@
 # Updated: 06.11.2025
 # ==================================================
 import os
+
+os.environ.setdefault("MONKEY_HEAD_LIGHT_IMPORTS", "1")
 import platform
 import subprocess
 import threading
 from pathlib import Path
+import sys
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 try:  # pragma: no cover - optional dependency
     import tkinter as tk

@@ -12,7 +12,10 @@ import platform
 import subprocess
 import sys
 
-import distro
+try:
+    import distro
+except Exception:  # pragma: no cover - optional dependency
+    distro = None
 from ..logging_setup import configure_logging
 
 configure_logging()
@@ -65,15 +68,18 @@ def check_os_support() -> None:
                 ver_str,
             )
     elif system == "Linux":
-        if distro.id() != "debian" or distro.codename().lower() not in {
-            "trixie",
-            "testing",
-        }:
-            logger.warning(
-                "Unsupported Linux distribution detected (%s %s). Debian Trixie/testing is required.",
-                distro.id(),
-                distro.codename(),
-            )
+        if distro is None:
+            logger.warning("distro module not available; skipping distribution check")
+        else:
+            if distro.id() != "debian" or distro.codename().lower() not in {
+                "trixie",
+                "testing",
+            }:
+                logger.warning(
+                    "Unsupported Linux distribution detected (%s %s). Debian Trixie/testing is required.",
+                    distro.id(),
+                    distro.codename(),
+                )
     else:
         logger.warning("Unsupported operating system detected: %s", system)
 
@@ -97,7 +103,9 @@ def system_check():
     # Check for Debian version
     with open("/etc/os-release") as f:
         content = f.read().lower()
-        if "debian" not in content or not any(x in content for x in ("trixie", "testing")):
+        if "debian" not in content or not any(
+            x in content for x in ("trixie", "testing")
+        ):
             error_message = "Debian Trixie/Testing Check failed"
             log_error(error_message)
             raise RuntimeError(error_message)
