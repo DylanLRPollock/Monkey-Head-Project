@@ -68,6 +68,10 @@ function setup_python_env() {
     pip install -r requirements.txt
     echo "Installing local pygpt-MHP package..."
     pip install -e repo/pygpt-MHP
+    echo "Synchronizing submodule files..."
+    python sync_pygpt_structure.py || exit 1
+    echo "Checking inter-program connectivity..."
+    python scripts/check_inter_program_connectivity.py || exit 1
 }
 
 function show_license_gui() {

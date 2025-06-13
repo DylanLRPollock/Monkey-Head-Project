@@ -158,6 +158,9 @@ python sync_pygpt_structure.py  # copy entire pygpt tree
 # python sync_pygpt_structure.py --depth 2  # limit recursion if desired
 ```
 
+Run `python scripts/check_inter_program_connectivity.py` to verify that
+the submodule and local packages import correctly.
+
 Once copied, prefer importing modules from the project root instead of the `repo/pygpt-MHP` path. The installer performs the submodule update and installation with `pip install -e repo/pygpt-MHP` automatically.
 
 ### Running Tests

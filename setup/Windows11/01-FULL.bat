@@ -134,6 +134,10 @@ pip install -r requirements.txt
 call :checkError "Install Python Requirements"
 pip install -e repo\pygpt-MHP
 call :checkError "Install pygpt-MHP"
+python sync_pygpt_structure.py
+call :checkError "Sync submodule"
+python scripts\check_inter_program_connectivity.py
+call :checkError "Inter-program connectivity"
 goto :eof
 
 :: Function to configure Git
