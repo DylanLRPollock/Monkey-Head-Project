@@ -71,6 +71,11 @@ Activate the virtual environment and execute:
 ```
 Results are stored in `logs/test_results.log`.
 
+## Next Steps
+
+With the environment ready, you can start the application using the launch
+scripts described in [run.md](run.md).
+
 ## Uninstallation and Fresh Install
 
 To remove the project, use the cross-platform uninstaller:
