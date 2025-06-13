@@ -44,11 +44,15 @@ def manage_volumes():
     check_error(prune_volumes, "Prune Docker Volumes")
 
 
-def deploy_kubernetes():
+K8S_MANIFEST = "k8s/deployment.yaml"
+
+
+def deploy_kubernetes() -> None:
+    """Apply the project's Kubernetes manifests."""
     logger.info("Deploying with Kubernetes...")
     os.chdir(os.path.expanduser("~/Source/repo"))
     deploy = subprocess.run(
-        ["kubectl", "apply", "-f", "deployment.yaml"],
+        ["kubectl", "apply", "-f", K8S_MANIFEST],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
@@ -73,7 +77,7 @@ def kubernetes_management():
     check_error(get_services, "Get Kubernetes Services")
 
 
-def cleanup_kubernetes(manifest: str = "deployment.yaml") -> None:
+def cleanup_kubernetes(manifest: str = K8S_MANIFEST) -> None:
     """Delete resources defined in the given manifest."""
     logger.info("Cleaning up Kubernetes resources...")
     os.chdir(os.path.expanduser("~/Source/repo"))

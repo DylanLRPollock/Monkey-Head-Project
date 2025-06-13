@@ -254,6 +254,10 @@ Programmatic helpers for Kubernetes lives in
 Python interface for scaling deployments, retrieving pod logs, and cleaning up
 resources.
 
+Kubernetes manifests are stored in the `k8s/` directory. Both the helper
+scripts and the GUI use `k8s/deployment.yaml` by default, so update that file
+to configure your cluster.
+
 Additional helpers now include `build_docker_image`, `stop_containers`,
 `cleanup_images`, and `manage_networks` for end-to-end Docker lifecycle
 management.

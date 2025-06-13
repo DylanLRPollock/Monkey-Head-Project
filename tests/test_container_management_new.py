@@ -32,7 +32,7 @@ def test_get_pod_logs():
 def test_cleanup_kubernetes():
     with patch("subprocess.run", return_value=DummyCompleted()):
         with patch("os.chdir"):
-            cleanup_kubernetes("deployment.yaml")
+            cleanup_kubernetes("k8s/deployment.yaml")
 
 
 def test_build_docker_image():
