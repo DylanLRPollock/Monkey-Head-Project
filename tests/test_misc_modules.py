@@ -1,4 +1,5 @@
 from unittest.mock import patch
+from pathlib import Path
 
 
 from monkey_head.ai_processor import AIProcessor
@@ -17,6 +18,33 @@ def test_ai_processor():
     proc = AIProcessor()
     assert proc.process_data("abc") == "ABC"
     assert proc.analyze_data("123")["length"] == 3
+
+    assert proc.compute_mean([1, 2, 3]) == 2.0
+
+    summary = proc.dataframe_summary([
+        {"a": 1, "b": 2},
+        {"a": 3, "b": 4},
+    ])
+    assert summary.loc["mean", "a"] == 2.0
+
+    coef, intercept = proc.train_linear_model([[0], [1]], [0, 1])
+    assert round(coef, 5) == 1.0 and round(intercept, 5) == 0.0
+
+    plot = proc.plot_histogram([1, 2, 3], str(tmp_path / "plot.png"))
+    assert Path(plot).is_file()
+
+    class DummyResp:
+        def __init__(self):
+            self.status_code = 200
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"title": "foo"}
+
+    with patch("requests.get", return_value=DummyResp()):
+        assert proc.fetch_todo_title(1) == "foo"
 
 
 def test_process_and_check_core_data():
