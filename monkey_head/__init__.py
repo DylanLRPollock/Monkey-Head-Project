@@ -40,6 +40,12 @@ from .media_conversion import (
 )
 from .utils.sorting import list_files_by_mtime, natural_sort
 from .pdf_utils import list_available_pdfs
+try:
+    from .pdf_chat import load_pdf_pages, answer_question, chat_with_pdf
+except Exception:  # pragma: no cover - optional dependency
+    load_pdf_pages = None
+    answer_question = None
+    chat_with_pdf = None
 
 if os.environ.get("MONKEY_HEAD_LIGHT_IMPORTS"):
     train_from_chat_and_pdfs = None
@@ -74,4 +80,7 @@ __all__ = [
     "train_from_chat_and_pdfs",
     "train_from_project_sources",
     "list_available_pdfs",
+    "load_pdf_pages",
+    "answer_question",
+    "chat_with_pdf",
 ]
