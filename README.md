@@ -163,6 +163,11 @@ the submodule and local packages import correctly.
 
 Once copied, prefer importing modules from the project root instead of the `repo/pygpt-MHP` path. The installer performs the submodule update and installation with `pip install -e repo/pygpt-MHP` automatically.
 
+The `run.py` launcher now detects when the mirrored `src` directory or installed
+package is missing and will automatically use `repo/pygpt-MHP/src` instead. This
+lets you try the project right after cloning, even before syncing or installing
+the submodule.
+
 ### Running Tests
 
 ```bash

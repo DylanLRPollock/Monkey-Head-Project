@@ -53,9 +53,20 @@ def run_module(target: str) -> None:
 
 
 def _load_cli() -> "callable":
-    """Import and return the standard CLI runner."""
-    sys.path.insert(0, str((Path(__file__).parent / "src").resolve()))
-    from pygpt_net.app import run as cli_run
+    """Import and return the standard CLI runner.
+
+    Falls back to the ``repo/pygpt-MHP`` submodule if the mirrored ``src``
+    directory or installed package is missing.
+    """
+    src_dir = Path(__file__).parent / "src"
+    sys.path.insert(0, str(src_dir.resolve()))
+    try:
+        from pygpt_net.app import run as cli_run
+    except Exception:  # pragma: no cover - fallback to submodule
+        sub_dir = Path(__file__).parent / "repo" / "pygpt-MHP" / "src"
+        if sub_dir.exists() and str(sub_dir.resolve()) not in sys.path:
+            sys.path.insert(0, str(sub_dir.resolve()))
+        from pygpt_net.app import run as cli_run
 
     return cli_run
 
