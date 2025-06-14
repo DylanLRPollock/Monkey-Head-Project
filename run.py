@@ -97,6 +97,11 @@ def main() -> None:
         action="store_true",
         help="Print pygpt_net version and exit",
     )
+    parser.add_argument(
+        "--list-pdfs",
+        action="store_true",
+        help="List PDF files available to the application",
+    )
     args = parser.parse_args()
 
     if args.module:
@@ -110,6 +115,13 @@ def main() -> None:
         from monkey_head.simple_chat_gui import run_simple_chat
 
         run_simple_chat()
+        return
+
+    if args.list_pdfs:
+        from monkey_head.pdf_utils import list_available_pdfs
+
+        for pdf in list_available_pdfs():
+            print(pdf)
         return
 
     from monkey_head.core.system_checks import check_os_support, check_python_version
