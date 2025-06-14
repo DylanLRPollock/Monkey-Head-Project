@@ -101,6 +101,10 @@ def update_submodules() -> None:
         subprocess.run(
             ["git", "submodule", "update", "--init", "--recursive"], check=True
         )
+        subprocess.run(
+            [sys.executable, "sync_pygpt_structure.py"],
+            check=True,
+        )
     except subprocess.CalledProcessError as exc:
         print(f"Failed to update submodules: {exc.returncode}")
         raise
