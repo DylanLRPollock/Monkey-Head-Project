@@ -4,11 +4,11 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated: 06.09.2025
+# Updated: 06.11.2025
 # ==================================================
 import time
 
-from monkey_head.utils.list_by_mtime import list_files_by_mtime
+from monkey_head.utils.sorting import list_files_by_mtime, natural_sort
 
 
 def test_list_files_by_mtime(tmp_path):
@@ -19,3 +19,9 @@ def test_list_files_by_mtime(tmp_path):
     f2.write_text("b")
     expected = [str(f1), str(f2)]
     assert list_files_by_mtime(str(tmp_path)) == expected
+    assert list_files_by_mtime(str(tmp_path), reverse=True) == expected[::-1]
+
+
+def test_natural_sort():
+    items = ["file10", "file2", "file1"]
+    assert natural_sort(items) == ["file1", "file2", "file10"]
