@@ -42,6 +42,13 @@ class CustomPyGPT:
                 user_input = input("You: ")
             except EOFError:
                 break
+            if user_input.lower().strip() == "list pdfs":
+                from .pdf_utils import list_available_pdfs
+
+                print("Available PDFs:")
+                for pdf in list_available_pdfs():
+                    print(f"- {pdf}")
+                continue
             if user_input.lower() in {"exit", "quit"}:
                 break
             self.memory.add_user_message(user_input)
