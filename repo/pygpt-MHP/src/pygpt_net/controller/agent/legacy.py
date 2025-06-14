@@ -64,6 +64,7 @@ class Legacy:
         """Setup agent controller"""
         # register hooks
         self.window.ui.add_hook("update.global.agent.iterations", self.hook_update)
+        self.window.ui.add_hook("update.global.agent.goal.notify", self.hook_update)
         self.reload()  # restore config
 
     def reload(self):
@@ -79,6 +80,12 @@ class Legacy:
             self.window.ui.config['global']['agent.continue'].setChecked(True)
         else:
             self.window.ui.config['global']['agent.continue'].setChecked(False)
+
+        # goal notify checkbox
+        if self.window.core.config.get('agent.goal.notify'):
+            self.window.ui.config['global']['agent.goal.notify'].setChecked(True)
+        else:
+            self.window.ui.config['global']['agent.goal.notify'].setChecked(False)
 
         # iterations slider
         self.window.controller.config.apply_value(
@@ -396,3 +403,6 @@ class Legacy:
             self.window.core.config.set(key, int(value))  # cast to int, if from text input
             self.window.core.config.save()
             self.update()
+        elif key == 'agent.goal.notify':
+            self.window.core.config.set(key, bool(value))
+            self.window.core.config.save()

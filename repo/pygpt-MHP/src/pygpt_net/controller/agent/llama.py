@@ -37,12 +37,23 @@ class Llama:
                 "value": 75,
                 "multiplier": 1,
             },
+            "agent.llama.max_eval": {
+                "type": "int",
+                "slider": True,
+                "label": "agent.llama.max_eval",
+                "min": 0,
+                "max": 100,
+                "step": 1,
+                "value": 3,
+                "multiplier": 1,
+            },
         }
 
     def setup(self):
         """Setup agent controller"""
         # register hooks
         self.window.ui.add_hook("update.global.agent.llama.loop.score", self.hook_update)
+        self.window.ui.add_hook("update.global.agent.llama.max_eval", self.hook_update)
         self.reload()  # restore config
 
     def reload(self):
@@ -59,6 +70,14 @@ class Llama:
             key="agent.llama.loop.score",
             option=self.options["agent.llama.loop.score"],
             value=self.window.core.config.get('agent.llama.loop.score'),
+        )
+
+        # max evaluation slider
+        self.window.controller.config.apply_value(
+            parent_id="global",
+            key="agent.llama.max_eval",
+            option=self.options["agent.llama.max_eval"],
+            value=self.window.core.config.get('agent.llama.max_eval'),
         )
 
     def reset_eval_step(self):
@@ -149,6 +168,10 @@ class Llama:
         if self.window.core.config.get(key) == value:
             return
         if key == 'agent.llama.loop.score':
+            self.window.core.config.set(key, int(value))
+            self.window.core.config.save()
+            self.update()
+        elif key == 'agent.llama.max_eval':
             self.window.core.config.set(key, int(value))
             self.window.core.config.save()
             self.update()

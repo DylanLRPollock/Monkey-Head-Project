@@ -61,10 +61,20 @@ class Agent:
         )
         self.window.ui.config['global']['agent.continue'] = self.window.ui.nodes['agent.continue']
 
+        # goal notify
+        self.window.ui.nodes['agent.goal.notify'] = ToggleLabel(trans("toolbox.agent.goal.notify.label"))
+        self.window.ui.nodes['agent.goal.notify'].box.stateChanged.connect(
+            lambda:
+            self.window.controller.agent.common.toggle_goal_notify(
+                self.window.ui.config['global']['agent.goal.notify'].box.isChecked())
+        )
+        self.window.ui.config['global']['agent.goal.notify'] = self.window.ui.nodes['agent.goal.notify']
+
         # options
         cols = QHBoxLayout()
         cols.addWidget(self.window.ui.config['global']['agent.auto_stop'])
         cols.addWidget(self.window.ui.config['global']['agent.continue'])
+        cols.addWidget(self.window.ui.config['global']['agent.goal.notify'])
 
         # rows
         rows = QVBoxLayout()
