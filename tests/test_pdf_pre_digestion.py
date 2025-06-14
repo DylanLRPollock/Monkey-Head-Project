@@ -9,7 +9,9 @@
 from pathlib import Path
 import json
 import shutil
+import pytest
 
+pytest.importorskip("fitz")
 from monkey_head.pdf_pre_digestion import pdf_pre_digestion
 
 

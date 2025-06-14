@@ -1,6 +1,9 @@
 import importlib.util
 from pathlib import Path
 import shutil
+import pytest
+
+pytest.importorskip("pypdf")
 
 
 def test_convert_pdf_to_text(tmp_path):

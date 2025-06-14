@@ -1,4 +1,6 @@
-import tensorflow as tf
+import pytest
+
+tf = pytest.importorskip("tensorflow")
 from monkey_head.tensorflow_feed import train_from_project_sources
 
 

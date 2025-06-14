@@ -44,8 +44,14 @@ if os.environ.get("MONKEY_HEAD_LIGHT_IMPORTS"):
     train_from_chat_and_pdfs = None
     train_from_project_sources = None
 else:
-    from .chat_learning import train_from_chat_and_pdfs
-    from .tensorflow_feed import train_from_project_sources
+    try:  # pragma: no cover - optional dependency
+        from .chat_learning import train_from_chat_and_pdfs
+    except Exception:
+        train_from_chat_and_pdfs = None
+    try:  # pragma: no cover - optional dependency
+        from .tensorflow_feed import train_from_project_sources
+    except Exception:
+        train_from_project_sources = None
 
 # Initialize project-wide logging as soon as the package is imported
 configure_logging()
