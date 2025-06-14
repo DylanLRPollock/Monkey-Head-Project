@@ -38,6 +38,8 @@ except Exception:  # pragma: no cover - can't import GUI libs
 from monkey_head.license_gui import show_license_gui
 from monkey_head.scripts.preload_data import preload_all
 from monkey_head.gui_scaling import apply_scaling
+from monkey_head.simple_chat_gui import run_simple_chat
+from monkey_head.ai_tools_gui import run_ai_tools
 from monkey_head.services.container_management import (
     build_docker_image,
     cleanup_images,
@@ -164,6 +166,11 @@ class MainUI:
         tools_menu.add_command(label="Data Summary", command=self.show_data_summary)
         tools_menu.add_command(label="Convert Media", command=self.convert_media_prompt)
         menu_bar.add_cascade(label="Tools", menu=tools_menu)
+
+        ai_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
+        ai_menu.add_command(label="Simple Chat", command=self.launch_simple_chat)
+        ai_menu.add_command(label="AI Processor Demo", command=self.launch_ai_tools)
+        menu_bar.add_cascade(label="AI", menu=ai_menu)
 
         docker_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
         docker_menu.add_command(label="Build Image", command=self.build_image)
@@ -458,6 +465,16 @@ class MainUI:
         finally:
             self.progress.stop()
             self.status_label.config(text="Status: Ready")
+
+    def launch_simple_chat(self):
+        """Open the simple chat demo in a background thread."""
+        self.log_message("Launching simple chat demo...")
+        threading.Thread(target=run_simple_chat).start()
+
+    def launch_ai_tools(self):
+        """Open the AI tools window in a background thread."""
+        self.log_message("Launching AI tools...")
+        threading.Thread(target=run_ai_tools).start()
 
 
 if __name__ == "__main__":
