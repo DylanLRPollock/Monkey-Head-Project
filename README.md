@@ -204,6 +204,8 @@ back to the command-line interface. You can also force CLI mode with
 minimal echo chatbot with `python run.py --minimal`. A basic Tkinter chat demo
 is still available via `python run.py --simple-chat`. To run individual modules
 directly, use `python run.py --module package.module[:func]`.
+You can also perform a quick environment check with
+`python run.py --system-check`.
 
 The GUI now checks whether you've accepted the license on startup and
 offers a **Tools** menu. From there you can reopen the license dialog or

@@ -9,6 +9,7 @@ This guide explains the different ways to launch and test the project.
 - `python run.py --minimal` – run the lightweight echo chatbot.
 - `python run.py --simple-chat` – open a simple Tkinter demo.
 - `python run.py --module package.module[:func]` – execute a module's callable.
+- `python run.py --system-check` – perform environment checks and exit.
 
 ## Helper Scripts
 
