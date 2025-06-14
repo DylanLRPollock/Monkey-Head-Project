@@ -36,3 +36,12 @@ def test_apply_scaling_4k(monkeypatch):
     root = DummyRoot()
     apply_scaling(root, mode="4k")
     assert root.tk.args == ("tk", "scaling", 2.0)
+
+
+def test_apply_scaling_custom(monkeypatch):
+    monkeypatch.setattr("monkey_head.gui_scaling.tkfont", DummyFontModule())
+    monkeypatch.setenv("SCREEN_FACTOR", "1.5")
+    monkeypatch.setenv("SCREEN_FONT_SIZE", "12")
+    root = DummyRoot()
+    apply_scaling(root, mode="custom")
+    assert root.tk.args == ("tk", "scaling", 1.5)

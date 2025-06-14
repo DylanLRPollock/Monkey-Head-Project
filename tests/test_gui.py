@@ -30,19 +30,41 @@ def test_show_data_summary_displays_info():
 def test_choose_screen_mode_env(monkeypatch):
     ui = MainUI.__new__(MainUI)
     monkeypatch.setenv("SCREEN_MODE", "1080p")
-    with patch("gui.main_ui.messagebox.askquestion") as ask:
+    with patch("gui.main_ui.simpledialog.askstring") as ask:
         mode = MainUI.choose_screen_mode(ui)
         ask.assert_not_called()
         assert mode == "1080p"
 
 
+def test_choose_screen_mode_env_custom(monkeypatch):
+    ui = MainUI.__new__(MainUI)
+    monkeypatch.setenv("SCREEN_MODE", "custom")
+    with patch("gui.main_ui.simpledialog.askstring") as ask:
+        mode = MainUI.choose_screen_mode(ui)
+        ask.assert_not_called()
+        assert mode == "custom"
+
+
 def test_choose_screen_mode_prompt():
     ui = MainUI.__new__(MainUI)
     with patch.dict("os.environ", {}, clear=True), patch(
-        "gui.main_ui.messagebox.askquestion", return_value="yes"
+        "gui.main_ui.simpledialog.askstring", return_value="4k"
     ):
         mode = MainUI.choose_screen_mode(ui)
         assert mode == "4k"
+
+
+def test_choose_screen_mode_prompt_custom(monkeypatch):
+    ui = MainUI.__new__(MainUI)
+    with patch.dict("os.environ", {}, clear=True), patch(
+        "gui.main_ui.simpledialog.askstring", return_value="custom"
+    ), patch("gui.main_ui.simpledialog.askfloat", return_value=1.5) as askf, patch(
+        "gui.main_ui.simpledialog.askinteger", return_value=12
+    ) as aski:
+        mode = MainUI.choose_screen_mode(ui)
+        assert mode == "custom"
+        askf.assert_called_once()
+        aski.assert_called_once()
 
 
 def test_build_image_calls_runner():
