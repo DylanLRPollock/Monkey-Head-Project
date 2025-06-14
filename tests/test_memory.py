@@ -30,6 +30,12 @@ class TestMemory(unittest.TestCase):
         # internal history should not change
         self.assertEqual(len(mem.get_messages()), 1)
 
+    def test_clear(self):
+        mem = Memory()
+        mem.add_user_message("hi")
+        mem.clear()
+        self.assertEqual(mem.get_messages(), [])
+
 
 if __name__ == "__main__":
     unittest.main()

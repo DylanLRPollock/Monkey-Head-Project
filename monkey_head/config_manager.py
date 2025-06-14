@@ -32,3 +32,8 @@ class ConfigManager:
     def set_setting(self, key, value):
         self.config[key] = value
         self.save_config()
+
+    def update_settings(self, data: dict) -> None:
+        """Update multiple settings at once and persist them."""
+        self.config.update(data)
+        self.save_config()
