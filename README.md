@@ -197,7 +197,8 @@ headless server), the launcher automatically falls
 back to the command-line interface. You can also force CLI mode with
 `python run.py --cli`. For an even lighter headless run you can launch the
 minimal echo chatbot with `python run.py --minimal`. A basic Tkinter chat demo
-is still available via `python run.py --simple-chat`.
+is still available via `python run.py --simple-chat`. To run individual modules
+directly, use `python run.py --module package.module[:func]`.
 
 The GUI now checks whether you've accepted the license on startup and
 offers a **Tools** menu. From there you can reopen the license dialog or
