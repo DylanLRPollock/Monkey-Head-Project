@@ -23,3 +23,7 @@ class Memory:
     def get_messages(self):
         """Return the stored conversation history."""
         return list(self._messages)
+
+    def clear(self) -> None:
+        """Remove all stored messages."""
+        self._messages.clear()
