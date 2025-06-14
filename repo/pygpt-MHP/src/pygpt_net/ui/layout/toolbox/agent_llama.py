@@ -54,6 +54,26 @@ class AgentLlama:
         )
         self.window.ui.config['global']['agent.llama.loop.enabled'] = self.window.ui.nodes['agent.llama.loop.enabled']
 
+        # max eval
+        option = self.window.controller.agent.llama.options["agent.llama.max_eval"]
+        self.window.ui.nodes['agent.llama.max_eval.label'] = QLabel(trans("toolbox.agent.llama.max_eval.label"))
+        self.window.ui.nodes['agent.llama.max_eval'] = OptionSlider(
+            self.window,
+            'global',
+            'agent.llama.max_eval',
+            option,
+        )
+        self.window.ui.config['global']['agent.llama.max_eval'] = self.window.ui.nodes['agent.llama.max_eval']
+
+        # verbose
+        self.window.ui.nodes['agent.llama.verbose'] = ToggleLabel(trans("toolbox.agent.llama.verbose.label"))
+        self.window.ui.nodes['agent.llama.verbose'].box.stateChanged.connect(
+            lambda:
+            self.window.controller.agent.common.toggle_llama_verbose(
+                self.window.ui.config['global']['agent.llama.verbose'].box.isChecked())
+        )
+        self.window.ui.config['global']['agent.llama.verbose'] = self.window.ui.nodes['agent.llama.verbose']
+
         # label
         self.window.ui.nodes['agent.llama.loop.label'] = QLabel(trans("toolbox.agent.llama.loop.label"))
 
@@ -62,10 +82,16 @@ class AgentLlama:
         cols.addWidget(self.window.ui.config['global']['agent.llama.loop.enabled'])
         cols.addWidget(self.window.ui.config['global']['agent.llama.loop.score'])
 
+        cols2 = QHBoxLayout()
+        cols2.addWidget(self.window.ui.config['global']['agent.llama.max_eval'])
+        cols2.addWidget(self.window.ui.config['global']['agent.llama.verbose'])
+
         # rows
         rows = QVBoxLayout()
         rows.addWidget(self.window.ui.nodes['agent.llama.loop.label'])
         rows.addLayout(cols)
+        rows.addWidget(self.window.ui.nodes['agent.llama.max_eval.label'])
+        rows.addLayout(cols2)
 
         self.window.ui.nodes['agent_llama.options'] = QWidget()
         self.window.ui.nodes['agent_llama.options'].setLayout(rows)

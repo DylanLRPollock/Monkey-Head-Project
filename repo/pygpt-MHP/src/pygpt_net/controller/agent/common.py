@@ -66,6 +66,40 @@ class Common:
         else:
             self.enable_continue()
 
+    def enable_goal_notify(self):
+        """Enable goal notify"""
+        self.window.core.config.set('agent.goal.notify', True)
+        self.window.core.config.save()
+
+    def disable_goal_notify(self):
+        """Disable goal notify"""
+        self.window.core.config.set('agent.goal.notify', False)
+        self.window.core.config.save()
+
+    def toggle_goal_notify(self, state: bool):
+        """Toggle goal notify"""
+        if not state:
+            self.disable_goal_notify()
+        else:
+            self.enable_goal_notify()
+
+    def enable_llama_verbose(self):
+        """Enable llama verbose mode"""
+        self.window.core.config.set('agent.llama.verbose', True)
+        self.window.core.config.save()
+
+    def disable_llama_verbose(self):
+        """Disable llama verbose mode"""
+        self.window.core.config.set('agent.llama.verbose', False)
+        self.window.core.config.save()
+
+    def toggle_llama_verbose(self, state: bool):
+        """Toggle llama verbose"""
+        if not state:
+            self.disable_llama_verbose()
+        else:
+            self.enable_llama_verbose()
+
     def is_infinity_loop(self, mode: str) -> bool:
         """
         Check if infinity loop is active
