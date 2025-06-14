@@ -18,6 +18,7 @@
 # ================================================== #
 
 import argparse
+import importlib
 import os
 import sys
 from pathlib import Path
@@ -29,6 +30,26 @@ def minimal_run() -> None:
     from monkey_head.pygpt_custom_cli import CustomPyGPT
 
     CustomPyGPT().run_cli()
+
+
+def run_module(target: str) -> None:
+    """Import ``module[:func]`` and execute the callable.
+
+    Parameters
+    ----------
+    target : str
+        Module path optionally followed by ``:func``. ``func`` defaults to
+        ``"main"`` when omitted.
+    """
+    module_name, _, func_name = target.partition(":")
+    if not func_name:
+        func_name = "main"
+    mod = importlib.import_module(module_name)
+    try:
+        func = getattr(mod, func_name)
+    except AttributeError as exc:  # pragma: no cover - invalid func
+        raise ImportError(f"Function {func_name} not found in {module_name}") from exc
+    func()
 
 
 def _load_cli() -> "callable":
@@ -67,11 +88,20 @@ def main() -> None:
         help="Run simple chat demonstration GUI",
     )
     parser.add_argument(
+        "--module",
+        type=str,
+        help="Run specified module optionally with :func",
+    )
+    parser.add_argument(
         "--version",
         action="store_true",
         help="Print pygpt_net version and exit",
     )
     args = parser.parse_args()
+
+    if args.module:
+        run_module(args.module)
+        return
 
     if args.minimal:
         minimal_run()

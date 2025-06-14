@@ -8,6 +8,7 @@ This guide explains the different ways to launch and test the project.
 - `python run.py --cli` – force command‑line mode if no GUI is available.
 - `python run.py --minimal` – run the lightweight echo chatbot.
 - `python run.py --simple-chat` – open a simple Tkinter demo.
+- `python run.py --module package.module[:func]` – execute a module's callable.
 
 ## Helper Scripts
 
