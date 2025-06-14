@@ -9,9 +9,14 @@
 from pathlib import Path
 import wave
 import subprocess
+import shutil
+import pytest
 
 import importlib.util
 from types import ModuleType
+
+if shutil.which("ffmpeg") is None:
+    pytest.skip("ffmpeg not installed", allow_module_level=True)
 
 spec = importlib.util.spec_from_file_location(
     "media_conversion",

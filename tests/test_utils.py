@@ -11,8 +11,9 @@
 import os
 from pathlib import Path
 import unittest
+import pytest
 
-from PIL import Image
+Image = pytest.importorskip("PIL.Image")
 
 from huey.utils import (
     calculate_sum,

@@ -6,7 +6,9 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.11.2025
 # ==================================================
-from PIL import Image
+import pytest
+
+Image = pytest.importorskip("PIL.Image")
 
 from monkey_head.convert_png_to_jpeg import convert_png_to_jpeg
 

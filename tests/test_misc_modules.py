@@ -1,6 +1,12 @@
 from unittest.mock import patch
 from pathlib import Path
+import pytest
 
+pytest.importorskip("numpy")
+pytest.importorskip("pandas")
+pytest.importorskip("sklearn")
+pytest.importorskip("seaborn")
+pytest.importorskip("matplotlib")
 
 from monkey_head.ai_processor import AIProcessor
 from monkey_head.chapter_splitter import split_chapters

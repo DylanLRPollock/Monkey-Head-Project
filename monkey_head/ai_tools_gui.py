@@ -19,7 +19,6 @@ except Exception:  # pragma: no cover - can't import GUI libs
     tk = None
     messagebox = None
 
-from .ai_processor import AIProcessor
 from .gui_scaling import apply_scaling
 from .license_gui import DARK_BG, LIGHT_FG, ACCENT_PURPLE
 
@@ -28,6 +27,9 @@ def run_ai_tools() -> None:
     """Launch a basic GUI exposing :class:`AIProcessor` methods."""
     if tk is None or messagebox is None:
         raise RuntimeError("tkinter is not available")
+
+    # Import here so missing scientific libs don't break module import
+    from .ai_processor import AIProcessor  # pragma: no cover - optional
 
     proc = AIProcessor()
 

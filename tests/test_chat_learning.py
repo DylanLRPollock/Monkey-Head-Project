@@ -1,4 +1,6 @@
-import tensorflow as tf
+import pytest
+
+tf = pytest.importorskip("tensorflow")
 from monkey_head.chat_learning import train_from_chat_and_pdfs
 
 

@@ -1,4 +1,7 @@
 from unittest.mock import patch
+import pytest
+
+pytest.importorskip("distro")
 
 from monkey_head.core.system_checks import check_os_support
 
