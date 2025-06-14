@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -33,7 +34,7 @@ function update_system() {
 
 function install_packages() {
     echo "Installing required packages: $DEFAULT_PACKAGES"
-    apt-get install -y $DEFAULT_PACKAGES
+    apt-get install -y "$DEFAULT_PACKAGES"
 }
 
 function clone_repo() {

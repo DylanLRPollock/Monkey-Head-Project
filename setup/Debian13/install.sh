@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -69,7 +70,7 @@ function install_selected_packages {
         packages="$DEFAULT_PACKAGES"
     fi
     echo "Installing packages: $packages..."
-    apt-get install -y $packages || error_exit "Failed to install packages."
+    apt-get install -y "$packages" || error_exit "Failed to install packages."
 }
 
 # Remove Firefox and install Microsoft Edge Dev

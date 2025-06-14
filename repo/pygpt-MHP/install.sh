@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
