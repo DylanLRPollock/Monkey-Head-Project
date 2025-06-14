@@ -8,10 +8,18 @@ REM Overseen By:   Dylan L.R. Pollock
 REM Updated: 06.05.2025
 REM ==================================================
 REM This script launches the app using the virtual environment
-cd /d "%~dp0"
-if not exist "venv\Scripts\activate.bat" (
+setlocal
+set "SCRIPT_DIR=%~dp0"
+set "ACTIVATE=%SCRIPT_DIR%venv\Scripts\activate.bat"
+
+pushd "%SCRIPT_DIR%"
+if not exist "%ACTIVATE%" (
     echo Virtual environment not found. Please run install.bat first.
+    popd
+    endlocal
     exit /b 1
 )
-call "venv\Scripts\activate.bat"
+call "%ACTIVATE%"
 python run.py %*
+popd
+endlocal
