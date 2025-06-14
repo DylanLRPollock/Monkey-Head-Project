@@ -4,18 +4,15 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated: 06.08.2025
+# Updated: 06.11.2025
 # ==================================================
-import os
-from typing import List
+"""Backward-compatible wrapper for :mod:`monkey_head.utils.sorting`."""
 
+from __future__ import annotations
 
-def list_files_by_mtime(directory: str) -> List[str]:
-    """Return file paths sorted by modification time (oldest first)."""
-    entries = [os.path.join(directory, f) for f in os.listdir(directory)]
-    entries = [e for e in entries if os.path.isfile(e)]
-    entries.sort(key=lambda p: os.path.getmtime(p))
-    return entries
+from .sorting import list_files_by_mtime
+
+__all__ = ["list_files_by_mtime"]
 
 
 if __name__ == "__main__":

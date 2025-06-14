@@ -38,6 +38,7 @@ from .media_conversion import (
     extract_audio,
     convert_media,
 )
+from .utils.sorting import list_files_by_mtime, natural_sort
 
 if os.environ.get("MONKEY_HEAD_LIGHT_IMPORTS"):
     train_from_chat_and_pdfs = None
@@ -61,6 +62,8 @@ __all__ = [
     "convert_file",
     "extract_audio",
     "convert_media",
+    "list_files_by_mtime",
+    "natural_sort",
     "train_from_chat_and_pdfs",
     "train_from_project_sources",
 ]
