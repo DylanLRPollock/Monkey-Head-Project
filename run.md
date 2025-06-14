@@ -16,7 +16,8 @@ This guide explains the different ways to launch and test the project.
 Two wrapper scripts simplify starting the project:
 
 - `run.sh` (Linux/macOS) activates the virtual environment and runs `run.py`.
-- `run.bat` (Windows) does the same on Windows systems.
+- `run.bat` (Windows) does the same on Windows systems. Use `run.bat help` to
+  list available options or `run.bat tests` to execute the test suite.
 
 ## Running Tests
 
@@ -25,7 +26,12 @@ After installation you can run the built‑in test suite:
 ```bash
 ./run-tests.sh
 ```
+On Windows use:
+```cmd
+run-tests.bat
+```
 
-The script runs `pytest` with coverage reporting and stores the results in `logs/test_results.log`.
+Each script runs `pytest` with coverage reporting and stores the results in
+`logs/test_results.log`.
 
 Make sure the project is installed as described in [install.md](install.md) before using these commands.
