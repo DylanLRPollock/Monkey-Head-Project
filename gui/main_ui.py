@@ -117,14 +117,36 @@ class MainUI:
     def choose_screen_mode(self) -> str:
         """Ask the user which display mode to use or read from ``SCREEN_MODE``."""
         env_mode = os.environ.get("SCREEN_MODE")
-        if env_mode in {"1080p", "4k"}:
+        if env_mode in {"1080p", "4k", "custom"}:
             return env_mode
-        if messagebox is not None:
-            resp = messagebox.askquestion(
+
+        if simpledialog is not None:
+            mode = simpledialog.askstring(
                 "Display Mode",
-                "Use 4K display scaling?",
+                "Choose display mode: 1080p, 4k, or custom",
+                initialvalue="1080p",
             )
-            return "4k" if resp == "yes" else "1080p"
+            if mode and mode.lower() in {"1080p", "4k", "custom"}:
+                mode = mode.lower()
+                if mode == "custom":
+                    if simpledialog is not None:
+                        factor = simpledialog.askfloat(
+                            "Scaling Factor",
+                            "Enter scaling factor",
+                            minvalue=0.5,
+                            maxvalue=5.0,
+                        )
+                        if factor is not None:
+                            os.environ["SCREEN_FACTOR"] = str(factor)
+                        font = simpledialog.askinteger(
+                            "Font Size",
+                            "Enter base font size",
+                            minvalue=6,
+                            maxvalue=24,
+                        )
+                        if font is not None:
+                            os.environ["SCREEN_FONT_SIZE"] = str(font)
+                return mode
         return "1080p"
 
     def setup_paths(self):

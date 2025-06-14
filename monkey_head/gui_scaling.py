@@ -1,5 +1,7 @@
 """Utilities for scaling Tkinter GUIs on high-DPI displays."""
 
+import os
+
 try:
     import tkinter as tk  # pragma: no cover - optional dependency
     from tkinter import font as tkfont
@@ -16,8 +18,9 @@ def apply_scaling(root: "tk.Tk", mode: str = "4k") -> None:
     root: tk.Tk
         The root window instance.
     mode: str, optional
-        ``"1080p"`` or ``"4k"`` to adjust scaling appropriately. Defaults to
-        ``"4k"``.
+        ``"1080p"``, ``"4k"`` or ``"custom"`` to adjust scaling
+        appropriately. ``"custom"`` reads ``SCREEN_FACTOR`` and
+        ``SCREEN_FONT_SIZE`` from the environment. Defaults to ``"4k"``.
     """
     if tk is None or tkfont is None:
         return
@@ -26,6 +29,15 @@ def apply_scaling(root: "tk.Tk", mode: str = "4k") -> None:
     if mode == "1080p":
         factor = 1.0
         font_size = 10
+    elif mode == "custom":
+        try:
+            factor = float(os.environ.get("SCREEN_FACTOR", 1.5))
+        except Exception:
+            factor = 1.5
+        try:
+            font_size = int(float(os.environ.get("SCREEN_FONT_SIZE", 12)))
+        except Exception:
+            font_size = 12
     else:
         factor = 2.0
         font_size = 14
