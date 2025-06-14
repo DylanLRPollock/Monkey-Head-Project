@@ -115,3 +115,27 @@ def test_convert_media_prompt_runs_thread():
         conv.assert_called_once_with(
             "in.wav", "out.mp3", bitrate="128k", codec="libx264"
         )
+
+
+def test_launch_simple_chat_runs_thread():
+    ui = MainUI.__new__(MainUI)
+    with patch("gui.main_ui.run_simple_chat") as run_chat, patch(
+        "gui.main_ui.threading.Thread"
+    ) as th, patch.object(MainUI, "log_message"):
+        th.side_effect = lambda target=None, args=(): SimpleNamespace(
+            start=lambda: target(*args)
+        )
+        MainUI.launch_simple_chat(ui)
+        run_chat.assert_called_once()
+
+
+def test_launch_ai_tools_runs_thread():
+    ui = MainUI.__new__(MainUI)
+    with patch("gui.main_ui.run_ai_tools") as run_tools, patch(
+        "gui.main_ui.threading.Thread"
+    ) as th, patch.object(MainUI, "log_message"):
+        th.side_effect = lambda target=None, args=(): SimpleNamespace(
+            start=lambda: target(*args)
+        )
+        MainUI.launch_ai_tools(ui)
+        run_tools.assert_called_once()
