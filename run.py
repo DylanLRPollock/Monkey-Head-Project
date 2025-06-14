@@ -113,6 +113,11 @@ def main() -> None:
         action="store_true",
         help="List PDF files available to the application",
     )
+    parser.add_argument(
+        "--system-check",
+        action="store_true",
+        help="Run environment checks and exit",
+    )
     args = parser.parse_args()
 
     if args.module:
@@ -133,6 +138,12 @@ def main() -> None:
 
         for pdf in list_available_pdfs():
             print(pdf)
+        return
+
+    if args.system_check:
+        from monkey_head.core.system_checks import system_check
+
+        system_check()
         return
 
     from monkey_head.core.system_checks import check_os_support, check_python_version
