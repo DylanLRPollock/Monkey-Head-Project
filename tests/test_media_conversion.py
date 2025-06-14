@@ -23,6 +23,7 @@ spec.loader.exec_module(mc)
 convert_audio = mc.convert_audio
 convert_video = mc.convert_video
 convert_file = mc.convert_file
+extract_audio = mc.extract_audio
 convert_media = mc.convert_media
 
 
@@ -43,6 +44,11 @@ def _make_video(path: Path) -> None:
             "lavfi",
             "-i",
             "color=c=red:s=16x16:d=1",
+            "-f",
+            "lavfi",
+            "-i",
+            "sine=d=1",
+            "-shortest",
             str(path),
         ],
         stdout=subprocess.PIPE,
@@ -67,6 +73,14 @@ def test_convert_video(tmp_path: Path) -> None:
     assert dst.exists() and dst.stat().st_size > 0
 
 
+def test_extract_audio(tmp_path: Path) -> None:
+    src = tmp_path / "clip.mp4"
+    dst = tmp_path / "clip.aac"
+    _make_video(src)
+    extract_audio(str(src), str(dst))
+    assert dst.exists() and dst.stat().st_size > 0
+
+
 def test_convert_file(tmp_path: Path) -> None:
     src = tmp_path / "a.txt"
     dst = tmp_path / "b.bin"
@@ -86,6 +100,14 @@ def test_convert_media_audio(tmp_path: Path) -> None:
 def test_convert_media_video(tmp_path: Path) -> None:
     src = tmp_path / "vid.mp4"
     dst = tmp_path / "vid.avi"
+    _make_video(src)
+    convert_media(str(src), str(dst))
+    assert dst.exists() and dst.stat().st_size > 0
+
+
+def test_convert_media_extract_audio(tmp_path: Path) -> None:
+    src = tmp_path / "movie.mp4"
+    dst = tmp_path / "movie.mp3"
     _make_video(src)
     convert_media(str(src), str(dst))
     assert dst.exists() and dst.stat().st_size > 0

@@ -35,6 +35,8 @@ from .media_conversion import (
     convert_audio,
     convert_video,
     convert_file,
+    extract_audio,
+    convert_media,
 )
 
 if os.environ.get("MONKEY_HEAD_LIGHT_IMPORTS"):
@@ -57,6 +59,8 @@ __all__ = [
     "convert_audio",
     "convert_video",
     "convert_file",
+    "extract_audio",
+    "convert_media",
     "train_from_chat_and_pdfs",
     "train_from_project_sources",
 ]
