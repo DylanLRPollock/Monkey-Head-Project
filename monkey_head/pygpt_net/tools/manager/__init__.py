@@ -73,29 +73,51 @@ class MonkeyManager(BaseTool):
         actions["monkey.update"] = QAction(trans("Monkey Update"), self.window)
         actions["monkey.update"].triggered.connect(self.update)
 
-        actions["monkey.docker.build"] = QAction(trans("Build Docker Image"), self.window)
-        actions["monkey.docker.build"].triggered.connect(container_management.build_docker_image)
+        actions["monkey.docker.build"] = QAction(
+            trans("Build Docker Image"), self.window
+        )
+        actions["monkey.docker.build"].triggered.connect(
+            container_management.build_docker_image
+        )
 
         actions["monkey.docker.start"] = QAction(trans("Start Containers"), self.window)
-        actions["monkey.docker.start"].triggered.connect(container_management.manage_containers)
+        actions["monkey.docker.start"].triggered.connect(
+            container_management.manage_containers
+        )
 
         actions["monkey.docker.stop"] = QAction(trans("Stop Containers"), self.window)
-        actions["monkey.docker.stop"].triggered.connect(container_management.stop_containers)
+        actions["monkey.docker.stop"].triggered.connect(
+            container_management.stop_containers
+        )
 
         actions["monkey.docker.clean"] = QAction(trans("Cleanup Images"), self.window)
-        actions["monkey.docker.clean"].triggered.connect(container_management.cleanup_images)
+        actions["monkey.docker.clean"].triggered.connect(
+            container_management.cleanup_images
+        )
 
         actions["monkey.docker.volumes"] = QAction(trans("Manage Volumes"), self.window)
-        actions["monkey.docker.volumes"].triggered.connect(container_management.manage_volumes)
+        actions["monkey.docker.volumes"].triggered.connect(
+            container_management.manage_volumes
+        )
 
-        actions["monkey.docker.networks"] = QAction(trans("Manage Networks"), self.window)
-        actions["monkey.docker.networks"].triggered.connect(container_management.manage_networks)
+        actions["monkey.docker.networks"] = QAction(
+            trans("Manage Networks"), self.window
+        )
+        actions["monkey.docker.networks"].triggered.connect(
+            container_management.manage_networks
+        )
 
         actions["monkey.k8s.deploy"] = QAction(trans("Deploy Kubernetes"), self.window)
-        actions["monkey.k8s.deploy"].triggered.connect(container_management.deploy_kubernetes)
+        actions["monkey.k8s.deploy"].triggered.connect(
+            container_management.deploy_kubernetes
+        )
 
-        actions["monkey.k8s.cleanup"] = QAction(trans("Cleanup Kubernetes"), self.window)
-        actions["monkey.k8s.cleanup"].triggered.connect(container_management.cleanup_kubernetes)
+        actions["monkey.k8s.cleanup"] = QAction(
+            trans("Cleanup Kubernetes"), self.window
+        )
+        actions["monkey.k8s.cleanup"].triggered.connect(
+            container_management.cleanup_kubernetes
+        )
 
         actions["monkey.k8s.scale"] = QAction(trans("Scale Deployment"), self.window)
         actions["monkey.k8s.scale"].triggered.connect(
@@ -103,4 +125,3 @@ class MonkeyManager(BaseTool):
         )
 
         return actions
-

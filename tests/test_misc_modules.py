@@ -21,10 +21,12 @@ def test_ai_processor():
 
     assert proc.compute_mean([1, 2, 3]) == 2.0
 
-    summary = proc.dataframe_summary([
-        {"a": 1, "b": 2},
-        {"a": 3, "b": 4},
-    ])
+    summary = proc.dataframe_summary(
+        [
+            {"a": 1, "b": 2},
+            {"a": 3, "b": 4},
+        ]
+    )
     assert summary.loc["mean", "a"] == 2.0
 
     coef, intercept = proc.train_linear_model([[0], [1]], [0, 1])

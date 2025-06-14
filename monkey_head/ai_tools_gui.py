@@ -37,7 +37,9 @@ def run_ai_tools() -> None:
     root.configure(bg=DARK_BG)
 
     tk.Label(root, text="Input Text", bg=DARK_BG, fg=LIGHT_FG).pack(padx=5, pady=5)
-    text_entry = tk.Entry(root, width=50, bg=DARK_BG, fg=LIGHT_FG, insertbackground=LIGHT_FG)
+    text_entry = tk.Entry(
+        root, width=50, bg=DARK_BG, fg=LIGHT_FG, insertbackground=LIGHT_FG
+    )
     text_entry.pack(padx=5, pady=5)
 
     def on_process() -> None:
@@ -45,23 +47,31 @@ def run_ai_tools() -> None:
         result = proc.process_data(text)
         messagebox.showinfo("Processed", result)
 
-    tk.Button(root, text="Process", command=on_process, bg=ACCENT_PURPLE, fg=LIGHT_FG).pack(pady=5)
+    tk.Button(
+        root, text="Process", command=on_process, bg=ACCENT_PURPLE, fg=LIGHT_FG
+    ).pack(pady=5)
 
-    tk.Label(root, text="Numbers (comma separated)", bg=DARK_BG, fg=LIGHT_FG).pack(padx=5, pady=5)
-    num_entry = tk.Entry(root, width=50, bg=DARK_BG, fg=LIGHT_FG, insertbackground=LIGHT_FG)
+    tk.Label(root, text="Numbers (comma separated)", bg=DARK_BG, fg=LIGHT_FG).pack(
+        padx=5, pady=5
+    )
+    num_entry = tk.Entry(
+        root, width=50, bg=DARK_BG, fg=LIGHT_FG, insertbackground=LIGHT_FG
+    )
     num_entry.pack(padx=5, pady=5)
 
     def on_mean() -> None:
         raw = num_entry.get()
         try:
-            nums = [float(x.strip()) for x in raw.split(',') if x.strip()]
+            nums = [float(x.strip()) for x in raw.split(",") if x.strip()]
         except ValueError:
             messagebox.showerror("Error", "Please enter valid numbers")
             return
         result = proc.compute_mean(nums) if nums else 0.0
         messagebox.showinfo("Mean", str(result))
 
-    tk.Button(root, text="Compute Mean", command=on_mean, bg=ACCENT_PURPLE, fg=LIGHT_FG).pack(pady=5)
+    tk.Button(
+        root, text="Compute Mean", command=on_mean, bg=ACCENT_PURPLE, fg=LIGHT_FG
+    ).pack(pady=5)
 
     root.mainloop()
 

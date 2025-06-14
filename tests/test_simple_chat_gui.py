@@ -4,7 +4,10 @@ from monkey_head.simple_chat_gui import get_answer, run_simple_chat
 
 
 def test_get_answer_known():
-    assert get_answer("What is the capital of France?") == "The capital of France is Paris."
+    assert (
+        get_answer("What is the capital of France?")
+        == "The capital of France is Paris."
+    )
 
 
 def test_get_answer_unknown():
@@ -55,7 +58,10 @@ def test_run_simple_chat(monkeypatch):
 
     monkeypatch.setattr("monkey_head.simple_chat_gui.tk", dummy_tk)
     monkeypatch.setattr("monkey_head.simple_chat_gui.scrolledtext", dummy_scrolled)
-    monkeypatch.setattr("monkey_head.simple_chat_gui.apply_scaling", lambda *a, **k: events.update({"scaled": True}))
+    monkeypatch.setattr(
+        "monkey_head.simple_chat_gui.apply_scaling",
+        lambda *a, **k: events.update({"scaled": True}),
+    )
 
     run_simple_chat()
     assert events.get("ran") is True

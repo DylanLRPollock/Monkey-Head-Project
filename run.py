@@ -83,6 +83,7 @@ def main() -> None:
         return
 
     from monkey_head.core.system_checks import check_os_support, check_python_version
+
     cli_run = _load_cli()
 
     # Warn if running on an unsupported operating system
