@@ -69,9 +69,14 @@ def load_memory_texts(memory_dir: str | Path) -> List[str]:
 
 
 def train_from_project_sources(
-    log_dir: str | Path, prompts_dir: str | Path, memory_dir: str | Path, epochs: int = 1
+    log_dir: str | Path,
+    prompts_dir: str | Path,
+    memory_dir: str | Path,
+    epochs: int = 1,
 ):
     """Train a model on logs, prompts and memory PDFs."""
-    chat_history = load_logs(log_dir) + load_prompts(prompts_dir) + load_memory_texts(memory_dir)
+    chat_history = (
+        load_logs(log_dir) + load_prompts(prompts_dir) + load_memory_texts(memory_dir)
+    )
     pdf_files = [str(p) for p in Path(memory_dir).rglob("*.pdf")]
     return train_from_chat_and_pdfs(chat_history, pdf_files, epochs=epochs)

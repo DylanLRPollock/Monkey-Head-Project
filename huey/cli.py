@@ -11,8 +11,16 @@
 import argparse
 import sys
 from pathlib import Path
-from .main import main as huey_main
-from .utils import convert_image, convert_images_in_directory
+
+if __package__:
+    # When executed as part of the huey package
+    from .main import main as huey_main
+    from .utils import convert_image, convert_images_in_directory
+else:  # Support running as a standalone script
+    # Insert project root so package imports work
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from huey.main import main as huey_main
+    from huey.utils import convert_image, convert_images_in_directory
 
 
 def parse_arguments(argv=None):

@@ -37,12 +37,15 @@ def setup_python_env(dest: str = "~/Source/repo") -> None:
 
     pip_path = os.path.join(venv_path, "bin", "pip")
     # Ensure the newest pip version compatible with Python 3.12 is installed
-    run_command([
-        pip_path,
-        "install",
-        "--upgrade",
-        "pip",
-    ], cwd=repo_path)
+    run_command(
+        [
+            pip_path,
+            "install",
+            "--upgrade",
+            "pip",
+        ],
+        cwd=repo_path,
+    )
     run_command(
         [pip_path, "install", "-r", "requirements.txt"],
         cwd=repo_path,
