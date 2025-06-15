@@ -19,13 +19,16 @@ def apply_scaling(root: "tk.Tk", mode: str = "4k") -> None:
         The root window instance.
     mode: str, optional
         ``"1080p"``, ``"4k"`` or ``"custom"`` to adjust scaling
-        appropriately. ``"custom"`` reads ``SCREEN_FACTOR`` and
-        ``SCREEN_FONT_SIZE`` from the environment. Defaults to ``"4k"``.
+        appropriately. ``"custom"`` reads ``SCREEN_FACTOR``,
+        ``SCREEN_FONT_SIZE`` and ``SCREEN_FONT_FAMILY`` from the
+        environment. Defaults to ``"4k"``.
     """
     if tk is None or tkfont is None:
         return
 
     mode = (mode or "4k").lower()
+    font_family = os.environ.get("SCREEN_FONT_FAMILY", "Lato")
+
     if mode == "1080p":
         factor = 1.0
         font_size = 10
@@ -38,6 +41,7 @@ def apply_scaling(root: "tk.Tk", mode: str = "4k") -> None:
             font_size = int(float(os.environ.get("SCREEN_FONT_SIZE", 12)))
         except Exception:
             font_size = 12
+        font_family = os.environ.get("SCREEN_FONT_FAMILY", font_family)
     else:
         factor = 2.0
         font_size = 14
@@ -50,7 +54,7 @@ def apply_scaling(root: "tk.Tk", mode: str = "4k") -> None:
     for name in ("TkDefaultFont", "TkTextFont", "TkFixedFont", "TkMenuFont"):
         try:
             f = tkfont.nametofont(name)
-            f.configure(size=font_size)
+            f.configure(size=font_size, family=font_family)
         except Exception:
             continue
 

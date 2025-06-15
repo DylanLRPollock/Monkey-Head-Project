@@ -239,6 +239,19 @@ view a summary of bundled prompts and memory files. Additional **Docker** and
 building images, starting or stopping containers, cleaning up resources, and
 deploying or scaling Kubernetes manifests.
 
+### Adjusting Font Size and Family
+
+The interface adapts to high-DPI displays via the `apply_scaling` utility. When
+running in `custom` mode, you can fine-tune scaling with environment variables:
+
+- `SCREEN_FACTOR` – scaling factor for all UI elements.
+- `SCREEN_FONT_SIZE` – base font size used across widgets.
+- `SCREEN_FONT_FAMILY` – font family applied to Tkinter fonts (default: `Lato`).
+
+Set these variables before launching `run.py` to tailor the GUI to your
+display. The `main_ui` dialog also prompts for these values when selecting the
+"custom" option at startup.
+
 ### Customizing prompts and personalities
 
 Prompt templates live in `prompts/pygpt_prompts.csv`. You can add new
