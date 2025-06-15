@@ -3493,3 +3493,4 @@ pygpt-net>=0.1.0
 tensorflow==2.19.0
 pyttsx3==2.98
 deepspeech==0.9.3
+flask==3.1.1
