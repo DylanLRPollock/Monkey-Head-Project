@@ -66,7 +66,10 @@ def _load_cli() -> "callable":
         sub_dir = Path(__file__).parent / "repo" / "pygpt-MHP" / "src"
         if sub_dir.exists() and str(sub_dir.resolve()) not in sys.path:
             sys.path.insert(0, str(sub_dir.resolve()))
-        from pygpt_net.app import run as cli_run
+        try:
+            from pygpt_net.app import run as cli_run
+        except Exception:  # pragma: no cover - missing GUI deps
+            return minimal_run
 
     return cli_run
 
