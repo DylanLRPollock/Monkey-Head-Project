@@ -56,6 +56,7 @@ setup(
         "uvicorn==0.34.3",
         "starlette==0.47.0",
         "flask==3.1.1",
+        "python-vlc==3.0.21203",
         "psutil==7.0.0",
         "platformdirs==4.3.8",
         "py-cpuinfo==9.0.0",

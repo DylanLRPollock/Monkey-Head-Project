@@ -3494,3 +3494,4 @@ tensorflow==2.19.0
 pyttsx3==2.98
 deepspeech==0.9.3
 flask==3.1.1
+python-vlc==3.0.21203
