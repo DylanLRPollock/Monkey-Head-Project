@@ -130,3 +130,9 @@ def system_check():
         ["which", "git"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     check_error(git_check, "Git Availability Check")
+
+    # Check for VLC media player
+    vlc_check = subprocess.run(
+        ["which", "vlc"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    check_error(vlc_check, "VLC media player availability check")
