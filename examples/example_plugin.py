@@ -6,4 +6,25 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-Placeholder for `repo/pygpt-MHP/examples/example_plugin.py` from the pygpt-MHP repo.
+"""Minimal example plugin for the PyGPT application."""
+
+from __future__ import annotations
+
+from pygpt_net.plugin.base.plugin import BasePlugin
+
+
+class ExamplePlugin(BasePlugin):
+    """A tiny plugin that logs when activated."""
+
+    def activate(self) -> None:  # pragma: no cover - UI integration
+        print("ExamplePlugin activated")
+
+
+def main() -> None:
+    plugin = ExamplePlugin()
+    plugin.activate()
+
+
+if __name__ == "__main__":  # pragma: no cover - example script
+    main()
+
