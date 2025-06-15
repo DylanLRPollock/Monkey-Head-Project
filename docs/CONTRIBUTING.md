@@ -67,12 +67,16 @@ To set up your development environment, follow these steps:
 
 3. **Run Docker:**
    - Build the Docker image:
+   ```bash
+    docker build -t monkey-head-project .
+    ```
+  - Run the Docker container:
+    ```bash
+    docker run -p 8000:8000 monkey-head-project
+    ```
+   - Or start the development stack with PostgreSQL:
      ```bash
-     docker build -t monkey-head-project .
-     ```
-   - Run the Docker container:
-     ```bash
-     docker run -p 8000:8000 monkey-head-project
+     ./scripts/docker_dev_setup.sh
      ```
 
 4. **Run Tests:**
