@@ -161,3 +161,13 @@ def test_launch_ai_tools_runs_thread():
         )
         MainUI.launch_ai_tools(ui)
         run_tools.assert_called_once()
+
+
+def test_clear_log_invokes_delete():
+    ui = MainUI.__new__(MainUI)
+    dummy_log = SimpleNamespace(delete=lambda *a, **k: None)
+    ui.log_text = dummy_log
+    with patch("gui.main_ui.tk", SimpleNamespace(END="end")):
+        with patch.object(dummy_log, "delete") as delete:
+            MainUI.clear_log(ui)
+            delete.assert_called_once_with("1.0", "end")

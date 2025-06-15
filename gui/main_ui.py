@@ -179,6 +179,7 @@ class MainUI:
         file_menu.add_command(label="Install", command=self.install)
         file_menu.add_command(label="Run", command=self.run)
         file_menu.add_command(label="Update", command=self.update)
+        file_menu.add_command(label="Clear Log", command=self.clear_log)
         file_menu.add_separator()
         file_menu.add_command(label="Exit", command=self.root.quit)
         menu_bar.add_cascade(label="File", menu=file_menu)
@@ -278,9 +279,24 @@ class MainUI:
         )
         self.update_button.pack(side=tk.LEFT, padx=10, pady=10)
 
+        self.clear_button = tk.Button(
+            self.root,
+            text="Clear Log",
+            command=self.clear_log,
+            bg=ACCENT_PURPLE,
+            fg=LIGHT_FG,
+            activebackground=ACCENT_PURPLE,
+            activeforeground=LIGHT_FG,
+        )
+        self.clear_button.pack(side=tk.LEFT, padx=10, pady=10)
+
     def log_message(self, message):
         self.log_text.insert(tk.END, message + "\n")
         self.log_text.see(tk.END)
+
+    def clear_log(self) -> None:
+        """Remove all text from the log window."""
+        self.log_text.delete("1.0", tk.END)
 
     def run_script(self, script_path):
         if script_path is None or not Path(script_path).exists():
