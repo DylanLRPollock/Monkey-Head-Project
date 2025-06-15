@@ -82,6 +82,19 @@ def launch_gui() -> None:
     pygpt_run(tools=[MonkeyManager()])
 
 
+def launch_manager_ui() -> None:
+    """Start the Tkinter program manager."""
+    from gui.main_ui import MainUI
+    try:
+        import tkinter as tk
+    except Exception as exc:  # pragma: no cover - missing tkinter
+        raise RuntimeError("tkinter is not available") from exc
+
+    root = tk.Tk()
+    MainUI(root)
+    root.mainloop()
+
+
 def main() -> None:
     """Launch the GUI by default with an optional CLI mode."""
 
@@ -132,6 +145,11 @@ def main() -> None:
         help="Deploy resources using manifests in k8s/",
     )
     parser.add_argument(
+        "--manager-ui",
+        action="store_true",
+        help="Launch the Tkinter program manager",
+    )
+    parser.add_argument(
         "--workdir",
         type=str,
         help="Set the working directory (default: project directory)",
@@ -180,6 +198,10 @@ def main() -> None:
         from monkey_head.services.container_management import deploy_kubernetes
 
         deploy_kubernetes()
+        return
+
+    if args.manager_ui:
+        launch_manager_ui()
         return
 
     from monkey_head.core.system_checks import check_os_support, check_python_version
