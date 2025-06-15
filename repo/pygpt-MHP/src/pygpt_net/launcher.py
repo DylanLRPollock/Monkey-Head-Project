@@ -43,6 +43,7 @@ class Launcher:
         self.debug = False
         self.force_legacy = False
         self.force_disable_gpu = False
+        self.force_enable_gpu = False
         self.shortcut_filter = None
         self.workdir = None
 
@@ -70,6 +71,12 @@ class Launcher:
             "--disable-gpu",
             required=False,
             help="force disable OpenGL (1=disabled, 0=enabled)",
+        )
+        parser.add_argument(
+            "-g",
+            "--enable-gpu",
+            required=False,
+            help="force enable OpenGL (1=enabled, 0=disabled)",
         )
         parser.add_argument(
             "-w",
@@ -100,6 +107,11 @@ class Launcher:
         if "disable-gpu" in args and args["disable-gpu"] == "1":
             print("** Force disable GPU enabled")
             self.force_disable_gpu = True
+
+        # force enable GPU
+        if "enable-gpu" in args and args["enable-gpu"] == "1":
+            print("** Force enable GPU enabled")
+            self.force_enable_gpu = True
 
         # force set workdir
         if "workdir" in args and args["workdir"] is not None:

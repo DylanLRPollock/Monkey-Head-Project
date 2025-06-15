@@ -313,6 +313,12 @@ and to force disable OpenGL hardware acceleration:
 python3 run.py --disable-gpu=1
 ```
 
+and to force enable OpenGL hardware acceleration:
+
+``` ini
+python3 run.py --enable-gpu=1
+```
+
 You can also manualy enable legacy mode by editing config file - open the `%WORKDIR%/config.json` config file in editor and set the following options:
 
 ``` json
@@ -3414,6 +3420,12 @@ and to force disable OpenGL hardware acceleration:
 
 ``` ini
 python3 run.py --disable-gpu=1
+```
+
+and to force enable OpenGL hardware acceleration:
+
+``` ini
+python3 run.py --enable-gpu=1
 ```
 
 You can also manualy enable legacy mode by editing config file - open the `%WORKDIR%/config.json` config file in editor and set the following options:
