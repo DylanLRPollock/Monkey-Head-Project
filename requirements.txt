@@ -3489,7 +3489,7 @@ youtube-transcript-api==0.6.3 ; python_version >= "3.10" and python_version < "3
 zipp==3.21.0 ; python_version >= "3.10" and python_version < "3.13" \
     --hash=sha256:2c9958f6430a2040341a52eb608ed6dd93ef4392e02ffe219417c1b28b5dd1f4 \
     --hash=sha256:ac1bbe05fd2991f160ebce24ffbac5f6d11d83dc90891255885223d42b3cd931
-pygpt-net>=0.1.0
+pygpt-MHP>=0.1.0
 tensorflow==2.19.0
 pyttsx3==2.98
 deepspeech==0.9.3

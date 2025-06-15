@@ -91,39 +91,39 @@ def test_to_workdir(mock_window):
     filesystem = Filesystem(mock_window)
 
     if platform.system() == 'Windows':
-        filesystem.window.core.config.path = 'C:\\Users\\new_user\\.config\\pygpt-net'
+        filesystem.window.core.config.path = 'C:\\Users\\new_user\\.config\\pygpt-MHP'
         mock_window.core.platforms.is_windows = MagicMock(return_value=True)
-        path = filesystem.to_workdir('C:\\Users\\old_user\\.config\\pygpt-net\\data\\test_file')
-        assert path == 'C:\\Users\\new_user\\.config\\pygpt-net\\data\\test_file'
+        path = filesystem.to_workdir('C:\\Users\\old_user\\.config\\pygpt-MHP\\data\\test_file')
+        assert path == 'C:\\Users\\new_user\\.config\\pygpt-MHP\\data\\test_file'
     else:
-        filesystem.window.core.config.path = '/home/new_user/.config/pygpt-net'
+        filesystem.window.core.config.path = '/home/new_user/.config/pygpt-MHP'
         mock_window.core.platforms.is_windows = MagicMock(return_value=False)
-        path = filesystem.to_workdir('/home/old_user/.config/pygpt-net/data/test_file')
-        assert path == '/home/new_user/.config/pygpt-net/data/test_file'
+        path = filesystem.to_workdir('/home/old_user/.config/pygpt-MHP/data/test_file')
+        assert path == '/home/new_user/.config/pygpt-MHP/data/test_file'
 
 
 def test_extract_local_url(mock_window):
     """Test extract local url"""
     filesystem = Filesystem(mock_window)
     if platform.system() == 'Windows':
-        filesystem.window.core.config.path = 'C:\\Users\\new_user\\.config\\pygpt-net'
+        filesystem.window.core.config.path = 'C:\\Users\\new_user\\.config\\pygpt-MHP'
         mock_window.core.platforms.is_windows = MagicMock(return_value=True)
-        url, path = filesystem.extract_local_url('C:\\Users\\old_user\\.config\\pygpt-net\\data\\test_file')
-        assert url == 'file:///C:\\Users\\new_user\\.config\\pygpt-net\\data\\test_file'
-        assert path == 'C:\\Users\\new_user\\.config\\pygpt-net\\data\\test_file'
+        url, path = filesystem.extract_local_url('C:\\Users\\old_user\\.config\\pygpt-MHP\\data\\test_file')
+        assert url == 'file:///C:\\Users\\new_user\\.config\\pygpt-MHP\\data\\test_file'
+        assert path == 'C:\\Users\\new_user\\.config\\pygpt-MHP\\data\\test_file'
     else:
-        filesystem.window.core.config.path = '/home/new_user/.config/pygpt-net'
+        filesystem.window.core.config.path = '/home/new_user/.config/pygpt-MHP'
         mock_window.core.platforms.is_windows = MagicMock(return_value=False)
-        url, path = filesystem.extract_local_url('/home/old_user/.config/pygpt-net/data/test_file')
-        assert url == 'file:///home/new_user/.config/pygpt-net/data/test_file'
-        assert path == '/home/new_user/.config/pygpt-net/data/test_file'
+        url, path = filesystem.extract_local_url('/home/old_user/.config/pygpt-MHP/data/test_file')
+        assert url == 'file:///home/new_user/.config/pygpt-MHP/data/test_file'
+        assert path == '/home/new_user/.config/pygpt-MHP/data/test_file'
 
 
 def test_extract_local_url_none(mock_window):
     """Test extract local url"""
     filesystem = Filesystem(mock_window)
     mock_window.core.platforms.is_windows = MagicMock(return_value=False)
-    filesystem.window.core.config.path = '/home/user/.config/pygpt-net'
+    filesystem.window.core.config.path = '/home/user/.config/pygpt-MHP'
 
     url, path = filesystem.extract_local_url('http://www.google.com/file.png')
     assert url == 'http://www.google.com/file.png'

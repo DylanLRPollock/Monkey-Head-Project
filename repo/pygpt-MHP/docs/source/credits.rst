@@ -20,7 +20,7 @@ https://pygpt.net/discord
 https://snapcraft.io/pygpt
 
 **PyPI:**
-https://pypi.org/project/pygpt-net
+https://pypi.org/project/pygpt-MHP
 
 **Author:**
 Marcin Szczygliński (Poland, EU)

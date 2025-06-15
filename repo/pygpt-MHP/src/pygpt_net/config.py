@@ -22,7 +22,7 @@ from pygpt_net.provider.core.config.json_file import JsonFileProvider
 
 
 class Config:
-    CONFIG_DIR = 'pygpt-net'
+    CONFIG_DIR = 'pygpt-MHP'
     SNAP_NAME = 'pygpt'
     TYPE_STR = 0
     TYPE_INT = 1

@@ -6,6 +6,6 @@
 # Overseen By:   Dylan L.R. Pollock                                                             #
 # Updated: 06.05.2025                                                                                 #
 # ================================================== #
-python -m pip install --upgrade pygpt-net
+python -m pip install --upgrade pygpt-MHP
 pygpt
 pause

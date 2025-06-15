@@ -32,7 +32,7 @@ class UpdateDialog(BaseDialog):
         self.window = window
         self.setParent(window)
         self.setWindowTitle(trans('update.title'))
-        self.cmd_pip = "pip install --upgrade pygpt-net"
+        self.cmd_pip = "pip install --upgrade pygpt-MHP"
         self.cmd_snap = "sudo snap refresh pygpt"
 
         # www

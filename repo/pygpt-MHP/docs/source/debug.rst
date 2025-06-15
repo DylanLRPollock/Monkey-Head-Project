@@ -9,7 +9,7 @@ By default, all errors and exceptions are logged to the file:
 
 .. code-block:: ini
 
-	{HOME_DIR}/.config/pygpt-net/app.log
+        {HOME_DIR}/.config/pygpt-MHP/app.log
 
 To increase the logging level (``ERROR`` level is default), run the application with ``--debug`` argument:
 

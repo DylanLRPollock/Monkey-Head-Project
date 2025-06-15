@@ -14,7 +14,7 @@ system:
   python_version: '3.12'
   virtual_env: '/workspace/venv'
   dependencies:
-    - pygpt-net
+    - pygpt-MHP
     - docker
     - kubernetes
     - fastapi

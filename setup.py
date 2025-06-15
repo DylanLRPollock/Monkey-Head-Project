@@ -69,7 +69,7 @@ setup(
         "elasticsearch==9.0.2",
         "pyyaml==6.0.2",
         "pypdf>=5.1.0,<6.0.0",
-        "pygpt-net>=0.1.0",
+        "pygpt-MHP>=0.1.0",
     ],
     extras_require={
         "dev": ["black==23.7.0", "flake8==6.0.0", "mypy==1.5.1", "pytest==7.4.0"]
