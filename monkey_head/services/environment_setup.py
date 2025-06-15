@@ -101,3 +101,32 @@ def update_env_variables():
     if line not in content:
         with open(bashrc_path, "a") as bashrc:
             bashrc.write(f"\n{line}\n")
+
+
+def checkout_branch(branch: str = "main", dest: str = "~/Source/repo") -> None:
+    """Fetch and checkout the given branch in the local repository."""
+    logger.info("Checking out branch %s", branch)
+    repo_path = os.path.expanduser(dest)
+    run_command(["git", "fetch"], cwd=repo_path)
+    run_command(["git", "checkout", branch], cwd=repo_path)
+
+
+def pull_latest(dest: str = "~/Source/repo") -> None:
+    """Pull the latest changes from the tracked remote."""
+    logger.info("Pulling latest changes...")
+    repo_path = os.path.expanduser(dest)
+    run_command(["git", "pull", "--ff-only"], cwd=repo_path)
+
+
+def commit_and_push(
+    message: str,
+    dest: str = "~/Source/repo",
+    remote: str = "origin",
+    branch: str = "main",
+) -> None:
+    """Commit all changes and push them to the remote branch."""
+    logger.info("Committing and pushing changes to %s/%s", remote, branch)
+    repo_path = os.path.expanduser(dest)
+    run_command(["git", "add", "."], cwd=repo_path)
+    run_command(["git", "commit", "-m", message], cwd=repo_path)
+    run_command(["git", "push", remote, branch], cwd=repo_path)
