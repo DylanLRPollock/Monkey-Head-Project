@@ -11,54 +11,62 @@
 from .formatter import format_text
 from .gencore import generate_core_data
 from .logging_setup import configure_logging
+from .utils.logger import get_logger
+from .utils.sorting import list_files_by_mtime, natural_sort
+import importlib
 import os
 
-if not os.environ.get("MONKEY_HEAD_LIGHT_IMPORTS"):
-    try:
-        from . import subos_manager
-    except Exception:  # pragma: no cover - optional dependency
-        subos_manager = None
-else:
-    subos_manager = None
-from .utils.logger import get_logger
+LIGHT_IMPORTS = bool(os.environ.get("MONKEY_HEAD_LIGHT_IMPORTS"))
 
-try:
-    from .convert_png_to_jpeg import convert_png_to_jpeg
-except Exception:  # pragma: no cover - optional dependency
-    convert_png_to_jpeg = None
+_lazy_modules = {
+    "subos_manager": "monkey_head.subos_manager",
+}
 
-try:
-    from .pdf_pre_digestion import pdf_pre_digestion
-except Exception:  # pragma: no cover - optional dependency
-    pdf_pre_digestion = None
-from .media_conversion import (
-    convert_audio,
-    convert_video,
-    convert_file,
-    extract_audio,
-    convert_media,
-)
-from .utils.sorting import list_files_by_mtime, natural_sort
-from .pdf_utils import list_available_pdfs
-try:
-    from .pdf_chat import load_pdf_pages, answer_question, chat_with_pdf
-except Exception:  # pragma: no cover - optional dependency
-    load_pdf_pages = None
-    answer_question = None
-    chat_with_pdf = None
+_lazy_functions = {
+    "convert_png_to_jpeg": ("monkey_head.convert_png_to_jpeg", "convert_png_to_jpeg"),
+    "pdf_pre_digestion": ("monkey_head.pdf_pre_digestion", "pdf_pre_digestion"),
+    "convert_audio": ("monkey_head.media_conversion", "convert_audio"),
+    "convert_video": ("monkey_head.media_conversion", "convert_video"),
+    "convert_file": ("monkey_head.media_conversion", "convert_file"),
+    "extract_audio": ("monkey_head.media_conversion", "extract_audio"),
+    "convert_media": ("monkey_head.media_conversion", "convert_media"),
+    "list_available_pdfs": ("monkey_head.pdf_utils", "list_available_pdfs"),
+    "load_pdf_pages": ("monkey_head.pdf_chat", "load_pdf_pages"),
+    "answer_question": ("monkey_head.pdf_chat", "answer_question"),
+    "chat_with_pdf": ("monkey_head.pdf_chat", "chat_with_pdf"),
+    "train_from_chat_and_pdfs": ("monkey_head.chat_learning", "train_from_chat_and_pdfs"),
+    "train_from_project_sources": ("monkey_head.tensorflow_feed", "train_from_project_sources"),
+}
 
-if os.environ.get("MONKEY_HEAD_LIGHT_IMPORTS"):
-    train_from_chat_and_pdfs = None
-    train_from_project_sources = None
-else:
-    try:  # pragma: no cover - optional dependency
-        from .chat_learning import train_from_chat_and_pdfs
-    except Exception:
-        train_from_chat_and_pdfs = None
-    try:  # pragma: no cover - optional dependency
-        from .tensorflow_feed import train_from_project_sources
-    except Exception:
-        train_from_project_sources = None
+_light_skip = {"subos_manager", "train_from_chat_and_pdfs", "train_from_project_sources"}
+
+
+def __getattr__(name: str):
+    """Lazy-load optional modules and functions."""
+    if name in _lazy_modules:
+        if LIGHT_IMPORTS and name in _light_skip:
+            return None
+        try:
+            module = importlib.import_module(_lazy_modules[name])
+        except Exception:  # pragma: no cover - optional dependency
+            value = None
+        else:
+            value = module
+        globals()[name] = value
+        return value
+    if name in _lazy_functions:
+        if LIGHT_IMPORTS and name in _light_skip:
+            return None
+        module_name, attr = _lazy_functions[name]
+        try:
+            module = importlib.import_module(module_name)
+            value = getattr(module, attr)
+        except Exception:  # pragma: no cover - optional dependency
+            value = None
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 # Initialize project-wide logging as soon as the package is imported
 configure_logging()

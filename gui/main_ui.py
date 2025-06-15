@@ -12,6 +12,7 @@ os.environ.setdefault("MONKEY_HEAD_LIGHT_IMPORTS", "1")
 import platform
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
+import threading
 from pathlib import Path
 import sys
 
@@ -334,19 +335,19 @@ class MainUI:
         self.log_message("Starting installation...")
         self.status_label.config(text="Status: Installing")
         self.progress.start()
-        self.executor.submit(self.run_script, self.install_path)
+        self._submit(self.run_script, self.install_path)
 
     def run(self):
         self.log_message("Launching application...")
         self.status_label.config(text="Status: Running")
         self.progress.start()
-        self.executor.submit(self.run_script, self.run_path)
+        self._submit(self.run_script, self.run_path)
 
     def update(self):
         self.log_message("Starting update...")
         self.status_label.config(text="Status: Updating")
         self.progress.start()
-        self.executor.submit(self.run_script, self.update_path)
+        self._submit(self.run_script, self.update_path)
 
     def check_license(self):
         """Display the license agreement if not yet accepted."""
@@ -365,6 +366,13 @@ class MainUI:
             "Data Summary", f"Prompts: {prompts}\nMemory files: {memory_files}"
         )
 
+    def _submit(self, func, *args):
+        """Run *func* asynchronously using the executor or a fallback thread."""
+        if getattr(self, "executor", None) is not None:
+            self.executor.submit(func, *args)
+        else:  # pragma: no cover - used in tests without __init__
+            threading.Thread(target=func, args=args).start()
+
     def _run_container_func(self, func, *args):
         try:
             func(*args)
@@ -379,49 +387,49 @@ class MainUI:
         self.log_message("Building Docker image...")
         self.status_label.config(text="Status: Building")
         self.progress.start()
-        self.executor.submit(self._run_container_func, build_docker_image)
+        self._submit(self._run_container_func, build_docker_image)
 
     def start_containers(self):
         self.log_message("Starting containers...")
         self.status_label.config(text="Status: Starting")
         self.progress.start()
-        self.executor.submit(self._run_container_func, manage_containers)
+        self._submit(self._run_container_func, manage_containers)
 
     def stop_containers(self):
         self.log_message("Stopping containers...")
         self.status_label.config(text="Status: Stopping")
         self.progress.start()
-        self.executor.submit(self._run_container_func, stop_containers)
+        self._submit(self._run_container_func, stop_containers)
 
     def cleanup_images(self):
         self.log_message("Pruning images...")
         self.status_label.config(text="Status: Cleaning")
         self.progress.start()
-        self.executor.submit(self._run_container_func, cleanup_images)
+        self._submit(self._run_container_func, cleanup_images)
 
     def manage_volumes(self):
         self.log_message("Managing volumes...")
         self.status_label.config(text="Status: Volumes")
         self.progress.start()
-        self.executor.submit(self._run_container_func, manage_volumes)
+        self._submit(self._run_container_func, manage_volumes)
 
     def manage_networks(self):
         self.log_message("Managing networks...")
         self.status_label.config(text="Status: Networks")
         self.progress.start()
-        self.executor.submit(self._run_container_func, manage_networks)
+        self._submit(self._run_container_func, manage_networks)
 
     def deploy_kubernetes(self):
         self.log_message("Deploying Kubernetes resources...")
         self.status_label.config(text="Status: Deploying")
         self.progress.start()
-        self.executor.submit(self._run_container_func, deploy_kubernetes)
+        self._submit(self._run_container_func, deploy_kubernetes)
 
     def cleanup_kubernetes(self):
         self.log_message("Cleaning Kubernetes resources...")
         self.status_label.config(text="Status: Cleaning")
         self.progress.start()
-        self.executor.submit(self._run_container_func, cleanup_kubernetes)
+        self._submit(self._run_container_func, cleanup_kubernetes)
 
     def scale_deployment_prompt(self):
         name = simpledialog.askstring("Deployment", "Deployment name:")
@@ -433,7 +441,7 @@ class MainUI:
         self.log_message(f"Scaling {name} to {replicas}...")
         self.status_label.config(text="Status: Scaling")
         self.progress.start()
-        self.executor.submit(self._run_container_func, scale_deployment, name, replicas)
+        self._submit(self._run_container_func, scale_deployment, name, replicas)
 
     def get_pod_logs_prompt(self):
         pod = simpledialog.askstring("Pod", "Pod name:")
@@ -442,7 +450,7 @@ class MainUI:
         self.log_message(f"Fetching logs for {pod}...")
         self.status_label.config(text="Status: Logs")
         self.progress.start()
-        self.executor.submit(self._get_logs, pod)
+        self._submit(self._get_logs, pod)
 
     def convert_media_prompt(self):
         if filedialog is None:
@@ -461,7 +469,7 @@ class MainUI:
         self.log_message(f"Converting {src} -> {dst}...")
         self.status_label.config(text="Status: Converting")
         self.progress.start()
-        self.executor.submit(self._convert_media_thread, src, dst, bitrate, codec)
+        self._submit(self._convert_media_thread, src, dst, bitrate, codec)
 
     def _convert_media_thread(self, src, dst, bitrate, codec):
         try:
@@ -487,12 +495,12 @@ class MainUI:
     def launch_simple_chat(self):
         """Open the simple chat demo in a background thread."""
         self.log_message("Launching simple chat demo...")
-        self.executor.submit(run_simple_chat)
+        self._submit(run_simple_chat)
 
     def launch_ai_tools(self):
         """Open the AI tools window in a background thread."""
         self.log_message("Launching AI tools...")
-        self.executor.submit(run_ai_tools)
+        self._submit(run_ai_tools)
 
     def on_close(self):
         """Shutdown the executor and close the UI."""
