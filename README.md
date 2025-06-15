@@ -231,6 +231,7 @@ is still available via `python run.py --simple-chat`. To run individual modules
 directly, use `python run.py --module package.module[:func]`.
 You can also perform a quick environment check with
 `python run.py --system-check`.
+For the installer-style program manager launch `python run.py --manager-ui`.
 To use a different working directory pass `--workdir /path/to/dir`.
 
 The GUI now checks whether you've accepted the license on startup and
