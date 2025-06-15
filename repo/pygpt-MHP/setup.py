@@ -8,7 +8,7 @@ LONG_DESCRIPTION = 'Package contains a gpt-4, gpt-4V, gpt-3.5, DALL-E 3, Langcha
                    'memory and history, editable presets, customizable UI and more.'
 
 setup(
-    name='pygpt-net',
+    name='pygpt-MHP',
     version=VERSION,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,

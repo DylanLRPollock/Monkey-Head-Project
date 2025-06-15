@@ -165,15 +165,15 @@ class Filesystem:
             )
 
         # try to find workdir in path: old versions compatibility, < 2.0.113
-        if work_dir.endswith('.config/pygpt-net'):
-            work_dir = work_dir.rsplit('/.config/pygpt-net', 1)[0]
-        elif work_dir.endswith('.config\\pygpt-net'):
-            work_dir = work_dir.rsplit('\\.config\\pygpt-net', 1)[0]
+        if work_dir.endswith('.config/pygpt-MHP'):
+            work_dir = work_dir.rsplit('/.config/pygpt-MHP', 1)[0]
+        elif work_dir.endswith('.config\\pygpt-MHP'):
+            work_dir = work_dir.rsplit('\\.config\\pygpt-MHP', 1)[0]
 
         if self.window.core.platforms.is_windows():
-            dir_index = path.find('\\.config\\pygpt-net\\') + 1
+            dir_index = path.find('\\.config\\pygpt-MHP\\') + 1
         else:
-            dir_index = path.find('/.config/pygpt-net/') + 1
+            dir_index = path.find('/.config/pygpt-MHP/') + 1
 
         parts = path[dir_index:]
         return os.path.join(work_dir, parts)

@@ -321,7 +321,7 @@ These configuration files are located in the user's work directory within the fo
 
 .. code-block:: ini
 
-   {HOME_DIR}/.config/pygpt-net/
+   {HOME_DIR}/.config/pygpt-MHP/
 
 
 Manual configuration
@@ -330,7 +330,7 @@ You can manually edit the configuration files in this directory (this is your wo
 
 .. code-block:: ini
 
-   {HOME_DIR}/.config/pygpt-net/
+   {HOME_DIR}/.config/pygpt-MHP/
 
 * ``assistants.json`` - stores the list of assistants.
 * ``attachments.json`` - stores the list of current attachments.
@@ -393,7 +393,7 @@ This allows you to overwrite language files or CSS styles in a very simple way -
 
 .. code-block:: ini
 
-   {HOME_DIR}/.config/pygpt-net/
+   {HOME_DIR}/.config/pygpt-MHP/
 
 
 * `locale` - a directory for locales in ``.ini`` format.

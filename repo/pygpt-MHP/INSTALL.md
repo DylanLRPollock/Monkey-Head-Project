@@ -48,7 +48,7 @@ source venv/bin/activate
 2. Install from PyPi:
 
 ``` commandline
-pip install pygpt-net
+pip install pygpt-MHP
 ```
 
 3. Once installed run the command to start the application:

@@ -98,7 +98,7 @@ PyPi (pip)
 
 .. code-block:: console
 
-    $ pip install pygpt-net
+    $ pip install pygpt-MHP
 
 3. Once installed run the command to start the application:
 
