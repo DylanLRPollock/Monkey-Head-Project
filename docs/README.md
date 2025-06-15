@@ -251,6 +251,10 @@ Usage: Central platform for code development, AI algorithm testing, system integ
 
 - **Role in Development**: Employed for **interfacing experiments** and showcasing adaptability to historical hardware. These legacy systems serve as proof-of-concept platforms, demonstrating how modern AI algorithms can adapt to and optimize older hardware. This versatility underscores the project’s commitment to 'breathing new life into old tech.' These systems help to test integration scenarios, ensuring backward compatibility and fostering a diverse, hybrid environment where modern and legacy technologies coalesce effectively.
 
+## Project Flow and Interconnectivity
+
+From Phase 1's hardware tests to Phase 4's honeycomb storage, each stage reinforces connections between HostOS, SubOS, and NanoOS layers. Huey's Z-Wave network keeps sensors and actuators synchronized, while Docker and Kubernetes allow modules to run across multiple machines. The Cloud Pyramid coordinates these interactions so the system evolves as a unified whole.
+
 ## Acknowledgements
 
 A heartfelt thank you to all contributors to the Monkey Head Project. Your dedication fuels the innovation that drives this project forward. We appreciate every individual and organization that has provided their support, whether through code contributions, testing, documentation, or sharing insights and feedback. 
@@ -266,4 +270,3 @@ Led by our AI agent **Spark-4** and the human counterpart, the Monkey Head Proje
 
 **(NOTE: This content has been written or altered by an AI agent and is pending human counterpart approval.)**
 ![LOGO](https://github.com/user-attachments/assets/bc03d6e6-daeb-4c8b-b3a9-dff0914d1225)
-
