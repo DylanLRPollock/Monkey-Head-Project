@@ -314,6 +314,15 @@ hardware selection. Choosing **manual** lets you pick from common devices such
 as SuperMicro X9 QRI-F+, MacBook Pro 2019, iMac 5K 2017, Raspberry Pi models,
 and more. Selecting **auto** performs a general installation.
 
+You can also skip the prompts entirely by providing your selections on the
+command line:
+
+```bash
+sudo python installer.py --hardware "Raspberry Pi 4" --software git docker.io
+```
+
+Passing `--software auto` installs all default packages without interaction.
+
 Next you'll choose the software profile. Selecting **auto** installs all default
 packages, while **manual** lets you pick specific packages and programs to
 install.
@@ -360,6 +369,8 @@ root. You can use the provided Python script or the convenience batch file:
 python installer.py      # cross-platform installer
 install.bat              # Windows helper that runs the same script
 ```
+The same `--hardware` and `--software` options can be supplied here to avoid the
+interactive menus.
 The license dialog will appear during this installation step as well.
 
 This launches `setup/Windows11/01-FULL.bat`, which installs Chocolatey, Git,
