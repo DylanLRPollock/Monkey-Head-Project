@@ -122,6 +122,16 @@ def main() -> None:
         help="Run environment checks and exit",
     )
     parser.add_argument(
+        "--docker-compose",
+        action="store_true",
+        help="Build image and start Docker Compose stack",
+    )
+    parser.add_argument(
+        "--kubernetes",
+        action="store_true",
+        help="Deploy resources using manifests in k8s/",
+    )
+    parser.add_argument(
         "--workdir",
         type=str,
         help="Set the working directory (default: project directory)",
@@ -158,6 +168,18 @@ def main() -> None:
         from monkey_head.core.system_checks import system_check
 
         system_check()
+        return
+
+    if args.docker_compose:
+        from monkey_head.services.container_management import manage_containers
+
+        manage_containers()
+        return
+
+    if args.kubernetes:
+        from monkey_head.services.container_management import deploy_kubernetes
+
+        deploy_kubernetes()
         return
 
     from monkey_head.core.system_checks import check_os_support, check_python_version
