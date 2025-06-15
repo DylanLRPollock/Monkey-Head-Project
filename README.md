@@ -283,6 +283,8 @@ your PDF collection elsewhere without modifying the code.
 `set_api_keys.py` walks you through entering API credentials. Choose
 which services to connect (OpenAI, Google, or DeepSeek) or select the
 auto option to configure all of them at once.
+`vic2_demo.py` launches a small Pygame window demonstrating VIC‑II
+graphics on Raspberry Pi 3 and 4 systems.
 
 The `huey` package also provides a small CLI. Use `huey convert` to
 convert image files between formats at maximum quality. Supply an input
