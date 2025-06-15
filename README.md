@@ -173,6 +173,25 @@ package is missing and will automatically use `repo/pygpt-MHP/src` instead. This
 lets you try the project right after cloning, even before syncing or installing
 the submodule.
 
+### Git Utilities
+
+Several helper functions in `monkey_head.services.environment_setup` make it
+easier to keep your local clone up to date. You can programmatically switch
+branches, pull the latest changes, and push commits:
+
+```python
+from monkey_head.services.environment_setup import (
+    checkout_branch, pull_latest, commit_and_push
+)
+
+checkout_branch("develop")      # git fetch && git checkout develop
+pull_latest()                    # git pull --ff-only
+commit_and_push("update", branch="develop")
+```
+
+These utilities rely on `git` being available on your system and are useful for
+automating common version control tasks in scripts.
+
 ### Running Tests
 
 ```bash

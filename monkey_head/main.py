@@ -11,7 +11,19 @@
 from monkey_head.utils.logger import get_logger
 from flask import Flask, jsonify
 import argparse
-from pygpt_net import __version__ as pygpt_version
+try:
+    from pygpt_net import __version__ as pygpt_version
+except Exception:  # pragma: no cover - optional dependency
+    import os
+    import sys
+
+    fallback = os.path.join(os.path.dirname(__file__), "..", "repo", "pygpt-MHP", "src")
+    if fallback not in sys.path:
+        sys.path.append(fallback)
+    try:  # pragma: no cover - best effort
+        from pygpt_net import __version__ as pygpt_version
+    except Exception:
+        pygpt_version = "unknown"
 from .core.system_checks import system_check, ensure_admin, check_python_version
 from .modules.updates import update_system, update_python_packages
 from .core.installations import (
