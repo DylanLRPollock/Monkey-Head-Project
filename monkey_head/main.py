@@ -6,8 +6,12 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.11.2025
 # ==================================================
+"""Main entry point for Monkey Head server."""
+
 from monkey_head.utils.logger import get_logger
 from flask import Flask, jsonify
+import argparse
+from pygpt_net import __version__ as pygpt_version
 from .core.system_checks import system_check, ensure_admin, check_python_version
 from .modules.updates import update_system, update_python_packages
 from .core.installations import (
@@ -48,8 +52,36 @@ def readiness_check():
     return jsonify(status="ready"), 200
 
 
-def main() -> None:
-    """Run full setup and start the health service."""
+@app.route("/version", methods=["GET"])
+def version_info() -> tuple:
+    """Return application version."""
+    return jsonify(version=pygpt_version), 200
+
+
+def parse_args(args: list[str] | None = None) -> argparse.Namespace:
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(description="Start Monkey Head server")
+    parser.add_argument(
+        "--skip-setup",
+        action="store_true",
+        help="Skip environment setup steps",
+    )
+    parser.add_argument(
+        "--host",
+        default="0.0.0.0",
+        help="Host interface to bind",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=4488,
+        help="Port to listen on",
+    )
+    return parser.parse_args(args)
+
+
+def run_setup() -> None:
+    """Run full environment setup."""
     ensure_admin()
     check_python_version()
     system_check()
@@ -70,7 +102,14 @@ def main() -> None:
     backup_config()
     restore_config()
 
-    app.run(host="0.0.0.0", port=4488)
+
+def main() -> None:
+    """Run setup tasks and start the health service."""
+    args = parse_args()
+    if not args.skip_setup:
+        run_setup()
+    logger.info("Starting server on %s:%s", args.host, args.port)
+    app.run(host=args.host, port=args.port)
 
 
 if __name__ == "__main__":
