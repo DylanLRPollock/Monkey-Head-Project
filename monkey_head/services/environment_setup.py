@@ -20,11 +20,24 @@ DEFAULT_REPO_URL = "https://github.com/DylanLRPollock/Monkey-Head-Project.git"
 def clone_repository(
     repo_url: str = DEFAULT_REPO_URL, dest: str = "~/Source/repo"
 ) -> None:
-    """Clone the repository to the given destination."""
+    """Clone the repository to the given destination.
+
+    If cloning fails but the destination already contains a ``.git``
+    directory, the existing repository is used as a fallback.
+    """
     logger.info("Cloning repository...")
     dest_path = os.path.expanduser(dest)
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-    run_command(["git", "clone", repo_url, dest_path], check=True)
+    try:
+        run_command(["git", "clone", repo_url, dest_path], check=True)
+    except Exception as exc:  # pragma: no cover - network or git failure
+        git_dir = os.path.join(dest_path, ".git")
+        if os.path.isdir(git_dir):
+            logger.warning(
+                "Clone failed (%s). Using existing repository at %s", exc, dest_path
+            )
+        else:
+            raise
 
 
 def setup_python_env(dest: str = "~/Source/repo") -> None:
