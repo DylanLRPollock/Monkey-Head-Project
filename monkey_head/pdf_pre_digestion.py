@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 from typing import List
+import os
 from pathlib import Path
 
 import fitz  # PyMuPDF
@@ -43,7 +44,8 @@ def _ensure_dirs(base: Path) -> dict[str, Path]:
 
 
 def pdf_pre_digestion(
-    pdf_file: str, memory_dir: str | Path = _DEF_MEM_DIR
+    pdf_file: str,
+    memory_dir: str | Path | None = None,
 ) -> dict[str, Path]:
     """Convert a PDF file into formatted text, structured JSON and page images.
 
@@ -58,7 +60,11 @@ def pdf_pre_digestion(
     if not pdf_path.is_file():
         raise FileNotFoundError(pdf_file)
 
-    mem_base = Path(memory_dir)
+    if memory_dir is None:
+        env = os.environ.get("MEMORY_DIR")
+        mem_base = Path(env) if env else _DEF_MEM_DIR
+    else:
+        mem_base = Path(memory_dir)
     dirs = _ensure_dirs(mem_base)
     stem = pdf_path.stem
 
@@ -97,7 +103,7 @@ if __name__ == "__main__":
     parser.add_argument("pdf_file", help="Path to input PDF")
     parser.add_argument(
         "--memory-dir",
-        default=str(_DEF_MEM_DIR),
+        default=os.environ.get("MEMORY_DIR", str(_DEF_MEM_DIR)),
         help="Base memory directory to store outputs",
     )
     args = parser.parse_args()

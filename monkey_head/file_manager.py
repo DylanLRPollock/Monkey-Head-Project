@@ -22,21 +22,23 @@ class FileManager:
         except Exception as e:  # pragma: no cover - simple wrapper
             ErrorHandler().handle_exception(e)
 
-    def read_file(self, file_path: str) -> str | None:
+    def read_file(self, file_path: str, encoding: str = "utf-8") -> str | None:
         """Return the contents of ``file_path`` or ``None`` on error."""
 
         try:
-            with open(file_path, "r") as file:
+            with open(file_path, "r", encoding=encoding) as file:
                 return file.read()
         except Exception as e:  # pragma: no cover - simple wrapper
             ErrorHandler().handle_exception(e)
             return None
 
-    def write_file(self, file_path: str, content: str) -> None:
+    def write_file(
+        self, file_path: str, content: str, encoding: str = "utf-8"
+    ) -> None:
         """Write ``content`` to ``file_path``."""
 
         try:
-            with open(file_path, "w") as file:
+            with open(file_path, "w", encoding=encoding) as file:
                 file.write(content)
         except Exception as e:  # pragma: no cover - simple wrapper
             ErrorHandler().handle_exception(e)

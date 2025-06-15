@@ -38,3 +38,15 @@ def test_pdf_pre_digestion(tmp_path):
 
     assert any(mem_dir.joinpath("PNG").glob("doc-*.png"))
     assert any(mem_dir.joinpath("JPEG").glob("doc-*.jpg"))
+
+
+def test_pdf_pre_digestion_env(tmp_path, monkeypatch):
+    pdf_src = Path("memory/PDF/Linux_on_PlayStation_3.pdf")
+    pdf_path = tmp_path / "doc.pdf"
+    shutil.copy(pdf_src, pdf_path)
+
+    mem_dir = tmp_path / "env_mem"
+    monkeypatch.setenv("MEMORY_DIR", str(mem_dir))
+    pdf_pre_digestion(str(pdf_path))
+
+    assert (mem_dir / "TXT" / "doc.txt").exists()

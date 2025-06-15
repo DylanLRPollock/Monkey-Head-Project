@@ -238,7 +238,9 @@ error if the `venv` directory is missing, reminding you to run
 `install.sh` first.
 `update_memory_pdfs.py` regenerates text versions of the bundled PDF files
 under `memory/PDF`. Run this script whenever you add or edit PDF documents
-to keep the preloaded dataset up to date.
+to keep the preloaded dataset up to date. Many helpers that work with these
+files now respect the `MEMORY_DIR` environment variable so you can store
+your PDF collection elsewhere without modifying the code.
 `set_api_keys.py` walks you through entering API credentials. Choose
 which services to connect (OpenAI, Google, or DeepSeek) or select the
 auto option to configure all of them at once.
