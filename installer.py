@@ -6,10 +6,15 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.11.2025
 # ==================================================
+import argparse
 import os
 import platform
 import subprocess
 import sys
+
+from monkey_head.core.system_checks import ensure_admin
+from monkey_head.license_cli import show_license_cli
+from monkey_head.license_gui import show_license_gui
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -22,6 +27,8 @@ HARDWARE_OPTIONS = [
     "Raspberry Pi 4",
     "HP Compaq 8200 Elite",
     "Lenovo Legion Go",
+    "Framework Laptop 13",
+    "Dell XPS 15",
 ]
 
 # Software package options for manual selection
@@ -31,6 +38,8 @@ SOFTWARE_OPTIONS = [
     "python3",
     "python3-venv",
     "docker.io",
+    "ffmpeg",
+    "tmux",
 ]
 
 
@@ -90,6 +99,41 @@ def select_software() -> str:
     return software
 
 
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """Parse command line arguments for non-interactive installs."""
+    parser = argparse.ArgumentParser(description="Install Monkey Head Project")
+    parser.add_argument("--hardware", help="Hardware preset name")
+    parser.add_argument(
+        "--software",
+        nargs="+",
+        help="Packages to install or 'auto' for defaults",
+    )
+    return parser.parse_args(argv)
+
+
+def ensure_admin_privileges() -> None:
+    """Verify the script is running with administrator rights."""
+    if os.name == "nt":
+        try:
+            import ctypes
+
+            if not ctypes.windll.shell32.IsUserAnAdmin():
+                raise PermissionError
+        except Exception:
+            print("Administrator privileges required.")
+            raise PermissionError("Please run as Administrator")
+    else:
+        ensure_admin()
+
+
+def display_license() -> None:
+    """Show the license agreement using GUI or CLI."""
+    try:
+        show_license_gui()
+    except Exception:
+        show_license_cli()
+
+
 LINUX_INSTALL = os.path.join(SCRIPT_DIR, "setup", "Debian13", "install.sh")
 MAC_INSTALL = os.path.join(SCRIPT_DIR, "setup", "macOS", "install.sh")
 WINDOWS_INSTALL = os.path.join(SCRIPT_DIR, "setup", "Windows11", "01-FULL.bat")
@@ -110,15 +154,23 @@ def update_submodules() -> None:
         raise
 
 
-def run_installer():
+def run_installer(
+    hardware: str | None = None, software: list[str] | None = None
+) -> int:
     system = platform.system()
-    hardware = select_hardware()
-    software = select_software()
+    if hardware is None:
+        hardware = select_hardware()
+    if software is None:
+        software_choice = select_software()
+    else:
+        software_choice = "auto" if software == ["auto"] else " ".join(software)
     env = os.environ.copy()
     env["MHP_HARDWARE"] = hardware
-    env["MHP_SOFTWARE"] = software
+    env["MHP_SOFTWARE"] = software_choice
     try:
+        ensure_admin_privileges()
         update_submodules()
+        display_license()
         if system == "Linux":
             subprocess.run(["bash", LINUX_INSTALL], check=True, env=env)
         elif system == "Darwin":
@@ -139,4 +191,5 @@ def run_installer():
 
 
 if __name__ == "__main__":
-    sys.exit(run_installer())
+    arguments = parse_args()
+    sys.exit(run_installer(arguments.hardware, arguments.software))
