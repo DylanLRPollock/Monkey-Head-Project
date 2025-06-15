@@ -276,6 +276,18 @@ file or directory with `--format` specifying the target type (e.g.
 `JPEG`, `PNG`). Converted files are saved alongside the originals or in a
 specified output directory.
 
+### File Integrity Checks
+
+Use `monkey_head.utils.integrity` to verify that important files have not been
+modified. Create a JSON manifest mapping each path to its SHA-256 digest and run
+
+```bash
+python -m monkey_head.utils.integrity manifest.json
+```
+
+The command prints any files that fail verification or `All files verified` if
+every digest matches.
+
 ### Docker and Kubernetes Utilities
 
 The `scripts/` directory contains helper scripts for container management:
