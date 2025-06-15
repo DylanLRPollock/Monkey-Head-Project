@@ -105,6 +105,8 @@ class MainWindow(QMainWindow, QtStyleTools):
                 self.core.config.set("render.engine", "legacy")
             if "disable-gpu" in self.args and self.args["disable-gpu"] == "1":
                 self.core.config.set("render.open_gl", False)
+            if "enable-gpu" in self.args and self.args["enable-gpu"] == "1":
+                self.core.config.set("render.open_gl", True)
 
         # from log level
         if self.core.config.get("log.level") in ["debug", "info"]:
