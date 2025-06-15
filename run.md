@@ -10,6 +10,8 @@ This guide explains the different ways to launch and test the project.
 - `python run.py --simple-chat` – open a simple Tkinter demo.
 - `python run.py --module package.module[:func]` – execute a module's callable.
 - `python run.py --system-check` – perform environment checks and exit.
+- `python run.py --docker-compose` – build and start the Docker Compose stack.
+- `python run.py --kubernetes` – deploy manifests from the `k8s/` directory.
 
 ## Helper Scripts
 

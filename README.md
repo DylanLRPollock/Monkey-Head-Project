@@ -313,6 +313,12 @@ The `scripts/` directory contains helper scripts for container management:
 ./scripts/k8s_setup.sh       # apply manifests in k8s/
 ./scripts/k8s_cleanup.sh     # remove Kubernetes resources
 ```
+You can also manage containers directly through `run.py`:
+
+```bash
+python run.py --docker-compose  # start the Docker Compose stack
+python run.py --kubernetes      # deploy the Kubernetes manifests
+```
 
 Programmatic helpers for Kubernetes lives in
 `monkey_head.services.container_management`. Functions like
