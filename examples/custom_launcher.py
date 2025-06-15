@@ -6,4 +6,19 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-Placeholder for `repo/pygpt-MHP/examples/custom_launcher.py` from the pygpt-MHP repo.
+"""Example launcher that starts the project in CLI mode."""
+
+from __future__ import annotations
+
+import subprocess
+import sys
+
+
+def main() -> int:
+    cmd = [sys.executable, "../run.py", "--cli"]
+    return subprocess.call(cmd)
+
+
+if __name__ == "__main__":  # pragma: no cover - example script
+    raise SystemExit(main())
+
