@@ -36,6 +36,7 @@ Full project documentation lives in [docs/README.md](docs/README.md).
 - [macOS Installation](#macos-installation)
 - [Modular Architecture](#-modular-architecture)
 - [Project History and Phases](#-project-history-and-phases)
+- [Project Flow and Interconnectivity](#-project-flow-and-interconnectivity)
 - [Project Overview](#-project-overview)
 - [Recent Updates](#-recent-updates)
 - [Related Projects and Inspirations](#-related-projects-and-inspirations)
@@ -113,6 +114,10 @@ Huey exposes clear integration points for sensors, actuators, and experimental m
 | 3     | System Awakening              | Oct 31, 2024 | Full system awakening, comprehensive hardware tests, emergency protocols. |
 
 ---
+
+## 🔗 Project Flow and Interconnectivity
+
+Each development phase expands how modules communicate across hardware and software layers. GenCore orchestrates HostOS, SubOS, and NanoOS components while Huey's sensor network links legacy systems with modern nodes. Docker and Kubernetes deployments synchronize these pieces, allowing distributed operation on varied platforms. The Cloud Pyramid governance layer oversees this mesh to ensure ethical, cohesive growth.
 
 ### Software Requirements
 
