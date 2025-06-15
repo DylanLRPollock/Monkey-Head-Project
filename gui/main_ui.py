@@ -11,7 +11,7 @@ import os
 os.environ.setdefault("MONKEY_HEAD_LIGHT_IMPORTS", "1")
 import platform
 import subprocess
-import threading
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import sys
 
@@ -73,6 +73,8 @@ class MainUI:
         self.apply_dark_theme()
         self.root.title("Program Manager")
         self.root.minsize(800, 600)
+        self.executor = ThreadPoolExecutor(max_workers=os.cpu_count() or 4)
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.setup_paths()
         self.create_menu()
         self.create_widgets()
@@ -332,19 +334,19 @@ class MainUI:
         self.log_message("Starting installation...")
         self.status_label.config(text="Status: Installing")
         self.progress.start()
-        threading.Thread(target=self.run_script, args=(self.install_path,)).start()
+        self.executor.submit(self.run_script, self.install_path)
 
     def run(self):
         self.log_message("Launching application...")
         self.status_label.config(text="Status: Running")
         self.progress.start()
-        threading.Thread(target=self.run_script, args=(self.run_path,)).start()
+        self.executor.submit(self.run_script, self.run_path)
 
     def update(self):
         self.log_message("Starting update...")
         self.status_label.config(text="Status: Updating")
         self.progress.start()
-        threading.Thread(target=self.run_script, args=(self.update_path,)).start()
+        self.executor.submit(self.run_script, self.update_path)
 
     def check_license(self):
         """Display the license agreement if not yet accepted."""
@@ -377,65 +379,49 @@ class MainUI:
         self.log_message("Building Docker image...")
         self.status_label.config(text="Status: Building")
         self.progress.start()
-        threading.Thread(
-            target=self._run_container_func, args=(build_docker_image,)
-        ).start()
+        self.executor.submit(self._run_container_func, build_docker_image)
 
     def start_containers(self):
         self.log_message("Starting containers...")
         self.status_label.config(text="Status: Starting")
         self.progress.start()
-        threading.Thread(
-            target=self._run_container_func, args=(manage_containers,)
-        ).start()
+        self.executor.submit(self._run_container_func, manage_containers)
 
     def stop_containers(self):
         self.log_message("Stopping containers...")
         self.status_label.config(text="Status: Stopping")
         self.progress.start()
-        threading.Thread(
-            target=self._run_container_func, args=(stop_containers,)
-        ).start()
+        self.executor.submit(self._run_container_func, stop_containers)
 
     def cleanup_images(self):
         self.log_message("Pruning images...")
         self.status_label.config(text="Status: Cleaning")
         self.progress.start()
-        threading.Thread(
-            target=self._run_container_func, args=(cleanup_images,)
-        ).start()
+        self.executor.submit(self._run_container_func, cleanup_images)
 
     def manage_volumes(self):
         self.log_message("Managing volumes...")
         self.status_label.config(text="Status: Volumes")
         self.progress.start()
-        threading.Thread(
-            target=self._run_container_func, args=(manage_volumes,)
-        ).start()
+        self.executor.submit(self._run_container_func, manage_volumes)
 
     def manage_networks(self):
         self.log_message("Managing networks...")
         self.status_label.config(text="Status: Networks")
         self.progress.start()
-        threading.Thread(
-            target=self._run_container_func, args=(manage_networks,)
-        ).start()
+        self.executor.submit(self._run_container_func, manage_networks)
 
     def deploy_kubernetes(self):
         self.log_message("Deploying Kubernetes resources...")
         self.status_label.config(text="Status: Deploying")
         self.progress.start()
-        threading.Thread(
-            target=self._run_container_func, args=(deploy_kubernetes,)
-        ).start()
+        self.executor.submit(self._run_container_func, deploy_kubernetes)
 
     def cleanup_kubernetes(self):
         self.log_message("Cleaning Kubernetes resources...")
         self.status_label.config(text="Status: Cleaning")
         self.progress.start()
-        threading.Thread(
-            target=self._run_container_func, args=(cleanup_kubernetes,)
-        ).start()
+        self.executor.submit(self._run_container_func, cleanup_kubernetes)
 
     def scale_deployment_prompt(self):
         name = simpledialog.askstring("Deployment", "Deployment name:")
@@ -447,10 +433,7 @@ class MainUI:
         self.log_message(f"Scaling {name} to {replicas}...")
         self.status_label.config(text="Status: Scaling")
         self.progress.start()
-        threading.Thread(
-            target=self._run_container_func,
-            args=(scale_deployment, name, replicas),
-        ).start()
+        self.executor.submit(self._run_container_func, scale_deployment, name, replicas)
 
     def get_pod_logs_prompt(self):
         pod = simpledialog.askstring("Pod", "Pod name:")
@@ -459,7 +442,7 @@ class MainUI:
         self.log_message(f"Fetching logs for {pod}...")
         self.status_label.config(text="Status: Logs")
         self.progress.start()
-        threading.Thread(target=self._get_logs, args=(pod,)).start()
+        self.executor.submit(self._get_logs, pod)
 
     def convert_media_prompt(self):
         if filedialog is None:
@@ -478,10 +461,7 @@ class MainUI:
         self.log_message(f"Converting {src} -> {dst}...")
         self.status_label.config(text="Status: Converting")
         self.progress.start()
-        threading.Thread(
-            target=self._convert_media_thread,
-            args=(src, dst, bitrate, codec),
-        ).start()
+        self.executor.submit(self._convert_media_thread, src, dst, bitrate, codec)
 
     def _convert_media_thread(self, src, dst, bitrate, codec):
         try:
@@ -507,12 +487,17 @@ class MainUI:
     def launch_simple_chat(self):
         """Open the simple chat demo in a background thread."""
         self.log_message("Launching simple chat demo...")
-        threading.Thread(target=run_simple_chat).start()
+        self.executor.submit(run_simple_chat)
 
     def launch_ai_tools(self):
         """Open the AI tools window in a background thread."""
         self.log_message("Launching AI tools...")
-        threading.Thread(target=run_ai_tools).start()
+        self.executor.submit(run_ai_tools)
+
+    def on_close(self):
+        """Shutdown the executor and close the UI."""
+        self.executor.shutdown(wait=False)
+        self.root.destroy()
 
 
 if __name__ == "__main__":
