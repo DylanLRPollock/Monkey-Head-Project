@@ -309,6 +309,7 @@ The `scripts/` directory contains helper scripts for container management:
 ```bash
 ./scripts/docker_setup.sh    # build image and start compose stack
 ./scripts/docker_cleanup.sh  # stop containers and prune resources
+./scripts/docker_dev_setup.sh # build image and start dev compose stack
 ./scripts/k8s_setup.sh       # apply manifests in k8s/
 ./scripts/k8s_cleanup.sh     # remove Kubernetes resources
 ```
@@ -465,6 +466,8 @@ For day-to-day development it is recommended to work in a Python virtual environ
 Create one with `python -m venv venv` and install dependencies using
 `pip install -r requirements.txt`. Docker users can spin up
 `docker-compose up` for an isolated environment that mirrors production.
+For a more complete stack with PostgreSQL and extra development tooling,
+use `./scripts/docker_dev_setup.sh` (or run `docker compose -f compose-dev.yaml up -d`).
 When adding new modules, format the code with `black` and run
 `flake8` and `pytest` before opening a pull request.
 
