@@ -230,6 +230,7 @@ is still available via `python run.py --simple-chat`. To run individual modules
 directly, use `python run.py --module package.module[:func]`.
 You can also perform a quick environment check with
 `python run.py --system-check`.
+To use a different working directory pass `--workdir /path/to/dir`.
 
 The GUI now checks whether you've accepted the license on startup and
 offers a **Tools** menu. From there you can reopen the license dialog or

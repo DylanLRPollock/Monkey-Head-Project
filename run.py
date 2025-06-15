@@ -118,7 +118,18 @@ def main() -> None:
         action="store_true",
         help="Run environment checks and exit",
     )
+    parser.add_argument(
+        "--workdir",
+        type=str,
+        help="Set the working directory (default: project directory)",
+    )
     args = parser.parse_args()
+
+    # determine working directory
+    if args.workdir:
+        os.environ["PYGPT_WORKDIR"] = os.path.abspath(args.workdir)
+    elif "PYGPT_WORKDIR" not in os.environ:
+        os.environ["PYGPT_WORKDIR"] = str(Path(__file__).parent.resolve())
 
     if args.module:
         run_module(args.module)
