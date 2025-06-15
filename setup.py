@@ -55,6 +55,7 @@ setup(
         "fastapi==0.115.12",
         "uvicorn==0.34.3",
         "starlette==0.47.0",
+        "flask==3.1.1",
         "psutil==7.0.0",
         "platformdirs==4.3.8",
         "py-cpuinfo==9.0.0",
