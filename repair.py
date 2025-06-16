@@ -5,9 +5,7 @@ from __future__ import annotations
 import subprocess
 import sys
 import tempfile
-from pathlib import Path
 
-import installer
 import uninstaller
 
 REPO_URL = "https://github.com/DylanLRPollock/Monkey-Head-Project.git"
