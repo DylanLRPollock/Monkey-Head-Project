@@ -508,6 +508,22 @@ to newest:
 python monkey_head/utils/list_by_mtime.py path/to/dir
 ```
 
+### Function Registry
+
+Decorate any standalone function with `register_function` to have it
+automatically added to a global registry. Call `list_functions()` to see
+all registered names:
+
+```python
+from monkey_head.function_registry import register_function, list_functions
+
+@register_function
+def hello(name: str) -> str:
+    return f"Hello {name}"
+
+print(list_functions())  # ["hello", ...]
+```
+
 ---
 
 ## 🔬 Test Hardware

@@ -5,8 +5,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import List, Optional
 import os
+from .function_registry import register_function
 
 
+@register_function
 def list_available_pdfs(pdf_dir: Optional[str | Path] = None) -> List[str]:
     """Return a sorted list of PDF filenames in ``pdf_dir``.
 
@@ -28,6 +30,7 @@ def list_available_pdfs(pdf_dir: Optional[str | Path] = None) -> List[str]:
     return sorted(p.name for p in path.glob("*.pdf"))
 
 
+@register_function
 def find_pdf(filename: str, pdf_dir: Optional[str | Path] = None) -> Optional[Path]:
     """Return the path to ``filename`` within ``pdf_dir`` if it exists."""
     if pdf_dir is None:

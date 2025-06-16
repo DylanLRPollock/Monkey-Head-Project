@@ -6,6 +6,10 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.08.2025
 # ==================================================
+from .function_registry import register_function
+
+
+@register_function
 def format_text(text, line_length=80):
     """
     Formats a text string to a specified line length.
