@@ -15,3 +15,6 @@ env/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Raw input directory
+raw/
