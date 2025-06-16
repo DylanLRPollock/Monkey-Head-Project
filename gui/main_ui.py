@@ -41,6 +41,7 @@ from monkey_head.scripts.preload_data import preload_all
 from monkey_head.gui_scaling import apply_scaling
 from monkey_head.simple_chat_gui import run_simple_chat
 from monkey_head.ai_tools_gui import run_ai_tools
+from monkey_head.config_toggle_gui import run_config_toggle_gui
 from monkey_head.services.container_management import (
     build_docker_image,
     cleanup_images,
@@ -191,6 +192,7 @@ class MainUI:
         tools_menu.add_command(label="License", command=self.show_license)
         tools_menu.add_command(label="Data Summary", command=self.show_data_summary)
         tools_menu.add_command(label="Convert Media", command=self.convert_media_prompt)
+        tools_menu.add_command(label="Config Toggles", command=self.show_config_toggles)
         menu_bar.add_cascade(label="Tools", menu=tools_menu)
 
         ai_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
@@ -365,6 +367,11 @@ class MainUI:
         messagebox.showinfo(
             "Data Summary", f"Prompts: {prompts}\nMemory files: {memory_files}"
         )
+
+    def show_config_toggles(self):
+        """Open the configuration toggles window in a thread."""
+        self.log_message("Opening config toggles...")
+        self._submit_task(run_config_toggle_gui)
 
     def _run_container_func(self, func, *args):
         try:
