@@ -22,6 +22,7 @@ import importlib
 import os
 import sys
 from pathlib import Path
+import subprocess
 
 
 def minimal_run() -> None:
@@ -30,6 +31,22 @@ def minimal_run() -> None:
     from monkey_head.pygpt_custom_cli import CustomPyGPT
 
     CustomPyGPT().run_cli()
+
+
+def run_sys_code(cmd: str) -> None:
+    """Execute a system command and print output."""
+    result = subprocess.run(
+        cmd,
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if result.stdout:
+        print(result.stdout.decode(), end="")
+    if result.stderr:
+        print(result.stderr.decode(), end="", file=sys.stderr)
+    if result.returncode != 0:
+        raise RuntimeError(f"Command failed with exit code {result.returncode}")
 
 
 def run_module(target: str) -> None:
@@ -150,6 +167,12 @@ def main() -> None:
         help="Launch the Tkinter program manager",
     )
     parser.add_argument(
+        "--sys-code",
+        type=str,
+        metavar="CMD",
+        help="Execute system command and exit",
+    )
+    parser.add_argument(
         "--workdir",
         type=str,
         help="Set the working directory (default: project directory)",
@@ -202,6 +225,9 @@ def main() -> None:
 
     if args.manager_ui:
         launch_manager_ui()
+        return
+    if args.sys_code:
+        run_sys_code(args.sys_code)
         return
 
     from monkey_head.core.system_checks import check_os_support, check_python_version
