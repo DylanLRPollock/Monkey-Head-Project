@@ -11,7 +11,7 @@ from .logging_setup import configure_logging
 
 
 class ErrorHandler:
-    def __init__(self, log_file="app.log"):
+    def __init__(self, log_file="memory/LOGS/app.log"):
         # Initialize logging if not already configured
         logger = configure_logging()
         if log_file:

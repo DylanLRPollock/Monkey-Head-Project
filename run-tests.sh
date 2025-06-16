@@ -24,7 +24,7 @@ EOF
 parse_args() {
     MODULE=""
     COV_ARGS=(--cov=monkey_head --cov-report=term)
-    LOG_FILE="logs/test_results.log"
+    LOG_FILE="memory/LOGS/test_results.log"
     while [[ $# -gt 0 ]]; do
         case "$1" in
             -h|--help)
