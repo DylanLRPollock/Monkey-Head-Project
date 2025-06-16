@@ -9,6 +9,8 @@
 import numpy as np
 import pandas as pd
 import matplotlib
+from PIL import Image
+import networkx as nx
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -75,3 +77,16 @@ class AIProcessor:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
         return response.json()["title"]
+
+    def shortest_path(self, edges: list[tuple[str, str]], source: str, target: str) -> list[str]:
+        """Return the shortest path between two nodes using ``networkx``."""
+
+        graph = nx.Graph()
+        graph.add_edges_from(edges)
+        return nx.shortest_path(graph, source, target)
+
+    def image_size(self, path: str) -> tuple[int, int]:
+        """Return the ``(width, height)`` of an image using Pillow."""
+
+        with Image.open(path) as img:
+            return img.size

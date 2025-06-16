@@ -7,6 +7,8 @@ pytest.importorskip("pandas")
 pytest.importorskip("sklearn")
 pytest.importorskip("seaborn")
 pytest.importorskip("matplotlib")
+pytest.importorskip("networkx")
+pytest.importorskip("PIL.Image")
 
 from monkey_head.ai_processor import AIProcessor
 from monkey_head.chapter_splitter import split_chapters
@@ -53,6 +55,18 @@ def test_ai_processor():
 
     with patch("requests.get", return_value=DummyResp()):
         assert proc.fetch_todo_title(1) == "foo"
+
+    # NetworkX shortest path
+    path = proc.shortest_path([("a", "b"), ("b", "c")], "a", "c")
+    assert path == ["a", "b", "c"]
+
+    # PIL image size
+    from PIL import Image
+
+    img = Image.new("RGB", (10, 20))
+    img_file = tmp_path / "img.png"
+    img.save(img_file)
+    assert proc.image_size(str(img_file)) == (10, 20)
 
 
 def test_process_and_check_core_data():

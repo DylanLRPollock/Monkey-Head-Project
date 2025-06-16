@@ -1,4 +1,7 @@
 from unittest.mock import patch
+import pytest
+
+pytest.importorskip("requests")
 
 from monkey_head.services.container_management import (
     scale_deployment,
