@@ -1,4 +1,8 @@
 import sys
+import pytest
+
+pytest.importorskip("flask")
+
 from monkey_head import main as main_mod
 
 

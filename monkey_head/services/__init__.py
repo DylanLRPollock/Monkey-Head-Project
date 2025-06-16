@@ -19,7 +19,11 @@ from .environment_setup import (
     pull_latest,
     setup_python_env,
 )
-from .home_assistant import call_service, get_state
+try:
+    from .home_assistant import call_service, get_state
+except Exception:  # pragma: no cover - optional dependency
+    call_service = None
+    get_state = None
 
 __all__ = [
     "build_docker_image",
@@ -39,6 +43,7 @@ __all__ = [
     "configure_git",
     "pull_latest",
     "setup_python_env",
-    "call_service",
-    "get_state",
 ]
+
+if call_service:
+    __all__ += ["call_service", "get_state"]

@@ -1,4 +1,7 @@
 from unittest.mock import patch
+import pytest
+
+pytest.importorskip("requests")
 
 from monkey_head.services.home_assistant import call_service, get_state
 
