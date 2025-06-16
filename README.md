@@ -337,6 +337,10 @@ Additional helpers now include `build_docker_image`, `stop_containers`,
 `cleanup_images`, `manage_networks`, `list_containers`, and `get_container_logs`
 for end-to-end Docker lifecycle management and diagnostics.
 
+Home automation is now supported through `monkey_head.services.home_assistant`.
+These helpers allow the project to call Home Assistant services and query entity
+state via its REST API.
+
 ### Linux (Debian 13) Installation
 
 Run the cross-platform installer with root privileges:
