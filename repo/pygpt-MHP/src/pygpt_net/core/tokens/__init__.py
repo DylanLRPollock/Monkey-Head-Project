@@ -9,9 +9,10 @@
 # Updated Date: 2025.03.02 19:00:00                  #
 # ================================================== #
 
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 
 import tiktoken
+from functools import lru_cache
 
 from langchain_core.messages import ChatMessage as ChatMessageLangchain
 from llama_index.core.base.llms.types import ChatMessage as ChatMessageLlama
@@ -45,6 +46,8 @@ CHAT_MODES = [
 ]
 
 class Tokens:
+    # cache for tiktoken encodings per model
+    _enc_cache: Dict[str, tiktoken.Encoding] = {}
     def __init__(self, window=None):
         """
         Tokens core
@@ -54,39 +57,38 @@ class Tokens:
         self.window = window
 
     @staticmethod
-    def from_str(
-            string: str,
-            model: str = "gpt-4"
-    ) -> int:
-        """
-        Return number of tokens from string
+    def _get_encoding(model: str) -> tiktoken.Encoding | None:
+        """Return cached encoding for the given model"""
+        default = "cl100k_base"
+        if model in Tokens._enc_cache:
+            return Tokens._enc_cache[model]
+        try:
+            if model:
+                encoding = tiktoken.encoding_for_model(model)
+            else:
+                encoding = tiktoken.get_encoding(default)
+        except KeyError:
+            encoding = tiktoken.get_encoding(default)
+        except ValueError:
+            return None
+        Tokens._enc_cache[model] = encoding
+        return encoding
 
-        :param string: string
-        :param model: model name
-        :return: number of tokens
-        """
+    @staticmethod
+    @lru_cache(maxsize=1024)
+    def from_str(string: str, model: str = "gpt-4") -> int:
+        """Return number of tokens from string"""
         if string is None or string == "":
             return 0
 
-        default = "cl100k_base"
-        try:
-            try:
-                if model is not None and model != "":
-                    encoding = tiktoken.encoding_for_model(model)
-                else:
-                    encoding = tiktoken.get_encoding(default)
-            except KeyError:
-                encoding = tiktoken.get_encoding(default)
-            except ValueError:
-                return 0
+        encoding = Tokens._get_encoding(model)
+        if encoding is None:
+            return 0
 
-            try:
-                return len(encoding.encode(str(string)))
-            except Exception as e:
-                print("Tokens calc exception", e)
-                return 0
+        try:
+            return len(encoding.encode(str(string)))
         except Exception as e:
-            print("Tokens calculation exception:", e)
+            print("Tokens calc exception", e)
             return 0
 
     @staticmethod
