@@ -20,8 +20,8 @@ if not exist "%ACTIVATE%" (
     exit /b 1
 )
 call "%ACTIVATE%"
-if not exist logs mkdir logs
-set "LOG_FILE=logs\test_results.log"
+if not exist memory\LOGS mkdir memory\LOGS
+set "LOG_FILE=memory\LOGS\test_results.log"
 echo Test run started at %DATE% %TIME% > "%LOG_FILE%"
 pytest -vv --cov=monkey_head --cov-report=term >> "%LOG_FILE%" 2>&1
 popd

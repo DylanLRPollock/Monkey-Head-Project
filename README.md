@@ -273,7 +273,7 @@ Two convenience wrappers simplify common tasks on Unix systems. `run.sh`
 activates the project's virtual environment and launches `run.py`. The
 `run-tests.sh` script now also captures coverage and logs results. It
 activates the environment, runs `pytest -vv --cov=monkey_head`, and
-saves the output to `logs/test_results.log`. Both scripts report an
+saves the output to `memory/LOGS/test_results.log`. Both scripts report an
 error if the `venv` directory is missing, reminding you to run
 `install.sh` first.
 `update_memory_pdfs.py` regenerates text versions of the bundled PDF files
@@ -431,7 +431,7 @@ python monkey_head/license_cli.py
 ```
 
 The script prints the license text and will keep asking for confirmation
-until you answer `yes` or `no`. Any errors are written to `app.log` and
+until you answer `yes` or `no`. Any errors are written to `memory/LOGS/app.log` and
 declining raises a `RuntimeError` without modifying the configuration
 file.
 
@@ -472,6 +472,11 @@ python repair.py       # Windows
 Legacy scripts from the `py/` folder were consolidated and updated in
 the `monkey_head/` directory. All utilities and modules live under `monkey_head/` to
 keep the project organized.
+
+The `memory/` directory now serves as the main storage location for
+internal files, documentation assets, and logs. Subfolders like
+`memory/LOGS`, `memory/DOCS`, and `memory/UPLOADS` keep content
+organized by format.
 
 ### Development Setup
 
@@ -622,7 +627,7 @@ If the application fails to start, try the following steps:
 1. Remove any old virtual environments and reinstall dependencies.
 2. Run `python -m pip install --upgrade pip` to update Python tooling.
 3. Verify that your `docker-compose` version meets the requirements.
-4. Check the logs in the `logs/` directory for detailed error messages.
+4. Check the logs in `memory/LOGS` for detailed error messages.
 
 For persistent issues, open a bug report with your system details and
 the steps needed to reproduce the error.

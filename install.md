@@ -69,7 +69,7 @@ Activate the virtual environment and execute:
 ```bash
 ./run-tests.sh
 ```
-Results are stored in `logs/test_results.log`.
+Results are stored in `memory/LOGS/test_results.log`.
 
 ## Next Steps
 

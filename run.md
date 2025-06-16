@@ -34,6 +34,6 @@ run-tests.bat
 ```
 
 Each script runs `pytest` with coverage reporting and stores the results in
-`logs/test_results.log`.
+`memory/LOGS/test_results.log`.
 
 Make sure the project is installed as described in [install.md](install.md) before using these commands.
