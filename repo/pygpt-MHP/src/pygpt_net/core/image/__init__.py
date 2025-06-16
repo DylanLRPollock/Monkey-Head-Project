@@ -98,16 +98,46 @@ class Image(QObject):
         self.window.core.debug.log(msg)
 
     def save_image(self, path: str, image: bytes) -> bool:
-        """
-        Save image to file
+        """Save image to ``path`` and copy it to the ``memory`` directory.
 
-        :param path: path to save
-        :param image: image data
-        :return: True if success
+        Parameters
+        ----------
+        path : str
+            Destination path for the image.
+        image : bytes
+            Image data.
+
+        Returns
+        -------
+        bool
+            ``True`` if saving succeeded, otherwise ``False``.
         """
+
         try:
             with open(path, 'wb') as file:
                 file.write(image)
+
+            # copy to memory folder if possible
+            try:
+                import shutil
+                from pathlib import Path
+
+                root = Path(__file__).resolve().parents[6]
+                memory = root / 'memory'
+                ext = Path(path).suffix.lower()
+                if ext == '.png':
+                    dest = memory / 'PNG'
+                elif ext in {'.jpg', '.jpeg'}:
+                    dest = memory / 'JPEG'
+                else:
+                    dest = None
+
+                if dest is not None:
+                    dest.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(path, dest / Path(path).name)
+            except Exception as exc:
+                print(f"Warning: failed to copy image to memory: {exc}")
+
             return True
         except Exception as e:
             print(trans('img.status.save.error') + ": " + str(e))
