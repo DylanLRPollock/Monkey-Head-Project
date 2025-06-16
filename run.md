@@ -12,6 +12,9 @@ This guide explains the different ways to launch and test the project.
 - `python run.py --system-check` – perform environment checks and exit.
 - `python run.py --docker-compose` – build and start the Docker Compose stack.
 - `python run.py --kubernetes` – deploy manifests from the `k8s/` directory.
+- `python launcher.py [command]` – unified script to run or install the project. Use
+  `install`, `uninstall`, `fresh-install`, or `system-check` commands, or omit the
+  command to start the application.
 
 ## Helper Scripts
 
