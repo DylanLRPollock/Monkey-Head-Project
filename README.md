@@ -281,6 +281,9 @@ under `memory/PDF`. Run this script whenever you add or edit PDF documents
 to keep the preloaded dataset up to date. Many helpers that work with these
 files now respect the `MEMORY_DIR` environment variable so you can store
 your PDF collection elsewhere without modifying the code.
+`storage_management.py` helps keep the `memory/` directory organized by
+automatically creating the standard subfolders, sorting stray files by
+extension and removing empty directories.
 `set_api_keys.py` walks you through entering API credentials. Choose
 which services to connect (OpenAI, Google, or DeepSeek) or select the
 auto option to configure all of them at once.

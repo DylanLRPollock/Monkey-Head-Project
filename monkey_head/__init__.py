@@ -40,6 +40,7 @@ from .media_conversion import (
 )
 from .utils.sorting import list_files_by_mtime, natural_sort
 from .pdf_utils import list_available_pdfs
+from .storage_management import StorageManager
 try:
     from .pdf_chat import load_pdf_pages, answer_question, chat_with_pdf
 except Exception:  # pragma: no cover - optional dependency
@@ -80,6 +81,7 @@ __all__ = [
     "train_from_chat_and_pdfs",
     "train_from_project_sources",
     "list_available_pdfs",
+    "StorageManager",
     "load_pdf_pages",
     "answer_question",
     "chat_with_pdf",
