@@ -499,6 +499,21 @@ to newest:
 python monkey_head/utils/list_by_mtime.py path/to/dir
 ```
 
+`auto-sort.py` organizes files dropped into a `raw` folder at the project root,
+moving them into `memory` subfolders according to file type. Run it without
+arguments to operate on the default directories:
+
+```bash
+python auto-sort.py
+```
+
+Pass a custom base directory if you maintain separate `raw` and `memory`
+folders elsewhere:
+
+```bash
+python auto-sort.py /path/to/base
+```
+
 ---
 
 ## 🔬 Test Hardware
