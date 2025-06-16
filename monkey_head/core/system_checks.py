@@ -68,18 +68,24 @@ def check_os_support() -> None:
                 ver_str,
             )
     elif system == "Linux":
-        if distro is None:
-            logger.warning("distro module not available; skipping distribution check")
+        if distro is not None:
+            dist_id = distro.id()
+            codename = str(distro.codename()).lower()
         else:
-            if distro.id() != "debian" or distro.codename().lower() not in {
-                "trixie",
-                "testing",
-            }:
-                logger.warning(
-                    "Unsupported Linux distribution detected (%s %s). Debian Trixie/testing is required.",
-                    distro.id(),
-                    distro.codename(),
-                )
+            release_info = {}
+            if hasattr(platform, "freedesktop_os_release"):
+                try:  # pragma: no cover - platform API may fail
+                    release_info = platform.freedesktop_os_release()
+                except Exception:
+                    release_info = {}
+            dist_id = release_info.get("ID", "").lower()
+            codename = release_info.get("VERSION_CODENAME", "").lower()
+        if dist_id != "debian" or codename not in {"trixie", "testing"}:
+            logger.warning(
+                "Unsupported Linux distribution detected (%s %s). Debian Trixie/testing is required.",
+                dist_id,
+                codename,
+            )
     else:
         logger.warning("Unsupported operating system detected: %s", system)
 
