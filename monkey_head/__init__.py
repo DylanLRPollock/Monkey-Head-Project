@@ -9,6 +9,7 @@
 """Utilities exposed for convenient imports."""
 
 from .formatter import format_text
+from .function_registry import register_function, list_functions, get_functions
 from .gencore import generate_core_data
 from .logging_setup import configure_logging
 import os
@@ -41,6 +42,7 @@ from .media_conversion import (
 from .utils.sorting import list_files_by_mtime, natural_sort
 from .pdf_utils import list_available_pdfs
 from .storage_management import StorageManager
+
 try:
     from .pdf_chat import load_pdf_pages, answer_question, chat_with_pdf
 except Exception:  # pragma: no cover - optional dependency
@@ -85,4 +87,7 @@ __all__ = [
     "load_pdf_pages",
     "answer_question",
     "chat_with_pdf",
+    "register_function",
+    "list_functions",
+    "get_functions",
 ]
