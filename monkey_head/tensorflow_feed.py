@@ -15,8 +15,6 @@ import json
 from pathlib import Path
 from typing import List
 
-import fitz  # PyMuPDF
-
 from .chat_learning import train_from_chat_and_pdfs
 
 

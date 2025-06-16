@@ -7,8 +7,6 @@
 # Updated: 06.11.2025
 # ==================================================
 from pathlib import Path
-from typing import Optional
-
 from .config_manager import ConfigManager
 from .error_handler import ErrorHandler
 
