@@ -283,7 +283,8 @@ files now respect the `MEMORY_DIR` environment variable so you can store
 your PDF collection elsewhere without modifying the code.
 `storage_management.py` helps keep the `memory/` directory organized by
 automatically creating the standard subfolders, sorting stray files by
-extension and removing empty directories.
+extension and removing empty directories. It can also report the total size
+of any subfolder and prune files older than a specified number of days.
 `set_api_keys.py` walks you through entering API credentials. Choose
 which services to connect (OpenAI, Google, or DeepSeek) or select the
 auto option to configure all of them at once.

@@ -14,6 +14,7 @@ import os
 import shutil
 from pathlib import Path
 from typing import Iterable, List, Optional
+import time
 
 __all__ = ["StorageManager"]
 
@@ -96,6 +97,39 @@ class StorageManager:
             if d.is_dir() and not any(d.iterdir()):
                 d.rmdir()
 
+    # -----------------------------------------------------
+    def get_total_size(self, folder: Optional[str] = None) -> int:
+        """Return the total size in bytes of all files under ``folder``."""
+        path = self.base_dir / folder if folder else self.base_dir
+        if not path.exists():
+            return 0
+        total = 0
+        for p in path.rglob("*"):
+            if p.is_file():
+                try:
+                    total += p.stat().st_size
+                except OSError:
+                    pass
+        return total
+
+    # -----------------------------------------------------
+    def remove_older_than(self, days: int, folder: Optional[str] = None) -> int:
+        """Remove files older than ``days`` days and return the count."""
+        path = self.base_dir / folder if folder else self.base_dir
+        if days <= 0 or not path.exists():
+            return 0
+        threshold = time.time() - days * 86400
+        removed = 0
+        for p in path.rglob("*"):
+            if p.is_file() and p.stat().st_mtime < threshold:
+                try:
+                    p.unlink()
+                    removed += 1
+                except OSError:
+                    pass
+        self.cleanup_empty_dirs()
+        return removed
+
 
 def main(argv: Optional[Iterable[str]] = None) -> None:
     """Basic CLI for manual maintenance."""
@@ -121,6 +155,19 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
         action="store_true",
         help="Remove empty directories",
     )
+    parser.add_argument(
+        "--size",
+        nargs="?",
+        const="",
+        metavar="FOLDER",
+        help="Show total size of FOLDER or the entire storage",
+    )
+    parser.add_argument(
+        "--prune",
+        type=int,
+        metavar="DAYS",
+        help="Delete files older than DAYS days",
+    )
 
     args = parser.parse_args(argv)
     mgr = StorageManager(args.path)
@@ -132,6 +179,12 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
             print(f)
     if args.cleanup:
         mgr.cleanup_empty_dirs()
+    if args.size is not None:
+        size = mgr.get_total_size(args.size or None)
+        print(size)
+    if args.prune is not None:
+        removed = mgr.remove_older_than(args.prune)
+        print(removed)
 
 
 if __name__ == "__main__":  # pragma: no cover - manual invocation
