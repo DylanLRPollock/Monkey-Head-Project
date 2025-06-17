@@ -32,7 +32,17 @@ class CriticalErrorHandler(logging.Handler):
 
 
 def configure_logging(config_path=None):
-    """Configure root logger using settings from CONFIG.txt."""
+    """Configure root logger using settings from CONFIG.txt.
+
+    Parameters
+    ----------
+    config_path : str | None
+        Optional path to the configuration file. When omitted the
+        ``MONKEY_HEAD_CONFIG`` environment variable is consulted. If that
+        is not set, ``config/CONFIG.txt`` under the project root is used.
+    """
+    if config_path is None:
+        config_path = os.environ.get("MONKEY_HEAD_CONFIG")
     if config_path is None:
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         config_path = os.path.join(base_dir, "config", "CONFIG.txt")

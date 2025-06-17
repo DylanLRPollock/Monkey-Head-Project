@@ -173,11 +173,19 @@ def main() -> None:
         help="Execute system command and exit",
     )
     parser.add_argument(
+        "--config",
+        type=str,
+        help="Path to CONFIG.txt for logging",
+    )
+    parser.add_argument(
         "--workdir",
         type=str,
         help="Set the working directory (default: project directory)",
     )
     args = parser.parse_args()
+
+    if args.config:
+        os.environ["MONKEY_HEAD_CONFIG"] = os.path.abspath(args.config)
 
     # determine working directory
     if args.workdir:
