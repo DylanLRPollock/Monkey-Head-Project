@@ -453,11 +453,16 @@ The script calls OS-specific cleanup scripts to delete the virtual environment, 
 
 ### Fresh Installation
 
-To completely reset the environment and reinstall everything, run the fresh installer. It first executes the uninstaller and then launches the regular installer:
+To completely reset the environment and reinstall everything, run the fresh
+installer. It first executes the uninstaller and then reinstalls the project.
+Use `--source github` to clone a new copy from GitHub or omit the option to use
+the current files:
 
 ```bash
-sudo python fresh_install.py  # Linux/macOS
-python fresh_install.py       # Windows
+sudo python fresh_install.py --source github  # Linux/macOS from GitHub
+sudo python fresh_install.py                  # Linux/macOS from local
+python fresh_install.py --source github       # Windows from GitHub
+python fresh_install.py                       # Windows from local
 ```
 
 

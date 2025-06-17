@@ -10,6 +10,7 @@ import run
 import installer
 import uninstaller
 import fresh_install
+import repair
 from monkey_head.core.system_checks import system_check
 
 
@@ -22,7 +23,18 @@ def main(argv: list[str] | None = None) -> None:
     sub.add_parser("run", help="Launch the application")
     sub.add_parser("install", help="Run installer")
     sub.add_parser("uninstall", help="Run uninstaller")
-    sub.add_parser("fresh-install", help="Uninstall then reinstall")
+    fresh_parser = sub.add_parser("fresh-install", help="Uninstall then reinstall")
+    fresh_parser.add_argument(
+        "--source",
+        choices=["local", "github"],
+        default="local",
+        help="Install from local files or clone from GitHub",
+    )
+    fresh_parser.add_argument(
+        "--repo",
+        default=repair.REPO_URL,
+        help="Repository URL when using --source github",
+    )
     sub.add_parser("system-check", help="Run environment verification")
 
     args, remainder = parser.parse_known_args(argv)
@@ -33,7 +45,7 @@ def main(argv: list[str] | None = None) -> None:
     if cmd == "uninstall":
         sys.exit(uninstaller.run_uninstaller())
     if cmd == "fresh-install":
-        sys.exit(fresh_install.run_fresh_install())
+        sys.exit(fresh_install.run_fresh_install(args.source, args.repo))
     if cmd == "system-check":
         system_check()
         return
