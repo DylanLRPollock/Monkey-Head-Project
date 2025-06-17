@@ -85,15 +85,11 @@ sudo python uninstaller.py  # Linux/macOS
 python uninstaller.py       # Windows
 ```
 
-The `fresh_install.py` script first runs the uninstaller and then reinstalls
-everything. Pass `--source github` to clone a new copy from GitHub or omit the
-option to reinstall from local files:
+The `fresh_install.py` script first runs the uninstaller and then reinstalls everything:
 
 ```bash
-sudo python fresh_install.py --source github  # Linux/macOS from GitHub
-sudo python fresh_install.py                  # Linux/macOS from local
-python fresh_install.py --source github       # Windows from GitHub
-python fresh_install.py                       # Windows from local
+sudo python fresh_install.py  # Linux/macOS
+python fresh_install.py       # Windows
 ```
 
 ---
