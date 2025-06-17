@@ -31,6 +31,10 @@ try:
     from .convert_mkv_to_mp4 import convert_mkv_to_mp4
 except Exception:  # pragma: no cover - optional dependency
     convert_mkv_to_mp4 = None
+try:
+    from .convert_video_to_gif import convert_video_to_gif
+except Exception:  # pragma: no cover - optional dependency
+    convert_video_to_gif = None
 
 try:
     from .pdf_pre_digestion import pdf_pre_digestion
@@ -84,6 +88,7 @@ __all__ = [
     "get_logger",
     "convert_png_to_jpeg",
     "convert_mkv_to_mp4",
+    "convert_video_to_gif",
     "pdf_pre_digestion",
     "convert_audio",
     "convert_video",
