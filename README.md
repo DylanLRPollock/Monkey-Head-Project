@@ -233,6 +233,8 @@ You can also perform a quick environment check with
 `python run.py --system-check`.
 For the installer-style program manager launch `python run.py --manager-ui`.
 To use a different working directory pass `--workdir /path/to/dir`.
+Specify an alternative logging configuration with
+`--config path/to/CONFIG.txt`.
 
 The GUI now checks whether you've accepted the license on startup and
 offers a **Tools** menu. From there you can reopen the license dialog or

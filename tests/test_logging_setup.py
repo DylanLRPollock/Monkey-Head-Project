@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 
 from monkey_head.logging_setup import configure_logging
 
@@ -8,9 +7,10 @@ def test_configure_logging_creates_log(tmp_path):
     cfg = tmp_path / "cfg.ini"
     log_file = tmp_path / "app.log"
     cfg.write_text(
-        "[logging]\nlog_level = INFO\nlog_file = {}\nlog_max_bytes = 1024\nlog_backup_count = 1\n".format(
-            log_file
-        )
+        (
+            "[logging]\nlog_level = INFO\nlog_file = {}\nlog_max_bytes = 1024\n"
+            "log_backup_count = 1\n"
+        ).format(log_file)
     )
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
@@ -43,9 +43,10 @@ def test_critical_error_triggers_gui(monkeypatch, tmp_path):
     cfg = tmp_path / "cfg.ini"
     log_file = tmp_path / "app.log"
     cfg.write_text(
-        "[logging]\nlog_level = INFO\nlog_file = {}\nlog_max_bytes = 1024\nlog_backup_count = 1\n".format(
-            log_file
-        )
+        (
+            "[logging]\nlog_level = INFO\nlog_file = {}\nlog_max_bytes = 1024\n"
+            "log_backup_count = 1\n"
+        ).format(log_file)
     )
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
@@ -63,3 +64,21 @@ def test_critical_error_triggers_gui(monkeypatch, tmp_path):
     logger.critical("boom")
     assert dummy_tk.created
     assert calls and "boom" in calls[0][1]
+
+
+def test_env_var_overrides_path(monkeypatch, tmp_path):
+    cfg = tmp_path / "cfg.ini"
+    log_file = tmp_path / "app.log"
+    cfg.write_text(
+        (
+            "[logging]\nlog_level = INFO\nlog_file = {}\nlog_max_bytes = 1024\n"
+            "log_backup_count = 1\n"
+        ).format(log_file)
+    )
+    root_logger = logging.getLogger()
+    for h in list(root_logger.handlers):
+        root_logger.removeHandler(h)
+    monkeypatch.setenv("MONKEY_HEAD_CONFIG", str(cfg))
+    logger = configure_logging()
+    logger.info("check")
+    assert log_file.exists()
