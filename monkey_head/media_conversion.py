@@ -101,7 +101,11 @@ def convert_media(
     elif src_ext in AUDIO_EXTENSIONS:
         convert_audio(src, dst, bitrate=bitrate)
     elif src_ext in VIDEO_EXTENSIONS:
-        convert_video(src, dst, codec=codec)
+        if dst_ext == ".gif":
+            from .convert_video_to_gif import convert_video_to_gif  # local import
+            convert_video_to_gif(src, dst)
+        else:
+            convert_video(src, dst, codec=codec)
     elif src_ext in IMAGE_EXTENSIONS and dst_ext in IMAGE_EXTENSIONS:
         shutil.copyfile(src, dst)
     else:
