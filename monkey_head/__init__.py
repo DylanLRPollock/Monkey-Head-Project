@@ -27,6 +27,10 @@ try:
     from .convert_png_to_jpeg import convert_png_to_jpeg
 except Exception:  # pragma: no cover - optional dependency
     convert_png_to_jpeg = None
+try:
+    from .convert_mkv_to_mp4 import convert_mkv_to_mp4
+except Exception:  # pragma: no cover - optional dependency
+    convert_mkv_to_mp4 = None
 
 try:
     from .pdf_pre_digestion import pdf_pre_digestion
@@ -72,6 +76,7 @@ __all__ = [
     "subos_manager",
     "get_logger",
     "convert_png_to_jpeg",
+    "convert_mkv_to_mp4",
     "pdf_pre_digestion",
     "convert_audio",
     "convert_video",
