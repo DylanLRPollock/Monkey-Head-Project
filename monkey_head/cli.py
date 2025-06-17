@@ -12,8 +12,20 @@ from .file_manager import FileManager
 
 class CLI:
     def __init__(self):
-        self.config_manager = ConfigManager("config.json")
+        self.config_manager = ConfigManager("config/pygpt_net/config.json")
         self.file_manager = FileManager()
+
+    def choose_provider(self) -> None:
+        """Interactively choose an LLM provider."""
+        options = ["openai", "google", "deepseek"]
+        choice = input(
+            "Select provider (openai/google/deepseek): "
+        ).strip().lower()
+        if choice not in options:
+            print("Invalid provider. Available options: openai, google, deepseek")
+            return
+        self.config_manager.set_setting("agent.llama.provider", choice)
+        print(f"Provider set to {choice}")
 
     def run(self):
         while True:
@@ -26,6 +38,8 @@ class CLI:
             elif command.startswith("get "):
                 _, key = command.split()
                 print(self.config_manager.get_setting(key))
+            elif command == "provider":
+                self.choose_provider()
             else:
                 print("Unknown command")
 
