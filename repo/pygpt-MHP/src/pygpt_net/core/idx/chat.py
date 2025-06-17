@@ -44,9 +44,7 @@ class Chat:
         ]
 
     def call(
-            self,
-            context: BridgeContext,
-            extra: Optional[Dict[str, Any]] = None
+        self, context: BridgeContext, extra: Optional[Dict[str, Any]] = None
     ) -> bool:
         """
         Call chat, complete or query mode
@@ -58,7 +56,9 @@ class Chat:
         model = context.model
         idx_mode = context.idx_mode  # mode
 
-        if model is None or not isinstance(model, ModelItem):  # check if model is provided
+        if model is None or not isinstance(
+            model, ModelItem
+        ):  # check if model is provided
             raise Exception("Model config not provided")
 
         if idx_mode == "query":  # query index only (raw mode)
@@ -73,7 +73,7 @@ class Chat:
             )
 
         # if not raw, check if chat mode is available
-        if MODE_CHAT in model.llama_index['mode']:
+        if MODE_CHAT in model.llama_index["mode"]:
             return self.chat(
                 context=context,
                 extra=extra,
@@ -85,9 +85,7 @@ class Chat:
             )  # if not, use query mode
 
     def raw_query(
-            self,
-            context: BridgeContext,
-            extra: Optional[Dict[str, Any]] = None
+        self, context: BridgeContext, extra: Optional[Dict[str, Any]] = None
     ) -> bool:
         """
         Raw query mode
@@ -102,9 +100,7 @@ class Chat:
         )
 
     def query(
-            self,
-            context: BridgeContext,
-            extra: Optional[Dict[str, Any]] = None
+        self, context: BridgeContext, extra: Optional[Dict[str, Any]] = None
     ) -> bool:
         """
         Query index mode (no chat, only single query) and append results to context
@@ -115,7 +111,9 @@ class Chat:
         """
         idx = context.idx
         model = context.model
-        system_prompt = context.system_prompt_raw  # get raw system prompt, without plugin addons
+        system_prompt = (
+            context.system_prompt_raw
+        )  # get raw system prompt, without plugin addons
         stream = context.stream
         ctx = context.ctx
         query = ctx.input  # user input
@@ -125,11 +123,13 @@ class Chat:
             raise Exception("Model config not provided")
 
         self.log("Query index...")
-        self.log("Idx: {}, query: {}, model: {}".format(
-            idx,
-            query,
-            model.id,
-        ))
+        self.log(
+            "Idx: {}, query: {}, model: {}".format(
+                idx,
+                query,
+                model.id,
+            )
+        )
 
         index, llm = self.get_index(idx, model)
         input_tokens = self.window.core.tokens.from_llama_messages(
@@ -146,22 +146,30 @@ class Chat:
                 streaming=stream,
                 text_qa_template=tpl,
                 verbose=verbose,
-            ).query(query)  # query with custom sys prompt
+            ).query(
+                query
+            )  # query with custom sys prompt
         else:
             response = index.as_query_engine(
                 llm=llm,
                 streaming=stream,
                 verbose=verbose,
-            ).query(query)  # query with default prompt
+            ).query(
+                query
+            )  # query with default prompt
 
         if response:
             if stream:
-                ctx.add_doc_meta(self.get_metadata(response.source_nodes))  # store metadata
+                ctx.add_doc_meta(
+                    self.get_metadata(response.source_nodes)
+                )  # store metadata
                 ctx.stream = response.response_gen
                 ctx.input_tokens = input_tokens
                 ctx.set_output("", "")
             else:
-                ctx.add_doc_meta(self.get_metadata(response.source_nodes))  # store metadata
+                ctx.add_doc_meta(
+                    self.get_metadata(response.source_nodes)
+                )  # store metadata
                 ctx.input_tokens = input_tokens
                 ctx.output_tokens = self.window.core.tokens.from_llama_messages(
                     response.response,
@@ -173,9 +181,7 @@ class Chat:
         return False
 
     def retrieval(
-            self,
-            context: BridgeContext,
-            extra: Optional[Dict[str, Any]] = None
+        self, context: BridgeContext, extra: Optional[Dict[str, Any]] = None
     ) -> bool:
         """
         Retrieve documents from index only
@@ -191,10 +197,12 @@ class Chat:
         verbose = self.window.core.config.get("log.llama", False)
 
         self.log("Retrieval...")
-        self.log("Idx: {}, retrieve only: {}".format(
-            idx,
-            query,
-        ))
+        self.log(
+            "Idx: {}, retrieve only: {}".format(
+                idx,
+                query,
+            )
+        )
 
         index, llm = self.get_index(idx, model)
         retriever = index.as_retriever()
@@ -202,14 +210,18 @@ class Chat:
         outputs = []
         self.log("Retrieved {} nodes...".format(len(nodes)))
         for node in nodes:
-            outputs.append({
-                "text": node.text,
-                "score": node.score,
-            })
+            outputs.append(
+                {
+                    "text": node.text,
+                    "score": node.score,
+                }
+            )
         if outputs:
             response = ""
             for output in outputs:
-                response += "**Score: {}**\n\n{}".format(output["score"], output["text"])
+                response += "**Score: {}**\n\n{}".format(
+                    output["score"], output["text"]
+                )
                 if output != outputs[-1]:
                     response += "\n\n-------\n\n"
             ctx.set_output(response)
@@ -217,9 +229,7 @@ class Chat:
         return True
 
     def chat(
-            self,
-            context: BridgeContext,
-            extra: Optional[Dict[str, Any]] = None
+        self, context: BridgeContext, extra: Optional[Dict[str, Any]] = None
     ) -> bool:
         """
         Chat mode (conversation, using context from index) and append result to the context
@@ -237,8 +247,10 @@ class Chat:
         use_index = True
         verbose = self.window.core.config.get("log.llama", False)
         allow_native_tool_calls = True
-        if ('provider' in model.llama_index
-                and model.llama_index['provider'] in self.tool_calls_not_allowed_providers):
+        if (
+            "provider" in model.llama_index
+            and model.llama_index["provider"] in self.tool_calls_not_allowed_providers
+        ):
             allow_native_tool_calls = False
 
         if idx is None or idx == "_":
@@ -246,7 +258,10 @@ class Chat:
             use_index = False
 
         # disable index if no api key
-        if self.window.core.config.get("api_key") == "" and self.window.core.config.get("llama.idx.embeddings.provider") == "openai":
+        if (
+            self.window.core.config.get("api_key") == ""
+            and self.window.core.config.get("llama.idx.embeddings.provider") == "openai"
+        ):
             print("Warning: no api key! Disabling index...")
             chat_mode = "simple"  # do not use query engine if no index
             use_index = False
@@ -255,12 +270,14 @@ class Chat:
             raise Exception("Model config not provided")
 
         self.log("Chat with index...")
-        self.log("Idx: {}, query: {}, chat_mode: {}, model: {}".format(
-            idx,
-            query,
-            chat_mode,
-            model.id,
-        ))
+        self.log(
+            "Idx: {}, query: {}, chat_mode: {}, model: {}".format(
+                idx,
+                query,
+                chat_mode,
+                model.id,
+            )
+        )
 
         # use index only if idx is not empty, otherwise use only LLM
         index = None
@@ -275,9 +292,11 @@ class Chat:
             if not nodes:
                 use_index = False
 
-        # TODO: if multimodal support, try to get multimodal provider
-        # if model.is_multimodal():
-            # llm = self.window.core.idx.llm.get(model, multimodal=True)  # get multimodal LLM model
+        # try to get multimodal provider if supported
+        if model.is_multimodal():
+            mm_llm = self.window.core.idx.llm.get(model, multimodal=True)
+            if mm_llm is not None:
+                llm = mm_llm
 
         # append context from DB
         history = self.context.get_messages(
@@ -345,7 +364,9 @@ class Chat:
                     ctx.stream = response.response_gen
                     ctx.input_tokens = input_tokens
                     ctx.set_output("", "")
-                    ctx.add_doc_meta(self.get_metadata(response.source_nodes))  # store metadata
+                    ctx.add_doc_meta(
+                        self.get_metadata(response.source_nodes)
+                    )  # store metadata
                 else:
                     ctx.input_tokens = input_tokens
                     ctx.output_tokens = self.window.core.tokens.from_llama_messages(
@@ -357,7 +378,9 @@ class Chat:
                     if output is None:
                         output = ""
                     ctx.set_output(output, "")
-                    ctx.add_doc_meta(self.get_metadata(response.source_nodes))  # store metadata
+                    ctx.add_doc_meta(
+                        self.get_metadata(response.source_nodes)
+                    )  # store metadata
             else:
                 # from LLM directly, no index
                 if stream:
@@ -371,7 +394,11 @@ class Chat:
                         response,
                         error_on_no_tool_call=False,
                     )
-                    ctx.tool_calls = self.window.core.command.unpack_tool_calls_from_llama(tool_calls)
+                    ctx.tool_calls = (
+                        self.window.core.command.unpack_tool_calls_from_llama(
+                            tool_calls
+                        )
+                    )
                     output = response.message.content
                     if output is None:
                         output = ""
@@ -381,16 +408,12 @@ class Chat:
                         output,
                         [],
                         model.id,
-                    ) # calc from response
+                    )  # calc from response
             return True
         return False
 
     def query_file(
-            self,
-            ctx: CtxItem,
-            path: str,
-            query: str,
-            model: Optional[ModelItem] = None
+        self, ctx: CtxItem, path: str, query: str, model: Optional[ModelItem] = None
     ) -> str:
         """
         Query file using temp index (created on the fly)
@@ -405,7 +428,9 @@ class Chat:
             model = self.window.core.models.from_defaults()
 
         llm, embed_model = self.window.core.idx.llm.get_service_context(model=model)
-        tmp_id, index = self.storage.get_tmp(path, llm, embed_model)  # get or create tmp index
+        tmp_id, index = self.storage.get_tmp(
+            path, llm, embed_model
+        )  # get or create tmp index
 
         idx = "tmp:{}".format(path)  # tmp index id
         self.log("Indexing to temporary in-memory index: {}...".format(idx))
@@ -425,9 +450,13 @@ class Chat:
             response = index.as_query_engine(
                 llm=llm,
                 streaming=False,
-            ).query(query)  # query with default prompt
+            ).query(
+                query
+            )  # query with default prompt
             if response:
-                ctx.add_doc_meta(self.get_metadata(response.source_nodes))  # store metadata
+                ctx.add_doc_meta(
+                    self.get_metadata(response.source_nodes)
+                )  # store metadata
                 output = response.response
 
         # clean tmp index
@@ -437,13 +466,13 @@ class Chat:
         return output
 
     def query_web(
-            self,
-            ctx: CtxItem,
-            type: str,
-            url: str,
-            args: Dict[str, Any],
-            query: str,
-            model: Optional[ModelItem] = None
+        self,
+        ctx: CtxItem,
+        type: str,
+        url: str,
+        args: Dict[str, Any],
+        query: str,
+        model: Optional[ModelItem] = None,
     ) -> str:
         """
         Query web using temp index (created on the fly)
@@ -465,7 +494,9 @@ class Chat:
         if model is None:
             model = self.window.core.models.from_defaults()
         llm, embed_model = self.window.core.idx.llm.get_service_context(model=model)
-        tmp_id, index = self.storage.get_tmp(id, llm, embed_model)  # get or create tmp index
+        tmp_id, index = self.storage.get_tmp(
+            id, llm, embed_model
+        )  # get or create tmp index
 
         idx = "tmp:{}".format(id)  # tmp index id
         self.log("Indexing to temporary in-memory index: {}...".format(idx))
@@ -487,9 +518,13 @@ class Chat:
             response = index.as_query_engine(
                 llm=llm,
                 streaming=False,
-            ).query(query)  # query with default prompt
+            ).query(
+                query
+            )  # query with default prompt
             if response:
-                ctx.add_doc_meta(self.get_metadata(response.source_nodes))  # store metadata
+                ctx.add_doc_meta(
+                    self.get_metadata(response.source_nodes)
+                )  # store metadata
                 output = response.response
 
         # clean tmp index
@@ -499,12 +534,12 @@ class Chat:
         return output
 
     def query_attachment(
-            self,
-            query: str,
-            path: str,
-            model: Optional[ModelItem] = None,
-            history: Optional[List[CtxItem]] = None,
-            verbose: bool = False,
+        self,
+        query: str,
+        path: str,
+        model: Optional[ModelItem] = None,
+        history: Optional[List[CtxItem]] = None,
+        verbose: bool = False,
     ) -> str:
         """
         Query attachment
@@ -555,10 +590,7 @@ class Chat:
         return output
 
     def query_retrieval(
-            self,
-            query: str,
-            idx: str,
-            model: Optional[ModelItem] = None
+        self, query: str, idx: str, model: Optional[ModelItem] = None
     ) -> str:
         """
         Query attachment
@@ -584,9 +616,7 @@ class Chat:
         return output
 
     def get_memory_buffer(
-            self,
-            history: List[ChatMessage],
-            llm = None
+        self, history: List[ChatMessage], llm=None
     ) -> ChatMemoryBuffer:
         """
         Get memory buffer
@@ -601,8 +631,7 @@ class Chat:
         )
 
     def get_custom_prompt(
-            self,
-            prompt: Optional[str] = None
+        self, prompt: Optional[str] = None
     ) -> Optional[ChatPromptTemplate]:
         """
         Get custom prompt template if sys prompt is not empty
@@ -632,11 +661,7 @@ class Chat:
         ]
         return ChatPromptTemplate(qa_msgs)
 
-    def get_index(
-            self,
-            idx: str,
-            model: ModelItem
-    ):
+    def get_index(self, idx: str, model: ModelItem):
         """
         Get index instance
 
@@ -648,7 +673,9 @@ class Chat:
         if not self.storage.exists(idx):
             if idx is None:
                 # create empty in memory idx
-                llm, embed_model = self.window.core.idx.llm.get_service_context(model=model)
+                llm, embed_model = self.window.core.idx.llm.get_service_context(
+                    model=model
+                )
                 index = self.storage.index_from_empty(embed_model)
                 return index, llm
             # raise Exception("Index not prepared")
@@ -657,19 +684,18 @@ class Chat:
         index = self.storage.get(idx, llm, embed_model)  # get index
         return index, llm
 
-    def get_metadata(
-            self,
-            source_nodes: Optional[list]
-    ) -> Dict[str, Any]:
+    def get_metadata(self, source_nodes: Optional[list]) -> Dict[str, Any]:
         """
         Get metadata from source nodes
 
         :param source_nodes: source nodes
         :return: metadata
         """
-        if (source_nodes is None
-                or not isinstance(source_nodes, list)
-                or len(source_nodes) == 0):
+        if (
+            source_nodes is None
+            or not isinstance(source_nodes, list)
+            or len(source_nodes) == 0
+        ):
             return {}
         metadata = {}
         i = 1
@@ -688,19 +714,14 @@ class Chat:
                             break
         return metadata
 
-    def parse_metadata(
-            self,
-            metadata: Optional[Dict]
-    ) -> Dict[str, Any]:
+    def parse_metadata(self, metadata: Optional[Dict]) -> Dict[str, Any]:
         """
         Parse metadata
 
         :param metadata: metadata
         :return: metadata
         """
-        if (metadata is None
-                or not isinstance(metadata, dict)
-                or len(metadata) == 0):
+        if metadata is None or not isinstance(metadata, dict) or len(metadata) == 0:
             return {}
         meta = {}
         for node in metadata:
@@ -719,8 +740,9 @@ class Chat:
         if self.window.core.config.get("mode") == MODE_AGENT_LLAMA:
             return
         is_log = False
-        if self.window.core.config.has("log.llama") \
-                and self.window.core.config.get("log.llama"):
+        if self.window.core.config.has("log.llama") and self.window.core.config.get(
+            "log.llama"
+        ):
             is_log = True
         self.window.core.debug.info(msg, not is_log)
         if is_log:

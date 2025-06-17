@@ -49,7 +49,7 @@ class Renderer(BaseRenderer):
     def get_pid(self, meta: CtxMeta):
         """
         Get PID for context meta
-        
+
         :param meta: context PID
         """
         if self.tab is not None:
@@ -59,7 +59,7 @@ class Renderer(BaseRenderer):
     def get_or_create_pid(self, meta: CtxMeta):
         """
         Get PID for context meta and create PID data (if not exists)
-        
+
         :param meta: context PID
         """
         if meta is not None:
@@ -71,37 +71,27 @@ class Renderer(BaseRenderer):
     def pid_create(self, pid, meta: CtxMeta):
         """
         Create PID data
-        
+
         :param pid: PID
         :param meta: context meta
         """
         if pid is not None:
             self.pids[pid] = PidData(pid, meta)
 
-    def begin(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem,
-            stream: bool = False
-    ):
+    def begin(self, meta: CtxMeta, ctx: CtxItem, stream: bool = False):
         """
         Render begin
-        
+
         :param meta: context meta
         :param ctx: context item
         :param stream: True if it is a stream
         """
         self.parser.reset()
 
-    def end(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem,
-            stream: bool = False
-    ):
+    def end(self, meta: CtxMeta, ctx: CtxItem, stream: bool = False):
         """
         Render end
-            
+
         :param meta: context meta
         :param ctx: context item
         :param stream: True if it is a stream
@@ -109,26 +99,17 @@ class Renderer(BaseRenderer):
         if stream:
             self.reload()  # reload ctx items only if stream
 
-    def end_extra(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem,
-            stream: bool = False
-    ):
+    def end_extra(self, meta: CtxMeta, ctx: CtxItem, stream: bool = False):
         """
         Render end extra
-        
+
         :param meta: context meta
         :param ctx: context item
         :param stream: True if it is a stream
         """
         self.to_end(meta)
 
-    def stream_begin(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem
-    ):
+    def stream_begin(self, meta: CtxMeta, ctx: CtxItem):
         """
         Render stream begin
 
@@ -137,28 +118,19 @@ class Renderer(BaseRenderer):
         """
         pass  # do nothing
 
-    def stream_end(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem
-    ):
+    def stream_end(self, meta: CtxMeta, ctx: CtxItem):
         """
         Render stream end
-        
+
         :param meta: context meta
         :param ctx: context item
         """
         pass  # do nothing
 
-    def append_context(
-            self,
-            meta: CtxMeta,
-            items: List[CtxItem],
-            clear: bool = True
-    ):
+    def append_context(self, meta: CtxMeta, items: List[CtxItem], clear: bool = True):
         """
         Append all context to output
-        
+
         :param meta: context meta
         :param items: context items
         :param clear: True if clear all output before append
@@ -175,15 +147,11 @@ class Renderer(BaseRenderer):
             i += 1
 
     def append_input(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem,
-            flush: bool = True,
-            append: bool = False
+        self, meta: CtxMeta, ctx: CtxItem, flush: bool = True, append: bool = False
     ):
         """
         Append text input to output
-        
+
         :param meta: context meta
         :param ctx: context item
         :param flush: True if flush
@@ -192,70 +160,58 @@ class Renderer(BaseRenderer):
         if ctx.input is None or ctx.input == "":
             return
 
-        if self.is_timestamp_enabled() \
-                and ctx.input_timestamp is not None:
+        if self.is_timestamp_enabled() and ctx.input_timestamp is not None:
             name = ""
-            if ctx.input_name is not None \
-                    and ctx.input_name != "":
+            if ctx.input_name is not None and ctx.input_name != "":
                 name = ctx.input_name + " "
-            text = '{} > {}'.format(name, ctx.input)
+            text = "{} > {}".format(name, ctx.input)
         else:
             text = "> {}".format(ctx.input)
 
         # check if it is a command response
         is_cmd = False
-        if ctx.input.strip().startswith("[") \
-                and ctx.input.strip().endswith("]"):
+        if ctx.input.strip().startswith("[") and ctx.input.strip().endswith("]"):
             is_cmd = True
 
         # hidden internal call
-        if ctx.internal \
-                and not is_cmd \
-                and not ctx.first \
-                and not ctx.input.strip().startswith("user: "):
-            self.append_raw(meta, ctx, '>>>', "msg-user")
+        if (
+            ctx.internal
+            and not is_cmd
+            and not ctx.first
+            and not ctx.input.strip().startswith("user: ")
+        ):
+            self.append_raw(meta, ctx, ">>>", "msg-user")
             return
         else:
             # don't show user prefix if provided in internal call goal update
             if ctx.internal and ctx.input.startswith("user: "):
-                text = re.sub(r'^user: ', '> ', ctx.input)
+                text = re.sub(r"^user: ", "> ", ctx.input)
 
         self.append_raw(meta, ctx, text.strip(), "msg-user")
 
-    def append_output(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem
-    ):
+    def append_output(self, meta: CtxMeta, ctx: CtxItem):
         """
         Append text output to output
-        
+
         :param meta: context meta
         :param ctx: context item
         """
         if ctx.output is None or ctx.output == "":
             return
 
-        if self.is_timestamp_enabled() \
-                and ctx.output_timestamp is not None:
+        if self.is_timestamp_enabled() and ctx.output_timestamp is not None:
             name = ""
-            if ctx.output_name is not None \
-                    and ctx.output_name != "":
+            if ctx.output_name is not None and ctx.output_name != "":
                 name = ctx.output_name + " "
-            text = '{} {}'.format(name, ctx.output)
+            text = "{} {}".format(name, ctx.output)
         else:
             text = "{}".format(ctx.output)
         self.append_raw(meta, ctx, text.strip(), "msg-bot")
 
-    def append_extra(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem,
-            footer: bool = False
-    ):
+    def append_extra(self, meta: CtxMeta, ctx: CtxItem, footer: bool = False):
         """
         Append extra data (images, files, etc.) to output
-        
+
         :param meta: context meta
         :param ctx: context item
         :param footer: True if it is a footer
@@ -282,18 +238,22 @@ class Renderer(BaseRenderer):
                 except Exception as e:
                     pass
 
-        # files and attachments, TODO check attachments
-        c = len(ctx.files)
+        # files and attachments
+        attachments = [
+            a.path for a in getattr(ctx, "attachments", []) if getattr(a, "path", None)
+        ]
+        files = list(ctx.files) + attachments
+        c = len(files)
         if c > 0:
             n = 1
-            for file in ctx.files:
+            for file in files:
                 if file in appended:
                     continue
                 try:
                     appended.append(file)
                     node.append(self.body.get_file_html(file, n, c))
                     n += 1
-                except Exception as e:
+                except Exception:
                     pass
 
         # urls
@@ -316,17 +276,17 @@ class Renderer(BaseRenderer):
 
         # extra action icons
         if footer:
-            show_edit = self.window.core.config.get('ctx.edit_icons')
+            show_edit = self.window.core.config.get("ctx.edit_icons")
             icons_html = " ".join(self.body.get_action_icons(ctx, all=show_edit))
             if icons_html != "":
-                extra = "<div class=\"action-icons\">{}</div>".format(icons_html)
+                extra = '<div class="action-icons">{}</div>'.format(icons_html)
                 if ctx.output is not None and ctx.output.endswith("```"):
                     extra = " \n&nbsp;" + extra + "<div></div>"
                 node.append(extra)
                 self.to_end(meta)
 
         # docs json
-        if self.window.core.config.get('ctx.sources'):
+        if self.window.core.config.get("ctx.sources"):
             if ctx.doc_ids is not None and len(ctx.doc_ids) > 0:
                 try:
                     docs = self.body.get_docs_html(ctx.doc_ids)
@@ -340,11 +300,7 @@ class Renderer(BaseRenderer):
             self.to_end(meta)
 
     def append_chunk(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem,
-            text_chunk: str,
-            begin: bool = False
+        self, meta: CtxMeta, ctx: CtxItem, text_chunk: str, begin: bool = False
     ):
         """
         Append output chunk to output
@@ -368,11 +324,9 @@ class Renderer(BaseRenderer):
             cursor = self.get_output_node(meta).textCursor()
             self.pids[pid].prev_position = cursor.position()
 
-            if self.is_timestamp_enabled() \
-                    and ctx.output_timestamp is not None:
+            if self.is_timestamp_enabled() and ctx.output_timestamp is not None:
                 name = ""
-                if ctx.output_name is not None \
-                        and ctx.output_name != "":
+                if ctx.output_name is not None and ctx.output_name != "":
                     name = ctx.output_name + " "
                 ts = datetime.fromtimestamp(ctx.output_timestamp)
                 hour = ts.strftime("%H:%M:%S")
@@ -383,7 +337,7 @@ class Renderer(BaseRenderer):
 
         self.pids[pid].buffer += raw_chunk
         to_append = self.pids[pid].buffer
-        if re.search(r'```(?!.*```)', self.pids[pid].buffer):
+        if re.search(r"```(?!.*```)", self.pids[pid].buffer):
             to_append += "\n```"  # fix for code block without closing ```
         html = self.parser.parse(to_append)
         self.append_html_chunk(meta, ctx, self.helpers.format_chunk(html))
@@ -391,7 +345,7 @@ class Renderer(BaseRenderer):
     def append_block(self, meta: CtxMeta):
         """
         Append block to output
-        
+
         :param meta: context meta
         """
         node = self.get_output_node(meta)
@@ -404,15 +358,10 @@ class Renderer(BaseRenderer):
         cursor.insertBlock(block_format)
         node.setTextCursor(cursor)
 
-    def append_html_chunk(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem,
-            html: str
-    ):
+    def append_html_chunk(self, meta: CtxMeta, ctx: CtxItem, html: str):
         """
         Append HTML chunk to output
-        
+
         :param meta: context meta
         :param ctx: CtxItem instance
         :param html: HTML chunk
@@ -420,7 +369,7 @@ class Renderer(BaseRenderer):
         # remove from cursor position to end
         pid = self.get_or_create_pid(meta)
         node = self.get_output_node(meta)
-        
+
         if self.pids[pid].prev_position is not None:
             cursor = node.textCursor()
             cursor.setPosition(self.pids[pid].prev_position)
@@ -433,16 +382,10 @@ class Renderer(BaseRenderer):
         node.setTextCursor(cursor)
         node.append(html.replace("\n", "<br>"))
 
-    def append_raw(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem,
-            text: str,
-            type: str = "msg-bot"
-    ):
+    def append_raw(self, meta: CtxMeta, ctx: CtxItem, text: str, type: str = "msg-bot"):
         """
         Append and format raw text to output
-        
+
         :param meta: context meta
         :param ctx: CtxItem instance
         :param text: text to append
@@ -453,7 +396,9 @@ class Renderer(BaseRenderer):
             text = self.append_timestamp(ctx, text)
             text = self.parser.parse(text)
         else:
-            content = self.append_timestamp(ctx, self.helpers.format_user_text(text), type=type)
+            content = self.append_timestamp(
+                ctx, self.helpers.format_user_text(text), type=type
+            )
             text = "<div><p>" + content + "</p></div>"
 
         text = self.helpers.post_format_text(text)
@@ -464,14 +409,10 @@ class Renderer(BaseRenderer):
         self.get_output_node(meta).append(text)
         self.to_end(meta)
 
-    def append_chunk_start(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem
-    ):
+    def append_chunk_start(self, meta: CtxMeta, ctx: CtxItem):
         """
         Append start of chunk to output
-        
+
         :param meta: context meta
         :param ctx: CtxItem instance
         """
@@ -480,14 +421,10 @@ class Renderer(BaseRenderer):
         cursor.movePosition(QTextCursor.End)
         node.setTextCursor(cursor)
 
-    def append_context_item(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem
-    ):
+    def append_context_item(self, meta: CtxMeta, ctx: CtxItem):
         """
         Append context item to output
-    
+
         :param meta: context meta
         :param ctx: context item
         """
@@ -495,16 +432,10 @@ class Renderer(BaseRenderer):
         self.append_output(meta, ctx)
         self.append_extra(meta, ctx, footer=True)
 
-    def append(
-            self,
-            meta: CtxMeta,
-            ctx: CtxItem,
-            text: str,
-            end: str = "\n"
-    ):
+    def append(self, meta: CtxMeta, ctx: CtxItem, text: str, end: str = "\n"):
         """
         Append text to output
-        
+
         :param meta: context meta
         :param ctx: context item
         :param text: text to append
@@ -522,22 +453,21 @@ class Renderer(BaseRenderer):
         node.setTextCursor(cur)  # Update visible cursor
 
     def append_timestamp(
-            self,
-            ctx: CtxItem,
-            text: str,
-            type: Optional[str] = None
+        self, ctx: CtxItem, text: str, type: Optional[str] = None
     ) -> str:
         """
         Append timestamp to text
-        
+
         :param ctx: context item
         :param text: Input text
         :param type: Type of message
         :return: Text with timestamp (if enabled)
         """
-        if ctx is not None \
-                and self.is_timestamp_enabled() \
-                and ctx.input_timestamp is not None:
+        if (
+            ctx is not None
+            and self.is_timestamp_enabled()
+            and ctx.input_timestamp is not None
+        ):
             if type == "msg-user":
                 timestamp = ctx.input_timestamp
             else:
@@ -548,10 +478,7 @@ class Renderer(BaseRenderer):
                 text = '<span class="ts">{}:</span> {}'.format(hour, text)
         return text
 
-    def reset(
-            self,
-            meta: Optional[CtxMeta] = None
-    ):
+    def reset(self, meta: Optional[CtxMeta] = None):
         """
         Reset
 
@@ -568,10 +495,7 @@ class Renderer(BaseRenderer):
         """
         self.window.controller.ctx.refresh_output()  # if clear all and appends all items again
 
-    def clear_output(
-            self,
-            meta: Optional[CtxMeta] = None
-    ):
+    def clear_output(self, meta: Optional[CtxMeta] = None):
         """
         Clear output
 
@@ -587,7 +511,7 @@ class Renderer(BaseRenderer):
     def to_end(self, meta: CtxMeta):
         """
         Move cursor to end of output
-    
+
         :param meta: context meta
         """
         node = self.get_output_node(meta)
@@ -601,12 +525,12 @@ class Renderer(BaseRenderer):
 
         :return: True if timestamp is enabled
         """
-        return self.window.core.config.get('output_timestamp')
+        return self.window.core.config.get("output_timestamp")
 
     def get_output_node(self, meta: CtxMeta) -> ChatOutput:
         """
         Get output node
-        
+
         :param meta: context meta
         :return: output node
         """
@@ -618,7 +542,7 @@ class Renderer(BaseRenderer):
 
         :return: input node
         """
-        return self.window.ui.nodes['input']
+        return self.window.ui.nodes["input"]
 
     def get_all_nodes(self) -> list:
         """
@@ -640,10 +564,12 @@ class Renderer(BaseRenderer):
 
     def on_theme_change(self):
         """On theme change"""
-        stylesheet = self.window.controller.theme.markdown.css['markdown']
+        stylesheet = self.window.controller.theme.markdown.css["markdown"]
         for node in self.get_all_nodes():
             # self.window.ui.nodes['output_plain'].setStyleSheet(stylesheet)
             node.setStyleSheet(stylesheet)
             node.document().setDefaultStyleSheet(stylesheet)
-            node.document().setMarkdown(self.window.ui.nodes['output'].document().toMarkdown())
+            node.document().setMarkdown(
+                self.window.ui.nodes["output"].document().toMarkdown()
+            )
             self.window.controller.ctx.refresh()

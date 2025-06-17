@@ -39,6 +39,13 @@ from .media_conversion import (
     extract_audio,
     convert_media,
 )
+from .honeycomb_storage import HoneycombStorage
+from .cloud_pyramid import CloudPyramid
+from .hardware_interface import (
+    send_hostos,
+    send_subos,
+    send_nanoos,
+)
 from .utils.sorting import list_files_by_mtime, natural_sort
 from .pdf_utils import list_available_pdfs
 from .storage_management import StorageManager
@@ -87,6 +94,11 @@ __all__ = [
     "load_pdf_pages",
     "answer_question",
     "chat_with_pdf",
+    "HoneycombStorage",
+    "CloudPyramid",
+    "send_hostos",
+    "send_subos",
+    "send_nanoos",
     "register_function",
     "list_functions",
     "get_functions",
