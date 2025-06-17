@@ -5,6 +5,8 @@
 - Motherboard and legacy technology PDF documentation.
 - Detailed installation instructions and contribute guidelines.
 - Extended logger utilities and fresh repair helper.
+- Option to override CONFIG.txt location via MONKEY_HEAD_CONFIG or
+  `--config` flag.
 - Docker and Kubernetes controls in the GUI.
 - API key setup and license prompts.
 - Universal image conversion utilities and PDF digestion improvements.
