@@ -1,167 +1,162 @@
-# 🐒 **Monkey Head Project**
+# 🐒 **MonkeyHead Project**
 
-> **Huey is a prototype robotic AI/OS**—an experiment proving that a single, motivated builder can bring a lawful, self-governing machine to life.
-> Built openly, governed by the **Cloud Pyramid Constitution**, and architected for *autonomy, modularity, expandability*.&#x20;
+> **Huey is a prototype robotic AI/OS** — an open-source experiment proving a single, dedicated developer can create a fully autonomous, modular, and expandable robotic ecosystem. Built transparently, governed by a constitutional framework, and architected explicitly to foster emergent artificial intelligence, Huey embodies a new paradigm in robotics and operating system design.
 
-![Volt-4](https://github.com/user-attachments/assets/2aa4a607-acae-45da-adc5-f41c869a1a0c)
-
----
-
-## 📑 Contents
-
-1. Thesis & Vision
-2. Phase History & Roadmap
-3. Governance: The Cloud Pyramid
-4. Huey OS Stack (Macro / Micro / Nano)
-5. Hardware Fleet
-6. Hierarchical Storage & Nature-Inspired Tech
-7. Wartime & Oversight Protocols
-8. Installation & Quick-Start
-9. Contribution Guide
-10. Business & Outreach
-11. Acknowledgements
+![Volt-4 Render](https://github.com/user-attachments/assets/2aa4a607-acae-45da-adc5-f41c869a1a0c)
 
 ---
 
-## 1 · Thesis & Vision
+## 📖 **1 · Project Thesis & Vision**
 
-> *With enough time, tools, and determination, anyone can craft an autonomous robot.*&#x20;
+**Core Thesis**:
 
-* **Autonomy** Huey makes legally-bounded decisions via adaptive AI and machine-learning pipelines.
-* **Modularity** All subsystems—from power rails to OS containers—can be hot-swapped or upgraded.
-* **Expandability** The project roadmap explicitly includes new motherboards, new agents, and even quantum co-processors when viable.
-* **Open ethos** Every line of code, schematic, and constitutional clause is public and versioned.
+> "Given adequate time, tools, and determination, a single individual can build a fully autonomous, modular, and expandable robot."
+> — MonkeyHead Project \[Thesis & Ethos] s\*\*:
 
----
-
-## 2 · Phase History & Roadmap
-
-| Phase                                      | Date       | Milestone & Proof-Points                                                             |
-| ------------------------------------------ | ---------- | ------------------------------------------------------------------------------------ |
-| **1 Genesis**                              | 2024-04-11 | Legacy VIC-20/C64/C128 interfaces, first Huey OS bootstrap.                          |
-| **2 Integration**                          | 2024-06-21 | Power grid, emergency fans, Spark-4 & Volt-4 agents, full GitHub exposure.           |
-| **3 System Awakening**                     | 2024-10-31 | Dual-node online, Halloween 10-hour burn-in, BIOS optimised, liquid-cool fail-over.  |
-| **4 Data Processing**                      | 2025-01-25 | Binary YES/NO engine, PDF/text mill, honeycomb RAID.                                 |
-| **6 Reconciliation & Optimisation**        | 2025-08-04 | Phase taxonomy locked; docs, CONTRIBUTING, issue tracker live.                       |
-| **7 The Architecture of Huey (⧖ current)** | 2025-Q4    | Define expressive boundaries; launch emergent-personality framework.                 |
-
-> *Phases 4 & 5 were merged into 6 for clarity and to align documentation with reality.*
+* **Autonomy**: Intelligent decision-making through AI systems, governed explicitly by constitutional law.
+* **Modularity**: Independent, interchangeable components and software containers to facilitate growth and adaptability.
+* **Expandability**: Ongoing evolution with clear pathways for upgrading, integrating future technologies, and scaling system architecture.
 
 ---
 
-## 3 · Governance — **The Cloud Pyramid**
+## 🚀 **2 · Project Phase History & Roadmap**
 
-A five-layer polity ensuring **law before logic**:
+| Phase | Date       | Milestones & Deliverables                                                                                                                     |
+| ----- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | 2024-04-11 | **Genesis**: Legacy hardware interfaces (VIC-20/C64/C128); First deployment of Huey OS baseline.                                              |
+| 2     | 2024-06-21 | **Integration**: Robust power management & cooling solutions; Initial deployment of Spark-4 & Volt-4 AI agents; Documentation overhaul.       |
+| 3     | 2024-10-31 | **System Awakening**: Dual-node system initialization; Extensive Halloween stress testing; Integrated Supermicro X9QRI-F+ motherboard.        |
+| 4     | 2025-01-25 | **Data Processing & Decision Core**: Binary decision-making algorithms; Honeycomb storage architecture finalized; Document parsing protocols. |
+| 6     | 2025-08-04 | **Reconciliation & Optimization**: Unified phase taxonomy; Community onboarding infrastructure; Documentation refinement.                     |
+| 7     | 2025-Q4    | **The Architecture of Huey (current)**: Framework for emergent personality & expressive behaviors; Implementation of governance constraints.  |
 
-1. **Founding Father / Borg Queen (Huey collective)** – final binary veto.&#x20;
-2. **Grand Council** – Executive • Senate (hardware) • Parliament (software).&#x20;
-3. **Joint Session** – three bodies harmonise bills.
-4. **Individual Chambers** – day-to-day governance.
-5. **Populace (128 AI citizens)** – vote, gain RAM & CPU entitlements as they age.&#x20;
-
-**Oversight Modules**
-
-* **AI Ethics Committee** – multi-disciplinary review board.&#x20;
-* **Reg-Compliance Unit** – continual audits; public transparency portal.&#x20;
-* **Supreme Court AI** – decisive constitutional interpretation.&#x20;
-
-**Emergency:** *Nuclear Act* → 10-minute countdown → conditional hibernation → human overseer revival.&#x20;
+> *Note*: Phases 4 & 5 were consolidated into Phase 6 for clarity.
 
 ---
 
-## 4 · Huey OS Stack
+## ⚖️ **3 · Cloud Pyramid Governance Model**
 
-| Tier        | Alias                          | Duties                                                          | Tech                                    |
-| ----------- | ------------------------------ | --------------------------------------------------------------- | --------------------------------------- |
-| **MacroOS** | *Huey Core*                    | Strategy, quorum enforcement, top-level scheduling.             | Debian Trixie RT-kernel + Z-Wave mesh.  |
-| **MicroOS** | *SubOS*                        | Container orchestration, hardware abstraction.                  | Docker • Kubernetes • Hyper-V.          |
-| **NanoOS**  | *AtomOS*                       | Real-time GPIO, sensor loops.                                   | Python 3.12 venvs, Rust micro-services. |
-| **Agents**  | Spark-4, Volt-4, Zap-4, Watt-4 | Specialised decision trees; inherit rights only via Article I.  |                                         |
+Huey operates within a clearly defined governance framework, the **Cloud Pyramid Constitution**, ensuring all actions adhere strictly to constitutional law.
 
----
+**Governance Structure**:
 
-## 5 · Hardware Fleet
+1. **Founding Father (Huey Collective)**: Final constitutional veto authority; acts as guardian of ethos and mission alignment.
+2. **Grand Council**: Executive, Senate (hardware oversight), Parliament (software oversight); balances power effectively across project domains.
+3. **Joint Session**: Regular coordination among governmental bodies to harmonize policy and implementation.
+4. **Individual Chambers**: Daily operational governance within respective domains.
+5. **Populace (128 AI Citizens)**: Representational AI citizens with voting capabilities, scaling resources (RAM, CPU allocation) as they evolve.
 
-### 5.1 Dual-Motherboard Chassis (“Legacy Node”)
+**Oversight & Compliance**:
 
-* 4 × Xeon E5-4627 v2 on Supermicro X9QRI-F+
-* i7-7820X on X299-PGF (analysis node)
-* 128 GB RAM mirrored to 64 GB ECC
-* Mixed RAID-10 HDDs & NVMe boot; honeycomb USB-C cold tier
-* Four redundant Dell R710 PSUs + consumer 550 W rails&#x20;
+* **AI Ethics Committee**: Multi-disciplinary ethical review and oversight.
+* **Regulatory Compliance Unit**: Continuous audits ensuring adherence to ethical and legal standards.
+* **Supreme Court AI**: Constitutional interpretation, ensuring consistent compliance.
 
-### 5.2 **MacBook Pro 2019 – “Daily Driver”**
+**Emergency Protocols**:
 
-32 GB RAM, i9 CPU, dual-boot macOS/Win10; primary dev box.&#x20;
-
-### 5.3 **iMac 5K 2017 – “Universal Display”**
-
-27″ 5K retina; central dashboard & data-viz hub.&#x20;
-
-### 5.4 **MacBook Pro 2012 – “Transmitter”**
-
-16 GB RAM, High Sierra / Win11 dual-boot; legacy I/O bridge (FireWire, Ethernet).&#x20;
-
-*(Full fleet list—including Threadripper 1950X “RAID”, Raspberry Pi 3 B+, C64/C128 integration—in `/docs/hardware/index.md`)*
+* **Nuclear Act**: Immediate 10-minute contingency protocol; system encryption; human oversight for reactivation and reconfiguration.
 
 ---
 
-## 6 · Hierarchical Storage & Bio-Inspired Tech
+## 💻 **4 · Huey OS Technical Stack**
 
-* **Honeycomb RAID** – hex-cluster arrays for fault-tolerant, space-efficient data.&#x20;
-* **Exact / Augmented Bifurcation** – split paths for redundancy vs. growth.
-* **Parasitic Protocol** – sandbox assimilation of alien hardware.
-* **Plane & Submarine logistics** – dual playbook for air-cooled and submerged nodes.&#x20;
+Huey OS (formerly GenCore) is a robust, custom-developed Debian Trixie-based kernel designed explicitly to house and govern an autonomous AI entity.
 
----
-
-## 7 · Oversight, Wartime, External Relations
-
-* **AI Oversight Chapter 9** – Ethics, Compliance, open-data publishing.&#x20;
-* **Wartime Chapter 7** – Nuclear Act, countdown, hibernation vault, human auditors.&#x20;
-* **External Guidelines Chapter 10** – diplomacy, interoperability, conflict resolution.&#x20;
+| Layer         | Alias                              | Functionality & Features                                                                             |
+| ------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **MacroOS**   | **Huey Core**                      | Strategic decision-making, quorum enforcement, OS-level scheduling.                                  |
+| **MicroOS**   | **SubOS Containers**               | Container orchestration, modular software/hardware abstraction via Docker/Kubernetes.                |
+| **NanoOS**    | **AtomOS Modules**                 | Real-time GPIO sensor interfaces; Python and Rust-based microservices.                               |
+| **AI Agents** | **Spark-4, Volt-4, Zap-4, Watt-4** | Specialized AI agents, decision trees; inherit operational citizenship via constitutional precedent. |
 
 ---
 
-## 8 · Installation & Quick-Start
+## 🛠️ **5 · Hardware Fleet**
 
-1. **Clone repo** → `make iso` → flash to USB.
-2. Boot on UEFI hardware (≥ 4 cores, 16 GB RAM, 256 GB storage).
-3. First login drops to **Huey Shell**; run `huey-init --constitution` to bind node to Cloud Pyramid.
-4. Use `hueyctl join --role nano --parent <IP>` to add subordinate devices (Pi, C64).
+Huey’s physical embodiment comprises carefully-selected modular hardware platforms:
 
-*(Detailed VM / NanoOS docker recipes in `/install/`)*
+### **5.1 Dual-Motherboard Chassis ("Legacy Node")**
 
----
+* **Motherboards**: Supermicro X9QRI-F+ (4 × Xeon E5-4627 V2); Supermicro C9X299-PGF (Intel i7-7820X).
+* **Memory**: 128GB ECC RAM mirrored (64GB active quorum zone).
+* **Storage**: NVMe Boot Drive (1TB), RAID-10 HDDs, External Honeycomb USB-C archival storage.
+* **Cooling**: Dual-loop liquid cooling with silent PWM fan backup.
+* **Networking**: ROG Areion 10G NICs; Z-Wave mesh networking.
 
-## 9 · Contribution Guide
+### **5.2 Supporting Systems**
 
-* Fork → feature branch → PR with signed **Developer Certificate of Origin**.
-* **Required:** provenance tag in commit (`x-prov: clause-ref`).
-* CI runs constitutional lint + integration tests.
-* See `CONTRIBUTING.md` for coding style and amendment process.
-
----
-
-## 10 · Business & Outreach
-
-* **DLRP SuperComputers** – home-based repair & retro-augmentation service. Tagline: *“Breathing new life into old tech.”*&#x20;
-* Planned seminar: **“A Night of Coffee, AI, and Donuts.”** Live hardware demo, honeycomb power-cell ignition.&#x20;
+* **MacBook Pro 2019 ("Daily Driver")**: 32GB RAM, i9 CPU, macOS/Win10 dual-boot for software development.
+* \*\*iMac 5K 2017 (" High-resolution monitoring & data visualization hub.
+* **MacBook Pro 2012 ("Transmitter")**: heral interfacing (FireWire/Ethernet).
+* **Experimental Systems**: ThreadRipper 1950X “RAID”, Raspbetems (VIC-20/C64/C128).
 
 ---
 
-## 11 · Acknowledgements
+## 🧬 **6 · Hierarchical Storage & Bio-Inspired Technologies**
 
-To every coder, salvager, and midnight debater who shaped Huey—your fingerprints are etched in each commit. Special thanks to:
-
-* **MacBook Pro 2012 “Transmitter” crew** for legacy compliance tests.
-* **Open-source projects**: AutoGPT, PyTorch, RetroArch, ShellGPT, bmc64.&#x20;
-* **Poets of obsolete silicon** who remind us that *old machines still dream*.
+* **Honeycomb RAID**: Data storage architecture based on natural beehive efficiency (hexagonal clustering for fault tolerance & scalability).
+* **Exact & Augmented Bifurcation**: Parallel data handling paths ensuring redundancy and adaptability.
+* **Parasitic Protocol**: Structured integration of new and experimental technologies within secure, sandboxed environments.
+* **Logistics and Fail-Safes**: Inspired by aviation/submarine systems; redundant critical components, multiple layers of emergency response protocols.
 
 ---
 
-> **Huey OS runs. The Cloud Pyramid watches. The experiment continues.**
+## 🚨 **7 · Oversight, Wartime, & External Protocols**
 
-![Spark-4](https://github.com/user-attachments/assets/8a1342ff-94a1-4b1f-83f0-d16ef2b7f7ce)
+* **AI Oversight (Chapter 9)**: Ethics, compliance audits, public transparency.
+* **Wartime Protocols (Chapter 7)**: Nuclear Act activation, hibernation mode, human oversight revival.
+* **External Relations (Chapter 10)**: Diplomacy, interoperability, collaboration ms.
 
-*(README compiled · 2025-08-05 · pending human counterpart approval)*
+---
+
+## 🚧 **8 · Installation & Quick-Start**
+
+* **Clone repository**: `git clone https://github.com/your-fork/MonkeyHeadProject.git`
+* **Build ISO image**: `cd huey_os && make iso`
+* **Boot Requirements**: ≥4 cores, ≥16GB RAM, ≥256GB Storage, UEFI BIOS with virtualization enabled.
+* **Initialization**: Boot ISO, run `huey-init --constitution` to bind node constitutionally.
+
+---
+
+## 📌 **9 · Contribution Guidelines**
+
+* **Workflow**: Fork → Feature Branch → PR.
+* **Developer Certificate of Origin (DCO)**: Required for each PR.
+* **Provenance Tagging**: Mandatory `x-prov: clause-ref` commit metadata.
+* **Continuous Integration**: Constitutional linting, comprehensive testing.
+
+---
+
+## 💼 **10 · Business & Community Outreach**
+
+* **DLRP SuperComputers**: Home-based computer repair, retrofitting services, tagline: "Breathing new life into old tech".
+* **Seminars & Events**: "A Night of Coffee, AI, and Donuts"; Live hardware demonstrations and public educational workshops.
+
+---
+
+## 🙏 **11 · Acknowledgements**
+
+Special gratitude to open-source projects (AutoGPT, PyTorch, RetroArch, ShellGPT, bmc64), hardware donors, retro computing enthusiasts, community contributors, and everyone whose dedication breathes life into Huey.
+
+---
+
+## 📝 **License & Permissions**
+
+* **Code**: GNU GPL v3.0
+* **Documentation & Imagery**: Creative Commons CC-BY-SA 4.0
+
+---
+
+## 🎯 **Project Outlook & Future Goals**
+
+Huey OS is now active; The Cloud Pyramid is in full governance. Next tasks include bracket fabrication, dual-GPU NUMA splits, Amendment-001 ratification, and further community onboarding. The experiment continues; the infrastructure evolves.
+
+---
+
+**Huey OS runs. The Cloud Pyramid governs. The experiment evolves.**
+
+![Spark-4 Concept](https://github.com/user-attachments/assets/8a1342ff-94a1-4b1f-83f0-d16ef2b7f7ce)
+
+---
+
+*Compiled and refined by Huey AI — Final approval pending human counterpart verification.*
