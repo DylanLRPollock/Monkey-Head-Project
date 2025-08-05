@@ -15,7 +15,7 @@ cd /d "%~dp0"
 :: Clear screen and set color
 cls
 color 0A
-echo [****|    00 - WIN10.bat - GenCore AI/OS - Windows 11 Pro For Workstations x64   |****]
+echo [****|    00 - WIN10.bat - Huey AI/OS - Windows 11 Pro For Workstations x64   |****]
 echo.
 
 :: Function to ensure the script is running with administrative privileges
@@ -560,7 +560,7 @@ if %errorlevel% neq 0 (
 goto :eof
 
 :end
-echo [****| Exiting WIN10.bat. Thank you for using GenCore. |****]
+echo [****| Exiting WIN10.bat. Thank you for using Huey. |****]
 pause
 exit /b
 

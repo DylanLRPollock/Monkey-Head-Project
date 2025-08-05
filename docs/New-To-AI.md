@@ -1,14 +1,14 @@
 # Monkey Head Project Overview
 
-The Monkey Head Project aims to build an adaptive AI Operating System (AIOS) called **GenCore**, which coordinates robotics hardware and legacy systems. The project envisions a universally accessible platform that enhances human-machine collaboration and ensures ethical governance.
+The Monkey Head Project aims to build an adaptive AI Operating System (AIOS) called **Huey**, which coordinates robotics hardware and legacy systems. The project envisions a universally accessible platform that enhances human-machine collaboration and ensures ethical governance.
 
 ## Core Components
-- **GenCore AIOS** – A hierarchical OS with HostOS, SubOS and NanoOS layers for strategic, operational and hardware-level control.
+- **Huey AIOS** – A hierarchical OS with HostOS, SubOS and NanoOS layers for strategic, operational and hardware-level control.
 - **Huey Robotic Shell** – A modular prototype integrating advanced hardware with autonomous power and safety mechanisms.
 - **Cloud Pyramid Ethical Governance** – Multi-tier oversight combining community input with a Supreme Court AI to enforce ethical standards.
 
 ## Vision and Development Phases
-The project believes that with enough dedication, an individual can create a fully autonomous robot. GenCore is designed to run on diverse hardware, from legacy machines like the VIC-20 and C64 to modern platforms.
+The project believes that with enough dedication, an individual can create a fully autonomous robot. Huey is designed to run on diverse hardware, from legacy machines like the VIC-20 and C64 to modern platforms.
 
 **Phase 1 (April 11, 2024)** established foundational hardware and initial AI/OS integration, proving compatibility with legacy systems.
 
@@ -19,7 +19,7 @@ The project believes that with enough dedication, an individual can create a ful
 **Phase 4 (January 25, 2025)** introduced advanced data processing and basic yes/no decision making through an improved honeycomb storage architecture.
 
 ## Legacy Systems
-Legacy machines such as **C64, VIC-20 and C128** are used for interfacing experiments, showcasing GenCore's adaptability and proving that modern AI can breathe new life into old technology.
+Legacy machines such as **C64, VIC-20 and C128** are used for interfacing experiments, showcasing Huey's adaptability and proving that modern AI can breathe new life into old technology.
 
 ## Quick Start
 For full installation details see [README.md](../README.md). A minimal setup is:

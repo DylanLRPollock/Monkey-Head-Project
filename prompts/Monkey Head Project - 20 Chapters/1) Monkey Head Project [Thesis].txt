@@ -37,15 +37,15 @@ By embedding modularity at both hardware and software layers, the system **effor
 ## **Autonomy: Independent Functionality and Adaptive Learning**
 
 ### **Core Ambition**
-**Autonomy** encapsulates the Project’s goal of crafting a robot that operates independently, minimizing human intervention. Achieving true autonomy entails **machine learning**, **neural networks**, and **reinforcement learning**, all orchestrated by the Project’s central AI/OS, **GenCore**.
+**Autonomy** encapsulates the Project’s goal of crafting a robot that operates independently, minimizing human intervention. Achieving true autonomy entails **machine learning**, **neural networks**, and **reinforcement learning**, all orchestrated by the Project’s central AI/OS, **Huey**.
 
 ### **Capabilities**
 1. **Environmental Navigation**: Equipped with **LIDAR**, **ultrasonic sensors**, and **computer vision** for mapping environments, detecting obstacles, and honing navigation.  
 2. **Task Execution**: **Reinforcement learning** refines the robot’s actions, optimizing performance through iterative feedback and environmental cues.  
 3. **Adaptive Learning**: **Neural networks** process real-time data, allowing the robot to adapt continuously to changing conditions.
 
-### **GenCore AI Architecture**
-Operating as the system’s “brain,” GenCore merges diverse AI methodologies:
+### **Huey AI Architecture**
+Operating as the system’s “brain,” Huey merges diverse AI methodologies:
 - **Cognitive Computing** for nuanced contextual awareness.  
 - **Deep Learning** for decision-making and continuous improvement.
 
@@ -90,7 +90,7 @@ The **Monkey Head Project** envisions a **future** where **advanced robotics** a
 - **Modularity** enables incremental component swaps, preventing obsolescence and fostering continuous innovation.  
 - **Expandability** ensures the platform remains open to future developments—expanded **computational capacity**, **new AI models**, and **refined governance**.
 
-Through its **Cloud Pyramid** governance system and **GenCore** AI architecture, the Monkey Head Project addresses **both** technological and **ethical** imperatives, setting a **responsible** standard for modern robotics. Ultimately, this multifaceted approach underscores the Project’s belief that **ambitious robotics development** can thrive on **individual dedication**, **community collaboration**, and **methodical engineering**—paving the way for ongoing advancements in AI and robotics far beyond traditional institutional boundaries.
+Through its **Cloud Pyramid** governance system and **Huey** AI architecture, the Monkey Head Project addresses **both** technological and **ethical** imperatives, setting a **responsible** standard for modern robotics. Ultimately, this multifaceted approach underscores the Project’s belief that **ambitious robotics development** can thrive on **individual dedication**, **community collaboration**, and **methodical engineering**—paving the way for ongoing advancements in AI and robotics far beyond traditional institutional boundaries.
 
   
 **#Monkey-Head-Project**  
