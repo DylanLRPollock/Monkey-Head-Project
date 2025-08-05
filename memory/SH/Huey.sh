@@ -8,7 +8,7 @@ set -euo pipefail
 # Overseen By:   Dylan L.R. Pollock
 # Updated:   06.11.2025
 # ==================================================
-# GenCore.sh - Prepare a Debian Trixie environment and
+# Huey.sh - Prepare a Debian Trixie environment and
 # auto-install the Monkey Head Project for running Huey
 
 set -e
@@ -61,5 +61,5 @@ install_packages
 clone_repo
 run_installer
 
-echo "GenCore setup completed successfully."
+echo "Huey setup completed successfully."
 

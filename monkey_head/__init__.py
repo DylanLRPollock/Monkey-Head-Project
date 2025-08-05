@@ -10,7 +10,7 @@
 
 from .formatter import format_text
 from .function_registry import register_function, list_functions, get_functions
-from .gencore import generate_core_data
+from .huey_core_data import generate_core_data
 from .logging_setup import configure_logging
 import os
 

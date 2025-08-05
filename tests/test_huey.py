@@ -7,10 +7,10 @@
 # Updated: 06.11.2025
 # ==================================================
 import unittest
-from monkey_head.gencore import generate_core_data
+from monkey_head.huey_core_data import generate_core_data
 
 
-class TestGenCore(unittest.TestCase):
+class TestHuey(unittest.TestCase):
     def test_generate_core_data(self):
         data = {"a": 1, "b": 2}
         result = generate_core_data(data)

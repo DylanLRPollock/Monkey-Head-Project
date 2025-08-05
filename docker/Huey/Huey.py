@@ -6,9 +6,9 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.11.2025
 # ==================================================
-"""GenCore environment generator.
+"""Huey environment generator.
 
-This script builds and deploys the GenCore AI/OS using Docker and Kubernetes.
+This script builds and deploys the Huey AI/OS using Docker and Kubernetes.
 """
 import argparse
 import logging
@@ -34,10 +34,10 @@ def check_error(command: subprocess.CompletedProcess, description: str) -> None:
         raise RuntimeError(error_message)
 
 
-DEFAULT_WORKDIR = os.path.expanduser("~/GenCore")
-DEFAULT_TAG = "gencore-aios:latest"
+DEFAULT_WORKDIR = os.path.expanduser("~/Huey")
+DEFAULT_TAG = "huey-aios:latest"
 DEFAULT_COMPOSE_FILE = "docker-compose.yml"
-DEFAULT_K8S_FILE = "GenCore.yaml"
+DEFAULT_K8S_FILE = "Huey.yaml"
 
 
 def require_tools(tools: list[str]) -> None:
@@ -49,36 +49,36 @@ def require_tools(tools: list[str]) -> None:
 
 
 def prepare_environment(workdir: str = DEFAULT_WORKDIR) -> None:
-    """Create required directories for GenCore."""
-    logger.info("Preparing GenCore environment directory at %s...", workdir)
+    """Create required directories for Huey."""
+    logger.info("Preparing Huey environment directory at %s...", workdir)
     os.makedirs(workdir, exist_ok=True)
 
 
 def build_image(tag: str = DEFAULT_TAG, context: str = ".") -> None:
-    """Build the Docker image for GenCore."""
-    logger.info("Building GenCore Docker image %s from %s...", tag, context)
+    """Build the Docker image for Huey."""
+    logger.info("Building Huey Docker image %s from %s...", tag, context)
     build = subprocess.run(
         ["docker", "build", "-t", tag, context],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
-    check_error(build, "Build GenCore Docker Image")
+    check_error(build, "Build Huey Docker Image")
 
 
-def deploy_gencore(
+def deploy_huey(
     workdir: str = DEFAULT_WORKDIR,
     compose_file: str = DEFAULT_COMPOSE_FILE,
     k8s_file: str = DEFAULT_K8S_FILE,
 ) -> None:
-    """Deploy GenCore using Docker Compose and Kubernetes."""
-    logger.info("Deploying GenCore environment...")
+    """Deploy Huey using Docker Compose and Kubernetes."""
+    logger.info("Deploying Huey environment...")
     os.chdir(workdir)
     deploy = subprocess.run(
         ["docker-compose", "-f", compose_file, "up", "-d"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )
-    check_error(deploy, "GenCore Deployment")
+    check_error(deploy, "Huey Deployment")
 
     kubectl = subprocess.run(
         ["kubectl", "apply", "-f", k8s_file],
@@ -91,7 +91,7 @@ def deploy_gencore(
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="Build and deploy the GenCore AI/OS using Docker and Kubernetes."
+        description="Build and deploy the Huey AI/OS using Docker and Kubernetes."
     )
     parser.add_argument("--tag", default=DEFAULT_TAG, help="Docker image tag")
     parser.add_argument(
@@ -110,7 +110,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--workdir",
         default=DEFAULT_WORKDIR,
-        help="Working directory for GenCore",
+        help="Working directory for Huey",
     )
     parser.add_argument(
         "--build-only",
@@ -134,7 +134,7 @@ def main() -> None:
         build_image(args.tag, args.context)
 
     if not args.build_only:
-        deploy_gencore(args.workdir, args.compose_file, args.k8s_file)
+        deploy_huey(args.workdir, args.compose_file, args.k8s_file)
 
 
 if __name__ == "__main__":
