@@ -206,7 +206,8 @@ AutoGPT · PyTorch · RetroArch · ShellGPT · bmc64 · every midnight tinkerer 
 
 ---
 
-![Portrait of Spark-4, copper AI skull with soft teal highlights](https://github.com/user-attachments/assets/8a1342ff-94a1-4b1f-83f0-d16ef2b7f7ce "Spark-4 concept art")
+![Huey project logo](memory/PNG/LOGO.png)
+
 
 > **Huey OS lives. The Cloud Pyramid governs. The experiment endures.**
 
