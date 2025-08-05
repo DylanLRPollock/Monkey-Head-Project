@@ -1,8 +1,3 @@
-*(Below is a **fully-fleshed master README** that folds every source file you provided into one coherent document.
-Images are preserved via their GitHub links; all sections can be pasted straight into `README.md` or split into sub-docs as you wish.)*
-
----
-
 # 🐒 **Monkey Head Project**
 
 > **Huey is a prototype robotic AI/OS**—an experiment proving that a single, motivated builder can bring a lawful, self-governing machine to life.
