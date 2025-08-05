@@ -1,6 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=PyGPT - Desktop AI Assistant
-Icon=${SNAP}/meta/gui/pygpt.png
-Exec=pygpt
-Categories=Utility;
