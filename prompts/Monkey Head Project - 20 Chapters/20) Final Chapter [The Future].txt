@@ -23,7 +23,7 @@ Central to the Project’s continued growth is a **rigorous, evidence-based appr
 ---
 
 ### 2. Extending Autonomy and Adaptability
-While **GenCore**—the Project’s AI/OS—already exemplifies intelligence and modularity, future enhancements will further its adaptive capabilities:
+While **Huey**—the Project’s AI/OS—already exemplifies intelligence and modularity, future enhancements will further its adaptive capabilities:
 
 - **Context-Aware Intelligence**  
   - Refine algorithms to interpret intricate environmental and social cues, enabling robots to make context-driven decisions.  
@@ -48,7 +48,7 @@ Sustained emphasis on **continuous exploration** envisions the Project’s robot
 
 - **Interdisciplinary Collaborations**  
   - Welcome expertise from fields like **bioinformatics**, **neuroscience**, and **quantum computing**.  
-  - Capitalize on GenCore’s flexibility to catalyze breakthroughs across multiple research sectors.
+  - Capitalize on Huey’s flexibility to catalyze breakthroughs across multiple research sectors.
 
 ---
 
@@ -79,7 +79,7 @@ Ultimately, the Monkey Head Project envisions a **future** where **robust, ethic
 ---
 
 ### Conclusion
-By merging **ambition** with **rigorous methodology**, **ethical oversight**, and a **communal ethos**, the Monkey Head Project aspires to more than technical success. It aims to pioneer a **culture** of exploration and shared growth, standing on the legacy of landmark technologies—from *legacy Commodore hardware* to **GenCore**—to forge bold new paths in the collective scientific imagination.
+By merging **ambition** with **rigorous methodology**, **ethical oversight**, and a **communal ethos**, the Monkey Head Project aspires to more than technical success. It aims to pioneer a **culture** of exploration and shared growth, standing on the legacy of landmark technologies—from *legacy Commodore hardware* to **Huey**—to forge bold new paths in the collective scientific imagination.
 
 Though the way forward holds uncertainties, a steadfast commitment to **resilience**, **modularity**, **autonomy**, and **ethical responsibility** illuminates the Project’s trajectory. In so doing, it delivers on the promise of expanding human knowledge, uniting people and machines, and nurturing sustainable advancements that endure well beyond their inception.
 

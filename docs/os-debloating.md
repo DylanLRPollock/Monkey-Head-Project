@@ -1,6 +1,6 @@
 # Operating System Debloating
 
-For best performance, the Monkey Head Project encourages minimizing unnecessary programs and services before installing GenCore. Removing bloat reduces memory and CPU overhead, ensuring that the AI/OS runs smoothly even on older hardware.
+For best performance, the Monkey Head Project encourages minimizing unnecessary programs and services before installing Huey. Removing bloat reduces memory and CPU overhead, ensuring that the AI/OS runs smoothly even on older hardware.
 
 ## Windows 10 & 11
 
@@ -25,8 +25,8 @@ After cleaning up, update the system and install only the packages listed in `se
 
 ## macOS
 
-On macOS, disable resource-heavy animations and remove unnecessary startup items via **System Settings**. Tools like **CleanMyMac** can help remove unneeded applications. Keeping the system lean ensures GenCore runs efficiently on Apple hardware.
+On macOS, disable resource-heavy animations and remove unnecessary startup items via **System Settings**. Tools like **CleanMyMac** can help remove unneeded applications. Keeping the system lean ensures Huey runs efficiently on Apple hardware.
 
 ---
 
-Trimming excess applications and services lets GenCore allocate resources where they matter most. For a full walkthrough, see the installation instructions in this repository's `README.md`.
+Trimming excess applications and services lets Huey allocate resources where they matter most. For a full walkthrough, see the installation instructions in this repository's `README.md`.

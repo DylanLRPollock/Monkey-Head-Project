@@ -12,12 +12,12 @@ pytest.importorskip("PIL.Image")
 
 from monkey_head.ai_processor import AIProcessor
 from monkey_head.chapter_splitter import split_chapters
-from monkey_head.gencore_core import process_core_data
-from monkey_head.gencore_checks import check_core_data
-from monkey_head.gencore_disk_manager_temp import manage_temp_files
-from monkey_head.gencore_linux import check_linux_service
-from monkey_head.gencore_remover import remove_files
-from monkey_head.gencore_tkinter import create_tkinter_window
+from monkey_head.huey_core import process_core_data
+from monkey_head.huey_checks import check_core_data
+from monkey_head.huey_disk_manager_temp import manage_temp_files
+from monkey_head.huey_linux import check_linux_service
+from monkey_head.huey_remover import remove_files
+from monkey_head.huey_tkinter import create_tkinter_window
 from monkey_head.file_manager import FileManager
 from monkey_head.error_handler import ErrorHandler
 

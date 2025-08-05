@@ -2,7 +2,7 @@
 
 > **Huey is a prototype robotic AI/OS** — a one-person, open-source odyssey that revives legacy hardware, fuses it with modern compute, and binds the result to a living constitution. Huey is transparent by design, modular by necessity, and governed—never merely programmed—by the **Cloud Pyramid**.
 
-> *Historical note ▸ every mention of “GenCore” in earlier files now maps to **Huey OS**. The rename is underway but backward links remain for posterity.*
+> *Historical note ▸ previous naming has been retired; all references now map to **Huey OS**.*
 
 ---
 
@@ -189,7 +189,7 @@ docker compose -f quickstart.yml up
 | **Personality Scaffold**            | Trigger matrix draft   |
 | **Dual-GPU NUMA**                   | Benchmarking           |
 | **Bracket Fabrication**             | CNC files sent to shop |
-| **GenCore-to-Huey rename**          | 70 % complete          |
+| **Huey rebranding**          | 100 % complete          |
 
 ---
 

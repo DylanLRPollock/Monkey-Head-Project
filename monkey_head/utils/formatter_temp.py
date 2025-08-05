@@ -81,7 +81,7 @@ class Formatter:
         )
         title_message = f"[Initialization] Monkey Head Project: {formatted_program_name} Initialized"
         init_message = (f"Starting '{formatted_program_name}.py'...", "initialization")
-        print(f"Monkey Head Project: GenCore / BananaBrain - {formatted_program_name}")
+        print(f"Monkey Head Project: Huey / BananaBrain - {formatted_program_name}")
         self.print_message(title_message, "initialization")
         self.print_message(init_message[0], init_message[1])
 

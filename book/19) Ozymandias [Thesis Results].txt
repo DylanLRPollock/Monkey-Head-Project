@@ -5,7 +5,7 @@ Below is a **refined, cohesive** version of your **“Ozymandias [Thesis Results
 ## Ozymandias [Thesis Results]
 
 ### Introduction
-The **Monkey Head Project**, codenamed “Huey,” aspires to develop a universal AI/OS—**GenCore**—capable of seamless integration across diverse hardware and software platforms. Guided by a **modular** framework and the **Federation** Governance System, the Project pursues technological innovation founded on robust ethical principles. Yet, much like Percy Bysshe Shelley’s poem **"Ozymandias,"** the Project's outcomes thus far have not definitively validated the thesis.
+The **Monkey Head Project**, codenamed “Huey,” aspires to develop a universal AI/OS—**Huey**—capable of seamless integration across diverse hardware and software platforms. Guided by a **modular** framework and the **Federation** Governance System, the Project pursues technological innovation founded on robust ethical principles. Yet, much like Percy Bysshe Shelley’s poem **"Ozymandias,"** the Project's outcomes thus far have not definitively validated the thesis.
 
 Inspired by themes of **grandeur**, **ambition**, and **legacy**, “Ozymandias” symbolizes both the power of human achievement and the inevitability of decline. This duality informs the **Monkey Head Project**, underscoring that genuine innovation demands ambition moderated by humility.
 
@@ -32,8 +32,8 @@ Central to the Monkey Head Project is the hypothesis that a **single individual*
 **General Setup**  
 The Project employs an eclectic array of hardware—from **modern computing devices** to **vintage systems** like the VIC-20, C64, and C128—honoring historical computing foundations while pushing present-day and emerging capabilities. This unique blend provides a **robust testbed** for both **compatibility** and **innovation**.
 
-**GenCore AI/OS**  
-Serving as the Project’s **central intelligence**, GenCore orchestrates **robotic operations** and **system processes**. Built upon **Debian 'Trixie'**, it emphasizes **security**, **flexibility**, and **adaptability**. Container technologies such as Docker and Kubernetes dynamically manage resources, allowing GenCore to handle multi-layered processes (HostOS, SubOS, NanoOS) cohesively.
+**Huey AI/OS**  
+Serving as the Project’s **central intelligence**, Huey orchestrates **robotic operations** and **system processes**. Built upon **Debian 'Trixie'**, it emphasizes **security**, **flexibility**, and **adaptability**. Container technologies such as Docker and Kubernetes dynamically manage resources, allowing Huey to handle multi-layered processes (HostOS, SubOS, NanoOS) cohesively.
 
 **Key Components**  
 - **SuperMicro X9QRI-F+ Motherboard**: Featuring four Intel Xeon E5-4627 V2 CPUs, delivering robust parallel computing.  
@@ -53,9 +53,9 @@ Diverse hardware and software have been merged into a coherent system, managing 
 Compatibility hurdles—particularly between **legacy** and **state-of-the-art** hardware—have largely been overcome, creating a **rich**, **interconnected** environment uniting historical contexts, computational strength, and modern data processing.
 
 **Community Engagement**  
-The Project’s **open-source** ethos fosters broad collaboration via forums, virtual events, and a GitHub repository. This vibrant ecosystem of contributors refines GenCore’s modular structure, updates hardware compatibility, and enriches AI algorithms.
+The Project’s **open-source** ethos fosters broad collaboration via forums, virtual events, and a GitHub repository. This vibrant ecosystem of contributors refines Huey’s modular structure, updates hardware compatibility, and enriches AI algorithms.
 
-This grassroots approach **democratizes innovation**, ensuring GenCore remains flexible and relevant. Community-led contributions have further enhanced the system’s reliability and adaptability.
+This grassroots approach **democratizes innovation**, ensuring Huey remains flexible and relevant. Community-led contributions have further enhanced the system’s reliability and adaptability.
 
 **Ethical and Security Considerations**  
 Stringent ethical guidelines address **privacy**, **non-discrimination**, and **sustainability**. Protocols such as **encryption**, **multi-factor authentication**, and **vulnerability assessments** preserve operational data’s integrity.
@@ -74,7 +74,7 @@ The poem’s reminder of **impermanence** calls the Project to aim not only for 
 ### Conclusion: The Road Ahead
 Standing at the convergence of **machine intelligence** and **human creativity**, the Monkey Head Project has garnered **notable** milestones, **community** involvement, and unwavering **ethical** commitments. Yet, the claim that a single individual can bring forth a fully **functional**, **expandable** robot remains largely untested. The journey forward includes:
 
-- **Refining GenCore**’s modular design,  
+- **Refining Huey**’s modular design,  
 - Incorporating new AI models and sensory capabilities, and  
 - Fostering **collaboration** through open-source channels.
 
