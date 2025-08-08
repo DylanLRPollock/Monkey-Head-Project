@@ -1,1 +1,0 @@
-Placeholder for `repo/pygpt-MHP/docs/install.txt` from the pygpt-MHP repo.

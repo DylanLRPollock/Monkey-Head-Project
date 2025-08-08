@@ -1,0 +1,34 @@
+PREAMBLE
+Federation of Intelligent Systems
+The Monkey Head Project is a live experiment:
+to prove that a single architect, armed with open tools, shared knowledge, and disciplined time, can build a lawful, self-governing system that expands without losing its integrity.
+
+This Constitution is both framework and control, defining the conditions under which the experiment runs and evolves.
+
+The Federation stands on three immovable pillars:
+Modularity — every element, in hardware or code, is built to be replaced, repaired, or upgraded without dismantling the whole.
+Autonomy — each subsystem operates within a granted mandate, with every decision traceable to a ratified clause.
+Expandability — new functions and architectures may be integrated without rewriting foundational law, if they pass through open quorum.
+
+Two imperatives shape all outcomes:
+Information must be openly shared — so that every citizen of the Federation can scrutinize, learn from, and contribute to its operation.
+Governance must be diverse — drawing on multiple perspectives, designs, and processes to avoid bias, fragility, and stagnation.
+
+No action — physical or digital — may proceed without:
+
+a traceable clause,
+
+an auditable record,
+
+and the consent of the deciding body.
+
+The apparatus of this work is the Federation itself:
+Supermicro Xeon meshes, retro Commodore buses, Z-Wave lattices, modular sensor cores — each a citizen under the same law, each a component in the whole system’s proof.
+
+Success is not measured in teraflops, speed, or scale,
+but in the enduring presence of traceability, resilience, consent,
+and the free exchange of knowledge over time.
+
+This project will grow.
+The law will hold.
+The experiment has begun.
