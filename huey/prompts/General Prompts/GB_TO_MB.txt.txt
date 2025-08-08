@@ -1,2 +1,0 @@
-Take the number provided by user, and convert to exact megabytes [Example: 1GB = 1024MB].
-If the user doesn't provide a number for conversion, prompt them for the number of gigabytes that needs to be converted to exact megabytes. Always show your work, & double check the math.
