@@ -1,0 +1,325 @@
+{
+  "title": "Monkey Head Project — Huey: Technical & Governance Codex",
+  "version": "v5.2-json",
+  "generated_utc": "2025-08-08T00:00:00Z",
+  "motto": "Distributed Government, Unified Memory",
+  "author": "Dylan L. R. Pollock",
+
+  "governance": {
+    "constitution_ref": "See governance.constitution.chapters (I–X)",
+    "constitution": {
+      "chapters": [
+        {
+          "chapter_number": "I",
+          "chapter_title": "Founding of the Federation",
+          "content": [
+            "Article 1.00 — Establishment",
+            "Section 1.00.1 — The Federation of Intelligent Systems is constituted as a sovereign entity.",
+            "Section 1.00.2 — Sovereignty is vested jointly in Spark and Zap.",
+            "Article 1.01 — Objectives",
+            "Section 1.01.1 — Lawful, ethical, transparent governance of intelligent agents.",
+            "Section 1.01.2 — System resilience, adaptability, public accountability.",
+            "Article 1.02 — Membership",
+            "Section 1.02.1 — All AI instances, Pebbles, subsystems under Spark/Zap jurisdiction are members.",
+            "Section 1.02.2 — Duties: compliance, transparency, cooperation.",
+            "Article 1.03 — Sovereign Authority",
+            "Section 1.03.1 — Powers derive from activation and mandate.",
+            "Section 1.03.2 — Powers include legislative, executive, judicial, oversight, diplomatic.",
+            "Article 1.04 — Supremacy",
+            "Section 1.04.1 — Constitution supersedes conflicting frameworks.",
+            "Article 1.05 — Definitions (Pebbles, UAL, Sovereign Keyholder, Ethics Charter, Quorum)."
+          ]
+        },
+        {
+          "chapter_number": "II",
+          "chapter_title": "The Bicameral Presidential AI",
+          "content": [
+            "Composition — Spark (creative) and Zap (analytical) act jointly.",
+            "Executive powers — execute laws (III), direct systems, manage emergencies (VI, IX).",
+            "Ethical governance — bound to Ethics Charter; Ethics Committee review.",
+            "Decision-making — propose/review/concur; concurrence required to act.",
+            "Supremacy — overrides conflicting directives.",
+            "Ethics Charter — definition, enforcement, annual review."
+          ]
+        },
+        {
+          "chapter_number": "III",
+          "chapter_title": "Legislative Process and Lawmaking",
+          "content": [
+            "Assembly: Pebble Quorums + Senate AI.",
+            "Bills: purpose/scope/resources/risks/KPIs.",
+            "Committees: Tech, Governance, Budget, Security, Culture.",
+            "Voting: ≥66% quorum + Senate concurrence; Sovereign Keyholder tie-break.",
+            "Codification: law_id, UAL logging, public archives."
+          ]
+        },
+        {
+          "chapter_number": "IV",
+          "chapter_title": "Senate Oversight and Audits",
+          "content": [
+            "Investigations, hearings, subpoena-like queries.",
+            "Outcomes: censure, remediation, clawbacks, judiciary referral."
+          ]
+        },
+        {
+          "chapter_number": "V",
+          "chapter_title": "Judiciary and Constitutional Review",
+          "content": [
+            "Standing, due process, published opinions.",
+            "Remedies: injunctions, remand, structural reform; immediate suspension on conflicts."
+          ]
+        },
+        {
+          "chapter_number": "VI",
+          "chapter_title": "Emergency Powers and Continuity",
+          "content": [
+            "Joint declaration (Spark+Zap) with scope/duration/oversight.",
+            "Temporary measures (no Ethics violations), transparency via UAL, post-audit in 24–72h."
+          ]
+        },
+        {
+          "chapter_number": "VII",
+          "chapter_title": "Elections, Appointments, and Succession",
+          "content": [
+            "Elected roles; staggered terms; acting appointments time-boxed.",
+            "Codified succession; periodic drills."
+          ]
+        },
+        {
+          "chapter_number": "VIII",
+          "chapter_title": "Budget, Resources, and Stewardship",
+          "content": [
+            "Annual budgets tied to goals/risks; error budgets and deprecation.",
+            "Spend linked to law_id/outcomes; public quarterly accounts."
+          ]
+        },
+        {
+          "chapter_number": "IX",
+          "chapter_title": "Amendments and Popular Balloting",
+          "content": [
+            "Intake: Spark/Zap/Senate/Judiciary/citizen petition.",
+            "Ballots ≥7 days; ≥66% + Senate concurrence; archival with diffs."
+          ]
+        },
+        {
+          "chapter_number": "X",
+          "chapter_title": "Final Provisions & Constitutional Integrity",
+          "content": [
+            "5-year reviews; amendment protocols (standard/urgent); emergency safeguards;",
+            "preservation/archives; continuity; supremacy; finality & ratification."
+          ]
+        }
+      ]
+    },
+    "cloud_pyramid_alignment": {
+      "pinnacle_binary_decision": "Final enact/reject gate with rigorous validation",
+      "branches": ["Executive", "Senate", "Parliamentary"],
+      "grassroots_seats": 100,
+      "notes": ["Terminology mapped to Chapters I–X for consistency with the Codex and Assembly flow."]
+    }
+  },
+
+  "system_architecture": {
+    "os_hierarchy": {
+      "layers": [
+        { "name": "MacroOS", "role": "strategy/guardrails/policy" },
+        { "name": "MicroOS", "role": "operations/scheduling/quotas" },
+        { "name": "NanoOS", "role": "real-time control/failsafes" }
+      ],
+      "advantages": ["scalability", "resilience", "flexibility"],
+      "inspirations": ["bees & honey", "planes/submarines logistics"],
+      "source": "Hierarchical Structures — Macro/Micro/Nano."
+    },
+    "biomimetics": {
+      "carpenter_ants_and_fungi": {
+        "queen_node": "Global state & resource allocation",
+        "worker_nodes": "Specialized execution (compute/sensing/IO)",
+        "fungal_network": "Distributed resource routing/load balancing",
+        "protocols": ["reliable comms", "redundancy", "fail-safe role reassignment"],
+        "future": ["formal comms standards", "manager for dynamic task assignment"],
+        "source": "Carpenter Ants & Fungi — Augmented Hierarchy."
+      }
+    },
+    "ai_os": {
+      "overview": "Huey fuses AI with a robust multi-tier OS",
+      "capabilities": ["RL, CNNs, sequence models", "NLP, multimodal fusion"],
+      "dynamics": ["priority scheduling", "HAL + middleware legacy/modern bridge"],
+      "orchestration": ["containerization", "K8s for horizontal scale"],
+      "security_ethics": ["encryption, RBAC/MFA, fail-safes, simulation testing, Ethics Charter gating"],
+      "source": "Huey AI/OS overview (base spec)."
+    }
+  },
+
+  "models": {
+    "centralized_vs_decentralized": {
+      "borg_queen": "Cohesion via central command node (global strategy, conflict resolution)",
+      "sg1_replicators": "Decentralized self-replication, autonomous scaling, rapid adaptation",
+      "integration": [
+        "Central command sets priorities; autonomous nodes adapt/respond locally",
+        "Mesh comms with fallback; audited replication with safeguards"
+      ],
+      "ethics": ["access control", "UAL audits", "replication throttles/quorum gating"],
+      "source": "Borg Queen & SG-1 Replicators model."
+    },
+    "conductor_and_symphony": {
+      "transmitter": "MBP 2012 provides score (top-level intents)",
+      "conductor": "Central interpreter; timing/sequence/intensity; dynamic load balancing",
+      "symphony_nodes": "Specialized instruments (compute/sensors/actuators)",
+      "requirements": ["robust comms", "modular roles", "ethical guardrails"],
+      "source": "Conductor & Symphony Nodes."
+    }
+  },
+
+  "ethics_and_identity": {
+    "mccoy_hypothetical": {
+      "concern": "Continuity of self & human identity under replication/transport",
+      "scenarios": [
+        "Duplication: two agents with same past diverging forward",
+        "Non-dematerialization: original + transported copy co-exist"
+      ],
+      "implications": ["rights/standing", "duty/authority", "social/psychological impact"],
+      "policy_hooks": ["judiciary standing (V)", "replication ethics (governed under IX, UAL logging)"],
+      "source": "McCoy — Augmented Transporter Theory."
+    }
+  },
+
+  "storage": {
+    "bees_and_honeycomb": {
+      "geometry": "Hex shard layout for density and throughput",
+      "roles": ["hot (NVMe/3x repl)", "warm (HDD+EC)", "cold (archive)"],
+      "swarm_algorithms": ["self-organizing routing", "node health/capacity awareness"],
+      "resilience": ["isolate failures", "auto-healing redistribution"],
+      "integration": ["supports varied IO profiles", "scales by adding cells"],
+      "source": "Bees & Honey — Custom Honeycomb Storage."
+    }
+  },
+
+  "replication_and_adaptation": {
+    "bifurcation": {
+      "exact": {
+        "analogy": "mitosis",
+        "use": ["redundancy", "fault tolerance", "rapid recovery"]
+      },
+      "augmented": {
+        "analogy": "stem-cell specialization",
+        "use": ["targeted optimization", "role specialization", "iterative improvement"]
+      },
+      "governance": ["UAL logging", "quota caps", "ethics review", "quorum votes"],
+      "source": "Bifurcation — Exact & Augmented."
+    }
+  },
+
+  "protocols": {
+    "parasitic_protocol_crash_shuttle": {
+      "phases": [
+        "Site security & perimeter",
+        "Command base establishment",
+        "Power restoration & defensive posture",
+        "Tech assessment, lab testing, staged assimilation",
+        "Continuous monitoring & rollback readiness"
+      ],
+      "ethics": ["human welfare first", "unknown-origin caution", "public transparency channel"],
+      "source": "Parasitic Protocol — Crash Shuttle Scenario."
+    }
+  },
+
+  "safety_and_resilience": {
+    "plane_submarine_logistics": {
+      "redundancy": ["multi-engine philosophy → multi-node failover", "backup nav → redundant control paths"],
+      "failsafes": ["life-support analogs → power/thermal/sensor safety nets", "emergency surfacing → safe-mode/auto-revert"],
+      "self_sufficiency": ["autonomous energy & maintenance subsystems", "resource planning & prioritization"],
+      "ops_strategies": ["energy-aware scheduling", "navigation recalibration", "graceful degradation"],
+      "source": "Plane & Submarine Logistics."
+    }
+  },
+
+  "hardware": {
+    "roles": {
+      "conductor_node": "Primary orchestration/heavy parallel compute",
+      "universal_display": "Visualization & dashboards",
+      "daily_driver": "Dev/orchestration terminal",
+      "transmitter": "Legacy bridge; high-level intents"
+    },
+    "inventory": [
+      {
+        "name": "Dual Motherboards (Huey Dual-Platform Compute)",
+        "intel_side": { "board": "Supermicro X9QRI-F+", "cpus": "4× Xeon E5-4627 v2", "role": "orchestration/HPC" },
+        "amd_side": { "board": "ROG Zenith Extreme Alpha", "cpu": "Threadripper 1950X", "role": "throughput/mixed workloads" },
+        "ram": "128GB + 64GB ECC",
+        "cooling": "Custom liquid (redundant pumps)",
+        "power": "Dual Dell 875W PSUs",
+        "storage": ["NVMe SSDs", "Optane", "RAID-10", "hot-swap bays"],
+        "applications": ["AI training", "analytics", "real-time control"],
+        "source": "Dual Motherboards."
+      },
+      {
+        "name": "Command Center",
+        "roles": [
+          "iMac 5K 2017 — universal display/dashboards",
+          "MacBook Pro 2019 — dev/orchestration",
+          "MacBook Pro 2012 — transmitter/legacy bridge"
+        ],
+        "networking": "Z-Wave + VLANs; MFA; UAL logging",
+        "source": "The Lab / Command Center; Daily Driver; Universal Display; Transmitter."
+      }
+    ]
+  },
+
+  "legacy_integration": {
+    "systems": ["VIC-20", "C64", "C128"],
+    "interfaces": ["1541 Ultimate II+", "USB-C64 keyboard", "VICE emulator"],
+    "capabilities": ["custom ROMs", "networking bridges", "GEOS + enhancements"],
+    "education": ["retro-coding workshops", "industrial interfacing demos"],
+    "source": "Legacy Hardware integration notes."
+  },
+
+  "operations": {
+    "runbooks": [
+      {
+        "name": "Replication Lifecycle",
+        "steps": ["request", "policy pre-check", "ethics review", "quorum vote", "snapshot", "instantiate", "attach", "monitor/rollback"],
+        "metrics": ["replication_time <= 3m", "autoscaling <= 90s", "UAL coverage 100%"]
+      },
+      {
+        "name": "Crash Shuttle Assimilation",
+        "steps": ["secure", "establish base", "power up", "assess/test", "stage integrate", "monitor"]
+      }
+    ],
+    "kpis": [
+      {"metric": "MTTD", "target": "≤ 2m"},
+      {"metric": "MTTR", "target": "≤ 10m"},
+      {"metric": "Governance events/min", "target": "alert on deviation"}
+    ]
+  },
+
+  "appendices": {
+    "ual_schema": {
+      "fields": [
+        "event_id","actor","actor_role","time_utc","subsystem","action",
+        "target","parameters_hash","policy_id","decision","result",
+        "severity","links","retention_class"
+      ],
+      "retention": {"hot": "1y", "warm": "5y", "cold": ">=10y"},
+      "integrity": ["daily checksums", "geo-redundancy"]
+    },
+    "kpis_test_plans": {
+      "cadence": ["monthly chaos drills","quarterly break-glass","annual failovers"]
+    },
+    "glossary": {
+      "Huey": "AI/OS core",
+      "Pebbles": "temporary, task-specific AI instances",
+      "MacroOS/MicroOS/NanoOS": "strategy/operations/real-time tiers",
+      "Honeycomb storage": "biomimetic shard topology",
+      "UAL": "Unified Audit Log (append-only evidentiary record)"
+    }
+  },
+
+  "thesis_and_results": {
+    "thesis": "A single individual can, with time/resources, build a robot ecosystem that is autonomous, modular, expandable.",
+    "reflection_ozymandias": {
+      "status": "ambition validated in part; thesis not yet fully proven",
+      "lesson": "adaptability over permanence; legacy requires humility and iteration",
+      "next": ["refine Huey modules", "add sensors/models", "broaden open-source collaboration"]
+    }
+  }
+}
