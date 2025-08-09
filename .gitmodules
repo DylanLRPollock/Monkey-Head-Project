@@ -1,3 +1,5 @@
 [submodule "repo/pygpt-MHP"]
         path = repo/pygpt-MHP
         url = https://github.com/DylanLRPollock/pygpt-MHP.git
+        branch = main
+        shallow = true
