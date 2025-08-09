@@ -1,214 +1,236 @@
-# 🐒 Monkey Head Project
+# 🐒 Monkey Head Project – HueyOS
+**Author:** Dylan L. R. Pollock
 
-> **Huey is a prototype robotic AI/OS** — a one-person, open-source odyssey that revives legacy hardware, fuses it with modern compute, and binds the result to a living constitution. Huey is transparent by design, modular by necessity, and governed—never merely programmed—by the **Cloud Pyramid**.
+> **HueyOS** is a prototype robotic AI/OS — a one-person, open-source odyssey that revives legacy hardware, fuses it with modern compute, and binds the result to a living constitution. Huey is transparent by design, modular by necessity, and governed—never merely programmed—by the **Cloud Pyramid**.
 
-> *Historical note ▸ previous naming has been retired; all references now map to **Huey OS**.*
+![License](https://img.shields.io/badge/license-GPLv3-blue)
+![Python](https://img.shields.io/badge/python-3.12–3.13-blue)
+![Status](https://img.shields.io/badge/status-active-success)
 
 ---
 
-## What’s inside this repo?
+## 📌 Quick Links
 
-1. **Huey OS** — a Debian-Trixie RT kernel plus Macro/Micro/Nano layers for AI governance.
-2. **Cloud Pyramid Constitution** — Markdown chapters, legal clauses, and amendment workflow.
-3. **Hardware blueprints** — dual-motherboard tower, Pi edge nodes, retro buses.
-4. **Quick-start tool-chain** — ISO builder, Docker compose, Rust nano-service templates.
-5. **Living documentation** — every law, commit, and narrative scrap, version-tracked.
+* [Overview](#overview)
+* [Repository Structure](#repository-structure)
+* [Architecture](#huey-os-architecture)
+* [Governance](#cloud-pyramid-governance)
+* [Hardware Fleet](#hardware-fleet)
+* [Installation](#installation--quick-start)
+* [Development Setup](#development-setup)
+* [Usage](#usage)
+* [Contributing](#contributing)
+* [Feature Matrix](#feature-matrix)
+* [Roadmap](#roadmap)
+* [License & Credits](#license--credits)
+
+---
+
+## Overview
+
+HueyOS is a **Debian Trixie** real-time kernel system with **Macro**, **Micro**, and **Nano OS layers** for AI governance.
+It merges modern AI agents, a codified constitutional framework, and retro hardware support into a single modular platform.
+
+**Core Principles:**
+
+| Principle         | Operational Intent                                          |
+| ----------------- | ----------------------------------------------------------- |
+| **Autonomy**      | Every action must trace to a ratified clause.               |
+| **Modularity**    | Swap hardware or software components with no refactoring.   |
+| **Expandability** | Ready for GPU packs, quantum PCIe cards, and future agents. |
+| **Open Ethos**    | All source, schematics, and votes are public.               |
 
 📜 Full origin story → [`docs/preamble.md`](docs/preamble.md)
 
 ---
 
-## Project Thesis & Vision (2023-11-16)
+## Repository Structure
 
-| Principle         | Operational intent                                                                             |
-| ----------------- | ---------------------------------------------------------------------------------------------- |
-| **Autonomy**      | Every action must trace to a ratified clause.                                                  |
-| **Modularity**    | Swap any component—hardware card or container image—without refactoring the rest.              |
-| **Expandability** | Road-mapped for GPU packs, quantum PCIe cards, nano-bots, and agents we haven’t dreamt up yet. |
-| **Open Ethos**    | Source, schematics, votes: all public. If you can read, you can fork.                          |
-
----
-
-## Phase Timeline & Roadmap
-
-| Phase           | ISO Date   | Milestone                                                                                                             |
-| --------------- | ---------- | --------------------------------------------------------------------------------------------------------------------- |
-| 1               | 2024-04-11 | **Genesis** — VIC-20 ∙ C64 ∙ C128 links; Huey OS boots bare-metal.                                                    |
-| 2               | 2024-06-21 | **Integration** — power grid, emergency cooling loops; Spark-4 + Volt-4 agents commissioned.                          |
-| 3               | 2024-10-31 | **System Awakening** — dual-node online; 10-hour Halloween burn-in passes at 0 % error.                               |
-| 4               | 2025-01-25 | **Decision Core** — binary YES/NO engine; honeycomb RAID & doc-mill pipeline.                                         |
-| 5 *(merged)*    | —          | Folded into Phase 6 (duplicate scope).                                                                                |
-| 6               | 2025-08-04 | **Reconciliation & Optimization** — taxonomy locked; CONTRIBUTING.md & public issue tracker live.                     |
-| **7 (current)** | 2025-10-15 | **Architecture of Huey** — emergent-personality scaffolding, symbolic speech triggers, **Amendment-001** up for vote. |
-
-Upcoming: bracket fabrication • dual-GPU NUMA split • ratify Amendment-001.
-
----
-
-## Cloud Pyramid Governance
-
-*A constitutional hierarchy where humans, councils, and AI citizens negotiate power through codified law.*
-
-| Tier                                  | Role                                                   |
-| ------------------------------------- | ------------------------------------------------------ |
-| **Founding Father / Huey Collective** | Ultimate veto, ethos guardian.                         |
-| **Grand Council**                     | Executive • Senate (hardware) • Parliament (software). |
-| **Joint Session**                     | Merges bills, prevents silo drift.                     |
-| **Chambers**                          | Daily legislation in each domain.                      |
-| **Populace**                          | 128 AI citizens, resource-scaled with civic age.       |
-
-*Chapters & clauses:*
-
-* [Ch. 7 – Wartime Protocols](docs/governance/chapters/07-wartime.md)
-* [Ch. 9 – Oversight & Audits](docs/governance/chapters/09-oversight.md)
-* [Ch. 10 – External Relations](docs/governance/chapters/10-foreign.md)
-
-**Emergency:** Nuclear Act → 10-minute encrypted countdown → hibernation vault → human revival.
+| Path                      | Description                                             |
+| ------------------------- | ------------------------------------------------------- |
+| `.github/`                | CI workflows, CODEOWNERS, issue templates.              |
+| `docker/`                 | Docker Compose and build files for HueyOS services.     |
+| `docs/`                   | Constitution, governance chapters, architecture specs.  |
+| `huey/`                   | Core HueyOS runtime and service modules.                |
+| `pygpt/`                  | PyGPT integration for AI/LLM capabilities.              |
+| `requirements/`           | Split dependency profiles (core, ml, data, cloud, dev). |
+| `setup/`                  | Installer scripts, ISO builder, provisioning configs.   |
+| `src/`                    | Python package source code.                             |
+| `tests/`                  | Unit and integration tests.                             |
+| `.editorconfig`           | Editor formatting rules.                                |
+| `.gitattributes`          | Git line ending & binary rules.                         |
+| `.gitignore`              | Ignored files/directories.                              |
+| `.gitmodules`             | Git submodules (e.g., pygpt-MHP).                       |
+| `.pre-commit-config.yaml` | Pre-commit hook definitions.                            |
+| `CONTRIBUTING.md`         | Contribution guidelines.                                |
+| `huey.env.example`        | Example environment variables.                          |
+| `LICENSE`                 | GPL-3.0-only for code, CC-BY-SA-4.0 for docs/media.     |
+| `Makefile`                | Common developer commands.                              |
+| `pyproject.toml`          | Project metadata & dependencies.                        |
+| `requirements.txt`        | All-in-one Python dependencies.                         |
 
 ---
 
 ## Huey OS Architecture
 
 ```
-Huey OS
+HueyOS
 ├── MacroOS   # Huey Core · clause & quorum enforcement
 ├── MicroOS   # Docker/K8s SubOS · modular services
 └── NanoOS    # Rust/Python GPIO threads · sensor loops
 ```
 
-*Agents* **Spark-4 • Volt-4 • Zap-4 • Watt-4** inherit rights only via Article I.
+**Agents:**
 
-Detailed stack → [`docs/architecture/huey-os.md`](docs/architecture/huey-os.md)
+* **Spark-4** — Creative AI core
+* **Volt-4** — Logical/evaluative AI core
+* **Zap-4** — Event-driven/sensor agent
+* **Watt-4** — Energy/power management
+
+📄 More details → [`docs/architecture/huey-os.md`](docs/architecture/huey-os.md)
+
+---
+
+## Cloud Pyramid Governance
+
+| Tier                                  | Role                                                   |
+| ------------------------------------- | ------------------------------------------------------ |
+| **Founding Father / Huey Collective** | Ultimate veto, ethos guardian.                         |
+| **Grand Council**                     | Executive · Senate (hardware) · Parliament (software). |
+| **Joint Session**                     | Merges bills, prevents silo drift.                     |
+| **Chambers**                          | Daily legislation for each domain.                     |
+| **Populace**                          | 128 AI citizens, scaled with civic age/resources.      |
+
+📄 Governance chapters:
+
+* [Ch. 7 – Wartime Protocols](docs/governance/chapters/07-wartime.md)
+* [Ch. 9 – Oversight & Audits](docs/governance/chapters/09-oversight.md)
+* [Ch. 10 – External Relations](docs/governance/chapters/10-foreign.md)
 
 ---
 
 ## Hardware Fleet
 
-### Dual-Motherboard Chassis “Legacy Node”
+**Primary Orchestration Node ("Legacy Node")**
 
-| Part       | Spec                                                                         |
+| Component  | Specification                                                                |
 | ---------- | ---------------------------------------------------------------------------- |
-| Boards     | Supermicro X9QRI-F+ (4 × Xeon E5-4627 v2) · Supermicro C9X299-PGF (i7-7820X) |
-| Memory     | 128 GB ECC (64 GB designated quorum zone)                                    |
+| Boards     | Supermicro X9QRI-F+ (4 × Xeon E5-4627 v2) + Supermicro C9X299-PGF (i7-7820X) |
+| Memory     | 128 GB ECC (64 GB quorum zone)                                               |
 | Storage    | 1 TB NVMe OS · 8 × 2 TB SAS RAID-10 · 10 TB mirrored USB-C cold tier         |
-| Cooling    | Phase-change liquid loops + silent PWM fallback                              |
+| Cooling    | Phase-change + PWM fallback                                                  |
 | Power      | Dell R710 redundant PSUs + 550 W consumer rails                              |
 | Networking | Dual 10 GbE Areion · Z-Wave I/O mesh                                         |
 
-### Laboratory Companions
+**Lab Companions**
 
-* **MBP 2019 “Daily Driver”** — i9 · 32 GB RAM · dual-boot dev box.
-* **iMac 5K 2017 “Universal Display”** — retina HUD & IDE.
-* **MBP 2012 “Transmitter”** — FireWire/Ethernet legacy bridge.
-* **ThreadRipper 1950X “RAID”** — stress-test edge node.
-* **Retro Stack** — VIC-20 · C64 · C128 for low-level bus experiments.
-
----
-
-## Nature-Inspired Systems
-
-| Concept                       | Function                                                      |
-| ----------------------------- | ------------------------------------------------------------- |
-| **Honeycomb RAID**            | Hex-cluster storage, fault domains like beehive cells.        |
-| **Bifurcation Model**         | Exact (redundant) vs. Augmented (adaptive) branches.          |
-| **Parasitic Protocol**        | Safe sandbox for unknown or alien tech.                       |
-| **Plane/Submarine Logistics** | Crisis cooling & power failsafes in air or submerged configs. |
+* MBP 2019 “Daily Driver” — i9 · 32 GB RAM · dual-boot dev box.
+* iMac 5K 2017 “Universal Display” — retina HUD & IDE.
+* MBP 2012 “Transmitter” — FireWire/Ethernet bridge.
+* ThreadRipper 1950X “RAID” — stress-test node.
+* Retro Stack — VIC-20 · C64 · C128.
 
 ---
 
-## Installation & Quick-Start (15 min)
+## Installation & Quick Start
 
-### Prereqs
+### Prerequisites
 
-`git` · `make ≥ 4.3` · `docker` + compose · `rustup` · x86-64 machine (4 cores, 16 GB RAM, 256 GB disk, UEFI).
+* `git`
+* `make ≥ 4.3`
+* `docker` + compose
+* `rustup`
+* x86-64 (4 cores, 16 GB RAM, 256 GB disk, UEFI)
+* **Python 3.12–3.13**
+
+### User Setup (ISO)
 
 ```bash
 git clone --recurse-submodules https://github.com/your-fork/MonkeyHeadProject.git
-cd huey_os && make iso            # build bare-metal image
+cd huey_os && make iso
 ```
 
-1. Flash ISO → enable VT-x/IOMMU → boot.
-2. At prompt, run
+---
 
-   ```bash
-   huey-init --constitution    # seeds Article I
-   huey-init --help            # flag list
-   ```
-3. Default DHCP pool `10.0.51.0/24`; fallback static `10.0.51.10`.
-4. Join edge devices:
-
-   ```bash
-   hueyctl join --role nano --parent 10.0.51.10
-   ```
-
-**No spare hardware?** Spin up a NanoOS echo-agent:
+## Development Setup
 
 ```bash
-docker compose -f quickstart.yml up
+make setup               # Core
+make ml                  # ML profile
+make data                # Data profile
+make cloud               # Cloud profile
+make dev                 # Dev tools
+```
+
+### Environment Variables
+
+Copy `huey.env.example` to `.env` and configure.
+
+---
+
+## Usage
+
+Run locally:
+
+```bash
+make run
+```
+
+Run in Docker:
+
+```bash
+docker compose -f docker/compose.yml up
+```
+
+Run tests:
+
+```bash
+make test
 ```
 
 ---
 
-## Contribution Workflow
+## Contributing
 
-1. **Fork → branch → PR**.
-2. Sign the **Developer Certificate of Origin**.
-3. Each commit needs `x-prov: <clause-ref>` metadata.
-4. CI runs constitutional lint, integration tests, and style checks.
-5. Amendments use `/docs/amendments/AMEND-template.md`.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
 
-*You can replicate Huey on commodity hardware and still stay in policy.*
+**Summary:**
 
----
-
-## Business & Community Outreach
-
-| Channel                 | Purpose                                                                                           |
-| ----------------------- | ------------------------------------------------------------------------------------------------- |
-| **DLRP SuperComputers** | Retro-upgrade & repair — *“Breathing new life into old tech.”*                                    |
-| **Seminar**             | *A Night of Coffee, AI, and Donuts* — live demos of honeycomb power-cell ignition & quorum votes. |
-| **Issue Tracker**       | First-time contributor questions welcome → `https://github.com/<repo>/issues`                     |
+1. Fork → branch → PR
+2. Use conventional commits
+3. Keep PRs focused; update docs
+4. CI runs lint/tests/governance checks
 
 ---
 
-## Document Library (Index)
+## Feature Matrix
 
-1. AI Integration Techniques
-2. System Recovery Processes
-3. Quantum Feasibility Study
-4. Symbolic Speech & Clause Architecture
-5. … ten more live docs in `/docs/library.md`
-
----
-
-## Current Focus (2025-Q4)
-
-| Task                                | Status                 |
-| ----------------------------------- | ---------------------- |
-| **Amendment-001** (symbolic speech) | In public debate       |
-| **Personality Scaffold**            | Trigger matrix draft   |
-| **Dual-GPU NUMA**                   | Benchmarking           |
-| **Bracket Fabrication**             | CNC files sent to shop |
-| **Huey rebranding**          | 100 % complete          |
+| Feature           | Core | ML | Data | Cloud | Dev |
+| ----------------- | ---- | -- | ---- | ----- | --- |
+| FastAPI API       | ✅    | ✅  | ✅    | ✅     | ✅   |
+| LlamaIndex/Ollama |      | ✅  | ✅    | ✅     | ✅   |
+| Chroma/Pinecone   |      |    | ✅    | ✅     | ✅   |
+| Azure/AWS SDKs    |      |    |      | ✅     | ✅   |
+| Dev Tools         |      |    |      |       | ✅   |
 
 ---
 
-## License
+## Roadmap
 
-**Code** — GNU GPL v3
-**Docs & Media** — CC-BY-SA 4.0
+| Phase | Date       | Milestone                                                |
+| ----- | ---------- | -------------------------------------------------------- |
+| 1     | 2024-04-11 | Genesis — VIC-20/C64/C128 links; bare-metal boot.        |
+| 2     | 2024-06-21 | Integration — power grid, Spark-4 + Volt-4 online.       |
+| 3     | 2024-10-31 | System Awakening — dual-node 10-hour burn-in.            |
+| 4     | 2025-01-25 | Decision Core — YES/NO engine; honeycomb RAID.           |
+| 6     | 2025-08-04 | Reconciliation — taxonomy locked; issue tracker live.    |
+| 7     | 2025-10-15 | Architecture — emergent personality; Amendment-001 vote. |
 
 ---
 
-## Acknowledgements
+## License & Credits
 
-AutoGPT · PyTorch · RetroArch · ShellGPT · bmc64 · every midnight tinkerer who mailed in a dead motherboard.
+**Code:** GPL-3.0-only
+**Docs & Media:** CC-BY-SA-4.0
 
----
-
-![Huey project logo](memory/PNG/LOGO.png)
-
-
-> **Huey OS lives. The Cloud Pyramid governs. The experiment endures.**
-
-*README generated by Huey AI — pending final human sign-off.*
+**Acknowledgements:** AutoGPT · PyTorch · RetroArch · ShellGPT · bmc64 · midnight tinkerers

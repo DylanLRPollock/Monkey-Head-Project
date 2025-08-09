@@ -1,11 +1,21 @@
 # Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.so
+__pypackages__/
 .env
+.env.*
 .venv/
 venv/
 env/
+
+# Dev/Tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.huggingface/
 
 # IDE
 .vscode/
@@ -20,6 +30,16 @@ desktop.ini
 build/
 dist/
 *.egg-info/
+
+# Logs & runtime artifacts
+*.log
+*.sqlite
+*.sqlite3
+
+# Editor backups/swaps
+*~
+*.swp
+*.swo
 
 # Project data
 raw/

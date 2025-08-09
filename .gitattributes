@@ -1,0 +1,42 @@
+# Normalize line endings for all text
+* text=auto eol=lf
+
+# Force LF for specific file types
+*.sh text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.md text eol=lf
+*.env text eol=lf
+*.cfg text eol=lf
+*.ini text eol=lf
+
+# Treat these as binary (no diff/merge)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.mp4 binary
+*.mov binary
+*.wav binary
+*.mp3 binary
+*.zip binary
+*.tar binary
+*.gz binary
+
+# Generated artifacts (don't diff)
+*.min.js -diff
+*.min.css -diff
+*.lock -diff
+
+# Documentation / metadata
+docs/* linguist-documentation=true
+
+# Export-ignore for release tarballs
+.github/ export-ignore
+tests/ export-ignore
+docs/ export-ignore
+scripts/dev/ export-ignore

@@ -1,0 +1,36 @@
+root = true
+
+# Default for all files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+# Markdown: allow trailing spaces (for line breaks)
+[*.md]
+trim_trailing_whitespace = false
+
+# YAML / YML: 2-space indent is standard
+[*.{yml,yaml}]
+indent_size = 2
+
+# JSON / TOML: 2-space indent (common in config files)
+[*.{json,toml}]
+indent_size = 2
+
+# Shell scripts
+[*.sh]
+indent_style = space
+indent_size = 4
+
+# Env files
+[*.env]
+indent_style = space
+indent_size = 2
+
+# Makefiles: tabs are required
+[Makefile]
+indent_style = tab

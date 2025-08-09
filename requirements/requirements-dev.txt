@@ -1,0 +1,7 @@
+# Dev tools / optional runtime helpers (kept out of core)
+chromedriver-autoinstaller==0.6.4 ; python_version >= "3.11" and python_version < "3.13"
+docker==7.1.0 ; python_version >= "3.11" and python_version < "3.13"
+coloredlogs==15.0.1 ; python_version >= "3.11" and python_version < "3.13"
+click==8.2.1 ; python_version >= "3.11" and python_version < "3.13"
+debugpy==1.8.14 ; python_version >= "3.11" and python_version < "3.13"
+pytest==8.3.4 ; python_version >= "3.11" and python_version < "3.13"
