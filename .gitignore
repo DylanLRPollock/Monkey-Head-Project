@@ -1,20 +1,26 @@
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
 *.so
-
-# Virtual environment
+.env
+.venv/
 venv/
 env/
 
-# IDE files
+# IDE
 .vscode/
 .idea/
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Raw input directory
+# Build/Dist
+build/
+dist/
+*.egg-info/
+
+# Project data
 raw/
+memory/
