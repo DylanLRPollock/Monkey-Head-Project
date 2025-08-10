@@ -1,145 +1,190 @@
+#!/usr/bin/env python3
 # ==================================================
-# This file is a part of the 'Monkey Head Project'
-# Website:   https://dlrp.ca
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-# License:   https://opensource.org/license/gpl-3-0
-# Overseen By:   Dylan L.R. Pollock
-# Updated: 06.09.2025
+# Monkey Head Project - HostOS Orchestrator
+# Overseen By: Dylan L.R. Pollock
+# Updated: 2025-08-09
 # ==================================================
+import argparse
 import os
+import shutil
 import logging
 import subprocess
+import sys
+from pathlib import Path
 
-# Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-logger = logging.getLogger(__name__)
+log = logging.getLogger("hostos")
+
+REQUIRED_APT = [
+    "git",
+    "docker.io",
+    "docker-compose-plugin",  # provides `docker compose`
+    "python3",
+    "python3-venv",
+    "qemu-kvm",
+    "libvirt-daemon-system",
+    "libvirt-clients",
+    "curl",
+    "ufw",
+]
 
 
-def check_error(command, description):
-    if command.returncode != 0:
-        error_message = (
-            f"Error: {description} failed with error code {command.returncode}."
-        )
-        logger.error(error_message)
-        raise RuntimeError(error_message)
+def run(cmd, check=True, **popen_kwargs):
+    log.debug("→ %s", " ".join(cmd))
+    proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, **popen_kwargs)
+    if proc.returncode != 0 and check:
+        log.error("Command failed: %s\nstdout:\n%s\nstderr:\n%s", " ".join(cmd), proc.stdout, proc.stderr)
+        raise RuntimeError(f"Command failed: {' '.join(cmd)} (code {proc.returncode})")
+    return proc
 
 
-def system_check():
-    logger.info("Performing system checks for HostOS...")
-    # Check for Debian version
-    with open("/etc/os-release") as f:
-        content = f.read().lower()
-        if "debian" not in content or not any(
-            x in content for x in ("trixie", "testing")
-        ):
-            error_message = "Debian Trixie/Testing Check failed"
-            logger.error(error_message)
-            raise RuntimeError(error_message)
-
-    # Check for available disk space
-    free_space = subprocess.check_output(["df", "/"]).splitlines()[-1].split()[3]
-    logger.info(f"Free space on /: {free_space}K")
-
-    # Check for internet connectivity
-    ping = subprocess.run(
-        ["ping", "-c", "1", "google.com"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    if ping.returncode != 0:
-        error_message = "Internet Connectivity Check failed"
-        logger.error(error_message)
-        raise RuntimeError(error_message)
-
-    # Check for required software (e.g., Git)
-    git_check = subprocess.run(
-        ["which", "git"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-    check_error(git_check, "Git Availability Check")
+def is_debian_trixie():
+    try:
+        with open("/etc/os-release") as f:
+            content = f.read().lower()
+        return "debian" in content and any(k in content for k in ("trixie", "testing"))
+    except Exception:
+        return False
 
 
-def install_tools():
-    logger.info("Installing tools for HostOS...")
-    tools_install = subprocess.run(
-        [
-            "apt-get",
-            "install",
-            "-y",
-            "git",
-            "docker.io",
-            "python3",
-            "python3-venv",
-            "qemu-kvm",
-            "libvirt-daemon-system",
-            "libvirt-clients",
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    check_error(tools_install, "Tools Installation")
+def ensure_system_requirements(skip_os_check=False):
+    log.info("Performing system checks for HostOS…")
+    if not skip_os_check and not is_debian_trixie():
+        raise RuntimeError("Debian Trixie/Testing not detected. Set --skip-os-check to bypass.")
+
+    # Disk space on /
+    usage = shutil.disk_usage("/")
+    free_gib = usage.free / (1024 ** 3)
+    log.info("Free space on /: %.2f GiB", free_gib)
+
+    # Internet connectivity (try multiple targets)
+    for host in ("1.1.1.1", "8.8.8.8", "google.com"):
+        try:
+            proc = run(["ping", "-c", "1", "-W", "2", host], check=False)
+            if proc.returncode == 0:
+                log.info("Internet OK via %s", host)
+                break
+        except Exception:
+            pass
+    else:
+        raise RuntimeError("Internet connectivity check failed.")
+
+    # Git availability quick check
+    if shutil.which("git") is None:
+        log.warning("git not found; will be installed in setup phase.")
 
 
-def configure_environment():
-    logger.info("Configuring environment for HostOS...")
-    os.makedirs(os.path.expanduser("~/HostOS"), exist_ok=True)
-    os.environ["HOSTOS_PATH"] = os.path.expanduser("~/HostOS")
-    with open(os.path.expanduser("~/.bashrc"), "a") as bashrc:
-        bashrc.write("\nexport HOSTOS_PATH=$HOME/HostOS\n")
+def apt_install():
+    log.info("Installing HostOS tools via apt…")
+    run(["sudo", "apt-get", "update"])
+    run(["sudo", "apt-get", "install", "-y", "--no-install-recommends"] + REQUIRED_APT)
 
 
 def enable_services():
-    logger.info("Enabling Docker service...")
-    enable_docker = subprocess.run(
-        ["systemctl", "enable", "--now", "docker"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    check_error(enable_docker, "Enable Docker Service")
+    log.info("Enabling and starting Docker…")
+    if shutil.which("systemctl"):
+        run(["sudo", "systemctl", "enable", "--now", "docker"])
+    else:
+        # Fallback for non-systemd
+        run(["sudo", "service", "docker", "start"], check=False)
+
+    # Add current user to docker group so `docker` works without sudo next session
+    try:
+        run(["sudo", "usermod", "-aG", "docker", os.getlogin()], check=False)
+    except Exception:
+        pass
 
 
 def check_virtualization():
-    logger.info("Checking virtualization support...")
+    log.info("Checking virtualization support…")
+    flags = ""
     try:
-        output = subprocess.check_output(["grep", "-E", "vmx|svm", "/proc/cpuinfo"])
-    except subprocess.CalledProcessError:
-        output = b""
-    if not output.strip():
-        error_message = "Virtualization support not detected"
-        logger.error(error_message)
-        raise RuntimeError(error_message)
+        flags = run(["bash", "-lc", "egrep -o 'vmx|svm' /proc/cpuinfo | sort -u | tr '\\n' ' '"], check=False).stdout.strip()
+    except Exception:
+        pass
+    kvm_ok = Path("/dev/kvm").exists()
+    if not flags and not kvm_ok:
+        raise RuntimeError("Virtualization not detected (no vmx/svm and /dev/kvm missing).")
+    log.info("Virtualization flags: %s | /dev/kvm: %s", flags or "none", "present" if kvm_ok else "absent")
 
 
-def configure_firewall(port: int = 5901):
-    logger.info("Configuring firewall for port %d...", port)
-    ufw_allow = subprocess.run(
-        ["ufw", "allow", str(port)], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-    check_error(ufw_allow, "Configure Firewall")
+def configure_firewall(port: int):
+    if shutil.which("ufw") is None:
+        log.warning("ufw not installed; skipping firewall configuration.")
+        return
+    log.info("Configuring UFW: allow %d", port)
+    run(["sudo", "ufw", "allow", str(port)], check=False)
 
 
-def deploy_hostos():
-    logger.info("Deploying HostOS environment...")
-    os.chdir(os.path.expanduser("~/HostOS"))
-    deploy = subprocess.run(
-        ["docker-compose", "up", "-d"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-    check_error(deploy, "HostOS Deployment")
-    kubectl = subprocess.run(
-        ["kubectl", "apply", "-f", "HostOS.yaml"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    check_error(kubectl, "Kubernetes Deployment")
+def ensure_workspace(path: Path):
+    path.mkdir(parents=True, exist_ok=True)
+    bashrc = Path.home() / ".bashrc"
+    export_line = f"\nexport HOSTOS_PATH={str(path)}\n"
+    try:
+        content = bashrc.read_text()
+        if "HOSTOS_PATH" not in content:
+            bashrc.write_text(content + export_line)
+    except FileNotFoundError:
+        bashrc.write_text(export_line)
 
+
+def deploy_hostos(workspace: Path, kube_manifest: Path):
+    log.info("Deploying HostOS from %s …", workspace)
+    os.chdir(workspace)
+
+    # docker compose up -d (prefer plugin)
+    compose_cmd = ["docker", "compose", "up", "-d"] if shutil.which("docker") else None
+    if compose_cmd:
+        res = run(compose_cmd, check=False)
+        if res.returncode != 0 and shutil.which("docker-compose"):
+            run(["docker-compose", "up", "-d"])
+    else:
+        log.warning("Docker not found; skipping docker compose step.")
+
+    # kubectl apply if available and manifest exists
+    if kube_manifest.exists() and shutil.which("kubectl"):
+        run(["kubectl", "apply", "-f", str(kube_manifest)])
+    elif kube_manifest.exists():
+        log.warning("kubectl not found; skipped applying %s", kube_manifest.name)
+    else:
+        log.info("No Kubernetes manifest found at %s (skipping).", kube_manifest)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="HostOS setup & deployment tool")
+    parser.add_argument("--workspace", default=str(Path.home()/ "HostOS"), help="Workspace directory (default: ~/HostOS)")
+    parser.add_argument("--vnc-port", type=int, default=5901, help="Port to open in firewall")
+    parser.add_argument("--skip-os-check", action="store_true", help="Bypass Debian Trixie check")
+    sub = parser.add_subparsers(dest="cmd")
+
+    sub.add_parser("setup", help="Install packages, enable services, prepare workspace")
+    sub.add_parser("deploy", help="Run docker compose and apply HostOS.yaml")
+    sub.add_parser("all", help="Run setup then deploy (default)")
+
+    args = parser.parse_args()
+    ws = Path(args.workspace)
+    kube_manifest = ws / "HostOS.yaml"
+
+    cmd = args.cmd or "all"
+
+    if cmd in ("setup", "all"):
+        ensure_system_requirements(skip_os_check=args.skip_os_check)
+        apt_install()
+        enable_services()
+        check_virtualization()
+        configure_firewall(args.vnc_port)
+        ensure_workspace(ws)
+
+    if cmd in ("deploy", "all"):
+        deploy_hostos(ws, kube_manifest)
+
+    log.info("Done. You may need to log out/in for docker group to take effect.")
 
 if __name__ == "__main__":
-    system_check()
-    install_tools()
-    configure_environment()
-    enable_services()
-    check_virtualization()
-    configure_firewall()
-    deploy_hostos()
+    try:
+        main()
+    except Exception as e:
+        log.error("HostOS failed: %s", e)
+        sys.exit(1)

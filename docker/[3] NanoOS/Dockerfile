@@ -1,52 +1,34 @@
-# Use Debian Trixie slim as the base image for a lightweight container
+# syntax=docker/dockerfile:1.7
+# NanoOS image (lightweight worker)
 FROM debian:trixie-slim
 
-# Define maintainer or author of the Dockerfile
-LABEL maintainer="admin@nanoos.com"
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Set environment variables to minimize issues and configure Python not to create .pyc files
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-# Update the package repository and install necessary packages
-# Using 'apt-get install -y --no-install-recommends' to keep the installation small
-# Adding '&& apt-get clean' to remove unnecessary files and free space
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
-    mate-desktop-environment-core \
-    tightvncserver \
-    && apt-get clean \
+      ca-certificates curl gnupg \
+      python3 python3-pip python3-venv \
+      iproute2 iputils-ping dnsutils \
+      git jq sudo nano vim less \
     && rm -rf /var/lib/apt/lists/*
 
-# Set up the working directory inside the container
-WORKDIR /nanoos-workdir
+ARG APP_USER=nanoos
+RUN useradd -m -s /bin/bash ${APP_USER} \
+    && usermod -aG sudo ${APP_USER} \
+    && echo "${APP_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-nanoos
 
-# Copy the project's requirements file first to leverage Docker cache
-COPY requirements.txt ./
+WORKDIR /app
 
-# Install Python dependencies from the requirements file
-# RUN pip3 install --no-cache-dir -r requirements.txt
+COPY requirements.txt /app/requirements.txt
+RUN python3 -m pip install --upgrade pip \
+    && pip install -r /app/requirements.txt
 
-# Copy the rest of the project files into the container
-COPY . .
+COPY NanoOS.py /app/NanoOS.py
 
-# Non-root User:
-# Correcting user creation and usage
-RUN useradd -m dlrp && chown -R dlrp:dlrp /nanoos-workdir
-USER dlrp
+ENV NANOOS_PATH=/home/${APP_USER}/NanoOS
 
-# Set up VNC server
-RUN mkdir /root/.vnc
-RUN echo "dlrp" | vncpasswd -f > /root/.vnc/passwd
-RUN chmod 600 /root/.vnc/passwd
+USER ${APP_USER}
 
-# Set up VNC session startup script
-RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &" > /root/.vnc/xstartup
-RUN chmod +x /root/.vnc/xstartup
-
-# Expose the necessary port(s)
-EXPOSE 5901
-
-# Define the command to run when the container starts
-CMD ["vncserver", "-geometry", "1280x800", "-depth", "24", "-localhost", "no", ":1"]
+CMD ["python3", "/app/NanoOS.py", "--help"]

@@ -1,68 +1,67 @@
-# Kubernetes resources for HostOS
+# HostOS Kubernetes manifest
+# Apply with: kubectl apply -f HostOS.yaml
 apiVersion: v1
-kind: PersistentVolume
+kind: Namespace
 metadata:
-  name: hostosPV
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: standard
-  hostPath:
-    path: "V:/"
+  name: hostos
 
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: ConfigMap
 metadata:
-  name: hostosPVC
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: standard
-  resources:
-    requests:
-      storage: 1Gi
+  name: hostos-config
+  namespace: hostos
+data:
+  HOSTOS_GREETING: "Welcome to Huey HostOS"
+  HOSTOS_PATH: "/home/hostos/HostOS"
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hostosDeployment
+  name: hostos-toolbox
+  namespace: hostos
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hostos
+      app: hostos-toolbox
   template:
     metadata:
       labels:
-        app: hostos
+        app: hostos-toolbox
     spec:
       containers:
-      - name: hostosContainer
-        image: hostos-image:latest  # Update this with the actual name and tag of your Docker image
-        ports:
-        - containerPort: 5901
-        volumeMounts:
-        - name: hostosVolume
-          mountPath: "/data"
+        - name: hostos
+          # Replace this with your built image, e.g. ghcr.io/dylanlrpollock/hostos:latest
+          image: hostos:local
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: hostos-config
+          command: ["/bin/sh","-lc"]
+          args: ["sleep infinity"]
+          ports:
+            - containerPort: 5901
+              name: vnc
+          volumeMounts:
+            - name: workspace
+              mountPath: /home/hostos/HostOS
       volumes:
-      - name: hostosVolume
-        persistentVolumeClaim:
-          claimName: hostosPVC
+        - name: workspace
+          emptyDir: {}
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: hostosService
+  name: hostos-vnc
+  namespace: hostos
 spec:
   selector:
-    app: hostos
+    app: hostos-toolbox
   ports:
-  - protocol: TCP
-    port: 5901
-    targetPort: 5901
-  type: LoadBalancer
+    - name: vnc
+      port: 5901
+      targetPort: 5901
+  type: ClusterIP

@@ -1,35 +1,15 @@
-# Kubernetes resources for SubOS
+# SubOS Kubernetes manifest
 apiVersion: v1
-kind: PersistentVolume
+kind: Namespace
 metadata:
-  name: subosPV
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: standard
-  hostPath:
-    path: "V:/"
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: subosPVC
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: standard
-  resources:
-    requests:
-      storage: 1Gi
+  name: subos
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: subosDeployment
+  name: subos-deployment
+  namespace: subos
 spec:
   replicas: 1
   selector:
@@ -41,28 +21,28 @@ spec:
         app: subos
     spec:
       containers:
-      - name: subosContainer
-        image: subos-image:latest  # Update this with the actual name and tag of your Docker image
-        ports:
-        - containerPort: 5901
-        volumeMounts:
-        - name: subosVolume
-          mountPath: "/data"
+        - name: subos
+          image: subos:local
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh","-lc"]
+          args: ["sleep infinity"]
+          volumeMounts:
+            - name: workspace
+              mountPath: /home/subos/SubOS
       volumes:
-      - name: subosVolume
-        persistentVolumeClaim:
-          claimName: subosPVC
+        - name: workspace
+          emptyDir: {}
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: subosService
+  name: subos-service
+  namespace: subos
 spec:
   selector:
     app: subos
   ports:
-  - protocol: TCP
-    port: 5901
-    targetPort: 5901
-  type: LoadBalancer
+    - port: 8080
+      targetPort: 8080
+  type: ClusterIP

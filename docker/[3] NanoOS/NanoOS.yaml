@@ -1,35 +1,15 @@
-# Kubernetes resources for NanoOS
+# NanoOS Kubernetes manifest (Deployment pattern)
 apiVersion: v1
-kind: PersistentVolume
+kind: Namespace
 metadata:
-  name: nanoosPV
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: standard
-  hostPath:
-    path: "V:/"
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: nanoosPVC
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: standard
-  resources:
-    requests:
-      storage: 1Gi
+  name: nanoos
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nanoosDeployment
+  name: nanoos-deployment
+  namespace: nanoos
 spec:
   replicas: 1
   selector:
@@ -41,28 +21,28 @@ spec:
         app: nanoos
     spec:
       containers:
-      - name: nanoosContainer
-        image: nanoos-image:latest  # Update this with the actual name and tag of your Docker image
-        ports:
-        - containerPort: 5901
-        volumeMounts:
-        - name: nanoosVolume
-          mountPath: "/data"
+        - name: nanoos
+          image: nanoos:local
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh","-lc"]
+          args: ["sleep infinity"]
+          volumeMounts:
+            - name: workspace
+              mountPath: /home/nanoos/NanoOS
       volumes:
-      - name: nanoosVolume
-        persistentVolumeClaim:
-          claimName: nanoosPVC
+        - name: workspace
+          emptyDir: {}
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: nanoosService
+  name: nanoos-service
+  namespace: nanoos
 spec:
   selector:
     app: nanoos
   ports:
-  - protocol: TCP
-    port: 5901
-    targetPort: 5901
-  type: LoadBalancer
+    - port: 8081
+      targetPort: 8081
+  type: ClusterIP
