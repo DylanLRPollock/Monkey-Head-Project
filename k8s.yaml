@@ -1,0 +1,123 @@
+# Namespace (optional; comment out if not desired)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monkey-head
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: monkey-head-config
+  namespace: monkey-head
+  labels: { app: monkey-head }
+data:
+  APP_ENV: "production"
+  TZ: "Etc/UTC"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: monkey-head-secrets
+  namespace: monkey-head
+type: Opaque
+data:
+  # echo -n dummy | base64 -> ZHVtbXk=
+  APP_SECRET: ZHVtbXk=
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monkey-head
+  namespace: monkey-head
+  labels: { app: monkey-head }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: monkey-head }
+  template:
+    metadata:
+      labels: { app: monkey-head }
+    spec:
+      containers:
+        - name: monkey-head
+          image: monkey-head-project:latest         # build: docker build -t monkey-head-project:latest .
+          imagePullPolicy: IfNotPresent             # Docker Desktop shares engine images with k8s
+          workingDir: /workspace
+          envFrom:
+            - configMapRef: { name: monkey-head-config }
+            - secretRef:    { name: monkey-head-secrets }
+          env:
+            - name: VIRTUAL_ENV
+              value: /workspace/venv
+            - name: PATH
+              value: /workspace/venv/bin:$(PATH)
+          ports:
+            - containerPort: 1995
+              name: http1995
+          readinessProbe:
+            tcpSocket: { port: 1995 }
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket: { port: 1995 }
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - name: l-drive
+              mountPath: /L
+            - name: workspace
+              mountPath: /workspace
+      volumes:
+        # Bind Windows L:\ into the pod (Docker Desktop only)
+        - name: l-drive
+          hostPath:
+            path: /run/desktop/mnt/host/l
+            type: Directory
+        # Local emptyDir for workspace
+        - name: workspace
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: monkey-head
+  namespace: monkey-head
+  labels: { app: monkey-head }
+spec:
+  selector: { app: monkey-head }
+  type: ClusterIP
+  ports:
+    - name: http1995
+      port: 1995
+      targetPort: 1995
+---
+# Optional: Ingress (requires an ingress controller such as nginx)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: monkey-head
+  namespace: monkey-head
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: monkey-head.localtest.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: monkey-head
+                port: { number: 1995 }
