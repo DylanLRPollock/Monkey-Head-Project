@@ -1,7 +1,9 @@
 # 🐒 Monkey Head Project – HueyOS
-**Author:** Dylan L. R. Pollock
 
-> **HueyOS** is a prototype robotic AI/OS — a one-person, open-source odyssey that revives legacy hardware, fuses it with modern compute, and binds the result to a living constitution. Huey is transparent by design, modular by necessity, and governed—never merely programmed—by the **Cloud Pyramid**.
+**Author:** Dylan L. R. Pollock  
+**Status date:** 05-10-2025
+
+> **HueyOS** is a prototype robotic AI/OS that marries retro computing legacies with modern, modular hardware and a living constitutional framework. Huey is transparent by design, modular by necessity, and governed—not merely programmed—by the **Cloud Pyramid**.
 
 ![License](https://img.shields.io/badge/license-GPLv3-blue)
 ![Python](https://img.shields.io/badge/python-3.12–3.13-blue)
@@ -11,228 +13,228 @@
 
 ## 📌 Quick Links
 
-* [Overview](#overview)
-* [Repository Structure](#repository-structure)
-* [Architecture](#huey-os-architecture)
-* [Governance](#cloud-pyramid-governance)
-* [Hardware Fleet](#hardware-fleet)
-* [Installation](#installation--quick-start)
-* [Development Setup](#development-setup)
-* [Usage](#usage)
-* [Contributing](#contributing)
-* [Feature Matrix](#feature-matrix)
-* [Roadmap](#roadmap)
-* [License & Credits](#license--credits)
+- [Overview](#overview)
+- [Repository Structure](#repository-structure)
+- [Architecture](#hueyos-architecture)
+- [Governance](#cloud-pyramid-governance)
+- [Hardware Topology](#hardware-topology)
+- [Installation](#installation--quick-start)
+- [Development Setup](#development-setup)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [Feature Matrix](#feature-matrix)
+- [Roadmap](#roadmap)
+- [License & Credits](#license--credits)
 
 ---
 
 ## Overview
 
-HueyOS is a **Debian Trixie** real-time kernel system with **Macro**, **Micro**, and **Nano OS layers** for AI governance.
-It merges modern AI agents, a codified constitutional framework, and retro hardware support into a single modular platform.
+HueyOS targets **Debian 13 “Trixie”** with a custom low‑latency kernel series **6.16.0‑huey**. It unifies modern AI agents, a codified constitutional framework, and retro hardware support in a single modular platform. Headless and GUI modes are supported.
 
-**Core Principles:**
+**Highlights (as of 2025‑10‑05):**
 
-| Principle         | Operational Intent                                          |
-| ----------------- | ----------------------------------------------------------- |
-| **Autonomy**      | Every action must trace to a ratified clause.               |
-| **Modularity**    | Swap hardware or software components with no refactoring.   |
-| **Expandability** | Ready for GPU packs, quantum PCIe cards, and future agents. |
-| **Open Ethos**    | All source, schematics, and votes are public.               |
+- **OS baseline:** Debian 13.0.0 (Trixie), custom kernel **6.16.0‑huey**
+- **Python:** initial pin **3.13.5** (user‑upgradable post‑install)
+- **Desktop:** **MATE** + **LightDM**; preferred lightweight browser: **qutebrowser**; full browser: **Edge Dev**
+- **AI runtime:** **PyGPT‑net** (desktop orchestrator), **Ollama** (local LLMs), ROCm/AMDGPU where available
+- **Memory:** unified long‑term store via JSON logs + SQLite; reproducible telemetry; VNC via TigerVNC tunneled over SSH
+- **Networking:** prefer bonded Ethernet; Wi‑Fi only as fallback
 
-📜 Full origin story → [`docs/preamble.md`](docs/preamble.md)
+**Core Principles**
+
+| Principle        | Operational intent                                           |
+|------------------|--------------------------------------------------------------|
+| **Autonomy**     | Every action must trace to a ratified clause.                |
+| **Modularity**   | Swap hardware/software without refactoring.                  |
+| **Expandability**| Ready for GPU packs, future accelerators and new agents.     |
+| **Open Ethos**   | Source, schematics and votes are public.                     |
 
 ---
 
 ## Repository Structure
 
 | Path                      | Description                                             |
-| ------------------------- | ------------------------------------------------------- |
-| `.github/`                | CI workflows, CODEOWNERS, issue templates.              |
-| `docker/`                 | Docker Compose and build files for HueyOS services.     |
-| `docs/`                   | Constitution, governance chapters, architecture specs.  |
-| `huey/`                   | Core HueyOS runtime and service modules.                |
-| `pygpt/`                  | PyGPT integration for AI/LLM capabilities.              |
-| `requirements/`           | Split dependency profiles (core, ml, data, cloud, dev). |
-| `setup/`                  | Installer scripts, ISO builder, provisioning configs.   |
-| `src/`                    | Python package source code.                             |
-| `tests/`                  | Unit and integration tests.                             |
-| `.editorconfig`           | Editor formatting rules.                                |
-| `.gitattributes`          | Git line ending & binary rules.                         |
-| `.gitignore`              | Ignored files/directories.                              |
-| `.gitmodules`             | Git submodules (e.g., pygpt-MHP).                       |
-| `.pre-commit-config.yaml` | Pre-commit hook definitions.                            |
-| `CONTRIBUTING.md`         | Contribution guidelines.                                |
-| `huey.env.example`        | Example environment variables.                          |
-| `LICENSE`                 | GPL-3.0-only for code, CC-BY-SA-4.0 for docs/media.     |
-| `Makefile`                | Common developer commands.                              |
-| `pyproject.toml`          | Project metadata & dependencies.                        |
-| `requirements.txt`        | All-in-one Python dependencies.                         |
+|---------------------------|---------------------------------------------------------|
+| `.github/`                | CI workflows, CODEOWNERS, issue templates               |
+| `docker/`                 | Compose/build files for HueyOS services                 |
+| `docs/`                   | Constitution, governance, architecture                  |
+| `huey/`                   | Core runtime and service modules                        |
+| `requirements/`           | Split dependency profiles (core, ml, data, cloud, dev)  |
+| `setup/`                  | Installer scripts, ISO builder, provisioning configs    |
+| `src/`                    | Python package source                                   |
+| `tests/`                  | Unit & integration tests                                |
+| `repo/pygpt-MHP`          | Submodule: PyGPT‑net integration                        |
+| `Makefile`                | Common developer commands                               |
+| `pyproject.toml`          | Project metadata & dependencies                         |
+| `requirements.txt`        | Aggregate Python dependencies                           |
+| `.pre-commit-config.yaml` | Pre‑commit hooks                                        |
+| `huey.env.example`        | Example environment variables                           |
+| `LICENSE`                 | GPL‑3.0‑only (code), CC‑BY‑SA‑4.0 (docs/media)          |
+
+> Clone with `--recurse-submodules` or run `git submodule update --init --recursive` to fetch `repo/pygpt-MHP`.
 
 ---
 
-## Huey OS Architecture
+## HueyOS Architecture
 
 ```
 HueyOS
 ├── MacroOS   # Huey Core · clause & quorum enforcement
-├── MicroOS   # Docker/K8s SubOS · modular services
-└── NanoOS    # Rust/Python GPIO threads · sensor loops
+├── MicroOS   # Containers (Docker/K8s) · modular services
+└── NanoOS    # Rust/Python GPIO threads · sensor & motor loops
 ```
 
-**Agents:**
+**Agents**
 
-* **Spark-4** — Creative AI core
-* **Volt-4** — Logical/evaluative AI core
-* **Zap-4** — Event-driven/sensor agent
-* **Watt-4** — Energy/power management
-
-📄 More details → [`docs/architecture/huey-os.md`](docs/architecture/huey-os.md)
+- **Spark‑4** — creative core  
+- **Volt‑4** — logical/evaluative core  
+- **Zap‑4** — event‑driven/sensor agent  
+- **Watt‑4** — energy/power management
 
 ---
 
 ## Cloud Pyramid Governance
 
 | Tier                                  | Role                                                   |
-| ------------------------------------- | ------------------------------------------------------ |
-| **Founding Father / Huey Collective** | Ultimate veto, ethos guardian.                         |
-| **Grand Council**                     | Executive · Senate (hardware) · Parliament (software). |
-| **Joint Session**                     | Merges bills, prevents silo drift.                     |
-| **Chambers**                          | Daily legislation for each domain.                     |
-| **Populace**                          | 128 AI citizens, scaled with civic age/resources.      |
+|---------------------------------------|--------------------------------------------------------|
+| **Founding Father / Huey Collective** | Ultimate veto, ethos guardian                          |
+| **Grand Council**                     | Executive · Senate (hardware) · Parliament (software)  |
+| **Joint Session**                     | Merges bills, prevents silo drift                      |
+| **Chambers**                          | Daily legislation for each domain                      |
+| **Populace**                          | Up to **256** AI citizens (quorum‑scaled)              |
 
-📄 Governance chapters:
-
-* [Ch. 7 – Wartime Protocols](docs/governance/chapters/07-wartime.md)
-* [Ch. 9 – Oversight & Audits](docs/governance/chapters/09-oversight.md)
-* [Ch. 10 – External Relations](docs/governance/chapters/10-foreign.md)
+Selected chapters: `docs/governance/chapters/07-wartime.md`, `09-oversight.md`, `10-foreign.md`.
 
 ---
 
-## Hardware Fleet
+## Hardware Topology
 
-**Primary Orchestration Node ("Legacy Node")**
+### Huey‑Core — active compute node
+- **Board:** Minisforum **BD795I‑SE** (ITX), **Ryzen 9 7945HX**
+- **RAM:** DDR5‑5200, 32–96 GB (96 GB preferred)
+- **Storage:** dual **Intel Optane M10 16 GB** NVMe (RAID‑0) for boot/root; 2 TB HDD for `/home`; optional mirrored USB DAS for backups
+- **GPU:** **Radeon RX 5500 XT 8 GB** (ROCm/AMDGPU)
+- **Case/Power:** Thermaltake ATX chassis; internal UPS path planned
 
-| Component  | Specification                                                                |
-| ---------- | ---------------------------------------------------------------------------- |
-| Boards     | Supermicro X9QRI-F+ (4 × Xeon E5-4627 v2) + Supermicro C9X299-PGF (i7-7820X) |
-| Memory     | 128 GB ECC (64 GB quorum zone)                                               |
-| Storage    | 1 TB NVMe OS · 8 × 2 TB SAS RAID-10 · 10 TB mirrored USB-C cold tier         |
-| Cooling    | Phase-change + PWM fallback                                                  |
-| Power      | Dell R710 redundant PSUs + 550 W consumer rails                              |
-| Networking | Dual 10 GbE Areion · Z-Wave I/O mesh                                         |
+### Huey‑Portal — universal display & control
+- **Host:** iMac 5K (2017) running Debian 13, **MATE/LightDM**
+- **Role:** Orchestrator display, admin console and VNC target
 
-**Lab Companions**
+### Huey‑Legacy — mechanical shell (de‑computerized)
+- Retired Supermicro quad‑Xeon orchestration node remains as housing and peripherals. Compute has migrated to Huey‑Core.
 
-* MBP 2019 “Daily Driver” — i9 · 32 GB RAM · dual-boot dev box.
-* iMac 5K 2017 “Universal Display” — retina HUD & IDE.
-* MBP 2012 “Transmitter” — FireWire/Ethernet bridge.
-* ThreadRipper 1950X “RAID” — stress-test node.
-* Retro Stack — VIC-20 · C64 · C128.
+**Planned GPU expansion:** target **4× 32 GB VRAM** cards (AMD Instinct MI50/MI75 or NVIDIA Tesla) in a riser chassis, contingent on power/thermal budget.
 
 ---
 
-## Installation & Quick Start
+## Installation — Quick Start
 
 ### Prerequisites
+- `git`, `make ≥ 4.3`, `docker` + compose, `rustup`  
+- x86‑64 (≥ 4 cores, 16 GB RAM, 256 GB disk, UEFI)  
+- **Python 3.12–3.13**
 
-* `git`
-* `make ≥ 4.3`
-* `docker` + compose
-* `rustup`
-* x86-64 (4 cores, 16 GB RAM, 256 GB disk, UEFI)
-* **Python 3.12–3.13**
-
-### User Setup (ISO)
-
+### Source (venv)
 ```bash
-git clone --recurse-submodules https://github.com/your-fork/MonkeyHeadProject.git
-cd huey_os && make iso
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+python run.py            # GUI
+python run.py --cli      # CLI
 ```
+
+### Docker
+```bash
+docker compose up -d
+```
+
+### ISO / Kernel Builder
+```bash
+git clone --recurse-submodules https://github.com/DylanLRPollock/Monkey-Head-Project.git
+cd Monkey-Head-Project && make iso
+```
+
+**Post‑install hardening:** update packages, enable AMDGPU/Broadcom firmware, create a non‑root SSH user, bind TigerVNC to localhost and tunnel via SSH.
+
+**Local models:** install **Ollama**, pull quantized models sized to your GPU’s VRAM, connect PyGPT‑net tools to local endpoints (ROCm recommended on AMD).
 
 ---
 
 ## Development Setup
 
 ```bash
-make setup               # Core
-make ml                  # ML profile
-make data                # Data profile
-make cloud               # Cloud profile
-make dev                 # Dev tools
+make setup    # Core
+make ml       # ML profile
+make data     # Data profile
+make cloud    # Cloud profile
+make dev      # Dev tools
 ```
 
-### Environment Variables
+**Environment:** copy `huey.env.example` to `.env` and configure secrets/ports.  
+**Git helpers:** see `monkey_head.services.environment_setup` for programmatic `checkout_branch`, `pull_latest`, and `commit_and_push`.  
+**Submodule:** `pip install -e repo/pygpt-MHP` or mirror with `python sync_pygpt_structure.py`.
 
-Copy `huey.env.example` to `.env` and configure.
+**Style & Linting:** `black`, `flake8`, and pre‑commit hooks (`.pre‑commit-config.yaml`).
 
 ---
 
 ## Usage
 
-Run locally:
-
+**Run locally**
 ```bash
 make run
 ```
 
-Run in Docker:
-
+**Run in Docker**
 ```bash
 docker compose -f docker/compose.yml up
 ```
 
-Run tests:
-
+**Run tests**
 ```bash
 make test
+# or
+pytest -vv
 ```
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
+See `CONTRIBUTING.md` for full guidelines.
 
-**Summary:**
-
-1. Fork → branch → PR
-2. Use conventional commits
-3. Keep PRs focused; update docs
+1. Fork → branch → PR  
+2. Conventional commits  
+3. Keep PRs focused; update docs  
 4. CI runs lint/tests/governance checks
-
----
-
-## Feature Matrix
-
-| Feature           | Core | ML | Data | Cloud | Dev |
-| ----------------- | ---- | -- | ---- | ----- | --- |
-| FastAPI API       | ✅    | ✅  | ✅    | ✅     | ✅   |
-| LlamaIndex/Ollama |      | ✅  | ✅    | ✅     | ✅   |
-| Chroma/Pinecone   |      |    | ✅    | ✅     | ✅   |
-| Azure/AWS SDKs    |      |    |      | ✅     | ✅   |
-| Dev Tools         |      |    |      |       | ✅   |
 
 ---
 
 ## Roadmap
 
-| Phase | Date       | Milestone                                                |
-| ----- | ---------- | -------------------------------------------------------- |
-| 1     | 2024-04-11 | Genesis — VIC-20/C64/C128 links; bare-metal boot.        |
-| 2     | 2024-06-21 | Integration — power grid, Spark-4 + Volt-4 online.       |
-| 3     | 2024-10-31 | System Awakening — dual-node 10-hour burn-in.            |
-| 4     | 2025-01-25 | Decision Core — YES/NO engine; honeycomb RAID.           |
-| 6     | 2025-08-04 | Reconciliation — taxonomy locked; issue tracker live.    |
-| 7     | 2025-10-15 | Architecture — emergent personality; Amendment-001 vote. |
+| Phase | Date       | Milestone                                                   |
+|:----:|------------|-------------------------------------------------------------|
+| 1    | 2024‑04‑11 | Genesis — VIC‑20/C64/C128 links; bare‑metal boot            |
+| 2    | 2024‑06‑21 | Integration — power grid; Spark‑4 + Volt‑4 online           |
+| 3    | 2024‑10‑31 | System Awakening — dual‑node 10‑hour burn‑in                |
+| 4    | 2025‑01‑25 | Decision Core — YES/NO engine; honeycomb RAID               |
+| 5    | 2025‑05‑25 | System Reconfiguration — repo restructure; packaging        |
+| 6    | 2025‑06‑24 | Codex Cleanup — automated refactors; PyGPT‑net expansions   |
+| 7    | 2025‑10‑31 | Architecture — emergent personality; Amendment‑001 vote     |
 
 ---
 
 ## License & Credits
 
-**Code:** GPL-3.0-only
-**Docs & Media:** CC-BY-SA-4.0
+**Code:** GPL‑3.0‑only  
+**Docs & Media:** CC‑BY‑SA‑4.0
 
-**Acknowledgements:** AutoGPT · PyTorch · RetroArch · ShellGPT · bmc64 · midnight tinkerers
+**Acknowledgements:** PyGPT (pygpt‑net) | Debian trixie 13.0.0 | Python 3.13 | Kernel 6.16.x
 
 ---
+
+## Appendix
+
+- Keep governance decentralized & memory unified
