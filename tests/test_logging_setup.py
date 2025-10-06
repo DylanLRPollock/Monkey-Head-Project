@@ -1,5 +1,7 @@
 import logging
 
+import pytest
+
 from monkey_head.logging_setup import configure_logging
 
 
@@ -78,7 +80,29 @@ def test_env_var_overrides_path(monkeypatch, tmp_path):
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
         root_logger.removeHandler(h)
+    monkeypatch.setenv("MEMORY_PATH", str(tmp_path / "memory"))
     monkeypatch.setenv("MONKEY_HEAD_CONFIG", str(cfg))
     logger = configure_logging()
     logger.info("check")
     assert log_file.exists()
+
+
+def test_default_config_uses_memory(monkeypatch, tmp_path):
+    root_logger = logging.getLogger()
+    for h in list(root_logger.handlers):
+        root_logger.removeHandler(h)
+    monkeypatch.setenv("MEMORY_PATH", str(tmp_path / "memory"))
+    monkeypatch.delenv("MONKEY_HEAD_CONFIG", raising=False)
+    logger = configure_logging()
+    logger.info("hello")
+    log_file = tmp_path / "memory" / "LOGS" / "monkey_head.log"
+    assert log_file.exists()
+
+
+def test_missing_config_raises(tmp_path):
+    root_logger = logging.getLogger()
+    for h in list(root_logger.handlers):
+        root_logger.removeHandler(h)
+    missing = tmp_path / "missing.ini"
+    with pytest.raises(FileNotFoundError):
+        configure_logging(str(missing))

@@ -43,4 +43,9 @@ dist/
 
 # Project data
 raw/
-memory/
+memory/*
+!memory/.gitkeep
+!memory/LOGS/
+!memory/LOGS/.gitkeep
+!memory/RAW/
+!memory/RAW/.gitkeep

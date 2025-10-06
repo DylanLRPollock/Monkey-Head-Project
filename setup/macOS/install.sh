@@ -20,6 +20,9 @@ INSTALL_DIR="/Applications/MonkeyHeadProject"
 # Virtual environment inside the install directory
 VENV_DIR="$INSTALL_DIR/venv"
 
+# Location of the shared memory directory
+MEMORY_PATH="${MEMORY_PATH:-$INSTALL_DIR/memory}"
+
 function command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
@@ -41,6 +44,12 @@ function copy_project_files() {
         PROJECT_ROOT="$INSTALL_DIR"
         cd "$PROJECT_ROOT" || exit 1
     fi
+}
+
+function prepare_memory_dirs() {
+    echo "Preparing memory directories at $MEMORY_PATH..."
+    mkdir -p "$MEMORY_PATH/LOGS" || exit 1
+    mkdir -p "$MEMORY_PATH/RAW" || exit 1
 }
 
 function install_homebrew() {
@@ -89,6 +98,7 @@ function update_submodules() {
 install_homebrew
 ensure_xcode_cli
 copy_project_files
+prepare_memory_dirs
 install_packages
 update_submodules
 setup_python_env

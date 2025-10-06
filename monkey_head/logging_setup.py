@@ -18,6 +18,8 @@ except Exception:  # pragma: no cover - can't import GUI libs
 
 __all__ = ["CriticalErrorHandler", "configure_logging"]
 
+from .utils.paths import get_logs_dir, get_memory_path
+
 
 class CriticalErrorHandler(logging.Handler):
     """Display a GUI dialog for critical log records."""
@@ -51,34 +53,42 @@ def _resolve_config_path(config_path: Optional[str]) -> Path:
     return base_dir / "config" / "CONFIG.txt"
 
 
+def _resolve_log_path(log_file: str) -> Path:
+    raw_path = Path(str(log_file).strip())
+    if raw_path.is_absolute():
+        return raw_path
+
+    parts = raw_path.parts
+    if parts and parts[0] == "memory":
+        base_dir = Path(__file__).resolve().parents[1]
+        return (base_dir / raw_path).resolve()
+
+    base_memory = get_memory_path(create=True)
+    return (base_memory / raw_path).resolve()
+
+
+def _parse_int(value: object, default: int) -> int:
+    try:
+        text = str(value).split("#")[0].strip()
+        return int(text)
+    except (TypeError, ValueError):
+        return default
+
+
 def configure_logging(config_path: Optional[str] = None) -> logging.Logger:
     """Configure the root logger using settings from the configuration file."""
 
     cfg_path = _resolve_config_path(config_path)
     parser = ConfigParser()
-    if cfg_path.exists():
-        parser.read(cfg_path)
-        log_level = parser.get("logging", "log_level", fallback="INFO").upper()
-        log_file = parser.get(
-            "logging",
-            "log_file",
-            fallback="memory/LOGS/monkey_head.log",
-        )
-        max_bytes_raw = parser.get("logging", "log_max_bytes", fallback="10485760")
-        backup_count_raw = parser.get("logging", "log_backup_count", fallback="5")
-        try:
-            max_bytes = int(str(max_bytes_raw).split("#")[0].strip())
-        except (TypeError, ValueError):
-            max_bytes = 10_485_760
-        try:
-            backup_count = int(str(backup_count_raw).split("#")[0].strip())
-        except (TypeError, ValueError):
-            backup_count = 5
-    else:
-        log_level = "INFO"
-        log_file = "memory/LOGS/monkey_head.log"
-        max_bytes = 10_485_760
-        backup_count = 5
+    if not cfg_path.exists():
+        raise FileNotFoundError(f"Logging configuration file not found: {cfg_path}")
+
+    parser.read(cfg_path)
+    default_logs_dir = get_logs_dir()
+    log_level = parser.get("logging", "log_level", fallback="INFO").upper()
+    log_file_value = parser.get("logging", "log_file", fallback="LOGS/monkey_head.log")
+    max_bytes = _parse_int(parser.get("logging", "log_max_bytes", fallback="10485760"), 10_485_760)
+    backup_count = _parse_int(parser.get("logging", "log_backup_count", fallback="5"), 5)
 
     logger = logging.getLogger()
     if logger.handlers:
@@ -87,13 +97,15 @@ def configure_logging(config_path: Optional[str] = None) -> logging.Logger:
     logger.setLevel(getattr(logging, log_level, logging.INFO))
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
-    log_path = Path(log_file)
+    log_path = _resolve_log_path(log_file_value)
     log_dir = log_path.parent
     if log_dir and not log_dir.exists():  # pragma: no cover - fs access
         try:
             log_dir.mkdir(parents=True, exist_ok=True)
         except Exception:
             log_path = Path(log_path.name)
+    elif log_dir and log_dir == default_logs_dir.resolve():
+        default_logs_dir.mkdir(parents=True, exist_ok=True)
 
     file_handler = logging.handlers.RotatingFileHandler(
         log_path, maxBytes=max_bytes, backupCount=backup_count

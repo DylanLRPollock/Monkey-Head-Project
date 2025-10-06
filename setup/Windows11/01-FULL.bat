@@ -12,6 +12,8 @@ setlocal enabledelayedexpansion
 :: Default installation directory
 set "INSTALL_DIR=%ProgramFiles%\Monkey-Head-Project"
 
+if not defined MEMORY_PATH set "MEMORY_PATH=%INSTALL_DIR%\memory"
+
 :: Change to the script's own directory
 cd /d "%~dp0"
 
@@ -44,6 +46,14 @@ goto :eof
 :: Function to log errors
 :logError
 echo %date% %time% - Error: %1 failed with error code %errorlevel% >> error_log.txt
+goto :eof
+
+:: Function to prepare shared memory directories
+:prepareMemoryDirs
+echo Preparing memory directories at %MEMORY_PATH%...
+if not exist "%MEMORY_PATH%" mkdir "%MEMORY_PATH%"
+if not exist "%MEMORY_PATH%\LOGS" mkdir "%MEMORY_PATH%\LOGS"
+if not exist "%MEMORY_PATH%\RAW" mkdir "%MEMORY_PATH%\RAW"
 goto :eof
 
 :: Function to perform initial system checks
@@ -222,6 +232,9 @@ call :installAdditionalTools
 
 echo Cloning the repository...
 call :cloneRepository
+
+echo Preparing shared memory directories...
+call :prepareMemoryDirs
 
 echo Setting up Python environment...
 call :setupPythonEnv

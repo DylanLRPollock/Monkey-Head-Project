@@ -20,6 +20,9 @@ INSTALL_DIR="/opt/monkey_head"
 # Virtual environment lives inside the install directory
 VENV_DIR="$INSTALL_DIR/venv"
 
+# Location of the shared memory directory
+MEMORY_PATH="${MEMORY_PATH:-$INSTALL_DIR/memory}"
+
 function error_exit {
     echo "$1" >&2
     exit 1
@@ -41,6 +44,12 @@ function copy_project_files {
         PROJECT_ROOT="$INSTALL_DIR"
         cd "$PROJECT_ROOT" || error_exit "Cannot cd to $PROJECT_ROOT"
     fi
+}
+
+function prepare_memory_dirs {
+    echo "Preparing memory directories at $MEMORY_PATH..."
+    mkdir -p "$MEMORY_PATH/LOGS" || error_exit "Cannot create $MEMORY_PATH/LOGS"
+    mkdir -p "$MEMORY_PATH/RAW" || error_exit "Cannot create $MEMORY_PATH/RAW"
 }
 
 DEBIAN_CODENAME=${DEBIAN_CODENAME:-trixie}
@@ -122,6 +131,7 @@ function update_submodules {
 ensure_root
 prompt_debian_codename
 copy_project_files
+prepare_memory_dirs
 update_system
 install_selected_packages
 install_edge_dev

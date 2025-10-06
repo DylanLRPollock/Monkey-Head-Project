@@ -1,0 +1,5 @@
+[logging]
+log_level = INFO
+log_file = LOGS/monkey_head.log
+log_max_bytes = 10485760
+log_backup_count = 5

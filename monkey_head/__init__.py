@@ -6,13 +6,14 @@ from importlib import import_module
 from typing import Any
 
 from . import core  # noqa: F401
-from . import function_registry, pdf_utils, system_checks  # noqa: F401
+from . import function_registry, pdf_utils, system_checks, utils  # noqa: F401
 
 __all__ = [
     "core",
     "function_registry",
     "pdf_utils",
     "system_checks",
+    "utils",
 ]
 
 _LEGACY_PREFIX = "huey.memory.PY"
