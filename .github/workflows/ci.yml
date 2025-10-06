@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13,15 +13,74 @@ jobs:
           submodules: true
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - name: Install core
+          python-version: "3.12"
+      - name: Install lint dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/requirements-dev.txt
+      - name: Run pre-commit
+        run: pre-commit run --all-files
+
+  tests:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python-version: "3.12"
+            install-extras: "false"
+          - python-version: "3.13"
+            install-extras: "true"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements/requirements-core.txt
-      - name: Lint & format
-        run: |
           pip install -r requirements/requirements-dev.txt
-          pre-commit run --all-files
-      - name: Tests
+          pip install pytest pytest-asyncio pytest-cov httpx
+          if [ "${{ matrix.install-extras }}" = "true" ]; then
+            pip install -r requirements/requirements-ml.txt
+            pip install -r requirements/requirements-data.txt
+            pip install -r requirements/requirements-cloud.txt
+          fi
+      - name: Run example task
+        if: ${{ matrix.install-extras == 'true' }}
         run: |
-          pytest -q
+          python - <<'PY'
+          from pathlib import Path
+          from monkey_head.scripts.auto_sort import main
+
+          workspace = Path('ci_example')
+          source = (workspace / 'source').resolve()
+          destination = (workspace / 'destination').resolve()
+          source.mkdir(parents=True, exist_ok=True)
+          destination.mkdir(parents=True, exist_ok=True)
+          (source / 'demo.txt').write_text('demo')
+
+          summary = main([
+              '--source', str(source),
+              '--destination', str(destination),
+              '--dry-run',
+              '--json',
+          ])
+
+          assert summary['source'] == str(source)
+          assert summary['destination'] == str(destination)
+          assert summary['moved'] == ['demo.txt -> TXT/demo.txt']
+          PY
+      - name: Run tests with coverage
+        run: |
+          pytest --cov=monkey_head --cov=src --cov-report=xml --cov-report=term
+          coverage report --fail-under=80
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.python-version }}
+          path: coverage.xml
