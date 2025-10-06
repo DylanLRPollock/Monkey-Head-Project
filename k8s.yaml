@@ -24,6 +24,30 @@ data:
   # echo -n dummy | base64 -> ZHVtbXk=
   APP_SECRET: ZHVtbXk=
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: monkey-head-config
+  namespace: monkey-head
+  labels: { app: monkey-head }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: monkey-head-memory
+  namespace: monkey-head
+  labels: { app: monkey-head }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -40,17 +64,12 @@ spec:
     spec:
       containers:
         - name: monkey-head
-          image: monkey-head-project:latest         # build: docker build -t monkey-head-project:latest .
-          imagePullPolicy: IfNotPresent             # Docker Desktop shares engine images with k8s
+          image: ghcr.io/dylanlrpollock/hueyos:hostos
+          imagePullPolicy: IfNotPresent
           workingDir: /workspace
           envFrom:
             - configMapRef: { name: monkey-head-config }
             - secretRef:    { name: monkey-head-secrets }
-          env:
-            - name: VIRTUAL_ENV
-              value: /workspace/venv
-            - name: PATH
-              value: /workspace/venv/bin:$(PATH)
           ports:
             - containerPort: 1995
               name: http1995
@@ -74,19 +93,17 @@ spec:
             readOnlyRootFilesystem: false
             capabilities: { drop: ["ALL"] }
           volumeMounts:
-            - name: l-drive
-              mountPath: /L
-            - name: workspace
-              mountPath: /workspace
+            - name: config
+              mountPath: /workspace/config
+            - name: memory
+              mountPath: /workspace/memory
       volumes:
-        # Bind Windows L:\ into the pod (Docker Desktop only)
-        - name: l-drive
-          hostPath:
-            path: /run/desktop/mnt/host/l
-            type: Directory
-        # Local emptyDir for workspace
-        - name: workspace
-          emptyDir: {}
+        - name: config
+          persistentVolumeClaim:
+            claimName: monkey-head-config
+        - name: memory
+          persistentVolumeClaim:
+            claimName: monkey-head-memory
 ---
 apiVersion: v1
 kind: Service

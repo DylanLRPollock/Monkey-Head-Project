@@ -5,6 +5,32 @@ metadata:
   name: subos
 
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: subos-config
+  namespace: subos
+  labels: { app: subos }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 512Mi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: subos-memory
+  namespace: subos
+  labels: { app: subos }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 2Gi
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,16 +48,23 @@ spec:
     spec:
       containers:
         - name: subos
-          image: subos:local
+          image: ghcr.io/dylanlrpollock/hueyos:subos
           imagePullPolicy: IfNotPresent
-          command: ["/bin/sh","-lc"]
-          args: ["sleep infinity"]
+          ports:
+            - containerPort: 1995
+              name: http1995
           volumeMounts:
-            - name: workspace
-              mountPath: /home/subos/SubOS
+            - name: config
+              mountPath: /workspace/config
+            - name: memory
+              mountPath: /workspace/memory
       volumes:
-        - name: workspace
-          emptyDir: {}
+        - name: config
+          persistentVolumeClaim:
+            claimName: subos-config
+        - name: memory
+          persistentVolumeClaim:
+            claimName: subos-memory
 
 ---
 apiVersion: v1
@@ -43,6 +76,7 @@ spec:
   selector:
     app: subos
   ports:
-    - port: 8080
-      targetPort: 8080
+    - name: http1995
+      port: 1995
+      targetPort: 1995
   type: ClusterIP

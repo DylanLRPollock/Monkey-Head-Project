@@ -51,8 +51,8 @@ services:
     working_dir: /workspace
     env_file: [.env]
     environment:
-      VIRTUAL_ENV: /workspace/venv
-      PATH: "/workspace/venv/bin:$$PATH"
+      VIRTUAL_ENV: /opt/venv
+      PATH: "/opt/venv/bin:$$PATH"
       APP_ENV: ${APP_ENV:-production}
       TZ: ${TZ:-Etc/UTC}
     volumes:

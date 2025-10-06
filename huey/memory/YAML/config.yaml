@@ -11,8 +11,8 @@ database:
 
 system:
   os: 'debian-trixie'
-  python_version: '3.12'
-  virtual_env: '/workspace/venv'
+  python_version: '3.13.5'
+  virtual_env: '/opt/venv'
   dependencies:
     - pygpt-MHP
     - docker

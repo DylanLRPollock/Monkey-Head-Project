@@ -5,6 +5,32 @@ metadata:
   name: nanoos
 
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nanoos-config
+  namespace: nanoos
+  labels: { app: nanoos }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 256Mi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nanoos-memory
+  namespace: nanoos
+  labels: { app: nanoos }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 1Gi
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,16 +48,23 @@ spec:
     spec:
       containers:
         - name: nanoos
-          image: nanoos:local
+          image: ghcr.io/dylanlrpollock/hueyos:nanoos
           imagePullPolicy: IfNotPresent
-          command: ["/bin/sh","-lc"]
-          args: ["sleep infinity"]
+          ports:
+            - containerPort: 1995
+              name: http1995
           volumeMounts:
-            - name: workspace
-              mountPath: /home/nanoos/NanoOS
+            - name: config
+              mountPath: /workspace/config
+            - name: memory
+              mountPath: /workspace/memory
       volumes:
-        - name: workspace
-          emptyDir: {}
+        - name: config
+          persistentVolumeClaim:
+            claimName: nanoos-config
+        - name: memory
+          persistentVolumeClaim:
+            claimName: nanoos-memory
 
 ---
 apiVersion: v1
@@ -43,6 +76,7 @@ spec:
   selector:
     app: nanoos
   ports:
-    - port: 8081
-      targetPort: 8081
+    - name: http1995
+      port: 1995
+      targetPort: 1995
   type: ClusterIP
