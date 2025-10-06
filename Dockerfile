@@ -42,18 +42,93 @@ RUN python3 -m venv "${VIRTUAL_ENV}" && "${VIRTUAL_ENV}/bin/pip" install --no-ca
 
 WORKDIR /workspace
 
-# Optional requirements without failing when file absent
-RUN --mount=type=bind,source=.,target=/src     --mount=type=cache,target=/root/.cache/pip,id=pip-cache,sharing=locked     bash -lc 'if [ -f /src/requirements.txt ]; then pip install -r /src/requirements.txt; fi'
-
 USER ${APP_USER}
 EXPOSE 1995
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=5   CMD python -c "import sys; sys.exit(0)"
 
-LABEL org.opencontainers.image.title="Monkey Head Project Dev Image"       org.opencontainers.image.description="Debian ${DEBIAN_VERSION} + CPython ${PYTHON_VERSION} dev toolbox (non-root, venv, tini)"       org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.title="HueyOS Base Image"       org.opencontainers.image.description="Debian ${DEBIAN_VERSION} + CPython ${PYTHON_VERSION} runtime base (non-root, venv, tini)"       org.opencontainers.image.licenses="MIT"
 
 ENTRYPOINT ["/usr/bin/tini","--"]
 CMD ["sleep","infinity"]
 
-# Compose target
+# -------- Stage: source snapshot --------
+FROM runtime AS hueyos-source
+USER root
+ARG APP_USER=app
+ARG APP_UID=1000
+ARG APP_GID=1000
+WORKDIR /workspace
+COPY --chown=${APP_UID}:${APP_GID} . /workspace
+
+# -------- Stage: HueyOS dev toolbox --------
 FROM runtime AS dev
+USER root
+ARG APP_USER=app
+ARG APP_UID=1000
+ARG APP_GID=1000
+ARG HUEY_EXTRAS="dev,ml,data,cloud"
+ENV HUEY_EXTRAS=${HUEY_EXTRAS}
+WORKDIR /workspace
+COPY --from=hueyos-source --chown=${APP_UID}:${APP_GID} /workspace /workspace
+RUN --mount=type=cache,target=/root/.cache/pip,id=pip-dev,sharing=locked     bash -lc 'set -eux; if [ -n "${HUEY_EXTRAS}" ]; then pip install --no-cache-dir --no-build-isolation ".[${HUEY_EXTRAS}]"; else pip install --no-cache-dir --no-build-isolation .; fi'
+LABEL org.opencontainers.image.title="HueyOS Dev"
+USER ${APP_USER}
+VOLUME ["/workspace/config","/workspace/memory"]
+EXPOSE 1995
+ENTRYPOINT ["/usr/bin/tini","--"]
+CMD ["uvicorn","huey.api:app","--host","0.0.0.0","--port","1995"]
+
+# -------- Stage: HueyOS HostOS runtime --------
+FROM runtime AS hostos
+USER root
+ARG APP_USER=app
+ARG APP_UID=1000
+ARG APP_GID=1000
+ARG HUEY_EXTRAS="ml,data,cloud"
+ENV HUEY_EXTRAS=${HUEY_EXTRAS}
+WORKDIR /workspace
+COPY --from=hueyos-source --chown=${APP_UID}:${APP_GID} /workspace /workspace
+RUN --mount=type=cache,target=/root/.cache/pip,id=pip-hostos,sharing=locked     bash -lc 'set -eux; if [ -n "${HUEY_EXTRAS}" ]; then pip install --no-cache-dir --no-build-isolation ".[${HUEY_EXTRAS}]"; else pip install --no-cache-dir --no-build-isolation .; fi'
+LABEL org.opencontainers.image.title="HueyOS HostOS"
+USER ${APP_USER}
+VOLUME ["/workspace/config","/workspace/memory"]
+EXPOSE 1995
+ENTRYPOINT ["/usr/bin/tini","--"]
+CMD ["uvicorn","huey.api:app","--host","0.0.0.0","--port","1995"]
+
+# -------- Stage: HueyOS SubOS runtime --------
+FROM runtime AS subos
+USER root
+ARG APP_USER=app
+ARG APP_UID=1000
+ARG APP_GID=1000
+ARG HUEY_EXTRAS="ml,data"
+ENV HUEY_EXTRAS=${HUEY_EXTRAS}
+WORKDIR /workspace
+COPY --from=hueyos-source --chown=${APP_UID}:${APP_GID} /workspace /workspace
+RUN --mount=type=cache,target=/root/.cache/pip,id=pip-subos,sharing=locked     bash -lc 'set -eux; if [ -n "${HUEY_EXTRAS}" ]; then pip install --no-cache-dir --no-build-isolation ".[${HUEY_EXTRAS}]"; else pip install --no-cache-dir --no-build-isolation .; fi'
+LABEL org.opencontainers.image.title="HueyOS SubOS"
+USER ${APP_USER}
+VOLUME ["/workspace/config","/workspace/memory"]
+EXPOSE 1995
+ENTRYPOINT ["/usr/bin/tini","--"]
+CMD ["uvicorn","huey.api:app","--host","0.0.0.0","--port","1995"]
+
+# -------- Stage: HueyOS NanoOS runtime --------
+FROM runtime AS nanoos
+USER root
+ARG APP_USER=app
+ARG APP_UID=1000
+ARG APP_GID=1000
+ARG HUEY_EXTRAS=""
+ENV HUEY_EXTRAS=${HUEY_EXTRAS}
+WORKDIR /workspace
+COPY --from=hueyos-source --chown=${APP_UID}:${APP_GID} /workspace /workspace
+RUN --mount=type=cache,target=/root/.cache/pip,id=pip-nanoos,sharing=locked     bash -lc 'set -eux; if [ -n "${HUEY_EXTRAS}" ]; then pip install --no-cache-dir --no-build-isolation ".[${HUEY_EXTRAS}]"; else pip install --no-cache-dir --no-build-isolation .; fi'
+LABEL org.opencontainers.image.title="HueyOS NanoOS"
+USER ${APP_USER}
+VOLUME ["/workspace/config","/workspace/memory"]
+EXPOSE 1995
+ENTRYPOINT ["/usr/bin/tini","--"]
+CMD ["uvicorn","huey.api:app","--host","0.0.0.0","--port","1995"]
