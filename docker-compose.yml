@@ -30,6 +30,17 @@ services:
     <<: *service_defaults
     image: monkey-head-project:latest         # tag produced by build
     container_name: monkey-head-project
+    command:
+      [
+        "python",
+        "-m",
+        "uvicorn",
+        "huey.api:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "1995",
+      ]
     build:
       context: .
       dockerfile: Dockerfile
@@ -46,7 +57,13 @@ services:
       TZ: ${TZ:-Etc/UTC}
     volumes:
       - .:/workspace
+      - ./.env:/workspace/.env:ro
+      - ./memory:/workspace/memory
       - shared_l:/L
+      - type: bind
+        source: ${SHARED_HOST_DIR:-.}
+        target: /workspace/shared-host
+        read_only: true
       # tmpfs example for faster I/O (optional):
       # - type: tmpfs
       #   target: /tmp
@@ -54,7 +71,11 @@ services:
       - "1995:1995"
     expose: ["1995"]
     healthcheck:
-      test: ["CMD-SHELL", "sh -lc 'command -v python >/dev/null || command -v python3 >/dev/null'"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS http://127.0.0.1:1995/healthz >/dev/null",
+        ]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -77,6 +98,28 @@ services:
     volumes:
       - .:/workspace
       - shared_l:/L
+    networks: [back]
+
+  subos:
+    <<: *service_defaults
+    build:
+      context: docker/[2] SubOS
+      dockerfile: Dockerfile
+    image: subos:local
+    profiles: ["subos"]
+    ports:
+      - "8080:8080"
+    networks: [back]
+
+  nanoos:
+    <<: *service_defaults
+    build:
+      context: docker/[3] NanoOS
+      dockerfile: Dockerfile
+    image: nanoos:local
+    profiles: ["nanoos"]
+    ports:
+      - "8081:8081"
     networks: [back]
 
   # Optional example dependency (enable with --profile extras)
