@@ -1,36 +1,42 @@
-# ==================================================
-# This file is a part of the 'Monkey Head Project'
-# Website:   https://dlrp.ca
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-# License:   https://opensource.org/license/gpl-3-0
-# Overseen By:   Dylan L.R. Pollock
-# Updated: 06.11.2025
-# ==================================================
 from pathlib import Path
-import importlib.util
 
-spec = importlib.util.spec_from_file_location(
-    "auto_sort", Path(__file__).resolve().parents[1] / "auto-sort.py"
-)
-module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(module)  # type: ignore
-sort_raw_files = module.sort_raw_files
+import pytest
+
+from monkey_head.utils.auto_sort import auto_sort_memory
 
 
-def test_auto_sort(tmp_path: Path) -> None:
-    base = tmp_path
-    raw = base / "raw"
-    raw.mkdir()
-    mem = base / "memory"
-    mem.mkdir()
+def _prepare_raw(memory_root: Path) -> Path:
+    raw = memory_root / "RAW"
+    raw.mkdir(parents=True, exist_ok=True)
+    (raw / "document.pdf").write_text("pdf")
+    (raw / "notes.txt").write_text("txt")
+    (raw / "script.py").write_text("print('hi')")
+    return raw
 
-    (raw / "file.txt").write_text("data")
-    (raw / "img.jpg").write_text("image")
-    (raw / "doc.PDF").write_text("pdf")
 
-    sort_raw_files(base)
+def test_auto_sort_moves_files(monkeypatch, tmp_path):
+    memory_root = tmp_path / "memory"
+    monkeypatch.setenv("MEMORY_PATH", str(memory_root))
+    raw = _prepare_raw(memory_root)
+    summary = auto_sort_memory()
+    assert (memory_root / "PDF" / "document.pdf").exists()
+    assert (memory_root / "TXT" / "notes.txt").exists()
+    assert (memory_root / "PY" / "script.py").exists()
+    assert summary["skipped"] == []
+    assert not any(item.exists() for item in raw.iterdir())
 
-    assert not any(raw.iterdir())
-    assert (mem / "TXT" / "file.txt").is_file()
-    assert (mem / "JPEG" / "img.jpg").is_file()
-    assert (mem / "PDF" / "doc.PDF").is_file()
+
+def test_auto_sort_dry_run(monkeypatch, tmp_path):
+    memory_root = tmp_path / "memory"
+    monkeypatch.setenv("MEMORY_PATH", str(memory_root))
+    raw = _prepare_raw(memory_root)
+    summary = auto_sort_memory(dry_run=True)
+    assert "document.pdf" in " ".join(summary["moved"])
+    assert all(item.is_file() for item in raw.iterdir())
+
+
+def test_auto_sort_missing_source(monkeypatch, tmp_path):
+    memory_root = tmp_path / "memory"
+    monkeypatch.setenv("MEMORY_PATH", str(memory_root))
+    with pytest.raises(FileNotFoundError):
+        auto_sort_memory(source_dir=memory_root / "does-not-exist")

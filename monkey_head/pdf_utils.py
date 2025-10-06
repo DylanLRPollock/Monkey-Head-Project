@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from .function_registry import register_function
+from .utils.paths import memory_candidates
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 
@@ -16,11 +17,28 @@ def _iter_pdf_dir_candidates(pdf_dir: str | Path) -> List[Path]:
 
     path = Path(pdf_dir)
     candidates: List[Path] = [path]
-    if not path.is_absolute():
-        candidates.append(BASE_DIR / path)
-        if path.parts and path.parts[0] != "huey":
-            candidates.append(BASE_DIR / "huey" / path)
+    if path.is_absolute():
+        return candidates
+
+    project_candidate = BASE_DIR / path
+    if project_candidate not in candidates:
+        candidates.append(project_candidate)
+
+    parts = path.parts
+    if parts and parts[0] in {"memory", "huey"}:
+        relative = Path(*parts[1:]) if len(parts) > 1 else Path()
+    else:
+        relative = path
+
+    for base in memory_candidates():
+        candidate = base / relative
+        if candidate not in candidates:
+            candidates.append(candidate)
     return candidates
+
+
+def _default_pdf_candidates() -> List[Path]:
+    return [candidate / "PDF" for candidate in memory_candidates()]
 
 
 def _resolve_pdf_dir(pdf_dir: str | Path) -> Optional[Path]:
@@ -41,15 +59,13 @@ def list_available_pdfs(pdf_dir: Optional[str | Path] = None) -> List[str]:
         if env:
             pdf_dir = Path(env)
         else:
-            for candidate in (
-                BASE_DIR / "memory" / "PDF",
-                BASE_DIR / "huey" / "memory" / "PDF",
-            ):
+            candidates = _default_pdf_candidates()
+            for candidate in candidates:
                 if candidate.is_dir():
                     pdf_dir = candidate
                     break
             else:
-                pdf_dir = BASE_DIR / "memory" / "PDF"
+                pdf_dir = candidates[0]
 
     resolved = _resolve_pdf_dir(pdf_dir)
     if resolved is None:
@@ -66,13 +82,12 @@ def find_pdf(filename: str, pdf_dir: Optional[str | Path] = None) -> Optional[Pa
         if env:
             pdf_dir = Path(env)
         else:
-            candidates = [BASE_DIR / "memory" / "PDF", BASE_DIR / "huey" / "memory" / "PDF"]
-            for candidate in candidates:
+            for candidate in _default_pdf_candidates():
                 if candidate.is_dir():
                     pdf_dir = candidate
                     break
             else:
-                pdf_dir = candidates[0]
+                pdf_dir = _default_pdf_candidates()[0]
     for directory in _iter_pdf_dir_candidates(pdf_dir):
         candidate = directory / filename
         if candidate.is_file():
