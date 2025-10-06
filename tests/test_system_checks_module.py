@@ -1,0 +1,75 @@
+"""Unit tests for :mod:`monkey_head.system_checks`."""
+
+from __future__ import annotations
+
+import logging
+from types import SimpleNamespace
+
+import pytest
+
+from monkey_head import system_checks
+
+
+def test_check_os_support_warns_for_legacy_windows(monkeypatch, caplog):
+    monkeypatch.setattr(system_checks.platform, "system", lambda: "Windows")
+    monkeypatch.setattr(system_checks.platform, "release", lambda: "6.1")
+
+    with caplog.at_level(logging.WARNING):
+        system_checks.check_os_support()
+
+    assert "Unsupported Windows version" in caplog.text
+
+
+def test_check_os_support_warns_for_non_debian_linux(monkeypatch, caplog):
+    class FakeDistro:
+        @staticmethod
+        def id():
+            return "ubuntu"
+
+        @staticmethod
+        def codename():
+            return "noble"
+
+    monkeypatch.setattr(system_checks.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(system_checks, "distro", FakeDistro())
+    monkeypatch.setattr(system_checks.platform, "freedesktop_os_release", lambda: {})
+
+    with caplog.at_level(logging.WARNING):
+        system_checks.check_os_support()
+
+    assert "Unsupported Linux distribution" in caplog.text
+
+
+def test_check_python_version_warns_on_experimental_release(monkeypatch, caplog):
+    class FakeInfo:
+        major = 3
+        minor = 13
+
+    monkeypatch.setattr(system_checks.sys, "version_info", FakeInfo())
+
+    with caplog.at_level(logging.WARNING):
+        system_checks.check_python_version()
+
+    assert "Python 3.13 detected" in caplog.text
+
+
+def test_system_check_collects_expected_results(monkeypatch):
+    def fake_os_check():
+        return None
+
+    monkeypatch.setattr(system_checks, "check_os_support", fake_os_check)
+    monkeypatch.setattr(system_checks, "check_python_version", lambda: None)
+    monkeypatch.setattr(
+        system_checks.shutil,
+        "disk_usage",
+        lambda path: SimpleNamespace(free=5 * 1024**3),
+    )
+    monkeypatch.setattr(system_checks.shutil, "which", lambda tool: f"/usr/bin/{tool}")
+
+    results = system_checks.system_check()
+
+    assert results["os_supported"] is True
+    assert results["python_supported"] is True
+    assert results["disk_space_ok"] is True
+    assert results["git_available"] is True
+    assert results["python3_available"] is True
