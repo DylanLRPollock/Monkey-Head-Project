@@ -41,6 +41,7 @@ from monkey_head.scripts.preload_data import preload_all
 from monkey_head.gui_scaling import apply_scaling
 from monkey_head.simple_chat_gui import run_simple_chat
 from monkey_head.ai_tools_gui import run_ai_tools
+from monkey_head.dashboard import launch_dashboard
 from monkey_head.config_toggle_gui import run_config_toggle_gui
 from monkey_head.services.container_management import (
     build_docker_image,
@@ -198,6 +199,7 @@ class MainUI:
         ai_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
         ai_menu.add_command(label="Simple Chat", command=self.launch_simple_chat)
         ai_menu.add_command(label="AI Processor Demo", command=self.launch_ai_tools)
+        ai_menu.add_command(label="Dashboard", command=self.launch_dashboard)
         menu_bar.add_cascade(label="AI", menu=ai_menu)
 
         docker_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
@@ -508,6 +510,14 @@ class MainUI:
         """Open the AI tools window in a background thread."""
         self.log_message("Launching AI tools...")
         self._submit_task(run_ai_tools)
+
+    def launch_dashboard(self):
+        """Open the PySide dashboard."""
+        self.log_message("Launching dashboard...")
+        try:
+            launch_dashboard()
+        except RuntimeError as exc:
+            messagebox.showerror("Dashboard", str(exc))
 
     def on_close(self):
         """Shutdown the executor and close the UI."""

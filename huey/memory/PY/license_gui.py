@@ -6,6 +6,10 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.11.2025
 # ==================================================
+from __future__ import annotations
+
+from datetime import datetime
+from hashlib import sha256
 from pathlib import Path
 
 try:  # pragma: no cover - optional dependency
@@ -25,19 +29,37 @@ LIGHT_FG = "#00ff00"  # green text
 ACCENT_PURPLE = "#2d2b57"  # dark purple accent
 
 
-def accept_license(config_path: str | Path) -> None:
-    """Set the ``license.accepted`` flag in the given config file."""
+def accept_license(config_path: str | Path, license_hash: str | None = None) -> None:
+    """Persist the acceptance state and timestamp for the license dialog."""
+
     manager = ConfigManager(str(config_path))
-    manager.set_setting("license.accepted", True)
+    payload = {
+        "license.accepted": True,
+        "license.accepted_at": datetime.utcnow().isoformat(timespec="seconds"),
+    }
+    if license_hash is not None:
+        payload["license.hash"] = license_hash
+    manager.update_settings(payload)
 
 
 def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -> None:
     """Display a simple license agreement dialog."""
-    if tk is None:
+
+    if tk is None or scrolledtext is None:
         raise RuntimeError("tkinter is not available")
 
     manager = ConfigManager(str(config_path))
-    if manager.get_setting("license.accepted"):
+
+    license_path = Path(__file__).resolve().parents[3] / "LICENSE"
+    try:
+        license_text = license_path.read_text(encoding="utf-8")
+    except Exception:
+        license_text = "License file not found."
+    license_hash = sha256(license_text.encode("utf-8")).hexdigest()
+
+    accepted = bool(manager.get_setting("license.accepted"))
+    accepted_hash = manager.get_setting("license.hash")
+    if accepted and accepted_hash == license_hash:
         return
 
     root = tk.Tk()
@@ -63,16 +85,12 @@ def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -
         highlightcolor=ACCENT_PURPLE,
         highlightthickness=2,
     )
-    try:
-        license_text = Path("docs/LICENSE").read_text(encoding="utf-8")
-    except Exception:
-        license_text = "License file not found."
     text.insert(tk.END, license_text)
     text.config(state=tk.DISABLED)
     text.pack(padx=10, pady=10)
 
     def on_accept() -> None:
-        accept_license(config_path)
+        accept_license(config_path, license_hash)
         messagebox.showinfo("License", "License accepted")
         messagebox.showwarning(
             "Experimental",
