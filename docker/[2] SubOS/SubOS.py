@@ -4,16 +4,31 @@
 # Overseen By: Dylan L.R. Pollock
 # Updated: 2025-08-09
 # ==================================================
+"""SubOS setup and deployment orchestration."""
+
+from __future__ import annotations
+
 import argparse
+import logging
 import os
 import shutil
-import logging
-import subprocess
 import sys
 from pathlib import Path
+from typing import Iterable
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 log = logging.getLogger("subos")
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from orchestrator_utils import (  # noqa: E402 - injected path
+    apt_install as apt_install_packages,
+    configure_firewall,
+    enable_services,
+    ensure_system_requirements as utils_ensure_system_requirements,
+    ensure_workspace as utils_ensure_workspace,
+    run,
+)
 
 REQUIRED_APT = [
     "git",
@@ -21,95 +36,101 @@ REQUIRED_APT = [
     "docker-compose-plugin",
     "python3",
     "python3-venv",
-    "curl"
+    "curl",
 ]
+SUPPORTED_OS = ["debian trixie", "debian testing", "debian bookworm", "debian stable"]
+DEFAULT_SERVICE_PORT = 8080
 
 
-def run(cmd, check=True):
-    log.debug("→ %s", " ".join(cmd))
-    proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    if proc.returncode != 0 and check:
-        log.error("Command failed: %s\nstdout:\n%s\nstderr:\n%s", " ".join(cmd), proc.stdout, proc.stderr)
-        raise RuntimeError(f"Command failed: {' '.join(cmd)}")
-    return proc
+def ensure_system_requirements(
+    *,
+    skip_os_check: bool = False,
+    allowed_overrides: Iterable[str] | None = None,
+    min_free_gib: float = 8.0,
+) -> None:
+    allowed = SUPPORTED_OS + list(allowed_overrides or [])
+    utils_ensure_system_requirements(
+        logger=log,
+        skip_os_check=skip_os_check,
+        allowed_distros=allowed,
+        required_commands=("git", "docker"),
+        min_free_gib=min_free_gib,
+    )
 
 
-def is_debian_trixie():
-    try:
-        with open("/etc/os-release") as f:
-            content = f.read().lower()
-        return "debian" in content and any(k in content for k in ("trixie", "testing"))
-    except Exception:
-        return False
-
-
-def ensure_system(skip_os_check=False):
-    log.info("Checking system requirements…")
-    if not skip_os_check and not is_debian_trixie():
-        raise RuntimeError("Debian Trixie/Testing not detected. Use --skip-os-check to bypass.")
-    usage = shutil.disk_usage("/")
-    log.info("Free space on /: %.2f GiB", usage.free / (1024 ** 3))
-    if shutil.which("git") is None:
-        log.warning("git not found; will be installed.")
-    try:
-        run(["ping", "-c", "1", "-W", "2", "google.com"], check=False)
-    except Exception:
-        log.warning("Internet check failed; continuing.")
-
-
-def apt_install():
+def apt_install() -> None:
     log.info("Installing SubOS tools…")
-    run(["sudo", "apt-get", "update"])
-    run(["sudo", "apt-get", "install", "-y", "--no-install-recommends"] + REQUIRED_APT)
+    apt_install_packages(REQUIRED_APT, log)
 
 
-def ensure_workspace(path: Path):
-    path.mkdir(parents=True, exist_ok=True)
-    bashrc = Path.home() / ".bashrc"
-    export_line = f"\nexport SUBOS_PATH={str(path)}\n"
-    try:
-        content = bashrc.read_text()
-        if "SUBOS_PATH" not in content:
-            bashrc.write_text(content + export_line)
-    except FileNotFoundError:
-        bashrc.write_text(export_line)
+def ensure_workspace(path: Path) -> None:
+    utils_ensure_workspace(path, "SUBOS_PATH", log)
 
 
-def deploy_subos(workspace: Path, kube_manifest: Path):
+def deploy_subos(workspace: Path, kube_manifest: Path) -> None:
     log.info("Deploying SubOS from %s", workspace)
     os.chdir(workspace)
-    compose_cmd = ["docker", "compose", "up", "-d"]
-    res = run(compose_cmd, check=False)
-    if res.returncode != 0 and shutil.which("docker-compose"):
-        run(["docker-compose", "up", "-d"])
+
+    if shutil.which("docker"):
+        res = run(["docker", "compose", "up", "-d"], log, check=False)
+        if res.returncode != 0 and shutil.which("docker-compose"):
+            run(["docker-compose", "up", "-d"], log)
+    else:
+        log.warning("Docker not found; skipping docker compose step.")
+
     if kube_manifest.exists() and shutil.which("kubectl"):
-        run(["kubectl", "apply", "-f", str(kube_manifest)])
+        run(["kubectl", "apply", "-f", str(kube_manifest)], log)
+    elif kube_manifest.exists():
+        log.warning("kubectl not found; skipped applying %s", kube_manifest.name)
 
 
-def main():
-    p = argparse.ArgumentParser(description="SubOS setup & deployment")
-    p.add_argument("--workspace", default=str(Path.home()/ "SubOS"))
-    p.add_argument("--skip-os-check", action="store_true")
-    sub = p.add_subparsers(dest="cmd")
+def main() -> None:
+    parser = argparse.ArgumentParser(description="SubOS setup & deployment")
+    parser.add_argument("--workspace", default=str(Path.home() / "SubOS"))
+    parser.add_argument("--service-port", type=int, default=DEFAULT_SERVICE_PORT)
+    parser.add_argument("--skip-os-check", action="store_true")
+    parser.add_argument(
+        "--allow-os",
+        action="append",
+        default=[],
+        help="Additional OS release strings to accept (case-insensitive)",
+    )
+    parser.add_argument(
+        "--min-free-gib",
+        type=float,
+        default=8.0,
+        help="Minimum recommended free space on / in GiB",
+    )
+    sub = parser.add_subparsers(dest="cmd")
     sub.add_parser("setup")
     sub.add_parser("deploy")
     sub.add_parser("all")
-    args = p.parse_args()
+
+    args = parser.parse_args()
     ws = Path(args.workspace)
     kube_manifest = ws / "SubOS.yaml"
     cmd = args.cmd or "all"
+
     if cmd in ("setup", "all"):
-        ensure_system(skip_os_check=args.skip_os_check)
+        ensure_system_requirements(
+            skip_os_check=args.skip_os_check,
+            allowed_overrides=args.allow_os,
+            min_free_gib=args.min_free_gib,
+        )
         apt_install()
+        enable_services(log)
+        configure_firewall(args.service_port, log)
         ensure_workspace(ws)
+
     if cmd in ("deploy", "all"):
         deploy_subos(ws, kube_manifest)
+
     log.info("Done.")
 
 
 if __name__ == "__main__":
     try:
         main()
-    except Exception as e:
+    except Exception as e:  # pragma: no cover - CLI tool
         log.error("SubOS failed: %s", e)
         sys.exit(1)

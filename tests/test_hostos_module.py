@@ -1,29 +1,41 @@
+import importlib.util
+from pathlib import Path
 from unittest.mock import patch
 
-from docker.HostOS.HostOS import (
-    enable_services,
-    check_virtualization,
-    configure_firewall,
-)
+HOSTOS_MODULE = Path(__file__).resolve().parents[1] / "docker" / "[1] HostOS" / "HostOS.py"
+spec = importlib.util.spec_from_file_location("hostos_module", HOSTOS_MODULE)
+HostOS = importlib.util.module_from_spec(spec)
+assert spec and spec.loader  # defensive for mypy/static analyzers
+spec.loader.exec_module(HostOS)
+
+enable_services = HostOS.enable_services
+check_virtualization = HostOS.check_virtualization
+configure_firewall = HostOS.configure_firewall
 
 
 class DummyCompleted:
-    def __init__(self, returncode=0):
+    def __init__(self, returncode=0, stdout="", stderr=""):
         self.returncode = returncode
-        self.stdout = b""
-        self.stderr = b""
+        self.stdout = stdout
+        self.stderr = stderr
 
 
 def test_enable_services():
-    with patch("subprocess.run", return_value=DummyCompleted()):
+    with patch("orchestrator_utils.shutil.which", return_value=True), patch(
+        "orchestrator_utils.run", return_value=DummyCompleted()
+    ):
         enable_services()
 
 
 def test_check_virtualization():
-    with patch("subprocess.check_output", return_value=b"vmx"):
+    with patch("orchestrator_utils._detect_cpu_flags", return_value={"vmx", "svm"}), patch(
+        "orchestrator_utils.Path.exists", return_value=True
+    ):
         check_virtualization()
 
 
 def test_configure_firewall():
-    with patch("subprocess.run", return_value=DummyCompleted()):
+    with patch("orchestrator_utils.shutil.which", return_value=True), patch(
+        "orchestrator_utils.run", return_value=DummyCompleted(stdout="Status: active")
+    ):
         configure_firewall(1234)

@@ -40,6 +40,76 @@ metadata:
 data:
   HOSTOS_GREETING: "Welcome to Huey HostOS"
   HOSTOS_PATH: "/workspace"
+  HUEY_DASHBOARD_PORT: "1995"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hostos-workload
+  namespace: hostos
+data:
+  start-hostos.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    export HUEY_DASHBOARD_PORT="${HUEY_DASHBOARD_PORT:-1995}"
+    echo "[HostOS] Starting window manager (if available)" >&2
+    if command -v startxfce4 >/dev/null 2>&1; then
+      (startxfce4 >/var/log/hostos-wm.log 2>&1 &)
+    elif command -v openbox-session >/dev/null 2>&1; then
+      (openbox-session >/var/log/hostos-wm.log 2>&1 &)
+    else
+      echo "[HostOS] No desktop environment found; continuing with dashboard only." >&2
+    fi
+
+    python3 - <<'PY'
+    import http.server
+    import os
+    import socketserver
+    import threading
+    import time
+
+    PORT = int(os.environ.get("HUEY_DASHBOARD_PORT", "1995"))
+
+
+    class HealthHandler(http.server.SimpleHTTPRequestHandler):
+        def do_GET(self):
+            if self.path in {"/healthz", "/readyz"}:
+                self.send_response(200)
+                self.send_header("Content-Type", "text/plain")
+                self.end_headers()
+                self.wfile.write(b"ok")
+                return
+
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(
+                b"<html><body><h1>Huey HostOS Dashboard</h1>"
+                b"<p>Robot operations console is active.</p></body></html>"
+            )
+
+        def log_message(self, *_args, **_kwargs):  # pragma: no cover - quiet logs
+            return
+
+
+    class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+        daemon_threads = True
+
+
+    def control_loop():
+        while True:
+            print("[HostOS] Monitoring subsystems…", flush=True)
+            time.sleep(20)
+
+
+    threading.Thread(target=control_loop, daemon=True).start()
+
+    with ThreadingHTTPServer(("", PORT), HealthHandler) as httpd:
+        print(f"[HostOS] Dashboard listening on port {PORT}", flush=True)
+        httpd.serve_forever()
+    PY
 
 ---
 apiVersion: apps/v1
@@ -64,14 +134,37 @@ spec:
           envFrom:
             - configMapRef:
                 name: hostos-config
+          command: ["/bin/bash", "/opt/hueyos/start-hostos.sh"]
           ports:
             - containerPort: 1995
-              name: http1995
+              name: dashboard
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: dashboard
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: dashboard
+            initialDelaySeconds: 10
+            periodSeconds: 15
           volumeMounts:
             - name: config
               mountPath: /workspace/config
             - name: memory
               mountPath: /workspace/memory
+            - name: hostos-workload
+              mountPath: /opt/hueyos/start-hostos.sh
+              subPath: start-hostos.sh
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -79,6 +172,10 @@ spec:
         - name: memory
           persistentVolumeClaim:
             claimName: hostos-memory
+        - name: hostos-workload
+          configMap:
+            name: hostos-workload
+            defaultMode: 0755
 
 ---
 apiVersion: v1
@@ -90,7 +187,7 @@ spec:
   selector:
     app: hostos-toolbox
   ports:
-    - name: http1995
+    - name: dashboard
       port: 1995
-      targetPort: 1995
+      targetPort: dashboard
   type: ClusterIP
