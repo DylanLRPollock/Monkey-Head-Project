@@ -12,7 +12,7 @@ python3 docker/[2]\ SubOS/SubOS.py --workspace "$HOME/SubOS" --service-port 8080
 python3 docker/[3]\ NanoOS/NanoOS.py --workspace "$HOME/NanoOS" --service-port 8081 all
 ```
 
-Use `--skip-os-check` or provide `--allow-os <name>` if you need to override distribution detection (for example on derivative Debian releases). The `setup` sub-command performs package installation, virtualization/firewall checks, and workspace creation without applying manifests.
+Use `--skip-os-check` or provide `--allow-os <name>` if you need to override distribution detection (for example on derivative Debian releases). The `setup` sub-command performs package installation, virtualization/firewall checks, and workspace creation without applying manifests. When running HostOS on nested hypervisors or macOS, ensure that `/dev/kvm` is available; otherwise the virtualization check will provide remediation guidance (e.g., enabling VT-x/AMD-V or using a KVM-capable host).
 
 ## Applying Kubernetes manifests
 
