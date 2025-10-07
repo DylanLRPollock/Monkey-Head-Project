@@ -30,10 +30,14 @@ from monkey_head.core.task_scheduler import (
     TaskScheduler,
     TaskStatus,
 )
+from monkey_head.hardware import create_default_sensor_manager
+from monkey_head.hardware.plugins import SensorReading
 from monkey_head.honeycomb_index import HoneycombIndex
 from monkey_head.honeycomb_monitor import HoneycombMonitor
 from monkey_head.honeycomb_storage import HoneycombStorage
+from monkey_head.network import NetworkManager
 from monkey_head.pdf_utils import find_pdf, list_available_pdfs
+from monkey_head.power import BatteryMonitor
 from monkey_head.system_checks import system_check
 from monkey_head.utils.auto_sort import auto_sort_memory
 from monkey_head.utils.paths import get_memory_path
@@ -205,6 +209,93 @@ class AnalyzeTextResponse(BaseModel):
     )
 
 
+class SensorMetadata(BaseModel):
+    """Metadata describing a configured sensor plugin."""
+
+    name: str
+    plugin: str
+    module: str
+    config: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SensorPluginsResponse(BaseModel):
+    """Response model listing available sensor plugins."""
+
+    plugins: List[str]
+
+
+class SensorListResponse(BaseModel):
+    """Response payload enumerating configured sensors."""
+
+    sensors: List[SensorMetadata]
+
+
+class SensorRegistrationRequest(BaseModel):
+    """Request body for registering a sensor instance."""
+
+    name: str
+    plugin: str
+    config: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SensorRegistrationResponse(BaseModel):
+    """Response describing a registered sensor."""
+
+    name: str
+    plugin: str
+    config: Dict[str, Any]
+
+
+class SensorReadingResponse(BaseModel):
+    """Single sensor reading returned to API clients."""
+
+    name: str
+    value: Any
+    timestamp: float
+    provenance: Dict[str, Any]
+
+
+class SensorHistoryResponse(BaseModel):
+    """Historical readings for a specific sensor."""
+
+    sensor: str
+    readings: List[SensorReadingResponse]
+
+
+class SensorPollAllResponse(BaseModel):
+    """Response returned when polling all configured sensors."""
+
+    readings: List[SensorReadingResponse]
+
+
+class NetworkStatusResponse(BaseModel):
+    """Current network connectivity status."""
+
+    active_interface: Optional[str]
+    interfaces: Dict[str, Dict[str, Optional[float]]]
+    wired_available: bool
+    wifi_available: bool
+    connected: bool
+    last_checked: float
+
+
+class BatteryStatusResponse(BaseModel):
+    """Current battery metrics."""
+
+    percent: Optional[float]
+    secs_left: Optional[float]
+    power_plugged: Optional[bool]
+    estimated_runtime_minutes: Optional[float]
+
+
+class PowerEventResponse(BaseModel):
+    """Response describing a power management action."""
+
+    timestamp: float
+    action: str
+    metadata: Dict[str, Any]
+
+
 class ServiceStatus(BaseModel):
     """Runtime status for a managed HueyOS service."""
 
@@ -327,6 +418,30 @@ SCHEDULER = TaskScheduler()
 CRASH_MANAGER = CrashRecoveryManager()
 EMERGENCY_CONTROLLER = EmergencyGovernanceController()
 _SERVICE_STATES: Dict[str, ServiceStatus] = {}
+SENSOR_MANAGER = create_default_sensor_manager()
+NETWORK_MANAGER = NetworkManager()
+BATTERY_MONITOR = BatteryMonitor()
+
+
+def _reading_to_response(reading: SensorReading) -> SensorReadingResponse:
+    return SensorReadingResponse(
+        name=reading.name,
+        value=reading.value,
+        timestamp=reading.timestamp,
+        provenance=reading.provenance,
+    )
+
+
+async def _sensor_stream(sensor_name: Optional[str]):
+    queue = SENSOR_MANAGER.subscribe(sensor_name)
+    try:
+        while True:
+            reading = await queue.get()
+            payload = _reading_to_response(reading).json()
+            yield f"data: {payload}\n\n"
+    finally:
+        SENSOR_MANAGER.unsubscribe(queue)
+
 
 
 class ResourceProfileModel(BaseModel):
@@ -641,6 +756,167 @@ def system_status() -> SystemStatusResponse:
     """Return operating system, hardware, and configuration details for HueyOS."""
 
     return _build_system_status()
+
+
+@app.get("/sensors/plugins", response_model=SensorPluginsResponse, tags=["Sensors"])
+def sensor_plugins() -> SensorPluginsResponse:
+    """List available sensor plugin identifiers."""
+
+    plugins = SENSOR_MANAGER.registry.available()
+    return SensorPluginsResponse(plugins=plugins)
+
+
+@app.get("/sensors", response_model=SensorListResponse, tags=["Sensors"])
+def list_sensors() -> SensorListResponse:
+    """Enumerate configured sensors."""
+
+    metadata: List[SensorMetadata] = []
+    for entry in SENSOR_MANAGER.list_sensors():
+        metadata.append(
+            SensorMetadata(
+                name=entry["name"],
+                plugin=str(entry.get("plugin")),
+                module=str(entry.get("module")),
+                config=dict(entry.get("config") or {}),
+            )
+        )
+    return SensorListResponse(sensors=metadata)
+
+
+@app.post(
+    "/sensors/register",
+    response_model=SensorRegistrationResponse,
+    status_code=status.HTTP_201_CREATED,
+    tags=["Sensors"],
+)
+def register_sensor(request: SensorRegistrationRequest) -> SensorRegistrationResponse:
+    """Register a new sensor plugin instance at runtime."""
+
+    try:
+        SENSOR_MANAGER.add_sensor(request.plugin, request.name, request.config)
+    except KeyError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Unknown sensor plugin {request.plugin!r}",
+        ) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    return SensorRegistrationResponse(
+        name=request.name,
+        plugin=request.plugin,
+        config=dict(request.config),
+    )
+
+
+@app.delete("/sensors/{sensor_name}", tags=["Sensors"])
+def remove_sensor(sensor_name: str) -> Dict[str, str]:
+    """Remove a configured sensor instance."""
+
+    if SENSOR_MANAGER.get_sensor(sensor_name) is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found")
+    SENSOR_MANAGER.remove_sensor(sensor_name)
+    return {"status": "removed", "sensor": sensor_name}
+
+
+@app.post(
+    "/sensors/{sensor_name}/poll",
+    response_model=SensorReadingResponse,
+    tags=["Sensors"],
+)
+def poll_sensor(sensor_name: str) -> SensorReadingResponse:
+    """Poll a single sensor and store the reading in honeycomb storage."""
+
+    try:
+        reading = SENSOR_MANAGER.poll_sensor(sensor_name)
+    except KeyError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found") from exc
+    except Exception as exc:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
+    return _reading_to_response(reading)
+
+
+@app.post("/sensors/poll", response_model=SensorPollAllResponse, tags=["Sensors"])
+def poll_all_sensors() -> SensorPollAllResponse:
+    """Poll every configured sensor."""
+
+    readings = [_reading_to_response(reading) for reading in SENSOR_MANAGER.poll_all()]
+    return SensorPollAllResponse(readings=readings)
+
+
+@app.get(
+    "/sensors/{sensor_name}/history",
+    response_model=SensorHistoryResponse,
+    tags=["Sensors"],
+)
+def sensor_history(
+    sensor_name: str,
+    limit: int = Query(50, ge=1, le=500, description="Maximum number of readings to return"),
+) -> SensorHistoryResponse:
+    """Return historical sensor readings from honeycomb storage."""
+
+    if SENSOR_MANAGER.get_sensor(sensor_name) is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found")
+    history = SENSOR_MANAGER.load_history(sensor_name, limit=limit)
+    readings = [SensorReadingResponse(**record) for record in history]
+    return SensorHistoryResponse(sensor=sensor_name, readings=readings)
+
+
+@app.get("/sensors/{sensor_name}/stream", tags=["Sensors"])
+async def stream_sensor(sensor_name: str) -> StreamingResponse:
+    """Stream real-time readings for ``sensor_name`` using server-sent events."""
+
+    if SENSOR_MANAGER.get_sensor(sensor_name) is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found")
+    return StreamingResponse(_sensor_stream(sensor_name), media_type="text/event-stream")
+
+
+@app.get("/sensors/stream", tags=["Sensors"])
+async def stream_all_sensors() -> StreamingResponse:
+    """Stream readings for all sensors using server-sent events."""
+
+    return StreamingResponse(_sensor_stream(None), media_type="text/event-stream")
+
+
+@app.get("/network/status", response_model=NetworkStatusResponse, tags=["Network"])
+def network_status() -> NetworkStatusResponse:
+    """Return the most recent network connectivity snapshot."""
+
+    status_snapshot = NETWORK_MANAGER.check_status()
+    return NetworkStatusResponse(**status_snapshot.__dict__)
+
+
+@app.post("/network/ensure", response_model=NetworkStatusResponse, tags=["Network"])
+def ensure_network_connectivity() -> NetworkStatusResponse:
+    """Ensure wired connectivity is preferred with Wi-Fi failover."""
+
+    status_snapshot = NETWORK_MANAGER.ensure_connectivity()
+    return NetworkStatusResponse(**status_snapshot.__dict__)
+
+
+@app.get("/power/battery", response_model=BatteryStatusResponse, tags=["Power"])
+def battery_status() -> BatteryStatusResponse:
+    """Expose the current battery status."""
+
+    status = BATTERY_MONITOR.get_status()
+    return BatteryStatusResponse(**status)
+
+
+@app.get("/power/should-shutdown", tags=["Power"])
+def power_should_shutdown() -> Dict[str, Any]:
+    """Return whether the system recommends a safe shutdown."""
+
+    return {
+        "should_shutdown": BATTERY_MONITOR.should_shutdown(),
+        "threshold": BATTERY_MONITOR.shutdown_threshold,
+    }
+
+
+@app.post("/power/shutdown", response_model=PowerEventResponse, tags=["Power"])
+def trigger_shutdown() -> PowerEventResponse:
+    """Initiate a safe shutdown sequence."""
+
+    event = BATTERY_MONITOR.initiate_shutdown()
+    return PowerEventResponse(timestamp=event.timestamp, action=event.action, metadata=event.metadata)
 
 
 @app.get(
