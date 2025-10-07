@@ -192,6 +192,20 @@ make run
 docker compose -f docker/compose.yml up
 ```
 
+### Kubernetes deployments
+
+Each orchestrator synchronises a workspace that contains the Kubernetes manifests generated in `docker/[1-3]`. After running
+`HostOS.py`, `SubOS.py` or `NanoOS.py` with the `deploy` subcommand (or `all`), apply the manifests with `kubectl`:
+
+```bash
+kubectl apply -f $HOSTOS_PATH/HostOS.yaml
+kubectl apply -f $SUBOS_PATH/SubOS.yaml
+kubectl apply -f $NANOOS_PATH/NanoOS.yaml
+```
+
+Update `kubectl` contexts as required for your cluster. The deployments expose readiness/liveness probes and create persistent
+volume claims, so ensure the target storage class supports `ReadWriteOnce` access.
+
 **Run tests**
 ```bash
 make test

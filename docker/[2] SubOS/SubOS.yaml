@@ -24,14 +24,51 @@ spec:
         - name: subos
           image: subos:local
           imagePullPolicy: IfNotPresent
-          command: ["/bin/sh","-lc"]
-          args: ["sleep infinity"]
+          command: ["python"]
+          args:
+            - "-m"
+            - "monkey_head.services.subos_runtime"
+            - "--port"
+            - "8080"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
           volumeMounts:
             - name: workspace
               mountPath: /home/subos/SubOS
       volumes:
         - name: workspace
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: subos-workspace
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: subos-workspace
+  namespace: subos
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
 
 ---
 apiVersion: v1

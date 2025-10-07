@@ -28,6 +28,8 @@ show-in-file-manager>=1.1.4
 # Utilities
 regex>=2023.3.23
 rich>=13.3.4
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
 
 # Dev / packaging
 pytest>=7.4.3

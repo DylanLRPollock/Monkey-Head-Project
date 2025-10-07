@@ -39,17 +39,58 @@ spec:
           envFrom:
             - configMapRef:
                 name: hostos-config
-          command: ["/bin/sh","-lc"]
-          args: ["sleep infinity"]
+          command: ["python"]
+          args:
+            - "-m"
+            - "monkey_head.services.hostos_runtime"
+            - "--vnc-port"
+            - "5901"
+            - "--dashboard-port"
+            - "8000"
           ports:
             - containerPort: 5901
               name: vnc
+            - containerPort: 8000
+              name: dashboard
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2"
+              memory: "4Gi"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: dashboard
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: dashboard
+            initialDelaySeconds: 15
+            periodSeconds: 15
           volumeMounts:
             - name: workspace
               mountPath: /home/hostos/HostOS
       volumes:
         - name: workspace
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: hostos-workspace
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hostos-workspace
+  namespace: hostos
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
 
 ---
 apiVersion: v1
@@ -64,4 +105,7 @@ spec:
     - name: vnc
       port: 5901
       targetPort: 5901
+    - name: dashboard
+      port: 8000
+      targetPort: 8000
   type: ClusterIP

@@ -5,12 +5,24 @@
 # Updated: 2025-08-09
 # ==================================================
 import argparse
-import os
-import shutil
 import logging
-import subprocess
+import os
+import platform
+import shutil
 import sys
 from pathlib import Path
+
+UTILS_ROOT = Path(__file__).resolve().parents[1]
+if str(UTILS_ROOT) not in sys.path:
+    sys.path.insert(0, str(UTILS_ROOT))
+
+from orchestrator_utils import (
+    apt_install,
+    configure_firewall,
+    ensure_system_requirements,
+    ensure_workspace,
+    run,
+)
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -30,104 +42,74 @@ REQUIRED_APT = [
     "ufw",
 ]
 
-
-def run(cmd, check=True, **popen_kwargs):
-    log.debug("→ %s", " ".join(cmd))
-    proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, **popen_kwargs)
-    if proc.returncode != 0 and check:
-        log.error("Command failed: %s\nstdout:\n%s\nstderr:\n%s", " ".join(cmd), proc.stdout, proc.stderr)
-        raise RuntimeError(f"Command failed: {' '.join(cmd)} (code {proc.returncode})")
-    return proc
-
-
-def is_debian_trixie():
-    try:
-        with open("/etc/os-release") as f:
-            content = f.read().lower()
-        return "debian" in content and any(k in content for k in ("trixie", "testing"))
-    except Exception:
-        return False
-
-
-def ensure_system_requirements(skip_os_check=False):
-    log.info("Performing system checks for HostOS…")
-    if not skip_os_check and not is_debian_trixie():
-        raise RuntimeError("Debian Trixie/Testing not detected. Set --skip-os-check to bypass.")
-
-    # Disk space on /
-    usage = shutil.disk_usage("/")
-    free_gib = usage.free / (1024 ** 3)
-    log.info("Free space on /: %.2f GiB", free_gib)
-
-    # Internet connectivity (try multiple targets)
-    for host in ("1.1.1.1", "8.8.8.8", "google.com"):
-        try:
-            proc = run(["ping", "-c", "1", "-W", "2", host], check=False)
-            if proc.returncode == 0:
-                log.info("Internet OK via %s", host)
-                break
-        except Exception:
-            pass
-    else:
-        raise RuntimeError("Internet connectivity check failed.")
-
-    # Git availability quick check
-    if shutil.which("git") is None:
-        log.warning("git not found; will be installed in setup phase.")
-
-
-def apt_install():
-    log.info("Installing HostOS tools via apt…")
-    run(["sudo", "apt-get", "update"])
-    run(["sudo", "apt-get", "install", "-y", "--no-install-recommends"] + REQUIRED_APT)
+DEFAULT_ALLOWED_DISTROS = [
+    "debian:trixie",
+    "debian:testing",
+    "debian:bookworm",
+    "debian:stable",
+]
 
 
 def enable_services():
     log.info("Enabling and starting Docker…")
     if shutil.which("systemctl"):
-        run(["sudo", "systemctl", "enable", "--now", "docker"])
+        run(["sudo", "systemctl", "enable", "--now", "docker"], logger=log)
     else:
-        # Fallback for non-systemd
-        run(["sudo", "service", "docker", "start"], check=False)
+        run(["sudo", "service", "docker", "start"], check=False, logger=log)
 
-    # Add current user to docker group so `docker` works without sudo next session
     try:
-        run(["sudo", "usermod", "-aG", "docker", os.getlogin()], check=False)
+        run(["sudo", "usermod", "-aG", "docker", os.getlogin()], check=False, logger=log)
     except Exception:
         pass
 
 
-def check_virtualization():
+def check_virtualization(skip_check: bool = False) -> None:
+    if skip_check:
+        log.warning("Skipping virtualization capability verification.")
+        return
+
     log.info("Checking virtualization support…")
     flags = ""
     try:
-        flags = run(["bash", "-lc", "egrep -o 'vmx|svm' /proc/cpuinfo | sort -u | tr '\\n' ' '"], check=False).stdout.strip()
+        flags = (
+            run(
+                [
+                    "bash",
+                    "-lc",
+                    "egrep -o 'vmx|svm' /proc/cpuinfo | sort -u | tr '\n' ' '",
+                ],
+                check=False,
+                logger=log,
+            ).stdout.strip()
+        )
     except Exception:
         pass
     kvm_ok = Path("/dev/kvm").exists()
     if not flags and not kvm_ok:
-        raise RuntimeError("Virtualization not detected (no vmx/svm and /dev/kvm missing).")
-    log.info("Virtualization flags: %s | /dev/kvm: %s", flags or "none", "present" if kvm_ok else "absent")
+        guidance = [
+            "Hardware virtualization was not detected (no vmx/svm CPU flags and /dev/kvm is missing).",
+            "Enable virtualization extensions in your BIOS/UEFI or cloud instance settings.",
+        ]
+        if platform.system() == "Darwin":
+            guidance.append(
+                "On macOS hosts consider installing QEMU (brew install qemu) and using HVF/TCG acceleration."
+            )
+        else:
+            guidance.append(
+                "If hardware acceleration cannot be enabled, use QEMU's software emulation (qemu-system-x86_64 -accel tcg)."
+            )
+        raise RuntimeError(" ".join(guidance))
 
+    if not kvm_ok:
+        log.warning(
+            "/dev/kvm is unavailable; KVM acceleration will be disabled. QEMU software emulation will be used instead."
+        )
 
-def configure_firewall(port: int):
-    if shutil.which("ufw") is None:
-        log.warning("ufw not installed; skipping firewall configuration.")
-        return
-    log.info("Configuring UFW: allow %d", port)
-    run(["sudo", "ufw", "allow", str(port)], check=False)
-
-
-def ensure_workspace(path: Path):
-    path.mkdir(parents=True, exist_ok=True)
-    bashrc = Path.home() / ".bashrc"
-    export_line = f"\nexport HOSTOS_PATH={str(path)}\n"
-    try:
-        content = bashrc.read_text()
-        if "HOSTOS_PATH" not in content:
-            bashrc.write_text(content + export_line)
-    except FileNotFoundError:
-        bashrc.write_text(export_line)
+    log.info(
+        "Virtualization flags: %s | /dev/kvm: %s",
+        flags or "none",
+        "present" if kvm_ok else "absent",
+    )
 
 
 def deploy_hostos(workspace: Path, kube_manifest: Path):
@@ -137,15 +119,15 @@ def deploy_hostos(workspace: Path, kube_manifest: Path):
     # docker compose up -d (prefer plugin)
     compose_cmd = ["docker", "compose", "up", "-d"] if shutil.which("docker") else None
     if compose_cmd:
-        res = run(compose_cmd, check=False)
+        res = run(compose_cmd, check=False, logger=log)
         if res.returncode != 0 and shutil.which("docker-compose"):
-            run(["docker-compose", "up", "-d"])
+            run(["docker-compose", "up", "-d"], logger=log)
     else:
         log.warning("Docker not found; skipping docker compose step.")
 
     # kubectl apply if available and manifest exists
     if kube_manifest.exists() and shutil.which("kubectl"):
-        run(["kubectl", "apply", "-f", str(kube_manifest)])
+        run(["kubectl", "apply", "-f", str(kube_manifest)], logger=log)
     elif kube_manifest.exists():
         log.warning("kubectl not found; skipped applying %s", kube_manifest.name)
     else:
@@ -154,9 +136,20 @@ def deploy_hostos(workspace: Path, kube_manifest: Path):
 
 def main():
     parser = argparse.ArgumentParser(description="HostOS setup & deployment tool")
-    parser.add_argument("--workspace", default=str(Path.home()/ "HostOS"), help="Workspace directory (default: ~/HostOS)")
+    parser.add_argument("--workspace", default=str(Path.home() / "HostOS"), help="Workspace directory (default: ~/HostOS)")
     parser.add_argument("--vnc-port", type=int, default=5901, help="Port to open in firewall")
     parser.add_argument("--skip-os-check", action="store_true", help="Bypass Debian Trixie check")
+    parser.add_argument(
+        "--allow-distro",
+        action="append",
+        dest="allowed_distros",
+        help="Additional distribution identifiers to allow (format distro:codename)",
+    )
+    parser.add_argument(
+        "--skip-virtualization-check",
+        action="store_true",
+        help="Skip virtualization capability validation",
+    )
     sub = parser.add_subparsers(dest="cmd")
 
     sub.add_parser("setup", help="Install packages, enable services, prepare workspace")
@@ -169,13 +162,22 @@ def main():
 
     cmd = args.cmd or "all"
 
+    allowed_distros = DEFAULT_ALLOWED_DISTROS.copy()
+    if args.allowed_distros:
+        allowed_distros.extend(args.allowed_distros)
+
     if cmd in ("setup", "all"):
-        ensure_system_requirements(skip_os_check=args.skip_os_check)
-        apt_install()
+        ensure_system_requirements(
+            component_name="HostOS",
+            skip_os_check=args.skip_os_check,
+            allowed_distributions=allowed_distros,
+            logger=log,
+        )
+        apt_install(REQUIRED_APT, logger=log)
         enable_services()
-        check_virtualization()
-        configure_firewall(args.vnc_port)
-        ensure_workspace(ws)
+        check_virtualization(skip_check=args.skip_virtualization_check)
+        configure_firewall(args.vnc_port, comment="HostOS VNC", logger=log)
+        ensure_workspace(ws, "HOSTOS_PATH", logger=log)
 
     if cmd in ("deploy", "all"):
         deploy_hostos(ws, kube_manifest)

@@ -24,14 +24,51 @@ spec:
         - name: nanoos
           image: nanoos:local
           imagePullPolicy: IfNotPresent
-          command: ["/bin/sh","-lc"]
-          args: ["sleep infinity"]
+          command: ["python"]
+          args:
+            - "-m"
+            - "monkey_head.services.nano_runtime"
+            - "--port"
+            - "8081"
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "750m"
+              memory: "1Gi"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8081
+            initialDelaySeconds: 8
+            periodSeconds: 10
           volumeMounts:
             - name: workspace
               mountPath: /home/nanoos/NanoOS
       volumes:
         - name: workspace
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: nanoos-workspace
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nanoos-workspace
+  namespace: nanoos
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
 
 ---
 apiVersion: v1

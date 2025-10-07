@@ -10,3 +10,5 @@ opencv-python>=4.8.1.78
 PyAudio>=0.2.14
 pytest>=7.4.3
 pip-tools>=7.3.0
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
