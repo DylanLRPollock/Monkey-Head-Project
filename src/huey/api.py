@@ -26,6 +26,9 @@ from monkey_head.core.task_scheduler import (
     TaskScheduler,
     TaskStatus,
 )
+from monkey_head.honeycomb_index import HoneycombIndex
+from monkey_head.honeycomb_monitor import HoneycombMonitor
+from monkey_head.honeycomb_storage import HoneycombStorage
 from monkey_head.pdf_utils import find_pdf, list_available_pdfs
 from monkey_head.system_checks import system_check
 from monkey_head.utils.auto_sort import auto_sort_memory
@@ -113,6 +116,51 @@ class AutoSortResponse(BaseModel):
     destination: str
     moved: List[str]
     skipped: List[str]
+
+
+class HoneycombUsageEntry(BaseModel):
+    """Metrics for a single comb inside the honeycomb storage."""
+
+    comb: str
+    cells: int
+    payload_bytes: int
+    oldest: Optional[float]
+    newest: Optional[float]
+
+
+class HoneycombContentUsage(BaseModel):
+    """Aggregated metrics for a logical content type."""
+
+    content_type: str
+    cells: int
+    payload_bytes: int
+    oldest: Optional[float]
+    newest: Optional[float]
+
+
+class HoneycombGrowthSample(BaseModel):
+    """Historical growth sample for the honeycomb."""
+
+    date: str
+    cells: int
+
+
+class HoneycombUsageTotals(BaseModel):
+    """Aggregate totals summarising honeycomb usage."""
+
+    cells: int
+    payload_bytes: int
+    combs: int
+    last_update: Optional[float]
+
+
+class HoneycombUsageResponse(BaseModel):
+    """Response payload describing honeycomb utilisation."""
+
+    summary: List[HoneycombUsageEntry]
+    totals: HoneycombUsageTotals
+    content_types: List[HoneycombContentUsage]
+    growth: List[HoneycombGrowthSample]
 
 
 class ProcessTextRequest(BaseModel):
@@ -520,6 +568,37 @@ def auto_sort(request: AutoSortRequest) -> AutoSortResponse:
     except FileNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     return AutoSortResponse(**summary)
+
+
+@app.get(
+    "/memory/honeycomb/usage",
+    response_model=HoneycombUsageResponse,
+    tags=["Memory"],
+)
+def honeycomb_usage(
+    window_days: int = Query(
+        30,
+        ge=1,
+        le=365,
+        description="Number of days to include when calculating growth statistics.",
+    )
+) -> HoneycombUsageResponse:
+    """Return aggregate metrics describing honeycomb storage utilisation."""
+
+    with HoneycombStorage() as storage:
+        index = HoneycombIndex(storage)
+        monitor = HoneycombMonitor(storage, index=index)
+        report = monitor.build_usage_report(window_days=window_days)
+    summary = [HoneycombUsageEntry(**item) for item in report["summary"]]
+    content_types = [HoneycombContentUsage(**item) for item in report["content_types"]]
+    totals = HoneycombUsageTotals(**report["totals"])
+    growth = [HoneycombGrowthSample(**item) for item in report["growth"]]
+    return HoneycombUsageResponse(
+        summary=summary,
+        totals=totals,
+        content_types=content_types,
+        growth=growth,
+    )
 
 
 @app.post(
