@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import logging
 import os
+import platform
 import shutil
 import subprocess
 from pathlib import Path
@@ -197,10 +198,37 @@ def _detect_cpu_flags() -> set[str]:
     return {flag.lower() for flag in flags}
 
 
+def _probe_virtualization_environment(logger: logging.Logger) -> str | None:
+    """Return the detected virtualization environment, if any."""
+
+    if shutil.which("systemd-detect-virt") is None:
+        logger.debug("systemd-detect-virt not available on this host.")
+        return None
+
+    proc = run(["systemd-detect-virt"], logger, check=False)
+    if proc.returncode == 0:
+        output = (proc.stdout or proc.stderr or "").strip()
+        return output or "unknown"
+    if proc.returncode == 1:
+        return "bare-metal"
+
+    logger.debug(
+        "systemd-detect-virt returned %s (stdout=%r, stderr=%r)",
+        proc.returncode,
+        getattr(proc, "stdout", ""),
+        getattr(proc, "stderr", ""),
+    )
+    return None
+
+
 def check_virtualization(logger: logging.Logger) -> None:
     """Verify that hardware virtualization is available for KVM/QEMU."""
 
     logger.info("Checking virtualization support…")
+    virt_env = _probe_virtualization_environment(logger)
+    if virt_env:
+        logger.info("Detected virtualization environment: %s", virt_env)
+
     flags = _detect_cpu_flags()
     kvm_path = Path("/dev/kvm")
     kvm_ok = kvm_path.exists()
@@ -209,14 +237,22 @@ def check_virtualization(logger: logging.Logger) -> None:
     logger.debug("/dev/kvm present: %s", kvm_ok)
 
     if {"vmx", "svm"} & flags and kvm_ok:
-        logger.info("Hardware virtualization available (flags: %s).", ", ".join(sorted({"vmx", "svm"} & flags)))
+        logger.info(
+            "Hardware virtualization available (flags: %s).",
+            ", ".join(sorted({"vmx", "svm"} & flags)),
+        )
         return
 
+    platform_hint = platform.system()
     guidance = (
         "Hardware virtualization was not detected. Ensure that VT-x/AMD-V is enabled in BIOS/UEFI. "
         "If you are running inside a macOS hypervisor or unsupported cloud VM, enable nested virtualization or "
         "consider using a QEMU/KVM capable host."
     )
+    if platform_hint.lower() == "darwin":
+        guidance += " macOS hosts require a hypervisor that exposes /dev/kvm (for example via UTM or QEMU)."
+    elif virt_env and virt_env != "bare-metal":
+        guidance += f" Detected virtualization layer: {virt_env}. Ensure it supports nested virtualization."
 
     missing_bits: list[str] = []
     if not ({"vmx", "svm"} & flags):
