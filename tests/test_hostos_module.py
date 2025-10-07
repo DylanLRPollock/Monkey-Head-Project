@@ -30,7 +30,7 @@ def test_enable_services():
 def test_check_virtualization():
     with patch("orchestrator_utils._detect_cpu_flags", return_value={"vmx", "svm"}), patch(
         "orchestrator_utils.Path.exists", return_value=True
-    ):
+    ), patch("orchestrator_utils._probe_virtualization_environment", return_value="bare-metal"):
         check_virtualization()
 
 
