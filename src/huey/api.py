@@ -18,6 +18,10 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from huey.memory.PY.ai_processor import AIProcessor
+from monkey_head.core.resilience import (
+    CrashRecoveryManager,
+    EmergencyGovernanceController,
+)
 from monkey_head.core.task_scheduler import (
     Agent,
     ResourceProfile,
@@ -227,8 +231,101 @@ class SystemCheckResponse(BaseModel):
     passed: bool = Field(..., description="True when every reported check passed")
 
 
+class CrashEventModel(BaseModel):
+    """Serialized representation of :class:`CrashEvent`."""
+
+    process: str
+    timestamp: float
+    restarted: bool
+    message: str
+    metadata: Dict[str, Any]
+
+
+class MonitoredProcessStatusModel(BaseModel):
+    """Status information for a process monitored by the resilience manager."""
+
+    name: str
+    healthy: bool
+    auto_restart: bool
+    last_heartbeat: Optional[float]
+    last_restart: Optional[float]
+    restart_attempts: int
+    manual_override_reason: Optional[str]
+
+
+class CrashPollResponse(BaseModel):
+    """Response emitted after polling the crash recovery manager."""
+
+    events: List[CrashEventModel]
+
+
+class ManualOverrideRequest(BaseModel):
+    """Request payload used to toggle automatic crash recovery."""
+
+    auto_restart: bool = Field(
+        ..., description="Set to False to disable automatic restarts"
+    )
+    reason: Optional[str] = Field(
+        None,
+        description="Operator reason recorded when disabling automatic restarts",
+    )
+
+
+class EmergencyServiceStatus(BaseModel):
+    """Metadata about a service managed during emergency mode."""
+
+    name: str
+    essential: bool
+    managed: bool
+
+
+class EmergencyStatusResponse(BaseModel):
+    """Snapshot of the emergency governance controller state."""
+
+    state: str
+    active_since: Optional[float]
+    reason: Optional[str]
+    triggered_by: Optional[str]
+    approvals: List[str]
+    services: List[EmergencyServiceStatus]
+
+
+class EmergencyModeRequest(BaseModel):
+    """Parameters needed to activate emergency mode."""
+
+    triggered_by: str = Field(..., description="Agent or operator requesting mode")
+    reason: str = Field(..., description="Human readable reason for emergency")
+    approvals: List[str] = Field(
+        default_factory=list,
+        description="List of additional approvers for quorum validation",
+    )
+
+
+class EmergencyExitRequest(BaseModel):
+    """Parameters required to exit emergency mode."""
+
+    requested_by: str = Field(..., description="Operator requesting exit")
+    approvals: List[str] = Field(
+        default_factory=list,
+        description="Approvers confirming exit is safe",
+    )
+
+
+class EmergencyActionRequest(BaseModel):
+    """Request payload for actions that require dual authorisation."""
+
+    actor: str = Field(..., description="Agent initiating the action")
+    approvals: List[str] = Field(
+        default_factory=list,
+        description="Additional approvers satisfying quorum",
+    )
+    action: str = Field(..., description="Description of the requested action")
+
+
 AI_PROCESSOR = AIProcessor()
 SCHEDULER = TaskScheduler()
+CRASH_MANAGER = CrashRecoveryManager()
+EMERGENCY_CONTROLLER = EmergencyGovernanceController()
 _SERVICE_STATES: Dict[str, ServiceStatus] = {}
 
 
@@ -438,6 +535,31 @@ def _update_service_status(name: str, status_value: str) -> ServiceStatus:
     return state
 
 
+def _monitor_status(name: str) -> MonitoredProcessStatusModel:
+    """Return the status object for ``name`` or raise ``KeyError``."""
+
+    for status in CRASH_MANAGER.statuses():
+        if status["name"] == name:
+            return MonitoredProcessStatusModel(**status)
+    raise KeyError(f"Unknown monitored process: {name}")
+
+
+def _register_default_emergency_services() -> None:
+    """Register baseline services that are paused during emergencies."""
+
+    service_names = ("spark-agent", "zap-agent", "ollama")
+    for service_name in service_names:
+        EMERGENCY_CONTROLLER.register_service(
+            service_name,
+            stop=lambda name=service_name: _update_service_status(name, "stopped"),
+            start=lambda name=service_name: _update_service_status(name, "running"),
+            essential=False,
+        )
+
+
+_register_default_emergency_services()
+
+
 @app.get("/healthz", tags=["System"])
 def healthz() -> Dict[str, str]:
     """Lightweight probe used by orchestrators to ensure the API is responsive."""
@@ -519,6 +641,78 @@ def system_status() -> SystemStatusResponse:
     """Return operating system, hardware, and configuration details for HueyOS."""
 
     return _build_system_status()
+
+
+@app.get(
+    "/resilience/monitors",
+    response_model=List[MonitoredProcessStatusModel],
+    tags=["Resilience"],
+)
+def list_monitored_processes() -> List[MonitoredProcessStatusModel]:
+    """Return the set of processes being watched by the crash manager."""
+
+    return [MonitoredProcessStatusModel(**status) for status in CRASH_MANAGER.statuses()]
+
+
+@app.post(
+    "/resilience/monitors/{name}/override",
+    response_model=MonitoredProcessStatusModel,
+    tags=["Resilience"],
+)
+def override_monitored_process(name: str, request: ManualOverrideRequest) -> MonitoredProcessStatusModel:
+    """Enable or disable automatic crash recovery for the given process."""
+
+    try:
+        CRASH_MANAGER.set_auto_restart(name, request.auto_restart, reason=request.reason)
+    except KeyError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    return _monitor_status(name)
+
+
+@app.post(
+    "/resilience/monitors/{name}/restart",
+    response_model=MonitoredProcessStatusModel,
+    tags=["Resilience"],
+)
+def manual_restart_monitored_process(name: str) -> MonitoredProcessStatusModel:
+    """Force a restart for a monitored process regardless of overrides."""
+
+    try:
+        CRASH_MANAGER.manual_restart(name)
+    except KeyError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    return _monitor_status(name)
+
+
+@app.post(
+    "/resilience/poll",
+    response_model=CrashPollResponse,
+    tags=["Resilience"],
+)
+def poll_crash_manager() -> CrashPollResponse:
+    """Poll the crash manager and return any crash events."""
+
+    events = [
+        CrashEventModel(
+            process=event.process,
+            timestamp=event.timestamp,
+            restarted=event.restarted,
+            message=event.message,
+            metadata=event.metadata,
+        )
+        for event in CRASH_MANAGER.poll()
+    ]
+    return CrashPollResponse(events=events)
+
+
+@app.post(
+    "/resilience/watchdog/ping",
+    tags=["Resilience"],
+)
+def watchdog_ping() -> Dict[str, bool]:
+    """Forward a watchdog heartbeat to the host environment."""
+
+    return {"watchdog": CRASH_MANAGER.ping_watchdog()}
 
 
 @app.get("/memory/pdfs", response_model=PDFListResponse, tags=["Memory"])
@@ -637,6 +831,83 @@ def ai_analyze_text(request: AnalyzeTextRequest) -> AnalyzeTextResponse:
 
     metrics = AI_PROCESSOR.analyze_data(request.text)
     return AnalyzeTextResponse(metrics=metrics)
+
+
+@app.get(
+    "/governance/emergency/status",
+    response_model=EmergencyStatusResponse,
+    tags=["Governance"],
+)
+def emergency_status() -> EmergencyStatusResponse:
+    """Return the current emergency governance state."""
+
+    snapshot = EMERGENCY_CONTROLLER.status()
+    services = [EmergencyServiceStatus(**service) for service in snapshot["services"]]
+    return EmergencyStatusResponse(
+        state=snapshot["state"],
+        active_since=snapshot["active_since"],
+        reason=snapshot["reason"],
+        triggered_by=snapshot["triggered_by"],
+        approvals=snapshot["approvals"],
+        services=services,
+    )
+
+
+@app.post(
+    "/governance/emergency/enter",
+    response_model=EmergencyStatusResponse,
+    tags=["Governance"],
+)
+def enter_emergency_mode(request: EmergencyModeRequest) -> EmergencyStatusResponse:
+    """Enter emergency mode after validating approvals."""
+
+    try:
+        EMERGENCY_CONTROLLER.enter_emergency_mode(
+            triggered_by=request.triggered_by,
+            reason=request.reason,
+            approvals=request.approvals,
+        )
+    except PermissionError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    return emergency_status()
+
+
+@app.post(
+    "/governance/emergency/exit",
+    response_model=EmergencyStatusResponse,
+    tags=["Governance"],
+)
+def exit_emergency_mode(request: EmergencyExitRequest) -> EmergencyStatusResponse:
+    """Exit emergency mode when sufficient approvals are provided."""
+
+    try:
+        EMERGENCY_CONTROLLER.exit_emergency_mode(
+            requested_by=request.requested_by,
+            approvals=request.approvals,
+        )
+    except PermissionError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    return emergency_status()
+
+
+@app.post(
+    "/governance/emergency/action",
+    tags=["Governance"],
+)
+def emergency_authorised_action(request: EmergencyActionRequest) -> Dict[str, str]:
+    """Validate that an emergency action has dual authorisation."""
+
+    try:
+        EMERGENCY_CONTROLLER.request_authorised_action(
+            actor=request.actor,
+            approvals=request.approvals,
+            action=request.action,
+        )
+    except PermissionError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    return {"status": "authorised", "action": request.action}
 
 
 @app.get("/admin/services", response_model=ServicesOverviewResponse, tags=["Administration"])
