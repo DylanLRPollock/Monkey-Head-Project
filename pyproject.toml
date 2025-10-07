@@ -113,6 +113,7 @@ dev = [
 ]
 
 [project.scripts]
+huey = "huey.cli:main"
 huey-api = "huey.api:app"
 
 [build-system]

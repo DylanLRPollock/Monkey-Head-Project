@@ -199,6 +199,27 @@ make test
 pytest -vv
 ```
 
+**Command-line interface**
+```bash
+# Prepare the shared memory workspace and run compatibility checks
+huey init --run-checks --verbose
+
+# Launch HueyOS with optional ML + cloud profiles enabled
+huey run --ml --cloud
+
+# Inspect host readiness with detailed output
+huey system-check --verbose
+
+# Deploy core services via Docker and Kubernetes manifests
+huey deploy --mode all --compose-file docker-compose.yml --manifest k8s.yaml
+
+# Summarise agent workload and resource health as JSON
+huey agent-status --json
+
+# Sort collected artefacts without modifying the filesystem
+huey memory-sort --dry-run --json
+```
+
 ---
 
 ## Contributing
