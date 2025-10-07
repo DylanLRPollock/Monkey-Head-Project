@@ -9,7 +9,7 @@ import time
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterator, List, Optional
+from typing import Any, Dict, Iterator, List, Optional
 
 from monkey_head.utils.paths import ensure_subdirectory
 
@@ -180,6 +180,116 @@ class HoneycombStorage:
             cursor = self._conn.cursor()
             cursor.execute("DELETE FROM honeycomb_cells WHERE full_key = ?", (key,))
             self._conn.commit()
+
+    def count(self, prefix: Optional[str] = None) -> int:
+        """Return the number of stored cells optionally scoped by ``prefix``."""
+
+        with self._lock:
+            cursor = self._conn.cursor()
+            if prefix is None:
+                cursor.execute("SELECT COUNT(*) FROM honeycomb_cells")
+            else:
+                cursor.execute(
+                    "SELECT COUNT(*) FROM honeycomb_cells WHERE full_key LIKE ?",
+                    (f"{prefix}%",),
+                )
+            (count,) = cursor.fetchone()
+        return int(count)
+
+    def prune(self, prefix: str, *, older_than: float) -> int:
+        """Remove cells matching ``prefix`` older than ``older_than`` seconds."""
+
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute(
+                "DELETE FROM honeycomb_cells WHERE full_key LIKE ? AND updated_at < ?",
+                (f"{prefix}%", older_than),
+            )
+            deleted = cursor.rowcount or 0
+            self._conn.commit()
+        return int(deleted)
+
+    def comb_usage(self) -> List[Dict[str, Any]]:
+        """Return aggregate metrics for each comb stored in the database."""
+
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute(
+                """
+                SELECT
+                    comb,
+                    COUNT(*) AS cells,
+                    SUM(LENGTH(payload)) AS payload_bytes,
+                    MIN(created_at) AS oldest,
+                    MAX(updated_at) AS newest
+                FROM honeycomb_cells
+                GROUP BY comb
+                ORDER BY comb ASC
+                """
+            )
+            rows = cursor.fetchall()
+        usage: List[Dict[str, Any]] = []
+        for row in rows:
+            usage.append(
+                {
+                    "comb": row["comb"],
+                    "cells": int(row["cells"]),
+                    "payload_bytes": int(row["payload_bytes"] or 0),
+                    "oldest": row["oldest"],
+                    "newest": row["newest"],
+                }
+            )
+        return usage
+
+    def prefix_metrics(self, prefix: str) -> Dict[str, Any]:
+        """Return aggregate metrics scoped to ``prefix``."""
+
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute(
+                """
+                SELECT
+                    COUNT(*) AS cells,
+                    SUM(LENGTH(payload)) AS payload_bytes,
+                    MIN(created_at) AS oldest,
+                    MAX(updated_at) AS newest
+                FROM honeycomb_cells
+                WHERE full_key LIKE ?
+                """,
+                (f"{prefix}%",),
+            )
+            row = cursor.fetchone()
+        return {
+            "cells": int(row["cells"] or 0),
+            "payload_bytes": int(row["payload_bytes"] or 0),
+            "oldest": row["oldest"],
+            "newest": row["newest"],
+        }
+
+    def growth_samples(self, window_days: int = 30) -> List[Dict[str, Any]]:
+        """Return per-day growth metrics limited to ``window_days`` worth of data."""
+
+        cutoff = time.time() - (window_days * 86400)
+        with self._lock:
+            cursor = self._conn.cursor()
+            cursor.execute(
+                """
+                SELECT
+                    strftime('%Y-%m-%d', created_at, 'unixepoch') AS bucket,
+                    COUNT(*) AS cells
+                FROM honeycomb_cells
+                WHERE created_at >= ?
+                GROUP BY bucket
+                ORDER BY bucket ASC
+                """,
+                (cutoff,),
+            )
+            rows = cursor.fetchall()
+        return [
+            {"date": row["bucket"], "cells": int(row["cells"])}
+            for row in rows
+            if row["bucket"] is not None
+        ]
 
     # ------------------------------------------------------------------
     # Honeycomb helpers

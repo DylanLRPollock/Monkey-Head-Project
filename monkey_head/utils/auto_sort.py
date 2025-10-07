@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Mapping
 
 from ..function_registry import register_function
 from .paths import get_memory_path
@@ -33,6 +33,12 @@ _EXTENSION_MAP: Dict[str, str] = {
     "yml": "YAML",
     "zip": "ZIP",
 }
+
+
+def get_extension_map() -> Mapping[str, str]:
+    """Return a read-only view of the extension to category mapping."""
+
+    return _EXTENSION_MAP.copy()
 
 
 def _normalise_destination_root(destination: str | Path | None) -> Path:
