@@ -21,12 +21,14 @@ class TestLicenseGui(unittest.TestCase):
         with temp_path.open("w", encoding="utf-8") as f:
             json.dump(data, f)
 
-        accept_license(temp_path)
+        accept_license(temp_path, "dummy-hash")
 
         with temp_path.open(encoding="utf-8") as f:
             updated = json.load(f)
 
         self.assertTrue(updated.get("license.accepted"))
+        self.assertIn("license.accepted_at", updated)
+        self.assertEqual(updated.get("license.hash"), "dummy-hash")
         os.remove(temp_path)
 
 
