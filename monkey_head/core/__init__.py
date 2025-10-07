@@ -2,6 +2,6 @@
 
 from __future__ import annotations
 
-from . import system_checks
+from . import messaging, system_checks, task_scheduler
 
-__all__ = ["system_checks"]
+__all__ = ["messaging", "system_checks", "task_scheduler"]
