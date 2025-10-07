@@ -31,6 +31,75 @@ spec:
       storage: 2Gi
 
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: subos-workload
+  namespace: subos
+data:
+  start-subos.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    export SUBOS_API_PORT="${SUBOS_API_PORT:-8080}"
+
+    python3 - <<'PY'
+    import asyncio
+    import http.server
+    import os
+    import socketserver
+    import threading
+
+    PORT = int(os.environ.get("SUBOS_API_PORT", "8080"))
+
+
+    class HealthHandler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            if self.path in {"/healthz", "/readyz"}:
+                self.send_response(200)
+                self.send_header("Content-Type", "text/plain")
+                self.end_headers()
+                self.wfile.write(b"ok")
+                return
+
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(b"SubOS microservices online")
+
+        def log_message(self, *_args, **_kwargs):  # pragma: no cover
+            return
+
+
+    class ThreadingHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+        daemon_threads = True
+
+
+    def serve_http():
+        with ThreadingHTTPServer(("", PORT), HealthHandler) as httpd:
+            print(f"[SubOS] API listening on port {PORT}", flush=True)
+            httpd.serve_forever()
+
+
+    async def microservice(name: str, interval: float) -> None:
+        while True:
+            print(f"[SubOS] {name} tick", flush=True)
+            await asyncio.sleep(interval)
+
+
+    async def main() -> None:
+        threading.Thread(target=serve_http, daemon=True).start()
+        await asyncio.gather(
+            microservice("AI processing", 5.0),
+            microservice("Memory manager", 7.0),
+            microservice("Sensor drivers", 10.0),
+        )
+
+
+    asyncio.run(main())
+    PY
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -50,14 +119,40 @@ spec:
         - name: subos
           image: ghcr.io/dylanlrpollock/hueyos:subos
           imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "/opt/hueyos/start-subos.sh"]
+          env:
+            - name: SUBOS_API_PORT
+              value: "8080"
           ports:
-            - containerPort: 1995
-              name: http1995
+            - containerPort: 8080
+              name: api
+          resources:
+            requests:
+              cpu: "750m"
+              memory: "1Gi"
+            limits:
+              cpu: "1.5"
+              memory: "2Gi"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: api
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: api
+            initialDelaySeconds: 10
+            periodSeconds: 15
           volumeMounts:
             - name: config
               mountPath: /workspace/config
             - name: memory
               mountPath: /workspace/memory
+            - name: subos-workload
+              mountPath: /opt/hueyos/start-subos.sh
+              subPath: start-subos.sh
       volumes:
         - name: config
           persistentVolumeClaim:
@@ -65,6 +160,10 @@ spec:
         - name: memory
           persistentVolumeClaim:
             claimName: subos-memory
+        - name: subos-workload
+          configMap:
+            name: subos-workload
+            defaultMode: 0755
 
 ---
 apiVersion: v1
@@ -76,7 +175,7 @@ spec:
   selector:
     app: subos
   ports:
-    - name: http1995
-      port: 1995
-      targetPort: 1995
+    - name: api
+      port: 8080
+      targetPort: api
   type: ClusterIP
