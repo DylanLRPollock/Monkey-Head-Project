@@ -202,6 +202,107 @@ async def test_emergency_endpoints_require_quorum(monkeypatch):
         assert entered.status_code == 200
         assert entered.json()["state"] == "emergency"
 
+
+@pytest.mark.asyncio
+async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
+    from monkey_head.hardware import drivers
+    from monkey_head.hardware.manager import SensorManager
+    from monkey_head.hardware.plugins import SensorRegistry
+    from monkey_head.honeycomb_storage import HoneycombStorage
+    from monkey_head.network.manager import NetworkStatus
+    from monkey_head.power.management import PowerEvent
+
+    storage = HoneycombStorage(base_dir=tmp_path)
+    registry = SensorRegistry()
+    drivers.register_builtin_sensors(registry)
+    sensor_manager = SensorManager(storage=storage, registry=registry)
+    monkeypatch.setattr(api_module, "SENSOR_MANAGER", sensor_manager, raising=False)
+
+    class DummyNetworkManager:
+        def __init__(self) -> None:
+            self.status = NetworkStatus(
+                active_interface="eth0",
+                interfaces={"eth0": {"isup": 1.0, "speed": 1000.0, "duplex": 1.0}},
+                wired_available=True,
+                wifi_available=False,
+                connected=True,
+                last_checked=123.0,
+            )
+
+        def check_status(self) -> NetworkStatus:
+            return self.status
+
+        def ensure_connectivity(self) -> NetworkStatus:
+            return self.status
+
+    monkeypatch.setattr(api_module, "NETWORK_MANAGER", DummyNetworkManager(), raising=False)
+
+    class DummyBatteryMonitor:
+        shutdown_threshold = 5.0
+
+        def get_status(self) -> dict[str, float | bool | None]:
+            return {
+                "percent": 42.0,
+                "secs_left": 1200.0,
+                "power_plugged": False,
+                "estimated_runtime_minutes": 20.0,
+            }
+
+        def should_shutdown(self) -> bool:
+            return False
+
+        def initiate_shutdown(self) -> PowerEvent:
+            return PowerEvent(timestamp=456.0, action="shutdown", metadata={"initiated": True})
+
+    monkeypatch.setattr(api_module, "BATTERY_MONITOR", DummyBatteryMonitor(), raising=False)
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        sensors_initial = await client.get("/sensors")
+        assert sensors_initial.status_code == 200
+        assert sensors_initial.json()["sensors"] == []
+
+        registration = await client.post(
+            "/sensors/register",
+            json={"name": "dev-entropy", "plugin": "virtual.random", "config": {"precision": 2}},
+        )
+        assert registration.status_code == 201
+
+        poll_response = await client.post("/sensors/dev-entropy/poll")
+        assert poll_response.status_code == 200
+        poll_payload = poll_response.json()
+        assert poll_payload["name"] == "dev-entropy"
+        assert "timestamp" in poll_payload
+
+        history = await client.get("/sensors/dev-entropy/history", params={"limit": 5})
+        assert history.status_code == 200
+        history_payload = history.json()
+        assert history_payload["sensor"] == "dev-entropy"
+        assert history_payload["readings"]
+
+        plugins = await client.get("/sensors/plugins")
+        assert plugins.status_code == 200
+        assert "virtual.random" in plugins.json()["plugins"]
+
+        net_status = await client.get("/network/status")
+        assert net_status.status_code == 200
+        assert net_status.json()["active_interface"] == "eth0"
+
+        net_ensure = await client.post("/network/ensure")
+        assert net_ensure.status_code == 200
+
+        battery = await client.get("/power/battery")
+        assert battery.status_code == 200
+        assert battery.json()["percent"] == 42.0
+
+        should_shutdown = await client.get("/power/should-shutdown")
+        assert should_shutdown.status_code == 200
+        assert should_shutdown.json()["should_shutdown"] is False
+
+        shutdown = await client.post("/power/shutdown")
+        assert shutdown.status_code == 200
+        assert shutdown.json()["metadata"]["initiated"] is True
+
         authorised = await client.post(
             "/governance/emergency/action",
             json={"actor": "spark", "approvals": ["zap"], "action": "shed-load"},
