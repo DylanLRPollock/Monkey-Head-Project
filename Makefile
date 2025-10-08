@@ -1,65 +1,30 @@
 SHELL := /bin/bash
 .ONESHELL:
 .SHELLFLAGS := -eu -o pipefail -c
-.PHONY: setup dev test run fmt lint clean ml data cloud pytest coverage lint-black lint-isort lint-ruff lint-flake8
+.PHONY: setup dev test run fmt lint clean ml data cloud pytest coverage lint-black lint-isort lint-ruff lint-flake8 docker-build docker-up docker-down
 
 PORT ?= 5151
-REQ_DIR := requirements
-REQ_ML_FILE := $(REQ_DIR)/requirements-ml.txt
-REQ_DATA_FILE := $(REQ_DIR)/requirements-data.txt
-REQ_CLOUD_FILE := $(REQ_DIR)/requirements-cloud.txt
-REQ_DEV_FILE := $(REQ_DIR)/requirements-dev.txt
-
-define install_section
-	@if [ -f $(1) ]; then \
-		echo "Installing dependencies from $(1)"; \
-		python3 -m pip install -r $(1); \
-	elif [ -f requirements.txt ]; then \
-		tmp_file="$$\(mktemp\)"; \
-		echo "Extracting $(2) requirements from requirements.txt"; \
-		SECTION="$(2)" TMP_FILE="$$tmp_file" python3 - <<-'PY'; \
-			import os
-			from pathlib import Path
-
-			section = os.environ["SECTION"]
-			tmp_path = Path(os.environ["TMP_FILE"])
-			source = Path("requirements.txt")
-			start_token = f"# ===== {section}.txt ====="
-			capture = False
-			lines = []
-
-			with source.open(encoding="utf-8") as handle:
-				for raw_line in handle:
-					stripped = raw_line.strip()
-					if stripped == start_token:
-						capture = True
-						continue
-					if capture and stripped.startswith("# =====") and stripped != start_token:
-						break
-					if capture and stripped and not stripped.startswith("#"):
-						lines.append(raw_line)
-
-			if not lines:
-				raise SystemExit(f"No requirements found for section '{section}'")
-
-			tmp_path.write_text("".join(lines), encoding="utf-8")
-		PY
-		python3 -m pip install -r "$$tmp_file"; \
-		rm -f "$$tmp_file"; \
-	else \
-		echo "Unable to locate requirements for $(2)" >&2; \
-		exit 1; \
-	fi
-endef
+PYTHON ?= python3
+PIP := $(PYTHON) -m pip
+SETUP_EXTRAS ?=
+DEV_EXTRAS ?= dev
+DEV_OPTIONAL_PROFILES ?=
+ML_EXTRAS ?= ml
+DATA_EXTRAS ?= data
+CLOUD_EXTRAS ?= cloud
 
 setup:
-	python3 -m pip install --upgrade pip
-	python3 -m pip install -r $(REQ_DIR)/requirements-core.txt
+	$(PIP) install --upgrade pip setuptools wheel
+	if [ -n "$(strip $(SETUP_EXTRAS))" ]; then \
+		$(PIP) install -e ".[$(strip $(SETUP_EXTRAS))]"; \
+	else \
+		$(PIP) install -e .; \
+	fi
 
 test: lint pytest
 
 run:
-	python3 -m uvicorn huey.api:app --host 0.0.0.0 --port $(PORT)
+	$(PYTHON) -m uvicorn huey.api:app --host 0.0.0.0 --port $(PORT)
 
 fmt:
 	black . && isort .
@@ -79,10 +44,10 @@ lint-flake8:
 	flake8 .
 
 pytest:
-	python3 -m pytest -q
+	$(PYTHON) -m pytest -q
 
 coverage:
-	python3 -m pytest --cov=huey --cov=monkey_head --cov-report=term-missing
+	$(PYTHON) -m pytest --cov=huey --cov=monkey_head --cov-report=term-missing
 
 clean:
 	rm -rf build dist .pytest_cache **/__pycache__ *.egg-info
@@ -96,13 +61,17 @@ clean:
 	fi
 
 ml:
-	$(call install_section,$(REQ_ML_FILE),requirements-ml)
-	python3 - <<-'PY'
-	from llama_index.core import Document, VectorStoreIndex
-
-	documents = [
-	    Document(text="Huey is a friendly robotics research assistant."),
-	    Document(text="Huey loves banana milkshakes."),
+	if [ -n "$(strip $(ML_EXTRAS))" ]; then \
+		$(PIP) install -e ".[$(strip $(ML_EXTRAS))]"; \
+	else \
+		$(PIP) install -e .; \
+	fi
+	$(PYTHON) - <<-'PY'
+	        from llama_index.core import Document, VectorStoreIndex
+	
+	        documents = [
+	            Document(text="Huey is a friendly robotics research assistant."),
+	            Document(text="Huey loves banana milkshakes."),
 	]
 	index = VectorStoreIndex.from_documents(documents)
 	response = index.as_query_engine().query("What does Huey enjoy?")
@@ -110,13 +79,17 @@ ml:
 	PY
 
 data:
-	$(call install_section,$(REQ_DATA_FILE),requirements-data)
-	python3 - <<-'PY'
-	import chromadb
-
-	client = chromadb.Client()
-	collection = client.get_or_create_collection("makefile_demo")
-	collection.add(
+	if [ -n "$(strip $(DATA_EXTRAS))" ]; then \
+		$(PIP) install -e ".[$(strip $(DATA_EXTRAS))]"; \
+	else \
+		$(PIP) install -e .; \
+	fi
+	$(PYTHON) - <<-'PY'
+	        import chromadb
+	
+	        client = chromadb.Client()
+	        collection = client.get_or_create_collection("makefile_demo")
+	        collection.add(
 	    ids=["1"],
 	    documents=["Huey keeps its research notes in a vector store."],
 	    metadatas=[{"source": "demo"}],
@@ -126,19 +99,23 @@ data:
 	PY
 
 cloud:
-	$(call install_section,$(REQ_CLOUD_FILE),requirements-cloud)
-	python3 - <<-'PY'
-	import urllib.request
-
-	import boto3  # noqa: F401 - ensure AWS SDK is installed
-	from azure.identity import AzureAuthorityHosts  # noqa: F401 - ensure Azure SDK is installed
-
+	if [ -n "$(strip $(CLOUD_EXTRAS))" ]; then \
+		$(PIP) install -e ".[$(strip $(CLOUD_EXTRAS))]"; \
+	else \
+		$(PIP) install -e .; \
+	fi
+	$(PYTHON) - <<-'PY'
+	        import urllib.request
+	
+	        import boto3  # noqa: F401 - ensure AWS SDK is installed
+	        from azure.identity import AzureAuthorityHosts  # noqa: F401 - ensure Azure SDK is installed
+	
 	providers = {
 	    "Azure": "https://management.azure.com/",
 	    "GCP": "https://www.googleapis.com/",
 	    "AWS": "https://sts.amazonaws.com/",
 	}
-
+	
 	for name, url in providers.items():
 	    try:
 	        with urllib.request.urlopen(url, timeout=5) as response:
@@ -149,11 +126,23 @@ cloud:
 	        print(f"{name} connectivity check succeeded (status {status})")
 	PY
 
-dev: setup
-	$(call install_section,$(REQ_DEV_FILE),requirements-dev)
-	python3 -m pip install black isort flake8 ruff
+dev:
+	if [ -n "$(strip $(DEV_OPTIONAL_PROFILES))" ]; then \
+		$(MAKE) setup SETUP_EXTRAS="$(strip $(DEV_EXTRAS)),$(strip $(DEV_OPTIONAL_PROFILES))"; \
+	else \
+		$(MAKE) setup SETUP_EXTRAS="$(strip $(DEV_EXTRAS))"; \
+	fi
 	pre-commit install --install-hooks
 	$(MAKE) fmt
 	$(MAKE) lint
 	pre-commit run --all-files
-	python3 -m pytest -q
+	$(PYTHON) -m pytest -q
+
+docker-build:
+	docker compose build
+
+docker-up:
+	docker compose up -d
+
+docker-down:
+	docker compose down
