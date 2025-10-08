@@ -2,7 +2,7 @@
 name = "hueyos"
 version = "0.2.0"
 description = "HueyOS: on-robot runtime for the Monkey Head Project (Huey)."
-requires-python = ">=3.12,<3.14"
+requires-python = ">=3.11,<3.14"
 readme = "README.md"
 authors = [{ name = "Dylan L. R. Pollock" }]
 license = { text = "GPL-3.0-only" }
@@ -100,6 +100,7 @@ cloud = [
   "s3transfer==0.13.0",
 ]
 dev = [
+  "black==24.10.0",
   "chromedriver-autoinstaller==0.6.4",
   "docker==7.1.0",
   "coloredlogs==15.0.1",
@@ -109,7 +110,10 @@ dev = [
   "pytest-asyncio==1.2.0",
   "pytest-cov==7.0.0",
   "httpx==0.28.1",
+  "isort==5.13.2",
   "pre-commit==4.0.1",
+  "ruff==0.9.10",
+  "flake8==7.1.1",
 ]
 
 [project.scripts]

@@ -60,10 +60,11 @@ HueyOS targets **Debian 13 “Trixie”** with a custom low‑latency kernel ser
 | Path                      | Description                                             |
 |---------------------------|---------------------------------------------------------|
 | `.github/`                | CI workflows, CODEOWNERS, issue templates               |
-| `docker/`                 | Compose/build files for HueyOS services                 |
+| `Dockerfile`              | Container image definition for HueyOS services          |
+| `docker-compose.yml`      | Docker Compose stack (API, worker, optional Redis)      |
+| `docker/`                 | Legacy orchestrator assets and experimental builds      |
 | `docs/`                   | Constitution, governance, architecture                  |
 | `huey/`                   | Core runtime and service modules                        |
-| `requirements/`           | Split dependency profiles (core, ml, data, cloud, dev)  |
 | `setup/`                  | Installer scripts, ISO builder, provisioning configs    |
 | `src/`                    | Python package source                                   |
 | `tests/`                  | Unit & integration tests                                |
@@ -170,8 +171,16 @@ uvicorn huey.api:app --reload
 
 ### Docker
 ```bash
+# Build with the default ML, data, and cloud profiles baked into the image
+docker compose build
+# Launch the API and (optionally) enable additional profiles via --profile
 docker compose up -d
 ```
+
+Set `HUEY_BUILD_EXTRAS` (for example, `HUEY_BUILD_EXTRAS=ml`) before running
+`docker compose build` to tailor which optional dependency groups are installed
+into the container image. Runtime-only tweaks can be made with Compose profiles
+(`docker compose --profile worker up`) without rebuilding the image.
 
 ### ISO / Kernel builder
 ```bash
@@ -187,11 +196,13 @@ cd Monkey-Head-Project && make iso
 ## Development Setup
 
 ```bash
-make setup    # Core
-make ml       # ML profile
-make data     # Data profile
-make cloud    # Cloud profile
-make dev      # Dev tools
+make setup                       # Editable install of the core package
+make setup SETUP_EXTRAS=dev      # Install with dev tooling extras
+make ml                          # Install ML profile extras and run a smoke test
+make data                        # Install data profile extras and run a smoke test
+make cloud                       # Install cloud profile extras and run a smoke test
+make dev                         # Install dev extras, format, lint, and test
+make dev DEV_OPTIONAL_PROFILES=ml,data  # Include optional profiles in dev setup
 ```
 
 **Environment:** copy `huey.env.example` to `.env` and configure secrets/ports.  
@@ -211,7 +222,7 @@ make run
 
 **Run in Docker**
 ```bash
-docker compose -f docker/compose.yml up
+docker compose up
 ```
 
 **Run tests**
