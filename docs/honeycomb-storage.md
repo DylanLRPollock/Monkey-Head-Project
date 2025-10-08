@@ -1,75 +1,87 @@
 # Honeycomb Storage Operations
 
-HueyOS stores long lived data inside a resilient honeycomb structure backed by
-SQLite. This document explains how the new memory index, backup procedures,
-monitoring, and retention policies work together to keep the hive healthy.
+HueyOS stores long-lived data inside a resilient honeycomb structure backed by
+SQLite. The honeycomb abstracts the storage of telemetry, documents, and other
+payloads into **combs** (namespaces) and **cells** (individual records). This
+section explains how the storage layer is implemented, how it interacts with the
+sensor manager, and which tooling is available for monitoring, backups, and
+retention.
 
-## Content-aware memory index
+## Storage model
 
-The honeycomb index maps high level content types (images, documents, logs,
-telemetry sensor data, etc.) onto deterministic comb and cell prefixes. It uses
-the existing auto-sort extension categories so the same heuristics drive both
-filesystem organisation and database persistence.
+The `huey.honeycomb_storage.HoneycombStorage` class exposes a key/value API that
+persists JSON payloads into the `honeycomb_cells` table.【F:huey/honeycomb_storage.py†L16-L101】
+Keys are split on `/` to derive comb and cell components, enabling structured
+queries and efficient indices. Examples:
 
-| Content type | Honeycomb path prefix      | Auto-sort categories |
-| ------------ | -------------------------- | -------------------- |
-| Images       | `media/images/<cell>`      | JPEG, PNG            |
-| Documents    | `knowledge/documents/<cell>` | PDF, MD, TXT, DOC, PPT, XLS |
-| Logs         | `telemetry/logs/<cell>`    | LOG, JSON            |
-| Sensor data  | `telemetry/sensor/<cell>`  | CSV, JSON            |
-| Archives     | `packages/archives/<cell>` | ZIP, GZ              |
-| Code         | `knowledge/code/<cell>`    | PY, SH               |
+| Key example                                | Comb                    | Purpose                              |
+|--------------------------------------------|-------------------------|--------------------------------------|
+| `telemetry/sensor/air_quality/8fa3…`       | `telemetry/sensor`      | Real-time sensor readings            |
+| `knowledge/documents/design/v1`            | `knowledge/documents`   | Indexed project documents            |
+| `media/images/20250201-capture01`          | `media/images`          | Archived camera stills               |
 
-Developers interact with the index through
-`monkey_head.honeycomb_index.HoneycombIndex`, which can classify a path and
-store structured metadata alongside content-specific payloads. Custom content
-mappings can be registered when new categories emerge, and all mappings are
-returned via the API for introspection.
+`HoneycombStorage.store()` automatically timestamps inserts and performs an
+upsert so updates preserve the original creation timestamp while refreshing the
+`updated_at` column.【F:huey/honeycomb_storage.py†L63-L85】 The helper methods
+`load()`, `get_record()`, `list_keys()`, `remove()`, and `count()` make the
+storage behave like a persistent dictionary with optional prefix scoping.【F:huey/honeycomb_storage.py†L87-L153】
 
-## Replication and backups
+## Integration with the sensor manager
 
-`monkey_head.honeycomb_backup.perform_rsync_snapshot` creates timestamped
-snapshots of the memory directory using `rsync`. Snapshots may be sent to local
-or remote (e.g. SSH mounted) destinations. Restoring a snapshot uses the same
-utility via `restore_snapshot`.
+`sensor_manager.SensorManager` captures readings from registered plugins and
+immediately persists them into the honeycomb. Each reading is given a unique
+cell name derived from a UUID, ensuring durable histories for later analysis.
+【F:huey/hardware/manager.py†L59-L111】 The same manager exposes streaming queues
+and history loaders so operators can replay sensor activity or subscribe to live
+feeds without touching the underlying database.
 
-Typical cron entry using a helper script:
+When writing your own sensor plugin, no special code is required to talk to the
+honeycomb. Calling `SensorManager.poll_sensor()` or `poll_all()` records the
+reading and broadcasts it to subscribers.
+
+## Querying and analytics
+
+Several utilities build on top of the storage abstraction:
+
+- `HoneycombIndex` classifies filesystem artefacts into comb paths based on
+  content type mappings shared with the auto-sorter.【F:huey/honeycomb_index.py†L20-L139】
+- `HoneycombMonitor.build_usage_report()` aggregates totals, content-type
+  breakdowns, and growth samples. The FastAPI endpoint `/memory/honeycomb/usage`
+  returns this data in the `HoneycombUsageResponse` schema for dashboards or
+  alerting pipelines.【F:src/huey/api.py†L232-L297】【F:src/huey/api.py†L1084-L1103】
+- `SensorManager.load_history()` retrieves ordered historical records for a
+  sensor, relying on `HoneycombStorage.list_keys()` and `get_record()` to load
+  payloads and timestamps.【F:huey/hardware/manager.py†L113-L148】
+
+## Backups and replication
+
+`huey.honeycomb_backup.perform_rsync_snapshot` creates timestamped snapshots of
+`memory/` using `rsync`. Snapshots may be sent to local or remote destinations,
+and `restore_snapshot` rehydrates the tree when needed. A sample cron entry:
 
 ```
 0 * * * * hueyos /opt/hueyos/.venv/bin/python - <<'PY'
 from pathlib import Path
-from monkey_head.honeycomb_backup import perform_rsync_snapshot
+from huey.honeycomb_backup import perform_rsync_snapshot
 
 perform_rsync_snapshot(destination=Path("/mnt/honeycomb-backups"))
 PY
 ```
 
-Restoration procedure:
+Always verify `rsync` availability during commissioning so operators are alerted
+if the backup toolchain is missing.
 
-1. Mount or attach the external media containing snapshots.
-2. Choose the snapshot directory (e.g. `20240101-000000`).
-3. Run `restore_snapshot(<snapshot>, <target>)` to repopulate the memory tree.
-4. Restart services that rely on the honeycomb database.
+## Monitoring growth
 
-If `rsync` is unavailable the helper raises a `BackupError`, ensuring operators
-are alerted to missing tooling before an incident occurs.
-
-## Monitoring honeycomb growth
-
-`monkey_head.honeycomb_monitor.HoneycombMonitor` calculates per-comb usage,
-content-type breakdowns, and growth trends (daily buckets). The data is
-returned as JSON and feeds the new `/memory/honeycomb/usage` API endpoint.
-Dashboard integrations can visualise the `summary`, `content_types`, and
-`growth` arrays to highlight hot spots or unusually fast growth.
+`HoneycombMonitor` calculates per-comb utilisation, content-type totals, and a
+rolling growth series (daily buckets by default). The resulting payload feeds
+Grafana or similar dashboards so sudden spikes become visible. Combine it with
+`HoneycombIndex` to align storage reporting with the auto-sort file taxonomy.
+【F:huey/honeycomb_monitor.py†L20-L144】
 
 ## Retention and pruning
 
-`monkey_head.honeycomb_retention.RetentionPolicy` deletes stale records while
-respecting critical data. Retention windows can be defined per content type
-(using the index) or directly per comb, with durations specified as symbols
-such as `14d` or `6m`. Applying a policy prunes cells older than the configured
-thresholds and reports how many were removed, allowing automation to log and
-alert on reclaimed capacity.
-
-Combine backups, monitoring, and retention policies to maintain a resilient and
-self-healing storage hive.
+`huey.honeycomb_retention.RetentionPolicy` applies content-aware expiry rules to
+old cells, using duration strings such as `14d` or `6m`. Operators can set
+different windows per content type or comb and record how many rows were
+pruned, closing the loop between ingestion, monitoring, and retention.
