@@ -1,10 +1,16 @@
 # HueyOS Documentation
 
-- Constitution & Governance
-- Architecture: MacroOS, MicroOS, NanoOS
-- Storage: Bees & Honey
-  - [Honeycomb storage operations](honeycomb-storage.md)
-- Orchestration Node (X9QRI-F+), Nodes (BD795I-SE), Black Box
+HueyOS combines robotics control, knowledge management, and constitutional
+governance primitives. The documents in this directory explain how to extend
+the platform and how to operate core services.
+
+## Quick starts
+
+- [CLI quick reference](#cli-quick-reference)
+- [Sensor plugin development](sensor-plugins.md)
+- [Honeycomb storage operations](honeycomb-storage.md)
+- [API reference](api-reference.md)
+- [Governance & resilience](governance.md)
 
 ## CLI quick reference
 
