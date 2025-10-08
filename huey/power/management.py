@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+import contextlib
 import logging
+import re
 import shutil
 import subprocess
 import sys
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 try:  # pragma: no cover - optional dependency
     import psutil  # type: ignore
@@ -35,28 +38,30 @@ class BatteryMonitor:
         self.shutdown_threshold = shutdown_threshold
         self._last_event: Optional[PowerEvent] = None
 
+    # ------------------------------------------------------------------
     def get_status(self) -> Dict[str, Any]:
-        """Return battery metrics using :mod:`psutil` when available."""
+        """Return current battery metrics.
 
-        if psutil and hasattr(psutil, "sensors_battery"):
-            battery = psutil.sensors_battery()  # type: ignore[attr-defined]
-        else:  # pragma: no cover - running without psutil
-            battery = None
-        if battery is None:
-            return {
-                "percent": None,
-                "secs_left": None,
-                "power_plugged": None,
-                "estimated_runtime_minutes": None,
-            }
-        secs_left = battery.secsleft if battery.secsleft not in (psutil.POWER_TIME_UNKNOWN, psutil.POWER_TIME_UNLIMITED) else None  # type: ignore[attr-defined]
-        return {
-            "percent": float(battery.percent),
-            "secs_left": secs_left,
-            "power_plugged": bool(battery.power_plugged),
-            "estimated_runtime_minutes": (secs_left / 60) if secs_left else None,
-        }
+        The monitor prefers :mod:`psutil` when available but can fall back to
+        Linux ``/sys`` data or ``acpi`` command output. The returned mapping
+        always contains the keys required by :class:`BatteryStatusResponse`.
+        """
 
+        status = (
+            self._status_from_psutil()
+            or self._status_from_sysfs()
+            or self._status_from_acpi()
+            or self._empty_status()
+        )
+
+        secs_left = status.get("secs_left")
+        if isinstance(secs_left, (int, float)) and secs_left >= 0:
+            status["estimated_runtime_minutes"] = secs_left / 60.0
+        else:
+            status["estimated_runtime_minutes"] = None
+        return status
+
+    # ------------------------------------------------------------------
     def should_shutdown(self) -> bool:
         status = self.get_status()
         percent = status.get("percent")
@@ -66,26 +71,247 @@ class BatteryMonitor:
             return False
         return percent <= self.shutdown_threshold
 
+    # ------------------------------------------------------------------
     def initiate_shutdown(self) -> PowerEvent:
         """Trigger a safe shutdown sequence using available system tools."""
 
-        timestamp = time.time()
-        metadata = {"threshold": self.shutdown_threshold}
-        if shutil.which("systemctl"):
-            cmd = ["systemctl", "poweroff"]
-        elif sys.platform.startswith("darwin"):
-            cmd = ["osascript", "-e", 'tell app "System Events" to shut down']
-        else:
-            cmd = ["shutdown", "-h", "now"]
-        metadata["command"] = cmd
+        return self._execute_power_action("shutdown", {"threshold": self.shutdown_threshold})
+
+    def initiate_hibernate(self) -> PowerEvent:
+        """Put the system into hibernation if supported."""
+
+        return self._execute_power_action("hibernate", {})
+
+    def initiate_sleep(self) -> PowerEvent:
+        """Suspend the system to RAM if supported."""
+
+        return self._execute_power_action("sleep", {})
+
+    def initiate_reboot(self) -> PowerEvent:
+        """Reboot the system using the preferred toolchain."""
+
+        return self._execute_power_action("reboot", {})
+
+    # ------------------------------------------------------------------
+    def _status_from_psutil(self) -> Optional[Dict[str, Any]]:
+        if not psutil or not hasattr(psutil, "sensors_battery"):
+            return None
         try:
-            subprocess.Popen(cmd)  # pragma: no cover - side effect heavy
-        except Exception as exc:  # pragma: no cover - best effort logging
-            LOGGER.exception("Failed to execute shutdown command %s", cmd)
-            metadata["error"] = str(exc)
-        event = PowerEvent(timestamp=timestamp, action="shutdown", metadata=metadata)
+            battery = psutil.sensors_battery()  # type: ignore[attr-defined]
+        except Exception:  # pragma: no cover - psutil can raise on some systems
+            LOGGER.debug("psutil.sensors_battery raised an exception", exc_info=True)
+            return None
+        if battery is None:
+            return None
+
+        secs_left = getattr(battery, "secsleft", None)
+        unknown = getattr(psutil, "POWER_TIME_UNKNOWN", -1)
+        unlimited = getattr(psutil, "POWER_TIME_UNLIMITED", -2)
+        if secs_left in (unknown, unlimited):
+            secs_left = None
+
+        percent = getattr(battery, "percent", None)
+        plugged = getattr(battery, "power_plugged", None)
+        return {
+            "percent": float(percent) if percent is not None else None,
+            "secs_left": float(secs_left) if isinstance(secs_left, (int, float)) else None,
+            "power_plugged": bool(plugged) if plugged is not None else None,
+            "source": "psutil",
+        }
+
+    def _status_from_sysfs(self) -> Optional[Dict[str, Any]]:
+        sysfs_root = Path("/sys/class/power_supply")
+        if not sysfs_root.exists():  # pragma: no cover - platform specific
+            return None
+
+        battery_dirs = [
+            path
+            for path in sysfs_root.iterdir()
+            if path.is_dir() and path.name.lower().startswith(("bat", "battery"))
+        ]
+        if not battery_dirs:
+            return None
+
+        battery = battery_dirs[0]
+        percent = self._read_sysfs_float(battery / "capacity")
+        status_text = self._read_sysfs_text(battery / "status")
+        power_now = self._read_sysfs_float(battery / "power_now")
+        if power_now is None:
+            power_now = self._read_sysfs_float(battery / "current_now")
+        energy_now = self._read_sysfs_float(battery / "energy_now")
+        if energy_now is None:
+            energy_now = self._read_sysfs_float(battery / "charge_now")
+
+        secs_left = None
+        if (
+            energy_now is not None
+            and power_now is not None
+            and power_now > 0
+            and status_text
+            and status_text.lower().startswith("dis")
+        ):
+            secs_left = float(energy_now / power_now * 3600.0)
+
+        ac_online = self._ac_adapter_online(sysfs_root)
+        if ac_online is None and status_text:
+            ac_online = status_text.lower() in {"charging", "full"}
+
+        return {
+            "percent": percent,
+            "secs_left": secs_left,
+            "power_plugged": ac_online,
+            "source": "sysfs",
+        }
+
+    def _status_from_acpi(self) -> Optional[Dict[str, Any]]:
+        acpi_cmd = shutil.which("acpi")
+        if not acpi_cmd:  # pragma: no cover - depends on tooling
+            return None
+        try:
+            output = subprocess.check_output(
+                [acpi_cmd, "-b"], text=True, stderr=subprocess.DEVNULL
+            )
+        except Exception:  # pragma: no cover - command may not be available
+            LOGGER.debug("acpi command failed", exc_info=True)
+            return None
+        if not output:
+            return None
+
+        percent: Optional[float] = None
+        secs_left: Optional[float] = None
+        power_plugged: Optional[bool] = None
+        for line in output.splitlines():
+            percent_match = re.search(r"(\d+(?:\.\d+)?)%", line)
+            if percent_match:
+                with contextlib.suppress(ValueError):
+                    percent = float(percent_match.group(1))
+            time_match = re.search(r"(\d+):(\d+):(\d+)", line)
+            if time_match:
+                hours, minutes, seconds = map(int, time_match.groups())
+                secs_left = float(hours * 3600 + minutes * 60 + seconds)
+            if "Charging" in line or "Full" in line:
+                power_plugged = True
+            elif "Discharging" in line:
+                power_plugged = False
+
+        if percent is None and secs_left is None and power_plugged is None:
+            return None
+        return {
+            "percent": percent,
+            "secs_left": secs_left,
+            "power_plugged": power_plugged,
+            "source": "acpi",
+        }
+
+    def _empty_status(self) -> Dict[str, Any]:
+        return {
+            "percent": None,
+            "secs_left": None,
+            "power_plugged": None,
+            "source": "unknown",
+            "estimated_runtime_minutes": None,
+        }
+
+    # ------------------------------------------------------------------
+    def _read_sysfs_text(self, path: Path) -> Optional[str]:
+        try:
+            value = path.read_text().strip()
+        except OSError:
+            return None
+        return value or None
+
+    def _read_sysfs_float(self, path: Path) -> Optional[float]:
+        text = self._read_sysfs_text(path)
+        if text is None:
+            return None
+        with contextlib.suppress(ValueError):
+            return float(text)
+        return None
+
+    def _ac_adapter_online(self, root: Path) -> Optional[bool]:
+        for supply in root.iterdir():
+            if not supply.is_dir():
+                continue
+            name = supply.name.lower()
+            if not name.startswith(("ac", "mains", "adp", "psu")):
+                continue
+            try:
+                text = (supply / "online").read_text().strip()
+            except OSError:
+                continue
+            if text == "":
+                continue
+            if text in {"1", "on", "online", "yes", "true"}:
+                return True
+            if text in {"0", "off", "offline", "no", "false"}:
+                return False
+        return None
+
+    # ------------------------------------------------------------------
+    def _execute_power_action(self, action: str, base_metadata: Dict[str, Any]) -> PowerEvent:
+        timestamp = time.time()
+        command = self._resolve_command(action)
+        metadata: Dict[str, Any] = {"action": action, "platform": sys.platform}
+        metadata.update(base_metadata)
+        if command:
+            metadata["command"] = command
+            try:
+                subprocess.Popen(command)  # pragma: no cover - system side effects
+            except Exception as exc:  # pragma: no cover - best effort logging
+                LOGGER.exception("Failed to execute %s command %s", action, command)
+                metadata["error"] = str(exc)
+        else:
+            metadata["error"] = "no supported command found"
+
+        event = PowerEvent(timestamp=timestamp, action=action, metadata=metadata)
         self._last_event = event
         return event
+
+    def _resolve_command(self, action: str) -> Optional[List[str]]:
+        action = action.lower()
+        if sys.platform.startswith("win"):
+            return self._windows_command(action)
+        if sys.platform.startswith("darwin"):
+            return self._darwin_command(action)
+        return self._linux_command(action)
+
+    def _linux_command(self, action: str) -> Optional[List[str]]:
+        if action == "shutdown":
+            if shutil.which("systemctl"):
+                return ["systemctl", "poweroff"]
+            return ["shutdown", "-h", "now"]
+        if action == "reboot":
+            if shutil.which("systemctl"):
+                return ["systemctl", "reboot"]
+            return ["shutdown", "-r", "now"]
+        if action in {"hibernate", "sleep"}:
+            subcommand = "hibernate" if action == "hibernate" else "suspend"
+            if shutil.which("systemctl"):
+                return ["systemctl", subcommand]
+            legacy = "pm-hibernate" if action == "hibernate" else "pm-suspend"
+            if shutil.which(legacy):
+                return [legacy]
+        return None
+
+    def _darwin_command(self, action: str) -> Optional[List[str]]:
+        if action == "shutdown":
+            return ["osascript", "-e", 'tell app "System Events" to shut down']
+        if action == "reboot":
+            return ["osascript", "-e", 'tell app "System Events" to restart']
+        if action in {"sleep", "hibernate"} and shutil.which("pmset"):
+            return ["pmset", "sleepnow"]
+        return None
+
+    def _windows_command(self, action: str) -> Optional[List[str]]:
+        if action == "shutdown":
+            return ["shutdown", "/s", "/t", "0"]
+        if action == "reboot":
+            return ["shutdown", "/r", "/t", "0"]
+        if action == "sleep":
+            return ["rundll32.exe", "powrprof.dll,SetSuspendState", "0", "1", "0"]
+        if action == "hibernate":
+            return ["rundll32.exe", "powrprof.dll,SetSuspendState", "Hibernate"]
+        return None
 
     @property
     def last_event(self) -> Optional[PowerEvent]:

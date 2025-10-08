@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import shutil
 import socket
@@ -9,7 +10,8 @@ import subprocess
 import sys
 import time
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from pathlib import Path
+from typing import Any, Dict, Optional, Tuple
 
 try:  # pragma: no cover - optional dependency
     import psutil  # type: ignore
@@ -20,8 +22,12 @@ except Exception:  # pragma: no cover - degrade gracefully
 LOGGER = logging.getLogger(__name__)
 
 
-WIRED_PREFIXES = ("eth", "enp", "eno", "ens")
-WIFI_PREFIXES = ("wlan", "wlx", "wifi", "ath")
+WIRED_PREFIXES = ("eth", "enp", "eno", "ens", "em")
+WIFI_PREFIXES = ("wlan", "wlx", "wifi", "ath", "wl")
+LOOPBACK_INTERFACES = {"lo", "lo0"}
+
+
+InterfaceInfo = Dict[str, Any]
 
 
 @dataclass
@@ -29,7 +35,7 @@ class NetworkStatus:
     """Status snapshot returned by :class:`NetworkManager`."""
 
     active_interface: Optional[str]
-    interfaces: Dict[str, Dict[str, Optional[float]]]
+    interfaces: Dict[str, InterfaceInfo]
     wired_available: bool
     wifi_available: bool
     connected: bool
@@ -50,47 +56,144 @@ class NetworkManager:
         self.check_port = check_port
         self.check_timeout = check_timeout
         self._last_status: Optional[NetworkStatus] = None
+        self._interface_categories: Dict[str, str] = {}
 
     # ------------------------------------------------------------------
-    def _interface_stats(self) -> Dict[str, Dict[str, Optional[float]]]:
-        info: Dict[str, Dict[str, Optional[float]]] = {}
-        if psutil is None:
+    def _interface_stats(self) -> Dict[str, InterfaceInfo]:
+        """Gather interface information from :mod:`psutil` or sysfs."""
+
+        self._interface_categories = {}
+        info: Dict[str, InterfaceInfo] = {}
+        if psutil is not None:
+            stats = psutil.net_if_stats()
+            addresses = psutil.net_if_addrs()
+        else:  # pragma: no cover - psutil is optional dependency
+            stats = {}
+            addresses = {}
+
+        for name, stat in stats.items():
+            category = self._interface_category(name)
+            self._interface_categories[name] = category
+            info[name] = self._build_interface_entry(name, stat)
+
+        if info:
             return info
-        for name, stats in psutil.net_if_stats().items():
+
+        # Fallback to sysfs when psutil is not available.
+        sysfs_root = Path("/sys/class/net")
+        if not sysfs_root.exists():  # pragma: no cover - platform specific
+            return info
+
+        for path in sysfs_root.iterdir():  # pragma: no cover - requires linux sysfs
+            if not path.is_dir():
+                continue
+            name = path.name
+            if name in LOOPBACK_INTERFACES:
+                continue
+            category = self._interface_category(name)
+            self._interface_categories[name] = category
             info[name] = {
-                "isup": float(stats.isup),
-                "speed": float(stats.speed or 0),
-                "duplex": float(getattr(stats, "duplex", 0) or 0),
+                "isup": self._read_sysfs_flag(path / "operstate"),
+                "speed": self._read_sysfs_float(path / "speed"),
+                "mtu": self._read_sysfs_float(path / "mtu"),
+                "duplex": None,
             }
         return info
 
-    def _preferred_interface(self, interfaces: Dict[str, Dict[str, Optional[float]]]) -> Optional[str]:
-        wired = [name for name in interfaces if name.startswith(WIRED_PREFIXES) and interfaces[name]["isup"]]
-        wifi = [name for name in interfaces if name.startswith(WIFI_PREFIXES) and interfaces[name]["isup"]]
+    def _build_interface_entry(self, name: str, stat: Any) -> InterfaceInfo:
+        """Compose a serialisable structure for a network interface."""
+
+        # Import locally to keep typing flexible when psutil is missing.
+        entry: InterfaceInfo = {
+            "isup": bool(getattr(stat, "isup", False)),
+            "speed": float(getattr(stat, "speed", 0)) or None,
+            "duplex": float(getattr(stat, "duplex", 0)) or None,
+            "mtu": float(getattr(stat, "mtu", 0)) or None,
+        }
+        return entry
+
+    def _read_sysfs_flag(self, path: Path) -> bool:
+        try:
+            value = path.read_text().strip()
+        except OSError:
+            return False
+        return value.lower() in {"up", "1", "yes", "true"}
+
+    def _read_sysfs_float(self, path: Path) -> Optional[float]:
+        try:
+            value = path.read_text().strip()
+        except OSError:
+            return None
+        if not value:
+            return None
+        with contextlib.suppress(ValueError):
+            return float(value)
+        return None
+
+    def _interface_category(self, name: str) -> str:
+        if name in LOOPBACK_INTERFACES:
+            return "loopback"
+        if name.startswith(WIRED_PREFIXES):
+            return "wired"
+        if name.startswith(WIFI_PREFIXES):
+            return "wifi"
+        return "other"
+
+    def _preferred_interface(self, interfaces: Dict[str, InterfaceInfo]) -> Optional[str]:
+        wired = [
+            name
+            for name, details in interfaces.items()
+            if self._interface_categories.get(name) == "wired" and details.get("isup")
+        ]
+        wifi = [
+            name
+            for name, details in interfaces.items()
+            if self._interface_categories.get(name) == "wifi" and details.get("isup")
+        ]
         return wired[0] if wired else (wifi[0] if wifi else None)
 
-    def _attempt_connectivity(self) -> bool:
+    def _attempt_connectivity(self) -> Tuple[bool, Optional[str]]:
         try:
             with socket.create_connection(
                 (self.check_host, self.check_port), timeout=self.check_timeout
-            ):
-                return True
+            ) as sock:
+                local_ip = sock.getsockname()[0]
+            return True, local_ip
         except OSError:
-            return False
+            return False, None
+
+    def _detect_active_interface(
+        self,
+        interfaces: Dict[str, InterfaceInfo],
+        local_ip: Optional[str],
+    ) -> Optional[str]:
+        if psutil is None:
+            return self._preferred_interface(interfaces)
+
+        if local_ip:
+            addrs = psutil.net_if_addrs()
+            for name, iface_addrs in addrs.items():
+                for addr in iface_addrs:
+                    if getattr(addr, "family", None) == socket.AF_INET and addr.address == local_ip:
+                        return name
+
+        # Fall back to simply returning the preferred active interface.
+        return self._preferred_interface(interfaces)
 
     def check_status(self) -> NetworkStatus:
         interfaces = self._interface_stats()
+        connected, local_ip = self._attempt_connectivity()
+        active_interface = self._detect_active_interface(interfaces, local_ip)
         preferred = self._preferred_interface(interfaces)
-        connected = self._attempt_connectivity()
         status = NetworkStatus(
-            active_interface=preferred,
+            active_interface=active_interface,
             interfaces=interfaces,
             wired_available=any(
-                name.startswith(WIRED_PREFIXES) and details.get("isup")
+                self._interface_categories.get(name) == "wired" and details.get("isup")
                 for name, details in interfaces.items()
             ),
             wifi_available=any(
-                name.startswith(WIFI_PREFIXES) and details.get("isup")
+                self._interface_categories.get(name) == "wifi" and details.get("isup")
                 for name, details in interfaces.items()
             ),
             connected=connected,
@@ -104,7 +207,11 @@ class NetworkManager:
     # ------------------------------------------------------------------
     def ensure_connectivity(self) -> NetworkStatus:
         status = self.check_status()
-        if status.connected and status.active_interface and status.active_interface.startswith(WIRED_PREFIXES):
+        if (
+            status.connected
+            and status.active_interface
+            and self._interface_categories.get(status.active_interface) == "wired"
+        ):
             return status
 
         if status.connected and status.wired_available:
@@ -122,7 +229,7 @@ class NetworkManager:
         return status
 
     def _find_first_available(
-        self, prefixes: tuple[str, ...], interfaces: Dict[str, Dict[str, Optional[float]]]
+        self, prefixes: tuple[str, ...], interfaces: Dict[str, InterfaceInfo]
     ) -> Optional[str]:
         for name, details in interfaces.items():
             if name.startswith(prefixes) and details.get("isup"):
