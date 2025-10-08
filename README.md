@@ -5,6 +5,8 @@
 
 > **HueyOS** is a prototype robotic AI/OS that marries retro computing legacies with modern, modular hardware and a living constitutional framework. Huey is transparent by design, modular by necessity, and governed—not merely programmed—by the **Cloud Pyramid**.
 
+(UEFI-only - amd64 - Kernel 6.16.4 - Debian 13.0.0 Trixie)
+
 ![License](https://img.shields.io/badge/license-GPLv3-blue)
 ![Python](https://img.shields.io/badge/python-3.12–3.13-blue)
 ![Status](https://img.shields.io/badge/status-active-success)

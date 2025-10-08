@@ -1,0 +1,4 @@
+The file sha256sum.txt contains the sha256 checksums of all files on this medium.
+
+You can verify them automatically with the 'verify-checksums' boot parameter,
+or, manually with: 'sha256sum -c sha256sum.txt'.
