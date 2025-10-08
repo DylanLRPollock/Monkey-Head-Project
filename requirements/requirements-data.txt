@@ -1,9 +1,0 @@
-# Vector/search stores (optional)
-chroma-hnswlib==0.7.6 ; python_version >= "3.11" and python_version < "3.14"
-chromadb==0.5.20 ; python_version >= "3.11" and python_version < "3.14"
-elastic-transport==8.17.1 ; python_version >= "3.11" and python_version < "3.14"
-elasticsearch==8.18.1 ; python_version >= "3.11" and python_version < "3.14"
-pinecone-client==3.2.2 ; python_version >= "3.11" and python_version < "3.14"
-pinecone-plugin-assistant==1.7.0 ; python_version >= "3.11" and python_version < "3.14"
-pinecone-plugin-interface==0.0.7 ; python_version >= "3.11" and python_version < "3.14"
-pinecone==7.3.0 ; python_version >= "3.11" and python_version < "3.14"
