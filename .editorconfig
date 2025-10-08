@@ -1,36 +1,170 @@
+# Root config for the repository
 root = true
 
-# Default for all files
+########################################
+# Global defaults
+########################################
 [*]
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
+trim_trailing_whitespace = true
 indent_style = space
 indent_size = 4
-trim_trailing_whitespace = true
 
-# Markdown: allow trailing spaces (for line breaks)
+# Advisory. Not a core EditorConfig key, but respected by many IDEs/linters.
+max_line_length = 100
+
+########################################
+# Documentation and prose
+########################################
+# Markdown: keep two-space hard breaks. Do not strip trailing spaces.
 [*.md]
 trim_trailing_whitespace = false
 
-# YAML / YML: 2-space indent is standard
-[*.{yml,yaml}]
-indent_size = 2
-
-# JSON / TOML: 2-space indent (common in config files)
-[*.{json,toml}]
-indent_size = 2
-
-# Shell scripts
-[*.sh]
-indent_style = space
+# reStructuredText and AsciiDoc
+[*.{rst,adoc}]
 indent_size = 4
+trim_trailing_whitespace = false
 
-# Env files
+# Diffs and patches: preserve whitespace exactly
+[*.{patch,diff}]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+########################################
+# Data and config formats
+########################################
+# YAML (GitHub Actions, Ansible, K8s, etc.)
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# JSON and JSONC (VS Code settings, ESLint, etc.) and TOML (pyproject)
+[*.{json,jsonc,toml}]
+indent_style = space
+indent_size = 2
+
+# INI-style configs (setup.cfg, .editorconfig fragments, systemd)
+[*.{ini,properties,cfg,conf,service,timer,link}]
+indent_style = space
+indent_size = 2
+
+# dotenv / env files
 [*.env]
 indent_style = space
 indent_size = 2
+end_of_line = lf
+insert_final_newline = true
 
-# Makefiles: tabs are required
+########################################
+# Programming languages
+########################################
+# Python
+[*.py]
+indent_style = space
+indent_size = 4
+
+# Shell scripts
+[*.{sh,bash,zsh}]
+indent_style = space
+indent_size = 4
+
+# C/C++
+[*.{c,cc,cpp,h,hpp}]
+indent_style = space
+indent_size = 4
+
+# Rust
+[*.rs]
+indent_style = space
+indent_size = 4
+
+# Go (gofmt uses tabs)
+[*.go]
+indent_style = tab
+tab_width = 8
+
+# JavaScript / TypeScript
+[*.{js,jsx,ts,tsx,mjs,cjs}]
+indent_style = space
+indent_size = 2
+
+# HTML / XML / CSS / SCSS / Less
+[*.{html,htm,xml,xsd,xslt,css,scss,less}]
+indent_style = space
+indent_size = 2
+
+# SQL
+[*.sql]
+indent_style = space
+indent_size = 2
+
+# Protocol Buffers
+[*.proto]
+indent_style = space
+indent_size = 2
+
+# Terraform
+[*.tf]
+indent_style = space
+indent_size = 2
+
+# Nix
+[*.nix]
+indent_style = space
+indent_size = 2
+
+########################################
+# Build and tooling
+########################################
+# Makefiles: tabs required
 [Makefile]
 indent_style = tab
+
+# Other make fragments
+[*.{mk,make}]
+indent_style = tab
+
+# CMake
+[{CMakeLists.txt,*.cmake}]
+indent_style = space
+indent_size = 2
+
+# Dockerfiles
+[{Dockerfile,**/Dockerfile,*.[Dd]ockerfile}]
+indent_style = space
+indent_size = 2
+
+# Git attributes/ignores (keep simple)
+[.gitattributes]
+indent_style = space
+indent_size = 2
+[.gitignore]
+indent_style = space
+indent_size = 2
+
+########################################
+# OS-specific scripts
+########################################
+# Windows batch files: CRLF is safer on Windows
+[*.{bat,cmd}]
+end_of_line = crlf
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# PowerShell (CRLF avoids some host issues)
+[*.ps1]
+end_of_line = crlf
+charset = utf-8
+indent_style = space
+indent_size = 2
+
+########################################
+# Project meta
+########################################
+# This file itself and similar dotfiles
+[.{editorconfig,*rc,prettierrc,eslintrc}]
+indent_style = space
+indent_size = 2
