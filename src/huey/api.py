@@ -857,6 +857,11 @@ def cancel_task(task_id: str) -> TaskResponse:
     return TaskResponse.from_record(record)
 
 
+@app.get(
+    "/status/system",
+    response_model=SystemStatusResponse,
+    tags=["System"],
+)
 @app.get("/system/status", response_model=SystemStatusResponse, tags=["System"])
 def system_status() -> SystemStatusResponse:
     """Return operating system, hardware, and configuration details for HueyOS."""
@@ -1186,13 +1191,19 @@ def honeycomb_usage(
     response_model=ProcessTextResponse,
     tags=["AI Tools"],
 )
-def ai_process_text(
+async def ai_process_text(
     request: ProcessTextRequest,
     stream: bool = Query(False, description="When true, stream the response body"),
 ):
     """Apply :class:`AIProcessor` transformations to the supplied text."""
 
-    processed = AI_PROCESSOR.process_data(request.text)
+    if not request.text.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Text must not be empty for processing.",
+        )
+
+    processed = await asyncio.to_thread(AI_PROCESSOR.process_data, request.text)
     if stream:
         return StreamingResponse(_stream_text(processed), media_type="text/plain")
     return ProcessTextResponse(processed_text=processed)
@@ -1214,6 +1225,12 @@ def ai_compute_mean(request: ComputeMeanRequest) -> ComputeMeanResponse:
 @app.post("/ai/analyze-text", response_model=AnalyzeTextResponse, tags=["AI Tools"])
 def ai_analyze_text(request: AnalyzeTextRequest) -> AnalyzeTextResponse:
     """Return lightweight analytics describing the provided text."""
+
+    if not request.text.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Text must not be empty for analysis.",
+        )
 
     metrics = AI_PROCESSOR.analyze_data(request.text)
     return AnalyzeTextResponse(metrics=metrics)
