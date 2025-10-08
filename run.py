@@ -8,13 +8,14 @@ from typing import Any, Callable
 _module = import_module("monkey_head.run")
 
 __all__ = getattr(_module, "__all__", [name for name in dir(_module) if not name.startswith("_")])
-for _name in ("main", "launch_gui", "launch_manager_ui", "_load_cli"):
+for _name in ("main", "launch_gui", "launch_manager_ui", "_load_cli", "minimal_run"):
     if _name not in __all__:
         __all__.append(_name)
 
 _launch_manager_ui_impl: Callable[..., Any] = getattr(_module, "launch_manager_ui")
 _launch_gui_impl: Callable[..., Any] = getattr(_module, "launch_gui")
 _load_cli_impl: Callable[..., Any] = getattr(_module, "_load_cli")
+_minimal_run_impl: Callable[..., Any] = getattr(_module, "minimal_run")
 
 
 def __getattr__(name: str) -> Any:  # pragma: no cover - proxy
@@ -36,7 +37,16 @@ def launch_gui(*args: Any, **kwargs: Any) -> Any:
 def _load_cli(*args: Any, **kwargs: Any) -> Any:
     """Proxy to the real ``_load_cli`` implementation."""
 
-    return _load_cli_impl(*args, **kwargs)
+    loader = _load_cli_impl(*args, **kwargs)
+    if loader is _minimal_run_impl:
+        return minimal_run
+    return loader
+
+
+def minimal_run(*args: Any, **kwargs: Any) -> Any:
+    """Proxy to the lightweight CLI launcher."""
+
+    return _minimal_run_impl(*args, **kwargs)
 
 
 def main(*args: Any, **kwargs: Any) -> Any:
