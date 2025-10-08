@@ -163,3 +163,51 @@ def test_run_pending_uses_updated_health_snapshot():
 
     assert dispatched and dispatched[0].task_id == record.task_id
     assert scheduler.get_task(record.task_id).status is TaskStatus.RUNNING
+
+
+def test_complete_task_records_result_and_history():
+    scheduler = TaskScheduler(health_provider=_healthy_snapshot)
+
+    record = scheduler.schedule_task(command="collect logs", requested_agent=Agent.SPARK)
+    assert record.status is TaskStatus.RUNNING
+
+    completed = scheduler.complete_task(record.task_id, result={"ok": True})
+
+    assert completed.status is TaskStatus.COMPLETED
+    assert completed.result == {"ok": True}
+    assert any(entry.status is TaskStatus.COMPLETED for entry in completed.history)
+
+
+def test_cancel_task_frees_capacity_and_logs_reason():
+    scheduler = TaskScheduler(health_provider=_healthy_snapshot)
+
+    running = scheduler.schedule_task(command="initial", requested_agent=Agent.SPARK)
+    assert running.assigned_agent is Agent.SPARK
+
+    cancelled = scheduler.cancel_task(running.task_id, reason="operator request")
+    assert cancelled.status is TaskStatus.CANCELLED
+    assert cancelled.error == "operator request"
+    assert any(entry.status is TaskStatus.CANCELLED for entry in cancelled.history)
+
+    follow_up = scheduler.schedule_task(command="follow", requested_agent=Agent.SPARK)
+    assert follow_up.status is TaskStatus.RUNNING
+    assert follow_up.assigned_agent is Agent.SPARK
+
+
+def test_list_tasks_supports_status_filters():
+    scheduler = TaskScheduler(
+        health_provider=_healthy_snapshot,
+        max_concurrency={Agent.SPARK: 1, Agent.ZAP: 0},
+    )
+
+    running = scheduler.schedule_task(command="active", requested_agent=Agent.SPARK)
+    pending = scheduler.schedule_task(
+        command="waiting",
+        priority=TaskPriority.HIGH,
+        requested_agent=Agent.SPARK,
+    )
+
+    subset = scheduler.list_tasks(statuses=[TaskStatus.PENDING])
+
+    assert {task.task_id for task in subset} == {pending.task_id}
+    assert running.task_id not in {task.task_id for task in subset}
