@@ -12,17 +12,29 @@ from .manager import (
     create_default_actuator_manager,
     create_default_sensor_manager,
 )
-from .plugins import ActuatorPlugin, ActuatorRegistry, SensorPlugin, SensorReading, SensorRegistry
+from .plugins import (
+    ActuatorPlugin,
+    ActuatorRegistry,
+    DummyTemperatureSensor,
+    SensorPlugin,
+    SensorReading,
+    SensorRegistry,
+    list_sensor_plugin_metadata,
+    list_sensor_plugins,
+)
 
 __all__ = [
     "ActuatorManager",
     "ActuatorPlugin",
     "ActuatorRegistry",
+    "DummyTemperatureSensor",
     "SensorManager",
     "create_default_actuator_manager",
     "SensorPlugin",
     "SensorReading",
     "SensorRegistry",
+    "list_sensor_plugin_metadata",
+    "list_sensor_plugins",
     "create_default_sensor_manager",
 ]
 
