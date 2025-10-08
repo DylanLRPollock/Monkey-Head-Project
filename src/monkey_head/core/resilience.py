@@ -13,6 +13,7 @@ if not __all__:
         "CrashEvent",
         "CrashRecoveryManager",
         "EmergencyGovernanceController",
+        "EmergencyServiceStatus",
         "EmergencyState",
         "HealthCheck",
         "MonitoredProcess",

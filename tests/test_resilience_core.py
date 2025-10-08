@@ -3,6 +3,7 @@ import pytest
 from monkey_head.core.resilience import (
     CrashRecoveryManager,
     EmergencyGovernanceController,
+    EmergencyServiceStatus,
     EmergencyState,
 )
 
@@ -34,6 +35,10 @@ def test_crash_recovery_manager_restarts_crashed_process():
     assert events[0].restarted is True
     assert state["restart_calls"] == 1
 
+    history = manager.event_log()
+    assert history[-1].process == "spark-loop"
+    assert history[-1].restarted is True
+
     status = manager.statuses()[0]
     assert status["restart_attempts"] == 1
     assert status["auto_restart"] is True
@@ -50,7 +55,9 @@ def test_crash_recovery_manual_override_prevents_restart():
 
     manager = CrashRecoveryManager(watchdog=DummyWatchdog())
     manager.register_process("zap-loop", health_check=health_check, restart=restart)
-    manager.set_auto_restart("zap-loop", False, reason="maintenance window")
+    status = manager.toggle_auto_restart("zap-loop", False, reason="maintenance window")
+    assert status["auto_restart"] is False
+    assert status["manual_override_reason"] == "maintenance window"
 
     events = manager.poll()
     assert events[0].restarted is False
@@ -75,6 +82,12 @@ def test_emergency_governance_controller_requires_quorum():
     controller.enter_emergency_mode(triggered_by="spark", reason="grid", approvals=["zap"])
     assert controller.state is EmergencyState.EMERGENCY
     assert stop_calls == ["stop"]
+
+    snapshot = controller.status()
+    assert snapshot["state"] == "emergency"
+    service_status = EmergencyServiceStatus(**snapshot["services"][0])
+    assert service_status.name == "ollama"
+    assert service_status.managed is True
 
     controller.exit_emergency_mode(requested_by="spark", approvals=["zap"])
     assert controller.state is EmergencyState.NORMAL
