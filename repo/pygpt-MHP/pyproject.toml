@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=67"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pygpt-MHP"
+version = "0.0.0"
+description = "Monkey Head Project - PyGPT integration stubs"
+authors = [{name = "Monkey Head Project"}]
+license = {text = "GPL-3.0-only"}
+readme = "README.md"
+requires-python = ">=3.11"
+
+[project.urls]
+Homepage = "https://github.com/DylanLRPollock/Monkey-Head-Project"

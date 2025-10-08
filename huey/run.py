@@ -10,6 +10,8 @@ import sys
 from pathlib import Path
 from typing import Callable
 
+_PYGPT_PREPARED = False
+
 
 def minimal_run() -> None:
     """Run the lightweight CLI without importing heavy GUI dependencies."""
@@ -63,16 +65,16 @@ def _candidate_src_paths() -> list[Path]:
     ]
 
 
-def _load_cli() -> Callable[..., None]:
-    """Import and return the canonical PyGPT CLI runner.
+def _prepare_pygpt() -> bool:
+    """Ensure :mod:`pygpt_net` is importable either from site-packages or vendors."""
 
-    Falls back to :func:`minimal_run` if the CLI cannot be imported due to
-    missing dependencies.
-    """
+    global _PYGPT_PREPARED
+    if _PYGPT_PREPARED:
+        return True
 
     try:
-        from pygpt_net.app import run as cli_run
-    except Exception:  # pragma: no cover - fallback to bundled sources
+        importlib.import_module("pygpt_net")
+    except Exception:  # pragma: no cover - attempt to load from vendored sources
         for candidate in _candidate_src_paths():
             if not candidate.exists():
                 continue
@@ -80,18 +82,47 @@ def _load_cli() -> Callable[..., None]:
             if resolved not in sys.path:
                 sys.path.insert(0, resolved)
             try:
-                from pygpt_net.app import run as cli_run
+                importlib.import_module("pygpt_net")
             except Exception:  # pragma: no cover - keep searching
                 continue
             else:
-                break
-        else:  # pragma: no cover - nothing worked
-            return minimal_run
+                _PYGPT_PREPARED = True
+                return True
+        return False
+    else:
+        _PYGPT_PREPARED = True
+        return True
+
+
+def _load_cli() -> Callable[..., None]:
+    """Import and return the canonical PyGPT CLI runner.
+
+    Falls back to :func:`minimal_run` if the CLI cannot be imported due to
+    missing dependencies.
+    """
+
+    if not _prepare_pygpt():
+        return minimal_run
+
+    try:
+        from pygpt_net.app import run as cli_run
+    except Exception:  # pragma: no cover - fallback to bundled sources
+        return minimal_run
     return cli_run
+
+
+def launch_cli(*args, **kwargs) -> None:
+    """Launch the PyGPT CLI entry point if available."""
+
+    cli_run = _load_cli()
+    cli_run(*args, **kwargs)
 
 
 def launch_gui() -> None:
     """Start the PyGPT GUI with the Monkey Head manager tool enabled."""
+
+    if not _prepare_pygpt():
+        raise RuntimeError("pygpt_net package is not available")
 
     from pygpt_net.app import run as pygpt_run
     from .pygpt_net.tools.manager import MonkeyManager
@@ -233,8 +264,6 @@ def main(argv: list[str] | None = None) -> None:
         launch_manager_ui()
         return
 
-    cli_run = _load_cli()
-
     from .system_checks import check_os_support, check_python_version
 
     check_os_support()
@@ -249,7 +278,7 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     if args.cli:
-        cli_run()
+        launch_cli()
         return
 
     if args.simple_chat:
@@ -265,11 +294,12 @@ def main(argv: list[str] | None = None) -> None:
         launch_gui()
     except Exception as exc:  # pragma: no cover - fallback to CLI
         print(f"GUI failed to launch: {exc}\nFalling back to CLI mode.")
-        cli_run()
+        launch_cli()
 
 
 __all__ = [
     "_load_cli",
+    "launch_cli",
     "launch_gui",
     "launch_manager_ui",
     "main",
