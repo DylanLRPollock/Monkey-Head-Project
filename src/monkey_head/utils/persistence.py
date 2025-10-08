@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import sqlite3
 import threading
 import time
@@ -71,9 +72,10 @@ class TelemetryStore:
 
     # ------------------------------------------------------------------
     def log_sensor_reading(self, reading: SensorReading) -> None:
+        timestamp = self._normalise_timestamp(getattr(reading, "timestamp", None))
         payload = {
             "name": getattr(reading, "name", None),
-            "timestamp": float(getattr(reading, "timestamp", time.time())),
+            "timestamp": timestamp,
             "value": getattr(reading, "value", None),
             "provenance": getattr(reading, "provenance", {}),
         }
@@ -273,6 +275,24 @@ class TelemetryStore:
         if len(value) <= limit:
             return value
         return value[: limit - 3] + "..."
+
+    @staticmethod
+    def _normalise_timestamp(value: Any) -> float:
+        """Convert *value* to a float timestamp, falling back to ``time.time``."""
+
+        if value is None:
+            return time.time()
+        if isinstance(value, (int, float)):
+            if math.isfinite(value):
+                return float(value)
+            return time.time()
+        try:
+            converted = float(value)
+        except (TypeError, ValueError):
+            return time.time()
+        if math.isfinite(converted):
+            return converted
+        return time.time()
 
 
 def _stringify(value: Any) -> Any:
