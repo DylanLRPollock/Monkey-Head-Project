@@ -1,0 +1,37 @@
+Architectures: amd64
+Codename: trixie
+Components: main
+Date: Wed, 08 Oct 2025 05:38:42 +0000
+Description: Last updated: Wed, 08 Oct 2025 05:38:42 +0000
+Label: Debian
+Origin: Debian
+Suite: trixie
+Version: 13
+MD5Sum:
+ 61d308ab11902ce19d20a02a2438b9c8              207 Release
+ 92d8a61f026b0b0808e160535dbb5967           124481 main/binary-amd64/Packages
+ d338f2b563c7fd30a6836cab71e99f86            41480 main/binary-amd64/Packages.gz
+ b90bd686a9ba245afab100d926562348              116 main/binary-amd64/Release
+ e98d0149148afe667206839c4beef886           230492 main/debian-installer/binary-amd64/Packages
+ 396b559e786d2d9c27c12a1bc5798b4a            77471 main/debian-installer/binary-amd64/Packages.gz
+SHA1:
+ c49d712a15ebe1d4c5012e325d0c107778c9847b              207 Release
+ ba0012f40bceb7163653af0309d6e2ddc24a10e7           124481 main/binary-amd64/Packages
+ 99f6f3d6a36185cb7447220c4850c6536ceede6e            41480 main/binary-amd64/Packages.gz
+ 798971e789128e56c94eda56b551c8c0fe5a1c8f              116 main/binary-amd64/Release
+ 9cdcd961f5ae865a88ba080934dde271351d1e37           230492 main/debian-installer/binary-amd64/Packages
+ c7b27e4d91183964e5f27bcdc495dbc10bc0d6ca            77471 main/debian-installer/binary-amd64/Packages.gz
+SHA256:
+ d50c86a8428324303b7e49fdc6d441494e701b80be8643114ba70b9c3076ea39              207 Release
+ 07b7b62d3ec3e196e9bdbbbf5389fa3170e7dadd295caee41ffc791c5e267832           124481 main/binary-amd64/Packages
+ d1e5a6c62f44d39978bb31c1280c377257e509152964ee6a009120e434793d10            41480 main/binary-amd64/Packages.gz
+ 71ced98f84c8678655403c5bfac226ddf9ca58ef604a24c2b42ffb1246424127              116 main/binary-amd64/Release
+ b5c979a0fb28105d514ea36972f3ad5579bff452f015f9c4b1d85a16406b398e           230492 main/debian-installer/binary-amd64/Packages
+ 4b5aad0ccb138cd1d93da4ae591661576698983e4b65f85c55f1a3d5b6bc8759            77471 main/debian-installer/binary-amd64/Packages.gz
+SHA512:
+ fbbf8d096b1cc9422ab69fedd240ea4eba0a0afa6a24a9886c448b71f635c76c7b4f0dc1c870d5e710b250dc9a184899c769c529080a56243362ffdae9276283              207 Release
+ 6609ad696d58a3da74147fc9f55f9886a4e37b8df10afce363124f24f6bf910fc0135abdd00bb9af24c96b584237b0e16f6dd63c9d746722acc229ee841c650c           124481 main/binary-amd64/Packages
+ 4673ae64fae8c85021114f0e4e0646aaca4aae8e676e950a9f70496cf6c5aaf88825111137279ff898378a632d1bf716070ed2c636df03e1c2c4d104396b1b4a            41480 main/binary-amd64/Packages.gz
+ 1e7aeda75a535403e9513dc42f69c0a07e2de29a0be6d0cd91a2c73286c5542b316cb8489e01a252d9f3ab7c0b1d0996a590c9da8ce4dffb3507362a3f5c884d              116 main/binary-amd64/Release
+ 1c8a62603f5a8e20928081b39de90557ce9317f6b7e5457552f2d111237e934b21915d22add9f3fa5515347f28203a9e19bef92e3a13d0d896b87e328764f432           230492 main/debian-installer/binary-amd64/Packages
+ c74531ae1b1c165f541236f41c6a865f48452121fdcdfae9307d06126ca8a51421a2f3894628c92d6115f86690334a1e5aecd83f4f125a958af9cabf1d7e2103            77471 main/debian-installer/binary-amd64/Packages.gz
