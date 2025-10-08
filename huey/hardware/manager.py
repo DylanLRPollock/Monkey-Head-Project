@@ -6,6 +6,7 @@ import asyncio
 import logging
 import threading
 import uuid
+from collections.abc import AsyncIterator
 from contextlib import suppress
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
@@ -35,6 +36,7 @@ class SensorManager:
         self.storage = storage or HoneycombStorage()
         self.registry = registry or SensorRegistry()
         self._sensors: Dict[str, SensorPlugin] = {}
+        self._configs: Dict[str, Dict[str, Any]] = {}
         self._lock = threading.RLock()
         self._subscribers: List[Tuple[Optional[str], asyncio.Queue[SensorReading]]] = []
 
@@ -48,6 +50,7 @@ class SensorManager:
             plugin = self.registry.create(plugin_name, name, config)
             plugin.setup()
             self._sensors[name] = plugin
+            self._configs[name] = plugin.config.copy()
         LOGGER.info("Registered sensor %s using plugin %s", name, plugin_name)
         return plugin
 
@@ -65,6 +68,7 @@ class SensorManager:
         with self._lock:
             sensor.setup()
             self._sensors[sensor.name] = sensor
+            self._configs[sensor.name] = sensor.config.copy()
         LOGGER.info("Registered sensor %s using pre-instantiated plugin", sensor.name)
 
     def remove_sensor(self, name: str) -> None:
@@ -72,6 +76,7 @@ class SensorManager:
 
         with self._lock:
             sensor = self._sensors.pop(name, None)
+            self._configs.pop(name, None)
         if sensor:
             with suppress(Exception):
                 sensor.shutdown()
@@ -83,9 +88,15 @@ class SensorManager:
     def list_sensors(self) -> List[Dict[str, Any]]:
         """Return metadata about configured sensors."""
 
+        metadata: List[Dict[str, Any]] = []
         with self._lock:
-            sensors = list(self._sensors.values())
-        return [sensor.provenance | {"name": sensor.name} for sensor in sensors]
+            for sensor in self._sensors.values():
+                config_copy = sensor.config.copy()
+                self._configs[sensor.name] = config_copy
+                metadata.append(
+                    sensor.provenance | {"name": sensor.name, "config": config_copy}
+                )
+        return metadata
 
     def get_sensor(self, name: str) -> Optional[SensorPlugin]:
         with self._lock:
@@ -146,6 +157,21 @@ class SensorManager:
                 queue.put_nowait(reading)
             except asyncio.QueueFull:  # pragma: no cover - best effort delivery
                 LOGGER.debug("Dropping sensor reading for %s due to full queue", reading.name)
+
+    async def stream(self, sensor_name: Optional[str] = None) -> AsyncIterator[SensorReading]:
+        """Yield readings in real-time for ``sensor_name`` or all sensors.
+
+        This helper wraps :meth:`subscribe` to provide an asynchronous iterator
+        that automatically unsubscribes when the consumer stops iterating.
+        """
+
+        queue = self.subscribe(sensor_name)
+        try:
+            while True:
+                reading = await queue.get()
+                yield reading
+        finally:
+            self.unsubscribe(queue)
 
     # ------------------------------------------------------------------
     # Historical queries

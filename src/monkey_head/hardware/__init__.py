@@ -13,9 +13,12 @@ from .manager import (
 from .plugins import (
     ActuatorPlugin,
     ActuatorRegistry,
+    DummyTemperatureSensor,
     SensorPlugin,
     SensorReading,
     SensorRegistry,
+    list_sensor_plugin_metadata,
+    list_sensor_plugins,
 )
 
 _drivers = import_module("huey.hardware.drivers")
@@ -26,11 +29,14 @@ __all__ = [
     "ActuatorManager",
     "ActuatorPlugin",
     "ActuatorRegistry",
+    "DummyTemperatureSensor",
     "SensorManager",
     "SensorPlugin",
     "SensorReading",
     "SensorRegistry",
     "create_default_actuator_manager",
     "create_default_sensor_manager",
+    "list_sensor_plugin_metadata",
+    "list_sensor_plugins",
     "drivers",
 ]

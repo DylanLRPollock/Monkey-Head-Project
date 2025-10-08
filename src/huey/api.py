@@ -33,7 +33,11 @@ from monkey_head.core.task_scheduler import (
     TaskStatus,
 )
 from monkey_head.hardware import create_default_sensor_manager
-from monkey_head.hardware.plugins import SensorReading
+from monkey_head.hardware.plugins import (
+    SensorReading,
+    list_sensor_plugin_metadata,
+    list_sensor_plugins,
+)
 from monkey_head.honeycomb_index import HoneycombIndex
 from monkey_head.honeycomb_monitor import HoneycombMonitor
 from monkey_head.honeycomb_storage import HoneycombStorage
@@ -321,6 +325,9 @@ class SensorPluginsResponse(BaseModel):
     """Response model listing available sensor plugins."""
 
     plugins: List[str]
+    metadata: List[Dict[str, Any]] = Field(
+        default_factory=list, description="Detailed metadata for available plugins"
+    )
 
 
 class SensorListResponse(BaseModel):
@@ -861,8 +868,10 @@ def system_status() -> SystemStatusResponse:
 def sensor_plugins() -> SensorPluginsResponse:
     """List available sensor plugin identifiers."""
 
-    plugins = SENSOR_MANAGER.registry.available()
-    return SensorPluginsResponse(plugins=plugins)
+    registry = SENSOR_MANAGER.registry
+    plugins = list_sensor_plugins(registry)
+    metadata = list_sensor_plugin_metadata(registry)
+    return SensorPluginsResponse(plugins=plugins, metadata=metadata)
 
 
 @app.get("/sensors", response_model=SensorListResponse, tags=["Sensors"])
