@@ -1,0 +1,81 @@
+{
+    "__meta__": {
+        "version": "2.5.8",
+        "app.version": "2.5.8",
+        "updated_at": "2025-03-02T00:00:00"
+    },
+    "items": {
+        "chat": {
+            "id": "chat",
+            "name": "chat",
+            "label": "mode.chat",
+            "default": true
+        },
+        "audio": {
+            "id": "audio",
+            "name": "audio",
+            "label": "mode.audio",
+            "default": false
+        },
+        "research": {
+            "id": "research",
+            "name": "research",
+            "label": "mode.research",
+            "default": false
+        },
+        "completion": {
+            "id": "completion",
+            "name": "completion",
+            "label": "mode.completion",
+            "default": false
+        },
+        "img": {
+            "id": "img",
+            "name": "img",
+            "label": "mode.img",
+            "default": false
+        },
+        "vision": {
+            "id": "vision",
+            "name": "vision",
+            "label": "mode.vision",
+            "default": false
+        },
+        "assistant": {
+            "id": "assistant",
+            "name": "assistant",
+            "label": "mode.assistant",
+            "default": false
+        },
+        "langchain": {
+            "id": "langchain",
+            "name": "langchain",
+            "label": "mode.langchain",
+            "default": false
+        },
+        "llama_index": {
+            "id": "llama_index",
+            "name": "Index (LlamaIndex)",
+            "label": "mode.llama_index",
+            "default": false
+        },
+        "agent_llama": {
+            "id": "agent_llama",
+            "name": "Agent (LlamaIndex)",
+            "label": "mode.agent_llama",
+            "default": false
+        },
+        "agent": {
+            "id": "agent",
+            "name": "Agent (legacy)",
+            "label": "mode.agent",
+            "default": false
+        },
+        "expert": {
+            "id": "expert",
+            "name": "Experts",
+            "label": "mode.expert",
+            "default": false
+        }
+    }
+}

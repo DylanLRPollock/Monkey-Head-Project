@@ -1,0 +1,23 @@
+{
+  "name": "a fluffy cat",
+  "ai_name": "",
+  "user_name": "",
+  "prompt": "a fluffy cat sitting comfortably on a sunny windowsill, with warm sunlight highlighting its fur, looking curiously outside",
+  "temperature": 1.0,
+  "chat": false,
+  "completion": false,
+  "img": true,
+  "vision": false,
+  "langchain": false,
+  "assistant": false,
+  "llama_index": false,
+  "agent": false,
+  "expert": false,
+  "experts": [],
+  "enabled": true,
+  "__meta__": {
+    "version": "2.2.7",
+    "app.version": "2.2.7",
+    "updated_at": "2024-05-01T00:00:00"
+  }
+}
