@@ -8,6 +8,7 @@ import os
 import shutil
 import subprocess
 import sys
+from importlib import import_module
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Sequence
 
@@ -222,7 +223,20 @@ def _normalise_profiles(profiles: Iterable[str]) -> List[str]:
 
 
 def _cmd_run(args: argparse.Namespace) -> int:
-    import run as runtime
+    runtime = None
+    attempted = ("run", "monkey_head.run", "huey.memory.PY.run")
+    for module_name in attempted:
+        try:
+            runtime = import_module(module_name)
+        except ModuleNotFoundError:
+            continue
+        else:
+            break
+    if runtime is None:
+        raise RuntimeError(
+            "Unable to locate runtime module (tried run, monkey_head.run, "
+            "huey.memory.PY.run)."
+        )
 
     requested_profiles: List[str] = []
     if args.ml:
@@ -231,6 +245,10 @@ def _cmd_run(args: argparse.Namespace) -> int:
         requested_profiles.append("cloud")
     for value in args.profile:
         requested_profiles.extend(part.strip() for part in value.split(","))
+
+    existing = os.environ.get("HUEY_PROFILES", "")
+    if existing:
+        requested_profiles.extend(part.strip() for part in existing.split(","))
 
     profiles = _normalise_profiles(requested_profiles)
     if profiles:
@@ -242,33 +260,51 @@ def _cmd_run(args: argparse.Namespace) -> int:
         check_os_support()
         check_python_version()
 
+    launch_gui = getattr(runtime, "launch_gui", None)
+    launch_manager_ui = getattr(runtime, "launch_manager_ui", None)
+    load_cli = getattr(runtime, "_load_cli", None)
+    minimal_run = getattr(runtime, "minimal_run", None)
+
     try:
         if args.manager_ui:
-            runtime.launch_manager_ui()
+            if launch_manager_ui is None:
+                raise RuntimeError("Manager UI is not available in this runtime build.")
+            launch_manager_ui()
             return 0
 
         if args.minimal:
-            try:
-                from huey.memory.PY.run import minimal_run
-            except ImportError as exc:  # pragma: no cover - legacy path missing
-                raise RuntimeError("Minimal CLI mode is not available.") from exc
+            if minimal_run is None:
+                raise RuntimeError("Minimal CLI mode is not available.")
             minimal_run()
             return 0
 
         cli_requested = args.cli and not args.gui
         if cli_requested:
-            runner = runtime._load_cli()
+            if load_cli is None:
+                raise RuntimeError("CLI launcher is not available in this runtime build.")
+            runner = load_cli()
+            runner()
+            return 0
+
+        if launch_gui is None:
+            if args.no_fallback:
+                raise RuntimeError("GUI launcher is not available in this runtime build.")
+            if load_cli is None:
+                raise RuntimeError("Neither GUI nor CLI entry points are available.")
+            runner = load_cli()
             runner()
             return 0
 
         try:
-            runtime.launch_gui()
+            launch_gui()
             return 0
         except Exception:
             if args.no_fallback:
                 raise
             print("GUI launch failed; falling back to CLI mode.")
-            runner = runtime._load_cli()
+            if load_cli is None:
+                raise RuntimeError("GUI launch failed and CLI entry point is missing.")
+            runner = load_cli()
             runner()
             return 0
     except KeyboardInterrupt:  # pragma: no cover - interactive usage
@@ -428,11 +464,14 @@ def _cmd_agent_status(args: argparse.Namespace) -> int:
 def _cmd_memory_sort(args: argparse.Namespace) -> int:
     from monkey_head.utils.auto_sort import auto_sort_memory
 
-    summary = auto_sort_memory(
-        source_dir=args.source,
-        destination_root=args.destination,
-        dry_run=args.dry_run,
-    )
+    try:
+        summary = auto_sort_memory(
+            source_dir=args.source,
+            destination_root=args.destination,
+            dry_run=args.dry_run,
+        )
+    except FileNotFoundError as exc:
+        raise RuntimeError(str(exc)) from exc
     if args.json:
         print(json.dumps(summary, indent=2, sort_keys=True))
     else:
