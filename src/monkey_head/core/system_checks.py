@@ -5,7 +5,7 @@ from __future__ import annotations
 from importlib import import_module
 from typing import Any
 
-_impl = import_module("huey.system_checks")
+_impl = import_module("monkey_head.system_checks")
 
 __all__ = list(getattr(_impl, "__all__", ()))
 if not __all__:
