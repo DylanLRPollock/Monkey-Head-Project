@@ -11,6 +11,8 @@ import sys
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Sequence
 
+__all__ = ["main"]
+
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
