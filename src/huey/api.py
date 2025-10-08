@@ -1038,10 +1038,12 @@ def override_monitored_process(name: str, request: ManualOverrideRequest) -> Mon
     """Enable or disable automatic crash recovery for the given process."""
 
     try:
-        CRASH_MANAGER.set_auto_restart(name, request.auto_restart, reason=request.reason)
+        status = CRASH_MANAGER.toggle_auto_restart(
+            name, request.auto_restart, reason=request.reason
+        )
     except KeyError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
-    return _monitor_status(name)
+    return MonitoredProcessStatusModel(**status)
 
 
 @app.post(
