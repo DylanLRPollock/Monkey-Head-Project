@@ -27,6 +27,7 @@
 - [Feature Matrix](#feature-matrix)
 - [Roadmap](#roadmap)
 - [License & Credits](#license--credits)
+- [Documentation portal](docs/index.md)
 
 ---
 
@@ -137,14 +138,34 @@ Selected chapters: `docs/governance/chapters/07-wartime.md`, `09-oversight.md`, 
 - x86‑64 (≥ 4 cores, 16 GB RAM, 256 GB disk, UEFI)  
 - **Python 3.12–3.13**
 
-### Source (venv)
+### Source installation
 ```bash
+git clone --recurse-submodules https://github.com/DylanLRPollock/Monkey-Head-Project.git
+cd Monkey-Head-Project
+
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-pip install -r requirements.txt
-python run.py            # GUI
-python run.py --cli      # CLI
+pip install -e .              # core runtime
+# Optional extras
+pip install -e '.[ml]'       # machine-learning toolchain
+pip install -e '.[data]'     # vector DB integrations
+pip install -e '.[cloud]'    # Azure/AWS helpers
+
+# Configure environment secrets if needed
+cp huey.env.example .env
+```
+
+### First boot
+```bash
+# Prepare the memory hive and confirm compatibility
+huey init --run-checks --verbose
+
+# Launch the multi-agent runtime (CLI fallback enabled by default)
+huey run --ml --cloud
+
+# Start the FastAPI control surface on http://127.0.0.1:8000
+uvicorn huey.api:app --reload
 ```
 
 ### Docker
@@ -152,16 +173,15 @@ python run.py --cli      # CLI
 docker compose up -d
 ```
 
-### ISO / Kernel Builder
+### ISO / Kernel builder
 ```bash
 git clone --recurse-submodules https://github.com/DylanLRPollock/Monkey-Head-Project.git
 cd Monkey-Head-Project && make iso
 ```
 
-**Post‑install hardening:** update packages, enable AMDGPU/Broadcom firmware, create a non‑root SSH user, bind TigerVNC to localhost and tunnel via SSH.
+**Post-install hardening:** update packages, enable AMDGPU/Broadcom firmware, create a non-root SSH user, bind TigerVNC to localhost and tunnel via SSH.
 
-**Local models:** install **Ollama**, pull quantized models sized to your GPU’s VRAM, connect PyGPT‑net tools to local endpoints (ROCm recommended on AMD).
-
+**Local models:** install **Ollama**, pull quantized models sized to your GPU’s VRAM, connect PyGPT-net tools to local endpoints (ROCm recommended on AMD).
 ---
 
 ## Development Setup
@@ -221,6 +241,14 @@ huey agent-status --json
 # Sort collected artefacts without modifying the filesystem
 huey memory-sort --dry-run --json
 ```
+
+### API quick start
+
+Use `uvicorn huey.api:app --reload` to expose the FastAPI control surface on `http://127.0.0.1:8000`. The [API reference](docs/api-reference.md) includes `curl` recipes for every endpoint, covering task scheduling, sensor telemetry, honeycomb reports, governance workflows, and crash recovery tooling.
+
+### Sensor plugin development
+
+To extend HueyOS with custom telemetry, follow the workflow described in [`docs/sensor-plugins.md`](docs/sensor-plugins.md). The sensor manager persists readings into the honeycomb store automatically, making them available through the `/sensors/*` API family.
 
 ---
 
