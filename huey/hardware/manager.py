@@ -11,6 +11,7 @@ from contextlib import suppress
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from monkey_head.honeycomb_storage import HoneycombStorage
+from monkey_head.utils.persistence import TelemetryStore
 
 from .plugins import (
     ActuatorPlugin,
@@ -32,9 +33,11 @@ class SensorManager:
         *,
         storage: Optional[HoneycombStorage] = None,
         registry: Optional[SensorRegistry] = None,
+        telemetry_store: Optional[TelemetryStore] = None,
     ) -> None:
         self.storage = storage or HoneycombStorage()
         self.registry = registry or SensorRegistry()
+        self.telemetry_store = telemetry_store
         self._sensors: Dict[str, SensorPlugin] = {}
         self._configs: Dict[str, Dict[str, Any]] = {}
         self._lock = threading.RLock()
@@ -136,6 +139,11 @@ class SensorManager:
         }
         key = f"telemetry/sensor/{reading.name}/{uuid.uuid4().hex}"
         self.storage.store(key, payload)
+        if self.telemetry_store is not None:
+            try:
+                self.telemetry_store.log_sensor_reading(reading)
+            except Exception:  # pragma: no cover - logging only
+                LOGGER.exception("Failed to persist sensor reading to telemetry store")
         self._broadcast(reading)
 
     # ------------------------------------------------------------------
@@ -237,14 +245,18 @@ class ActuatorManager:
             return actuator.perform(command, payload)
 
 
-def create_default_sensor_manager() -> SensorManager:
+def create_default_sensor_manager(*, telemetry_store: Optional[TelemetryStore] = None) -> SensorManager:
     """Create a :class:`SensorManager` with built-in plugins registered."""
 
     from . import drivers  # Local import to avoid circular dependency
 
     registry = SensorRegistry()
     drivers.register_builtin_sensors(registry)
-    return SensorManager(storage=HoneycombStorage(), registry=registry)
+    return SensorManager(
+        storage=HoneycombStorage(),
+        registry=registry,
+        telemetry_store=telemetry_store,
+    )
 
 
 def create_default_actuator_manager() -> ActuatorManager:

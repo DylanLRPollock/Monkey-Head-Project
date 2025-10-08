@@ -12,6 +12,7 @@ import importlib
 import importlib.util
 import logging
 import re
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -25,6 +26,14 @@ from sklearn.linear_model import LinearRegression
 import seaborn as sns
 import requests
 
+from monkey_head.utils.gpu import (
+    AcceleratorInfo,
+    detect_accelerators,
+    recommend_models_for_vram,
+    total_vram_bytes,
+)
+from monkey_head.utils.persistence import TelemetryStore
+
 
 class AIProcessor:
     """Utility class that exposes lightweight AI features for demos and tests.
@@ -37,7 +46,13 @@ class AIProcessor:
 
     _OLLAMA_DEFAULT_MODEL = "llama3"
 
-    def __init__(self, model: str | None = None, default_instruction: str | None = None):
+    def __init__(
+        self,
+        model: str | None = None,
+        default_instruction: str | None = None,
+        *,
+        telemetry_store: Optional[TelemetryStore] = None,
+    ):
         self.model = model
         self.default_instruction = default_instruction or (
             "Rewrite the provided text to improve clarity while preserving meaning."
@@ -45,6 +60,10 @@ class AIProcessor:
         self._logger = logging.getLogger(__name__)
         self._llm_backend: str | None = None
         self._llm_client: object | None = None
+        self.telemetry_store = telemetry_store or TelemetryStore()
+        self._accelerators: List[AcceleratorInfo] = []
+        self._recommended_models: List[str] = []
+        self.refresh_hardware_state()
         self._initialize_llm_backend()
 
     # ------------------------------------------------------------------
@@ -62,6 +81,28 @@ class AIProcessor:
                 self._llm_backend = name
                 self._llm_client = client
                 return
+
+    def refresh_hardware_state(self) -> None:
+        """Refresh accelerator metadata and recommended models."""
+
+        self._accelerators = detect_accelerators()
+        best_vram = max((info.vram_total or 0 for info in self._accelerators), default=0)
+        self._recommended_models = recommend_models_for_vram(best_vram)
+        if self.model is None and self._recommended_models:
+            self.model = self._recommended_models[0]
+
+    def get_model_catalog(self, refresh: bool = False) -> Dict[str, Any]:
+        """Return backend, model, and accelerator insights for callers."""
+
+        if refresh or not self._accelerators:
+            self.refresh_hardware_state()
+        return {
+            "backend": self._llm_backend,
+            "active_model": self.model or self._OLLAMA_DEFAULT_MODEL,
+            "recommended_models": list(self._recommended_models),
+            "accelerators": [info.to_dict() for info in self._accelerators],
+            "total_vram": total_vram_bytes(self._accelerators),
+        }
 
     def _init_ollama_backend(self) -> object | None:
         """Return an ``ollama`` client if the library is available."""
@@ -121,16 +162,56 @@ class AIProcessor:
         if not text:
             return ""
 
+        if not self._accelerators:
+            self.refresh_hardware_state()
+
         directive = instruction or self.default_instruction
+        model_name = self.model or self._OLLAMA_DEFAULT_MODEL
+        backend_label = self._llm_backend or "offline"
+        status = "offline"
+
         if self._llm_backend is not None and self._llm_client is not None:
             try:
-                return self._process_with_llm(text, directive)
+                response, used_fallback = self._process_with_llm(text, directive)
             except Exception:  # pragma: no cover - optional dependency failure
-                self._logger.debug("LLM backend '%s' failed, falling back", self._llm_backend)
+                self._logger.debug(
+                    "LLM backend '%s' failed, falling back", self._llm_backend, exc_info=True
+                )
+                response = self._fallback_process(text)
+                backend_label = f"{self._llm_backend}-error"
+                status = "error"
+            else:
+                status = "fallback" if used_fallback else "success"
+                backend_label = (
+                    f"{self._llm_backend}-fallback"
+                    if used_fallback
+                    else self._llm_backend
+                )
+                self._log_interaction(
+                    prompt=text,
+                    response=response,
+                    instruction=directive,
+                    backend=backend_label,
+                    model=model_name,
+                    status=status,
+                )
+                return response
+        else:
+            response = self._fallback_process(text)
+            backend_label = "offline"
+            status = "offline"
 
-        return self._fallback_process(text)
+        self._log_interaction(
+            prompt=text,
+            response=response,
+            instruction=directive,
+            backend=backend_label,
+            model=model_name,
+            status=status,
+        )
+        return response
 
-    def _process_with_llm(self, text: str, instruction: str) -> str:
+    def _process_with_llm(self, text: str, instruction: str) -> tuple[str, bool]:
         """Delegate semantic processing to the configured LLM backend."""
 
         if self._llm_backend == "ollama":
@@ -156,7 +237,7 @@ class AIProcessor:
             if isinstance(message, dict):
                 content = message.get("content")
                 if isinstance(content, str) and content.strip():
-                    return content.strip()
+                    return content.strip(), False
 
             if isinstance(response, dict) and "messages" in response:
                 messages = response["messages"]
@@ -165,7 +246,7 @@ class AIProcessor:
                     if isinstance(content, dict):
                         candidate = content.get("content")
                         if isinstance(candidate, str) and candidate.strip():
-                            return candidate.strip()
+                            return candidate.strip(), False
 
         elif self._llm_backend == "pygpt_net":
             client = self._llm_client
@@ -177,9 +258,39 @@ class AIProcessor:
                     model=self.model,
                 )
                 if isinstance(output, str) and output.strip():
-                    return output.strip()
+                    return output.strip(), False
 
-        return self._fallback_process(text)
+        return self._fallback_process(text), True
+
+    def _log_interaction(
+        self,
+        *,
+        prompt: str,
+        response: str,
+        instruction: str,
+        backend: str,
+        model: str,
+        status: str,
+    ) -> None:
+        if self.telemetry_store is None:
+            return
+
+        metadata: Dict[str, Any] = {
+            "total_vram": total_vram_bytes(self._accelerators),
+            "recommended_models": list(self._recommended_models),
+        }
+        try:
+            self.telemetry_store.log_ai_result(
+                prompt=prompt,
+                response=response,
+                model=model,
+                backend=backend,
+                instruction=instruction,
+                metadata=metadata,
+                status=status,
+            )
+        except Exception:  # pragma: no cover - telemetry failures should not break flow
+            self._logger.debug("Failed to record AI interaction telemetry", exc_info=True)
 
     def _fallback_process(self, text: str) -> str:
         """Provide a deterministic transformation when no LLM is active."""

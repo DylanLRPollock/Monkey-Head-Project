@@ -9,9 +9,10 @@ import shutil
 import subprocess
 import sys
 import time
+from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, DefaultDict, Dict, List, Optional
 
 try:  # pragma: no cover - optional dependency
     import psutil  # type: ignore
@@ -37,6 +38,9 @@ class BatteryMonitor:
     def __init__(self, *, shutdown_threshold: float = 5.0) -> None:
         self.shutdown_threshold = shutdown_threshold
         self._last_event: Optional[PowerEvent] = None
+        self._listeners: DefaultDict[str, List[Callable[[Dict[str, Any]], None]]] = defaultdict(list)
+        self._last_status: Optional[Dict[str, Any]] = None
+        self._low_battery_triggered = False
 
     # ------------------------------------------------------------------
     def get_status(self) -> Dict[str, Any]:
@@ -59,7 +63,7 @@ class BatteryMonitor:
             status["estimated_runtime_minutes"] = secs_left / 60.0
         else:
             status["estimated_runtime_minutes"] = None
-        return status
+        return self.observe(status)
 
     # ------------------------------------------------------------------
     def should_shutdown(self) -> bool:
@@ -91,6 +95,64 @@ class BatteryMonitor:
         """Reboot the system using the preferred toolchain."""
 
         return self._execute_power_action("reboot", {})
+
+    # ------------------------------------------------------------------
+    def register_hook(self, event: str, callback: Callable[[Dict[str, Any]], None]) -> None:
+        """Register ``callback`` to be invoked when ``event`` occurs."""
+
+        self._listeners[event].append(callback)
+
+    def remove_hook(self, event: str, callback: Callable[[Dict[str, Any]], None]) -> None:
+        listeners = self._listeners.get(event)
+        if not listeners:
+            return
+        with contextlib.suppress(ValueError):
+            listeners.remove(callback)
+
+    def observe(self, status: Dict[str, Any]) -> Dict[str, Any]:
+        """Process an externally supplied ``status`` dictionary."""
+
+        enriched = dict(status)
+        enriched.setdefault("threshold", self.shutdown_threshold)
+        enriched.setdefault("timestamp", time.time())
+        self._dispatch_events(enriched)
+        self._last_status = enriched
+        return enriched
+
+    def _dispatch_events(self, status: Dict[str, Any]) -> None:
+        percent = status.get("percent")
+        plugged = status.get("power_plugged")
+        threshold = status.get("threshold", self.shutdown_threshold)
+
+        if (
+            percent is not None
+            and not bool(plugged)
+            and percent <= threshold
+        ):
+            if not self._low_battery_triggered:
+                self._low_battery_triggered = True
+                self._emit("battery_low", status)
+        elif self._low_battery_triggered and (
+            plugged or percent is None or percent > threshold
+        ):
+            self._low_battery_triggered = False
+            self._emit("battery_recovered", status)
+
+        previous_plugged = None
+        if self._last_status is not None:
+            previous_plugged = self._last_status.get("power_plugged")
+        if plugged is not None and plugged != previous_plugged:
+            event = "power_connected" if plugged else "power_disconnected"
+            self._emit(event, status)
+
+        self._emit("status", status)
+
+    def _emit(self, event: str, status: Dict[str, Any]) -> None:
+        for callback in list(self._listeners.get(event, [])):
+            try:
+                callback(status)
+            except Exception:  # pragma: no cover - callbacks should not break monitor
+                LOGGER.exception("Battery event hook '%s' failed", event)
 
     # ------------------------------------------------------------------
     def _status_from_psutil(self) -> Optional[Dict[str, Any]]:
