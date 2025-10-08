@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import asyncio
 from pathlib import Path
 import sys
 import types
+from typing import Any
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -59,8 +61,9 @@ sys.modules["huey.memory.PY.ai_processor"] = ai_module
 setattr(py_pkg, "ai_processor", ai_module)
 
 import huey.api as api_module
-from huey.api import app
+from huey.api import SystemStatusResponse, app
 from monkey_head.core.task_scheduler import ResourceSnapshot, TaskScheduler, TaskStatus
+from monkey_head.hardware.plugins import SensorReading
 
 
 @pytest.mark.asyncio
@@ -316,3 +319,157 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
         )
         assert exited.status_code == 200
         assert exited.json()["state"] == "normal"
+
+
+class _StubSensorManager:
+    def __init__(self) -> None:
+        self.registry = object()
+        self._sensors: dict[str, dict[str, Any]] = {}
+        self._subscriptions: set[asyncio.Queue[SensorReading]] = set()
+
+    def list_sensors(self) -> list[dict[str, Any]]:
+        return [
+            {
+                "name": name,
+                "plugin": info["plugin"],
+                "module": "dummy.module",
+                "config": info["config"],
+            }
+            for name, info in self._sensors.items()
+        ]
+
+    def get_sensor(self, name: str | None) -> dict[str, Any] | None:
+        if name is None:
+            return None
+        return self._sensors.get(name)
+
+    def add_sensor(self, plugin: str, name: str, config: dict[str, Any]) -> None:
+        if plugin != "dummy":
+            raise KeyError(plugin)
+        self._sensors[name] = {"plugin": plugin, "config": dict(config)}
+
+    def poll_sensor(self, sensor_name: str) -> SensorReading:
+        if sensor_name not in self._sensors:
+            raise KeyError(sensor_name)
+        return SensorReading(
+            name=sensor_name,
+            value={"payload": True},
+            timestamp=1.0,
+            provenance={"source": "stub"},
+        )
+
+    def poll_all(self) -> list[SensorReading]:
+        return [self.poll_sensor(name) for name in self._sensors]
+
+    def load_history(self, sensor_name: str, limit: int) -> list[dict[str, Any]]:
+        self.poll_sensor(sensor_name)
+        return [
+            {
+                "name": sensor_name,
+                "value": {"payload": True},
+                "timestamp": 1.0,
+                "provenance": {"source": "stub"},
+            }
+        ]
+
+    def subscribe(self, sensor_name: str | None) -> asyncio.Queue[SensorReading]:
+        queue: asyncio.Queue[SensorReading] = asyncio.Queue()
+        target = sensor_name or next(iter(self._sensors), "stub")
+        queue.put_nowait(
+            SensorReading(
+                name=target,
+                value={"payload": True},
+                timestamp=1.0,
+                provenance={"source": "stub"},
+            )
+        )
+        self._subscriptions.add(queue)
+        return queue
+
+    def unsubscribe(self, queue: asyncio.Queue[SensorReading]) -> None:
+        self._subscriptions.discard(queue)
+
+
+@pytest.mark.asyncio
+async def test_system_status_alias_endpoint(monkeypatch):
+    stub_status = SystemStatusResponse(
+        system="Linux",
+        release="6.1",
+        version="6.1",
+        architecture="x86_64",
+        hostname="huey-node",
+        python_version="3.11",
+        cpu_count=4,
+        memory_total=1024,
+        memory_available=512,
+        uptime_seconds=12.0,
+        boot_time=1.0,
+        disk_free=2048,
+        memory_path="/tmp/memory",
+    )
+    monkeypatch.setattr(api_module, "_build_system_status", lambda: stub_status, raising=False)
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.get("/status/system")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["system"] == "Linux"
+    assert payload["memory_path"] == "/tmp/memory"
+
+
+@pytest.mark.asyncio
+async def test_ai_process_text_supports_streaming_and_validation(monkeypatch):
+    monkeypatch.setattr(api_module, "_stream_text", lambda text, chunk_size=64: [text], raising=False)
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/ai/process-text",
+            json={"text": "hello world"},
+            params={"stream": "true"},
+        )
+        assert response.status_code == 200
+        assert response.json() == ["hello world"]
+
+        invalid = await client.post("/ai/process-text", json={"text": "   "})
+
+    assert invalid.status_code == 400
+    assert "empty" in invalid.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_ai_analyze_text_rejects_empty_payload():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post("/ai/analyze-text", json={"text": ""})
+
+    assert response.status_code == 400
+    assert "empty" in response.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_sensor_streaming_and_invalid_registration(monkeypatch):
+    stub_manager = _StubSensorManager()
+    stub_manager.add_sensor("dummy", "alpha", {})
+    monkeypatch.setattr(api_module, "SENSOR_MANAGER", stub_manager, raising=False)
+    monkeypatch.setattr(
+        api_module,
+        "_sensor_stream",
+        lambda sensor_name: [f"data: {sensor_name or 'alpha'}\n\n"],
+        raising=False,
+    )
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.get("/sensors/alpha/stream")
+        assert response.status_code == 200
+        assert response.json() == ["data: alpha\n\n"]
+
+        failure = await client.post(
+            "/sensors/register",
+            json={"name": "beta", "plugin": "unknown", "config": {}},
+        )
+
+    assert failure.status_code == 404

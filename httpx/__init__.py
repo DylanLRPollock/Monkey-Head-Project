@@ -1,6 +1,7 @@
 """Minimal subset of the ``httpx`` API tailored for the test-suite."""
 from __future__ import annotations
 
+import asyncio
 from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
@@ -32,7 +33,7 @@ class AsyncClient(AbstractAsyncContextManager["AsyncClient"]):
         return None
 
     async def get(self, url: str, *, params: Optional[Dict[str, Any]] = None) -> _Response:
-        return self._request("GET", url, params=params)
+        return await self._request("GET", url, params=params)
 
     async def post(
         self,
@@ -41,9 +42,9 @@ class AsyncClient(AbstractAsyncContextManager["AsyncClient"]):
         json: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None,
     ) -> _Response:
-        return self._request("POST", url, params=params, json=json)
+        return await self._request("POST", url, params=params, json=json)
 
-    def _request(
+    async def _request(
         self,
         method: str,
         url: str,
@@ -54,6 +55,30 @@ class AsyncClient(AbstractAsyncContextManager["AsyncClient"]):
         app = self._transport.app
         if hasattr(app, "handle_request"):
             response = app.handle_request(method, url, params=params or {}, json=json or {})
+            data = getattr(response, "data", None)
+            if asyncio.iscoroutine(data):
+                try:
+                    data = await data
+                except Exception as exc:  # pragma: no cover - defensive guard
+                    try:
+                        from fastapi import HTTPException  # type: ignore
+                    except Exception:  # pragma: no cover - fallback when fastapi missing
+                        HTTPException = None  # type: ignore[assignment]
+                    if HTTPException is not None and isinstance(exc, HTTPException):
+                        return _Response(
+                            status_code=getattr(exc, "status_code", 500),
+                            payload={"detail": getattr(exc, "detail", str(exc))},
+                        )
+                    raise
+                setattr(response, "data", data)
             payload = response.json()
+            if asyncio.iscoroutine(payload):
+                payload = await payload
+            try:
+                from fastapi.responses import StreamingResponse
+            except Exception:  # pragma: no cover - defensive when fastapi missing
+                StreamingResponse = None  # type: ignore[assignment]
+            if StreamingResponse is not None and isinstance(payload, StreamingResponse):
+                payload = list(payload)
             return _Response(status_code=response.status_code, payload=payload)
         raise RuntimeError("Provided app does not implement handle_request")
