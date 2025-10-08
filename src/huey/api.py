@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import asyncio
+import datetime as dt
+import html
 import platform
 import shutil
 import socket
 import time
 from pathlib import Path
-from typing import Any, AsyncGenerator, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, List, Optional, Sequence
 
 try:  # pragma: no cover - psutil is an optional dependency at runtime
     import psutil  # type: ignore
@@ -16,7 +18,7 @@ except Exception:  # pragma: no cover - fall back to stdlib metrics
     psutil = None  # type: ignore[assignment]
 
 from fastapi import FastAPI, HTTPException, Query, status
-from fastapi.responses import StreamingResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from huey.memory.PY.ai_processor import AIProcessor
@@ -47,9 +49,16 @@ from monkey_head.power import BatteryMonitor
 from monkey_head.system_checks import system_check
 from monkey_head.utils.auto_sort import auto_sort_memory
 from monkey_head.utils.paths import get_memory_path
+from monkey_head.utils.persistence import (
+    AIInteraction,
+    SensorTelemetry,
+    TelemetryStore,
+)
 
 __all__ = [
     "AI_PROCESSOR",
+    "TELEMETRY_STORE",
+    "AcceleratorInfoModel",
     "AnalyzeTextRequest",
     "AnalyzeTextResponse",
     "AutoSortRequest",
@@ -59,6 +68,7 @@ __all__ = [
     "CRASH_MANAGER",
     "ComputeMeanRequest",
     "ComputeMeanResponse",
+    "AIModelAvailabilityResponse",
     "CrashEventModel",
     "CrashPollResponse",
     "EMERGENCY_CONTROLLER",
@@ -93,6 +103,10 @@ __all__ = [
     "SensorReadingResponse",
     "SensorRegistrationRequest",
     "SensorRegistrationResponse",
+    "TelemetrySensorRecord",
+    "SensorTelemetryResponse",
+    "AIInteractionRecord",
+    "AIInteractionResponse",
     "ServiceStatus",
     "ServicesOverviewResponse",
     "SystemCheckResponse",
@@ -126,11 +140,16 @@ __all__ = [
     "locate_pdf",
     "manual_restart_monitored_process",
     "network_status",
+    "system_accelerators",
+    "list_ai_models",
     "override_monitored_process",
     "poll_all_sensors",
     "poll_crash_manager",
     "poll_sensor",
     "power_should_shutdown",
+    "list_recent_sensor_telemetry",
+    "list_recent_ai_interactions",
+    "dashboard",
     "register_sensor",
     "remove_sensor",
     "sensor_history",
@@ -154,6 +173,29 @@ app = FastAPI(
         "capabilities through a unified API for integrations and operator tooling."
     ),
 )
+
+
+class AcceleratorInfoModel(BaseModel):
+    """Hardware accelerator metadata exposed via the API."""
+
+    name: str = Field(..., description="Friendly accelerator name")
+    vendor: str = Field(..., description="Reported vendor for the device")
+    driver: str = Field(..., description="Kernel driver handling the device")
+    backend: str = Field(..., description="Acceleration backend (e.g. rocm)")
+    vram_total: Optional[int] = Field(None, description="Total VRAM in bytes when known")
+    vram_free: Optional[int] = Field(None, description="Estimated free VRAM in bytes")
+    bus_id: Optional[str] = Field(None, description="Bus address for the accelerator")
+    node: Optional[str] = Field(None, description="Kernel device node identifier")
+
+
+class AIModelAvailabilityResponse(BaseModel):
+    """Recommended AI model summary based on detected accelerators."""
+
+    backend: Optional[str]
+    active_model: Optional[str]
+    recommended_models: List[str]
+    accelerators: List[AcceleratorInfoModel]
+    total_vram: int
 
 
 class SystemStatusResponse(BaseModel):
@@ -184,6 +226,10 @@ class SystemStatusResponse(BaseModel):
         None, description="Free disk space on the root filesystem in bytes"
     )
     memory_path: str = Field(..., description="Primary HueyOS memory directory path")
+    accelerators: List[AcceleratorInfoModel] = Field(
+        default_factory=list,
+        description="Detected hardware accelerators available to the system",
+    )
 
 
 class PDFListResponse(BaseModel):
@@ -374,6 +420,40 @@ class SensorPollAllResponse(BaseModel):
     readings: List[SensorReadingResponse]
 
 
+class TelemetrySensorRecord(BaseModel):
+    """Persisted sensor reading stored in the telemetry database."""
+
+    name: str
+    timestamp: float
+    value: Any
+    provenance: Dict[str, Any]
+
+
+class SensorTelemetryResponse(BaseModel):
+    """Recent telemetry records for sensors."""
+
+    records: List[TelemetrySensorRecord]
+
+
+class AIInteractionRecord(BaseModel):
+    """Historical AI interaction stored for auditing."""
+
+    timestamp: float
+    prompt: str
+    response: str
+    model: Optional[str]
+    backend: Optional[str]
+    instruction: Optional[str]
+    metadata: Dict[str, Any]
+    status: str
+
+
+class AIInteractionResponse(BaseModel):
+    """Collection of AI interactions returned to clients."""
+
+    records: List[AIInteractionRecord]
+
+
 class NetworkStatusResponse(BaseModel):
     """Current network connectivity status."""
 
@@ -519,12 +599,16 @@ class EmergencyActionRequest(BaseModel):
     action: str = Field(..., description="Description of the requested action")
 
 
-AI_PROCESSOR = AIProcessor()
+TELEMETRY_STORE = TelemetryStore()
+try:
+    AI_PROCESSOR = AIProcessor(telemetry_store=TELEMETRY_STORE)
+except TypeError:  # Backwards compatibility for stub AIProcessor in tests
+    AI_PROCESSOR = AIProcessor()
 SCHEDULER = TaskScheduler()
 CRASH_MANAGER = CrashRecoveryManager()
 EMERGENCY_CONTROLLER = EmergencyGovernanceController()
 _SERVICE_STATES: Dict[str, ServiceStatus] = {}
-SENSOR_MANAGER = create_default_sensor_manager()
+SENSOR_MANAGER = create_default_sensor_manager(telemetry_store=TELEMETRY_STORE)
 NETWORK_MANAGER = NetworkManager()
 BATTERY_MONITOR = BatteryMonitor()
 
@@ -720,6 +804,17 @@ def _build_system_status() -> SystemStatusResponse:
     if disk_usage is not None:
         disk_free = int(disk_usage.free)
 
+    catalog: Dict[str, Any] = {}
+    if hasattr(AI_PROCESSOR, "get_model_catalog"):
+        try:
+            catalog = AI_PROCESSOR.get_model_catalog()
+        except Exception:  # pragma: no cover - optional dependency failure
+            catalog = {}
+    accelerators = [
+        AcceleratorInfoModel(**info)
+        for info in catalog.get("accelerators", [])
+    ]
+
     return SystemStatusResponse(
         system=uname.system,
         release=uname.release,
@@ -734,9 +829,151 @@ def _build_system_status() -> SystemStatusResponse:
         boot_time=boot_time,
         disk_free=disk_free,
         memory_path=str(memory_path),
+        accelerators=accelerators,
     )
 
 
+def _collect_accelerator_models(refresh: bool = False) -> List[AcceleratorInfoModel]:
+    catalog = AI_PROCESSOR.get_model_catalog(refresh=refresh)
+    return [AcceleratorInfoModel(**info) for info in catalog.get("accelerators", [])]
+
+
+def _render_dashboard(
+    system: SystemStatusResponse,
+    battery: Dict[str, Any],
+    sensor_records: Sequence[SensorTelemetry],
+    ai_records: Sequence[AIInteraction],
+    catalog: Dict[str, Any],
+) -> str:
+    def _fmt(value: Any) -> str:
+        if value is None:
+            return "&mdash;"
+        return html.escape(str(value))
+
+    def _format_bytes(value: Optional[int]) -> str:
+        if value is None:
+            return "&mdash;"
+        units = ["B", "KiB", "MiB", "GiB", "TiB"]
+        amount = float(value)
+        for unit in units:
+            if amount < 1024.0 or unit == units[-1]:
+                return f"{amount:.1f} {unit}"
+            amount /= 1024.0
+        return f"{amount:.1f} {units[-1]}"
+
+    def _format_ts(value: Optional[float]) -> str:
+        if value is None:
+            return "&mdash;"
+        try:
+            return html.escape(dt.datetime.fromtimestamp(value).isoformat(sep=" ", timespec="seconds"))
+        except Exception:
+            return _fmt(value)
+
+    accelerators = system.accelerators or []
+    accelerator_rows = "".join(
+        f"<tr><td>{_fmt(acc.name)}</td><td>{_fmt(acc.vendor)}</td><td>{_fmt(acc.backend)}</td>"
+        f"<td>{_format_bytes(acc.vram_total)}</td><td>{_format_bytes(acc.vram_free)}</td></tr>"
+        for acc in accelerators
+    ) or "<tr><td colspan='5'>No accelerators detected</td></tr>"
+
+    recommended = catalog.get("recommended_models", [])
+    recommended_models = ", ".join(html.escape(str(model)) for model in recommended) or "None"
+
+    sensor_rows = "".join(
+        f"<tr><td>{_fmt(record.name)}</td><td>{_format_ts(record.timestamp)}</td>"
+        f"<td>{_fmt(record.value)}</td></tr>"
+        for record in sensor_records[:10]
+    ) or "<tr><td colspan='3'>No sensor telemetry recorded yet.</td></tr>"
+
+    ai_rows = "".join(
+        f"<tr><td>{_format_ts(record.timestamp)}</td>"
+        f"<td>{_fmt(record.model)}</td><td>{_fmt(record.backend)}</td>"
+        f"<td>{_fmt(record.status)}</td>"
+        f"<td class='prompt'>{_fmt(record.prompt)[:160]}</td>"
+        f"<td class='response'>{_fmt(record.response)[:160]}</td></tr>"
+        for record in ai_records[:10]
+    ) or "<tr><td colspan='6'>No AI interactions logged.</td></tr>"
+
+    battery_percent = _fmt(battery.get("percent"))
+    battery_secs = _fmt(battery.get("secs_left"))
+    battery_plugged = _fmt(battery.get("power_plugged"))
+    battery_runtime = _fmt(battery.get("estimated_runtime_minutes"))
+
+    now = html.escape(dt.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"))
+
+    return f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="refresh" content="30" />
+        <title>HueyOS Dashboard</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; margin: 1.5rem; background: #0f111a; color: #f0f3ff; }}
+            h1 {{ margin-bottom: 0.2rem; }}
+            h2 {{ margin-top: 1.5rem; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 0.5rem; }}
+            th, td {{ border: 1px solid #23263b; padding: 0.5rem; text-align: left; }}
+            th {{ background-color: #1d2030; }}
+            tr:nth-child(even) {{ background-color: #131522; }}
+            .prompt, .response {{ max-width: 24rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+            .meta {{ display: flex; gap: 2rem; flex-wrap: wrap; }}
+            .meta section {{ background: #16192a; padding: 1rem; border-radius: 0.5rem; min-width: 18rem; box-shadow: 0 0 12px rgba(0,0,0,0.4); }}
+            a {{ color: #8ab4ff; }}
+        </style>
+    </head>
+    <body>
+        <h1>HueyOS Operations Dashboard</h1>
+        <p>Last updated {now}</p>
+        <div class="meta">
+            <section>
+                <h2>System</h2>
+                <p><strong>Host:</strong> {html.escape(system.hostname)}</p>
+                <p><strong>OS:</strong> {html.escape(system.system)} {html.escape(system.release)}</p>
+                <p><strong>Python:</strong> {html.escape(system.python_version)}</p>
+                <p><strong>Memory Path:</strong> {html.escape(system.memory_path)}</p>
+            </section>
+            <section>
+                <h2>Battery</h2>
+                <p><strong>Charge:</strong> {battery_percent}%</p>
+                <p><strong>Plugged:</strong> {battery_plugged}</p>
+                <p><strong>Seconds Remaining:</strong> {battery_secs}</p>
+                <p><strong>Estimated Runtime (minutes):</strong> {battery_runtime}</p>
+            </section>
+            <section>
+                <h2>AI Models</h2>
+                <p><strong>Backend:</strong> {_fmt(catalog.get('backend'))}</p>
+                <p><strong>Active Model:</strong> {_fmt(catalog.get('active_model'))}</p>
+                <p><strong>Recommended:</strong> {recommended_models}</p>
+            </section>
+        </div>
+
+        <h2>Accelerators</h2>
+        <table>
+            <thead>
+                <tr><th>Name</th><th>Vendor</th><th>Backend</th><th>Total VRAM</th><th>Free VRAM</th></tr>
+            </thead>
+            <tbody>{accelerator_rows}</tbody>
+        </table>
+
+        <h2>Recent Sensor Telemetry</h2>
+        <table>
+            <thead>
+                <tr><th>Sensor</th><th>Timestamp</th><th>Value</th></tr>
+            </thead>
+            <tbody>{sensor_rows}</tbody>
+        </table>
+
+        <h2>Recent AI Interactions</h2>
+        <table>
+            <thead>
+                <tr><th>Timestamp</th><th>Model</th><th>Backend</th><th>Status</th><th>Prompt</th><th>Response</th></tr>
+            </thead>
+            <tbody>{ai_rows}</tbody>
+        </table>
+    </body>
+    </html>
+    """
 def _stream_text(text: str, chunk_size: int = 64) -> AsyncGenerator[str, None]:
     """Yield ``text`` in fixed-sized chunks for streaming responses."""
 
@@ -779,6 +1016,47 @@ def _register_default_emergency_services() -> None:
 
 
 _register_default_emergency_services()
+
+
+def _register_battery_hooks() -> None:
+    """Attach event-driven hooks to the battery monitor."""
+
+    def _schedule_power_saving(status: Dict[str, Any]) -> None:
+        TELEMETRY_STORE.log_event("battery_low", status)
+        active = [
+            record
+            for record in SCHEDULER.list_tasks([TaskStatus.PENDING, TaskStatus.RUNNING])
+            if record.metadata.get("power_event") == "battery_low"
+        ]
+        if active:
+            return
+        SCHEDULER.schedule_task(
+            command="activate_power_saving",
+            priority=TaskPriority.CRITICAL,
+            metadata={
+                "power_event": "battery_low",
+                "battery_percent": status.get("percent"),
+                "source": status.get("source"),
+            },
+            resource_profile=ResourceProfile(cpu=0.05, memory=0.05, battery=1.0, gpu=0.0),
+        )
+
+    def _log_recovery(status: Dict[str, Any]) -> None:
+        TELEMETRY_STORE.log_event("battery_recovered", status)
+
+    def _log_power_connected(status: Dict[str, Any]) -> None:
+        TELEMETRY_STORE.log_event("power_connected", status)
+
+    def _log_power_disconnected(status: Dict[str, Any]) -> None:
+        TELEMETRY_STORE.log_event("power_disconnected", status)
+
+    BATTERY_MONITOR.register_hook("battery_low", _schedule_power_saving)
+    BATTERY_MONITOR.register_hook("battery_recovered", _log_recovery)
+    BATTERY_MONITOR.register_hook("power_connected", _log_power_connected)
+    BATTERY_MONITOR.register_hook("power_disconnected", _log_power_disconnected)
+
+
+_register_battery_hooks()
 
 
 @app.get("/healthz", tags=["System"])
@@ -867,6 +1145,17 @@ def system_status() -> SystemStatusResponse:
     """Return operating system, hardware, and configuration details for HueyOS."""
 
     return _build_system_status()
+
+
+@app.get(
+    "/system/accelerators",
+    response_model=List[AcceleratorInfoModel],
+    tags=["System"],
+)
+def system_accelerators() -> List[AcceleratorInfoModel]:
+    """Return detected hardware accelerators and VRAM metrics."""
+
+    return _collect_accelerator_models(refresh=True)
 
 
 @app.get("/sensors/plugins", response_model=SensorPluginsResponse, tags=["Sensors"])
@@ -988,6 +1277,73 @@ async def stream_all_sensors() -> StreamingResponse:
     """Stream readings for all sensors using server-sent events."""
 
     return StreamingResponse(_sensor_stream(None), media_type="text/event-stream")
+
+
+@app.get(
+    "/telemetry/sensors/recent",
+    response_model=SensorTelemetryResponse,
+    tags=["Telemetry"],
+)
+def list_recent_sensor_telemetry(
+    limit: int = Query(25, ge=1, le=500, description="Maximum number of records to return"),
+    name: Optional[str] = Query(None, description="Filter telemetry to a specific sensor"),
+) -> SensorTelemetryResponse:
+    """Return recent sensor telemetry captured in the persistent store."""
+
+    records = TELEMETRY_STORE.fetch_recent_sensor_readings(name=name, limit=limit)
+    payload = [
+        TelemetrySensorRecord(
+            name=record.name,
+            timestamp=record.timestamp,
+            value=record.value,
+            provenance=record.provenance,
+        )
+        for record in records
+    ]
+    return SensorTelemetryResponse(records=payload)
+
+
+@app.get(
+    "/telemetry/ai/recent",
+    response_model=AIInteractionResponse,
+    tags=["Telemetry"],
+)
+def list_recent_ai_interactions(
+    limit: int = Query(25, ge=1, le=500, description="Maximum number of AI interactions to return"),
+) -> AIInteractionResponse:
+    """Return recent AI Processor interactions from the telemetry store."""
+
+    records = TELEMETRY_STORE.fetch_recent_ai_results(limit=limit)
+    payload = [
+        AIInteractionRecord(
+            timestamp=record.timestamp,
+            prompt=record.prompt,
+            response=record.response,
+            model=record.model,
+            backend=record.backend,
+            instruction=record.instruction,
+            metadata=record.metadata,
+            status=record.status,
+        )
+        for record in records
+    ]
+    return AIInteractionResponse(records=payload)
+
+
+@app.get("/dashboard", response_class=HTMLResponse, tags=["Dashboard"])
+def dashboard() -> HTMLResponse:
+    """Render a lightweight operational dashboard for HueyOS."""
+
+    system = _build_system_status()
+    battery = BATTERY_MONITOR.get_status()
+    sensor_records = TELEMETRY_STORE.fetch_recent_sensor_readings(limit=10)
+    ai_records = TELEMETRY_STORE.fetch_recent_ai_results(limit=10)
+    try:
+        catalog = AI_PROCESSOR.get_model_catalog()
+    except Exception:  # pragma: no cover - optional dependency failure
+        catalog = {}
+    content = _render_dashboard(system, battery, sensor_records, ai_records, catalog)
+    return HTMLResponse(content=content)
 
 
 @app.get("/network/status", response_model=NetworkStatusResponse, tags=["Network"])
@@ -1183,6 +1539,22 @@ def honeycomb_usage(
         totals=totals,
         content_types=content_types,
         growth=growth,
+    )
+
+
+@app.get("/ai/models", response_model=AIModelAvailabilityResponse, tags=["AI Tools"])
+def list_ai_models() -> AIModelAvailabilityResponse:
+    """Report active AI backend and recommended local models."""
+
+    catalog = AI_PROCESSOR.get_model_catalog(refresh=True)
+    return AIModelAvailabilityResponse(
+        backend=catalog.get("backend"),
+        active_model=catalog.get("active_model"),
+        recommended_models=list(catalog.get("recommended_models", [])),
+        accelerators=[
+            AcceleratorInfoModel(**info) for info in catalog.get("accelerators", [])
+        ],
+        total_vram=int(catalog.get("total_vram", 0)),
     )
 
 
