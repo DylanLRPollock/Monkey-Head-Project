@@ -135,6 +135,51 @@ async def test_task_submission_respects_resource_constraints(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_system_status_endpoint_reports_expected_fields(monkeypatch, tmp_path):
+    memory_root = tmp_path / "memory"
+    memory_root.mkdir()
+
+    monkeypatch.setattr(
+        api_module.platform,
+        "uname",
+        lambda: types.SimpleNamespace(
+            system="TestOS",
+            release="1.0",
+            version="1.0.0",
+            machine="x86_64",
+        ),
+    )
+    monkeypatch.setattr(api_module.platform, "python_version", lambda: "3.12.1")
+    monkeypatch.setattr(api_module.socket, "gethostname", lambda: "huey-node")
+    monkeypatch.setattr(api_module.time, "time", lambda: 200.0)
+    monkeypatch.setattr(
+        api_module.shutil,
+        "disk_usage",
+        lambda path: types.SimpleNamespace(free=123456),
+    )
+    fake_psutil = types.SimpleNamespace(
+        cpu_count=lambda logical=True: 8,
+        virtual_memory=lambda: types.SimpleNamespace(total=16 * 1024**3, available=8 * 1024**3),
+        boot_time=lambda: 100.0,
+    )
+    monkeypatch.setattr(api_module, "psutil", fake_psutil)
+    monkeypatch.setattr(api_module, "get_memory_path", lambda create=True: memory_root)
+
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.get("/system/status")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["system"] == "TestOS"
+    assert payload["cpu_count"] == 8
+    assert payload["memory_total"] == 16 * 1024**3
+    assert payload["memory_available"] == 8 * 1024**3
+    assert payload["disk_free"] == 123456
+    assert payload["memory_path"] == str(memory_root)
+
+
+@pytest.mark.asyncio
 async def test_resilience_endpoints_support_manual_override(monkeypatch):
     from monkey_head.core.resilience import CrashRecoveryManager
 

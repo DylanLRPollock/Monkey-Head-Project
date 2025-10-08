@@ -129,3 +129,28 @@ def test_agent_status_json(monkeypatch, capsys):
     assert payload["tasks_by_agent"]["spark"] == 1
     assert payload["resource_snapshot"]["cpu_percent"] == 42.0
     assert payload["tasks"]
+
+
+def test_deploy_dry_run_prints_expected_commands(tmp_path: Path, monkeypatch, capsys):
+    compose_file = tmp_path / "docker-compose.yml"
+    manifest_file = tmp_path / "k8s.yaml"
+    compose_file.write_text("services: {}", encoding="utf-8")
+    manifest_file.write_text("apiVersion: v1\nkind: Pod", encoding="utf-8")
+
+    monkeypatch.setattr(cli.shutil, "which", lambda tool: f"/usr/bin/{tool}")
+
+    exit_code = cli.main(
+        [
+            "deploy",
+            "--compose-file",
+            str(compose_file),
+            "--manifest",
+            str(manifest_file),
+            "--dry-run",
+        ]
+    )
+
+    assert exit_code == 0
+    captured = capsys.readouterr().out.splitlines()
+    assert any(line.startswith("[dry-run] docker compose -f") for line in captured)
+    assert any(line.startswith("[dry-run] kubectl apply -f") for line in captured)
