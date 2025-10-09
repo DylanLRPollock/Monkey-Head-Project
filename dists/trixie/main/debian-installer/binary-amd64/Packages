@@ -1054,7 +1054,7 @@ SHA256: 7f22ae73ebb968c06bffdb344985b242eebb869a8ce9dd81b454a2a5a8da8398
 SHA512: 45d73afda9ce15260e6a5b79f83303d797013fc32f1ab483a836e90af1cf90f6e32ae68ccc761c7ad6ae3968b58b5b2c1a70db0386a179e4961090b954c77a6b
 Description: Debian-Installer font for the Khmer language of Cambodia
  Free fonts for the Khmer language, used in Cambodia, developed by
- the Khmer Software Iniative, part of the Open Forum of Cambodia.
+ the Khmer Software Initiative, part of the Open Forum of Cambodia.
  .
  This package provides a Khmer OS font for use with the GTK+ frontend
  of debian-installer.
