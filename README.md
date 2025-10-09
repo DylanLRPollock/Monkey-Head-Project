@@ -33,11 +33,11 @@
 
 ## Overview
 
-HueyOS targets **Debian 13 “Trixie”** with a custom low‑latency kernel series **6.16.0‑huey**. It unifies modern AI agents, a codified constitutional framework, and retro hardware support in a single modular platform. Headless and GUI modes are supported.
+HueyOS targets **Debian 13 “Trixie”** with a custom low‑latency kernel series **6.16.4‑huey**. It unifies modern AI agents, a codified constitutional framework, and retro hardware support in a single modular platform. Headless and GUI modes are supported.
 
 **Highlights (as of 2025‑10‑05):**
 
-- **OS baseline:** Debian 13.0.0 (Trixie), custom kernel **6.16.0‑huey**
+- **OS baseline:** Debian 13.0.0 (Trixie), custom kernel **6.16.4‑huey**
 - **Python:** initial pin **3.13.5** (user‑upgradable post‑install)
 - **Desktop:** **MATE** + **LightDM**; preferred lightweight browser: **qutebrowser**; full browser: **Edge Dev**
 - **AI runtime:** **PyGPT‑net** (desktop orchestrator), **Ollama** (local LLMs), ROCm/AMDGPU where available
