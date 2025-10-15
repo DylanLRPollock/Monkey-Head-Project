@@ -302,7 +302,7 @@ c18072c934e172ad2a150546c8e072fd4bdb6949b40c2dbc209d79cac358e6d0  ./live/filesys
 9eea4b6de6802d224953841533127be62eb0cf8d18a3c9807bf2d8f20814291b  ./live/filesystem.squashfs
 ce12956500512ddaf6f648392c50d4398c194f3a6464ded4de423bd38e9f7340  ./live/initrd.img-6.12.48+deb13-amd64
 b16fca18f23b2bbb9041e4db59c83fbfadb105ad547de36bdefdbba6d281bdd0  ./live/vmlinuz-6.12.48+deb13-amd64
-2dd9ed21eaebb2fef7e42205a760703cd21ef32a504b1849f59e895c8e2ae77a  ./live/vmlinuz-6.16.4
+2dd9ed21eaebb2fef7e42205a760703cd21ef32a504b1849f59e895c8e2ae77a  ./live/vmlinuz-6.16.12
 b74330955fd3baa1e9557a5b3c38fd0413dae7bcca6b2b14081e0f2d462d46e3  ./pool-udeb/main/a/acl/acl-udeb_2.3.2-2+b1_amd64.udeb
 b5b0a2543abcf5c6f07fb30a574bd7f5ac0b6a831f82e11137f71e3738fefb91  ./pool-udeb/main/a/acl/libacl1-udeb_2.3.2-2+b1_amd64.udeb
 4ccea8d246a6223539599cfeef6c1ca79ad4e57b78dc7f082bc35064d5289175  ./pool-udeb/main/a/alsa-lib/libasound2-udeb_1.2.14-1_amd64.udeb
@@ -619,8 +619,8 @@ e168cf48723c5a65570494d95016561c512d1b5fa6a95939f8567899d34512bb  ./pool/main/k/
 b21a3b81dedf2290959a988ae3eb5e72f464bf2a0df687f4eead9c767c8f70d2  ./pool/main/l/linux-base/linux-base_4.12_all.deb
 d8f64b2798fe6aae73069ce03c449bbcd513bb12ad424ee1584518beedb34c35  ./pool/main/l/linux-signed-amd64/linux-image-6.12.48+deb13-amd64_6.12.48-1_amd64.deb
 4c7d95b4cac2d138f941cc0d9d39f682e71e63f082d3a11895ba526a2b18f29a  ./pool/main/l/linux-signed-amd64/linux-image-amd64_6.12.48-1_amd64.deb
-0861e9139bc5378953a4cf5c739af2fa06b87d7f4ce6be39860102ad56408513  ./pool/main/l/linux-upstream/linux-headers-6.16.4_1_amd64.deb
-c407ce52ef48d06d2e904d9a6acd754f03bc01818f87e8a568cd83c0d3eca60c  ./pool/main/l/linux-upstream/linux-image-6.16.4_1_amd64.deb
+0861e9139bc5378953a4cf5c739af2fa06b87d7f4ce6be39860102ad56408513  ./pool/main/l/linux-upstream/linux-headers-6.16.12_1_amd64.deb
+c407ce52ef48d06d2e904d9a6acd754f03bc01818f87e8a568cd83c0d3eca60c  ./pool/main/l/linux-upstream/linux-image-6.16.12_1_amd64.deb
 b354b28a25a5820852dfafbf2dea04cc3bdb501268687abc8680174ab771ccd3  ./pool/main/l/linux-upstream/linux-libc-dev_1_amd64.deb
 51420462b13fb95b88f084580c8f7f4482b4f59fcc60bd7ad883c6789d61fbcf  ./pool/main/l/lvm2/dmeventd_2%3a1.02.205-2_amd64.deb
 4771f7ab0a907a8e5d02a6358ff016ae7cb49124906bada02fa882e141b615a0  ./pool/main/l/lvm2/dmsetup_2%3a1.02.205-2_amd64.deb

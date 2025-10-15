@@ -5,7 +5,7 @@
 
 > **HueyOS** is a prototype robotic AI/OS that marries retro computing legacies with modern, modular hardware and a living constitutional framework. Huey is transparent by design, modular by necessity, and governed—not merely programmed—by the **Cloud Pyramid**.
 
-(UEFI-only - amd64 - Kernel 6.16.4 - Debian 13.0.0 Trixie)
+(UEFI-only - amd64 - Kernel 6.16.12 - Debian 13.0.0 Trixie)
 
 ![License](https://img.shields.io/badge/license-GPLv3-blue)
 ![Python](https://img.shields.io/badge/python-3.12–3.13-blue)
@@ -33,16 +33,18 @@
 
 ## Overview
 
-HueyOS targets **Debian 13 “Trixie”** with a custom low‑latency kernel series **6.16.4‑huey**. It unifies modern AI agents, a codified constitutional framework, and retro hardware support in a single modular platform. Headless and GUI modes are supported.
+HueyOS targets **Debian 13 “Trixie”** with a custom low‑latency kernel series **6.16.12‑huey**. It unifies modern AI agents, a codified constitutional framework, and retro hardware support in a single modular platform. Headless and GUI modes are supported.
 
 **Highlights (as of 2025‑10‑05):**
 
-- **OS baseline:** Debian 13.0.0 (Trixie), custom kernel **6.16.4‑huey**
+- **OS baseline:** Debian 13.0.0 (Trixie), custom kernel **6.16.12‑huey**
 - **Python:** initial pin **3.13.5** (user‑upgradable post‑install)
 - **Desktop:** **MATE** + **LightDM**; preferred lightweight browser: **qutebrowser**; full browser: **Edge Dev**
 - **AI runtime:** **PyGPT‑net** (desktop orchestrator), **Ollama** (local LLMs), ROCm/AMDGPU where available
 - **Memory:** unified long‑term store via JSON logs + SQLite; reproducible telemetry; VNC via TigerVNC tunneled over SSH
 - **Networking:** prefer bonded Ethernet; Wi‑Fi only as fallback
+
+> **Lifecycle notice (2025‑10‑05):** Upstream kernel **6.16.x** has entered end‑of‑life. HueyOS stays pinned to **6.16.12** for production compliance while we begin validation on **kernel 6.17.x** and **Debian “Forky”** starting **2025‑10‑31**.
 
 **Core Principles**
 
@@ -293,7 +295,7 @@ See `CONTRIBUTING.md` for full guidelines.
 **Code:** GPL‑3.0‑only  
 **Docs & Media:** CC‑BY‑SA‑4.0
 
-**Acknowledgements:** PyGPT (pygpt‑net) | Debian trixie 13.0.0 | Python 3.13 | Kernel 6.16.x
+**Acknowledgements:** PyGPT (pygpt‑net) | Debian trixie 13.0.0 | Python 3.13 | Kernel 6.16.12 (final 6.16.x)
 
 ---
 

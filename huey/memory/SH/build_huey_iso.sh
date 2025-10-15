@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # This script builds a UEFI-only amd64 ISO using Debian live-build
-# and a custom Linux kernel version 6.16.4. It is adapted from the
+# and a custom Linux kernel version 6.16.12. It is adapted from the
 # user‑provided instructions. Because this container environment
 # doesn't provide a Windows filesystem under /mnt/c, the output
 # directory (OUTWIN) is pointed at the shared folder so that the ISO
@@ -12,7 +12,7 @@ set -euo pipefail
 
 # --- config ---
 ISO_NAME="huey-v1.0-amd64"
-KVER="6.16.4"
+KVER="6.16.12"
 LOCALVER="-huey"
 # Output directory set to shared folder rather than Windows desktop.
 OUTWIN="${OUTWIN:-/home/oai/share/${ISO_NAME}}"
@@ -35,7 +35,7 @@ sudo apt-get install -y \
 rm -rf "$WORK" && mkdir -p "$WORK"
 cd "$WORK"
 
-# --- build kernel 6.16.4 → .debs ---
+# --- build kernel 6.16.12 → .debs ---
 wget -q https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${KVER}.tar.xz
 tar -xf linux-${KVER}.tar.xz
 cd linux-${KVER}
@@ -94,7 +94,7 @@ mkdir -p "${INC}"/{boot,dists,doc,EFI,firmware,huey,install,install.amd,iso,isol
 # minimal README on the ISO root
 cat > "${INC}/README.md" <<'EOF_README'
 # Huey ISO
-UEFI-only, amd64. Kernel 6.16.4. Custom Debian 13 (Trixie) live + installer image for Monkey-Head-Project.
+UEFI-only, amd64. Kernel 6.16.12. Custom Debian 13 (Trixie) live + installer image for Monkey-Head-Project.
 EOF_README
 
 # build

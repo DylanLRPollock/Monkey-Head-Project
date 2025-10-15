@@ -302,7 +302,7 @@ be62c79e41c895450fca7d06e88305f2  ./live/filesystem.packages
 9b843599b2925671b8e495f267109374  ./live/filesystem.squashfs
 36db42902445dff4b0a21425b31c0605  ./live/initrd.img-6.12.48+deb13-amd64
 09998ec0dd903ec80c2904cb5c949844  ./live/vmlinuz-6.12.48+deb13-amd64
-c18f4306e21789cf9f82468d74be95dc  ./live/vmlinuz-6.16.4
+c18f4306e21789cf9f82468d74be95dc  ./live/vmlinuz-6.16.12
 6d198550904ddc7ac225d480bfb5e1c2  ./pool-udeb/main/a/acl/acl-udeb_2.3.2-2+b1_amd64.udeb
 8d4b1be0316bd5953419969840233248  ./pool-udeb/main/a/acl/libacl1-udeb_2.3.2-2+b1_amd64.udeb
 a3974b13803054aae3ae34beb29b0670  ./pool-udeb/main/a/alsa-lib/libasound2-udeb_1.2.14-1_amd64.udeb
@@ -619,8 +619,8 @@ dd416da7558711da8d03fa9a2d335615  ./pool/main/k/keyutils/keyutils_1.6.3-6_amd64.
 357e20ac5d979589d9b26c8bfc434d90  ./pool/main/l/linux-base/linux-base_4.12_all.deb
 0097354dfcfe8bfe45ce5c6c1a9ee9b9  ./pool/main/l/linux-signed-amd64/linux-image-6.12.48+deb13-amd64_6.12.48-1_amd64.deb
 763f91c6b0266d11ff1024c521a546e1  ./pool/main/l/linux-signed-amd64/linux-image-amd64_6.12.48-1_amd64.deb
-ec02d13c737ea5872aa4d990393cf363  ./pool/main/l/linux-upstream/linux-headers-6.16.4_1_amd64.deb
-5e9fa6669678cd4aeb7d001d7e39f4e5  ./pool/main/l/linux-upstream/linux-image-6.16.4_1_amd64.deb
+ec02d13c737ea5872aa4d990393cf363  ./pool/main/l/linux-upstream/linux-headers-6.16.12_1_amd64.deb
+5e9fa6669678cd4aeb7d001d7e39f4e5  ./pool/main/l/linux-upstream/linux-image-6.16.12_1_amd64.deb
 c75e102d8e83ceee74349e69883e0116  ./pool/main/l/linux-upstream/linux-libc-dev_1_amd64.deb
 ffd978431aadd38b3e8f42fc4433e038  ./pool/main/l/lvm2/dmeventd_2%3a1.02.205-2_amd64.deb
 1097404ddbb3b6147fffe884f634746c  ./pool/main/l/lvm2/dmsetup_2%3a1.02.205-2_amd64.deb

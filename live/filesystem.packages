@@ -181,9 +181,9 @@ libxtables12:amd64	1.8.11-2
 libxxhash0:amd64	0.8.3-2
 libzstd1:amd64	1.5.7+dfsg-1
 linux-base	4.12
-linux-headers-6.16.4	1
+linux-headers-6.16.12	1
 linux-image-6.12.48+deb13-amd64	6.12.48-1
-linux-image-6.16.4	1
+linux-image-6.16.12	1
 linux-image-amd64	6.12.48-1
 linux-libc-dev:amd64	1
 linux-sysctl-defaults	4.12

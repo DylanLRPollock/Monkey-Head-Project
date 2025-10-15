@@ -1,4 +1,4 @@
-# Hardware Enablement Guide — Huey OS (Debian Trixie · Kernel 6.16)
+# Hardware Enablement Guide — Huey OS (Debian Trixie · Kernel 6.16.12)
 
 **System Platform**: Supermicro X9QRI-F+  
 **Chipset**: Intel C602  
@@ -7,9 +7,11 @@
 **Network**: 10GbE Areion (AQuantia AQtion)  
 **Storage**: 2 × Kingston SSD 240 GB (RAID)  
 **Bluetooth**: ASUS USB-BT500  
-**Wi-Fi**: USB 2.4GHz adapter  
-**OS Base**: Debian “Trixie” (testing)  
-**Kernel**: Custom 6.16 RT with modular driver flags
+**Wi-Fi**: USB 2.4GHz adapter
+**OS Base**: Debian “Trixie” (testing)
+**Kernel**: Custom 6.16.12 RT with modular driver flags
+
+> **Lifecycle update:** Kernel **6.16.x** has reached upstream EOL. Production images remain on **6.16.12** while validation of **6.17.x** and **Debian “Forky”** begins on **2025-10-31**.
 
 ---
 
@@ -78,7 +80,7 @@
    sudo dpkg -i *.deb
    ```
 
-3. **Build Custom Kernel 6.16**  
+3. **Build Custom Kernel 6.16.12**
    Minimum `.config` flags:
    - `CONFIG_AHCI`
    - `CONFIG_XHCI_HCD`
