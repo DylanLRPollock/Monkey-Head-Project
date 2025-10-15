@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 SUPPORTED_DISTRO_ID = "debian"
 SUPPORTED_DISTRO_CODENAME = "trixie"
-MIN_KERNEL_VERSION = Version("6.16.4")
+MIN_KERNEL_VERSION = Version("6.16.12")
 MIN_PYTHON_VERSION = (3, 12)
 MAX_PYTHON_VERSION = (3, 14)
 REQUIRED_TOOLS: Tuple[str, ...] = ("git", "python3")
