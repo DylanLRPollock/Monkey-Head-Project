@@ -3,7 +3,9 @@ set -euo pipefail
 
 # This script builds a UEFI-only amd64 ISO using Debian live-build
 # and a custom Linux kernel version 6.16.12. It is adapted from the
-# user‑provided instructions. Because this container environment
+# user‑provided instructions while being prepped for the Debian “Forky” /
+# kernel 6.17.x migration (comments note the pending switch while 6.16.x
+# remains the production floor). Because this container environment
 # doesn't provide a Windows filesystem under /mnt/c, the output
 # directory (OUTWIN) is pointed at the shared folder so that the ISO
 # and its extracted contents can be accessed from outside the
