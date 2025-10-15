@@ -1,4 +1,4 @@
-# Hardware Enablement Guide — Huey OS (Debian Trixie · Kernel 6.16.12)
+# Hardware Enablement Guide — Huey OS (Debian Trixie · Kernel 6.16.12 → Forky · Kernel 6.17.x migration)
 
 **System Platform**: Supermicro X9QRI-F+  
 **Chipset**: Intel C602  
@@ -8,10 +8,10 @@
 **Storage**: 2 × Kingston SSD 240 GB (RAID)  
 **Bluetooth**: ASUS USB-BT500  
 **Wi-Fi**: USB 2.4GHz adapter
-**OS Base**: Debian “Trixie” (testing)
-**Kernel**: Custom 6.16.12 RT with modular driver flags
+**OS Base**: Debian “Trixie” (testing) → migrating to Debian “Forky” (testing/next)
+**Kernel**: Custom 6.16.12 RT with modular driver flags → migrating to 6.17.x RT tree
 
-> **Lifecycle update:** Kernel **6.16.x** has reached upstream EOL. Production images remain on **6.16.12** while validation of **6.17.x** and **Debian “Forky”** begins on **2025-10-31**.
+> **Lifecycle update:** Kernel **6.16.x** has reached upstream EOL. Production images remain on **6.16.12** while the migration to **6.17.x** on **Debian “Forky”** is now underway (validation window kicked off **2025-10-31**).
 
 ---
 
@@ -81,6 +81,7 @@
    ```
 
 3. **Build Custom Kernel 6.16.12**
+   - _Transition note:_ 6.17.x RT configs are staged in `huey/memory/SH/` for the Forky switchover; keep both trees buildable until the final cutover.
    Minimum `.config` flags:
    - `CONFIG_AHCI`
    - `CONFIG_XHCI_HCD`

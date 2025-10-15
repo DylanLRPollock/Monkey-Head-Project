@@ -5,7 +5,7 @@
 
 > **HueyOS** is a prototype robotic AI/OS that marries retro computing legacies with modern, modular hardware and a living constitutional framework. Huey is transparent by design, modular by necessity, and governed—not merely programmed—by the **Cloud Pyramid**.
 
-(UEFI-only - amd64 - Kernel 6.16.12 - Debian 13.0.0 Trixie)
+(UEFI-only - amd64 - Kernel 6.16.12 · Forky/6.17.x migration underway - Debian 13.0.0 Trixie)
 
 ![License](https://img.shields.io/badge/license-GPLv3-blue)
 ![Python](https://img.shields.io/badge/python-3.12–3.13-blue)
@@ -33,18 +33,18 @@
 
 ## Overview
 
-HueyOS targets **Debian 13 “Trixie”** with a custom low‑latency kernel series **6.16.12‑huey**. It unifies modern AI agents, a codified constitutional framework, and retro hardware support in a single modular platform. Headless and GUI modes are supported.
+HueyOS targets **Debian 13 “Trixie”** with a custom low‑latency kernel series **6.16.12‑huey** while the next milestone actively migrates the stack to **Debian “Forky”** with kernel **6.17.x**. It unifies modern AI agents, a codified constitutional framework, and retro hardware support in a single modular platform. Headless and GUI modes are supported.
 
 **Highlights (as of 2025‑10‑05):**
 
-- **OS baseline:** Debian 13.0.0 (Trixie), custom kernel **6.16.12‑huey**
+- **OS baseline:** Debian 13.0.0 (Trixie), custom kernel **6.16.12‑huey** → transitioning to **Debian 14 “Forky”** with kernel **6.17.x-huey**
 - **Python:** initial pin **3.13.5** (user‑upgradable post‑install)
 - **Desktop:** **MATE** + **LightDM**; preferred lightweight browser: **qutebrowser**; full browser: **Edge Dev**
 - **AI runtime:** **PyGPT‑net** (desktop orchestrator), **Ollama** (local LLMs), ROCm/AMDGPU where available
 - **Memory:** unified long‑term store via JSON logs + SQLite; reproducible telemetry; VNC via TigerVNC tunneled over SSH
 - **Networking:** prefer bonded Ethernet; Wi‑Fi only as fallback
 
-> **Lifecycle notice (2025‑10‑05):** Upstream kernel **6.16.x** has entered end‑of‑life. HueyOS stays pinned to **6.16.12** for production compliance while we begin validation on **kernel 6.17.x** and **Debian “Forky”** starting **2025‑10‑31**.
+> **Lifecycle notice (2025‑11‑15):** Upstream kernel **6.16.x** has entered end‑of‑life. HueyOS is actively switching its baseline to **kernel 6.17.x** on **Debian “Forky”**, keeping **6.16.12/Trixie** builds online only until migration certification completes.
 
 **Core Principles**
 
