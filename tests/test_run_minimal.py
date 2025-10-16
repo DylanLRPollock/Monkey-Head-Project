@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Run Minimal module (tests)
+
 import os
 from run import minimal_run
 from monkey_head.pygpt_custom_cli import CustomPyGPT

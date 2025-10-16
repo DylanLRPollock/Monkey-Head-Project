@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Cli module (src/huey)
+
 """Top-level command line interface for HueyOS."""
 
 from __future__ import annotations

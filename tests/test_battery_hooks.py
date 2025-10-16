@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Battery Hooks module (tests)
+
 from huey.power.management import BatteryMonitor
 
 

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Container Management module (huey/services)
+
 """Utility helpers for orchestrating external container and cluster tooling."""
 
 from __future__ import annotations

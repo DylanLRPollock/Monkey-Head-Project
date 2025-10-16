@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Cli Print module (huey/memory/PY)
+
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca

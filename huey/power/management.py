@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Management module (huey/power)
+
 """Battery monitoring and safe shutdown routines."""
 
 from __future__ import annotations

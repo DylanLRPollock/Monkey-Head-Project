@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Os Check Fallback module (tests)
+
 from unittest.mock import patch
 
 from monkey_head.core.system_checks import check_os_support

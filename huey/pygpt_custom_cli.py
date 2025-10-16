@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Pygpt Custom Cli module (huey)
+
 """Lightweight CLI integration mimicking the legacy PyGPT launcher."""
 
 from __future__ import annotations

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Function Registry module (tests)
+
 """Tests for the lightweight function registry utilities."""
 
 from __future__ import annotations

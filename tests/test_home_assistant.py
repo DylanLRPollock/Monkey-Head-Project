@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Home Assistant module (tests)
+
 from unittest.mock import patch
 import pytest
 

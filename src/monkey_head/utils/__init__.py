@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for src/monkey_head/utils
+
 """Expose utility helpers while bridging legacy Monkey Head modules."""
 
 from __future__ import annotations

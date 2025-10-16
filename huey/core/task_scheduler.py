@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Task Scheduler module (huey/core)
+
 """Task scheduling and resource aware assignment for HueyOS agents."""
 
 from __future__ import annotations

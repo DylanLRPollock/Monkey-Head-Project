@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Commands module (huey/memory/PY)
+
 from __future__ import annotations
 
 import subprocess

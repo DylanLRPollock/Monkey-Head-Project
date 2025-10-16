@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for huey/memory/PY
+
 from .container_management import (
     build_docker_image,
     cleanup_images,

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: App module (huey/pygpt_net)
+
 """Stub application runner compatible with Monkey Head integration tests."""
 
 from __future__ import annotations

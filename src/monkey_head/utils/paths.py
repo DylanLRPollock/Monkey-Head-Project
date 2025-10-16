@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Paths module (src/monkey_head/utils)
+
 """Compatibility wrapper around :mod:`huey.utils.paths`."""
 
 from __future__ import annotations

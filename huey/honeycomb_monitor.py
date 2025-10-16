@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Honeycomb Monitor module (huey)
+
 """Monitoring helpers for analysing honeycomb memory utilisation."""
 
 from __future__ import annotations

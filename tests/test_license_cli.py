@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test License Cli module (tests)
+
 import json
 from unittest.mock import patch
 

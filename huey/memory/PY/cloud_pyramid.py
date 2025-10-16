@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Cloud Pyramid module (huey/memory/PY)
+
 """Simplified implementation of the Cloud Pyramid governance system."""
 
 from __future__ import annotations

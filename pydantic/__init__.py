@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for pydantic
+
 """Lightweight stand-in for the ``pydantic`` package used in the tests.
 
 The real dependency is not available in the execution environment, but the

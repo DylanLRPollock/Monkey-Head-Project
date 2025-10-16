@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test List Available Pdfs module (tests)
+
 from monkey_head.pdf_utils import list_available_pdfs
 
 

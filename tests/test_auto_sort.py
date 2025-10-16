@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Auto Sort module (tests)
+
 from pathlib import Path
 
 import pytest

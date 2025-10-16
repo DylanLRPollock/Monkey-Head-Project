@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for huey/hardware
+
 """Hardware integration layer for HueyOS.
 
 This package provides abstractions around sensors and actuators along with

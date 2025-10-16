@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Preload Data module (src/monkey_head/scripts)
+
 """Utility helpers for preloading reference data used by the tests."""
 
 from __future__ import annotations

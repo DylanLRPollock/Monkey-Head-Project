@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Pdf Utils module (huey)
+
 """Utilities for handling project PDF documents."""
 
 from __future__ import annotations

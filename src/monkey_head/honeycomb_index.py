@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Honeycomb Index module (src/monkey_head)
+
 """Content-aware indexing helpers for :class:`HoneycombStorage`."""
 
 from __future__ import annotations

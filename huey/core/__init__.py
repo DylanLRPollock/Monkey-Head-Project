@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for huey/core
+
 """Core utilities for the Monkey Head compatibility layer."""
 
 from __future__ import annotations

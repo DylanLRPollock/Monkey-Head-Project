@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Auto Sort module (src/monkey_head/utils)
+
 """Compatibility wrapper around :mod:`huey.utils.auto_sort`."""
 
 from __future__ import annotations

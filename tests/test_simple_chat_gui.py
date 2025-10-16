@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Simple Chat Gui module (tests)
+
 from types import SimpleNamespace
 
 from monkey_head.simple_chat_gui import get_answer, run_simple_chat

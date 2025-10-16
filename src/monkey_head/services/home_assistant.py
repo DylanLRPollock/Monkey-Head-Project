@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Home Assistant module (src/monkey_head/services)
+
 """Minimal Home Assistant API helpers used by the test-suite."""
 
 from __future__ import annotations

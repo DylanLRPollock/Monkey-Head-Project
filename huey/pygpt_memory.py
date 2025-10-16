@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Pygpt Memory module (huey)
+
 """Simplified conversation memory helpers for Monkey Head's PyGPT integration."""
 
 from __future__ import annotations

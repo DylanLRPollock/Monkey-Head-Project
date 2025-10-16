@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Llm module (huey/agents)
+
 """Abstractions for interacting with LLM providers via the pygpt-MHP stack."""
 
 from __future__ import annotations

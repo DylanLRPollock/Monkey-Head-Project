@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Preset module (huey/pygpt_net/item)
+
 """Simplified preset data model used for testing integrations."""
 
 from __future__ import annotations

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Gpu module (src/monkey_head/utils)
+
 """Hardware accelerator detection utilities for HueyOS and Monkey Head."""
 
 from __future__ import annotations

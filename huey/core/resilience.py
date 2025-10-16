@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Resilience module (huey/core)
+
 """Resilience and emergency management utilities for HueyOS.
 
 This module centralises the logic required to monitor long running

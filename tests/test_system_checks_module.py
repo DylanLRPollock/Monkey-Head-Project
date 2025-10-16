@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test System Checks Module module (tests)
+
 """Unit tests for :mod:`monkey_head.system_checks`."""
 
 from __future__ import annotations

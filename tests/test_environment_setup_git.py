@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Environment Setup Git module (tests)
+
 from monkey_head.services.environment_setup import (
     clone_repository,
     checkout_branch,

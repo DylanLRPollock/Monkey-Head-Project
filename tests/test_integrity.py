@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Integrity module (tests)
+
 import hashlib
 from monkey_head.utils.integrity import sha256_digest, verify_checksums
 

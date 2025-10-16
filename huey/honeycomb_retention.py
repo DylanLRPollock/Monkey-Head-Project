@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Honeycomb Retention module (huey)
+
 """Retention policy helpers for honeycomb storage."""
 
 from __future__ import annotations

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: System Checks module (huey)
+
 """System environment checks for the Monkey Head compatibility layer."""
 
 from __future__ import annotations

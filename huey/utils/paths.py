@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Paths module (huey/utils)
+
 """Filesystem helpers for managing shared project directories."""
 
 from __future__ import annotations

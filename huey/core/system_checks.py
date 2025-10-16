@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: System Checks module (huey/core)
+
 """Compatibility layer for :mod:`monkey_head.system_checks`."""
 
 from __future__ import annotations

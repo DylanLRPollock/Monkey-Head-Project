@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Logging Setup module (huey)
+
 """Logging helpers for the Monkey Head compatibility layer."""
 
 from __future__ import annotations

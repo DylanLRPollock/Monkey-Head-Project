@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Failover module (tests)
+
 from pathlib import Path
 
 from monkey_head.scripts.failover import (

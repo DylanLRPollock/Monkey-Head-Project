@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Agent Llama module (huey/pygpt_net/ui/layout/toolbox)
+
 # ================================================== #
 # This file is a part of PYGPT package               #
 # Website: https://pygpt.net                         #

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Telemetry Store module (tests)
+
 import sys
 from dataclasses import dataclass
 from pathlib import Path

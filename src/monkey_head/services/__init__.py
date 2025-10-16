@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for src/monkey_head/services
+
 """Compatibility layer for service management helpers."""
 
 from __future__ import annotations

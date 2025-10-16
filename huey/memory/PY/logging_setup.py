@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Logging Setup module (huey/memory/PY)
+
 import logging
 import logging.handlers
 import os

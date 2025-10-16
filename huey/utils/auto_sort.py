@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Auto Sort module (huey/utils)
+
 """Utilities for organising files stored in the shared memory directory."""
 
 from __future__ import annotations

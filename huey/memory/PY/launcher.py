@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Launcher module (huey/memory/PY)
+
 """Unified launcher for the Monkey Head Project."""
 
 from __future__ import annotations

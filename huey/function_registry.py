@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Function Registry module (huey)
+
 """Simple function registry used by high level utilities."""
 
 from __future__ import annotations

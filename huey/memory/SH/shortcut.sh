@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Shortcut shell script (huey/memory/SH)
+
 set -euo pipefail
 # ==================================================
 # This file is a part of the 'Monkey Head Project'

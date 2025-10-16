@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Startup module (huey/memory/PY)
+
 """Convenient startup entry point for the Monkey Head Project."""
 
 from __future__ import annotations

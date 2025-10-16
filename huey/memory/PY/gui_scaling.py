@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Gui Scaling module (huey/memory/PY)
+
 """Utilities for scaling Tkinter GUIs on high-DPI displays."""
 
 import os

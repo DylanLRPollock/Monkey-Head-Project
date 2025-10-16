@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for httpx
+
 """Minimal subset of the ``httpx`` API tailored for the test-suite."""
 from __future__ import annotations
 

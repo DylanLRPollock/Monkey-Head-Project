@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for src/monkey_head
+
 """Compatibility package mapping the legacy :mod:`monkey_head` namespace."""
 
 from __future__ import annotations

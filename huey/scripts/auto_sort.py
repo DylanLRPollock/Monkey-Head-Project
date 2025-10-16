@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Auto Sort module (huey/scripts)
+
 """CLI for the :func:`monkey_head.utils.auto_sort.auto_sort_memory` helper."""
 
 from __future__ import annotations

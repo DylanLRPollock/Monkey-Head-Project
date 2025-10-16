@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Repair module (huey/memory/PY)
+
 """Repair the Monkey Head Project by reinstalling from a fresh clone."""
 from __future__ import annotations
 
