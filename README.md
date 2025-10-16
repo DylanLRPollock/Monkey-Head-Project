@@ -2,6 +2,8 @@
 
 **Author:** Dylan L. R. Pollock  
 **Status date:** 05-10-2025
+**Official site:** [www.dlrp.ca](https://www.dlrp.ca)
+**Contact:** [admin@dlrp.ca](mailto:admin@dlrp.ca)
 
 > **HueyOS** is a prototype robotic AI/OS that marries retro computing legacies with modern, modular hardware and a living constitutional framework. Huey is transparent by design, modular by necessity, and governed—not merely programmed—by the **Cloud Pyramid**.
 
@@ -28,6 +30,7 @@
 - [Roadmap](#roadmap)
 - [License & Credits](#license--credits)
 - [Documentation portal](docs/index.md)
+- [Official website](https://www.dlrp.ca)
 
 ---
 
