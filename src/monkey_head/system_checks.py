@@ -25,8 +25,8 @@ except Exception:  # pragma: no cover - handled gracefully in tests
 logger = logging.getLogger(__name__)
 
 SUPPORTED_DISTRO_ID = "debian"
-SUPPORTED_DISTRO_CODENAME = "trixie"
-MIN_KERNEL_VERSION = Version("6.16.12")
+SUPPORTED_DISTRO_CODENAME = "forky"
+MIN_KERNEL_VERSION = Version("6.17.0")
 MIN_PYTHON_VERSION = (3, 12)
 MAX_PYTHON_VERSION = (3, 14)
 REQUIRED_TOOLS: Tuple[str, ...] = ("git", "python3")
@@ -111,7 +111,7 @@ def check_os_support() -> bool:
 
     if not supported:
         logger.warning(
-            "Unsupported Linux distribution detected (%s %s). Debian Trixie is required.",
+            "Unsupported Linux distribution detected (%s %s). Debian Forky is required.",
             dist_id or "unknown",
             codename or "unknown",
         )

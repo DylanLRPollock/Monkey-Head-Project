@@ -22,7 +22,7 @@ def test_windows_warning():
 def test_linux_supported_no_warning():
     with patch("platform.system", return_value="Linux"), patch(
         "distro.id", return_value="debian"
-    ), patch("distro.codename", return_value="trixie"), patch(
+    ), patch("distro.codename", return_value="forky"), patch(
         "monkey_head.core.system_checks.logger"
     ) as log:
         check_os_support()
