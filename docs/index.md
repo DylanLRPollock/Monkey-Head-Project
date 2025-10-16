@@ -11,6 +11,7 @@ the platform and how to operate core services.
 - [Honeycomb storage operations](honeycomb-storage.md)
 - [API reference](api-reference.md)
 - [Governance & resilience](governance.md)
+- [Linux 6.17.3 upgrade runbook](kernel-6.17.3-runbook.md)
 
 ## CLI quick reference
 
