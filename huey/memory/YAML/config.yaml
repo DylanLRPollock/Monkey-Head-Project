@@ -12,6 +12,7 @@ database:
 system:
   os: 'debian-trixie'
   python_version: '3.13.5'
+  python_next_version: '3.14.x (post-2025-10-31 rollout)'
   virtual_env: '/opt/venv'
   dependencies:
     - pygpt-MHP

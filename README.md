@@ -5,10 +5,10 @@
 
 > **HueyOS** is a prototype robotic AI/OS that marries retro computing legacies with modern, modular hardware and a living constitutional framework. Huey is transparent by design, modular by necessity, and governed—not merely programmed—by the **Cloud Pyramid**.
 
-(UEFI-only - amd64 - Kernel 6.16.12 · Forky/6.17.x migration underway - Debian 13.0.0 Trixie)
+(UEFI-only - amd64 - Kernel 6.16.12 → staging 6.17.x - Debian 13.0.0 Trixie / Debian 14 “Forky” pilots)
 
 ![License](https://img.shields.io/badge/license-GPLv3-blue)
-![Python](https://img.shields.io/badge/python-3.12–3.13-blue)
+![Python](https://img.shields.io/badge/python-3.12–3.14-blue)
 ![Status](https://img.shields.io/badge/status-active-success)
 
 ---
@@ -37,14 +37,14 @@ HueyOS targets **Debian 13 “Trixie”** with a custom low‑latency kernel ser
 
 **Highlights (as of 2025‑10‑05):**
 
-- **OS baseline:** Debian 13.0.0 (Trixie), custom kernel **6.16.12‑huey** → transitioning to **Debian 14 “Forky”** with kernel **6.17.x-huey**
-- **Python:** initial pin **3.13.5** (user‑upgradable post‑install)
+- **OS baseline:** Debian 13.0.0 (Trixie), custom kernel **6.16.12‑huey** → transitioning to **Debian 14 “Forky”** with kernel **6.17.x-huey** (certification window opened **2025‑10‑31**)
+- **Python:** current pin **3.13.5** with **3.14.x** staged for general availability after **2025‑10‑31** (upgrade path validated in Docker + installer; PyGPT‑net + bridge wheels verified for 3.14 markers)
 - **Desktop:** **MATE** + **LightDM**; preferred lightweight browser: **qutebrowser**; full browser: **Edge Dev**
 - **AI runtime:** **PyGPT‑net** (desktop orchestrator), **Ollama** (local LLMs), ROCm/AMDGPU where available
 - **Memory:** unified long‑term store via JSON logs + SQLite; reproducible telemetry; VNC via TigerVNC tunneled over SSH
 - **Networking:** prefer bonded Ethernet; Wi‑Fi only as fallback
 
-> **Lifecycle notice (2025‑11‑15):** Upstream kernel **6.16.x** has entered end‑of‑life. HueyOS is actively switching its baseline to **kernel 6.17.x** on **Debian “Forky”**, keeping **6.16.12/Trixie** builds online only until migration certification completes.
+> **Lifecycle notice (2025‑11‑15):** Upstream kernel **6.16.x** has entered end‑of‑life. HueyOS is actively switching its baseline to **kernel 6.17.x** on **Debian “Forky”**, keeping **6.16.12/Trixie** builds online only until migration certification completes. Python **3.14.x** replaces the interim **3.13.x** builds following the same certification gate.
 
 **Core Principles**
 
@@ -139,7 +139,7 @@ Selected chapters: `docs/governance/chapters/07-wartime.md`, `09-oversight.md`, 
 ### Prerequisites
 - `git`, `make ≥ 4.3`, `docker` + compose, `rustup`  
 - x86‑64 (≥ 4 cores, 16 GB RAM, 256 GB disk, UEFI)  
-- **Python 3.12–3.13**
+- **Python 3.12–3.14** (3.14 binaries roll out after the 2025‑10‑31 gate)
 
 ### Source installation
 ```bash
@@ -295,7 +295,7 @@ See `CONTRIBUTING.md` for full guidelines.
 **Code:** GPL‑3.0‑only  
 **Docs & Media:** CC‑BY‑SA‑4.0
 
-**Acknowledgements:** PyGPT (pygpt‑net) | Debian trixie 13.0.0 | Python 3.13 | Kernel 6.16.12 (final 6.16.x)
+**Acknowledgements:** PyGPT (pygpt‑net) | Debian trixie 13.0.0 → Debian forky pilots | Python 3.13 → 3.14 staging | Kernel 6.16.12 → 6.17.x
 
 ---
 
