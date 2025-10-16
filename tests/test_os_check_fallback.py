@@ -13,7 +13,7 @@ def test_linux_fallback_no_warning():
         "monkey_head.core.system_checks.distro", None
     ), patch(
         "platform.freedesktop_os_release",
-        return_value={"ID": "debian", "VERSION_CODENAME": "trixie"},
+        return_value={"ID": "debian", "VERSION_CODENAME": "forky"},
     ), patch("monkey_head.core.system_checks.logger") as log:
         check_os_support()
         log.warning.assert_not_called()

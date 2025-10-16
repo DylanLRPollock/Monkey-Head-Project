@@ -85,9 +85,9 @@ def check_os_support() -> None:
                     release_info = {}
             dist_id = release_info.get("ID", "").lower()
             codename = release_info.get("VERSION_CODENAME", "").lower()
-        if dist_id != "debian" or codename not in {"trixie", "testing"}:
+        if dist_id != "debian" or codename not in {"forky", "testing"}:
             logger.warning(
-                "Unsupported Linux distribution detected (%s %s). Debian Trixie/testing is required.",
+                "Unsupported Linux distribution detected (%s %s). Debian Forky/testing is required.",
                 dist_id,
                 codename,
             )
@@ -115,9 +115,9 @@ def system_check():
     with open("/etc/os-release") as f:
         content = f.read().lower()
         if "debian" not in content or not any(
-            x in content for x in ("trixie", "testing")
+            x in content for x in ("forky", "testing")
         ):
-            error_message = "Debian Trixie/Testing Check failed"
+            error_message = "Debian Forky/Testing Check failed"
             log_error(error_message)
             raise RuntimeError(error_message)
 

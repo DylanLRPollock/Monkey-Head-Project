@@ -32,7 +32,7 @@ __all__ = [
     "system_check",
 ]
 
-_SUPPORTED_LINUX_CODENAMES = {"trixie", "testing"}
+_SUPPORTED_LINUX_CODENAMES = {"forky", "testing"}
 
 
 def ensure_admin() -> None:
@@ -110,7 +110,7 @@ def check_os_support() -> None:
             codename = str(release_info.get("VERSION_CODENAME", "")).lower()
         if dist_id != "debian" or codename not in _SUPPORTED_LINUX_CODENAMES:
             logger.warning(
-                "Unsupported Linux distribution detected (%s %s). Debian Trixie/testing is required.",
+                "Unsupported Linux distribution detected (%s %s). Debian Forky/testing is required.",
                 dist_id,
                 codename,
             )
