@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: System Checks module (src/monkey_head)
+
 """System environment checks for the Monkey Head runtime."""
 
 from __future__ import annotations

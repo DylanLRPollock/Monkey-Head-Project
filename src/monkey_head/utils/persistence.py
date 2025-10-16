@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Persistence module (src/monkey_head/utils)
+
 """Persistent telemetry storage utilities."""
 
 from __future__ import annotations

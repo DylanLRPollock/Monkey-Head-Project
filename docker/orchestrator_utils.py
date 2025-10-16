@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Orchestrator Utils module (docker)
+
 """Shared helpers for the HostOS/SubOS/NanoOS orchestrators."""
 from __future__ import annotations
 

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Gpu Utils module (tests)
+
 import math
 
 from monkey_head.utils.gpu import detect_accelerators, recommend_models_for_vram

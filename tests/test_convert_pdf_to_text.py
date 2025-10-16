@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Convert Pdf To Text module (tests)
+
 import importlib.util
 from pathlib import Path
 import shutil

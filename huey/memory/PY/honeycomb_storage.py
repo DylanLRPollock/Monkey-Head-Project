@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Honeycomb Storage module (huey/memory/PY)
+
 """Honeycomb style storage system with simple clustering and replication."""
 
 from __future__ import annotations

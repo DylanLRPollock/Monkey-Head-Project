@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Vic2 Demo module (huey/memory/PY)
+
 """Simple VIC-II graphics demo for Raspberry Pi 3/4.
 
 This script opens a 320x200 window using the classic Commodore 64

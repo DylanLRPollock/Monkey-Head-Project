@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Resilience Core module (tests)
+
 import pytest
 
 from monkey_head.core.resilience import (

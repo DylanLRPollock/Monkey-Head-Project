@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Tensorflow Feed module (tests)
+
 import pytest
 
 tf = pytest.importorskip("tensorflow")

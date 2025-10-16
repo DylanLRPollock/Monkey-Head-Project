@@ -1,3 +1,8 @@
+REM Monkey Head Project
+REM By: Dylan L.R. Pollock
+REM www.dlrp.ca
+REM HueyOS: Shortcut batch script (huey/memory/BAT)
+
 # ==================================================  #
 # This file is a part of the 'Monkey Head Project'                                       #
 # Website:   https://dlrp.ca                                                                            #

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Network module (src/monkey_head)
+
 """Network management helpers bridging to :mod:`huey.network.manager`."""
 
 from __future__ import annotations

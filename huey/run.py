@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Run module (huey)
+
 """Runtime entry points integrating the PyGPT stack with Monkey Head."""
 
 from __future__ import annotations

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Pygpt Custom Cli module (huey/memory/PY)
+
 from pathlib import Path
 
 

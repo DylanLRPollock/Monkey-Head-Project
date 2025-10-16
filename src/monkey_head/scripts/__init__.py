@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for src/monkey_head/scripts
+
 """Compatibility helpers for legacy management scripts."""
 
 from __future__ import annotations

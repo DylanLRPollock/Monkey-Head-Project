@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Environment Setup module (src/monkey_head/services)
+
 """Minimal project environment management helpers used in tests."""
 
 from __future__ import annotations

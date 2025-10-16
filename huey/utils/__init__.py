@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for huey/utils
+
 """Utility helpers for the Monkey Head compatibility layer."""
 
 from .paths import get_memory_path, get_logs_dir, ensure_subdirectory

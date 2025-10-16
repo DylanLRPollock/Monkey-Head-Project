@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Custom Pygpt Cli module (tests)
+
 from monkey_head.pygpt_custom_cli import CustomPyGPT
 
 

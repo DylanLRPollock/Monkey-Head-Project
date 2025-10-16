@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Misc Modules module (tests)
+
 from unittest.mock import patch
 from pathlib import Path
 import pytest

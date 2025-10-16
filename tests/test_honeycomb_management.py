@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Honeycomb Management module (tests)
+
 import subprocess
 from pathlib import Path
 

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Honeycomb Storage module (tests)
+
 import time
 
 from monkey_head.honeycomb_storage import HoneycombStorage

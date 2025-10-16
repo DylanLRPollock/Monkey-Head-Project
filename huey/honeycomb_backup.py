@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Honeycomb Backup module (huey)
+
 """Backup and replication helpers for honeycomb memory."""
 
 from __future__ import annotations

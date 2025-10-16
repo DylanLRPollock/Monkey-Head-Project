@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Memory module (huey/agents)
+
 """Utilities for persisting agent state within the honeycomb memory."""
 
 from __future__ import annotations

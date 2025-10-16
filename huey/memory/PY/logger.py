@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Logger module (huey/memory/PY)
+
 """Centralized logging utilities for Monkey Head."""
 
 import logging

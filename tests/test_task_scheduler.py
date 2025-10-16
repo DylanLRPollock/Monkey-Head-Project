@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Task Scheduler module (tests)
+
 """Tests for the :mod:`monkey_head.core.task_scheduler` module."""
 
 from __future__ import annotations

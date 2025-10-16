@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Huey Cli Config module (tests)
+
 import sys
 from unittest.mock import patch
 

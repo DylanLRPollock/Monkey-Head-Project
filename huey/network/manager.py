@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Manager module (huey/network)
+
 """Network manager that prefers wired connections with Wi-Fi failover."""
 
 from __future__ import annotations

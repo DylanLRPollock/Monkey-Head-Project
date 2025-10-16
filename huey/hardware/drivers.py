@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Drivers module (huey/hardware)
+
 """Built-in sensor and actuator plugins leveraging common robotics libraries."""
 
 from __future__ import annotations

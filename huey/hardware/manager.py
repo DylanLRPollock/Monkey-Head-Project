@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Manager module (huey/hardware)
+
 """Sensor manager coordinating plugin lifecycle and telemetry logging."""
 
 from __future__ import annotations

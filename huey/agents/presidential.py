@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Presidential module (huey/agents)
+
 """Bicameral presidential agent structure for HueyOS."""
 
 from __future__ import annotations

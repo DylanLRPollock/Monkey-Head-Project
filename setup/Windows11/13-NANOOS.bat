@@ -1,3 +1,8 @@
+REM Monkey Head Project
+REM By: Dylan L.R. Pollock
+REM www.dlrp.ca
+REM HueyOS: 13 Nanoos batch script (setup/Windows11)
+
 # ==================================================  #
 # This file is a part of the 'Monkey Head Project'                                       #
 # Website:   https://dlrp.ca                                                                            #

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Gui module (tests)
+
 from unittest.mock import patch
 from types import SimpleNamespace
 from gui.main_ui import MainUI

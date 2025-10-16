@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Planner module (repo/pygpt-MHP/src/pygpt_net/provider/agents)
+
 # ================================================== #
 # This file is a part of PYGPT package               #
 # Website: https://pygpt.net                         #

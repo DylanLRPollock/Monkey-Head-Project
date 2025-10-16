@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Conftest module
+
 """Pytest hooks providing minimal asyncio support for the tests."""
 from __future__ import annotations
 

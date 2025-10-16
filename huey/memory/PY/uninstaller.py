@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Uninstaller module (huey/memory/PY)
+
 """Cross-platform uninstaller for the Monkey Head Project."""
 import os
 import platform

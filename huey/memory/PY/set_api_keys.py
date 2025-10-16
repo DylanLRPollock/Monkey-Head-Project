@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Set Api Keys module (huey/memory/PY)
+
 import json
 import os
 

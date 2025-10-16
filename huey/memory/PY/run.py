@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Run module (huey/memory/PY)
+
 """Entry point wrapper for the legacy :mod:`monkey_head.run` module."""
 
 from __future__ import annotations

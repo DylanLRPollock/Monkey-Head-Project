@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for fastapi
+
 """Tiny FastAPI-compatible shim for the unit tests.
 
 The real framework is extensive, however the tests in this kata only exercise a

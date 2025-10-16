@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Plugins module (src/monkey_head/hardware)
+
 """Compatibility wrapper for :mod:`huey.hardware.plugins`."""
 
 from __future__ import annotations

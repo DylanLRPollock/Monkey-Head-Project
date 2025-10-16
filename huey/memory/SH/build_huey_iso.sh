@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Build Huey Iso shell script (huey/memory/SH)
+
 set -euo pipefail
 
 # This script builds a UEFI-only amd64 ISO using Debian live-build

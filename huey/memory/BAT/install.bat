@@ -1,3 +1,8 @@
+REM Monkey Head Project
+REM By: Dylan L.R. Pollock
+REM www.dlrp.ca
+REM HueyOS: Install batch script (huey/memory/BAT)
+
 @echo off
 REM ==================================================
 REM This file is a part of the 'Monkey Head Project'

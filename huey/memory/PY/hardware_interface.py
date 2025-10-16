@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Hardware Interface module (huey/memory/PY)
+
 """Unified hardware command interface across HostOS, SubOS and NanoOS."""
 
 from __future__ import annotations

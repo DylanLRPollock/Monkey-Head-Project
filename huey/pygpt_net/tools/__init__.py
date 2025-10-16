@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for huey/pygpt_net/tools
+
 """Tool shims that integrate Monkey Head with the PyGPT stub."""
 
 from __future__ import annotations

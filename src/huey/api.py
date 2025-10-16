@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Api module (src/huey)
+
 """FastAPI application exposing the HueyOS control surface."""
 
 from __future__ import annotations

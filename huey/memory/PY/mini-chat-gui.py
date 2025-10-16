@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Mini Chat Gui module (huey/memory/PY)
+
 import tkinter as tk
 from tkinter import scrolledtext
 

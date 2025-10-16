@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Memory Paths module (tests)
+
 from pathlib import Path
 
 from monkey_head.utils.paths import ensure_subdirectory, get_memory_path, memory_candidates

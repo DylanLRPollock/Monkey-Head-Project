@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Pdf Utils module (src/monkey_head)
+
 """PDF helper functions used by the HueyOS API."""
 
 from __future__ import annotations

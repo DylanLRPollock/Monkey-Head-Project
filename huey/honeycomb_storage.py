@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Honeycomb Storage module (huey)
+
 """Honeycomb inspired structured storage for HueyOS agents."""
 
 from __future__ import annotations

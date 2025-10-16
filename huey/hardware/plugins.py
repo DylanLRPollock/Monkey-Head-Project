@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Plugins module (huey/hardware)
+
 """Plugin infrastructure for HueyOS hardware integrations."""
 
 from __future__ import annotations

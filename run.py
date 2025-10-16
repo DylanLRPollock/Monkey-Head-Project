@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Run module
+
 """Convenience proxy to expose the Huey runtime entry points at the project root."""
 
 from __future__ import annotations

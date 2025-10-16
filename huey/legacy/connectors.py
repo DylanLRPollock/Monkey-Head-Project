@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Connectors module (huey/legacy)
+
 """Legacy system connector abstractions.
 
 The HueyOS codex references Commodore and other retro systems that need to

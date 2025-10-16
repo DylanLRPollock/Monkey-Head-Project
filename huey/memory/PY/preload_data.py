@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Preload Data module (huey/memory/PY)
+
 import csv
 from pathlib import Path
 from typing import Dict, List

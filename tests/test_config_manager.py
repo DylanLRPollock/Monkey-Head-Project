@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Config Manager module (tests)
+
 from monkey_head.config_manager import ConfigManager
 
 

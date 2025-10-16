@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Hostos Module module (tests)
+
 import importlib.util
 from pathlib import Path
 from unittest.mock import patch

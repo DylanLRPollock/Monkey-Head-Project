@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for fastapi/responses
+
 """Minimal subset of ``fastapi.responses`` used in the tests."""
 from __future__ import annotations
 

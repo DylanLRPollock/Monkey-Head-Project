@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Failover module (huey/scripts)
+
 """Dual-motherboard failover orchestration utilities.
 
 The HueyOS hardware topology includes redundant motherboards. This module

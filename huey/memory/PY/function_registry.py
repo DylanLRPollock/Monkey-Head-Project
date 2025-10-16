@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Function Registry module (huey/memory/PY)
+
 from __future__ import annotations
 
 from typing import Callable, Dict, List

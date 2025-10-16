@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Placeholder module (huey/pygpt_net/controller/config)
+
 """Placeholder utilities mirrored from the PyGPT configuration tree."""
 
 from __future__ import annotations

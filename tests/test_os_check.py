@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Os Check module (tests)
+
 from unittest.mock import patch
 import pytest
 

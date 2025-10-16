@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Update Prompts module (huey/memory/PY)
+
 import csv
 import re
 import os

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Manager module (repo/pygpt-MHP/src/pygpt_net/tools)
+
 """Minimal Monkey Head manager tool for the PyGPT stub environment."""
 
 from __future__ import annotations

@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Messaging module (huey/core)
+
 """Messaging protocol primitives for inter-component communication.
 
 This module defines the internal envelope structure used by HueyOS

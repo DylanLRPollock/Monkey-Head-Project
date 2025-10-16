@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Package initializer for huey/agents
+
 """Agent implementations used by HueyOS."""
 
 from .presidential import (

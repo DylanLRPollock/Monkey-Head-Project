@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Cli Run module (tests)
+
 from monkey_head.cli import CLI
 
 

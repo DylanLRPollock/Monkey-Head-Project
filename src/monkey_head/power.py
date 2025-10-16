@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Power module (src/monkey_head)
+
 """Power management helpers bridging to :mod:`huey.power.management`."""
 
 from __future__ import annotations

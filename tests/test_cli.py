@@ -1,3 +1,8 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Test Cli module (tests)
+
 """Tests for the top-level huey CLI."""
 
 from __future__ import annotations
