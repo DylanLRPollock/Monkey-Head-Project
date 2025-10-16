@@ -48,7 +48,8 @@ def check_python_version() -> None:
         major = getattr(info, "major", 0)
         minor = getattr(info, "minor", 0)
 
-    if major == 3 and minor == 13:
+    if major == 3 and minor >= 14:
         logger.warning(
-            "Python 3.13 detected. This version is experimental and not fully supported."
+            "Python 3.%s detected. This version is experimental and not fully supported.",
+            minor,
         )

@@ -36,6 +36,7 @@ services:
       target: dev
       args:
         PYTHON_VERSION: "3.13.5"
+        PYTHON_NEXT_VERSION: "3.14.0"
         DEBIAN_VERSION: "trixie"
     working_dir: /workspace
     env_file: [.env]

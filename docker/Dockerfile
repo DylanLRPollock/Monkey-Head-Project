@@ -3,6 +3,8 @@
 ARG DEBIAN_VERSION=trixie
 ARG DEBIAN_VARIANT=slim
 ARG PYTHON_VERSION=3.13.5
+ARG PYTHON_NEXT_VERSION=3.14.0
+ARG PYTHON_SUPPORTED_MAX=3.14
 ARG APP_USER=app
 ARG APP_UID=1000
 ARG APP_GID=1000
@@ -13,6 +15,8 @@ ARG LC_ALL=en_US.UTF-8
 # -------- Stage: build CPython --------
 FROM debian:${DEBIAN_VERSION}-${DEBIAN_VARIANT} AS cpython
 ARG PYTHON_VERSION
+ARG PYTHON_NEXT_VERSION
+ARG PYTHON_SUPPORTED_MAX
 ENV DEBIAN_FRONTEND=noninteractive
 RUN --mount=type=cache,target=/var/cache/apt,id=apt-cpython,sharing=locked     set -eux;     apt-get update;     apt-get install -y --no-install-recommends       build-essential ca-certificates curl wget xz-utils       libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev       libffi-dev liblzma-dev tk-dev uuid-dev;     rm -rf /var/lib/apt/lists*
 WORKDIR /tmp/src
@@ -22,8 +26,8 @@ RUN --mount=type=cache,target=/tmp/build-cache,id=py-build,sharing=locked     se
 
 # -------- Stage: runtime --------
 FROM debian:${DEBIAN_VERSION}-${DEBIAN_VARIANT} AS runtime
-ARG APP_USER APP_UID APP_GID TZ LANG LC_ALL
-ENV DEBIAN_FRONTEND=noninteractive     PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1     PIP_DISABLE_PIP_VERSION_CHECK=1     TZ=${TZ} LANG=${LANG} LC_ALL=${LC_ALL}
+ARG APP_USER APP_UID APP_GID TZ LANG LC_ALL PYTHON_VERSION PYTHON_NEXT_VERSION PYTHON_SUPPORTED_MAX
+ENV DEBIAN_FRONTEND=noninteractive     PYTHONDONTWRITEBYTECODE=1     PYTHONUNBUFFERED=1     PIP_DISABLE_PIP_VERSION_CHECK=1     TZ=${TZ} LANG=${LANG} LC_ALL=${LC_ALL} PYTHON_VERSION_ACTIVE=${PYTHON_VERSION} PYTHON_NEXT_VERSION=${PYTHON_NEXT_VERSION} PYTHON_SUPPORTED_MAX=${PYTHON_SUPPORTED_MAX}
 
 RUN --mount=type=cache,target=/var/cache/apt,id=apt-runtime,sharing=locked     set -eux;     apt-get update;     apt-get install -y --no-install-recommends       ca-certificates curl git bash tini locales tzdata procps       iproute2 iputils-ping dnsutils nano less;     echo "${TZ}" > /etc/timezone;     ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime;     dpkg-reconfigure -f noninteractive tzdata;     sed -i "s/^# ${LANG} UTF-8/${LANG} UTF-8/" /etc/locale.gen || true;     locale-gen;     rm -rf /var/lib/apt/lists/*
 
@@ -47,7 +51,7 @@ EXPOSE 1995
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=5   CMD python -c "import sys; sys.exit(0)"
 
-LABEL org.opencontainers.image.title="HueyOS Base Image"       org.opencontainers.image.description="Debian ${DEBIAN_VERSION} + CPython ${PYTHON_VERSION} runtime base (non-root, venv, tini)"       org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.title="HueyOS Base Image"       org.opencontainers.image.description="Debian ${DEBIAN_VERSION} + CPython ${PYTHON_VERSION} runtime base (non-root, venv, tini) · staged upgrade to ${PYTHON_NEXT_VERSION} (max supported ${PYTHON_SUPPORTED_MAX})"       org.opencontainers.image.licenses="MIT"
 
 ENTRYPOINT ["/usr/bin/tini","--"]
 CMD ["sleep","infinity"]
