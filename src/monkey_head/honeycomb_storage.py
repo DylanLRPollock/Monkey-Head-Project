@@ -106,10 +106,16 @@ class HoneycombStorage:
     # ------------------------------------------------------------------
     @staticmethod
     def _split_key(key: str) -> tuple[str, str]:
+        if not isinstance(key, str):
+            raise TypeError("Honeycomb keys must be strings")
+        if not key or key.strip() == "":
+            raise ValueError("Honeycomb keys must not be empty")
         if "/" in key:
             comb, cell = key.split("/", 1)
         else:
             comb, cell = "default", key
+        if not comb:
+            raise ValueError("Comb portion of key must not be empty")
         return comb, cell
 
     def _record_path(self, key: str) -> Path:
