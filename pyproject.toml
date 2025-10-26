@@ -87,7 +87,7 @@ data = [
   "chromadb==1.2.1",
   "elastic-transport==8.17.1",
   "elasticsearch==8.18.1",
-  "pinecone-client==3.2.2",
+  "pinecone-client==6.0.0",
   "pinecone-plugin-assistant==1.7.0",
   "pinecone-plugin-interface==0.0.7",
   "pinecone==7.3.0",
