@@ -5,6 +5,8 @@
 
 import time
 
+import pytest
+
 from monkey_head.honeycomb_storage import HoneycombStorage
 
 
@@ -62,3 +64,24 @@ def test_conversation_helpers(tmp_path):
 
     results = storage.query("conversation/chat/")
     assert len(results) == 2
+
+
+def test_store_rejects_invalid_keys(tmp_path):
+    storage = HoneycombStorage(base_dir=tmp_path)
+
+    with pytest.raises(TypeError):
+        storage.store(123, {})
+
+    with pytest.raises(ValueError):
+        storage.store("   ", {})
+
+    with pytest.raises(ValueError):
+        storage.store("/leading", {})
+
+
+def test_store_after_close_raises(tmp_path):
+    storage = HoneycombStorage(base_dir=tmp_path)
+    storage.close()
+
+    with pytest.raises(RuntimeError):
+        storage.store("alpha", {})
