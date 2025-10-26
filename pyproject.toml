@@ -84,7 +84,7 @@ ml = [
 ]
 data = [
   "chroma-hnswlib==0.7.6",
-  "chromadb==0.5.20",
+  "chromadb==1.2.1",
   "elastic-transport==8.17.1",
   "elasticsearch==8.18.1",
   "pinecone-client==3.2.2",
