@@ -4,20 +4,21 @@
 # HueyOS: Test Container Management New module (tests)
 
 from unittest.mock import patch
+
 import pytest
 
 pytest.importorskip("requests")
 
 from monkey_head.services.container_management import (
-    scale_deployment,
-    get_pod_logs,
-    cleanup_kubernetes,
     build_docker_image,
-    stop_containers,
     cleanup_images,
-    manage_networks,
-    list_containers,
+    cleanup_kubernetes,
     get_container_logs,
+    get_pod_logs,
+    list_containers,
+    manage_networks,
+    scale_deployment,
+    stop_containers,
 )
 
 

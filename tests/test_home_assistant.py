@@ -4,6 +4,7 @@
 # HueyOS: Test Home Assistant module (tests)
 
 from unittest.mock import patch
+
 import pytest
 
 pytest.importorskip("requests")
@@ -25,7 +26,13 @@ class DummyResp:
 
 def test_call_service():
     with patch("requests.post", return_value=DummyResp({"ok": True})) as post:
-        result = call_service("light", "toggle", {"entity_id": "light.kitchen"}, base_url="http://hass", token="abc")
+        result = call_service(
+            "light",
+            "toggle",
+            {"entity_id": "light.kitchen"},
+            base_url="http://hass",
+            token="abc",
+        )
         post.assert_called_once()
         assert result == {"ok": True}
 

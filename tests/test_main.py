@@ -14,8 +14,8 @@
 # tests/test_main.py
 
 import unittest
-from unittest.mock import patch
 from pathlib import Path
+from unittest.mock import patch
 
 _missing_dep = ""
 try:

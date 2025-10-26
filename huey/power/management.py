@@ -43,7 +43,9 @@ class BatteryMonitor:
     def __init__(self, *, shutdown_threshold: float = 5.0) -> None:
         self.shutdown_threshold = shutdown_threshold
         self._last_event: Optional[PowerEvent] = None
-        self._listeners: DefaultDict[str, List[Callable[[Dict[str, Any]], None]]] = defaultdict(list)
+        self._listeners: DefaultDict[str, List[Callable[[Dict[str, Any]], None]]] = (
+            defaultdict(list)
+        )
         self._last_status: Optional[Dict[str, Any]] = None
         self._low_battery_triggered = False
 
@@ -84,7 +86,9 @@ class BatteryMonitor:
     def initiate_shutdown(self) -> PowerEvent:
         """Trigger a safe shutdown sequence using available system tools."""
 
-        return self._execute_power_action("shutdown", {"threshold": self.shutdown_threshold})
+        return self._execute_power_action(
+            "shutdown", {"threshold": self.shutdown_threshold}
+        )
 
     def initiate_hibernate(self) -> PowerEvent:
         """Put the system into hibernation if supported."""
@@ -102,12 +106,16 @@ class BatteryMonitor:
         return self._execute_power_action("reboot", {})
 
     # ------------------------------------------------------------------
-    def register_hook(self, event: str, callback: Callable[[Dict[str, Any]], None]) -> None:
+    def register_hook(
+        self, event: str, callback: Callable[[Dict[str, Any]], None]
+    ) -> None:
         """Register ``callback`` to be invoked when ``event`` occurs."""
 
         self._listeners[event].append(callback)
 
-    def remove_hook(self, event: str, callback: Callable[[Dict[str, Any]], None]) -> None:
+    def remove_hook(
+        self, event: str, callback: Callable[[Dict[str, Any]], None]
+    ) -> None:
         listeners = self._listeners.get(event)
         if not listeners:
             return
@@ -129,11 +137,7 @@ class BatteryMonitor:
         plugged = status.get("power_plugged")
         threshold = status.get("threshold", self.shutdown_threshold)
 
-        if (
-            percent is not None
-            and not bool(plugged)
-            and percent <= threshold
-        ):
+        if percent is not None and not bool(plugged) and percent <= threshold:
             if not self._low_battery_triggered:
                 self._low_battery_triggered = True
                 self._emit("battery_low", status)
@@ -181,7 +185,9 @@ class BatteryMonitor:
         plugged = getattr(battery, "power_plugged", None)
         return {
             "percent": float(percent) if percent is not None else None,
-            "secs_left": float(secs_left) if isinstance(secs_left, (int, float)) else None,
+            "secs_left": (
+                float(secs_left) if isinstance(secs_left, (int, float)) else None
+            ),
             "power_plugged": bool(plugged) if plugged is not None else None,
             "source": "psutil",
         }
@@ -315,7 +321,9 @@ class BatteryMonitor:
         return None
 
     # ------------------------------------------------------------------
-    def _execute_power_action(self, action: str, base_metadata: Dict[str, Any]) -> PowerEvent:
+    def _execute_power_action(
+        self, action: str, base_metadata: Dict[str, Any]
+    ) -> PowerEvent:
         timestamp = time.time()
         command = self._resolve_command(action)
         metadata: Dict[str, Any] = {"action": action, "platform": sys.platform}
@@ -386,4 +394,3 @@ class BatteryMonitor:
 
 
 __all__ = ["BatteryMonitor", "PowerEvent"]
-

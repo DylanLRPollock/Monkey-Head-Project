@@ -10,10 +10,9 @@ import pytest
 
 pytest.importorskip("PIL.Image")
 
-from huey.config import load_config
 from huey.cli import parse_arguments, run_cli
-from huey.exceptions import HueyError, DataNotFoundError, InvalidInputError
-
+from huey.config import load_config
+from huey.exceptions import DataNotFoundError, HueyError, InvalidInputError
 
 # Tests for configuration loading
 

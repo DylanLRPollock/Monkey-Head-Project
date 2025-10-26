@@ -71,10 +71,8 @@ class NetworkManager:
         info: Dict[str, InterfaceInfo] = {}
         if psutil is not None:
             stats = psutil.net_if_stats()
-            addresses = psutil.net_if_addrs()
         else:  # pragma: no cover - psutil is optional dependency
             stats = {}
-            addresses = {}
 
         for name, stat in stats.items():
             category = self._interface_category(name)
@@ -144,7 +142,9 @@ class NetworkManager:
             return "wifi"
         return "other"
 
-    def _preferred_interface(self, interfaces: Dict[str, InterfaceInfo]) -> Optional[str]:
+    def _preferred_interface(
+        self, interfaces: Dict[str, InterfaceInfo]
+    ) -> Optional[str]:
         wired = [
             name
             for name, details in interfaces.items()
@@ -179,7 +179,10 @@ class NetworkManager:
             addrs = psutil.net_if_addrs()
             for name, iface_addrs in addrs.items():
                 for addr in iface_addrs:
-                    if getattr(addr, "family", None) == socket.AF_INET and addr.address == local_ip:
+                    if (
+                        getattr(addr, "family", None) == socket.AF_INET
+                        and addr.address == local_ip
+                    ):
                         return name
 
         # Fall back to simply returning the preferred active interface.
@@ -205,8 +208,15 @@ class NetworkManager:
             last_checked=time.time(),
         )
         self._last_status = status
-        if not connected and status.wifi_available and preferred and preferred.startswith(WIFI_PREFIXES):
-            LOGGER.warning("Connectivity degraded while using Wi-Fi interface %s", preferred)
+        if (
+            not connected
+            and status.wifi_available
+            and preferred
+            and preferred.startswith(WIFI_PREFIXES)
+        ):
+            LOGGER.warning(
+                "Connectivity degraded while using Wi-Fi interface %s", preferred
+            )
         return status
 
     # ------------------------------------------------------------------
@@ -221,13 +231,17 @@ class NetworkManager:
 
         if status.connected and status.wired_available:
             # Wi-Fi is up but wired exists - attempt to switch.
-            wired_interface = self._find_first_available(WIRED_PREFIXES, status.interfaces)
+            wired_interface = self._find_first_available(
+                WIRED_PREFIXES, status.interfaces
+            )
             if wired_interface and status.active_interface != wired_interface:
                 self._bring_up_interface(wired_interface)
                 status = self.check_status()
         elif not status.connected:
             # Attempt Wi-Fi failover.
-            wifi_interface = self._find_first_available(WIFI_PREFIXES, status.interfaces)
+            wifi_interface = self._find_first_available(
+                WIFI_PREFIXES, status.interfaces
+            )
             if wifi_interface:
                 self._bring_up_interface(wifi_interface)
                 status = self.check_status()
@@ -245,7 +259,11 @@ class NetworkManager:
         LOGGER.info("Attempting to prioritise interface %s", interface)
         if shutil.which("nmcli"):
             try:
-                subprocess.run(["nmcli", "device", "connect", interface], check=False, capture_output=True)
+                subprocess.run(
+                    ["nmcli", "device", "connect", interface],
+                    check=False,
+                    capture_output=True,
+                )
             except Exception:  # pragma: no cover - environment specific
                 LOGGER.exception("Failed to invoke nmcli for interface %s", interface)
         elif sys.platform.startswith("darwin") and shutil.which("networksetup"):
@@ -256,7 +274,9 @@ class NetworkManager:
                     capture_output=True,
                 )
             except Exception:  # pragma: no cover
-                LOGGER.exception("Failed to invoke networksetup for interface %s", interface)
+                LOGGER.exception(
+                    "Failed to invoke networksetup for interface %s", interface
+                )
         else:
             LOGGER.debug("No supported network management tool available")
 
@@ -266,4 +286,3 @@ class NetworkManager:
 
 
 __all__ = ["NetworkManager", "NetworkStatus"]
-

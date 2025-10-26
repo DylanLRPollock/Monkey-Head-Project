@@ -25,7 +25,7 @@ except Exception:  # pragma: no cover - can't import GUI libs
     scrolledtext = None
 
 from .gui_scaling import apply_scaling
-from .license_gui import DARK_BG, LIGHT_FG, ACCENT_PURPLE
+from .license_gui import ACCENT_PURPLE, DARK_BG, LIGHT_FG
 
 
 def get_answer(question: str) -> str:

@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 from importlib import import_module
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 _impl = import_module("huey.core.resilience")
 
@@ -35,3 +35,17 @@ def __getattr__(name: str) -> Any:
 
 
 __doc__ = _impl.__doc__
+
+
+if TYPE_CHECKING:  # pragma: no cover - import for type checkers only
+    from huey.core.resilience import (
+        CrashEvent,
+        CrashRecoveryManager,
+        EmergencyGovernanceController,
+        EmergencyServiceStatus,
+        EmergencyState,
+        HealthCheck,
+        MonitoredProcess,
+        RestartCallback,
+        SystemdWatchdogClient,
+    )

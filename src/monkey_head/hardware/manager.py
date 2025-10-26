@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 from importlib import import_module
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 _impl = import_module("huey.hardware.manager")
 
@@ -30,3 +30,12 @@ def __getattr__(name: str) -> Any:
 
 
 __doc__ = _impl.__doc__
+
+
+if TYPE_CHECKING:  # pragma: no cover - import for type checkers only
+    from huey.hardware.manager import (
+        ActuatorManager,
+        SensorManager,
+        create_default_actuator_manager,
+        create_default_sensor_manager,
+    )

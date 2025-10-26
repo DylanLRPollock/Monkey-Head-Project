@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 from monkey_head.honeycomb_storage import HoneycombStorage
+
 from .llm import LLMAdapter, LLMProvider
 from .memory import AgentMemory, MemoryEntry
 
@@ -421,9 +422,7 @@ class PresidentialCouncil:
                 fallback_reason = "Human override applied"
             else:
                 approved = False
-                fallback_reason = (
-                    "Agents disagreed; defaulting to fail-safe rejection pending human review."
-                )
+                fallback_reason = "Agents disagreed; defaulting to fail-safe rejection pending human review."
 
         rationale = self._compose_council_rationale(votes, fallback_reason)
         timestamp = max(spark_decision.timestamp, zap_decision.timestamp)

@@ -23,9 +23,11 @@ class GPIOZeroDigitalSensor(SensorPlugin):
 
     def setup(self) -> None:
         try:
-            from gpiozero import Device, DigitalInputDevice  # type: ignore
+            from gpiozero import DigitalInputDevice  # type: ignore
         except Exception as exc:  # pragma: no cover - optional dependency
-            raise RuntimeError("gpiozero is required for GPIOZeroDigitalSensor") from exc
+            raise RuntimeError(
+                "gpiozero is required for GPIOZeroDigitalSensor"
+            ) from exc
         pin = int(self.config.get("pin"))
         bounce = float(self.config.get("bounce_time", 0)) or None
         self._device = DigitalInputDevice(pin, bounce_time=bounce)
@@ -42,9 +44,11 @@ class GPIOZeroDigitalActuator(ActuatorPlugin):
 
     def setup(self) -> None:
         try:
-            from gpiozero import Device, DigitalOutputDevice  # type: ignore
+            from gpiozero import DigitalOutputDevice  # type: ignore
         except Exception as exc:  # pragma: no cover - optional dependency
-            raise RuntimeError("gpiozero is required for GPIOZeroDigitalActuator") from exc
+            raise RuntimeError(
+                "gpiozero is required for GPIOZeroDigitalActuator"
+            ) from exc
         pin = int(self.config.get("pin"))
         self._device = DigitalOutputDevice(pin)
         LOGGER.debug("Initialised gpiozero actuator %s on pin %s", self.name, pin)
@@ -92,7 +96,9 @@ class SerialCommandActuator(ActuatorPlugin):
         try:
             import serial  # type: ignore
         except Exception as exc:  # pragma: no cover - optional dependency
-            raise RuntimeError("pyserial is required for SerialCommandActuator") from exc
+            raise RuntimeError(
+                "pyserial is required for SerialCommandActuator"
+            ) from exc
         port = self.config.get("port")
         baudrate = int(self.config.get("baudrate", 9600))
         timeout = float(self.config.get("timeout", 1))
@@ -120,12 +126,19 @@ class SMBusSensor(SensorPlugin):
         address = int(self.config.get("address"), 0)
         self._bus = SMBus(bus_id)
         self._address = address
-        LOGGER.debug("Initialised SMBus sensor %s on bus %s address 0x%X", self.name, bus_id, address)
+        LOGGER.debug(
+            "Initialised SMBus sensor %s on bus %s address 0x%X",
+            self.name,
+            bus_id,
+            address,
+        )
 
     def read(self) -> Any:
         register = int(self.config.get("register", 0))
         length = int(self.config.get("length", 2))
-        data = getattr(self, "_bus").read_i2c_block_data(self._address, register, length)
+        data = getattr(self, "_bus").read_i2c_block_data(
+            self._address, register, length
+        )
         return data
 
 
@@ -180,4 +193,3 @@ __all__ = [
     "register_builtin_actuators",
     "register_builtin_sensors",
 ]
-

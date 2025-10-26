@@ -51,7 +51,9 @@ class SensorManager:
     # ------------------------------------------------------------------
     # Sensor lifecycle
     # ------------------------------------------------------------------
-    def add_sensor(self, plugin_name: str, name: str, config: Optional[Dict[str, Any]] = None) -> SensorPlugin:
+    def add_sensor(
+        self, plugin_name: str, name: str, config: Optional[Dict[str, Any]] = None
+    ) -> SensorPlugin:
         """Instantiate and register a sensor using ``plugin_name``."""
 
         with self._lock:
@@ -62,7 +64,9 @@ class SensorManager:
         LOGGER.info("Registered sensor %s using plugin %s", name, plugin_name)
         return plugin
 
-    def add_plugins(self, definitions: Iterable[Tuple[str, str, Dict[str, Any]]]) -> List[SensorPlugin]:
+    def add_plugins(
+        self, definitions: Iterable[Tuple[str, str, Dict[str, Any]]]
+    ) -> List[SensorPlugin]:
         """Bulk register sensors from configuration definitions."""
 
         sensors = load_plugins_from_definitions(definitions, registry=self.registry)
@@ -154,7 +158,9 @@ class SensorManager:
     # ------------------------------------------------------------------
     # Streaming helpers
     # ------------------------------------------------------------------
-    def subscribe(self, sensor_name: Optional[str] = None) -> asyncio.Queue[SensorReading]:
+    def subscribe(
+        self, sensor_name: Optional[str] = None
+    ) -> asyncio.Queue[SensorReading]:
         queue: asyncio.Queue[SensorReading] = asyncio.Queue()
         self._subscribers.append((sensor_name, queue))
         return queue
@@ -169,9 +175,13 @@ class SensorManager:
             try:
                 queue.put_nowait(reading)
             except asyncio.QueueFull:  # pragma: no cover - best effort delivery
-                LOGGER.debug("Dropping sensor reading for %s due to full queue", reading.name)
+                LOGGER.debug(
+                    "Dropping sensor reading for %s due to full queue", reading.name
+                )
 
-    async def stream(self, sensor_name: Optional[str] = None) -> AsyncIterator[SensorReading]:
+    async def stream(
+        self, sensor_name: Optional[str] = None
+    ) -> AsyncIterator[SensorReading]:
         """Yield readings in real-time for ``sensor_name`` or all sensors.
 
         This helper wraps :meth:`subscribe` to provide an asynchronous iterator
@@ -189,7 +199,9 @@ class SensorManager:
     # ------------------------------------------------------------------
     # Historical queries
     # ------------------------------------------------------------------
-    def load_history(self, sensor_name: str, *, limit: int = 50) -> List[Dict[str, Any]]:
+    def load_history(
+        self, sensor_name: str, *, limit: int = 50
+    ) -> List[Dict[str, Any]]:
         prefix = f"telemetry/sensor/{sensor_name}/"
         keys = self.storage.list_keys(prefix=prefix)
         if limit:
@@ -214,7 +226,9 @@ class ActuatorManager:
         self._actuators: Dict[str, ActuatorPlugin] = {}
         self._lock = threading.RLock()
 
-    def add_actuator(self, plugin_name: str, name: str, config: Optional[Dict[str, Any]] = None) -> ActuatorPlugin:
+    def add_actuator(
+        self, plugin_name: str, name: str, config: Optional[Dict[str, Any]] = None
+    ) -> ActuatorPlugin:
         with self._lock:
             plugin = self.registry.create(plugin_name, name, config)
             plugin.setup()
@@ -226,7 +240,9 @@ class ActuatorManager:
         with self._lock:
             actuator.setup()
             self._actuators[actuator.name] = actuator
-        LOGGER.info("Registered actuator %s using pre-instantiated plugin", actuator.name)
+        LOGGER.info(
+            "Registered actuator %s using pre-instantiated plugin", actuator.name
+        )
 
     def remove_actuator(self, name: str) -> None:
         with self._lock:
@@ -241,7 +257,9 @@ class ActuatorManager:
             actuators = list(self._actuators.values())
         return [actuator.provenance | {"name": actuator.name} for actuator in actuators]
 
-    def perform(self, name: str, command: str, payload: Optional[Dict[str, Any]] = None) -> Any:
+    def perform(
+        self, name: str, command: str, payload: Optional[Dict[str, Any]] = None
+    ) -> Any:
         with self._lock:
             actuator = self._actuators.get(name)
         if actuator is None:
@@ -250,7 +268,9 @@ class ActuatorManager:
             return actuator.perform(command, payload)
 
 
-def create_default_sensor_manager(*, telemetry_store: Optional[TelemetryStore] = None) -> SensorManager:
+def create_default_sensor_manager(
+    *, telemetry_store: Optional[TelemetryStore] = None
+) -> SensorManager:
     """Create a :class:`SensorManager` with built-in plugins registered."""
 
     from . import drivers  # Local import to avoid circular dependency
@@ -280,4 +300,3 @@ __all__ = [
     "create_default_actuator_manager",
     "create_default_sensor_manager",
 ]
-

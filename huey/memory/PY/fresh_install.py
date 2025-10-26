@@ -35,11 +35,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def _prompt_source() -> str:
     """Interactively prompt for reinstall source."""
-    choice = input("Reinstall from local files or GitHub clone? [l/g]: ").strip().lower()
+    choice = (
+        input("Reinstall from local files or GitHub clone? [l/g]: ").strip().lower()
+    )
     return "github" if choice.startswith("g") else "local"
 
 
-def run_fresh_install(source: str | None = None, repo_url: str = repair.REPO_URL) -> int:
+def run_fresh_install(
+    source: str | None = None, repo_url: str = repair.REPO_URL
+) -> int:
     """Remove existing files and perform a new installation."""
     if source is None:
         source = _prompt_source()

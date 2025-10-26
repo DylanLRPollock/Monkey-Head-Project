@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 try:  # pragma: no cover - optional GUI dependencies
-    from PySide6.QtCore import QTimer, Qt
+    from PySide6.QtCore import Qt, QTimer
     from PySide6.QtWidgets import (
         QApplication,
         QGridLayout,
@@ -32,8 +32,8 @@ try:  # pragma: no cover - optional GUI dependencies
         QLabel,
         QMainWindow,
         QMessageBox,
-        QPushButton,
         QProgressBar,
+        QPushButton,
         QTableWidget,
         QTableWidgetItem,
         QTabWidget,
@@ -128,13 +128,17 @@ def _system_metrics() -> Dict[str, str]:
         try:
             vm = psutil.virtual_memory()
             metrics["Memory"] = f"{_format_bytes(vm.used)} / {_format_bytes(vm.total)}"
-            metrics["MemoryPercent"] = f"{(vm.used / vm.total) * 100:0.1f}" if vm.total else "0.0"
+            metrics["MemoryPercent"] = (
+                f"{(vm.used / vm.total) * 100:0.1f}" if vm.total else "0.0"
+            )
         except Exception:
             metrics["Memory"] = "Unavailable"
             metrics["MemoryPercent"] = "0.0"
         try:
             disk = psutil.disk_usage(str(Path("/")))
-            metrics["Disk"] = f"{_format_bytes(disk.used)} / {_format_bytes(disk.total)}"
+            metrics["Disk"] = (
+                f"{_format_bytes(disk.used)} / {_format_bytes(disk.total)}"
+            )
         except Exception:
             metrics["Disk"] = "Unavailable"
         try:
@@ -147,13 +151,15 @@ def _system_metrics() -> Dict[str, str]:
             minutes = int((uptime % 3600) // 60)
             metrics["Uptime"] = f"{hours}h {minutes}m"
     else:
-        metrics.update({
-            "CPU Load": "psutil unavailable",
-            "Memory": "psutil unavailable",
-            "MemoryPercent": "0.0",
-            "Disk": "psutil unavailable",
-            "Uptime": "Unknown",
-        })
+        metrics.update(
+            {
+                "CPU Load": "psutil unavailable",
+                "Memory": "psutil unavailable",
+                "MemoryPercent": "0.0",
+                "Disk": "psutil unavailable",
+                "Uptime": "Unknown",
+            }
+        )
     return metrics
 
 
@@ -251,11 +257,17 @@ class DashboardWindow(QMainWindow):
                 "Updated",
             ]
         )
-        self.task_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        self.task_table.horizontalHeader().setSectionResizeMode(
+            0, QHeaderView.ResizeToContents
+        )
         self.task_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         for idx in range(2, 6):
-            self.task_table.horizontalHeader().setSectionResizeMode(idx, QHeaderView.ResizeToContents)
-        self.task_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeToContents)
+            self.task_table.horizontalHeader().setSectionResizeMode(
+                idx, QHeaderView.ResizeToContents
+            )
+        self.task_table.horizontalHeader().setSectionResizeMode(
+            6, QHeaderView.ResizeToContents
+        )
         layout.addWidget(self.task_table)
 
         buttons = QHBoxLayout()
@@ -345,7 +357,9 @@ class DashboardWindow(QMainWindow):
 
     def refresh_agent_table(self) -> None:
         records = self.scheduler.list_tasks()
-        stats: Dict[Agent, Dict[str, int]] = defaultdict(lambda: {"running": 0, "pending": 0, "completed": 0})
+        stats: Dict[Agent, Dict[str, int]] = defaultdict(
+            lambda: {"running": 0, "pending": 0, "completed": 0}
+        )
         for record in records:
             agent = record.assigned_agent or record.requested_agent
             if agent is None:
@@ -404,7 +418,9 @@ class DashboardWindow(QMainWindow):
     def _complete_selected_task(self) -> None:
         row = self.task_table.currentRow()
         if row < 0:
-            QMessageBox.warning(self, "Complete Task", "Select a task to mark as complete.")
+            QMessageBox.warning(
+                self, "Complete Task", "Select a task to mark as complete."
+            )
             return
         task_id_item = self.task_table.item(row, 0)
         if task_id_item is None:
@@ -415,7 +431,9 @@ class DashboardWindow(QMainWindow):
         except KeyError as exc:
             QMessageBox.warning(self, "Complete Task", str(exc))
         else:
-            QMessageBox.information(self, "Task Completed", f"Task {task_id} marked completed.")
+            QMessageBox.information(
+                self, "Task Completed", f"Task {task_id} marked completed."
+            )
         self.refresh_all()
 
 

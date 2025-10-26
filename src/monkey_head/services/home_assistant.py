@@ -26,7 +26,9 @@ def _build_headers(token: str | None) -> Dict[str, str]:
 
 def _require_requests() -> None:
     if requests is None:
-        raise RuntimeError("The 'requests' package is required for Home Assistant integrations")
+        raise RuntimeError(
+            "The 'requests' package is required for Home Assistant integrations"
+        )
 
 
 def call_service(
@@ -41,7 +43,9 @@ def call_service(
 
     _require_requests()
     url = f"{base_url.rstrip('/')}/api/services/{domain}/{service}"
-    response = requests.post(url, json=payload or {}, headers=_build_headers(token), timeout=10)
+    response = requests.post(
+        url, json=payload or {}, headers=_build_headers(token), timeout=10
+    )
     response.raise_for_status()
     return response.json()
 

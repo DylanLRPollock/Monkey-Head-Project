@@ -12,8 +12,8 @@
 # Updated: 06.09.2025
 # ==================================================
 import subprocess
-from unittest.mock import patch
 import types
+from unittest.mock import patch
 
 from monkey_head import subos_manager
 
@@ -37,17 +37,19 @@ def test_update_system_runs_commands():
 
 
 def test_create_user_skips_existing():
-    with patch("pwd.getpwnam", return_value=types.SimpleNamespace()), patch(
-        "subprocess.run"
-    ) as mock_run:
+    with (
+        patch("pwd.getpwnam", return_value=types.SimpleNamespace()),
+        patch("subprocess.run") as mock_run,
+    ):
         subos_manager.create_user("nobody")
         mock_run.assert_not_called()
 
 
 def test_create_user_adds_new():
-    with patch("pwd.getpwnam", side_effect=KeyError), patch(
-        "subprocess.run", return_value=R()
-    ) as mock_run:
+    with (
+        patch("pwd.getpwnam", side_effect=KeyError),
+        patch("subprocess.run", return_value=R()) as mock_run,
+    ):
         subos_manager.create_user("subos")
         mock_run.assert_called_with(
             ["useradd", "-m", "subos"],

@@ -35,6 +35,7 @@ from pydantic import BaseModel, Field
 try:  # pragma: no cover - exercised indirectly during import
     from huey.memory.PY.ai_processor import AIProcessor  # type: ignore
 except ModuleNotFoundError:  # pragma: no cover - compatibility shim
+
     class AIProcessor:  # type: ignore[no-redef]
         """Minimal stand-in for the legacy :class:`AIProcessor`."""
 
@@ -89,6 +90,8 @@ except ModuleNotFoundError:  # pragma: no cover - compatibility shim
                 "words": len(text.split()),
                 "unique_characters": len(set(text)),
             }
+
+
 from monkey_head.core.resilience import (
     CrashRecoveryManager,
     EmergencyGovernanceController,
@@ -116,11 +119,7 @@ from monkey_head.power import BatteryMonitor
 from monkey_head.system_checks import system_check
 from monkey_head.utils.auto_sort import auto_sort_memory
 from monkey_head.utils.paths import get_memory_path
-from monkey_head.utils.persistence import (
-    AIInteraction,
-    SensorTelemetry,
-    TelemetryStore,
-)
+from monkey_head.utils.persistence import AIInteraction, SensorTelemetry, TelemetryStore
 
 __all__ = [
     "AI_PROCESSOR",
@@ -249,7 +248,9 @@ class AcceleratorInfoModel(BaseModel):
     vendor: str = Field(..., description="Reported vendor for the device")
     driver: str = Field(..., description="Kernel driver handling the device")
     backend: str = Field(..., description="Acceleration backend (e.g. rocm)")
-    vram_total: Optional[int] = Field(None, description="Total VRAM in bytes when known")
+    vram_total: Optional[int] = Field(
+        None, description="Total VRAM in bytes when known"
+    )
     vram_free: Optional[int] = Field(None, description="Estimated free VRAM in bytes")
     bus_id: Optional[str] = Field(None, description="Bus address for the accelerator")
     node: Optional[str] = Field(None, description="Kernel device node identifier")
@@ -396,7 +397,9 @@ class ProcessTextRequest(BaseModel):
 class ProcessTextResponse(BaseModel):
     """Response model when streaming is not requested."""
 
-    processed_text: str = Field(..., description="Text after AIProcessor transformation")
+    processed_text: str = Field(
+        ..., description="Text after AIProcessor transformation"
+    )
 
 
 class ComputeMeanRequest(BaseModel):
@@ -700,19 +703,22 @@ async def _sensor_stream(sensor_name: Optional[str]):
         SENSOR_MANAGER.unsubscribe(queue)
 
 
-
 class ResourceProfileModel(BaseModel):
     """API schema exposing the scheduler resource hints."""
 
     cpu: float = Field(0.3, ge=0.0, le=1.0, description="Expected CPU utilisation bias")
-    memory: float = Field(0.2, ge=0.0, le=1.0, description="Expected memory utilisation bias")
+    memory: float = Field(
+        0.2, ge=0.0, le=1.0, description="Expected memory utilisation bias"
+    )
     battery: float = Field(
         0.1,
         ge=0.0,
         le=1.0,
         description="Battery drain sensitivity; higher values require higher charge.",
     )
-    gpu: float = Field(0.0, ge=0.0, le=1.0, description="Relative GPU demand if applicable")
+    gpu: float = Field(
+        0.0, ge=0.0, le=1.0, description="Relative GPU demand if applicable"
+    )
 
     def to_profile(self) -> ResourceProfile:
         return ResourceProfile(
@@ -807,7 +813,9 @@ class TaskResponse(BaseModel):
 class TaskSubmissionRequest(BaseModel):
     """Payload for creating a new task via the scheduler."""
 
-    command: str = Field(..., description="Instruction to execute within the agent context")
+    command: str = Field(
+        ..., description="Instruction to execute within the agent context"
+    )
     priority: TaskPriority = Field(
         TaskPriority.NORMAL,
         description="Relative priority for queue ordering; higher values run sooner.",
@@ -878,8 +886,7 @@ def _build_system_status() -> SystemStatusResponse:
         except Exception:  # pragma: no cover - optional dependency failure
             catalog = {}
     accelerators = [
-        AcceleratorInfoModel(**info)
-        for info in catalog.get("accelerators", [])
+        AcceleratorInfoModel(**info) for info in catalog.get("accelerators", [])
     ]
 
     return SystemStatusResponse(
@@ -932,34 +939,47 @@ def _render_dashboard(
         if value is None:
             return "&mdash;"
         try:
-            return html.escape(dt.datetime.fromtimestamp(value).isoformat(sep=" ", timespec="seconds"))
+            return html.escape(
+                dt.datetime.fromtimestamp(value).isoformat(sep=" ", timespec="seconds")
+            )
         except Exception:
             return _fmt(value)
 
     accelerators = system.accelerators or []
-    accelerator_rows = "".join(
-        f"<tr><td>{_fmt(acc.name)}</td><td>{_fmt(acc.vendor)}</td><td>{_fmt(acc.backend)}</td>"
-        f"<td>{_format_bytes(acc.vram_total)}</td><td>{_format_bytes(acc.vram_free)}</td></tr>"
-        for acc in accelerators
-    ) or "<tr><td colspan='5'>No accelerators detected</td></tr>"
+    accelerator_rows = (
+        "".join(
+            f"<tr><td>{_fmt(acc.name)}</td><td>{_fmt(acc.vendor)}</td><td>{_fmt(acc.backend)}</td>"
+            f"<td>{_format_bytes(acc.vram_total)}</td><td>{_format_bytes(acc.vram_free)}</td></tr>"
+            for acc in accelerators
+        )
+        or "<tr><td colspan='5'>No accelerators detected</td></tr>"
+    )
 
     recommended = catalog.get("recommended_models", [])
-    recommended_models = ", ".join(html.escape(str(model)) for model in recommended) or "None"
+    recommended_models = (
+        ", ".join(html.escape(str(model)) for model in recommended) or "None"
+    )
 
-    sensor_rows = "".join(
-        f"<tr><td>{_fmt(record.name)}</td><td>{_format_ts(record.timestamp)}</td>"
-        f"<td>{_fmt(record.value)}</td></tr>"
-        for record in sensor_records[:10]
-    ) or "<tr><td colspan='3'>No sensor telemetry recorded yet.</td></tr>"
+    sensor_rows = (
+        "".join(
+            f"<tr><td>{_fmt(record.name)}</td><td>{_format_ts(record.timestamp)}</td>"
+            f"<td>{_fmt(record.value)}</td></tr>"
+            for record in sensor_records[:10]
+        )
+        or "<tr><td colspan='3'>No sensor telemetry recorded yet.</td></tr>"
+    )
 
-    ai_rows = "".join(
-        f"<tr><td>{_format_ts(record.timestamp)}</td>"
-        f"<td>{_fmt(record.model)}</td><td>{_fmt(record.backend)}</td>"
-        f"<td>{_fmt(record.status)}</td>"
-        f"<td class='prompt'>{_fmt(record.prompt)[:160]}</td>"
-        f"<td class='response'>{_fmt(record.response)[:160]}</td></tr>"
-        for record in ai_records[:10]
-    ) or "<tr><td colspan='6'>No AI interactions logged.</td></tr>"
+    ai_rows = (
+        "".join(
+            f"<tr><td>{_format_ts(record.timestamp)}</td>"
+            f"<td>{_fmt(record.model)}</td><td>{_fmt(record.backend)}</td>"
+            f"<td>{_fmt(record.status)}</td>"
+            f"<td class='prompt'>{_fmt(record.prompt)[:160]}</td>"
+            f"<td class='response'>{_fmt(record.response)[:160]}</td></tr>"
+            for record in ai_records[:10]
+        )
+        or "<tr><td colspan='6'>No AI interactions logged.</td></tr>"
+    )
 
     battery_percent = _fmt(battery.get("percent"))
     battery_secs = _fmt(battery.get("secs_left"))
@@ -1041,6 +1061,8 @@ def _render_dashboard(
     </body>
     </html>
     """
+
+
 def _stream_text(text: str, chunk_size: int = 64) -> AsyncGenerator[str, None]:
     """Yield ``text`` in fixed-sized chunks for streaming responses."""
 
@@ -1063,9 +1085,9 @@ def _update_service_status(name: str, status_value: str) -> ServiceStatus:
 def _monitor_status(name: str) -> MonitoredProcessStatusModel:
     """Return the status object for ``name`` or raise ``KeyError``."""
 
-    for status in CRASH_MANAGER.statuses():
-        if status["name"] == name:
-            return MonitoredProcessStatusModel(**status)
+    for status_entry in CRASH_MANAGER.statuses():
+        if status_entry["name"] == name:
+            return MonitoredProcessStatusModel(**status_entry)
     raise KeyError(f"Unknown monitored process: {name}")
 
 
@@ -1105,7 +1127,9 @@ def _register_battery_hooks() -> None:
                 "battery_percent": status.get("percent"),
                 "source": status.get("source"),
             },
-            resource_profile=ResourceProfile(cpu=0.05, memory=0.05, battery=1.0, gpu=0.0),
+            resource_profile=ResourceProfile(
+                cpu=0.05, memory=0.05, battery=1.0, gpu=0.0
+            ),
         )
 
     def _log_recovery(status: Dict[str, Any]) -> None:
@@ -1168,7 +1192,9 @@ def list_tasks_endpoint(
     """List known tasks with optional status filters."""
 
     records = SCHEDULER.list_tasks(status_filter)
-    return TaskListResponse(tasks=[TaskResponse.from_record(record) for record in records])
+    return TaskListResponse(
+        tasks=[TaskResponse.from_record(record) for record in records]
+    )
 
 
 @app.get(
@@ -1182,7 +1208,9 @@ def get_task(task_id: str) -> TaskResponse:
     try:
         record = SCHEDULER.get_task(task_id)
     except KeyError as exc:  # pragma: no cover - defensive
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
+        ) from exc
     return TaskResponse.from_record(record)
 
 
@@ -1198,7 +1226,9 @@ def cancel_task(task_id: str) -> TaskResponse:
     try:
         record = SCHEDULER.cancel_task(task_id)
     except KeyError as exc:  # pragma: no cover - defensive
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
+        ) from exc
     return TaskResponse.from_record(record)
 
 
@@ -1269,7 +1299,9 @@ def register_sensor(request: SensorRegistrationRequest) -> SensorRegistrationRes
             detail=f"Unknown sensor plugin {request.plugin!r}",
         ) from exc
     except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        ) from exc
     return SensorRegistrationResponse(
         name=request.name,
         plugin=request.plugin,
@@ -1282,7 +1314,9 @@ def remove_sensor(sensor_name: str) -> Dict[str, str]:
     """Remove a configured sensor instance."""
 
     if SENSOR_MANAGER.get_sensor(sensor_name) is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found"
+        )
     SENSOR_MANAGER.remove_sensor(sensor_name)
     return {"status": "removed", "sensor": sensor_name}
 
@@ -1298,9 +1332,13 @@ def poll_sensor(sensor_name: str) -> SensorReadingResponse:
     try:
         reading = SENSOR_MANAGER.poll_sensor(sensor_name)
     except KeyError as exc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found") from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found"
+        ) from exc
     except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)
+        ) from exc
     return _reading_to_response(reading)
 
 
@@ -1319,12 +1357,16 @@ def poll_all_sensors() -> SensorPollAllResponse:
 )
 def sensor_history(
     sensor_name: str,
-    limit: int = Query(50, ge=1, le=500, description="Maximum number of readings to return"),
+    limit: int = Query(
+        50, ge=1, le=500, description="Maximum number of readings to return"
+    ),
 ) -> SensorHistoryResponse:
     """Return historical sensor readings from honeycomb storage."""
 
     if SENSOR_MANAGER.get_sensor(sensor_name) is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found"
+        )
     history = SENSOR_MANAGER.load_history(sensor_name, limit=limit)
     readings = [SensorReadingResponse(**record) for record in history]
     return SensorHistoryResponse(sensor=sensor_name, readings=readings)
@@ -1335,8 +1377,12 @@ async def stream_sensor(sensor_name: str) -> StreamingResponse:
     """Stream real-time readings for ``sensor_name`` using server-sent events."""
 
     if SENSOR_MANAGER.get_sensor(sensor_name) is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found")
-    return StreamingResponse(_sensor_stream(sensor_name), media_type="text/event-stream")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Sensor not found"
+        )
+    return StreamingResponse(
+        _sensor_stream(sensor_name), media_type="text/event-stream"
+    )
 
 
 @app.get("/sensors/stream", tags=["Sensors"])
@@ -1352,8 +1398,12 @@ async def stream_all_sensors() -> StreamingResponse:
     tags=["Telemetry"],
 )
 def list_recent_sensor_telemetry(
-    limit: int = Query(25, ge=1, le=500, description="Maximum number of records to return"),
-    name: Optional[str] = Query(None, description="Filter telemetry to a specific sensor"),
+    limit: int = Query(
+        25, ge=1, le=500, description="Maximum number of records to return"
+    ),
+    name: Optional[str] = Query(
+        None, description="Filter telemetry to a specific sensor"
+    ),
 ) -> SensorTelemetryResponse:
     """Return recent sensor telemetry captured in the persistent store."""
 
@@ -1376,7 +1426,9 @@ def list_recent_sensor_telemetry(
     tags=["Telemetry"],
 )
 def list_recent_ai_interactions(
-    limit: int = Query(25, ge=1, le=500, description="Maximum number of AI interactions to return"),
+    limit: int = Query(
+        25, ge=1, le=500, description="Maximum number of AI interactions to return"
+    ),
 ) -> AIInteractionResponse:
     """Return recent AI Processor interactions from the telemetry store."""
 
@@ -1452,7 +1504,9 @@ def trigger_shutdown() -> PowerEventResponse:
     """Initiate a safe shutdown sequence."""
 
     event = BATTERY_MONITOR.initiate_shutdown()
-    return PowerEventResponse(timestamp=event.timestamp, action=event.action, metadata=event.metadata)
+    return PowerEventResponse(
+        timestamp=event.timestamp, action=event.action, metadata=event.metadata
+    )
 
 
 @app.get(
@@ -1463,7 +1517,9 @@ def trigger_shutdown() -> PowerEventResponse:
 def list_monitored_processes() -> List[MonitoredProcessStatusModel]:
     """Return the set of processes being watched by the crash manager."""
 
-    return [MonitoredProcessStatusModel(**status) for status in CRASH_MANAGER.statuses()]
+    return [
+        MonitoredProcessStatusModel(**status) for status in CRASH_MANAGER.statuses()
+    ]
 
 
 @app.post(
@@ -1471,7 +1527,9 @@ def list_monitored_processes() -> List[MonitoredProcessStatusModel]:
     response_model=MonitoredProcessStatusModel,
     tags=["Resilience"],
 )
-def override_monitored_process(name: str, request: ManualOverrideRequest) -> MonitoredProcessStatusModel:
+def override_monitored_process(
+    name: str, request: ManualOverrideRequest
+) -> MonitoredProcessStatusModel:
     """Enable or disable automatic crash recovery for the given process."""
 
     try:
@@ -1479,7 +1537,9 @@ def override_monitored_process(name: str, request: ManualOverrideRequest) -> Mon
             name, request.auto_restart, reason=request.reason
         )
     except KeyError as exc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
+        ) from exc
     return MonitoredProcessStatusModel(**status)
 
 
@@ -1494,7 +1554,9 @@ def manual_restart_monitored_process(name: str) -> MonitoredProcessStatusModel:
     try:
         CRASH_MANAGER.manual_restart(name)
     except KeyError as exc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
+        ) from exc
     return _monitor_status(name)
 
 
@@ -1530,7 +1592,9 @@ def watchdog_ping() -> Dict[str, bool]:
 
 
 @app.get("/memory/pdfs", response_model=PDFListResponse, tags=["Memory"])
-def list_pdfs(pdf_dir: Optional[str] = Query(None, description="Override PDF search root")) -> PDFListResponse:
+def list_pdfs(
+    pdf_dir: Optional[str] = Query(None, description="Override PDF search root")
+) -> PDFListResponse:
     """List the PDF resources HueyOS can currently access."""
 
     pdfs = list_available_pdfs(pdf_dir=pdf_dir)
@@ -1549,7 +1613,10 @@ def list_pdfs(pdf_dir: Optional[str] = Query(None, description="Override PDF sea
     response_model=PDFDetailResponse,
     tags=["Memory"],
 )
-def locate_pdf(filename: str, pdf_dir: Optional[str] = Query(None, description="Optional PDF search root")) -> PDFDetailResponse:
+def locate_pdf(
+    filename: str,
+    pdf_dir: Optional[str] = Query(None, description="Optional PDF search root"),
+) -> PDFDetailResponse:
     """Resolve an absolute path for a specific PDF."""
 
     path = find_pdf(filename, pdf_dir=pdf_dir)
@@ -1574,7 +1641,9 @@ def auto_sort(request: AutoSortRequest) -> AutoSortResponse:
             dry_run=request.dry_run,
         )
     except FileNotFoundError as exc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
+        ) from exc
     return AutoSortResponse(**summary)
 
 
@@ -1710,9 +1779,13 @@ def enter_emergency_mode(request: EmergencyModeRequest) -> EmergencyStatusRespon
             approvals=request.approvals,
         )
     except PermissionError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)
+        ) from exc
     except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        ) from exc
     return emergency_status()
 
 
@@ -1730,7 +1803,9 @@ def exit_emergency_mode(request: EmergencyExitRequest) -> EmergencyStatusRespons
             approvals=request.approvals,
         )
     except PermissionError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)
+        ) from exc
     return emergency_status()
 
 
@@ -1748,11 +1823,15 @@ def emergency_authorised_action(request: EmergencyActionRequest) -> Dict[str, st
             action=request.action,
         )
     except PermissionError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)
+        ) from exc
     return {"status": "authorised", "action": request.action}
 
 
-@app.get("/admin/services", response_model=ServicesOverviewResponse, tags=["Administration"])
+@app.get(
+    "/admin/services", response_model=ServicesOverviewResponse, tags=["Administration"]
+)
 def list_services() -> ServicesOverviewResponse:
     """Report the last known status of services managed by HueyOS."""
 
@@ -1783,7 +1862,9 @@ def stop_service(service_name: str) -> ServiceStatus:
     return _update_service_status(service_name, "stopped")
 
 
-@app.post("/admin/system-check", response_model=SystemCheckResponse, tags=["Administration"])
+@app.post(
+    "/admin/system-check", response_model=SystemCheckResponse, tags=["Administration"]
+)
 def admin_system_check() -> SystemCheckResponse:
     """Execute the full HueyOS system check suite and report individual results."""
 

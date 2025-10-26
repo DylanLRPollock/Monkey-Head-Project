@@ -17,7 +17,9 @@ logger = logging.getLogger(__name__)
 DEFAULT_REPO_URL = "https://github.com/DylanLRPollock/Monkey-Head-Project.git"
 
 
-def run_command(command: Sequence[str], *, cwd: str | None = None, check: bool = False) -> subprocess.CompletedProcess[str]:
+def run_command(
+    command: Sequence[str], *, cwd: str | None = None, check: bool = False
+) -> subprocess.CompletedProcess[str]:
     """Run ``command`` via :func:`subprocess.run` and return the completed process."""
 
     return subprocess.run(command, cwd=cwd, check=check, text=True)
@@ -27,7 +29,9 @@ def _expand(path: str) -> str:
     return os.path.expanduser(path)
 
 
-def clone_repository(repo_url: str = DEFAULT_REPO_URL, dest: str = "~/Source/repo") -> None:
+def clone_repository(
+    repo_url: str = DEFAULT_REPO_URL, dest: str = "~/Source/repo"
+) -> None:
     """Clone ``repo_url`` into ``dest`` creating parent directories as required."""
 
     dest_path = _expand(dest)
@@ -37,7 +41,9 @@ def clone_repository(repo_url: str = DEFAULT_REPO_URL, dest: str = "~/Source/rep
     except Exception as exc:  # pragma: no cover - error path exercised in tests
         git_dir = os.path.join(dest_path, ".git")
         if os.path.isdir(git_dir):
-            logger.warning("Clone failed (%s). Using existing repository at %s", exc, dest_path)
+            logger.warning(
+                "Clone failed (%s). Using existing repository at %s", exc, dest_path
+            )
         else:
             raise
 
@@ -52,10 +58,14 @@ def setup_python_env(dest: str = "~/Source/repo") -> None:
 
     pip_exe = os.path.join(venv_path, "bin", "pip")
     run_command([pip_exe, "install", "--upgrade", "pip"], cwd=dest_path, check=True)
-    run_command([pip_exe, "install", "-r", "requirements.txt"], cwd=dest_path, check=True)
+    run_command(
+        [pip_exe, "install", "-r", "requirements.txt"], cwd=dest_path, check=True
+    )
 
 
-def configure_git(name: str = "Your Name", email: str = "your.email@example.com") -> None:
+def configure_git(
+    name: str = "Your Name", email: str = "your.email@example.com"
+) -> None:
     """Set the global git username and email values."""
 
     run_command(["git", "config", "--global", "user.name", name], check=True)
@@ -77,7 +87,12 @@ def pull_latest(dest: str = "~/Source/repo") -> None:
     run_command(["git", "pull", "--ff-only"], cwd=dest_path)
 
 
-def commit_and_push(message: str, dest: str = "~/Source/repo", remote: str = "origin", branch: str = "main") -> None:
+def commit_and_push(
+    message: str,
+    dest: str = "~/Source/repo",
+    remote: str = "origin",
+    branch: str = "main",
+) -> None:
     """Commit staged changes with ``message`` and push to ``remote`` ``branch``."""
 
     dest_path = _expand(dest)

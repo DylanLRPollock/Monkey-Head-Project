@@ -42,4 +42,3 @@ __all__ = [
     "list_sensor_plugins",
     "create_default_sensor_manager",
 ]
-

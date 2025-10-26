@@ -23,9 +23,7 @@ class CLI:
     def choose_provider(self) -> None:
         """Interactively choose an LLM provider."""
         options = ["openai", "google", "deepseek"]
-        choice = input(
-            "Select provider (openai/google/deepseek): "
-        ).strip().lower()
+        choice = input("Select provider (openai/google/deepseek): ").strip().lower()
         if choice not in options:
             print("Invalid provider. Available options: openai, google, deepseek")
             return

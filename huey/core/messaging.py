@@ -147,7 +147,9 @@ class MessageEnvelope(BaseModel):
 
         return cls.from_json(data.decode("utf-8"))
 
-    def build_ack(self, status: str, payload: Optional[Dict[str, Any]] = None) -> "MessageEnvelope":
+    def build_ack(
+        self, status: str, payload: Optional[Dict[str, Any]] = None
+    ) -> "MessageEnvelope":
         """Create a reply envelope acknowledging the current message."""
 
         if not self.header.reply_to:

@@ -144,7 +144,11 @@ class SensorRegistry:
         try:
             sample = plugin_cls(name="__describe__")
         except Exception:  # pragma: no cover - plugin misbehaviour
-            LOGGER.debug("Failed to instantiate sensor plugin %s for metadata", name, exc_info=True)
+            LOGGER.debug(
+                "Failed to instantiate sensor plugin %s for metadata",
+                name,
+                exc_info=True,
+            )
         else:
             config_keys = sorted(sample.config.keys())
             del sample
@@ -170,7 +174,9 @@ class SensorRegistry:
         return metadata
 
     # ------------------------------------------------------------------
-    def create(self, plugin_name: str, name: str, config: Optional[Dict[str, Any]] = None) -> SensorPlugin:
+    def create(
+        self, plugin_name: str, name: str, config: Optional[Dict[str, Any]] = None
+    ) -> SensorPlugin:
         """Instantiate a sensor plugin by symbolic ``plugin_name``."""
 
         plugin_cls = self.get(plugin_name)
@@ -199,7 +205,9 @@ class SensorRegistry:
                 continue
             if not isinstance(plugin_cls, type):
                 LOGGER.warning(
-                    "Entry point %s did not return a class (got %r)", entry_point, plugin_cls
+                    "Entry point %s did not return a class (got %r)",
+                    entry_point,
+                    plugin_cls,
                 )
                 continue
             if not issubclass(plugin_cls, SensorPlugin):
@@ -270,7 +278,9 @@ def list_sensor_plugins(registry: Optional[SensorRegistry] = None) -> List[str]:
     return registry.available()
 
 
-def list_sensor_plugin_metadata(registry: Optional[SensorRegistry] = None) -> List[Dict[str, Any]]:
+def list_sensor_plugin_metadata(
+    registry: Optional[SensorRegistry] = None,
+) -> List[Dict[str, Any]]:
     """Return metadata for every available sensor plugin."""
 
     registry = registry or SensorRegistry()
@@ -297,7 +307,9 @@ class ActuatorRegistry:
     def available(self) -> List[str]:
         return sorted(self._plugins)
 
-    def create(self, plugin_name: str, name: str, config: Optional[Dict[str, Any]] = None) -> ActuatorPlugin:
+    def create(
+        self, plugin_name: str, name: str, config: Optional[Dict[str, Any]] = None
+    ) -> ActuatorPlugin:
         plugin_cls = self.get(plugin_name)
         return plugin_cls(name=name, config=config)
 
@@ -314,4 +326,3 @@ __all__ = [
     "list_sensor_plugins",
     "load_plugins_from_definitions",
 ]
-

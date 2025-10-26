@@ -4,6 +4,7 @@
 # HueyOS: Test Run Module Option module (tests)
 
 import sys
+
 from run import main
 
 

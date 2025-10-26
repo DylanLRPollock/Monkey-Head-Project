@@ -14,12 +14,11 @@
 # Updated Date: 2024.12.14 22:00:00                  #
 # ================================================== #
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from llama_index.core.agent import (
-    StructuredPlannerAgent,
     FunctionCallingAgentWorker,
-    ReActAgentWorker,
+    StructuredPlannerAgent,
 )
 
 from .base import BaseAgent
@@ -43,7 +42,6 @@ class PlannerAgent(BaseAgent):
         verbose = kwargs.get("verbose", False)
         llm = kwargs.get("llm", None)
         chat_history = kwargs.get("chat_history", [])
-        max_iterations = kwargs.get("max_iterations", 10)
         worker = FunctionCallingAgentWorker.from_tools(
             tools=tools,
             llm=llm,

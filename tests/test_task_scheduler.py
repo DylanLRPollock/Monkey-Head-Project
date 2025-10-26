@@ -7,9 +7,9 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import sys
 import types
+from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(REPO_ROOT))
@@ -72,7 +72,9 @@ def test_schedule_task_dispatches_when_resources_are_healthy():
 def test_schedule_task_is_pending_when_resources_are_constrained():
     scheduler = TaskScheduler(health_provider=_overloaded_snapshot)
 
-    record = scheduler.schedule_task(command="train model", priority=TaskPriority.CRITICAL)
+    record = scheduler.schedule_task(
+        command="train model", priority=TaskPriority.CRITICAL
+    )
 
     assert record.status is TaskStatus.PENDING
     assert record.assigned_agent is None
@@ -173,7 +175,9 @@ def test_run_pending_uses_updated_health_snapshot():
 def test_complete_task_records_result_and_history():
     scheduler = TaskScheduler(health_provider=_healthy_snapshot)
 
-    record = scheduler.schedule_task(command="collect logs", requested_agent=Agent.SPARK)
+    record = scheduler.schedule_task(
+        command="collect logs", requested_agent=Agent.SPARK
+    )
     assert record.status is TaskStatus.RUNNING
 
     completed = scheduler.complete_task(record.task_id, result={"ok": True})

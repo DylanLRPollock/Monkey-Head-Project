@@ -3,6 +3,8 @@
 # www.dlrp.ca
 # HueyOS: Subos Manager module (huey/memory/PY)
 
+import logging
+
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -12,7 +14,6 @@
 # Updated: 06.11.2025
 # ==================================================
 import os
-import logging
 import pwd
 
 from .core.system_checks import ensure_admin

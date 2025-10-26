@@ -15,11 +15,10 @@
 # ================================================== #
 
 import json
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 from llama_index.core.chat_engine.types import AgentChatResponse
 from llama_index.core.tools import BaseTool, FunctionTool, QueryEngineTool, ToolMetadata
-
 from pygpt_net.core.bridge.context import BridgeContext
 from pygpt_net.item.ctx import CtxItem
 

@@ -7,11 +7,10 @@
 
 from __future__ import annotations
 
-import os
 import hashlib
 import json
 from pathlib import Path
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
 
 
 class HoneycombStorage:

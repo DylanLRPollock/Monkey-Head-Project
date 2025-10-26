@@ -15,10 +15,10 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 from pathlib import Path
-import os
 
 __all__ = [
     "convert_audio",
@@ -108,6 +108,7 @@ def convert_media(
     elif src_ext in VIDEO_EXTENSIONS:
         if dst_ext == ".gif":
             from .convert_video_to_gif import convert_video_to_gif  # local import
+
             convert_video_to_gif(src, dst)
         else:
             convert_video(src, dst, codec=codec)

@@ -13,9 +13,12 @@
 # ==================================================
 """Main entry point for Monkey Head server."""
 
-from monkey_head.utils.logger import get_logger
-from flask import Flask, jsonify
 import argparse
+
+from flask import Flask, jsonify
+
+from monkey_head.utils.logger import get_logger
+
 try:
     from pygpt_net import __version__ as pygpt_version
 except Exception:  # pragma: no cover - optional dependency
@@ -29,28 +32,28 @@ except Exception:  # pragma: no cover - optional dependency
         from pygpt_net import __version__ as pygpt_version
     except Exception:
         pygpt_version = "unknown"
-from .core.system_checks import system_check, ensure_admin, check_python_version
-from .modules.updates import update_system, update_python_packages
 from .core.installations import (
-    install_common_tools,
     install_additional_tools,
+    install_common_tools,
     install_optional_tools,
+)
+from .core.system_checks import check_python_version, ensure_admin, system_check
+from .logging_setup import configure_logging
+from .modules.updates import update_python_packages, update_system
+from .scripts.backup_restore import backup_config, restore_config
+from .services.container_management import (
+    deploy_kubernetes,
+    kubernetes_management,
+    manage_containers,
+    manage_volumes,
 )
 from .services.environment_setup import (
     clone_repository,
-    setup_python_env,
     configure_git,
     create_directories,
+    setup_python_env,
     update_env_variables,
 )
-from .services.container_management import (
-    manage_containers,
-    manage_volumes,
-    deploy_kubernetes,
-    kubernetes_management,
-)
-from .scripts.backup_restore import backup_config, restore_config
-from .logging_setup import configure_logging
 
 app = Flask(__name__)
 

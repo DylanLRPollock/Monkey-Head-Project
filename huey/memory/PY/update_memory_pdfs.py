@@ -14,8 +14,8 @@
 import logging
 from pathlib import Path
 
-from .convert_pdf_to_text import convert_pdf_to_text, save_text_to_file
 from ..logging_setup import configure_logging
+from .convert_pdf_to_text import convert_pdf_to_text, save_text_to_file
 
 configure_logging()
 

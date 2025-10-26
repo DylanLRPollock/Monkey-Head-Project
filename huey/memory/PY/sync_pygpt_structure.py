@@ -19,10 +19,9 @@ overwritten if they contain a ``Placeholder for`` header. The ``--depth``
 option controls how deep into the submodule the copy process recurses. By
 default the entire tree is mirrored.
 """
+import argparse
 import os
 import shutil
-import argparse
-
 
 PYGPT_DIR = os.path.join("repo", "pygpt-MHP")
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))

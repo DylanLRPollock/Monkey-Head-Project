@@ -14,20 +14,21 @@
 # tests/test_utils.py
 
 import os
-from pathlib import Path
 import unittest
+from pathlib import Path
+
 import pytest
 
 Image = pytest.importorskip("PIL.Image")
 
+from huey.exceptions import InvalidInputError
 from huey.utils import (
     calculate_sum,
-    validate_input,
-    convert_jpeg_to_png,
     convert_image,
     convert_images_in_directory,
+    convert_jpeg_to_png,
+    validate_input,
 )
-from huey.exceptions import InvalidInputError
 
 
 class TestUtils(unittest.TestCase):

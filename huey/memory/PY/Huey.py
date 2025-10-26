@@ -99,9 +99,7 @@ def parse_args() -> argparse.Namespace:
         description="Build and deploy the Huey AI/OS using Docker and Kubernetes."
     )
     parser.add_argument("--tag", default=DEFAULT_TAG, help="Docker image tag")
-    parser.add_argument(
-        "--context", default=".", help="Path to Docker build context"
-    )
+    parser.add_argument("--context", default=".", help="Path to Docker build context")
     parser.add_argument(
         "--compose-file",
         default=DEFAULT_COMPOSE_FILE,

@@ -105,9 +105,7 @@ def check_os_support() -> bool:
         return False
 
     dist_id, codename = _detect_linux_distribution()
-    supported = (
-        dist_id == SUPPORTED_DISTRO_ID and codename == SUPPORTED_DISTRO_CODENAME
-    )
+    supported = dist_id == SUPPORTED_DISTRO_ID and codename == SUPPORTED_DISTRO_CODENAME
 
     if not supported:
         logger.warning(
@@ -160,9 +158,10 @@ def check_python_version() -> bool:
         minor = getattr(info, "minor", 0)
         micro = getattr(info, "micro", 0)
 
-    supported = (
-        (major, minor) >= MIN_PYTHON_VERSION and (major, minor) < MAX_PYTHON_VERSION
-    )
+    supported = (major, minor) >= MIN_PYTHON_VERSION and (
+        major,
+        minor,
+    ) < MAX_PYTHON_VERSION
 
     if not supported:
         logger.warning(
@@ -206,4 +205,3 @@ def system_check() -> Dict[str, bool]:
     results["tools_available"] = all(tool_results.values()) if tool_results else True
 
     return results
-

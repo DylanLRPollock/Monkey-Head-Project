@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import argparse
 import wave
-from pathlib import Path
 
 
 def load_audio(path: str) -> tuple[int, bytes]:
@@ -51,4 +50,3 @@ def main() -> None:
 
 if __name__ == "__main__":  # pragma: no cover - example script
     main()
-

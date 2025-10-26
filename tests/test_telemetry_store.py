@@ -21,12 +21,14 @@ if SRC_STR not in sys.path:
 try:  # pragma: no cover - exercised indirectly when the package is available
     from huey.hardware.plugins import SensorReading
 except ModuleNotFoundError:  # pragma: no cover - fallback for isolated test runs
+
     @dataclass
     class SensorReading:  # type: ignore[override]
         name: str
         value: Any
         timestamp: Optional[float] = None
         provenance: Optional[Dict[str, Any]] = None
+
 
 from monkey_head.utils.persistence import TelemetryStore
 

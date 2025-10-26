@@ -14,16 +14,11 @@
 # Updated Date: 2024.12.14 22:00:00                  #
 # ================================================== #
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from llama_index.core.agent import ReActAgent as Agent
-from llama_index.core.agent.react_multimodal.step import (
-    MultimodalReActAgentWorker,
-)
-
-from pygpt_net.core.types import (
-    MODE_VISION,
-)
+from llama_index.core.agent.react_multimodal.step import MultimodalReActAgentWorker
+from pygpt_net.core.types import MODE_VISION
 
 from .base import BaseAgent
 

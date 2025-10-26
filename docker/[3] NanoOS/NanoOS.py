@@ -16,17 +16,25 @@ import sys
 from pathlib import Path
 from typing import Iterable
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 log = logging.getLogger("nanoos")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from orchestrator_utils import (  # noqa: E402 - injected path
     apt_install as apt_install_packages,
+)
+from orchestrator_utils import (
     configure_firewall,
     enable_services,
+)
+from orchestrator_utils import (
     ensure_system_requirements as utils_ensure_system_requirements,
-    ensure_workspace as utils_ensure_workspace,
+)
+from orchestrator_utils import ensure_workspace as utils_ensure_workspace
+from orchestrator_utils import (
     run,
 )
 

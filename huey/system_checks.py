@@ -153,11 +153,15 @@ def system_check() -> Dict[str, bool]:
     try:
         usage = shutil.disk_usage("/")
     except Exception:  # pragma: no cover - non-POSIX platforms
-        logger.debug("Unable to determine disk usage for root filesystem.", exc_info=True)
+        logger.debug(
+            "Unable to determine disk usage for root filesystem.", exc_info=True
+        )
     else:
-        free_gb = usage.free / (1024 ** 3)
+        free_gb = usage.free / (1024**3)
         if free_gb < 1:
-            logger.warning("Low disk space detected on root filesystem: %.2f GiB free", free_gb)
+            logger.warning(
+                "Low disk space detected on root filesystem: %.2f GiB free", free_gb
+            )
             results["disk_space_ok"] = False
         else:
             logger.info("Available disk space on root filesystem: %.2f GiB", free_gb)

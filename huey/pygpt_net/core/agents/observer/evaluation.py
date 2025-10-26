@@ -17,7 +17,6 @@
 from typing import List
 
 from llama_index.core.tools import FunctionTool
-
 from pygpt_net.item.ctx import CtxItem
 
 

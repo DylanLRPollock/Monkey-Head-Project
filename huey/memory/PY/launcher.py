@@ -11,11 +11,12 @@ from __future__ import annotations
 import argparse
 import sys
 
-import run
-import installer
-import uninstaller
 import fresh_install
+import installer
 import repair
+import uninstaller
+
+import run
 from monkey_head.core.system_checks import system_check
 
 

@@ -38,7 +38,9 @@ class VectorStore:
         self.embeddings.append(embedding)
 
     def query(self, embedding: list[float], top_k: int = 1) -> list[str]:
-        scores = [(_cosine(embedding, e), t) for e, t in zip(self.embeddings, self.texts)]
+        scores = [
+            (_cosine(embedding, e), t) for e, t in zip(self.embeddings, self.texts)
+        ]
         scores.sort(reverse=True)
         return [t for _, t in scores[:top_k]]
 
@@ -57,4 +59,3 @@ def main() -> None:
 
 if __name__ == "__main__":  # pragma: no cover - example script
     main()
-

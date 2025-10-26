@@ -56,14 +56,20 @@ class HoneycombMonitor:
                 newest = aggregates["newest"]
                 metrics_oldest = metrics.get("oldest")
                 metrics_newest = metrics.get("newest")
-                if metrics_oldest is not None and (oldest is None or metrics_oldest < oldest):
+                if metrics_oldest is not None and (
+                    oldest is None or metrics_oldest < oldest
+                ):
                     aggregates["oldest"] = metrics_oldest
-                if metrics_newest is not None and (newest is None or metrics_newest > newest):
+                if metrics_newest is not None and (
+                    newest is None or metrics_newest > newest
+                ):
                     aggregates["newest"] = metrics_newest
             summary.append(aggregates)
         return summary
 
-    def usage_totals(self, comb_usage: Iterable[Dict[str, object]]) -> HoneycombUsageTotals:
+    def usage_totals(
+        self, comb_usage: Iterable[Dict[str, object]]
+    ) -> HoneycombUsageTotals:
         cells = 0
         payload_bytes = 0
         combs = 0
@@ -104,4 +110,3 @@ class HoneycombMonitor:
 
 
 __all__ = ["HoneycombMonitor", "HoneycombUsageTotals"]
-

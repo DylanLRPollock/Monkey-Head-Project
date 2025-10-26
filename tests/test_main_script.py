@@ -4,6 +4,7 @@
 # HueyOS: Test Main Script module (tests)
 
 import sys
+
 import pytest
 
 pytest.importorskip("flask")
@@ -21,7 +22,9 @@ def test_parse_args_defaults():
 def test_main_respects_skip(monkeypatch):
     called = {}
     monkeypatch.setattr(main_mod, "run_setup", lambda: called.setdefault("setup", True))
-    monkeypatch.setattr(main_mod.app, "run", lambda host, port: called.setdefault("run", (host, port)))
+    monkeypatch.setattr(
+        main_mod.app, "run", lambda host, port: called.setdefault("run", (host, port))
+    )
     monkeypatch.setattr(sys, "argv", ["main.py", "--skip-setup", "--port", "1234"])
     main_mod.main()
     assert "setup" not in called
@@ -31,7 +34,9 @@ def test_main_respects_skip(monkeypatch):
 def test_main_runs_setup(monkeypatch):
     called = {}
     monkeypatch.setattr(main_mod, "run_setup", lambda: called.setdefault("setup", True))
-    monkeypatch.setattr(main_mod.app, "run", lambda host, port: called.setdefault("run", (host, port)))
+    monkeypatch.setattr(
+        main_mod.app, "run", lambda host, port: called.setdefault("run", (host, port))
+    )
     monkeypatch.setattr(sys, "argv", ["main.py"])
     main_mod.main()
     assert called["setup"] is True

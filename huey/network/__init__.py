@@ -8,4 +8,3 @@
 from .manager import NetworkManager, NetworkStatus
 
 __all__ = ["NetworkManager", "NetworkStatus"]
-

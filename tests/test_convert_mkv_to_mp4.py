@@ -3,6 +3,9 @@
 # www.dlrp.ca
 # HueyOS: Test Convert Mkv To Mp4 module (tests)
 
+import importlib.util
+import shutil
+
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -12,9 +15,8 @@
 # Updated: 06.11.2025
 # ==================================================
 import subprocess
-import shutil
 from pathlib import Path
-import importlib.util
+
 import pytest
 
 if shutil.which("ffmpeg") is None:

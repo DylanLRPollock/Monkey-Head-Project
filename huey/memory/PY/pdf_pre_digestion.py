@@ -23,15 +23,14 @@ JPEG for compatibility with other tools.
 from __future__ import annotations
 
 import json
-from typing import List
 import os
 from pathlib import Path
+from typing import List
 
 import fitz  # PyMuPDF
 
 from .convert_png_to_jpeg import convert_png_to_jpeg
 from .formatter import format_text
-
 
 _DEF_MEM_DIR = Path("memory")
 

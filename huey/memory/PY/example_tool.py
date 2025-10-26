@@ -17,9 +17,8 @@ from __future__ import annotations
 
 from typing import Dict
 
-from PySide6.QtGui import QAction
-
 from pygpt_net.tools.base import BaseTool
+from PySide6.QtGui import QAction
 
 
 class EchoTool(BaseTool):
@@ -43,4 +42,3 @@ def main() -> None:
 
 if __name__ == "__main__":  # pragma: no cover - example script
     main()
-

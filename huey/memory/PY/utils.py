@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 from PIL import Image
+
 from .exceptions import InvalidInputError
 
 # Supported image formats for conversion

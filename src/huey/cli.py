@@ -260,7 +260,10 @@ def _cmd_run(args: argparse.Namespace) -> int:
         os.environ["HUEY_PROFILES"] = ",".join(profiles)
 
     if not args.skip_checks:
-        from monkey_head.core.system_checks import check_os_support, check_python_version
+        from monkey_head.core.system_checks import (
+            check_os_support,
+            check_python_version,
+        )
 
         check_os_support()
         check_python_version()
@@ -286,14 +289,18 @@ def _cmd_run(args: argparse.Namespace) -> int:
         cli_requested = args.cli and not args.gui
         if cli_requested:
             if load_cli is None:
-                raise RuntimeError("CLI launcher is not available in this runtime build.")
+                raise RuntimeError(
+                    "CLI launcher is not available in this runtime build."
+                )
             runner = load_cli()
             runner()
             return 0
 
         if launch_gui is None:
             if args.no_fallback:
-                raise RuntimeError("GUI launcher is not available in this runtime build.")
+                raise RuntimeError(
+                    "GUI launcher is not available in this runtime build."
+                )
             if load_cli is None:
                 raise RuntimeError("Neither GUI nor CLI entry points are available.")
             runner = load_cli()
@@ -380,7 +387,8 @@ def _cmd_deploy(args: argparse.Namespace) -> int:
             raise RuntimeError(f"Docker compose file not found: {compose_path}")
         tasks.append(
             (
-                "docker", [
+                "docker",
+                [
                     "docker",
                     "compose",
                     "-f",
@@ -418,7 +426,9 @@ def _cmd_agent_status(args: argparse.Namespace) -> int:
     agent_counts: Dict[str, int] = {agent.value: 0 for agent in Agent}
 
     for record in records:
-        status_counts[record.status.value] = status_counts.get(record.status.value, 0) + 1
+        status_counts[record.status.value] = (
+            status_counts.get(record.status.value, 0) + 1
+        )
         if record.assigned_agent:
             agent_counts[record.assigned_agent.value] = (
                 agent_counts.get(record.assigned_agent.value, 0) + 1

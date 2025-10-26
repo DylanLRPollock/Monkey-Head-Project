@@ -4,13 +4,15 @@
 # HueyOS: Test Fresh Install module (tests)
 
 from unittest.mock import patch
+
 import fresh_install
 
 
 def test_fresh_install_local_success():
-    with patch("uninstaller.run_uninstaller", return_value=0) as uninst, patch(
-        "installer.run_installer", return_value=0
-    ) as inst:
+    with (
+        patch("uninstaller.run_uninstaller", return_value=0) as uninst,
+        patch("installer.run_installer", return_value=0) as inst,
+    ):
         rc = fresh_install.run_fresh_install("local")
         assert rc == 0
         uninst.assert_called_once()

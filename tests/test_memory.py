@@ -12,6 +12,7 @@
 # Updated: 06.08.2025
 # ==================================================
 import unittest
+
 from monkey_head.pygpt_memory import Memory
 
 

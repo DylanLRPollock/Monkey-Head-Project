@@ -56,9 +56,9 @@ class LLMAdapter:
         air-gapped deployments.
         """
 
-        message_history = list(messages) if messages else [
-            {"role": "user", "content": prompt}
-        ]
+        message_history = (
+            list(messages) if messages else [{"role": "user", "content": prompt}]
+        )
         try:
             client = self._ensure_client()
         except RuntimeError as exc:  # pragma: no cover - exercised when deps missing

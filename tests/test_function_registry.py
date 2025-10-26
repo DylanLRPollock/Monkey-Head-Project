@@ -34,7 +34,7 @@ def test_register_function_overwrites_existing_entry():
         return "first"
 
     @function_registry.register_function
-    def sample():  # type: ignore[no-redef]
+    def sample():  # noqa: F811
         return "second"
 
     registry = function_registry.get_functions()

@@ -12,6 +12,7 @@
 # Updated: 06.08.2025
 # ==================================================
 import unittest
+
 from monkey_head.formatter import format_text
 
 

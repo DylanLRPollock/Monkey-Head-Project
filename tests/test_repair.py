@@ -3,9 +3,10 @@
 # www.dlrp.ca
 # HueyOS: Test Repair module (tests)
 
-from unittest.mock import patch
-import sys
 import subprocess
+import sys
+from unittest.mock import patch
+
 import repair
 
 
@@ -17,9 +18,11 @@ class DummyCompleted:
 
 
 def test_run_repair_success(tmp_path):
-    with patch("uninstaller.run_uninstaller", return_value=0) as uninst, patch(
-        "subprocess.run"
-    ) as run_mock, patch("tempfile.TemporaryDirectory") as tmpdir:
+    with (
+        patch("uninstaller.run_uninstaller", return_value=0) as uninst,
+        patch("subprocess.run") as run_mock,
+        patch("tempfile.TemporaryDirectory") as tmpdir,
+    ):
         tmpdir.return_value.__enter__.return_value = str(tmp_path)
         run_mock.side_effect = [DummyCompleted(), DummyCompleted()]
         rc = repair.run_repair("repo-url")

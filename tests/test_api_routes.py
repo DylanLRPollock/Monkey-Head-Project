@@ -8,12 +8,13 @@
 from __future__ import annotations
 
 import asyncio
-from pathlib import Path
 import sys
 import types
+from pathlib import Path
 from typing import Any
 
 import pytest
+
 from httpx import ASGITransport, AsyncClient
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -61,6 +62,7 @@ class _DummyAIProcessor:
     def analyze_data(self, text: str) -> dict[str, int]:
         return {"length": len(text)}
 
+
 ai_module.AIProcessor = _DummyAIProcessor  # type: ignore[attr-defined]
 sys.modules["huey.memory.PY.ai_processor"] = ai_module
 setattr(py_pkg, "ai_processor", ai_module)
@@ -100,7 +102,9 @@ def _degraded_snapshot() -> ResourceSnapshot:
 
 
 @pytest.mark.asyncio
-async def test_task_management_endpoints_support_submission_and_cancellation(monkeypatch):
+async def test_task_management_endpoints_support_submission_and_cancellation(
+    monkeypatch,
+):
     scheduler = TaskScheduler(health_provider=_healthy_snapshot)
     monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
 
@@ -164,7 +168,9 @@ async def test_system_status_endpoint_reports_expected_fields(monkeypatch, tmp_p
     )
     fake_psutil = types.SimpleNamespace(
         cpu_count=lambda logical=True: 8,
-        virtual_memory=lambda: types.SimpleNamespace(total=16 * 1024**3, available=8 * 1024**3),
+        virtual_memory=lambda: types.SimpleNamespace(
+            total=16 * 1024**3, available=8 * 1024**3
+        ),
         boot_time=lambda: 100.0,
     )
     monkeypatch.setattr(api_module, "psutil", fake_psutil)
@@ -288,7 +294,9 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
         def ensure_connectivity(self) -> NetworkStatus:
             return self.status
 
-    monkeypatch.setattr(api_module, "NETWORK_MANAGER", DummyNetworkManager(), raising=False)
+    monkeypatch.setattr(
+        api_module, "NETWORK_MANAGER", DummyNetworkManager(), raising=False
+    )
 
     class DummyBatteryMonitor:
         shutdown_threshold = 5.0
@@ -305,9 +313,13 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
             return False
 
         def initiate_shutdown(self) -> PowerEvent:
-            return PowerEvent(timestamp=456.0, action="shutdown", metadata={"initiated": True})
+            return PowerEvent(
+                timestamp=456.0, action="shutdown", metadata={"initiated": True}
+            )
 
-    monkeypatch.setattr(api_module, "BATTERY_MONITOR", DummyBatteryMonitor(), raising=False)
+    monkeypatch.setattr(
+        api_module, "BATTERY_MONITOR", DummyBatteryMonitor(), raising=False
+    )
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
@@ -317,7 +329,11 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
 
         registration = await client.post(
             "/sensors/register",
-            json={"name": "dev-entropy", "plugin": "virtual.random", "config": {"precision": 2}},
+            json={
+                "name": "dev-entropy",
+                "plugin": "virtual.random",
+                "config": {"precision": 2},
+            },
         )
         assert registration.status_code == 201
 
@@ -457,7 +473,9 @@ async def test_system_status_alias_endpoint(monkeypatch):
         disk_free=2048,
         memory_path="/tmp/memory",
     )
-    monkeypatch.setattr(api_module, "_build_system_status", lambda: stub_status, raising=False)
+    monkeypatch.setattr(
+        api_module, "_build_system_status", lambda: stub_status, raising=False
+    )
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
@@ -471,7 +489,9 @@ async def test_system_status_alias_endpoint(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_ai_process_text_supports_streaming_and_validation(monkeypatch):
-    monkeypatch.setattr(api_module, "_stream_text", lambda text, chunk_size=64: [text], raising=False)
+    monkeypatch.setattr(
+        api_module, "_stream_text", lambda text, chunk_size=64: [text], raising=False
+    )
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:

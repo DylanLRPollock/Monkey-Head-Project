@@ -3,6 +3,8 @@
 # www.dlrp.ca
 # HueyOS: Convert Pdf To Text module (huey/memory/PY)
 
+import logging
+
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -12,9 +14,10 @@
 # Updated: 06.09.2025
 # ==================================================
 import os
-from pypdf import PdfReader
-import logging
 from concurrent.futures import ThreadPoolExecutor
+
+from pypdf import PdfReader
+
 from ..logging_setup import configure_logging
 
 # Setup logging configuration using shared settings

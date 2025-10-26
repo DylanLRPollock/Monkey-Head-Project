@@ -12,6 +12,7 @@
 # Updated: 06.11.2025
 # ==================================================
 import unittest
+
 from monkey_head.huey_core_data import generate_core_data
 
 

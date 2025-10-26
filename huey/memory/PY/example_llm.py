@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import argparse
+
 from monkey_head.ai_processor import AIProcessor
 
 
@@ -33,4 +34,3 @@ def main() -> None:
 
 if __name__ == "__main__":  # pragma: no cover - example script
     main()
-

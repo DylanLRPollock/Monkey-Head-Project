@@ -17,9 +17,9 @@ import threading
 os.environ.setdefault("MONKEY_HEAD_LIGHT_IMPORTS", "1")
 import platform
 import subprocess
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-import sys
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
@@ -27,13 +27,7 @@ if str(ROOT_DIR) not in sys.path:
 
 try:  # pragma: no cover - optional dependency
     import tkinter as tk
-    from tkinter import (
-        messagebox,
-        scrolledtext,
-        simpledialog,
-        filedialog,
-        ttk,
-    )
+    from tkinter import filedialog, messagebox, scrolledtext, simpledialog, ttk
 except Exception:  # pragma: no cover - can't import GUI libs
     tk = None
     messagebox = None
@@ -41,13 +35,13 @@ except Exception:  # pragma: no cover - can't import GUI libs
     filedialog = None
     ttk = None
 
-from monkey_head.license_gui import show_license_gui
-from monkey_head.scripts.preload_data import preload_all
-from monkey_head.gui_scaling import apply_scaling
-from monkey_head.simple_chat_gui import run_simple_chat
 from monkey_head.ai_tools_gui import run_ai_tools
-from monkey_head.dashboard import launch_dashboard
 from monkey_head.config_toggle_gui import run_config_toggle_gui
+from monkey_head.dashboard import launch_dashboard
+from monkey_head.gui_scaling import apply_scaling
+from monkey_head.license_gui import show_license_gui
+from monkey_head.media_conversion import convert_media
+from monkey_head.scripts.preload_data import preload_all
 from monkey_head.services.container_management import (
     build_docker_image,
     cleanup_images,
@@ -60,7 +54,7 @@ from monkey_head.services.container_management import (
     scale_deployment,
     stop_containers,
 )
-from monkey_head.media_conversion import convert_media
+from monkey_head.simple_chat_gui import run_simple_chat
 
 # Dark theme colors
 # Updated to use a black background with green text and

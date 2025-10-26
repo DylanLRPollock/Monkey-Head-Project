@@ -17,7 +17,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-from pathlib import Path
 
 
 def load_rows(csv_path: str) -> list[dict[str, str]]:
@@ -40,4 +39,3 @@ def main() -> None:
 
 if __name__ == "__main__":  # pragma: no cover - example script
     main()
-

@@ -3,8 +3,9 @@
 # www.dlrp.ca
 # HueyOS: Test Cli Print module (tests)
 
-from monkey_head.cli_print import print_message
 import pytest
+
+from monkey_head.cli_print import print_message
 
 
 def test_print_message_outputs(capsys):

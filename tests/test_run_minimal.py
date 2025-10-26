@@ -4,8 +4,9 @@
 # HueyOS: Test Run Minimal module (tests)
 
 import os
-from run import minimal_run
+
 from monkey_head.pygpt_custom_cli import CustomPyGPT
+from run import minimal_run
 
 
 def test_minimal_run(monkeypatch):

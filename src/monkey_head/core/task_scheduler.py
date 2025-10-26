@@ -126,8 +126,12 @@ class TaskRecord:
             "task_id": self.task_id,
             "command": self.command,
             "priority": int(self.priority),
-            "requested_agent": self.requested_agent.value if self.requested_agent else None,
-            "assigned_agent": self.assigned_agent.value if self.assigned_agent else None,
+            "requested_agent": (
+                self.requested_agent.value if self.requested_agent else None
+            ),
+            "assigned_agent": (
+                self.assigned_agent.value if self.assigned_agent else None
+            ),
             "status": self.status.value,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
@@ -144,9 +148,13 @@ class TaskRecord:
             "snapshot": {
                 "timestamp": self.snapshot.timestamp if self.snapshot else None,
                 "cpu_percent": self.snapshot.cpu_percent if self.snapshot else None,
-                "memory_available": self.snapshot.memory_available if self.snapshot else None,
+                "memory_available": (
+                    self.snapshot.memory_available if self.snapshot else None
+                ),
                 "memory_total": self.snapshot.memory_total if self.snapshot else None,
-                "battery_percent": self.snapshot.battery_percent if self.snapshot else None,
+                "battery_percent": (
+                    self.snapshot.battery_percent if self.snapshot else None
+                ),
                 "notes": self.snapshot.notes if self.snapshot else None,
             },
             "history": [
@@ -188,7 +196,9 @@ class TaskScheduler:
         self._pending_index: Set[str] = set()
 
         if max_concurrency is None:
-            max_concurrency = {agent: max(1, int(default_concurrency)) for agent in Agent}
+            max_concurrency = {
+                agent: max(1, int(default_concurrency)) for agent in Agent
+            }
         else:
             max_concurrency = {
                 agent: max(0, int(max_concurrency.get(agent, default_concurrency)))
@@ -245,7 +255,11 @@ class TaskScheduler:
             if cpu_percent > allowed:
                 reason = f"CPU utilisation {cpu_percent:.1f}% exceeds {allowed:.1f}% allowance"
 
-        if reason is None and snapshot.memory_available is not None and snapshot.memory_total:
+        if (
+            reason is None
+            and snapshot.memory_available is not None
+            and snapshot.memory_total
+        ):
             free_ratio = snapshot.memory_available / snapshot.memory_total
             minimum = max(0.05, self.min_free_memory - (profile.memory * 0.1))
             if free_ratio < minimum:
@@ -292,15 +306,21 @@ class TaskScheduler:
         ):
             return requested
 
-        available.sort(key=lambda agent: (agent in record.excluded_agents, self._agent_load[agent]))
+        available.sort(
+            key=lambda agent: (agent in record.excluded_agents, self._agent_load[agent])
+        )
         return available[0]
 
     def _log_transition(self, record: TaskRecord, message: str) -> None:
-        entry = TaskLogEntry(timestamp=time.time(), status=record.status, message=message)
+        entry = TaskLogEntry(
+            timestamp=time.time(), status=record.status, message=message
+        )
         record.history.append(entry)
         LOGGER.debug("Task %s: %s", record.task_id, message)
 
-    def _update_status(self, record: TaskRecord, status: TaskStatus, message: str) -> None:
+    def _update_status(
+        self, record: TaskRecord, status: TaskStatus, message: str
+    ) -> None:
         record.status = status
         record.updated_at = time.time()
         self._log_transition(record, message)
@@ -428,7 +448,9 @@ class TaskScheduler:
                 )
             record.result = result
             record.assigned_agent = None
-            self._update_status(record, TaskStatus.COMPLETED, "Task completed successfully")
+            self._update_status(
+                record, TaskStatus.COMPLETED, "Task completed successfully"
+            )
             self.run_pending()
             return record
 
@@ -459,7 +481,9 @@ class TaskScheduler:
             self._update_status(record, TaskStatus.FAILED, error)
             return record
 
-    def cancel_task(self, task_id: str, reason: str = "Cancelled by request") -> TaskRecord:
+    def cancel_task(
+        self, task_id: str, reason: str = "Cancelled by request"
+    ) -> TaskRecord:
         with self._lock:
             record = self._require_task(task_id)
             if record.status in {TaskStatus.COMPLETED, TaskStatus.CANCELLED}:
@@ -479,7 +503,9 @@ class TaskScheduler:
         with self._lock:
             return self._require_task(task_id)
 
-    def list_tasks(self, statuses: Optional[Iterable[TaskStatus]] = None) -> List[TaskRecord]:
+    def list_tasks(
+        self, statuses: Optional[Iterable[TaskStatus]] = None
+    ) -> List[TaskRecord]:
         with self._lock:
             records = list(self._tasks.values())
         if statuses is None:

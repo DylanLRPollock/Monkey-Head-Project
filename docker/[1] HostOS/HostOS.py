@@ -25,11 +25,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from orchestrator_utils import (  # noqa: E402 - path injection required
     apt_install as apt_install_packages,
-    check_virtualization as utils_check_virtualization,
-    configure_firewall as utils_configure_firewall,
-    enable_services as utils_enable_services,
+)
+from orchestrator_utils import check_virtualization as utils_check_virtualization
+from orchestrator_utils import configure_firewall as utils_configure_firewall
+from orchestrator_utils import enable_services as utils_enable_services
+from orchestrator_utils import (
     ensure_system_requirements as utils_ensure_system_requirements,
-    ensure_workspace as utils_ensure_workspace,
+)
+from orchestrator_utils import ensure_workspace as utils_ensure_workspace
+from orchestrator_utils import (
     run,
 )
 
@@ -126,7 +130,10 @@ def main() -> None:
         "--workspace", default=str(Path.home() / "HostOS"), help="Workspace directory"
     )
     parser.add_argument(
-        "--vnc-port", type=int, default=DEFAULT_VNC_PORT, help="VNC port to open via ufw"
+        "--vnc-port",
+        type=int,
+        default=DEFAULT_VNC_PORT,
+        help="VNC port to open via ufw",
     )
     parser.add_argument(
         "--skip-os-check",

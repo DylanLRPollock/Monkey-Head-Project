@@ -37,9 +37,7 @@ class FileManager:
             ErrorHandler().handle_exception(e)
             return None
 
-    def write_file(
-        self, file_path: str, content: str, encoding: str = "utf-8"
-    ) -> None:
+    def write_file(self, file_path: str, content: str, encoding: str = "utf-8") -> None:
         """Write ``content`` to ``file_path``."""
 
         try:

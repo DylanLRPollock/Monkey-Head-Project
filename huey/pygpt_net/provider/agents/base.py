@@ -14,7 +14,7 @@
 # Updated Date: 2024.12.14 22:00:00                  #
 # ================================================== #
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 class BaseAgent:

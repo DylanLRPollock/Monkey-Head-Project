@@ -6,10 +6,10 @@
 from __future__ import annotations
 
 import subprocess
-from typing import Sequence, Optional
+from typing import Optional, Sequence
 
-from .logger import get_logger
 from ..core.system_checks import check_error
+from .logger import get_logger
 
 logger = get_logger(__name__)
 

@@ -19,17 +19,17 @@ import logging
 import re
 from typing import Any, Dict, List, Optional
 
+import matplotlib
+import networkx as nx
 import numpy as np
 import pandas as pd
-import matplotlib
 from PIL import Image
-import networkx as nx
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
-import seaborn as sns
 import requests
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
 
 from monkey_head.utils.gpu import (
     AcceleratorInfo,
@@ -91,7 +91,9 @@ class AIProcessor:
         """Refresh accelerator metadata and recommended models."""
 
         self._accelerators = detect_accelerators()
-        best_vram = max((info.vram_total or 0 for info in self._accelerators), default=0)
+        best_vram = max(
+            (info.vram_total or 0 for info in self._accelerators), default=0
+        )
         self._recommended_models = recommend_models_for_vram(best_vram)
         if self.model is None and self._recommended_models:
             self.model = self._recommended_models[0]
@@ -180,7 +182,9 @@ class AIProcessor:
                 response, used_fallback = self._process_with_llm(text, directive)
             except Exception:  # pragma: no cover - optional dependency failure
                 self._logger.debug(
-                    "LLM backend '%s' failed, falling back", self._llm_backend, exc_info=True
+                    "LLM backend '%s' failed, falling back",
+                    self._llm_backend,
+                    exc_info=True,
                 )
                 response = self._fallback_process(text)
                 backend_label = f"{self._llm_backend}-error"
@@ -295,7 +299,9 @@ class AIProcessor:
                 status=status,
             )
         except Exception:  # pragma: no cover - telemetry failures should not break flow
-            self._logger.debug("Failed to record AI interaction telemetry", exc_info=True)
+            self._logger.debug(
+                "Failed to record AI interaction telemetry", exc_info=True
+            )
 
     def _fallback_process(self, text: str) -> str:
         """Provide a deterministic transformation when no LLM is active."""
@@ -373,7 +379,9 @@ class AIProcessor:
         response.raise_for_status()
         return response.json()["title"]
 
-    def shortest_path(self, edges: list[tuple[str, str]], source: str, target: str) -> list[str]:
+    def shortest_path(
+        self, edges: list[tuple[str, str]], source: str, target: str
+    ) -> list[str]:
         """Return the shortest path between two nodes using ``networkx``."""
 
         graph = nx.Graph()

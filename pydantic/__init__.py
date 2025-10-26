@@ -39,7 +39,9 @@ def Field(
     default_factory: Callable[[], Any] | None = None,
     **metadata: Any,
 ) -> FieldInfo:
-    return FieldInfo(default=default, default_factory=default_factory, metadata=metadata)
+    return FieldInfo(
+        default=default, default_factory=default_factory, metadata=metadata
+    )
 
 
 class ModelMeta(type):
