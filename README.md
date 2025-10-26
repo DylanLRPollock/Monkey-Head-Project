@@ -16,12 +16,21 @@
 
 ## October 31, 2025 — Changeover Notice
 
-On **2025‑10‑31**, HueyOS migrates to **Debian 14 “Forky,” kernel 6.17.x‑huey, and Python 3.14.x** (with packaging and CLI updates). Full notes will ship in `docs/releases/2025-10-31-changeover.md`. Until then, the baseline is **Debian 13 “Trixie” + 6.16.x‑huey**.
+On **2025‑10‑31**, HueyOS migrates to **Debian 14 “Forky,” kernel 6.17.x‑huey, and Python 3.14.x** (with packaging and CLI updates). Track day-of updates in [`docs/releases/2025-10-31-changeover.md`](docs/releases/2025-10-31-changeover.md). Until then, the baseline is **Debian 13 “Trixie” + 6.16.x‑huey**.
+
+## Quick Recipes — Oct 31 Changeover
+
+- **Forky apt switch:** `sudo tools/upgrade_to_forky.sh` — applies the staged APT source flip and refreshes the Microsoft Edge signing key (see [docs/debian-forky-upgrade.md](docs/debian-forky-upgrade.md)).
+- **Kernel 6.17.x-huey build:** follow [docs/kernel-6.17.3-runbook.md](docs/kernel-6.17.3-runbook.md) to rebuild and install the DKMS-free kernel, then record results in the release stub.
+- **Python 3.14 virtualenv:** once packages land, rerun the commands in [docs/python314-upgrade-notes.md](docs/python314-upgrade-notes.md) to create the 3.14 environment and capture any blockers.
+- **Release log:** summarize successful steps and deltas in [`docs/releases/2025-10-31-changeover.md`](docs/releases/2025-10-31-changeover.md) for final publication.
 
 ---
 
 ## Table of Contents
 
+- [October 31, 2025 — Changeover Notice](#october-31-2025--changeover-notice)
+- [Quick Recipes — Oct 31 Changeover](#quick-recipes--oct-31-changeover)
 - [Overview](#overview)
 - [Repository Structure](#repository-structure)
 - [Architecture](#architecture)
