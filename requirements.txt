@@ -19,7 +19,7 @@ aiofiles==24.1.0 ; python_version >= "3.11" and python_version < "3.15"
 python-multipart==0.0.20 ; python_version >= "3.11" and python_version < "3.15"
 orjson==3.10.11 ; python_version >= "3.11" and python_version < "3.15"
 psutil==7.1.2 ; python_version >= "3.11" and python_version < "3.15"
-packaging==24.1 ; python_version >= "3.11" and python_version < "3.15"
+packaging==25.0 ; python_version >= "3.11" and python_version < "3.15"
 typing-extensions==4.12.2 ; python_version >= "3.11" and python_version < "3.15"
 
 # --- ML + SDKs ---
