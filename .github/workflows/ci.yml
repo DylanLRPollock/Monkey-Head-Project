@@ -7,6 +7,10 @@ on:
     branches: [ main, develop ]
   workflow_dispatch:
 
+# Limit default token permissions for the workflow
+permissions:
+  contents: read
+
 # Prevent overlapping runs on the same ref
 concurrency:
   group: ci-${{ github.ref }}
