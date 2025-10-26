@@ -1,4 +1,16 @@
-*   @DylanLRPollock
-/src/huey/api/     @DylanLRPollock
-/src/huey/nano/    @DylanLRPollock
-/docs/             @DylanLRPollock
+# CODEOWNERS — Monkey‑Head‑Project (HueyOS)
+# Docs: https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# Order matters: the last matching pattern wins.
+
+# Default: everything falls to Dylan unless overridden below.
+*                       @DylanLRPollock
+
+# Targeted ownership (more specific paths below)
+/src/huey/api/          @DylanLRPollock
+/src/huey/nano/         @DylanLRPollock
+/docs/                  @DylanLRPollock
+
+# Optional extras you may want (uncomment as needed)
+# /.github/              @DylanLRPollock      # workflows, issue templates, etc.
+# **/*.md                @DylanLRPollock      # all Markdown across the repo
+# /scripts/              @DylanLRPollock      # dev/ops scripts
