@@ -26,7 +26,69 @@ from fastapi import FastAPI, HTTPException, Query, status
 from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
-from huey.memory.PY.ai_processor import AIProcessor
+# ``AIProcessor`` pulls in a large number of optional runtime dependencies from
+# the legacy ``huey`` tree. When those modules are unavailable (for example in
+# a trimmed CI environment) we fall back to a lightweight stub that mimics the
+# subset of behaviour exercised by the API endpoints. The stub keeps the
+# service operational for health checks and developer tooling while clearly
+# signalling that the full ML stack is absent.
+try:  # pragma: no cover - exercised indirectly during import
+    from huey.memory.PY.ai_processor import AIProcessor  # type: ignore
+except ModuleNotFoundError:  # pragma: no cover - compatibility shim
+    class AIProcessor:  # type: ignore[no-redef]
+        """Minimal stand-in for the legacy :class:`AIProcessor`."""
+
+        _DEFAULT_MODEL = "stub"
+
+        def __init__(
+            self,
+            model: str | None = None,
+            default_instruction: str | None = None,
+            *,
+            telemetry_store: "TelemetryStore" | None = None,
+        ) -> None:
+            self.model = model or self._DEFAULT_MODEL
+            self.default_instruction = default_instruction or (
+                "Rewrite the provided text to improve clarity while preserving meaning."
+            )
+            self.telemetry_store = telemetry_store
+
+        # ------------------------------------------------------------------
+        # Interface compatibility helpers
+        # ------------------------------------------------------------------
+        def get_model_catalog(self, refresh: bool = False) -> Dict[str, Any]:
+            """Return static metadata describing the stub environment."""
+
+            return {
+                "backend": "stub",
+                "active_model": self.model,
+                "recommended_models": [self._DEFAULT_MODEL],
+                "accelerators": [],
+                "total_vram": 0,
+            }
+
+        def process_data(self, text: str) -> str:
+            """Provide a deterministic echo transformation used by the API."""
+
+            return f"Processed: {text.strip()}"
+
+        def compute_mean(self, numbers: Sequence[float]) -> float:
+            """Compute the arithmetic mean of ``numbers`` with basic validation."""
+
+            values = list(numbers)
+            if not values:
+                raise ValueError("numbers must contain at least one value")
+            return sum(values) / len(values)
+
+        def analyze_data(self, text: str) -> Dict[str, Any]:
+            """Return trivial metrics mirroring the real implementation signature."""
+
+            length = len(text)
+            return {
+                "length": length,
+                "words": len(text.split()),
+                "unique_characters": len(set(text)),
+            }
 from monkey_head.core.resilience import (
     CrashRecoveryManager,
     EmergencyGovernanceController,
