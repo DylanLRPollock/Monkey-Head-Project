@@ -1,0 +1,37 @@
+version: 2
+updates:
+  # Python packages managed via requirements*.txt / setup.cfg / pyproject.toml (setuptools)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "21:30"
+      timezone: "America/Toronto"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps(pip)"
+      include: "scope"
+    groups:
+      python-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+      python-major:
+        patterns: ["*"]
+        update-types: ["major"]
+
+  # Keep GitHub Actions up to date
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "21:40"
+      timezone: "America/Toronto"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps(actions)"
+      include: "scope"
+    groups:
+      gha-all:
+        patterns: ["*"]
