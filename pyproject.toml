@@ -110,7 +110,7 @@ dev = [
   "pytest-asyncio==1.2.0",
   "pytest-cov==7.0.0",
   "httpx==0.28.1",
-  "isort==5.13.2",
+  "isort==7.0.0",
   "pre-commit==4.0.1",
   "ruff==0.9.10",
   "flake8==7.1.1",
