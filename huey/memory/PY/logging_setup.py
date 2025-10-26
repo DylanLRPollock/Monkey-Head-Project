@@ -1,12 +1,11 @@
-# Monkey Head Project
-# By: Dylan L.R. Pollock
-# www.dlrp.ca
-# HueyOS: Logging Setup module (huey/memory/PY)
+"""Logging helpers for the legacy Huey memory package."""
+
+from __future__ import annotations
 
 import logging
 import logging.handlers
-import os
-from configparser import ConfigParser
+from pathlib import Path
+from typing import Optional
 
 try:  # pragma: no cover - optional GUI dependency
     import tkinter as tk
@@ -14,6 +13,8 @@ try:  # pragma: no cover - optional GUI dependency
 except Exception:  # pragma: no cover - can't import GUI libs
     tk = None
     messagebox = None
+
+from monkey_head.config_manager import ConfigManager
 
 
 class CriticalErrorHandler(logging.Handler):
@@ -36,40 +37,47 @@ class CriticalErrorHandler(logging.Handler):
                     pass
 
 
-def configure_logging(config_path=None):
-    """Configure root logger using settings from CONFIG.txt.
+def _resolve_log_path(log_file: str) -> Path:
+    raw_path = Path(str(log_file).strip())
+    if raw_path.is_absolute():
+        return raw_path
+    return Path.cwd() / raw_path
 
-    Parameters
-    ----------
-    config_path : str | None
-        Optional path to the configuration file. When omitted the
-        ``MONKEY_HEAD_CONFIG`` environment variable is consulted. If that
-        is not set, ``config/CONFIG.txt`` under the project root is used.
-    """
-    if config_path is None:
-        config_path = os.environ.get("MONKEY_HEAD_CONFIG")
-    if config_path is None:
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        config_path = os.path.join(base_dir, "config", "CONFIG.txt")
 
-    parser = ConfigParser()
-    if os.path.exists(config_path):
-        parser.read(config_path)
-        log_level = parser.get("logging", "log_level", fallback="INFO").upper()
-        log_file = parser.get(
-            "logging",
-            "log_file",
-            fallback="memory/LOGS/monkey_head.log",
-        )
-        max_bytes = parser.get("logging", "log_max_bytes", fallback="10485760")
-        backup_count = parser.get("logging", "log_backup_count", fallback="5")
-        max_bytes = int(str(max_bytes).split("#")[0].strip())
-        backup_count = int(str(backup_count).split("#")[0].strip())
-    else:
-        log_level = "INFO"
-        log_file = "memory/LOGS/monkey_head.log"
-        max_bytes = 10_485_760
-        backup_count = 5
+def _parse_int(value: object, default: int) -> int:
+    try:
+        text = str(value).split("#")[0].strip()
+        return int(text)
+    except (TypeError, ValueError):
+        return default
+
+
+def _load_logging_settings(config_path: Optional[str]) -> dict[str, object]:
+    manager = ConfigManager(config_path)
+    cfg_path = manager.path
+    if not cfg_path.exists():
+        raise FileNotFoundError(f"Logging configuration file not found: {cfg_path}")
+
+    return manager.get_section(
+        "logging",
+        {
+            "log_level": "INFO",
+            "log_file": "memory/LOGS/monkey_head.log",
+            "log_max_bytes": 10_485_760,
+            "log_backup_count": 5,
+        },
+    )
+
+
+def configure_logging(config_path: Optional[str] = None) -> logging.Logger:
+    """Configure root logger using settings from main.config."""
+
+    logging_cfg = _load_logging_settings(config_path)
+
+    log_level = str(logging_cfg.get("log_level", "INFO")).upper()
+    log_file_value = logging_cfg.get("log_file", "memory/LOGS/monkey_head.log")
+    max_bytes = _parse_int(logging_cfg.get("log_max_bytes", 10_485_760), 10_485_760)
+    backup_count = _parse_int(logging_cfg.get("log_backup_count", 5), 5)
 
     logger = logging.getLogger()
     if logger.handlers:
@@ -81,15 +89,16 @@ def configure_logging(config_path=None):
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
 
-    log_dir = os.path.dirname(log_file)
-    if log_dir and not os.path.exists(log_dir):  # pragma: no cover - fs access
+    log_path = _resolve_log_path(str(log_file_value))
+    log_dir = log_path.parent
+    if log_dir and not log_dir.exists():  # pragma: no cover - fs access
         try:
-            os.makedirs(log_dir, exist_ok=True)
+            log_dir.mkdir(parents=True, exist_ok=True)
         except Exception:
-            log_file = os.path.basename(log_file)
+            log_path = Path(log_path.name)
 
     file_handler = logging.handlers.RotatingFileHandler(
-        log_file, maxBytes=max_bytes, backupCount=backup_count
+        log_path, maxBytes=max_bytes, backupCount=backup_count
     )
     file_handler.setFormatter(formatter)
     stream_handler = logging.StreamHandler()
@@ -102,3 +111,6 @@ def configure_logging(config_path=None):
     logger.addHandler(stream_handler)
     logger.addHandler(gui_handler)
     return logger
+
+
+__all__ = ["CriticalErrorHandler", "configure_logging"]

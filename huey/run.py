@@ -205,7 +205,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "--config",
         type=str,
-        help="Path to CONFIG.txt for logging",
+        help="Path to main.config for logging",
     )
     parser.add_argument(
         "--workdir",
