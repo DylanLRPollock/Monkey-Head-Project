@@ -2,7 +2,7 @@
 -c constraints.txt
 
 # --- Core ---
-aiohttp==3.12.13 ; python_version >= "3.11" and python_version < "3.15"
+aiohttp==3.12.14 ; python_version >= "3.11" and python_version < "3.15"
 aiosqlite==0.21.0 ; python_version >= "3.11" and python_version < "3.15"
 anyio==4.9.0 ; python_version >= "3.11" and python_version < "3.15"
 attrs==25.3.0 ; python_version >= "3.11" and python_version < "3.15"
