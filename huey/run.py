@@ -130,6 +130,7 @@ def launch_gui() -> None:
         raise RuntimeError("pygpt_net package is not available")
 
     from pygpt_net.app import run as pygpt_run
+
     from .pygpt_net.tools.manager import MonkeyManager
 
     pygpt_run(tools=[MonkeyManager()])

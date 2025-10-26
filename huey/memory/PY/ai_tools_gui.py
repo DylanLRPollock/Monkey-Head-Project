@@ -28,18 +28,18 @@ except Exception:  # pragma: no cover - can't import GUI libs
     ttk = None
 
 from .gui_scaling import apply_scaling
-from .license_gui import DARK_BG, LIGHT_FG, ACCENT_PURPLE
+from .license_gui import ACCENT_PURPLE, DARK_BG, LIGHT_FG
 
 try:  # pragma: no cover - psutil optional dependency
     import psutil  # type: ignore
 except Exception:  # pragma: no cover - psutil missing at runtime
     psutil = None  # type: ignore[assignment]
 
-from pathlib import Path
 import platform
 import shutil
 import socket
 import time
+from pathlib import Path
 from typing import Dict, List
 
 from monkey_head.agents.llm import LLMAdapter, LLMProvider
@@ -103,9 +103,7 @@ def _gather_system_status() -> Dict[str, str]:
 
     try:
         disk = shutil.disk_usage(Path("/"))
-        data["disk"] = (
-            f"{_format_bytes(disk.used)} used / {_format_bytes(disk.total)}"
-        )
+        data["disk"] = f"{_format_bytes(disk.used)} used / {_format_bytes(disk.total)}"
     except Exception:
         data["disk"] = "Unavailable"
 
@@ -294,7 +292,9 @@ def run_ai_tools() -> None:
         justify=tk.LEFT,
     ).pack(padx=10, pady=(10, 5), anchor=tk.W)
 
-    uploads_list = tk.Listbox(memory_frame, width=70, height=10, bg=DARK_BG, fg=LIGHT_FG)
+    uploads_list = tk.Listbox(
+        memory_frame, width=70, height=10, bg=DARK_BG, fg=LIGHT_FG
+    )
     uploads_list.pack(padx=10, pady=5, fill=tk.BOTH, expand=True)
 
     def populate_uploads() -> None:

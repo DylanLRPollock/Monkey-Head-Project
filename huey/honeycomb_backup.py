@@ -46,7 +46,9 @@ def _ensure_destination(destination: Path) -> Path:
 def _resolve_rsync() -> str:
     binary = shutil.which("rsync")
     if not binary:
-        raise BackupError("rsync is required for honeycomb snapshots but was not found in PATH")
+        raise BackupError(
+            "rsync is required for honeycomb snapshots but was not found in PATH"
+        )
     return binary
 
 
@@ -86,7 +88,9 @@ def perform_rsync_snapshot(
     )
 
 
-def restore_snapshot(snapshot: Path, target: Path, *, extra_args: Optional[Iterable[str]] = None) -> BackupResult:
+def restore_snapshot(
+    snapshot: Path, target: Path, *, extra_args: Optional[Iterable[str]] = None
+) -> BackupResult:
     """Restore a snapshot into ``target`` using ``rsync``."""
 
     rsync_binary = _resolve_rsync()

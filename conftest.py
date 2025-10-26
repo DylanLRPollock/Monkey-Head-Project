@@ -13,7 +13,6 @@ from pathlib import Path
 
 import pytest
 
-
 # Ensure the ``src`` directory is importable without requiring installation.
 _PROJECT_ROOT = Path(__file__).resolve().parent
 _SRC_PATH = _PROJECT_ROOT / "src"
@@ -58,5 +57,9 @@ def pytest_pyfunc_call(pyfuncitem: pytest.Function) -> bool:
     return True
 
 
-def pytest_configure(config: pytest.Config) -> None:  # pragma: no cover - configuration hook
-    config.addinivalue_line("markers", "asyncio: run the marked coroutine test inside an event loop")
+def pytest_configure(
+    config: pytest.Config,
+) -> None:  # pragma: no cover - configuration hook
+    config.addinivalue_line(
+        "markers", "asyncio: run the marked coroutine test inside an event loop"
+    )

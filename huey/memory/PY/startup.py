@@ -12,12 +12,12 @@ import argparse
 import os
 import sys
 
+import run
 from monkey_head.core.system_checks import (
     check_os_support,
     check_python_version,
     system_check,
 )
-import run
 
 
 def startup(skip_checks: bool = False, dry_run: bool = False) -> None:

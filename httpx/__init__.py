@@ -27,17 +27,23 @@ class _Response:
 
 
 class AsyncClient(AbstractAsyncContextManager["AsyncClient"]):
-    def __init__(self, *, transport: ASGITransport, base_url: str | None = None) -> None:
+    def __init__(
+        self, *, transport: ASGITransport, base_url: str | None = None
+    ) -> None:
         self._transport = transport
         self._base_url = base_url
 
-    async def __aenter__(self) -> "AsyncClient":  # pragma: no cover - exercised in tests
+    async def __aenter__(
+        self,
+    ) -> "AsyncClient":  # pragma: no cover - exercised in tests
         return self
 
     async def __aexit__(self, exc_type, exc, tb) -> None:  # pragma: no cover - trivial
         return None
 
-    async def get(self, url: str, *, params: Optional[Dict[str, Any]] = None) -> _Response:
+    async def get(
+        self, url: str, *, params: Optional[Dict[str, Any]] = None
+    ) -> _Response:
         return await self._request("GET", url, params=params)
 
     async def post(
@@ -59,7 +65,9 @@ class AsyncClient(AbstractAsyncContextManager["AsyncClient"]):
     ) -> _Response:
         app = self._transport.app
         if hasattr(app, "handle_request"):
-            response = app.handle_request(method, url, params=params or {}, json=json or {})
+            response = app.handle_request(
+                method, url, params=params or {}, json=json or {}
+            )
             data = getattr(response, "data", None)
             if asyncio.iscoroutine(data):
                 try:
@@ -67,7 +75,9 @@ class AsyncClient(AbstractAsyncContextManager["AsyncClient"]):
                 except Exception as exc:  # pragma: no cover - defensive guard
                     try:
                         from fastapi import HTTPException  # type: ignore
-                    except Exception:  # pragma: no cover - fallback when fastapi missing
+                    except (
+                        Exception
+                    ):  # pragma: no cover - fallback when fastapi missing
                         HTTPException = None  # type: ignore[assignment]
                     if HTTPException is not None and isinstance(exc, HTTPException):
                         return _Response(

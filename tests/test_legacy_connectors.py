@@ -18,7 +18,7 @@ from monkey_head.legacy.connectors import (
 async def test_emulated_connector_buffers_messages():
     connector = EmulatedLegacyConnector()
     await connector.connect()
-    await connector.send(b"LOAD\"*\",8,1")
+    await connector.send(b'LOAD"*",8,1')
     queued = await connector.command_channel.get()
     assert queued.startswith(b"LOAD")
 

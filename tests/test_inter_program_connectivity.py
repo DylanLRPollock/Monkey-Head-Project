@@ -3,9 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test Inter Program Connectivity module (tests)
 
-from scripts.check_inter_program_connectivity import (
-    check_inter_program_connectivity,
-)
+from scripts.check_inter_program_connectivity import check_inter_program_connectivity
 
 
 def test_check_inter_program_connectivity():

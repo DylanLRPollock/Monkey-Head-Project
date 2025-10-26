@@ -14,15 +14,12 @@
 # Updated Date: 2024.12.14 08:00:00                  #
 # ================================================== #
 
-from typing import Optional, Any
+from typing import Any, Optional
 
-from pygpt_net.core.types import (
-    MODE_AGENT,
-    MODE_EXPERT,
-)
-from pygpt_net.core.events import KernelEvent, RenderEvent
 from pygpt_net.core.bridge import BridgeContext
 from pygpt_net.core.ctx.reply import ReplyContext
+from pygpt_net.core.events import KernelEvent, RenderEvent
+from pygpt_net.core.types import MODE_AGENT, MODE_EXPERT
 from pygpt_net.item.ctx import CtxItem
 
 

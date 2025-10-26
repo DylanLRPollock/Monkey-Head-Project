@@ -11,7 +11,16 @@ import time
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Optional, Sequence
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    MutableMapping,
+    Optional,
+    Sequence,
+)
 
 from monkey_head.honeycomb_storage import HoneycombRecord, HoneycombStorage
 from monkey_head.utils.auto_sort import get_extension_map
@@ -96,7 +105,9 @@ class HoneycombIndex:
         extension_map: Optional[Mapping[str, str]] = None,
     ) -> None:
         self._storage = storage
-        self._mappings: Dict[str, HoneycombContentMapping] = dict(mappings or _DEFAULT_MAPPINGS)
+        self._mappings: Dict[str, HoneycombContentMapping] = dict(
+            mappings or _DEFAULT_MAPPINGS
+        )
         self._extension_map: Mapping[str, str] = extension_map or get_extension_map()
         self._category_index: MutableMapping[str, str] = {}
         self._rebuild_category_index()
@@ -110,7 +121,9 @@ class HoneycombIndex:
             for category in mapping.categories:
                 self._category_index.setdefault(category.upper(), content_type)
 
-    def register_content_type(self, name: str, mapping: HoneycombContentMapping) -> None:
+    def register_content_type(
+        self, name: str, mapping: HoneycombContentMapping
+    ) -> None:
         self._mappings[name] = mapping
         self._rebuild_category_index()
 
@@ -144,7 +157,9 @@ class HoneycombIndex:
     # ------------------------------------------------------------------
     # Storage integration
     # ------------------------------------------------------------------
-    def _build_key(self, mapping: HoneycombContentMapping, *, cell_id: Optional[str] = None) -> str:
+    def _build_key(
+        self, mapping: HoneycombContentMapping, *, cell_id: Optional[str] = None
+    ) -> str:
         cell = cell_id or uuid.uuid4().hex
         return f"{mapping.comb}/{mapping.cell_prefix}/{cell}"
 
@@ -203,7 +218,9 @@ class HoneycombIndex:
     # ------------------------------------------------------------------
     # Retrieval helpers
     # ------------------------------------------------------------------
-    def _to_index_record(self, record: HoneycombRecord) -> Optional[HoneycombIndexRecord]:
+    def _to_index_record(
+        self, record: HoneycombRecord
+    ) -> Optional[HoneycombIndexRecord]:
         if not isinstance(record.data, dict):
             return None
         content_type = record.data.get("content_type")
@@ -299,4 +316,3 @@ __all__ = [
     "HoneycombIndex",
     "HoneycombIndexRecord",
 ]
-

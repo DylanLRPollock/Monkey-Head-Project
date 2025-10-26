@@ -96,7 +96,9 @@ def configure_logging(config_path: Optional[str] = None) -> logging.Logger:
         return logger
 
     logger.setLevel(getattr(logging, log_level, logging.INFO))
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
 
     log_path = _resolve_log_path(str(log_file_value))
     log_dir = log_path.parent

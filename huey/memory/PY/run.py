@@ -12,7 +12,9 @@ from typing import Any, Callable
 
 _module = import_module("monkey_head.run")
 
-__all__ = getattr(_module, "__all__", [name for name in dir(_module) if not name.startswith("_")])
+__all__ = getattr(
+    _module, "__all__", [name for name in dir(_module) if not name.startswith("_")]
+)
 for _name in ("main", "launch_gui", "launch_manager_ui", "_load_cli", "minimal_run"):
     if _name not in __all__:
         __all__.append(_name)

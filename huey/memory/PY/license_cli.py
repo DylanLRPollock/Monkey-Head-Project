@@ -12,9 +12,9 @@
 # Updated: 06.11.2025
 # ==================================================
 from pathlib import Path
+
 from .config_manager import ConfigManager
 from .error_handler import ErrorHandler
-
 
 DEFAULT_CONFIG = "config/pygpt_net/config.json"
 LICENSE_PATH = "docs/LICENSE"

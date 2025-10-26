@@ -3,8 +3,9 @@
 # www.dlrp.ca
 # HueyOS: Test Run Config Path module (tests)
 
-from run import main
 import os
+
+from run import main
 
 
 def test_run_sets_config_env(monkeypatch, tmp_path):
@@ -15,16 +16,16 @@ def test_run_sets_config_env(monkeypatch, tmp_path):
             "log_backup_count = 1\n"
         ).format(tmp_path)
     )
-    monkeypatch.setattr('run.launch_gui', lambda: None)
-    monkeypatch.setattr('run._load_cli', lambda: lambda: None)
-    monkeypatch.setattr('monkey_head.core.system_checks.check_os_support', lambda: None)
+    monkeypatch.setattr("run.launch_gui", lambda: None)
+    monkeypatch.setattr("run._load_cli", lambda: lambda: None)
+    monkeypatch.setattr("monkey_head.core.system_checks.check_os_support", lambda: None)
     monkeypatch.setattr(
-        'monkey_head.core.system_checks.check_python_version',
+        "monkey_head.core.system_checks.check_python_version",
         lambda: None,
     )
     monkeypatch.setattr(
-        'sys.argv',
-        ['run.py', '--config', str(cfg)],
+        "sys.argv",
+        ["run.py", "--config", str(cfg)],
     )
     main()
-    assert os.environ.get('MONKEY_HEAD_CONFIG') == str(cfg)
+    assert os.environ.get("MONKEY_HEAD_CONFIG") == str(cfg)

@@ -12,7 +12,8 @@
 # Updated: 06.11.2025
 # ==================================================
 import os
-from setuptools import setup, find_packages  # type: ignore
+
+from setuptools import find_packages, setup  # type: ignore
 
 here = os.path.abspath(os.path.dirname(__file__))
 try:

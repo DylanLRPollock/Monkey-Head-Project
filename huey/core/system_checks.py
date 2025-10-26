@@ -12,7 +12,9 @@ from typing import Any
 
 _module = import_module("monkey_head.system_checks")
 
-__all__ = getattr(_module, "__all__", [name for name in dir(_module) if not name.startswith("_")])
+__all__ = getattr(
+    _module, "__all__", [name for name in dir(_module) if not name.startswith("_")]
+)
 if "check_python_version" not in __all__:
     __all__.append("check_python_version")
 

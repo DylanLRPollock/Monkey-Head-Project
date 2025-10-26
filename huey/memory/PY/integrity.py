@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
-from typing import Iterable, Mapping
+from typing import Mapping
 
 
 def sha256_digest(file_path: str | Path) -> str:

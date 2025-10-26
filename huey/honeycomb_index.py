@@ -101,7 +101,9 @@ class HoneycombIndex:
             for category in mapping.categories:
                 self._category_index.setdefault(category.upper(), content_type)
 
-    def register_content_type(self, name: str, mapping: HoneycombContentMapping) -> None:
+    def register_content_type(
+        self, name: str, mapping: HoneycombContentMapping
+    ) -> None:
         """Register or replace a mapping for ``name``."""
 
         self._mappings[name] = mapping
@@ -145,7 +147,9 @@ class HoneycombIndex:
     # ------------------------------------------------------------------
     # Storage integration
     # ------------------------------------------------------------------
-    def _build_key(self, mapping: HoneycombContentMapping, *, cell_id: Optional[str] = None) -> str:
+    def _build_key(
+        self, mapping: HoneycombContentMapping, *, cell_id: Optional[str] = None
+    ) -> str:
         cell = cell_id or uuid.uuid4().hex
         return f"{mapping.comb}/{mapping.cell_prefix}/{cell}"
 

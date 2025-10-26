@@ -17,13 +17,13 @@
 from typing import List
 
 from pygpt_net.core.types import (
+    MODE_AUDIO,
     MODE_CHAT,
     MODE_COMPLETION,
     MODE_LANGCHAIN,
     MODE_LLAMA_INDEX,
-    MODE_VISION,
-    MODE_AUDIO,
     MODE_RESEARCH,
+    MODE_VISION,
 )
 
 

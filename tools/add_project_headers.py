@@ -134,8 +134,12 @@ def find_targets(root: Path) -> Iterable[Path]:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true", help="Only report files missing headers")
-    parser.add_argument("paths", nargs="*", type=Path, default=[REPO_ROOT], help="Paths to scan")
+    parser.add_argument(
+        "--check", action="store_true", help="Only report files missing headers"
+    )
+    parser.add_argument(
+        "paths", nargs="*", type=Path, default=[REPO_ROOT], help="Paths to scan"
+    )
     return parser.parse_args()
 
 
@@ -145,7 +149,11 @@ def main() -> int:
     missing: list[Path] = []
 
     for input_path in args.paths:
-        root = (REPO_ROOT / input_path).resolve() if not input_path.is_absolute() else input_path
+        root = (
+            (REPO_ROOT / input_path).resolve()
+            if not input_path.is_absolute()
+            else input_path
+        )
         if root.is_file():
             targets = [root]
         else:

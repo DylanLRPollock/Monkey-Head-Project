@@ -14,6 +14,7 @@
 try:  # pragma: no cover - optional dependency
     import tkinter as tk
     from tkinter import messagebox
+
     from .gui_scaling import apply_scaling
 except Exception:  # pragma: no cover - can't import GUI libs
     tk = None

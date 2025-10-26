@@ -14,9 +14,7 @@
 # Updated Date: 2024.11.21 20:00:00                  #
 # ================================================== #
 
-from pygpt_net.core.types import (
-    MODE_AGENT,
-)
+from pygpt_net.core.types import MODE_AGENT
 from pygpt_net.utils import trans
 
 

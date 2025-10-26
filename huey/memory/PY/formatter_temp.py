@@ -3,6 +3,10 @@
 # www.dlrp.ca
 # HueyOS: Formatter Temp module (huey/memory/PY)
 
+import atexit
+import json
+import logging
+
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -13,13 +17,8 @@
 # ==================================================
 import os
 import sys
-import glob
-import atexit
-import logging
+
 from ..logging_setup import configure_logging
-import json
-from concurrent.futures import ThreadPoolExecutor
-from nltk.tokenize import sent_tokenize
 
 
 # Define Formatter class

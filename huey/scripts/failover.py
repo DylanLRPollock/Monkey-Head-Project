@@ -76,7 +76,9 @@ def build_failover_plan(
             command.insert(3, f"--exclude={pattern}")
         if dry_run:
             command.insert(1, "--dry-run")
-        plan.tasks.append(ReplicationTask(source=source, target=target, command=command))
+        plan.tasks.append(
+            ReplicationTask(source=source, target=target, command=command)
+        )
         LOGGER.debug("Planned replication of %s -> %s", source, target)
     return plan
 

@@ -4,15 +4,14 @@
 # HueyOS: Test Honeycomb Management module (tests)
 
 import subprocess
-from pathlib import Path
 
 import pytest
 
 from monkey_head.honeycomb_backup import perform_rsync_snapshot, restore_snapshot
 from monkey_head.honeycomb_index import HoneycombIndex
+from monkey_head.honeycomb_monitor import HoneycombMonitor
 from monkey_head.honeycomb_retention import RetentionPolicy, parse_duration
 from monkey_head.honeycomb_storage import HoneycombStorage
-from monkey_head.honeycomb_monitor import HoneycombMonitor
 
 
 def test_honeycomb_index_maps_extensions(tmp_path):
@@ -40,8 +39,8 @@ def test_honeycomb_monitor_reports_usage(tmp_path):
 
 
 def test_retention_policy_prunes_old_cells(tmp_path, monkeypatch):
-    import monkey_head.honeycomb_storage as storage_module
     import monkey_head.honeycomb_retention as retention_module
+    import monkey_head.honeycomb_storage as storage_module
 
     storage = HoneycombStorage(base_dir=tmp_path)
     index = HoneycombIndex(storage)
@@ -101,6 +100,8 @@ def test_backup_helpers_build_rsync_commands(tmp_path, monkeypatch):
     assert result.snapshot == destination / "20240101-000000"
 
     commands.clear()
-    restore_result = restore_snapshot(destination / "20240101-000000", tmp_path / "restore")
+    restore_result = restore_snapshot(
+        destination / "20240101-000000", tmp_path / "restore"
+    )
     assert commands["cmd"][0] == "/usr/bin/rsync"
     assert restore_result.snapshot == (tmp_path / "restore")

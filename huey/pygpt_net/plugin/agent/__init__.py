@@ -14,9 +14,10 @@
 # Updated Date: 2024.12.14 22:00:00                  #
 # ================================================== #
 
-from pygpt_net.plugin.base.plugin import BasePlugin
 from pygpt_net.core.events import Event
 from pygpt_net.item.ctx import CtxItem
+from pygpt_net.plugin.base.plugin import BasePlugin
+
 from .config import Config
 
 

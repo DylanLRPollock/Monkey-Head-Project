@@ -14,10 +14,9 @@
 # Updated Date: 2024.12.14 08:00:00                  #
 # ================================================== #
 
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
 
 from llama_index.core.tools import FunctionTool
-
 from pygpt_net.core.bridge.context import BridgeContext
 from pygpt_net.core.bridge.worker import BridgeSignals
 from pygpt_net.core.events import Event, KernelEvent

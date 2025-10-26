@@ -24,6 +24,7 @@ from .environment_setup import (
     pull_latest,
     setup_python_env,
 )
+
 try:
     from .home_assistant import call_service, get_state
 except Exception:  # pragma: no cover - optional dependency

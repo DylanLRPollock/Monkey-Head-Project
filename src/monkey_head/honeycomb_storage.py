@@ -170,7 +170,9 @@ class HoneycombStorage:
         created_at = float(payload.get("created_at", time.time()))
         updated_at = float(payload.get("updated_at", created_at))
         data = payload.get("data")
-        return HoneycombRecord(key=key, data=data, created_at=created_at, updated_at=updated_at)
+        return HoneycombRecord(
+            key=key, data=data, created_at=created_at, updated_at=updated_at
+        )
 
     def _write_record(self, path: Path, record: HoneycombRecord) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -195,7 +197,9 @@ class HoneycombStorage:
         with self._lock:
             existing = self.get_record(key)
             created_at = existing.created_at if existing else now
-            record = HoneycombRecord(key=key, data=data, created_at=created_at, updated_at=now)
+            record = HoneycombRecord(
+                key=key, data=data, created_at=created_at, updated_at=now
+            )
             self._write_record(path, record)
         return record
 
@@ -325,8 +329,7 @@ class HoneycombStorage:
             bucket = dt.strftime("%Y-%m-%d")
             buckets[bucket] = buckets.get(bucket, 0) + 1
         return [
-            {"date": date, "cells": buckets[date]}
-            for date in sorted(buckets.keys())
+            {"date": date, "cells": buckets[date]} for date in sorted(buckets.keys())
         ]
 
     # ------------------------------------------------------------------
@@ -396,4 +399,3 @@ class HoneycombStorage:
 
 
 __all__ = ["HoneycombStorage", "HoneycombRecord", "SCHEMA_VERSION"]
-

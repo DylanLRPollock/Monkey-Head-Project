@@ -52,7 +52,9 @@ def run(
             "\n" if stderr else " ",
             stderr or "<no stderr>",
         )
-        raise RuntimeError(f"Command failed: {' '.join(cmd)} (exit code {proc.returncode})")
+        raise RuntimeError(
+            f"Command failed: {' '.join(cmd)} (exit code {proc.returncode})"
+        )
     return proc
 
 
@@ -115,7 +117,7 @@ def ensure_system_requirements(
         logger.info("Detected host OS: %s", os_release.get("pretty_name", descriptor))
 
     usage = shutil.disk_usage("/")
-    free_gib = usage.free / (1024 ** 3)
+    free_gib = usage.free / (1024**3)
     logger.info("Free space on /: %.2f GiB", free_gib)
     if free_gib < min_free_gib:
         logger.warning(
@@ -133,11 +135,16 @@ def ensure_system_requirements(
         except Exception as exc:  # pragma: no cover - defensive
             logger.debug("Ping to %s failed: %s", host, exc)
     else:
-        raise RuntimeError("Internet connectivity check failed (ping targets exhausted).")
+        raise RuntimeError(
+            "Internet connectivity check failed (ping targets exhausted)."
+        )
 
     for command in required_commands or ():
         if shutil.which(command) is None:
-            logger.warning("Required command '%s' not found; it will be installed if possible.", command)
+            logger.warning(
+                "Required command '%s' not found; it will be installed if possible.",
+                command,
+            )
 
 
 def apt_install(packages: Sequence[str], logger: logging.Logger) -> None:
@@ -238,7 +245,9 @@ def check_virtualization(logger: logging.Logger) -> None:
     kvm_path = Path("/dev/kvm")
     kvm_ok = kvm_path.exists()
 
-    logger.debug("CPU virtualization flags detected: %s", ", ".join(sorted(flags)) or "<none>")
+    logger.debug(
+        "CPU virtualization flags detected: %s", ", ".join(sorted(flags)) or "<none>"
+    )
     logger.debug("/dev/kvm present: %s", kvm_ok)
 
     if {"vmx", "svm"} & flags and kvm_ok:
@@ -264,15 +273,21 @@ def check_virtualization(logger: logging.Logger) -> None:
         missing_bits.append("CPU flags")
     if not kvm_ok:
         missing_bits.append("/dev/kvm")
-    logger.error("Virtualization prerequisites missing: %s", ", ".join(missing_bits) or "unknown")
+    logger.error(
+        "Virtualization prerequisites missing: %s", ", ".join(missing_bits) or "unknown"
+    )
     raise RuntimeError(guidance)
 
 
-def configure_firewall(port: int, logger: logging.Logger, *, proto: str = "tcp") -> None:
+def configure_firewall(
+    port: int, logger: logging.Logger, *, proto: str = "tcp"
+) -> None:
     """Open the requested port via UFW if available."""
 
     if shutil.which("ufw") is None:
-        logger.warning("UFW not installed; skipping firewall configuration for %d/%s.", port, proto)
+        logger.warning(
+            "UFW not installed; skipping firewall configuration for %d/%s.", port, proto
+        )
         return
 
     rule = f"{port}/{proto}"

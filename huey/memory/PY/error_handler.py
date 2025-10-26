@@ -52,7 +52,9 @@ class ErrorHandler:
 
         logging.info(info_message)
 
-    def handle_exception(self, exception: Exception, *, raise_error: bool = False) -> None:
+    def handle_exception(
+        self, exception: Exception, *, raise_error: bool = False
+    ) -> None:
         """Log ``exception`` with traceback and optionally re-raise it.
 
         Parameters

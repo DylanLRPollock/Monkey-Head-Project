@@ -16,8 +16,8 @@
 
 from typing import Any
 
-from pygpt_net.core.events import KernelEvent
 from pygpt_net.core.bridge.context import BridgeContext
+from pygpt_net.core.events import KernelEvent
 from pygpt_net.item.ctx import CtxItem
 from pygpt_net.utils import trans
 

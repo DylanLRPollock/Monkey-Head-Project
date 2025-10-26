@@ -3,6 +3,9 @@
 # www.dlrp.ca
 # HueyOS: Test Convert Video To Gif module (tests)
 
+import importlib.util
+import shutil
+
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -12,18 +15,15 @@
 # Updated: 06.11.2025
 # ==================================================
 import subprocess
-import shutil
 from pathlib import Path
-import importlib.util
+
 import pytest
 
 if shutil.which("ffmpeg") is None:
     pytest.skip("ffmpeg not installed", allow_module_level=True)
 
 module_path = (
-    Path(__file__).resolve().parents[1]
-    / "monkey_head"
-    / "convert_video_to_gif.py"
+    Path(__file__).resolve().parents[1] / "monkey_head" / "convert_video_to_gif.py"
 )
 spec = importlib.util.spec_from_file_location("cvg", module_path)
 module = importlib.util.module_from_spec(spec)

@@ -7,7 +7,6 @@ import csv
 from pathlib import Path
 from typing import Dict, List
 
-
 BASE_DIR = Path(__file__).resolve().parents[2]
 
 

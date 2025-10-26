@@ -136,7 +136,9 @@ class HoneycombStorage:
                 (key, comb, cell, payload, created_at, now),
             )
             self._conn.commit()
-        return HoneycombRecord(key=key, data=data, created_at=created_at, updated_at=now)
+        return HoneycombRecord(
+            key=key, data=data, created_at=created_at, updated_at=now
+        )
 
     def load(self, key: str) -> Optional[Any]:
         """Return the stored payload for ``key`` or ``None`` when missing."""
@@ -169,7 +171,9 @@ class HoneycombStorage:
         with self._lock:
             cursor = self._conn.cursor()
             if prefix is None:
-                cursor.execute("SELECT full_key FROM honeycomb_cells ORDER BY full_key ASC")
+                cursor.execute(
+                    "SELECT full_key FROM honeycomb_cells ORDER BY full_key ASC"
+                )
             else:
                 cursor.execute(
                     "SELECT full_key FROM honeycomb_cells WHERE full_key LIKE ? ORDER BY full_key ASC",
@@ -347,7 +351,9 @@ class HoneycombStorage:
                 updated_at=row["updated_at"],
             )
 
-    def query(self, prefix: str, *, limit: Optional[int] = None) -> List[HoneycombRecord]:
+    def query(
+        self, prefix: str, *, limit: Optional[int] = None
+    ) -> List[HoneycombRecord]:
         """Return records whose key begins with ``prefix`` sorted by recency."""
 
         with self._lock:

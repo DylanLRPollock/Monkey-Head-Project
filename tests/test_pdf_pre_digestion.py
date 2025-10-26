@@ -3,6 +3,9 @@
 # www.dlrp.ca
 # HueyOS: Test Pdf Pre Digestion module (tests)
 
+import json
+import shutil
+
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -12,8 +15,7 @@
 # Updated: 06.11.2025
 # ==================================================
 from pathlib import Path
-import json
-import shutil
+
 import pytest
 
 pytest.importorskip("fitz")

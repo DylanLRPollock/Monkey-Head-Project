@@ -8,9 +8,8 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List
-
 from pkgutil import extend_path
+from typing import List
 
 __all__ = ["api"]
 

@@ -3,6 +3,9 @@
 # www.dlrp.ca
 # HueyOS: Test Placeholder module (tests)
 
+import importlib.util
+import sys
+
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -12,8 +15,6 @@
 # Updated: 06.09.2025
 # ==================================================
 import unittest
-import sys
-import importlib.util
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent

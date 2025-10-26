@@ -26,14 +26,18 @@ def _project_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
-def _run_command(command: Iterable[str], description: str, cwd: Path | None = None) -> subprocess.CompletedProcess[bytes]:
+def _run_command(
+    command: Iterable[str], description: str, cwd: Path | None = None
+) -> subprocess.CompletedProcess[bytes]:
     command = list(command)
     LOGGER.info("%s", description)
     if cwd is None:
         cwd = _project_root()
     executable = command[0]
     if shutil.which(executable) is None:
-        LOGGER.warning("Skipping '%s' because the executable is not available.", " ".join(command))
+        LOGGER.warning(
+            "Skipping '%s' because the executable is not available.", " ".join(command)
+        )
         return subprocess.CompletedProcess(command, 0, b"", b"")
     result = subprocess.run(
         command,
@@ -43,7 +47,9 @@ def _run_command(command: Iterable[str], description: str, cwd: Path | None = No
     )
     if result.returncode != 0:
         LOGGER.error(
-            "Command '%s' failed with exit code %s", " ".join(command), result.returncode
+            "Command '%s' failed with exit code %s",
+            " ".join(command),
+            result.returncode,
         )
     else:
         LOGGER.debug("Command '%s' completed successfully", " ".join(command))

@@ -67,7 +67,9 @@ class HoneycombMonitor:
             summary.append(aggregates)
         return summary
 
-    def usage_totals(self, comb_usage: Iterable[Dict[str, object]]) -> HoneycombUsageTotals:
+    def usage_totals(
+        self, comb_usage: Iterable[Dict[str, object]]
+    ) -> HoneycombUsageTotals:
         cells = 0
         payload_bytes = 0
         combs = 0

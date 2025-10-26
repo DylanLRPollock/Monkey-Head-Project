@@ -3,9 +3,12 @@
 # www.dlrp.ca
 # HueyOS: Test Memory Paths module (tests)
 
-from pathlib import Path
 
-from monkey_head.utils.paths import ensure_subdirectory, get_memory_path, memory_candidates
+from monkey_head.utils.paths import (
+    ensure_subdirectory,
+    get_memory_path,
+    memory_candidates,
+)
 
 
 def test_memory_path_env_override(monkeypatch, tmp_path):

@@ -40,6 +40,11 @@ def list_files_by_mtime(directory: str, reverse: bool = False) -> List[str]:
 
 def natural_sort(items: Iterable[str]) -> List[str]:
     """Return ``items`` sorted in natural order."""
-    convert = lambda text: int(text) if text.isdigit() else text.lower()
-    alphanum_key = lambda key: [convert(c) for c in re.split(r"([0-9]+)", key)]
+
+    def convert(text: str) -> int | str:
+        return int(text) if text.isdigit() else text.lower()
+
+    def alphanum_key(key: str) -> list[int | str]:
+        return [convert(component) for component in re.split(r"([0-9]+)", key)]
+
     return sorted(list(items), key=alphanum_key)

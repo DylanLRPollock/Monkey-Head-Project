@@ -88,7 +88,9 @@ class ConfigManager:
         self.save_config()
 
     def update_settings(self, data: Mapping[str, Any]) -> None:
-        def _merge(target: dict[str, Any], updates: Mapping[str, Any]) -> dict[str, Any]:
+        def _merge(
+            target: dict[str, Any], updates: Mapping[str, Any]
+        ) -> dict[str, Any]:
             for key, value in updates.items():
                 if (
                     key in target

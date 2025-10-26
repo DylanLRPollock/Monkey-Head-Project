@@ -4,8 +4,9 @@
 # HueyOS: Test Convert Pdf To Text module (tests)
 
 import importlib.util
-from pathlib import Path
 import shutil
+from pathlib import Path
+
 import pytest
 
 pytest.importorskip("pypdf")

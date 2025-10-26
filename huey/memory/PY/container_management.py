@@ -13,9 +13,9 @@
 # ==================================================
 import os
 import subprocess
-from ..utils.logger import get_logger
 
 from ..core.system_checks import check_error
+from ..utils.logger import get_logger
 
 logger = get_logger(__name__)
 

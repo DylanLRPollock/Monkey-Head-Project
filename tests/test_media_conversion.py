@@ -3,6 +3,11 @@
 # www.dlrp.ca
 # HueyOS: Test Media Conversion module (tests)
 
+import importlib.util
+import shutil
+import subprocess
+import wave
+
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
 # Website:   https://dlrp.ca
@@ -12,13 +17,9 @@
 # Updated: 06.05.2025
 # ==================================================
 from pathlib import Path
-import wave
-import subprocess
-import shutil
-import pytest
-
-import importlib.util
 from types import ModuleType
+
+import pytest
 
 if shutil.which("ffmpeg") is None:
     pytest.skip("ffmpeg not installed", allow_module_level=True)

@@ -82,9 +82,13 @@ def test_emergency_governance_controller_requires_quorum():
     )
 
     with pytest.raises(PermissionError):
-        controller.enter_emergency_mode(triggered_by="spark", reason="grid", approvals=[])
+        controller.enter_emergency_mode(
+            triggered_by="spark", reason="grid", approvals=[]
+        )
 
-    controller.enter_emergency_mode(triggered_by="spark", reason="grid", approvals=["zap"])
+    controller.enter_emergency_mode(
+        triggered_by="spark", reason="grid", approvals=["zap"]
+    )
     assert controller.state is EmergencyState.EMERGENCY
     assert stop_calls == ["stop"]
 
@@ -98,5 +102,9 @@ def test_emergency_governance_controller_requires_quorum():
     assert controller.state is EmergencyState.NORMAL
     assert start_calls == ["start"]
 
-    controller.enter_emergency_mode(triggered_by="spark", reason="grid", approvals=["zap"])
-    controller.request_authorised_action(actor="spark", approvals=["zap"], action="shed-load")
+    controller.enter_emergency_mode(
+        triggered_by="spark", reason="grid", approvals=["zap"]
+    )
+    controller.request_authorised_action(
+        actor="spark", approvals=["zap"], action="shed-load"
+    )

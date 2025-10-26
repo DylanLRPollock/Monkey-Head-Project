@@ -13,8 +13,9 @@
 # ==================================================
 import os
 import subprocess
-from ..utils.logger import get_logger
+
 from ..utils.commands import run_command
+from ..utils.logger import get_logger
 
 logger = get_logger(__name__)
 

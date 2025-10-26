@@ -63,7 +63,9 @@ def detect_accelerators(*, sys_root: Optional[Path] = None) -> List[AcceleratorI
 
     root = sys_root or Path("/sys/class/drm")
     infos = _detect_from_sysfs(root)
-    needs_rocm = [info for info in infos if info.backend == "rocm" and info.vram_total is None]
+    needs_rocm = [
+        info for info in infos if info.backend == "rocm" and info.vram_total is None
+    ]
     if needs_rocm:
         rocm_map = _detect_from_rocm_smi()
         for info in needs_rocm:
@@ -185,7 +187,11 @@ def _detect_from_rocm_smi() -> Dict[str, Dict[str, Optional[int]]]:
                 or value.get("vram_used")
                 or value.get("used")
             )
-            free = _coerce_int(value.get("VRAM Free (MiB)") or value.get("vram_free") or value.get("free"))
+            free = _coerce_int(
+                value.get("VRAM Free (MiB)")
+                or value.get("vram_free")
+                or value.get("free")
+            )
             if total is not None and total < 8 * 1024**2:  # assume MiB
                 total *= 1024 * 1024
             if used is not None and used < 8 * 1024**2:
@@ -264,7 +270,9 @@ def _coerce_int(value: Any) -> Optional[int]:
         return None
 
 
-def _format_name(name: Optional[str], vendor: str, bus_id: Optional[str], driver: str) -> str:
+def _format_name(
+    name: Optional[str], vendor: str, bus_id: Optional[str], driver: str
+) -> str:
     base = name or vendor or driver or "GPU"
     if vendor and vendor not in base:
         base = f"{vendor} {base}".strip()

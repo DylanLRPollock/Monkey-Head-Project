@@ -12,7 +12,9 @@ __all__ = ["StreamingResponse", "HTMLResponse"]
 
 
 class StreamingResponse:
-    def __init__(self, content: Iterable[Any], *, media_type: str = "text/plain") -> None:
+    def __init__(
+        self, content: Iterable[Any], *, media_type: str = "text/plain"
+    ) -> None:
         self.content = content
         self.media_type = media_type
 

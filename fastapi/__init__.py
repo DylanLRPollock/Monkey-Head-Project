@@ -78,28 +78,44 @@ class Route:
 
 
 class FastAPI:
-    def __init__(self, *, title: str = "", version: str = "", description: str = "") -> None:
+    def __init__(
+        self, *, title: str = "", version: str = "", description: str = ""
+    ) -> None:
         self.title = title
         self.version = version
         self.description = description
         self._routes: List[Route] = []
 
     # route registration -------------------------------------------------
-    def get(self, path: str, *, status_code: int = status.HTTP_200_OK, **_: Any) -> Callable:
+    def get(
+        self, path: str, *, status_code: int = status.HTTP_200_OK, **_: Any
+    ) -> Callable:
         return self._create_decorator(path, ["GET"], status_code)
 
-    def post(self, path: str, *, status_code: int = status.HTTP_200_OK, **_: Any) -> Callable:
+    def post(
+        self, path: str, *, status_code: int = status.HTTP_200_OK, **_: Any
+    ) -> Callable:
         return self._create_decorator(path, ["POST"], status_code)
 
-    def delete(self, path: str, *, status_code: int = status.HTTP_200_OK, **_: Any) -> Callable:
+    def delete(
+        self, path: str, *, status_code: int = status.HTTP_200_OK, **_: Any
+    ) -> Callable:
         return self._create_decorator(path, ["DELETE"], status_code)
 
-    def put(self, path: str, *, status_code: int = status.HTTP_200_OK, **_: Any) -> Callable:
+    def put(
+        self, path: str, *, status_code: int = status.HTTP_200_OK, **_: Any
+    ) -> Callable:
         return self._create_decorator(path, ["PUT"], status_code)
 
-    def _create_decorator(self, path: str, methods: List[str], status_code: int) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def _create_decorator(
+        self, path: str, methods: List[str], status_code: int
+    ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
         def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-            self._routes.append(Route(path=path, methods=methods, endpoint=func, status_code=status_code))
+            self._routes.append(
+                Route(
+                    path=path, methods=methods, endpoint=func, status_code=status_code
+                )
+            )
             return func
 
         return decorator
@@ -128,8 +144,12 @@ class FastAPI:
                     return Response(status_code=route.status_code, data=result)
                 return Response(status_code=route.status_code, data=result)
             except HTTPException as exc:
-                return Response(status_code=exc.status_code, data={"detail": exc.detail})
-        return Response(status_code=status.HTTP_404_NOT_FOUND, data={"detail": "Not Found"})
+                return Response(
+                    status_code=exc.status_code, data={"detail": exc.detail}
+                )
+        return Response(
+            status_code=status.HTTP_404_NOT_FOUND, data={"detail": "Not Found"}
+        )
 
     def _invoke(
         self,
@@ -144,7 +164,9 @@ class FastAPI:
         from pydantic import BaseModel
 
         signature = inspect.signature(endpoint)
-        type_hints = get_type_hints(endpoint, globalns=getattr(endpoint, "__globals__", {}))
+        type_hints = get_type_hints(
+            endpoint, globalns=getattr(endpoint, "__globals__", {})
+        )
         kwargs: Dict[str, Any] = {}
         body = body or {}
 
@@ -194,13 +216,16 @@ class Response:
     data: Any
 
     def json(self) -> Any:
-        from pydantic import BaseModel
         from fastapi.responses import StreamingResponse
+        from pydantic import BaseModel
 
         if isinstance(self.data, BaseModel):
             return self.data.model_dump()
         if isinstance(self.data, list):
-            return [item.model_dump() if isinstance(item, BaseModel) else item for item in self.data]
+            return [
+                item.model_dump() if isinstance(item, BaseModel) else item
+                for item in self.data
+            ]
         if isinstance(self.data, StreamingResponse):
             return list(self.data)
         return self.data

@@ -200,7 +200,9 @@ class EmergencyGovernanceController:
                 name=name, stop=stop, start=start, essential=essential
             )
 
-    def _validate_approvals(self, approvals: Iterable[str], initiator: str) -> List[str]:
+    def _validate_approvals(
+        self, approvals: Iterable[str], initiator: str
+    ) -> List[str]:
         unique = {initiator}
         for approval in approvals:
             if approval:
@@ -249,7 +251,9 @@ class EmergencyGovernanceController:
 
         with self._lock:
             if self.state is EmergencyState.NORMAL:
-                LOGGER.info("Exit request ignored because system is not in emergency mode")
+                LOGGER.info(
+                    "Exit request ignored because system is not in emergency mode"
+                )
                 return
             approval_identities = self._validate_approvals(approvals, requested_by)
             LOGGER.warning(
@@ -450,7 +454,9 @@ class CrashRecoveryManager:
         """Return serialisable status information for each process."""
 
         with self._lock:
-            return [self._serialise_process(process) for process in self._processes.values()]
+            return [
+                self._serialise_process(process) for process in self._processes.values()
+            ]
 
     def has_process(self, name: str) -> bool:
         """Return ``True`` when a process is registered."""

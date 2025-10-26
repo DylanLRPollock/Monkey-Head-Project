@@ -10,8 +10,6 @@ from __future__ import annotations
 import logging
 from types import SimpleNamespace
 
-import pytest
-
 from monkey_head import system_checks
 
 

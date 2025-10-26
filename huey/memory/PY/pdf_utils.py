@@ -7,9 +7,10 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import List, Optional
-import os
+
 from .function_registry import register_function
 
 

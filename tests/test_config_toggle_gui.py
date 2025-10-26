@@ -4,6 +4,7 @@
 # HueyOS: Test Config Toggle Gui module (tests)
 
 import json
+
 from monkey_head.config_toggle_gui import update_toggle_settings
 
 

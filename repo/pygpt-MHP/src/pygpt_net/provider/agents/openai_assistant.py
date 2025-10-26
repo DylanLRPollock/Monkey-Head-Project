@@ -14,11 +14,11 @@
 # Updated Date: 2024.12.14 22:00:00                  #
 # ================================================== #
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 from llama_index.agent.openai import OpenAIAssistantAgent as Agent
-
 from pygpt_net.core.bridge.context import BridgeContext
+
 from .base import BaseAgent
 
 

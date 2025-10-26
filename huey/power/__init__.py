@@ -8,4 +8,3 @@
 from .management import BatteryMonitor, PowerEvent
 
 __all__ = ["BatteryMonitor", "PowerEvent"]
-

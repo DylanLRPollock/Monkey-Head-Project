@@ -4,8 +4,8 @@
 # HueyOS: Update Prompts module (huey/memory/PY)
 
 import csv
-import re
 import os
+import re
 
 INPUT_FILE = os.path.join("prompts", "pygpt_prompts.csv")
 OUTPUT_FILE = os.path.join("prompts", "pygpt_prompts.csv")  # overwrite
