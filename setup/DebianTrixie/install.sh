@@ -174,15 +174,19 @@ function install_packages() {
 }
 
 function install_edge() {
-    echo "Installing Microsoft Edge Dev ..."
+    echo "Installing Microsoft Edge Beta ..."
     apt-get purge -y firefox || true
     apt-get autoremove -y || true
     install -d -m 755 /usr/share/keyrings
     curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft.gpg
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" \
-        > /etc/apt/sources.list.d/microsoft-edge-dev.list
+        > /etc/apt/sources.list.d/microsoft-edge-beta.list
     apt-get update -y
-    apt-get install -y microsoft-edge-dev
+    apt-get install -y microsoft-edge-beta
+    if command -v update-alternatives >/dev/null 2>&1 && [[ -x /usr/bin/microsoft-edge-beta ]]; then
+        update-alternatives --set x-www-browser /usr/bin/microsoft-edge-beta || true
+        update-alternatives --set gnome-www-browser /usr/bin/microsoft-edge-beta || true
+    fi
 }
 
 function ensure_python_runtime() {
