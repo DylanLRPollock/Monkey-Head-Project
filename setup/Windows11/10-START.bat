@@ -160,9 +160,16 @@ goto :eof
 :: Function to open application in browser (optional)
 :openBrowser
 echo Opening application in web browser...
-REM Add command to open application in default web browser
-REM For example:
-start http://localhost
+set "EDGE_BETA_EXE=%ProgramFiles(x86)%\Microsoft\Edge Beta\Application\msedge.exe"
+if not exist "%EDGE_BETA_EXE%" (
+    set "EDGE_BETA_EXE=%ProgramFiles%\Microsoft\Edge Beta\Application\msedge.exe"
+)
+if exist "%EDGE_BETA_EXE%" (
+    start "" "%EDGE_BETA_EXE%" http://localhost
+) else (
+    echo Microsoft Edge Beta not found. Launching with default browser instead.
+    start http://localhost
+)
 goto :eof
 
 :: Function to log startup steps

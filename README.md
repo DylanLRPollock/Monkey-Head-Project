@@ -20,7 +20,7 @@ On **2025‑10‑31**, HueyOS migrates to **Debian 14 “Forky,” kernel 6.17.x
 
 ## Quick Recipes — Oct 31 Changeover
 
-- **Forky apt switch:** `sudo tools/upgrade_to_forky.sh` — applies the staged APT source flip and refreshes the Microsoft Edge signing key (see [docs/debian-forky-upgrade.md](docs/debian-forky-upgrade.md)).
+- **Forky apt switch:** `sudo tools/upgrade_to_forky.sh` — applies the staged APT source flip and refreshes the Microsoft Edge Beta signing key (see [docs/debian-forky-upgrade.md](docs/debian-forky-upgrade.md)).
 - **Kernel 6.17.x-huey build:** follow [docs/kernel-6.17.3-runbook.md](docs/kernel-6.17.3-runbook.md) to rebuild and install the DKMS-free kernel, then record results in the release stub.
 - **Python 3.14 virtualenv:** once packages land, rerun the commands in [docs/python314-upgrade-notes.md](docs/python314-upgrade-notes.md) to create the 3.14 environment and capture any blockers.
 - **Release log:** summarize successful steps and deltas in [`docs/releases/2025-10-31-changeover.md`](docs/releases/2025-10-31-changeover.md) for final publication.
@@ -62,7 +62,8 @@ HueyOS targets **Debian 13 “Trixie”** today with a low‑latency **6.16.x‑
 - **OS baseline:** Debian 13.0.0 (Trixie) → changeover to **Debian 14 “Forky”** begins **2025‑10‑31**.  
 - **Kernel:** 6.16.x‑huey → **6.17.x‑huey** (low‑latency, targeted drivers).  
 - **Python:** 3.13.x now; **3.14.x** becomes baseline post‑changeover.  
-- **Runtime:** **PyGPT‑net** (orchestrator) + **Ollama** (local LLMs); ROCm/Vulkan where available.  
+- **Runtime:** **PyGPT‑net** (orchestrator) + **Ollama** (local LLMs); ROCm/Vulkan where available.
+- **Official browser:** Microsoft Edge Beta across Linux and Windows deployments.
 - **Memory:** unified long‑term store via JSON logs + SQLite with reproducible telemetry.  
 - **Networking:** bonded Ethernet preferred; Wi‑Fi fallback; **TigerVNC** bound to localhost via SSH.
 
@@ -310,9 +311,10 @@ wget -qO- https://packages.microsoft.com/keys/microsoft.asc | \
 
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] \
 https://packages.microsoft.com/repos/edge stable main" | \
-  sudo tee /etc/apt/sources.list.d/microsoft-edge.list >/dev/null
+  sudo tee /etc/apt/sources.list.d/microsoft-edge-beta.list >/dev/null
 
 sudo apt update
+sudo apt install -y microsoft-edge-beta
 ```
 
 ### RAID Superblock Cleanup (when reverting experiments)

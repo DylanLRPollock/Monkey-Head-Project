@@ -32,8 +32,11 @@ install -d -m 0755 /etc/apt/keyrings
 curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
   | gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg
 
+rm -f /etc/apt/sources.list.d/microsoft-edge.list \
+  /etc/apt/sources.list.d/microsoft-edge-dev.list
+
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" \
-  > /etc/apt/sources.list.d/microsoft-edge.list
+  > /etc/apt/sources.list.d/microsoft-edge-beta.list
 
 apt update
 apt -y full-upgrade
