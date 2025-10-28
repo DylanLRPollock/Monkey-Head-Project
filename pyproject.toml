@@ -9,7 +9,7 @@ license = { text = "GPL-3.0-only" }
 
 # Keep the on-robot footprint small; full stack available via extras
 dependencies = [
-  "aiohttp==3.12.13",
+  "aiohttp==3.12.14",
   "aiosqlite==0.21.0",
   "anyio==4.9.0",
   "attrs==25.3.0",
@@ -21,7 +21,7 @@ dependencies = [
   "pydantic-core==2.33.2",
   "pydantic-settings==2.10.1",
   "sse-starlette==3.0.2",
-  "starlette==0.46.2",
+  "starlette==0.49.1",
   "uvicorn[standard]==0.34.3",
 ]
 
@@ -37,7 +37,7 @@ ml = [
   "llama-cloud-services==0.6.34",
   "llama-cloud==0.1.26",
   "llama-index==0.13.0",
-  "llama-index-core==0.12.44",
+  "llama-index-core==0.13.0",
   "llama-index-embeddings-azure-openai==0.3.8",
   "llama-index-embeddings-gemini==0.3.2",
   "llama-index-embeddings-huggingface-api==0.3.1",
@@ -79,7 +79,7 @@ ml = [
   "sortedcontainers==2.4.0",
   "standard-aifc==3.13.0; python_version >= '3.13' and python_version < '3.15'",
   "traitlets==5.14.3",
-  "transformers==4.48.3",
+  "transformers==4.53.0",
   "pygpt-net>=0.3.0",
 ]
 data = [
