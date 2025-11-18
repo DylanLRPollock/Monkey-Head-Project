@@ -51,7 +51,7 @@ ml = [
   "llama-cloud==0.1.26",
   "llama-cloud-services==0.6.34",
   "llama-index==0.13.0",
-  "llama-index-core==0.12.44",
+  "llama-index-core==0.13.0",
   "llama-index-embeddings-azure-openai==0.3.8",
   "llama-index-embeddings-gemini==0.3.2",
   "llama-index-embeddings-huggingface-api==0.3.1",
