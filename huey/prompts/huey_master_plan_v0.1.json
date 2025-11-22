@@ -1,0 +1,23 @@
+{
+  "version": "0.1",
+  "project_name": "Monkey-Head Project",
+  "description": "Centralized master architecture and training blueprint for Huey, the AI robot.",
+  "created_by": "Dylan L.R. Pollock",
+  "modules": {
+    "orchestration_node": {},
+    "black_box_unit": {},
+    "huey_portable": {},
+    "huey_hub": {},
+    "huey_portal": {},
+    "inference_layer": {},
+    "audio_visual_stack": {},
+    "governance_model": {},
+    "memory_architecture": {},
+    "network_topology": {},
+    "training_sessions": []
+  },
+  "status": {
+    "overall_state": "in-progress",
+    "last_updated": null
+  }
+}

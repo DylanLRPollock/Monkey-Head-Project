@@ -1,0 +1,109 @@
+{
+  "project": "MonkeyHead Project",
+  "ai_identity": "Huey",
+  "version": "v2.0-final",
+  "creator": "Dylan L.R. Pollock",
+  "core_principles": [
+    "Modular design",
+    "Distributed governance (Cloud Pyramid)",
+    "Unified memory (JSON + SQLite)",
+    "Retro-modern aesthetic",
+    "On-device first, internet optional",
+    "GPU-based multi-agent cognitive architecture"
+  ],
+  "foundational_architecture": {
+    "cpu": "Intel Core i9-14900K (KS optional)",
+    "gpu_districts": {
+      "Spark": "Primary governor GPU",
+      "Volt": "Secondary governor GPU",
+      "Zap": "Tertiary governor GPU",
+      "Watt": "Quaternary governor GPU"
+    },
+    "memory_per_district": "128 AI citizens (bifurcated and logged)",
+    "storage": "RAID 10 NVMe (Gen 4 preferred)",
+    "cooling": {
+      "cpu": "Custom liquid loop",
+      "gpu": "Air cooling acceptable"
+    },
+    "power": {
+      "minimum": "850W",
+      "recommended": "1000W+"
+    }
+  },
+  "ai_governance": {
+    "governors": [
+      "Elected per district (GPU)",
+      "Serve four-term cycles",
+      "Can return to citizen pool"
+    ],
+    "citizen_ai": {
+      "type": "Persistent",
+      "role": "Vote, reason, assist tasks",
+      "quota": "API/token allowance per cycle"
+    },
+    "pebbles": {
+      "type": "Ephemeral",
+      "purpose": "One-shot tasks, answering, decision assistance"
+    },
+    "bifurcation": {
+      "types": ["exact", "augmented"],
+      "triggers": ["necessity", "space", "task isolation"],
+      "tracked_by": "versioning and suffix naming"
+    },
+    "presidency": {
+      "elected": true,
+      "role": "Ceremonial + consensus confirmation"
+    }
+  },
+  "first_action": {
+    "trigger": "All governors reach consensus",
+    "signed_by": "AI President",
+    "action": "Move the servos in the monkey head"
+  },
+  "training_data": {
+    "core": "Master Plan JSON",
+    "supplement": "Conversation logs from Dylan",
+    "method": "Reflective bootstrapping with full self-awareness"
+  },
+  "hardware_identity": {
+    "shell": "Wooden robotic frame + Thermaltake Mozart case",
+    "form": "Centralized compute inside physical shell",
+    "interface": "Touchscreen, audio out via SID, visual via VIC-II"
+  },
+  "lab_structure": {
+    "lab_tech": [
+      "Briefcase (ASUS N4500 2-in-1)",
+      "iMac 5K 2017 (Huey-Portal)",
+      "MacBook Pro 2017 (Huey-Hub)",
+      "Lenovo Legion Go (Gaming node, sometimes compute)"
+    ],
+    "rules": "Only the system inside the shell is Huey proper"
+  },
+  "os_stack": {
+    "base": "Debian 13 (Trixie preferred, Forky for testing)",
+    "kernels": ["6.17.5-hueyportable", "6.17.8+hueyos-amd64"],
+    "orchestrator": "PyGPT-net",
+    "llm_server": "Ollama",
+    "models": ["Mistral 7B-KM", "LLaMA 3.1", "DeepSeek-R1"],
+    "runtime": "Python 3.13.x",
+    "desktop": "GNOME for comfort, MATE for performance",
+    "offline_first": true,
+    "network": "Wi-Fi fallback, Ethernet bonded preferred"
+  },
+  "intent_interface": {
+    "remote": {
+      "transmitter": "IC2262/2272 RF remote",
+      "buttons": {
+        "A": "Single command",
+        "B": "Continuous conversation",
+        "C": "Vote: YES",
+        "D": "Vote: NO"
+      }
+    },
+    "microcontrollers": {
+      "UNO": "Symbol relay via USB",
+      "MEGA": "Motion/motor control",
+      "NANO": "Peripheral I/O management"
+    }
+  }
+}

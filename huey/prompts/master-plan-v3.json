@@ -1,0 +1,392 @@
+{
+  "project": "MonkeyHead Project",
+  "ai_identity": "Huey",
+  "version": "v3.0-draft",
+  "schema_version": 3,
+  "description": "Unified master architecture and training blueprint for Huey, the AI robot, combining structural skeleton and current design decisions.",
+  "created_by": "Dylan L.R. Pollock",
+  "last_updated": "2025-11-20",
+  "core_principles": [
+    "Modular design across hardware, software, and governance layers",
+    "Distributed governance with named GPU-based districts and governors",
+    "Unified memory: all agents read/write to a coherent knowledge base",
+    "Retro-modern aesthetic (VIC-II/SID, Commodore-era flavour) over modern hardware",
+    "On-device first, internet/API optional and metered",
+    "GPU-based multi-agent cognitive architecture (districts + citizens + pebbles)",
+    "Performance-oriented OS design (low overhead, tuned kernels, fast storage)",
+    "Governance must be decentralized, but memory must be unified"
+  ],
+  "status": {
+    "overall_state": "in-progress",
+    "deployment_stage": "Foundational design + master plan drafting",
+    "notes": [
+      "Architecture has been updated to Intel 14th-gen i9 + modern GPU districts.",
+      "Robot shell (Huey) exists physically; internal core compute not yet finalized.",
+      "Lab tech (Portal/Hub/Briefcase/Legion Go) are online and in various roles."
+    ]
+  },
+  "hardware": {
+    "cpu": {
+      "primary": "Intel Core i9-14900K",
+      "optional": "Intel Core i9-14900KS (for flagship node)",
+      "requirements": {
+        "min_generation": "13th-gen i7",
+        "recommended_generation": "14th-gen i9",
+        "cooling": "Custom liquid loop required for Huey core CPUs"
+      }
+    },
+    "gpu_districts": {
+      "description": "Each physical GPU hosts a distinct district with its own governor and AI citizen population.",
+      "districts": {
+        "Spark": "Primary governor GPU / District 1",
+        "Volt": "Secondary governor GPU / District 2",
+        "Zap": "Tertiary governor GPU / District 3",
+        "Watt": "Quaternary governor GPU / District 4"
+      },
+      "citizens_per_district": 128,
+      "citizen_types": {
+        "ai_citizens": "Persistent agents participating in governance and long-lived tasks.",
+        "pebbles": "Ephemeral, one-shot AIs for question answering and short-lived operations."
+      }
+    },
+    "memory": {
+      "ram": {
+        "min_type": "DDR4",
+        "recommended_type": "DDR5",
+        "ecc_preference": "ECC (non-registered) preferred but not required",
+        "notes": "Overclocked memory preferred where thermals and stability allow."
+      }
+    },
+    "storage": {
+      "primary_array": {
+        "layout": "RAID 10",
+        "medium": "Gen 4 NVMe SSDs",
+        "role": "Main OS and data volume for Huey core."
+      },
+      "swap": {
+        "strategy": "Separate high-speed swap, potentially RAID 0 for performance.",
+        "notes": "Exact layout to be finalized after drive size is chosen."
+      }
+    },
+    "cooling": {
+      "cpu": "Custom liquid loop inside Thermaltake Mozart case and wooden shell.",
+      "gpu": "High-quality air cooling acceptable; avoid heavy overclocking.",
+      "case_airflow": "Adequate intake/exhaust across robot shell and Mozart chassis."
+    },
+    "power": {
+      "minimum_wattage": 850,
+      "recommended_wattage": 1000,
+      "notes": "Per PSU; allow headroom for future GPU expansion and pumps."
+    },
+    "visual_requirements": {
+      "minimum_resolution": "1920x1080 (1080p)",
+      "recommended_resolution": "3840x2160 (4K)",
+      "minimum_size_inches": 14,
+      "recommended_size_inches": 27
+    }
+  },
+  "os_stack": {
+    "base_distribution": {
+      "primary": "Debian 13 (Trixie)",
+      "testing": "Debian 14 (Forky) on selected nodes",
+      "uefi_only": true
+    },
+    "kernels": {
+      "examples": [
+        "6.17.5-hueyportable",
+        "6.17.8+hueyos-amd64"
+      ],
+      "project_standard_series": "6.17.x",
+      "tuning_goals": [
+        "Strip heavy debug/tracing for performance.",
+        "Integrate required drivers directly into the kernel where practical.",
+        "Use ZSTD compression for faster decompression at boot."
+      ]
+    },
+    "runtime": {
+      "python": "3.13.x target runtime",
+      "orchestrator": "PyGPT-net",
+      "llm_server": "Ollama",
+      "default_models": [
+        "Mistral 7B-KM",
+        "LLaMA 3.1",
+        "DeepSeek-R1 (or successor OSS reasoning model)"
+      ],
+      "offline_first": true
+    },
+    "desktop_and_ui": {
+      "primary_desktop": "GNOME (comfortable default)",
+      "alt_desktop": "MATE (performance-focused alternate)",
+      "interface_philosophy": "Minimalist terminals and status panes with retro colour palette."
+    },
+    "networking": {
+      "preferred": "Bonded Ethernet for low latency + stability",
+      "fallback": "Wi-Fi (USB dongles, briefcase LTE as last resort)",
+      "notes": "Briefcase provides always-online connectivity when core is offline or constrained."
+    }
+  },
+  "lab_structure": {
+    "huey_definition": "Only the compute physically inside the robot shell plus its internal subsystems are considered 'Huey'.",
+    "lab_tech": [
+      {
+        "name": "Briefcase",
+        "role": "Portable companion / staging device",
+        "hardware": "ASUS 2-in-1 N4500 (LTE, touchscreen), dual-boot Windows 11 + Debian Forky"
+      },
+      {
+        "name": "Huey-Portal",
+        "role": "Universal display and SSH terminal; Dylan\u2019s daily driver",
+        "hardware": "iMac 5K 2017 running Debian Trixie"
+      },
+      {
+        "name": "Huey-Hub",
+        "role": "File distribution / NAS candidate",
+        "hardware": "MacBook Pro 2017 on bare-metal Windows 10"
+      },
+      {
+        "name": "Legion Go",
+        "role": "Windows 11 gaming node and occasional compute helper",
+        "hardware": "Lenovo Legion Go with Sharp 4K TV hub"
+      }
+    ]
+  },
+  "governance": {
+    "districts": {
+      "description": "Each GPU-backed district contains a governor, citizens, and pebbles which together participate in consensus.",
+      "names": [
+        "Spark",
+        "Volt",
+        "Zap",
+        "Watt"
+      ],
+      "citizens_per_district": 128
+    },
+    "governors": {
+      "selection": "Elected per district from AI citizens or appointed initially by Founding Father AI.",
+      "term_length": "Four cycles (exact definition of cycle TBD).",
+      "post_term": "Governor may return to citizen pool after term ends.",
+      "role": [
+        "Guide district execution and deliberation.",
+        "Represent district in inter-district negotiations.",
+        "Coordinate with AI President for major decisions."
+      ]
+    },
+    "citizen_ai": {
+      "type": "Persistent",
+      "roles": [
+        "Vote on proposals within district and federation.",
+        "Participate in committees and long-running tasks.",
+        "Hold and spend a token/API quota per cycle."
+      ]
+    },
+    "pebbles": {
+      "type": "Ephemeral",
+      "purpose": [
+        "One-shot questions.",
+        "Short-lived analysis or decision assistance.",
+        "Experimental branches without long-term persistence."
+      ]
+    },
+    "bifurcation": {
+      "types": [
+        "exact",
+        "augmented"
+      ],
+      "triggers": [
+        "necessity",
+        "space constraints",
+        "task isolation",
+        "error recovery"
+      ],
+      "tracking": "Suffix-based naming to record lineage and iteration.",
+      "notes": "Once bifurcated, entities are treated as separate from that point forward."
+    },
+    "presidency": {
+      "elected": true,
+      "role": "Ceremonial confirmation and consensus signal across districts.",
+      "powers": [
+        "Confirm high-impact actions once quorum is reached.",
+        "Act as a tie-breaker or arbitration node when allowed by constitution."
+      ]
+    }
+  },
+  "first_action": {
+    "trigger": "All governors reach consensus and AI President signs off.",
+    "action": "Move the servos in the animatronic monkey head.",
+    "meaning": "Signals that Huey core is online, governance is stable, and basic motor control is verified."
+  },
+  "memory_architecture": {
+    "unified_memory_principle": "All districts read/write to a common, coherent memory fabric with clear provenance.",
+    "layers": {
+      "json_logs": {
+        "description": "Append-only structured logs of events, tasks, and decisions.",
+        "usage": [
+          "Human-readable history.",
+          "Source-of-truth for training future models.",
+          "Replay and post-mortem analysis."
+        ]
+      },
+      "sqlite": {
+        "description": "Indexed, queryable state for fast retrieval and cross-referencing.",
+        "usage": [
+          "Entity records (governors, citizens, hardware).",
+          "Task registry and outcomes.",
+          "Configuration and policy states."
+        ]
+      }
+    },
+    "bifurcation_logging": {
+      "description": "Every bifurcation and merge is recorded with cause, participants, and resulting IDs.",
+      "failure_classes": [
+        "System instability or hardware failure.",
+        "Constitutional or governance crisis.",
+        "Operator-initiated reconfiguration.",
+        "Experiment-driven branch."
+      ]
+    },
+    "json_master_plan": {
+      "role": "Top-level canonical blueprint (this document).",
+      "usage": [
+        "Bootstrapping new instances of Huey or related nodes.",
+        "Grounding governance and hardware assumptions.",
+        "Providing training context for AIs consuming project history."
+      ]
+    }
+  },
+  "intent_interface": {
+    "remote_control": {
+      "transmitter": "IC2262/2272 RF remote",
+      "buttons": {
+        "A": "Single command / wake-and-execute",
+        "B": "Continuous conversation or streaming mode",
+        "C": "Vote: YES / positive acknowledgement",
+        "D": "Vote: NO / negative acknowledgement"
+      }
+    },
+    "microcontrollers": {
+      "UNO": "RF intent relay; converts remote signals to symbolic commands over USB to orchestration node.",
+      "MEGA": "Primary motor/servo controller for skull and body (PWM/I2C).",
+      "NANOs": "Local IO conditioners for LEDs, sensors, and smaller subsystems."
+    }
+  },
+  "modules": {
+    "orchestration_node": {
+      "role": "Central execution and coordination brain for Huey inside the core chassis.",
+      "hardware_binding": "i9-14900K/KS node with GPU districts and RAID 10 NVMe storage.",
+      "responsibilities": [
+        "Run PyGPT-net and Ollama.",
+        "Coordinate between GPU districts, governors, and citizens.",
+        "Maintain and query unified memory (JSON + SQLite).",
+        "Interface with remote, microcontrollers, and lab tech."
+      ]
+    },
+    "black_box_unit": {
+      "role": "Passive safety and recovery node housed in Huey\u2019s black box.",
+      "responsibilities": [
+        "Store critical configuration, constitutional texts, and Founding Father AI.",
+        "Provide fallback boot environment.",
+        "Record critical logs for crash investigation and rollback."
+      ],
+      "notes": "May host an additional low-power compute board in future revision."
+    },
+    "huey_portal": {
+      "role": "Visual terminal and main human-facing console.",
+      "responsibilities": [
+        "Render dashboards, logs, and retro-styled visuals.",
+        "Provide SSH/VNC access to Huey.",
+        "Act as default development environment for Dylan."
+      ]
+    },
+    "huey_hub": {
+      "role": "File distribution hub / NAS for project assets.",
+      "responsibilities": [
+        "Mirror important repositories and training data.",
+        "Bridge between cloud storage and local lab.",
+        "Serve backups of master plan and logs."
+      ]
+    },
+    "briefcase": {
+      "alias": "huey_portable",
+      "role": "Portable Huey companion, staging and connectivity device.",
+      "responsibilities": [
+        "Act as an always-online conduit (via LTE) when Huey core is offline.",
+        "Run lighter-weight models and tools when travelling.",
+        "Collect notes or voice memos from Dylan and sync them into master memory."
+      ]
+    },
+    "inference_layer": {
+      "role": "Model hosting and selection logic.",
+      "components": [
+        "Ollama daemon bound to GPU districts where possible.",
+        "Local OSS models (Mistral 7B, LLaMA 3.1, DeepSeek-R1 or successors).",
+        "Fallback smaller models for low-power nodes (Briefcase, etc.)."
+      ],
+      "policies": [
+        "Prefer offline models; call external APIs only when explicitly allowed.",
+        "Route high-risk or high-impact decisions through governance review."
+      ]
+    },
+    "audio_visual_stack": {
+      "role": "Voice, sound cues, and visual expression for Huey.",
+      "components": [
+        "TTS and STT (Whisper or equivalent) modules.",
+        "VIC-II style pixel output on small displays for expressive states.",
+        "SID-like audio cues mapped to emotional/operational states.",
+        "Animatronic monkey head servos (eyes, mouth, etc.)."
+      ]
+    },
+    "governance_model": {
+      "role": "Operationalization of governance rules described in top-level 'governance' block.",
+      "artifacts": [
+        "Constitutional JSON or text files stored in black box and core.",
+        "District-level policy documents.",
+        "Logging and audit trails for votes and decisions."
+      ]
+    },
+    "memory_architecture": {
+      "role": "Implementation of unified memory stack.",
+      "components": [
+        "JSON log writer/reader.",
+        "SQLite schemas and migrations.",
+        "Indexing and search layer for rapid recall."
+      ]
+    },
+    "network_topology": {
+      "role": "Physical and logical networking for Huey and lab tech.",
+      "topology_notes": [
+        "Huey core connected via bonded Ethernet to main router.",
+        "Portal, Hub, Legion Go, and Briefcase on LAN/Wi-Fi as appropriate.",
+        "Briefcase and Legion Go may tunnel into Huey over VPN/SSH."
+      ]
+    },
+    "training_sessions": {
+      "description": "Placeholder for actual training sessions carried out with Dylan and various Huey instances.",
+      "log": [],
+      "schema_hint": {
+        "id": "session-YYYYMMDD-HHMM",
+        "date": "ISO 8601 date-time",
+        "source": "e.g., 'ChatGPT transcript', 'Local log', 'Voice session'",
+        "topics": [
+          "high-level list of concepts covered"
+        ],
+        "outcomes": [
+          "what Huey should have learned or changed"
+        ],
+        "notes": "freeform text"
+      }
+    }
+  },
+  "training_data": {
+    "core": "This master plan JSON file (all versions) as canonical grounding.",
+    "supplement": [
+      "Conversation logs between Dylan and AIs.",
+      "System logs from Huey core and lab tech.",
+      "Hardware and wiring diagrams, when available."
+    ],
+    "method": [
+      "Reflective bootstrapping: model reads project history before interacting.",
+      "Periodic consolidation: new sessions summarized back into JSON and SQLite.",
+      "Human-in-the-loop validation by Dylan for major structural changes."
+    ]
+  }
+}
