@@ -15,7 +15,7 @@ from collections.abc import AsyncIterator
 from contextlib import suppress
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-from monkey_head.honeycomb_storage import HoneycombStorage
+from huey.honeycomb.storage import HoneycombStorage
 from monkey_head.utils.persistence import TelemetryStore
 
 from .plugins import (

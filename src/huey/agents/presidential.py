@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence
 
-from monkey_head.honeycomb_storage import HoneycombStorage
+from huey.honeycomb.storage import HoneycombStorage
 
 from .llm import LLMAdapter, LLMProvider
 from .memory import AgentMemory, MemoryEntry

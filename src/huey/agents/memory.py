@@ -11,7 +11,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-from monkey_head.honeycomb_storage import HoneycombRecord, HoneycombStorage
+from huey.honeycomb.storage import HoneycombRecord, HoneycombStorage
 
 
 @dataclass(frozen=True)

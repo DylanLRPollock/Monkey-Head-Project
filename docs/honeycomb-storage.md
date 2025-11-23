@@ -9,8 +9,8 @@ retention.
 
 ## Storage model
 
-The `huey.honeycomb_storage.HoneycombStorage` class exposes a key/value API that
-persists JSON payloads into the `honeycomb_cells` table.【F:huey/honeycomb_storage.py†L16-L101】
+The `huey.honeycomb.storage.HoneycombStorage` class exposes a key/value API that
+persists JSON payloads into the `honeycomb_cells` table.【F:src/huey/honeycomb/storage.py†L34-L155】
 Keys are split on `/` to derive comb and cell components, enabling structured
 queries and efficient indices. Examples:
 
@@ -22,16 +22,16 @@ queries and efficient indices. Examples:
 
 `HoneycombStorage.store()` automatically timestamps inserts and performs an
 upsert so updates preserve the original creation timestamp while refreshing the
-`updated_at` column.【F:huey/honeycomb_storage.py†L63-L85】 The helper methods
+`updated_at` column.【F:src/huey/honeycomb/storage.py†L116-L140】 The helper methods
 `load()`, `get_record()`, `list_keys()`, `remove()`, and `count()` make the
-storage behave like a persistent dictionary with optional prefix scoping.【F:huey/honeycomb_storage.py†L87-L153】
+storage behave like a persistent dictionary with optional prefix scoping.【F:src/huey/honeycomb/storage.py†L143-L199】
 
 ## Integration with the sensor manager
 
 `sensor_manager.SensorManager` captures readings from registered plugins and
 immediately persists them into the honeycomb. Each reading is given a unique
 cell name derived from a UUID, ensuring durable histories for later analysis.
-【F:huey/hardware/manager.py†L59-L111】 The same manager exposes streaming queues
+【F:src/huey/hardware/manager.py†L43-L156】 The same manager exposes streaming queues
 and history loaders so operators can replay sensor activity or subscribe to live
 feeds without touching the underlying database.
 
@@ -44,25 +44,25 @@ reading and broadcasts it to subscribers.
 Several utilities build on top of the storage abstraction:
 
 - `HoneycombIndex` classifies filesystem artefacts into comb paths based on
-  content type mappings shared with the auto-sorter.【F:huey/honeycomb_index.py†L20-L139】
+  content type mappings shared with the auto-sorter.【F:src/huey/honeycomb/index.py†L20-L198】
 - `HoneycombMonitor.build_usage_report()` aggregates totals, content-type
   breakdowns, and growth samples. The FastAPI endpoint `/memory/honeycomb/usage`
   returns this data in the `HoneycombUsageResponse` schema for dashboards or
-  alerting pipelines.【F:src/huey/api.py†L232-L297】【F:src/huey/api.py†L1084-L1103】
+  alerting pipelines.【F:src/huey/honeycomb/monitor.py†L27-L114】【F:src/huey/api.py†L1650-L1678】
 - `SensorManager.load_history()` retrieves ordered historical records for a
   sensor, relying on `HoneycombStorage.list_keys()` and `get_record()` to load
-  payloads and timestamps.【F:huey/hardware/manager.py†L113-L148】
+  payloads and timestamps.【F:src/huey/hardware/manager.py†L113-L155】
 
 ## Backups and replication
 
-`huey.honeycomb_backup.perform_rsync_snapshot` creates timestamped snapshots of
+`huey.honeycomb.backup.perform_rsync_snapshot` creates timestamped snapshots of
 `memory/` using `rsync`. Snapshots may be sent to local or remote destinations,
 and `restore_snapshot` rehydrates the tree when needed. A sample cron entry:
 
 ```
 0 * * * * hueyos /opt/hueyos/.venv/bin/python - <<'PY'
 from pathlib import Path
-from huey.honeycomb_backup import perform_rsync_snapshot
+from huey.honeycomb.backup import perform_rsync_snapshot
 
 perform_rsync_snapshot(destination=Path("/mnt/honeycomb-backups"))
 PY
@@ -77,11 +77,11 @@ if the backup toolchain is missing.
 rolling growth series (daily buckets by default). The resulting payload feeds
 Grafana or similar dashboards so sudden spikes become visible. Combine it with
 `HoneycombIndex` to align storage reporting with the auto-sort file taxonomy.
-【F:huey/honeycomb_monitor.py†L20-L144】
+【F:src/huey/honeycomb/monitor.py†L27-L108】
 
 ## Retention and pruning
 
-`huey.honeycomb_retention.RetentionPolicy` applies content-aware expiry rules to
+`huey.honeycomb.retention.RetentionPolicy` applies content-aware expiry rules to
 old cells, using duration strings such as `14d` or `6m`. Operators can set
 different windows per content type or comb and record how many rows were
-pruned, closing the loop between ingestion, monitoring, and retention.
+pruned, closing the loop between ingestion, monitoring, and retention.【F:src/huey/honeycomb/retention.py†L29-L95】

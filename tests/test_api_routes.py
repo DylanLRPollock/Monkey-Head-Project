@@ -267,7 +267,7 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
     from monkey_head.hardware import drivers
     from monkey_head.hardware.manager import SensorManager
     from monkey_head.hardware.plugins import SensorRegistry
-    from monkey_head.honeycomb_storage import HoneycombStorage
+    from monkey_head.honeycomb.storage import HoneycombStorage
     from monkey_head.network.manager import NetworkStatus
     from monkey_head.power.management import PowerEvent
 

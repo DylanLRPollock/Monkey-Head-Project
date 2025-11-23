@@ -1,4 +1,4 @@
-"""Legacy import path forwarding to :mod:`huey.honeycomb.retention`."""
+"""Compatibility wrapper for :mod:`huey.honeycomb.retention`."""
 
 from __future__ import annotations
 
