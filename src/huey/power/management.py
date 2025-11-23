@@ -299,6 +299,7 @@ class BatteryMonitor:
             return None
         with contextlib.suppress(ValueError):
             return float(text)
+        # If conversion fails, return None
         return None
 
     def _ac_adapter_online(self, root: Path) -> Optional[bool]:

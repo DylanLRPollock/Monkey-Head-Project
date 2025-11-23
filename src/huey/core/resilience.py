@@ -425,9 +425,10 @@ class CrashRecoveryManager:
                 raise KeyError(f"Unknown monitored process: {name}")
             process.auto_restart_enabled = enabled
             process.manual_override_reason = reason if not enabled else None
+            name_sanitized = name.replace('\r', '').replace('\n', '')
             LOGGER.info(
                 "Manual override for %s set to %s (reason=%s)",
-                name,
+                name_sanitized,
                 enabled,
                 reason,
             )
@@ -448,7 +449,8 @@ class CrashRecoveryManager:
             if process is None:
                 raise KeyError(f"Unknown monitored process: {name}")
             process.restart()
-            LOGGER.info("Manual restart executed for process %s", name)
+            name_sanitized = name.replace('\r', '').replace('\n', '')
+            LOGGER.info("Manual restart executed for process %s", name_sanitized)
 
     def statuses(self) -> List[Dict[str, Any]]:
         """Return serialisable status information for each process."""
