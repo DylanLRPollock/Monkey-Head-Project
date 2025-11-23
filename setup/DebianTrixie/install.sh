@@ -202,26 +202,25 @@ function ensure_python_runtime() {
 
     local version
     version=$("$python_bin" -V 2>&1 | awk '{print $2}')
-    if [[ $version != 3.13.* && $version != 3.14.* ]]; then
+    if [[ $version != 3.14.* ]]; then
         cat <<'PYWARN' >&2
-Python 3.13.x or 3.14.x is required for the Monkey Head Project runtime but was not detected.
-Debian Trixie currently ships Python 3.12. Please build CPython 3.13.5 today and
-schedule the upgrade to Python 3.14.x immediately after the 2025-10-31 certification gate.
-Mirror the Dockerfile build stage when compiling from source:
+Python 3.14.x is required for the Monkey Head Project runtime but was not detected.
+Debian Trixie currently ships Python 3.12. Please build CPython 3.14.x to meet the
+post-changeover target. Mirror the Dockerfile build stage when compiling from source:
 
   apt-get install -y --no-install-recommends \
       build-essential ca-certificates curl wget xz-utils \
       libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev \
       libffi-dev liblzma-dev tk-dev uuid-dev
-  curl -fsSLO https://www.python.org/ftp/python/${PYTHON_FALLBACK:-3.13.5}/Python-${PYTHON_FALLBACK:-3.13.5}.tgz
-  tar -xzf Python-${PYTHON_FALLBACK:-3.13.5}.tgz
-  cd Python-${PYTHON_FALLBACK:-3.13.5}
+  curl -fsSLO https://www.python.org/ftp/python/${PYTHON_FALLBACK:-3.14.0}/Python-${PYTHON_FALLBACK:-3.14.0}.tgz
+  tar -xzf Python-${PYTHON_FALLBACK:-3.14.0}.tgz
+  cd Python-${PYTHON_FALLBACK:-3.14.0}
   ./configure --prefix=/usr/local --enable-optimizations --with-lto --enable-shared
   make -j"$(nproc)"
   make altinstall
   ldconfig
 
-Re-run this installer after Python 3.13/3.14 is available (python3.14, python3.13 or python3).
+Re-run this installer after Python 3.14 is available (python3.14).
 PYWARN
         exit 1
     fi

@@ -10,7 +10,7 @@
 > HueyOS is a modular robotic AI/OS that blends retro-computing aesthetics with modern Linux, clustered compute, and a constitutional governance model (the **Cloud Pyramid**). It operates offline-first with optional API use. **Governance remains decentralized while memory remains unified.**
 
 ![License](https://img.shields.io/badge/license-GPLv3-blue)
-![Python](https://img.shields.io/badge/python-3.12–3.14-blue)
+![Python](https://img.shields.io/badge/python-3.14.x-blue)
 
 ---
 
