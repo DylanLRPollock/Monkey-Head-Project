@@ -84,13 +84,13 @@ At a conceptual level:
 
 The **Master Plan JSON** is the canonical, machine-readable blueprint for Huey’s hardware, governance, memory model, and history. The current canonical version is:
 
-- **`master-plan-v14.5`** — *“Master Plan V14.5: structurally expanded successor to V14.0.”*  
-  It preserves all constitutional, hardware, and history content from V14.0 and adds explicit meta/lineage blocks, process skeletons, and templates for nodes, districts, citizens, and governance workflows.
+- **`master-plan-v13.json`** — *“Master Plan V13: canonical blueprint for V13.x releases.”*
+  It captures the governance, hardware, and historical context referenced throughout this README and is consumed by Huey at boot time.
 
 Key points:
 
-- **Schema** — Version 11 (frozen for V14.x); all new content must conform to this schema.
-- **Lineage** — V14.5 compiles and refines V0.1, V2-final, V3, V4, V5, V7, V8, V10, V11 (and 11.5), V12 (and 12.5), and the entire V13 family, then locks those decisions for training and reference.
+- **Schema** — Version 11 (frozen for the V13 family); all new content must conform to this schema.
+- **Lineage** — V13 compiles and refines V0.1, V2-final, V3, V4, V5, V7, V8, V10, V11 (and 11.5), and V12 (and 12.5), then locks those decisions for training and reference.
 - **Role in the repo**  
   - This README is the **human-facing narrative**.  
   - The Master Plan JSON is the **AI-facing canonical spec**, consumed by Huey at boot and by tooling during orchestration and training.
@@ -110,7 +110,7 @@ If you change the governance model, hardware assumptions, or key policies, updat
 | `docs/`                   | Constitution, governance, architecture, API, plugins  |
 | `docs/api-reference.md`   | FastAPI reference and `curl` recipes                  |
 | `docs/sensor-plugins.md`  | Sensor plugin development guide                       |
-| `docs/master-plan/`       | Master Plan JSONs (V14.x is canonical)               |
+| `master-plan-v13.json`    | Canonical Master Plan JSON consumed at runtime       |
 | `huey/`                   | Core runtime and service modules                      |
 | `huey/api/`               | FastAPI surface                                       |
 | `setup/`                  | Installer scripts, ISO builder, provisioning configs  |
