@@ -17,6 +17,8 @@ __all__ = getattr(
 )
 if "check_python_version" not in __all__:
     __all__.append("check_python_version")
+if "check_error" not in __all__:
+    __all__.append("check_error")
 
 for _name in __all__:
     if _name != "check_python_version":
@@ -55,3 +57,13 @@ def check_python_version() -> None:
             "Python 3.%s detected. This version is experimental and not fully supported.",
             minor,
         )
+
+
+def check_error(command: Any, description: str) -> None:
+    """Raise a runtime error when a subprocess command fails."""
+
+    returncode = getattr(command, "returncode", 0)
+    if returncode != 0:
+        message = f"Error: {description} failed with error code {returncode}."
+        logger.error(message)
+        raise RuntimeError(message)

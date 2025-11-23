@@ -7,7 +7,7 @@
 
 import logging
 
-from ..logging_setup import configure_logging
+from .logging_setup import configure_logging
 
 
 def get_logger(name: str | None = None, level: str | None = None) -> logging.Logger:
