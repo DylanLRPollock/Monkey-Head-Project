@@ -19,7 +19,7 @@ import csv
 import json
 from pathlib import Path
 from typing import List
-
+import logging
 from .chat_learning import train_from_chat_and_pdfs
 
 
@@ -66,8 +66,8 @@ def load_memory_texts(memory_dir: str | Path) -> List[str]:
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
             texts.append(json.dumps(data))
-        except Exception:
-            pass
+        except Exception as e:
+            logging.warning(f"Failed to load JSON from '{path}': {e}")
     return texts
 
 
