@@ -25,14 +25,15 @@ services:
     env_file:
       - ${HUEY_ENV_FILE:-huey.env.example}
     environment:
-      HUEY_API_PORT: ${HUEY_API_PORT:-1995}
+      HUEY_HOST: ${HUEY_HOST:-0.0.0.0}
+      HUEY_PORT: ${HUEY_PORT:-1995}
       HUEY_CONFIG_DIR: /app/config
       HUEY_MEMORY_DIR: /app/memory
     volumes:
       - ./config:/app/config
       - ./memory:/app/memory
     ports:
-      - "${HUEY_API_PORT:-1995}:1995"
+      - "${HUEY_PORT:-1995}:1995"
     healthcheck:
       test:
         - CMD
@@ -52,6 +53,8 @@ services:
       - huey
       - run
       - --cli
+    env_file:
+      - ${HUEY_ENV_FILE:-huey.env.example}
     environment:
       HUEY_CONFIG_DIR: /app/config
       HUEY_MEMORY_DIR: /app/memory
