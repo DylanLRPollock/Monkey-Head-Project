@@ -7,7 +7,7 @@ import time
 
 import pytest
 
-from monkey_head.honeycomb.storage import HoneycombStorage
+from hueyos.honeycomb.storage import HoneycombStorage
 
 
 def test_store_list_and_remove(tmp_path):

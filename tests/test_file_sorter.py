@@ -13,7 +13,7 @@
 # ==================================================
 import time
 
-from monkey_head.utils.sorting import list_files_by_mtime, natural_sort
+from hueyos.utils.sorting import list_files_by_mtime, natural_sort
 
 
 def test_list_files_by_mtime(tmp_path):

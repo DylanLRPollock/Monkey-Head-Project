@@ -14,7 +14,7 @@ except Exception:  # pragma: no cover - can't import GUI libs
     tk = None
     messagebox = None
 
-from monkey_head.config_manager import ConfigManager
+from hueyos.config_manager import ConfigManager
 
 
 class CriticalErrorHandler(logging.Handler):
@@ -62,7 +62,7 @@ def _load_logging_settings(config_path: Optional[str]) -> dict[str, object]:
         "logging",
         {
             "log_level": "INFO",
-            "log_file": "memory/LOGS/monkey_head.log",
+            "log_file": "memory/LOGS/hueyos.log",
             "log_max_bytes": 10_485_760,
             "log_backup_count": 5,
         },
@@ -75,7 +75,7 @@ def configure_logging(config_path: Optional[str] = None) -> logging.Logger:
     logging_cfg = _load_logging_settings(config_path)
 
     log_level = str(logging_cfg.get("log_level", "INFO")).upper()
-    log_file_value = logging_cfg.get("log_file", "memory/LOGS/monkey_head.log")
+    log_file_value = logging_cfg.get("log_file", "memory/LOGS/hueyos.log")
     max_bytes = _parse_int(logging_cfg.get("log_max_bytes", 10_485_760), 10_485_760)
     backup_count = _parse_int(logging_cfg.get("log_backup_count", 5), 5)
 

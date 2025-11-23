@@ -11,13 +11,13 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.05.2025
 # ==================================================
-"""Demonstration of using :class:`~monkey_head.ai_processor.AIProcessor`."""
+"""Demonstration of using :class:`~hueyos.ai_processor.AIProcessor`."""
 
 from __future__ import annotations
 
 import argparse
 
-from monkey_head.ai_processor import AIProcessor
+from hueyos.ai_processor import AIProcessor
 
 
 def main() -> None:

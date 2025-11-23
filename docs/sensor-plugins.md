@@ -63,12 +63,12 @@ were active when a reading was produced.
 ## Packaging and entry points
 
 `SensorRegistry` maintains the mapping of symbolic plugin names to classes and
-can lazily load additional plugins from the `monkey_head.sensors` entry point
+can lazily load additional plugins from the `hueyos.sensors` entry point
 group.【F:huey/hardware/plugins.py†L67-L166】 Adding the following to your
 `pyproject.toml` registers the example plugin:
 
 ```toml
-[project.entry-points."monkey_head.sensors"]
+[project.entry-points."hueyos.sensors"]
 "workshop.temperature" = "my_package.sensors:WorkshopTemperature"
 ```
 

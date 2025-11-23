@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test Task Scheduler module (tests)
 
-"""Tests for the :mod:`monkey_head.core.task_scheduler` module."""
+"""Tests for the :mod:`hueyos.core.task_scheduler` module."""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ else:
             current_path.append(candidate_str)
     pkg.__path__ = current_path
 
-from monkey_head.core.task_scheduler import (  # noqa: E402  pylint: disable=wrong-import-position
+from hueyos.core.task_scheduler import (  # noqa: E402  pylint: disable=wrong-import-position
     Agent,
     ResourceProfile,
     ResourceSnapshot,

@@ -22,7 +22,7 @@ def test_system_check_json(monkeypatch, capsys):
         return {"os_supported": True, "python_supported": True}
 
     monkeypatch.setattr(
-        "monkey_head.system_checks.system_check", fake_system_check, raising=True
+        "hueyos.system_checks.system_check", fake_system_check, raising=True
     )
 
     exit_code = cli.main(["system-check", "--json"])
@@ -113,7 +113,7 @@ class _FakeScheduler:
 
 
 def test_agent_status_json(monkeypatch, capsys):
-    from monkey_head.core.task_scheduler import Agent, TaskStatus
+    from hueyos.core.task_scheduler import Agent, TaskStatus
 
     records = [
         _FakeRecord(task_id="1", status=TaskStatus.RUNNING, assigned_agent=Agent.SPARK),

@@ -15,9 +15,9 @@ def test_manager_ui(monkeypatch):
     monkeypatch.setattr("run.launch_manager_ui", fake_manager)
     monkeypatch.setattr("run.launch_gui", lambda: None)
     monkeypatch.setattr("run._load_cli", lambda: lambda: None)
-    monkeypatch.setattr("monkey_head.core.system_checks.check_os_support", lambda: None)
+    monkeypatch.setattr("hueyos.core.system_checks.check_os_support", lambda: None)
     monkeypatch.setattr(
-        "monkey_head.core.system_checks.check_python_version", lambda: None
+        "hueyos.core.system_checks.check_python_version", lambda: None
     )
     monkeypatch.setattr("sys.argv", ["run.py", "--manager-ui"])
     main()

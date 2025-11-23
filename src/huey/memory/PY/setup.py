@@ -31,8 +31,8 @@ setup(
     author="Dylan L.R. Pollock",
     author_email="admin@dlrp.ca",
     url="https://github.com/DylanLRPollock/Monkey-Head-Project",
-    packages=find_packages(where="monkey_head"),
-    package_dir={"": "monkey_head"},
+    packages=find_packages(where="hueyos"),
+    package_dir={"": "hueyos"},
     install_requires=[
         "requests==2.32.4",
         "httpx==0.28.1",

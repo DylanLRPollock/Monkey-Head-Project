@@ -5,7 +5,7 @@
 
 import math
 
-from monkey_head.utils.gpu import detect_accelerators, recommend_models_for_vram
+from hueyos.utils.gpu import detect_accelerators, recommend_models_for_vram
 
 
 def test_detect_accelerators_sysfs(tmp_path):

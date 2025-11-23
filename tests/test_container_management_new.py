@@ -9,7 +9,7 @@ import pytest
 
 pytest.importorskip("requests")
 
-from monkey_head.services.container_management import (
+from hueyos.services.container_management import (
     build_docker_image,
     cleanup_images,
     cleanup_kubernetes,

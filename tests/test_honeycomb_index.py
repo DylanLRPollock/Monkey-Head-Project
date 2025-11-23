@@ -5,8 +5,8 @@
 
 import time
 
-from monkey_head.honeycomb.index import HoneycombIndex
-from monkey_head.honeycomb.storage import HoneycombStorage
+from hueyos.honeycomb.index import HoneycombIndex
+from hueyos.honeycomb.storage import HoneycombStorage
 
 
 def test_index_records_by_content_type(tmp_path, monkeypatch):

@@ -15,7 +15,7 @@ import subprocess
 import types
 from unittest.mock import patch
 
-from monkey_head import subos_manager
+from hueyos import subos_manager
 
 
 class R:

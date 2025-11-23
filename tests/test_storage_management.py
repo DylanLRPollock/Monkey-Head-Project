@@ -6,7 +6,7 @@
 import os
 import time
 
-from monkey_head.storage_management import StorageManager
+from hueyos.storage_management import StorageManager
 
 
 def test_sort_and_list(tmp_path):

@@ -5,7 +5,7 @@
 
 import pytest
 
-from monkey_head.cli_print import print_message
+from hueyos.cli_print import print_message
 
 
 def test_print_message_outputs(capsys):

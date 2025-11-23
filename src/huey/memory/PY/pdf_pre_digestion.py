@@ -15,7 +15,7 @@
 
 This version relies solely on :mod:`PyMuPDF` so no external ``pdftotext`` or
 ``pdftoppm`` binaries are required.  The output text is formatted using the
-project's :func:`~monkey_head.formatter.format_text` helper to keep line lengths
+project's :func:`~hueyos.formatter.format_text` helper to keep line lengths
 manageable for AI models.  Each page is rendered to a PNG and also converted to
 JPEG for compatibility with other tools.
 """

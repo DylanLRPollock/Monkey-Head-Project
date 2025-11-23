@@ -16,7 +16,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-INSTALL_DIR="/opt/monkey_head"
+INSTALL_DIR="/opt/hueyos"
 VENV_DIR="$INSTALL_DIR/venv"
 MEMORY_PATH="${MEMORY_PATH:-$INSTALL_DIR/memory}"
 CONFIG_DIR="$INSTALL_DIR/config/pygpt_net"
@@ -301,9 +301,9 @@ function ensure_env_file() {
         cat <<'ENV' > "$ENV_TEMPLATE"
 APP_ENV=production
 TZ=Etc/UTC
-PDF_DIR=/opt/monkey_head/memory/PDF
+PDF_DIR=/opt/hueyos/memory/PDF
 # Uncomment to override default log directory
-# LOG_DIR=/opt/monkey_head/memory/LOGS
+# LOG_DIR=/opt/hueyos/memory/LOGS
 ENV
     fi
 
@@ -330,7 +330,7 @@ JSON
 from pathlib import Path
 from huey.memory.PY.license_gui import show_license_gui, ConfigManager
 
-config_path = Path("/opt/monkey_head/config/pygpt_net/config.json")
+config_path = Path("/opt/hueyos/config/pygpt_net/config.json")
 manager = ConfigManager(str(config_path))
 if manager.get_setting("license.accepted"):
     raise SystemExit(0)
@@ -339,7 +339,7 @@ try:
     show_license_gui(config_path)
 except Exception as exc:  # pragma: no cover - depends on desktop availability
     print(f"License GUI could not be displayed: {exc}")
-    print("Run '/opt/monkey_head/venv/bin/python -m huey.memory.PY.license_cli' to accept via CLI.")
+    print("Run '/opt/hueyos/venv/bin/python -m huey.memory.PY.license_cli' to accept via CLI.")
     manager.set_setting("license.accepted", False)
 PY
 }

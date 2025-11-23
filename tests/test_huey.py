@@ -13,7 +13,7 @@
 # ==================================================
 import unittest
 
-from monkey_head.huey_core_data import generate_core_data
+from hueyos.huey_core_data import generate_core_data
 
 
 class TestHuey(unittest.TestCase):

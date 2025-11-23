@@ -69,8 +69,8 @@ setattr(py_pkg, "ai_processor", ai_module)
 
 import huey.api as api_module
 from huey.api import SystemStatusResponse, app
-from monkey_head.core.task_scheduler import ResourceSnapshot, TaskScheduler, TaskStatus
-from monkey_head.hardware.plugins import SensorReading
+from hueyos.core.task_scheduler import ResourceSnapshot, TaskScheduler, TaskStatus
+from hueyos.hardware.plugins import SensorReading
 
 
 @pytest.mark.asyncio
@@ -192,7 +192,7 @@ async def test_system_status_endpoint_reports_expected_fields(monkeypatch, tmp_p
 
 @pytest.mark.asyncio
 async def test_resilience_endpoints_support_manual_override(monkeypatch):
-    from monkey_head.core.resilience import CrashRecoveryManager
+    from hueyos.core.resilience import CrashRecoveryManager
 
     manager = CrashRecoveryManager()
     monkeypatch.setattr(api_module, "CRASH_MANAGER", manager, raising=False)
@@ -236,7 +236,7 @@ async def test_resilience_endpoints_support_manual_override(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_emergency_endpoints_require_quorum(monkeypatch):
-    from monkey_head.core.resilience import EmergencyGovernanceController
+    from hueyos.core.resilience import EmergencyGovernanceController
 
     controller = EmergencyGovernanceController()
     controller.register_service("mock", stop=lambda: None, start=lambda: None)
@@ -264,12 +264,12 @@ async def test_emergency_endpoints_require_quorum(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
-    from monkey_head.hardware import drivers
-    from monkey_head.hardware.manager import SensorManager
-    from monkey_head.hardware.plugins import SensorRegistry
-    from monkey_head.honeycomb.storage import HoneycombStorage
-    from monkey_head.network.manager import NetworkStatus
-    from monkey_head.power.management import PowerEvent
+    from hueyos.hardware import drivers
+    from hueyos.hardware.manager import SensorManager
+    from hueyos.hardware.plugins import SensorRegistry
+    from hueyos.honeycomb.storage import HoneycombStorage
+    from hueyos.network.manager import NetworkStatus
+    from hueyos.power.management import PowerEvent
 
     storage = HoneycombStorage(base_dir=tmp_path)
     registry = SensorRegistry()

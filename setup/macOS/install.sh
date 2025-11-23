@@ -112,7 +112,7 @@ show_license_gui
 function preload_data() {
     echo "Preloading bundled data..."
     source "$VENV_DIR/bin/activate"
-    python -m monkey_head.scripts.preload_data --summary || echo "Data preload failed"
+    python -m hueyos.scripts.preload_data --summary || echo "Data preload failed"
 }
 
 preload_data

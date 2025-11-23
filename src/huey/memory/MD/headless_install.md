@@ -4,7 +4,7 @@ For servers without a graphical environment you can run the license
 agreement from the command line.
 
 ```bash
-python monkey_head/license_cli.py
+python hueyos/license_cli.py
 ```
 
 `license_cli.py` prints the license text and prompts whether you accept

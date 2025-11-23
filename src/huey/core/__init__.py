@@ -15,7 +15,7 @@ __all__ = ["messaging", "system_checks", "task_scheduler"]
 
 def __getattr__(name: str) -> Any:  # pragma: no cover - thin import proxy
     if name in __all__:
-        module = import_module(f"monkey_head.core.{name}")
+        module = import_module(f"hueyos.core.{name}")
         globals()[name] = module
         return module
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
