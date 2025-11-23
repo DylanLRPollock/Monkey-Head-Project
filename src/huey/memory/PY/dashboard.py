@@ -55,13 +55,13 @@ try:  # pragma: no cover - psutil optional
 except Exception:  # pragma: no cover - psutil missing at runtime
     psutil = None  # type: ignore[assignment]
 
-from monkey_head.core.task_scheduler import (
+from hueyos.core.task_scheduler import (
     Agent,
     TaskPriority,
     TaskScheduler,
     TaskStatus,
 )
-from monkey_head.utils.paths import get_memory_path
+from hueyos.utils.paths import get_memory_path
 
 
 def _format_bytes(value: float | int | None) -> str:

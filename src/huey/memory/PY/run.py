@@ -3,14 +3,14 @@
 # www.dlrp.ca
 # HueyOS: Run module (huey/memory/PY)
 
-"""Entry point wrapper for the legacy :mod:`monkey_head.run` module."""
+"""Entry point wrapper for the legacy :mod:`hueyos.run` module."""
 
 from __future__ import annotations
 
 from importlib import import_module
 from typing import Any, Callable
 
-_module = import_module("monkey_head.run")
+_module = import_module("hueyos.run")
 
 __all__ = getattr(
     _module, "__all__", [name for name in dir(_module) if not name.startswith("_")]
@@ -57,7 +57,7 @@ def minimal_run(*args: Any, **kwargs: Any) -> Any:
 
 
 def main(*args: Any, **kwargs: Any) -> Any:
-    """Invoke :func:`monkey_head.run.main` with patched hooks."""
+    """Invoke :func:`hueyos.run.main` with patched hooks."""
 
     setattr(_module, "launch_manager_ui", globals()["launch_manager_ui"])
     setattr(_module, "launch_gui", globals()["launch_gui"])

@@ -18,7 +18,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-LOCAL_SRC = ROOT / "monkey_head"
+LOCAL_SRC = ROOT / "hueyos"
 SUBMODULE_SRC = ROOT / "repo" / "pygpt-MHP" / "src"
 
 local_module = LOCAL_SRC / "pygpt_net" / "controller" / "config" / "placeholder.py"

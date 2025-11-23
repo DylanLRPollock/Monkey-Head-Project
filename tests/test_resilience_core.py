@@ -5,7 +5,7 @@
 
 import pytest
 
-from monkey_head.core.resilience import (
+from hueyos.core.resilience import (
     CrashRecoveryManager,
     EmergencyGovernanceController,
     EmergencyServiceStatus,

@@ -47,7 +47,7 @@ pytest:
 	$(PYTHON) -m pytest -q
 
 coverage:
-	$(PYTHON) -m pytest --cov=huey --cov=monkey_head --cov-report=term-missing
+	$(PYTHON) -m pytest --cov=huey --cov=hueyos --cov-report=term-missing
 
 clean:
 	rm -rf build dist .pytest_cache **/__pycache__ *.egg-info

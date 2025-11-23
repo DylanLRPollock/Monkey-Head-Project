@@ -31,13 +31,13 @@ import requests
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
 
-from monkey_head.utils.gpu import (
+from hueyos.utils.gpu import (
     AcceleratorInfo,
     detect_accelerators,
     recommend_models_for_vram,
     total_vram_bytes,
 )
-from monkey_head.utils.persistence import TelemetryStore
+from hueyos.utils.persistence import TelemetryStore
 
 
 class AIProcessor:

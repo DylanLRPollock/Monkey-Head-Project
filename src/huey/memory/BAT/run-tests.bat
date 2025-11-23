@@ -28,7 +28,7 @@ call "%ACTIVATE%"
 if not exist memory\LOGS mkdir memory\LOGS
 set "LOG_FILE=memory\LOGS\test_results.log"
 echo Test run started at %DATE% %TIME% > "%LOG_FILE%"
-pytest -vv --cov=monkey_head --cov-report=term >> "%LOG_FILE%" 2>&1
+pytest -vv --cov=hueyos --cov-report=term >> "%LOG_FILE%" 2>&1
 popd
 endlocal
 

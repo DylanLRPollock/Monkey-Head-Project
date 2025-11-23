@@ -23,7 +23,7 @@ if shutil.which("ffmpeg") is None:
     pytest.skip("ffmpeg not installed", allow_module_level=True)
 
 module_path = (
-    Path(__file__).resolve().parents[1] / "monkey_head" / "convert_video_to_gif.py"
+    Path(__file__).resolve().parents[1] / "hueyos" / "convert_video_to_gif.py"
 )
 spec = importlib.util.spec_from_file_location("cvg", module_path)
 module = importlib.util.module_from_spec(spec)

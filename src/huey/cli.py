@@ -182,8 +182,8 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def _cmd_init(args: argparse.Namespace) -> int:
-    from monkey_head.utils.auto_sort import get_extension_map
-    from monkey_head.utils.paths import ensure_subdirectory, get_memory_path
+    from hueyos.utils.auto_sort import get_extension_map
+    from hueyos.utils.paths import ensure_subdirectory, get_memory_path
 
     memory_path = get_memory_path(create=True)
     created: List[str] = []
@@ -205,7 +205,7 @@ def _cmd_init(args: argparse.Namespace) -> int:
             print(f"  - {item}")
 
     if args.run_checks:
-        from monkey_head.system_checks import system_check
+        from hueyos.system_checks import system_check
 
         results = system_check()
         print("System check results:")
@@ -229,7 +229,7 @@ def _normalise_profiles(profiles: Iterable[str]) -> List[str]:
 
 def _cmd_run(args: argparse.Namespace) -> int:
     runtime = None
-    attempted = ("run", "monkey_head.run", "huey.memory.PY.run")
+    attempted = ("run", "hueyos.run", "huey.memory.PY.run")
     for module_name in attempted:
         try:
             runtime = import_module(module_name)
@@ -239,7 +239,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
             break
     if runtime is None:
         raise RuntimeError(
-            "Unable to locate runtime module (tried run, monkey_head.run, "
+            "Unable to locate runtime module (tried run, hueyos.run, "
             "huey.memory.PY.run)."
         )
 
@@ -260,7 +260,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
         os.environ["HUEY_PROFILES"] = ",".join(profiles)
 
     if not args.skip_checks:
-        from monkey_head.core.system_checks import (
+        from hueyos.core.system_checks import (
             check_os_support,
             check_python_version,
         )
@@ -326,7 +326,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
 
 
 def _cmd_system_check(args: argparse.Namespace) -> int:
-    from monkey_head.system_checks import system_check
+    from hueyos.system_checks import system_check
 
     results = system_check()
     if args.json:
@@ -419,7 +419,7 @@ def _cmd_deploy(args: argparse.Namespace) -> int:
 
 def _cmd_agent_status(args: argparse.Namespace) -> int:
     from huey.api import SCHEDULER
-    from monkey_head.core.task_scheduler import Agent, TaskStatus
+    from hueyos.core.task_scheduler import Agent, TaskStatus
 
     records = SCHEDULER.list_tasks()
     status_counts: Dict[str, int] = {status.value: 0 for status in TaskStatus}
@@ -477,7 +477,7 @@ def _cmd_agent_status(args: argparse.Namespace) -> int:
 
 
 def _cmd_memory_sort(args: argparse.Namespace) -> int:
-    from monkey_head.utils.auto_sort import auto_sort_memory
+    from hueyos.utils.auto_sort import auto_sort_memory
 
     try:
         summary = auto_sort_memory(

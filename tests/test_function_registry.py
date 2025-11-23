@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from monkey_head import function_registry
+from hueyos import function_registry
 
 
 @pytest.fixture(autouse=True)

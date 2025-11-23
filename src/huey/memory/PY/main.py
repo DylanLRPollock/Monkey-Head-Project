@@ -17,7 +17,7 @@ import argparse
 
 from flask import Flask, jsonify
 
-from monkey_head.utils.logger import get_logger
+from hueyos.utils.logger import get_logger
 
 try:
     from pygpt_net import __version__ as pygpt_version

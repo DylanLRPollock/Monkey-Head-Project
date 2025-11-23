@@ -44,7 +44,7 @@ class CustomPyGPT:
         return f"Echo: {message}"
 
     def _handle_list_pdfs(self) -> Iterable[str]:
-        """Return available PDF names by deferring to :mod:`monkey_head.pdf_utils`."""
+        """Return available PDF names by deferring to :mod:`hueyos.pdf_utils`."""
 
         from .pdf_utils import list_available_pdfs
 

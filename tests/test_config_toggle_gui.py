@@ -5,7 +5,7 @@
 
 import json
 
-from monkey_head.config_toggle_gui import update_toggle_settings
+from hueyos.config_toggle_gui import update_toggle_settings
 
 
 def test_update_toggle_settings(tmp_path):

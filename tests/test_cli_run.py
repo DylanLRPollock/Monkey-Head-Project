@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test Cli Run module (tests)
 
-from monkey_head.cli import CLI
+from hueyos.cli import CLI
 
 
 class DummyConfig:

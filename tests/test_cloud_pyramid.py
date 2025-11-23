@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test Cloud Pyramid module (tests)
 
-from monkey_head.cloud_pyramid import CloudPyramid
+from hueyos.cloud_pyramid import CloudPyramid
 
 
 def test_decision_process():

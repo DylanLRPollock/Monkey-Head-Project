@@ -13,7 +13,7 @@
 # ==================================================
 import unittest
 
-from monkey_head.pygpt_memory import Memory
+from hueyos.pygpt_memory import Memory
 
 
 class TestMemory(unittest.TestCase):

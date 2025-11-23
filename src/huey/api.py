@@ -92,11 +92,11 @@ except ModuleNotFoundError:  # pragma: no cover - compatibility shim
             }
 
 
-from monkey_head.core.resilience import (
+from hueyos.core.resilience import (
     CrashRecoveryManager,
     EmergencyGovernanceController,
 )
-from monkey_head.core.task_scheduler import (
+from hueyos.core.task_scheduler import (
     Agent,
     ResourceProfile,
     TaskPriority,
@@ -104,8 +104,8 @@ from monkey_head.core.task_scheduler import (
     TaskScheduler,
     TaskStatus,
 )
-from monkey_head.hardware import create_default_sensor_manager
-from monkey_head.hardware.plugins import (
+from hueyos.hardware import create_default_sensor_manager
+from hueyos.hardware.plugins import (
     SensorReading,
     list_sensor_plugin_metadata,
     list_sensor_plugins,
@@ -113,13 +113,13 @@ from monkey_head.hardware.plugins import (
 from huey.honeycomb.index import HoneycombIndex
 from huey.honeycomb.monitor import HoneycombMonitor
 from huey.honeycomb.storage import HoneycombStorage
-from monkey_head.network import NetworkManager
-from monkey_head.pdf_utils import find_pdf, list_available_pdfs
-from monkey_head.power import BatteryMonitor
-from monkey_head.system_checks import system_check
-from monkey_head.utils.auto_sort import auto_sort_memory
-from monkey_head.utils.paths import get_memory_path
-from monkey_head.utils.persistence import AIInteraction, SensorTelemetry, TelemetryStore
+from hueyos.network import NetworkManager
+from hueyos.pdf_utils import find_pdf, list_available_pdfs
+from hueyos.power import BatteryMonitor
+from hueyos.system_checks import system_check
+from hueyos.utils.auto_sort import auto_sort_memory
+from hueyos.utils.paths import get_memory_path
+from hueyos.utils.persistence import AIInteraction, SensorTelemetry, TelemetryStore
 
 __all__ = [
     "AI_PROCESSOR",

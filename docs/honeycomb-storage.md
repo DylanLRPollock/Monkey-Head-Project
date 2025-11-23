@@ -9,8 +9,8 @@ retention.
 
 ## Storage model
 
-The `huey.honeycomb.storage.HoneycombStorage` class exposes a key/value API that
-persists JSON payloads into the `honeycomb_cells` table.【F:src/huey/honeycomb/storage.py†L34-L155】
+The `hueyos.honeycomb.storage.HoneycombStorage` class exposes a key/value API that
+persists JSON payloads into the `honeycomb_cells` table.【F:src/hueyos/honeycomb/storage.py†L33-L155】
 Keys are split on `/` to derive comb and cell components, enabling structured
 queries and efficient indices. Examples:
 
@@ -22,9 +22,9 @@ queries and efficient indices. Examples:
 
 `HoneycombStorage.store()` automatically timestamps inserts and performs an
 upsert so updates preserve the original creation timestamp while refreshing the
-`updated_at` column.【F:src/huey/honeycomb/storage.py†L116-L140】 The helper methods
+`updated_at` column.【F:src/hueyos/honeycomb/storage.py†L118-L140】 The helper methods
 `load()`, `get_record()`, `list_keys()`, `remove()`, and `count()` make the
-storage behave like a persistent dictionary with optional prefix scoping.【F:src/huey/honeycomb/storage.py†L143-L199】
+storage behave like a persistent dictionary with optional prefix scoping.【F:src/hueyos/honeycomb/storage.py†L143-L205】
 
 ## Integration with the sensor manager
 
@@ -44,25 +44,25 @@ reading and broadcasts it to subscribers.
 Several utilities build on top of the storage abstraction:
 
 - `HoneycombIndex` classifies filesystem artefacts into comb paths based on
-  content type mappings shared with the auto-sorter.【F:src/huey/honeycomb/index.py†L20-L198】
+  content type mappings shared with the auto-sorter.【F:src/hueyos/honeycomb/index.py†L20-L200】
 - `HoneycombMonitor.build_usage_report()` aggregates totals, content-type
   breakdowns, and growth samples. The FastAPI endpoint `/memory/honeycomb/usage`
   returns this data in the `HoneycombUsageResponse` schema for dashboards or
-  alerting pipelines.【F:src/huey/honeycomb/monitor.py†L27-L114】【F:src/huey/api.py†L1650-L1678】
+  alerting pipelines.【F:src/hueyos/honeycomb/monitor.py†L27-L114】【F:src/huey/api.py†L1650-L1678】
 - `SensorManager.load_history()` retrieves ordered historical records for a
   sensor, relying on `HoneycombStorage.list_keys()` and `get_record()` to load
   payloads and timestamps.【F:src/huey/hardware/manager.py†L113-L155】
 
 ## Backups and replication
 
-`huey.honeycomb.backup.perform_rsync_snapshot` creates timestamped snapshots of
+`hueyos.honeycomb.backup.perform_rsync_snapshot` creates timestamped snapshots of
 `memory/` using `rsync`. Snapshots may be sent to local or remote destinations,
 and `restore_snapshot` rehydrates the tree when needed. A sample cron entry:
 
 ```
 0 * * * * hueyos /opt/hueyos/.venv/bin/python - <<'PY'
 from pathlib import Path
-from huey.honeycomb.backup import perform_rsync_snapshot
+from hueyos.honeycomb.backup import perform_rsync_snapshot
 
 perform_rsync_snapshot(destination=Path("/mnt/honeycomb-backups"))
 PY
@@ -81,7 +81,7 @@ Grafana or similar dashboards so sudden spikes become visible. Combine it with
 
 ## Retention and pruning
 
-`huey.honeycomb.retention.RetentionPolicy` applies content-aware expiry rules to
+`hueyos.honeycomb.retention.RetentionPolicy` applies content-aware expiry rules to
 old cells, using duration strings such as `14d` or `6m`. Operators can set
 different windows per content type or comb and record how many rows were
-pruned, closing the loop between ingestion, monitoring, and retention.【F:src/huey/honeycomb/retention.py†L29-L95】
+pruned, closing the loop between ingestion, monitoring, and retention.【F:src/hueyos/honeycomb/retention.py†L29-L95】

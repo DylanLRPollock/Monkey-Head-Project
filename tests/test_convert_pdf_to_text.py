@@ -14,7 +14,7 @@ pytest.importorskip("pypdf")
 
 def test_convert_pdf_to_text(tmp_path):
     root = Path(__file__).resolve().parents[1]
-    module_path = root / "monkey_head" / "convert_pdf_to_text.py"
+    module_path = root / "hueyos" / "convert_pdf_to_text.py"
     spec = importlib.util.spec_from_file_location("cpt", module_path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

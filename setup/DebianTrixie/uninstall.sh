@@ -18,7 +18,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # Installation directory
-INSTALL_DIR="/opt/monkey_head"
+INSTALL_DIR="/opt/hueyos"
 
 # Virtual environment inside the installation directory
 VENV_DIR="$INSTALL_DIR/venv"
