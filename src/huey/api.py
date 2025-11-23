@@ -1711,9 +1711,10 @@ async def ai_process_text(
             detail="Text must not be empty for processing.",
         )
 
-    processed = await asyncio.to_thread(AI_PROCESSOR.process_data, request.text)
     if stream:
-        return StreamingResponse(_stream_text(processed), media_type="text/plain")
+        return StreamingResponse(_stream_text(request.text), media_type="text/plain")
+
+    processed = await asyncio.to_thread(AI_PROCESSOR.process_data, request.text)
     return ProcessTextResponse(processed_text=processed)
 
 

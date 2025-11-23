@@ -13,6 +13,8 @@ import types
 from pathlib import Path
 from typing import Any
 
+import importlib
+
 import pytest
 
 from httpx import ASGITransport, AsyncClient
@@ -48,6 +50,13 @@ py_pkg = types.ModuleType("huey.memory.PY")
 py_pkg.__path__ = [str(REPO_ROOT / "huey" / "memory" / "PY")]
 sys.modules["huey.memory.PY"] = py_pkg
 setattr(memory_pkg, "PY", py_pkg)
+
+api_module = importlib.import_module("huey.api")
+
+# Import the public API symbols used by these tests directly into the module
+# namespace for convenience and to mirror the FastAPI application's exports.
+from hueyos.core.task_scheduler import ResourceSnapshot, TaskScheduler, TaskStatus
+from hueyos.hardware.plugins import SensorReading
 
 ai_module = types.ModuleType("huey.memory.PY.ai_processor")
 
