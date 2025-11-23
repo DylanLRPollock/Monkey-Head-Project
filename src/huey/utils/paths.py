@@ -1,8 +1,3 @@
-# Monkey Head Project
-# By: Dylan L.R. Pollock
-# www.dlrp.ca
-# HueyOS: Paths module (huey/utils)
-
 """Filesystem helpers for managing shared project directories."""
 
 from __future__ import annotations
@@ -11,7 +6,8 @@ import os
 from pathlib import Path
 from typing import Iterable
 
-_BASE_DIR = Path(__file__).resolve().parents[2]
+_PROJECT_ROOT = Path(__file__).resolve().parents[3]
+_SRC_ROOT = _PROJECT_ROOT / "src"
 
 
 def _expand_path(value: str) -> Path:
@@ -20,7 +16,7 @@ def _expand_path(value: str) -> Path:
     expanded = Path(os.path.expanduser(value))
     if expanded.is_absolute():
         return expanded
-    return (_BASE_DIR / expanded).resolve()
+    return (_PROJECT_ROOT / expanded).resolve()
 
 
 def get_memory_path(create: bool = True) -> Path:
@@ -28,9 +24,9 @@ def get_memory_path(create: bool = True) -> Path:
 
     The location can be overridden with the ``MEMORY_PATH`` environment variable.
     If unset, the function prefers an existing ``memory`` directory at the project
-    root, then falls back to the historical ``huey/memory`` directory. When
-    ``create`` is ``True`` (the default) the returned directory is created if it
-    does not already exist.
+    root, then falls back to the vendored ``src/huey/memory`` tree. When ``create``
+    is ``True`` (the default) the returned directory is created if it does not
+    already exist.
     """
 
     env_value = os.environ.get("MEMORY_PATH")
@@ -40,17 +36,17 @@ def get_memory_path(create: bool = True) -> Path:
             memory_path.mkdir(parents=True, exist_ok=True)
         return memory_path
 
-    preferred = _BASE_DIR / "memory"
+    preferred = _PROJECT_ROOT / "memory"
     if preferred.exists():
         if create:
             preferred.mkdir(parents=True, exist_ok=True)
         return preferred
 
-    legacy = _BASE_DIR / "huey" / "memory"
-    if legacy.exists():
+    packaged = _SRC_ROOT / "huey" / "memory"
+    if packaged.exists():
         if create:
-            legacy.mkdir(parents=True, exist_ok=True)
-        return legacy
+            packaged.mkdir(parents=True, exist_ok=True)
+        return packaged
 
     if create:
         preferred.mkdir(parents=True, exist_ok=True)
@@ -79,9 +75,9 @@ def memory_candidates(extra: Iterable[Path] | None = None) -> list[Path]:
     env_value = os.environ.get("MEMORY_PATH")
     if env_value:
         candidates.append(_expand_path(env_value))
-    preferred = _BASE_DIR / "memory"
+    preferred = _PROJECT_ROOT / "memory"
     candidates.append(preferred)
-    candidates.append(_BASE_DIR / "huey" / "memory")
+    candidates.append(_SRC_ROOT / "huey" / "memory")
     if extra:
         candidates.extend(extra)
     seen: set[Path] = set()

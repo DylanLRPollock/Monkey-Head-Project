@@ -22,13 +22,13 @@ get_memory_path = getattr(_base, "get_memory_path")
 __all__ = list(getattr(_base, "__all__", ()))
 
 # Extend the package search path so that imports such as
-# ``monkey_head.utils.sorting`` resolve to the legacy compatibility modules that
-# still live inside ``huey/memory/PY``.
+# ``monkey_head.utils.sorting`` resolve to the compatibility modules that live
+# inside ``src/huey/memory/PY``.
 __path__: List[str] = [str(Path(__file__).resolve().parent)]
 for candidate in getattr(_base, "__path__", []):
     if candidate not in __path__:
         __path__.append(candidate)
-_legacy = Path(__file__).resolve().parents[3] / "huey" / "memory" / "PY"
+_legacy = Path(__file__).resolve().parents[2] / "huey" / "memory" / "PY"
 if _legacy.exists():
     legacy_path = str(_legacy)
     if legacy_path not in __path__:
