@@ -83,7 +83,7 @@ ml = [
   "llama-index-readers-twitter==0.4.1",
   "llama-index-readers-web==0.5.6",
   "llama-index-utils-huggingface==0.4.1",
-  "llama-index-workflows==1.0.1",
+  "llama-index-workflows==2.11.4",
   "llama-parse==0.6.81",
   "mistralai==1.9.11",
   "ollama==0.6.1",

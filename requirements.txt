@@ -65,7 +65,7 @@ llama-index-readers-microsoft-onedrive==0.4.1 ; python_version >= "3.11" and pyt
 llama-index-readers-twitter==0.4.1 ; python_version >= "3.11" and python_version < "3.15"
 llama-index-readers-web==0.5.6 ; python_version >= "3.11" and python_version < "3.15"
 llama-index-utils-huggingface==0.4.1 ; python_version >= "3.11" and python_version < "3.15"
-llama-index-workflows==1.0.1 ; python_version >= "3.11" and python_version < "3.15"
+llama-index-workflows==2.11.4 ; python_version >= "3.11" and python_version < "3.15"
 llama-parse==0.6.81 ; python_version >= "3.11" and python_version < "3.15"
 mistralai==1.9.11 ; python_version >= "3.11" and python_version < "3.15"
 ollama==0.6.1 ; python_version >= "3.11" and python_version < "3.15"
