@@ -1533,14 +1533,14 @@ def override_monitored_process(
     """Enable or disable automatic crash recovery for the given process."""
 
     try:
-        status = CRASH_MANAGER.toggle_auto_restart(
+        process_status = CRASH_MANAGER.toggle_auto_restart(
             name, request.auto_restart, reason=request.reason
         )
     except KeyError as exc:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
         ) from exc
-    return MonitoredProcessStatusModel(**status)
+    return MonitoredProcessStatusModel(**process_status)
 
 
 @app.post(
