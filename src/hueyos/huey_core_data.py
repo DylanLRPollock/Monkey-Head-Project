@@ -1,17 +1,16 @@
-# Auto-generated bridge to legacy module
+"""Core data helpers for Huey."""
+
 from __future__ import annotations
 
-from importlib import import_module
-from typing import Any
 
-_impl = import_module("huey.memory.PY.huey_core_data")
-__all__ = getattr(_impl, "__all__", [name for name in dir(_impl) if not name.startswith('_')])
-for name in __all__:
-    globals()[name] = getattr(_impl, name)
-
-
-def __getattr__(name: str) -> Any:
-    return getattr(_impl, name)
+def generate_core_data(data: dict) -> dict:
+    if not isinstance(data, dict):
+        raise ValueError("data must be a dictionary")
+    return {
+        "processed": True,
+        "input_length": len(data),
+        "details": data,
+    }
 
 
-__doc__ = getattr(_impl, '__doc__')
+__all__ = ["generate_core_data"]

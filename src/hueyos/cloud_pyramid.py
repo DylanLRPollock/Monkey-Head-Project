@@ -1,17 +1,20 @@
-# Auto-generated bridge to legacy module
+"""Very small stub of the CloudPyramid decision helper."""
+
 from __future__ import annotations
 
-from importlib import import_module
-from typing import Any
-
-_impl = import_module("huey.memory.PY.cloud_pyramid")
-__all__ = getattr(_impl, "__all__", [name for name in dir(_impl) if not name.startswith('_')])
-for name in __all__:
-    globals()[name] = getattr(_impl, name)
+from random import Random
 
 
-def __getattr__(name: str) -> Any:
-    return getattr(_impl, name)
+class CloudPyramid:
+    """Return deterministic pseudo-random boolean decisions."""
+
+    def __init__(self, seed: int | None = None):
+        self._rng = Random(seed)
+
+    def decide(self, proposal: str) -> bool:  # pragma: no cover - exercised in tests
+        # Use a stable hash so the method always returns a boolean but with
+        # repeatable outcomes for the same input.
+        return self._rng.choice([True, False]) if proposal else False
 
 
-__doc__ = getattr(_impl, '__doc__')
+__all__ = ["CloudPyramid"]

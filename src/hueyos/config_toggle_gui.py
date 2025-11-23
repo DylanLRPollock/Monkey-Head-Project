@@ -1,17 +1,23 @@
-# Auto-generated bridge to legacy module
+"""Utility for updating boolean configuration toggles."""
+
 from __future__ import annotations
 
-from importlib import import_module
-from typing import Any
-
-_impl = import_module("huey.memory.PY.config_toggle_gui")
-__all__ = getattr(_impl, "__all__", [name for name in dir(_impl) if not name.startswith('_')])
-for name in __all__:
-    globals()[name] = getattr(_impl, name)
+import json
+from pathlib import Path
+from typing import Mapping
 
 
-def __getattr__(name: str) -> Any:
-    return getattr(_impl, name)
+def update_toggle_settings(config_path: str | Path, updates: Mapping[str, bool]) -> None:
+    path = Path(config_path)
+    current = {}
+    if path.exists():
+        try:
+            current = json.loads(path.read_text())
+        except json.JSONDecodeError:
+            current = {}
+
+    current.update({k: bool(v) for k, v in updates.items()})
+    path.write_text(json.dumps(current, indent=2))
 
 
-__doc__ = getattr(_impl, '__doc__')
+__all__ = ["update_toggle_settings"]
