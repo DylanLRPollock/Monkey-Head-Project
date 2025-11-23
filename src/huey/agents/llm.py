@@ -12,6 +12,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, Optional, Sequence
 
+from huey.pygpt_integration import prepare_pygpt
+
 
 class LLMProvider(str, Enum):
     """Supported language model providers."""
@@ -96,6 +98,10 @@ class LLMAdapter:
 
     def _register_with_pygpt(self) -> None:
         """Instantiate a pygpt agent wrapper for integration metadata."""
+
+        if not prepare_pygpt():
+            self._pygpt_agent = None
+            return
 
         try:
             if self.provider is LLMProvider.OPENAI:
