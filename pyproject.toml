@@ -117,7 +117,7 @@ cloud = [
 ]
 
 dev = [
-  "black==24.10.0",
+  "black==25.11.0",
   "chromedriver-autoinstaller==0.6.4",
   "click==8.3.1",
   "coloredlogs==15.0.1",
