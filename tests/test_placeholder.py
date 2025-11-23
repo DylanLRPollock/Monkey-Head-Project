@@ -1,70 +1,73 @@
-# Monkey Head Project
-# By: Dylan L.R. Pollock
-# www.dlrp.ca
-# HueyOS: Test Placeholder module (tests)
+"""Tests for the lightweight placeholder helpers."""
 
-import importlib.util
-import sys
+from huey.pygpt_net.controller.config.placeholder import Placeholder
 
-# ==================================================
-# This file is a part of the 'Monkey Head Project'
-# Website:   https://dlrp.ca
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-# License:   https://opensource.org/license/gpl-3-0
-# Overseen By:   Dylan L.R. Pollock
-# Updated: 06.09.2025
-# ==================================================
-import unittest
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-LOCAL_SRC = ROOT / "hueyos"
-SUBMODULE_SRC = ROOT / "repo" / "pygpt-MHP" / "src"
+class DummyPreset:
+    def __init__(self, filename: str, name: str | None = None) -> None:
+        self.filename = filename
+        self.name = name or filename
 
-local_module = LOCAL_SRC / "pygpt_net" / "controller" / "config" / "placeholder.py"
-if local_module.exists():
-    MODULE_PATH = str(local_module)
-    sys.path.append(str(LOCAL_SRC))
-else:
-    MODULE_PATH = str(
-        SUBMODULE_SRC / "pygpt_net" / "controller" / "config" / "placeholder.py"
-    )
-    sys.path.append(str(SUBMODULE_SRC))
 
-spec = importlib.util.spec_from_file_location("placeholder_module", MODULE_PATH)
-placeholder_module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(placeholder_module)
-Placeholder = placeholder_module.Placeholder
-from pygpt_net.item.preset import PresetItem  # noqa: E402
+class DummyPresets:
+    def __init__(self, payload):
+        self.payload = payload
+
+    def get_all(self):
+        if isinstance(self.payload, Exception):
+            raise self.payload
+        return self.payload
+
+
+class DummyCore:
+    def __init__(self, payload):
+        self.presets = payload
 
 
 class DummyWindow:
-    def __init__(self, presets):
-        class DummyPresets:
-            def __init__(self, data):
-                self._data = data
-
-            def get_all(self):
-                return self._data
-
-        class DummyCore:
-            def __init__(self, presets):
-                self.presets = DummyPresets(presets)
-
-        self.core = DummyCore(presets)
+    def __init__(self, payload=None, with_core: bool = True):
+        if with_core:
+            self.core = DummyCore(payload)
 
 
-class TestPlaceholder(unittest.TestCase):
-    def test_get_presets_returns_names(self):
-        preset = PresetItem()
-        preset.name = "Example"
-        preset.filename = "example.json"
-        presets = {preset.filename: preset}
-        placeholder = Placeholder(DummyWindow(presets))
-        result = placeholder.get_presets()
-        self.assertIn({"_": "---"}, result)
-        self.assertIn({"example.json": "Example"}, result)
+def test_get_presets_returns_names():
+    preset = DummyPreset("example.json", name="Example")
+    placeholder = Placeholder(DummyWindow(DummyPresets({preset.filename: preset})))
+
+    result = placeholder.get_presets()
+
+    assert {"_": "---"} in result
+    assert {"example.json": "Example"} in result
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_handles_missing_core_gracefully():
+    placeholder = Placeholder(DummyWindow(with_core=False))
+
+    assert placeholder.get_presets() == [{"_": "---"}]
+
+
+def test_accepts_iterable_of_tuples():
+    presets = [("first.json", DummyPreset("first.json", "First"))]
+    placeholder = Placeholder(DummyWindow(DummyPresets(presets)))
+
+    assert placeholder.get_presets()[1:] == [{"first.json": "First"}]
+
+
+def test_accepts_iterable_of_objects():
+    presets = [DummyPreset("alt.json", "Alternate")]
+    placeholder = Placeholder(DummyWindow(DummyPresets(presets)))
+
+    assert placeholder.get_presets()[1:] == [{"alt.json": "Alternate"}]
+
+
+def test_ignores_unusable_iterables_and_errors():
+    class NoFilename:
+        pass
+
+    placeholder_list = Placeholder(DummyWindow(DummyPresets([NoFilename()])))
+    placeholder_error = Placeholder(DummyWindow(DummyPresets(ValueError("bad"))))
+    placeholder_string = Placeholder(DummyWindow(DummyPresets("not iterable")))
+
+    assert placeholder_list.get_presets() == [{"_": "---"}]
+    assert placeholder_error.get_presets() == [{"_": "---"}]
+    assert placeholder_string.get_presets() == [{"_": "---"}]

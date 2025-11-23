@@ -7,7 +7,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List
+from collections.abc import Iterable
+from typing import Any, Dict, List
 
 
 class Placeholder:
@@ -27,6 +28,22 @@ class Placeholder:
             return []
         if isinstance(items, dict):
             return items.items()
+
+        if isinstance(items, Iterable) and not isinstance(items, (str, bytes)):
+            collected = []
+            for item in items:
+                if isinstance(item, (list, tuple)) and len(item) == 2:
+                    collected.append((item[0], item[1]))
+                    continue
+
+                filename = getattr(item, "filename", None) or getattr(
+                    item, "name", None
+                )
+                if filename is not None:
+                    collected.append((filename, item))
+
+            return collected
+
         return []
 
     def get_presets(self) -> List[Dict[str, str]]:
