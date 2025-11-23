@@ -68,14 +68,13 @@ sys.modules["huey.memory.PY.ai_processor"] = ai_module
 setattr(py_pkg, "ai_processor", ai_module)
 
 import huey.api as api_module
-from huey.api import SystemStatusResponse, app
 from monkey_head.core.task_scheduler import ResourceSnapshot, TaskScheduler, TaskStatus
 from monkey_head.hardware.plugins import SensorReading
 
 
 @pytest.mark.asyncio
 async def test_healthz_endpoint_returns_service_status():
-    transport = ASGITransport(app=app)
+    transport = ASGITransport(app=api_module.app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         response = await client.get("/healthz")
 
@@ -108,7 +107,7 @@ async def test_task_management_endpoints_support_submission_and_cancellation(
     scheduler = TaskScheduler(health_provider=_healthy_snapshot)
     monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
 
-    transport = ASGITransport(app=app)
+    transport = ASGITransport(app=api_module.app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         submit = await client.post("/tasks", json={"command": "calibrate sensors"})
         assert submit.status_code == 202
@@ -135,7 +134,7 @@ async def test_task_submission_respects_resource_constraints(monkeypatch):
     scheduler = TaskScheduler(health_provider=_degraded_snapshot)
     monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
 
-    transport = ASGITransport(app=app)
+    transport = ASGITransport(app=api_module.app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         submit = await client.post("/tasks", json={"command": "train heavy model"})
 
@@ -176,7 +175,7 @@ async def test_system_status_endpoint_reports_expected_fields(monkeypatch, tmp_p
     monkeypatch.setattr(api_module, "psutil", fake_psutil)
     monkeypatch.setattr(api_module, "get_memory_path", lambda create=True: memory_root)
 
-    transport = ASGITransport(app=app)
+    transport = ASGITransport(app=api_module.app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         response = await client.get("/system/status")
 
@@ -208,7 +207,7 @@ async def test_resilience_endpoints_support_manual_override(monkeypatch):
 
     manager.register_process("core-loop", health_check=health_check, restart=restart)
 
-    transport = ASGITransport(app=app)
+    transport = ASGITransport(app=api_module.app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         state["healthy"] = False
         poll = await client.post("/resilience/poll")
@@ -242,7 +241,7 @@ async def test_emergency_endpoints_require_quorum(monkeypatch):
     controller.register_service("mock", stop=lambda: None, start=lambda: None)
     monkeypatch.setattr(api_module, "EMERGENCY_CONTROLLER", controller, raising=False)
 
-    transport = ASGITransport(app=app)
+    transport = ASGITransport(app=api_module.app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         status_response = await client.get("/governance/emergency/status")
         assert status_response.status_code == 200
@@ -321,7 +320,7 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
         api_module, "BATTERY_MONITOR", DummyBatteryMonitor(), raising=False
     )
 
-    transport = ASGITransport(app=app)
+    transport = ASGITransport(app=api_module.app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         sensors_initial = await client.get("/sensors")
         assert sensors_initial.status_code == 200
@@ -458,7 +457,7 @@ class _StubSensorManager:
 
 @pytest.mark.asyncio
 async def test_system_status_alias_endpoint(monkeypatch):
-    stub_status = SystemStatusResponse(
+    stub_status = api_module.SystemStatusResponse(
         system="Linux",
         release="6.1",
         version="6.1",
@@ -477,7 +476,7 @@ async def test_system_status_alias_endpoint(monkeypatch):
         api_module, "_build_system_status", lambda: stub_status, raising=False
     )
 
-    transport = ASGITransport(app=app)
+    transport = ASGITransport(app=api_module.app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         response = await client.get("/status/system")
 
@@ -493,7 +492,7 @@ async def test_ai_process_text_supports_streaming_and_validation(monkeypatch):
         api_module, "_stream_text", lambda text, chunk_size=64: [text], raising=False
     )
 
-    transport = ASGITransport(app=app)
+    transport = ASGITransport(app=api_module.app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         response = await client.post(
             "/ai/process-text",
@@ -511,7 +510,7 @@ async def test_ai_process_text_supports_streaming_and_validation(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_ai_analyze_text_rejects_empty_payload():
-    transport = ASGITransport(app=app)
+    transport = ASGITransport(app=api_module.app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         response = await client.post("/ai/analyze-text", json={"text": ""})
 
@@ -531,7 +530,7 @@ async def test_sensor_streaming_and_invalid_registration(monkeypatch):
         raising=False,
     )
 
-    transport = ASGITransport(app=app)
+    transport = ASGITransport(app=api_module.app)
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         response = await client.get("/sensors/alpha/stream")
         assert response.status_code == 200
