@@ -558,7 +558,7 @@ class ServiceStatus(BaseModel):
     name: str = Field(..., description="Human readable service identifier")
     status: str = Field(..., description="Current state such as 'running' or 'stopped'")
     last_changed: float = Field(
-        default_factory=lambda: time.time(),
+        default_factory=time.time,
         description="Unix timestamp when the status last changed",
     )
 
