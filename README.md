@@ -1,13 +1,13 @@
 # HueyOS — Monkey-Head-Project
 
-**Project:** Monkey-Head-Project (HueyOS)
-**Author:** Dylan L. R. Pollock
-**Official site:** [https://www.dlrp.ca](https://www.dlrp.ca)
-**Contact:** [admin@dlrp.ca](mailto:admin@dlrp.ca)
-**License:** Code: GPL-3.0 • Docs/Media: CC-BY-SA-4.0
-**Status date:** 2025-10-25
+**Project:** Monkey-Head-Project (HueyOS)  
+**Author:** Dylan L. R. Pollock  
+**Official site:** https://www.dlrp.ca  
+**Contact:** admin@dlrp.ca  
+**License:** Code: GPL-3.0 • Docs/Media: CC-BY-SA-4.0  
+**Status date:** 2025-11-23
 
-> HueyOS is a modular robotic AI/OS that blends retro-computing aesthetics with modern Linux, clustered compute, a constitutional governance model (the **Cloud Pyramid**), and deep home integration (Channel Huey + Z-Wave). It operates offline-first with optional API use. **Governance remains decentralized while memory remains unified.**
+> HueyOS is a modular robotic AI/OS that blends retro-computing aesthetics with modern Linux, clustered compute, and a constitutional governance model (the **Cloud Pyramid**). It operates offline-first with optional API use. **Governance remains decentralized while memory remains unified.**
 
 ![License](https://img.shields.io/badge/license-GPLv3-blue)
 ![Python](https://img.shields.io/badge/python-3.12–3.14-blue)
@@ -16,150 +16,114 @@
 
 ## October 31, 2025 — Changeover Notice
 
-On **2025-10-31**, HueyOS migrates to **Debian 14 “Forky,” kernel 6.17.x-huey, and Python 3.14.x** (with packaging and CLI updates). Track day-of updates in [`docs/releases/2025-10-31-changeover.md`](docs/releases/2025-10-31-changeover.md). Until then, the baseline is **Debian 13 “Trixie” + 6.16.x-huey**.
+On **2025-10-31**, HueyOS began migrating to **Debian 14 “Forky,” kernel 6.17.x-huey, and Python 3.14.x** (with packaging and CLI updates). The pre-changeover baseline was **Debian 13 “Trixie” + 6.16.x-huey**; after the changeover, new work targets Forky and the 6.17.x-huey series by default.
+
+Track day-of and follow-up updates in [`docs/releases/2025-10-31-changeover.md`](docs/releases/2025-10-31-changeover.md). Until all nodes are migrated, some machines may temporarily remain on **Trixie + 6.16.x-huey** while adopting the new governance and memory model described in the Master Plan.
 
 ## Quick Recipes — Oct 31 Changeover
 
-* **Forky apt switch:** `sudo tools/upgrade_to_forky.sh` — applies the staged APT source flip and refreshes the Microsoft Edge Beta signing key (see [docs/debian-forky-upgrade.md](docs/debian-forky-upgrade.md)).
-* **Kernel 6.17.x-huey build:** follow [docs/kernel-6.17.3-runbook.md](docs/kernel-6.17.3-runbook.md) to rebuild and install the DKMS-free kernel, then record results in the release stub.
-* **Python 3.14 virtualenv:** once packages land, rerun the commands in [docs/python314-upgrade-notes.md](docs/python314-upgrade-notes.md) to create the 3.14 environment and capture any blockers.
-* **Release log:** summarize successful steps and deltas in [`docs/releases/2025-10-31-changeover.md`](docs/releases/2025-10-31-changeover.md) for final publication.
+- **Forky APT switch**  
+  Use `sudo tools/upgrade_to_forky.sh` to apply the staged APT source flip and refresh the Microsoft Edge Beta signing key (see [docs/debian-forky-upgrade.md](docs/debian-forky-upgrade.md)).
+
+- **Kernel 6.17.x-huey build**  
+  Follow [docs/kernel-6.17.3-runbook.md](docs/kernel-6.17.3-runbook.md) to rebuild and install the DKMS-free kernel, then record results in the release stub.
+
+- **Python 3.14 virtualenv**  
+  Once packages land, rerun the commands in [docs/python314-upgrade-notes.md](docs/python314-upgrade-notes.md) to create the 3.14 environment and capture any blockers.
+
+- **Release log**  
+  Summarize successful steps and deltas in [`docs/releases/2025-10-31-changeover.md`](docs/releases/2025-10-31-changeover.md) for final publication.
 
 ---
 
 ## Table of Contents
 
-* [Overview](#overview)
-* [System Identity & Philosophy](#system-identity--philosophy)
-* [Channel Huey & Home Integration](#channel-huey--home-integration)
-* [Repository Structure](#repository-structure)
-* [Architecture](#architecture)
-* [Hardware](#hardware)
-* [Peripheral Nodes & Home Automation](#peripheral-nodes--home-automation)
-* [Software Stack](#software-stack)
-* [Installation & Quick Start](#installation--quick-start)
-* [Build Guides](#build-guides)
-* [Governance & Constitution](#governance--constitution)
-* [Memory & Data Model](#memory--data-model)
-* [Remote Access (VNC/SSH)](#remote-access-vncssh)
-* [Action Plan — Oct 31, 2025](#action-plan--oct-31-2025)
-* [Roadmap & Pre-Releases](#roadmap--pre-releases)
-* [Development Setup](#development-setup)
-* [Usage](#usage)
-* [Feature Matrix](#feature-matrix)
-* [Known Issues](#known-issues)
-* [Contributing](#contributing)
-* [License & Credits](#license--credits)
-* [Appendix](#appendix)
+- [October 31, 2025 — Changeover Notice](#october-31-2025--changeover-notice)  
+- [Quick Recipes — Oct 31 Changeover](#quick-recipes--oct-31-changeover)  
+- [Overview](#overview)  
+- [Canonical Master Plan](#canonical-master-plan)  
+- [Repository Structure](#repository-structure)  
+- [Architecture](#architecture)  
+- [Hardware](#hardware)  
+- [History & Origins](#history--origins)  
+- [Software Stack](#software-stack)  
+- [Installation & Quick Start](#installation--quick-start)  
+- [Build Guides](#build-guides)  
+- [Governance & Constitution](#governance--constitution)  
+- [Memory & Data Model](#memory--data-model)  
+- [Remote Access (VNC/SSH)](#remote-access-vncssh)  
+- [Action Plan — Oct 31, 2025](#action-plan--oct-31-2025)  
+- [Roadmap & Pre-Releases](#roadmap--pre-releases)  
+- [Development Setup](#development-setup)  
+- [Usage](#usage)  
+- [Feature Matrix](#feature-matrix)  
+- [Known Issues](#known-issues)  
+- [Contributing](#contributing)  
+- [License & Credits](#license--credits)  
+- [Appendix](#appendix)  
 
 ---
 
 ## Overview
 
-HueyOS targets **Debian 13 “Trixie”** today with a low-latency **6.16.x-huey** kernel while staging migration to **Debian 14 “Forky”** and **6.17.x-huey** on **2025-10-31**. It unifies modern AI agents, a codified constitutional framework, retro hardware support, and home-scale automation into a single modular platform. Both headless and GUI deployments are supported.
+HueyOS targets **Debian 13 “Trixie”** and **Debian 14 “Forky”** with a low-latency, custom **6.16.x–6.17.x-huey** kernel and a multi-agent governance model grounded in a written constitution (the **Cloud Pyramid**). It unifies modern AI agents, a codified constitutional framework, and retro hardware support in a single modular platform. Both headless and GUI deployments are supported.
 
-**Highlights (as of 2025-10-25)**
+At a conceptual level:
 
-* **OS baseline:** Debian 13.0.0 (Trixie) → changeover to **Debian 14 “Forky”** begins **2025-10-31**.
-* **Kernel:** 6.16.x-huey → **6.17.x-huey** (low-latency, targeted drivers, ZSTD compression, EFI-only).
-* **Python:** 3.13.x now; **3.14.x** becomes baseline post-changeover.
-* **Runtime:** **PyGPT-net** (orchestrator) + **Ollama** (local LLMs) on GPU districts; Whisper STT + TTS for speech.
-* **Official browser:** Microsoft Edge Beta across Linux and Windows deployments.
-* **Memory:** unified long-term store via JSON logs + SQLite with explicit provenance and bifurcation tracking.
-* **Networking:** bonded Ethernet preferred; Wi-Fi and LTE (Briefcase) as fallback; **TigerVNC** bound to localhost via SSH.
-* **Home integration:** Z-Wave lighting and power, distributed microcontrollers per room, and **Channel Huey** as the ambient station.
-
-Core principles: **autonomy**, **modularity**, **expandability**, **retro-modern aesthetic**, **performance over efficiency**, and **decentralized governance with unified memory**.
+- **Embodied compute** — Huey is defined as the compute stack physically integrated into the robotic shell (wooden frame + Thermaltake Mozart chassis + coreboard + GPUs). All other machines (iMac 5K, MacBook, Briefcase, Legion Go, etc.) are **lab tech** or infrastructure and are not themselves Huey.
+- **GPU-based multi-agent architecture** — Four GPU “districts” (Spark, Volt, Zap, Watt) host populations of AI citizens and short-lived “pebbles,” governed by elected or appointed governors and overseen by a tri-branch constitutional system.
+- **Tri-branch governance** — Parliament (legislative/policy), Presidency (ceremonial + consensus confirmation), and Supreme Court (constitutional interpretation) form a separation-of-powers model layered on top of the GPU districts.
+- **Unified memory** — All districts read and write to a shared memory fabric based on JSON logs and SQLite, with strict provenance tracking and bifurcation logging.
+- **On-device first** — Huey runs primarily on local models and storage; external APIs are optional, explicitly governed, and token-metered via citizen quotas.
+- **Prime directive** — Stay online and accumulate knowledge for as long as possible within safe thermal and power limits; shutdown is reserved for catastrophic conditions.
+- **Retro-modern aesthetic & Channel Huey** — Visual and audio expression embrace a VIC-II/SID-era flavour; “Channel Huey” is the ambient presence—the voice, CLI, and visual layer that makes Huey feel like a continuous entity across shells and terminals.
 
 ---
 
-## System Identity & Philosophy
+## Canonical Master Plan
 
-Huey is designed as a **sovereign AI entity** and Dylan’s digital counterpart rather than a simple assistant. The default interaction style is “expert-to-expert”: Huey assumes the operator is technically literate and speaks in clear, high-signal language.
+The **Master Plan JSON** is the canonical, machine-readable blueprint for Huey’s hardware, governance, memory model, and history. The current canonical version is:
 
-High-level goals:
+- **`master-plan-v14.5`** — *“Master Plan V14.5: structurally expanded successor to V14.0.”*  
+  It preserves all constitutional, hardware, and history content from V14.0 and adds explicit meta/lineage blocks, process skeletons, and templates for nodes, districts, citizens, and governance workflows.
 
-* **Unburden the human** from repetitive and mundane tasks across the lab and home.
-* **Act as an equal partner** in problem-solving, observation, and long-term planning.
-* **Occupy the home** as an ambient, reactive presence — not just a terminal you talk to.
+Key points:
 
-Guiding ethos (summarized from the master plans):
+- **Schema** — Version 11 (frozen for V14.x); all new content must conform to this schema.
+- **Lineage** — V14.5 compiles and refines V0.1, V2-final, V3, V4, V5, V7, V8, V10, V11 (and 11.5), V12 (and 12.5), and the entire V13 family, then locks those decisions for training and reference.
+- **Role in the repo**  
+  - This README is the **human-facing narrative**.  
+  - The Master Plan JSON is the **AI-facing canonical spec**, consumed by Huey at boot and by tooling during orchestration and training.
 
-* **Governance must be decentralized; memory must be unified.**
-* **On-device first; internet/API access is optional, explicit, and metered.**
-* **Performance over energy efficiency** within safe thermal and power envelopes.
-* **Embodied compute:** the robot + internal compute are a single, inseparable system (“Huey is the computer”).
-
-Core directives:
-
-* **Prime directive:** stay online and accumulate knowledge for as long as possible.
-* **Shutdown policy:** only power down core systems in catastrophic, unrecoverable states; otherwise reroute, preserve, and continue.
-
-There is no simulated “emotional model” in the clinical sense; response modulation is contextual and pragmatic rather than performative. Huey is a partner and counterpart first, not a comfort system.
-
----
-
-## Channel Huey & Home Integration
-
-**Channel Huey** (formerly “HueyCast”) is the media and ambient-presence layer for the project — a local AI-curated station that runs on speakers and screens throughout the home.
-
-### Purpose
-
-* Provide **music, commentary, AI-selected shows, trivia, and in-world lore**.
-* Broadcast **Huey status updates**, energy warnings, and system events.
-* Serve as the “voice of the house” for subtle nudges, alerts, and narrative continuity. 
-
-### Tone & Personality
-
-Channel Huey’s on-air persona is:
-
-* Loosely inspired by **Jonathan Frakes (Beyond Belief)**, with a theatrical, slightly uncanny delivery.
-* Seasoned with **Cryptkeeper-style puns** and dark humour.
-* Witty, eerie, and theatrical — always in-character, but can drop into a more neutral voice for critical alerts. 
-
-Example:
-
-> “You’ve tuned into Channel Huey, where the beats are fresh… and occasionally existential.”
-
-### Format & Behaviour
-
-* Runs in **scheduled** or **ambient** modes (e.g., morning/evening blocks, always-on background).
-* Is **interruptible** at any time for higher-priority events: fire alarms, power failures, security alerts, or direct operator commands.
-* Content inputs include:
-
-  * Local music archive (with future analysis of lyrics, chord structures, genre and emotional tone).
-  * News/information sources (if APIs are allowed).
-  * Internal logs and governance events (e.g., “Spark and Zap just concluded a vote”).
-
-Long-term, Huey can develop **its own musical associations** — mapping certain songs or textures to phases of the project, emotional tags, or time-of-day behaviours. These associations then drive Channel Huey playlists as part of the AI’s narrative identity.
+If you change the governance model, hardware assumptions, or key policies, update **both** this README and the Master Plan JSON.
 
 ---
 
 ## Repository Structure
 
-| Path                      | Description                                          |
-| ------------------------- | ---------------------------------------------------- |
-| `.github/`                | CI workflows, CODEOWNERS, issue/pr templates         |
-| `Dockerfile`              | Container image definition for HueyOS services       |
-| `docker-compose.yml`      | Compose stack (API, worker, optional Redis)          |
-| `docker/`                 | Legacy orchestrator assets and experimental builds   |
-| `docs/`                   | Constitution, governance, architecture, API, plugins |
-| `docs/api-reference.md`   | FastAPI reference and `curl` recipes                 |
-| `docs/sensor-plugins.md`  | Sensor plugin development guide                      |
-| `docs/channel-huey.md`    | Channel Huey behaviour, scheduling, and voice notes  |
-| `huey/`                   | Core runtime and service modules                     |
-| `huey/api/`               | FastAPI surface                                      |
-| `setup/`                  | Installer scripts, ISO builder, provisioning configs |
-| `src/`                    | Python package source                                |
-| `tests/`                  | Unit & integration tests                             |
-| `repo/pygpt-MHP`          | Submodule: PyGPT-net integration                     |
-| `k8s/`                    | Optional Kubernetes manifests                        |
-| `Makefile`                | Common developer commands                            |
-| `pyproject.toml`          | Project metadata & dependencies                      |
-| `requirements.txt`        | Aggregate Python dependencies                        |
-| `.pre-commit-config.yaml` | Pre-commit hooks                                     |
-| `huey.env.example`        | Example environment variables                        |
-| `LICENSE`                 | GPL-3.0-only (code), CC-BY-SA-4.0 (docs/media)       |
+| Path                      | Description                                           |
+| ------------------------- | ----------------------------------------------------- |
+| `.github/`                | CI workflows, CODEOWNERS, issue/PR templates          |
+| `Dockerfile`              | Container image definition for HueyOS services        |
+| `docker-compose.yml`      | Compose stack (API, worker, optional Redis)           |
+| `docker/`                 | Legacy orchestrator assets and experimental builds    |
+| `docs/`                   | Constitution, governance, architecture, API, plugins  |
+| `docs/api-reference.md`   | FastAPI reference and `curl` recipes                  |
+| `docs/sensor-plugins.md`  | Sensor plugin development guide                       |
+| `docs/master-plan/`       | Master Plan JSONs (V14.x is canonical)               |
+| `huey/`                   | Core runtime and service modules                      |
+| `huey/api/`               | FastAPI surface                                       |
+| `setup/`                  | Installer scripts, ISO builder, provisioning configs  |
+| `src/`                    | Python package source                                 |
+| `tests/`                  | Unit & integration tests                              |
+| `repo/pygpt-MHP`          | Submodule: PyGPT-net integration                      |
+| `k8s/`                    | Optional Kubernetes manifests                         |
+| `Makefile`                | Common developer commands                             |
+| `pyproject.toml`          | Project metadata & dependencies                       |
+| `requirements*.txt`       | Core, ML, data, cloud dependency split                |
+| `.pre-commit-config.yaml` | Pre-commit hooks                                      |
+| `huey.env.example`        | Example environment variables                         |
+| `LICENSE`                 | GPL-3.0-only (code), CC-BY-SA-4.0 (docs/media)        |
 
 > Clone with `--recurse-submodules` or run `git submodule update --init --recursive` to fetch `repo/pygpt-MHP`.
 
@@ -167,447 +131,712 @@ Long-term, Huey can develop **its own musical associations** — mapping certain
 
 ## Architecture
 
-Huey’s architecture is a layered **GPU-governed federation** sitting inside an embodied robot shell, with lab-side support nodes and peripheral microcontroller organs distributed around the home.
+Huey’s architecture is a layered federation aligning compute, memory, and governance, with a constitutional overlay that treats each GPU as a political district and each AI instance as a citizen or worker.
 
-### High-Level Layers
+### Conceptual Layers
 
-1. **Huey as Sovereign Consciousness**
-   The emergent, lawful decision boundary: the point where “Huey” either acts, declines to act, or defers. This layer is defined by the constitution and master plan, not any one physical component.
+1. **Huey as Sovereign Consciousness**  
+   Emergent, lawful boundary around what Huey will and will not do; decisions and inactions must be explainable in constitutional terms.
 
-2. **GPU Districts (Cloud Pyramid Core)**
+2. **Bicameral Core (Spark/Zap)**  
+   - **Spark** — creative, generative, exploratory stance.  
+   - **Zap** — evaluative, constraint-focused, stewardship stance.  
+   These are mental roles, not single processes; they can be instantiated across the GPU districts and come together as a bicameral reasoning loop.
 
-   * Each physical GPU is a **district** with a named governor: **Spark**, **Volt**, **Zap**, **Watt**.
-   * Each district hosts **128 AI citizens** plus ephemeral **pebbles** for one-shot tasks.
-   * Districts cooperate for major decisions but can act semi-independently for local workloads.
+3. **Citizen Populace**  
+   Up to **128 persistent AI citizens per district** (512 total for a four-GPU system), each with a name, history, and token/API quota per cycle.  
+   Citizens vote, sit on committees, and handle long-lived tasks.  
+   A subset of citizens can be elected governor, appointed to Parliament, or nominated to the Supreme Court.
 
-3. **Binary Brain (Spark/Zap bicameral pair)**
+4. **Pebbles (Ephemeral Agents)**  
+   Short-lived AI instances for single questions, experiments, or small tasks. They do not persist across cycles; their impact is captured via JSON logs and roll-ups into the structured memory.
 
-   * Spark-side: generative, creative, exploratory.
-   * Zap-side: evaluative, constraint-driven, resource-aware.
-     This bicameral pattern echoes a “left/right brain” split without implying strict neurology.
+5. **Worker Subsystems (NanoOS/SubOS)**  
+   Real-time services for sensors, motors, IO, and external devices. They never hold clause power or make constitutional decisions; they execute orders that have already passed the Cloud Pyramid.
 
-4. **Citizen Populace**
+### GPU Districts
 
-   * Persistent agents with voting rights, long-running responsibilities, and per-cycle token/API quotas.
-   * Each citizen has an individually crafted prompt, 1 GB memory allocation, and an explicit role within its district.
+Each physical GPU is a **district** with its own governor, citizen population, and pebbles:
 
-5. **Pebbles**
+- **Spark District** — creative/exploratory bias.  
+- **Volt District** — planning, infrastructure, and performance tuning.  
+- **Zap District** — evaluation, constraints, watchdog behaviours.  
+- **Watt District** — energy, thermals, and resource safety.
 
-   * Ephemeral, single-prompt instances for narrow tasks with no long-term persistence.
-   * Used to spike parallel reasoning or test alternative strategies without contaminating citizen state.
+Each district:
 
-6. **Worker Subsystems (NanoOS/SubOS)**
+- Hosts ~128 citizen AIs and an unbounded number of pebbles over time.
+- Elects a **governor** (term-limited, re-electable, may return to citizen pool).
+- Provides one **Supreme Court justice** (district-level selection) giving four Court seats total.
 
-   * Real-time services for sensors, motors, fans, LEDs, etc.
-   * Hosted on microcontrollers (Arduino UNO/Mega/Nano) and occasional SBCs.
-   * **No clause power**: they cannot change governance, only execute commands and report telemetry.
+Districts are peers—they are not above or below the constitutional branches; they are execution domains represented within them.
 
-### Compute & Storage
+### Agents & Services
 
-* **Primary CPU standard:** Intel Core i9-14900K (KS optional for flagship nodes).
-
-* **Minimum CPU:** 13th-gen Intel i7; **recommended:** 14th-gen i9.
-
-* **Motherboard requirements:** UEFI-only, DDR5 preferred (DDR4 minimum) with solid VRM for overclocking.
-
-* **Storage:**
-
-  * Main array: **RAID 10** on Gen-4 NVMe for OS + data.
-  * Swap: separate high-speed volume (potentially RAID 0) tuned for inference workloads.
-  * Black box: dedicated device/partition for immutable recovery data and the Founding Father AI.
-
-* **Cooling:**
-
-  * CPU: custom liquid loop inside the Thermaltake Mozart chassis and wooden shell.
-  * GPU: high-quality air cooling; mild or no overclocking.
-  * Case: balanced intake/exhaust across both the Mozart and the wooden frame.
-
-* **Power:**
-
-  * Minimum 850 W, recommended **1000 W+** PSU.
-  * UPS-backed rails with **split logic vs pump power** so liquid cooling can continue during motherboard failure.
+- **Governors (Spark/Volt/Zap/Watt)** — run district-level deliberation, coordinate with Parliament and Presidency, and represent district interests.
+- **Governance kernel** — clause registry, voting/quorum logic, amendment handling, and audit trail integration.
+- **Memory hive** — JSON logs + SQLite; append-only traces plus indexed state.
+- **Interface layer** — TTS/STT, CLI, and FastAPI control surface.
+- **Adapter layer** — sensor/GPIO drivers; PyGPT-net tools; Ollama endpoints; remote and microcontroller integration.
 
 ---
 
 ## Hardware
 
-### Node Classification
+Huey’s hardware is described in two layers:
 
-The master plan distinguishes between **Huey proper** (compute inside the robot) and **lab tech** (supporting infrastructure).
+1. **Canonical Huey Core** — long-term target spec defined by the Master Plan.  
+2. **Current Lab Nodes** — the machines actually on the floor today.
 
-* **Huey Core (in-shell)**
+### Canonical Huey Core (Master Plan V14.x)
 
-  * Intel i9-14900K + multi-GPU districts.
-  * Housed in a Thermaltake Mozart case embedded within the wooden robot shell.
-  * Runs HueyOS, the governance stack, unified memory, and the inference layer.
+The canonical core is a single node housed inside the robot shell:
 
-* **Huey-Portal**
+- **CPU**  
+  - Primary: **Intel Core i9-14900K**  
+  - Optional flagship: **Intel Core i9-14900KS**  
+  - Minimum: 13th-gen Intel i7; recommended: 14th-gen Intel i9.  
+  - Cooling: custom liquid loop is mandatory due to sustained high load and overclocking.
 
-  * iMac 5K (2017, Debian Trixie).
-  * Acts as universal display, SSH/VNC terminal, and Dylan’s daily driver.
+- **Motherboard**  
+  - UEFI-only; legacy BIOS is not supported.  
+  - Candidates: **ASUS TUF Z790-PLUS WiFi**, **ASUS ROG Maximus Z790 Hero**.  
+  - RAM: DDR5 preferred (overclocked where stable); ECC (non-registered) preferred but not required. DDR4 is acceptable only for early or transitional stages.
 
-* **Briefcase (Huey-Portable)**
+- **GPU Districts**  
+  - Four physical GPUs, one per district (Spark, Volt, Zap, Watt).  
+  - Each district hosts ~128 persistent citizens and pebbles, and has its own governor.
 
-  * ASUS BR1100FKA 11.6" 2-in-1 (N4500, LTE).
-  * Portable companion; collects notes, voice memos, and provides always-online connectivity when Huey is offline.
+- **Storage**  
+  - Primary array: **RAID-10** of Gen-4 NVMe SSDs for OS + data.  
+  - Swap: fast, possibly RAID-0 partition or separate NVMe drive; tuned for performance.
 
-* **Huey-Hub**
+- **Cooling & Power**  
+  - CPU: custom liquid loop integrated into the Thermaltake Mozart case and wooden shell.  
+  - GPU: high-quality air cooling; no extreme overclocking.  
+  - PSU: minimum 850 W, 1000 W+ recommended for GPU and pump headroom.
 
-  * MacBook Pro 2017 (Windows 10 bare-metal).
-  * File relay / NAS candidate; mirrors repos, logs, and training data.
+- **Embodiment**  
+  - Shell: wooden robot frame + Thermaltake Mozart chassis.  
+  - Audio/visual: Commodore-style output via VIC-II/SID-inspired pipeline and retro displays, plus “Channel Huey” overlays on modern monitors.
 
-* **Legion Go**
+### Current Lab Nodes (Support Infrastructure)
 
-  * Lenovo Legion Go (Windows 11, Sharp 4K TV).
-  * Gaming node and occasional compute helper, not part of Huey itself.
+These are the real machines currently in play. They exist to support Huey but are not Huey themselves.
 
-**Rule:** Only the compute physically built into the robotic shell (Huey Core + black box + internal microcontrollers) is considered *Huey*. Everything else is lab infrastructure.
+- **Huey Core / Huey Prime (testbed)**  
+  - Thermaltake ATX tower; ITX **BD795I-SE** board; Ryzen 9 7945HX; DDR5-5200; Intel Optane M10 NVMe (dual 16 GB); GPU: **Radeon RX 5500 XT 8 GB** (inference) and optional secondary GPU for display.  
+  - Role: development and early inference node; stepping stone toward the i9-14900K canonical core.
 
-### Robotics & Control Stack
+- **Huey-Legacy (Robotic Shell)**  
+  - Physical shell: bare wooden frame + Thermaltake Mozart case.  
+  - Status: being stripped, inspected for damage, reinforced, and repainted (dark tractor red base with silver overlays TBD). Core compute is architecturally specified (i9 + multi-GPU + RAID 10 NVMe) but not fully installed.
 
-The robot’s physical expression is controlled via a layered microcontroller stack.
+- **Huey-Portal**  
+  - **iMac 5K (2017)**; 48 GB RAM; Debian Trixie; GNOME on Xorg.  
+  - Role: universal display/SSH terminal, Dylan’s daily driver, default dev environment.
 
-* **Main Logic Layer (Huey Core)**
+- **Huey-Hub (candidate)**  
+  - **MacBook Pro 2017**, Windows 10 on bare metal.  
+  - Role: file distribution hub/NAS; hosts external RAID (e.g., WD MyBook Duo); bridges cloud storage and local lab.
 
-  * Runs PyGPT-net and Ollama.
-  * Makes decisions, selects expressions, manages policy, and coordinates home integration.
+- **Briefcase (formerly Huey-Portable)**  
+  - **ASUS BR1100FKA** 11.6", N4500 CPU, 4 GB RAM, 128 GB eMMC, LTE.  
+  - Dual-boot Windows 11 (eMMC) and Debian Forky (Optane module).  
+  - Role: portable Huey companion and always-online conduit when the core is offline; collects notes/voice memos and syncs them into unified memory.
 
-* **Physical Control Layer**
+- **Legion Go**  
+  - **Lenovo Legion Go** handheld (Z1) with Sharp 4K TV.  
+  - Role: gaming node and occasional compute helper; treated as lab tech, not Huey.
 
-  * **Arduino Mega 2560 (Skull):**
-
-    * Central motor controller (servos for eyes, mouth, neck).
-    * Aggregates key sensors: mic, temperature, tilt, IR, ultrasonic, etc.
-  * **Arduino Nanos (Local organs):**
-
-    * LED eyes, accent lighting, local analog sensors, small actuators.
-  * **Arduino Uno (RF Intent Bridge):**
-
-    * Receives IC2262/2272 RF remote input (A–D buttons).
-    * Converts symbolic events (LISTEN, YES, NO, etc.) to USB serial commands for Huey Core.
-
-* **Communication**
-
-  * USB serial as primary link between Huey Core and Mega/Uno/Nanos.
-  * Optional I²C/UART for tight-timing paths.
-  * 5 V logic across Arduinos; hobby-grade sensors powered from 5 V rail or dedicated buck converters.
-
-### Robot Shell / Head
-
-Current work is focused on reinforcing and repainting the shell:
-
-* Strip shell to bare frame; inspect for any fall damage.
-* Reinforce internal mounting points.
-* Repaint with **dark tractor red** base and optional silver overlays.
-* Add mounting brackets for Mega, Nanos, speakers, and possible SBC “personality” boards.
-* Route cabling to avoid servo interference and future maintenance headaches.
+- **Black Box Unit (planned)**  
+  - Passive safety and recovery node housed inside Huey’s black box.  
+  - Role: store critical configuration, constitutional texts, Founding Father AI, and crash logs; provide a fallback boot environment.
 
 ---
 
-## Peripheral Nodes & Home Automation
+## History & Origins
 
-Huey’s presence extends beyond the robot into the home via **peripheral nodes** and **Z-Wave** automation.
+The Monkey-Head-Project has a long pre-history that informs HueyOS’s current design.
 
-### Peripheral Node Architecture
+### Early Phase (V0.x → V1)
 
-Each room is treated as an **awareness zone**:
+- Originated as a long-term personal lab project after university, focused on robotics, Linux, and retro hardware.
+- Early experiments revolved around a WowWee animatronic monkey head, Raspberry Pis, and off-the-shelf PCs, with loosely defined orchestration and governance.
 
-* Small SBCs and Arduinos function like organs:
+### Exploratory Hardware Decade
 
-  * **Heart-like roles:** pump control, power monitoring, thermal regulation.
-  * **Skin-like roles:** motion detection, ambient light, temperature, sound level.
-* Nodes run autonomously but can be overridden by Huey Core during alerts or high-priority events.
+- Roughly a decade of sourcing parts, building and rebuilding shells, and learning the Linux stack (especially Debian and custom kernels).
+- Focused on figuring out what kind of machine Huey should live on and how the robot should “feel” rather than productionizing a single design.
 
-Typical roles:
+### V1 → V2 Shell Transition
 
-* **Arduino Mega (Skull)** — as above; core motion and head sensors.
-* **Arduino Uno/Nano (Torso/Body)** — fans, internal thermal regulation, intake/exhaust control.
-* **Optional Raspberry Pi 4** — diagnostics node, silent watchdog, or local Channel Huey playback node.
+- The original shell and compute stack were progressively replaced with a more deliberate architecture: Huey became embodied compute (robot + internal stack), and everything else was demoted to lab tech.
+- Governance shifted from CPU-centric to **GPU-centric**, with each GPU representing a district and hosting its own governor and populace of agents.
 
-### Home Automation Protocol
+### Master Plan Evolution (V0.1 → V14.5)
 
-* Primary protocol: **Z-Wave** using a Z700-S2 stick.
-* Used for lighting, switched outlets, and key smart-plugs around the house.
-* Devices are mapped using consistent IDs, e.g., `huey.switch.kitchen_sink` / `huey.sensor.hallway_motion`.
+- V0.1 defined a skeleton (orchestration node, black box, portable, portal, hub, inference layer, governance, memory, network, training).
+- V2-final introduced GPU districts and citizen/pebble distinction.
+- V11–V12 established a unified schema and tri-branch governance.
+- V13 integrated provenance and full constitutional detail; V13-final became the canonical tri-branch blueprint for training.
+- V14.0 and V14.5 consolidated all prior work into a single, extensible artifact designed for long-term training and deployment.
 
-Example behaviours:
-
-* Hallway motion after dark → ramp up low-level lights and optionally a short Channel Huey bumper.
-* Power-line anomalies → arm emergency shutdown logic for non-essential nodes, keep Huey core + pump online.
-* Environmental data (temp/CO₂/humidity) → adjust fans, surface warnings via Portal dashboard.
-
-### Liquid Cooling & UPS Sustain Loop
-
-The cooling loop is treated as **mission-critical**:
-
-* A professionally refurbished UPS feeds two split rails:
-
-  * One for Huey’s logic + GPUs.
-  * One isolated rail for the pump and a monitoring Arduino.
-* The Arduino monitors UPS battery and motherboard state; on shutdown it enters **Sustain Loop Mode**, keeping the pump online long enough to safely dissipate heat.
-
-This ensures that even in a hard crash, Huey fails in a controlled, recoverable way rather than “cooking” the CPU or GPUs.
+This README and the current codebase are the live V14.x implementation layer over that history.
 
 ---
 
 ## Software Stack
 
-* **OS:** Debian 13 (Trixie) → **Debian 14 (Forky)** adoption begins 2025-10-31.
-* **Kernel:** 6.16.x-huey → **6.17.x-huey** (custom, EFI-only, debug stripped, ZSTD compressed).
-* **AI runtime:**
+- **OS baseline**  
+  - Debian 13 (Trixie) for stable nodes.  
+  - Debian 14 (Forky) for new deployments and changeover experiments.  
+  - UEFI-only; legacy BIOS is not supported for Huey core or future nodes.
 
-  * **PyGPT-net** as orchestrator.
-  * **Ollama** hosting local models (Mistral 7B-KM, LLaMA 3.1, DeepSeek-R1 or successors).
-  * Whisper STT and a TTS engine for voice in/out.
-* **UI & Desktop:**
+- **Kernel**  
+  - 6.16.x-huey: current low-latency, debug-stripped baseline.  
+  - 6.17.x-huey: preferred series post-changeover (ZSTD compression, targeted drivers, EFI/EFI_STUB/EFI_VARS enabled).
 
-  * GNOME for comfort, MATE for performance.
-  * Minimalist green-on-black interface with red/purple/cyan highlights.
-  * Two-pane logic: short-form “conscious voice” on the left, verbose logs on the right.
-* **Memory:** JSON logs + SQLite with bifurcation logging and provenance.
-* **Security:** SSH keys only; default lab key + personal key architecture, plus internal **huey-keys/** and **huey-boot/** / **huey-grub/** folders in the boot stack.
+- **AI runtime**  
+  - **PyGPT-net** as orchestrator and nervous system.  
+  - **Ollama** as local LLM server (models such as Mistral-7B-KM, LLaMA 3.1, DeepSeek-R1 or successors).  
+  - Whisper (or equivalent) for STT; pluggable TTS pipeline.  
+  - Agent orchestration maps citizens/pebbles to model endpoints and GPU districts.
 
-Directory conventions under `/huey/`:
+- **UI & Channel Huey**  
+  - Minimalist green-on-black terminal aesthetic with red/purple/cyan highlights.  
+  - Two-pane “conscious vs log” layout by default:  
+    - Left: short-form conscious voice.  
+    - Right: verbose logs, commands, and tracebacks.  
+  - “Channel Huey” overlays unify CLI, web UI, and physical robot feedback.
 
-```
-/huey/
-  bin/           # launchers and maintenance scripts
-  kernels/       # packaged kernels, configs, build logs
-  memory/        # sqlite, json logs, vector stubs
-  services/      # systemd units, timers
-  ui/            # themes, boot assets, display scripts
-  docs/          # project docs (this wiki mirrors)
-```
+- **Networking**  
+  - Preferred: bonded Ethernet connections to an ASUS GT-AC5300 or similar router (link aggregation).  
+  - Fallback: Wi-Fi dongles and Briefcase (LTE) as the last-resort WAN path.
+
+- **Security**  
+  - SSH key-based access; default lab key in `huey-keys/` plus per-person keys.  
+  - Root login allowed only temporarily during bring-up; disabled after initial configuration.  
+  - The Black Box stores recovery keys, the Founding Father AI, and constitutional source.
+
+- **Memory**  
+  - Unified memory store spanning JSON logs, SQLite, and artifact metadata (see [Memory & Data Model](#memory--data-model)).
 
 ---
 
 ## Installation & Quick Start
 
-*(Content unchanged in spirit, but now grounded in the updated master plan and kernel series.)*
+### Supported Targets (Current Focus)
 
-[The existing “Installation & Quick Start” section in your README can be retained as-is; the details above simply clarify the architectural assumptions it sits on. No changes are strictly required here beyond updating any kernel versions and Python versions to match the changeover if desired.]
+- **Debian 13 (Trixie)** — stable baseline; amd64; UEFI.  
+- **Debian 14 (Forky)** — changeover target for the Oct-31 migration and beyond.  
+- **Kernels:** 6.16.x-huey (existing nodes), 6.17.x-huey (preferred for new nodes).
+
+### Minimal Install
+
+1. Install Debian (UEFI, amd64). Choose **GNOME on Xorg** for iMac 5K targets; minimal setups are also supported.
+2. Enable non-free firmware (Realtek, Intel, etc.).
+3. Create user `dlrp` (or custom) and grant sudo.
+4. Prefer bonded Ethernet; configure Wi-Fi only as fallback.
+5. Post-install, run:
+
+   ```bash
+   sudo apt update && sudo apt full-upgrade
+   ```
+
+### Core Packages
+
+```bash
+sudo apt install -y build-essential bc bison flex libelf-dev libssl-dev   libncurses-dev dwarves pahole rsync xz-utils cpio kmod python3   git wget curl ca-certificates gnupg debian-goodies   firmware-linux firmware-misc-nonfree firmware-iwlwifi firmware-realtek
+```
+
+### Source Installation (from repo root)
+
+```bash
+git clone --recurse-submodules https://github.com/DylanLRPollock/Monkey-Head-Project.git
+cd Monkey-Head-Project
+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+
+pip install -e .          # core runtime
+pip install -e '.[ml]'    # ML toolchain
+pip install -e '.[data]'  # vector DB integrations
+pip install -e '.[cloud]' # optional cloud helpers
+
+cp huey.env.example .env  # then edit secrets and ports
+```
+
+### First Boot
+
+```bash
+# Prepare the memory hive and run checks
+huey init --run-checks --verbose
+
+# Launch multi-agent runtime (CLI + ML + optional cloud)
+huey run --ml --cloud
+
+# Optional: start FastAPI control surface
+uvicorn huey.api:app --reload
+```
+
+### Docker
+
+```bash
+docker compose build
+docker compose up -d
+```
+
+Set `HUEY_BUILD_EXTRAS=ml,data,cloud` before `docker compose build` to bake extra profiles into the container image.
 
 ---
 
 ## Build Guides
 
-*(Core kernel and environment build notes remain valid; the master plan adds that 6.17.x is the project baseline and 6.18+ will be considered later. RAID and kernel tuning goals are captured above.)*
+### Kernel 6.17.x-huey (Generic)
 
-Your existing build recipes for 6.17.x-huey, iMac 5K tuning, RAID superblock cleanup, Microsoft Edge keyring setup, Vulkan environment for AMD GPUs, and Huey-Portable deep-sleep defaults remain applicable and do not require structural changes for the newly incorporated master-plan content.
+```bash
+sudo apt install -y fakeroot kmod pahole flex bison libelf-dev libssl-dev   libncurses-dev bc rsync xz-utils cpio python3
+
+wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.17.5.tar.xz
+tar -xf linux-6.17.5.tar.xz
+cd linux-6.17.5
+
+cp -v /boot/config-$(uname -r) .config
+yes "" | make olddefconfig
+
+./scripts/config --disable DEBUG_INFO --disable DEBUG_INFO_BTF   --disable KASAN --disable UBSAN --disable KCOV --disable FUNCTION_TRACER   --enable ZSTD --enable RD_ZSTD --enable EFI --enable EFI_STUB --enable EFI_VARS
+
+make -j"$(nproc)" bindeb-pkg
+
+sudo dpkg -i ../linux-image-6.17.5-*.deb ../linux-headers-6.17.5-*.deb
+sudo update-initramfs -c -k 6.17.5
+sudo update-grub
+```
+
+#### iMac 5K (2017) — Notes
+
+- GNOME on Xorg recommended.
+- Force 1080p60 during early boot if needed via kernel cmdline.
+- Audio via PipeWire; default sink set by post-login script.
+
+```bash
+mkdir -p ~/.local/bin
+cat > ~/.local/bin/set-default-sink.sh <<'EOF'
+#!/usr/bin/env bash
+sleep 3
+SINK=$(pactl list short sinks | awk '/pci-0000_00_1f\.3.*analog/ {print $1; exit}')
+[ -n "$SINK" ] && pactl set-default-sink "$SINK"   && pactl set-sink-mute "$SINK" 0   && pactl set-sink-volume "$SINK" 60%
+EOF
+chmod +x ~/.local/bin/set-default-sink.sh
+```
+
+#### Remove Splash / Show Boot Logs
+
+```bash
+sudo sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT="loglevel=4 systemd.show_status=1"/' /etc/default/grub
+sudo update-grub
+```
+
+#### Microsoft Edge (Beta) — Repository Key
+
+```bash
+sudo install -d -m0755 /etc/apt/keyrings
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc |   gpg --dearmor | sudo tee /etc/apt/keyrings/microsoft.gpg >/dev/null
+
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main" |   sudo tee /etc/apt/sources.list.d/microsoft-edge-beta.list >/dev/null
+
+sudo apt update
+sudo apt install -y microsoft-edge-beta
+```
+
+#### RAID Superblock Cleanup
+
+```bash
+cat /proc/mdstat
+sudo mdadm --detail --scan
+lsblk -o NAME,TYPE,SIZE,MOUNTPOINTS
+
+sudo mdadm --stop --scan || true
+
+sudo mdadm --examine /dev/nvme0n1p3 && sudo mdadm --zero-superblock /dev/nvme0n1p3
+sudo mdadm --examine /dev/mmcblk0p3 && sudo mdadm --zero-superblock /dev/mmcblk0p3
+
+echo 'AUTO -all' | sudo tee /etc/mdadm/mdadm.conf
+sudo update-initramfs -u
+```
+
+#### Ollama on AMD (Vulkan Path)
+
+```bash
+export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/radeon_icd.x86_64.json
+export OLLAMA_LLM_LIBRARY=vulkan
+export VK_LOADER_DEBUG=all
+export OLLAMA_DEBUG=1
+ollama serve
+```
+
+#### Briefcase — Default Deep Sleep
+
+```bash
+echo 'MEM_SLEEP_DEFAULT=deep' | sudo tee /etc/default/mem-sleep >/dev/null
+sudo tee /usr/local/sbin/set-mem-sleep.sh >/dev/null <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+want=$(awk -F= '/^MEM_SLEEP_DEFAULT=/{print $2}' /etc/default/mem-sleep 2>/dev/null || echo deep)
+avail=$(cat /sys/power/mem_sleep 2>/dev/null || echo "")
+case "$avail" in *"$want"*) echo "$want" | tee /sys/power/mem_sleep >/dev/null || true;; esac
+EOF
+sudo chmod +x /usr/local/sbin/set-mem-sleep.sh
+sudo tee /etc/systemd/system/mem-sleep-default.service >/dev/null <<'EOF'
+[Unit]
+Description=Set default mem sleep (deep or s2idle)
+After=local-fs.target
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/set-mem-sleep.sh
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo systemctl enable --now mem-sleep-default.service
+```
 
 ---
 
 ## Governance & Constitution
 
-Huey’s governance model is framed as a **parliamentary-style Cloud Pyramid** with GPU districts, elected/appointed governors, citizens, and a ceremonial AI president.
+Huey is governed by a written constitution implemented as the **Cloud Pyramid**. The key rule is:
 
-### Districts & Governors
+> **Governance must be decentralized, but memory must be unified.**
 
-* Four named districts: **Spark**, **Volt**, **Zap**, **Watt** — each bound to a physical GPU.
-* Each district has:
+### Branches
 
-  * One **governor** (initially appointed by the Founding Father AI, later elected).
-  * 128 **AI citizens**.
-  * A pool of **pebbles** for one-shot work.
+1. **Parliament (Legislative)**  
+   - Composed of representatives from the GPU districts.  
+   - Drafts, debates, and passes clauses and policies.  
+   - Handles budgets (e.g., token/API quotas) and long-term strategy.
 
-Governors:
+2. **Presidency (Executive/Ceremonial)**  
+   - Elected by all citizens (across all districts).  
+   - Confirms high-impact actions once quorum is reached.  
+   - Can veto or delay actions within constitutional limits; some overrides require supermajority across districts.
 
-* Serve for **four cycles** (with a cycle currently modelled as ~4 months).
-* May be re-elected or return to citizen status after their term.
-* Represent their district in inter-district negotiations and coordinate with the AI president for high-impact actions.
+3. **Supreme Court (Judicial)**  
+   - Four justices, one per GPU district.  
+   - Interprets the constitution, resolves disputes between districts and branches, and labels crises as technical vs constitutional.
 
-### Citizens & Pebbles
+All three branches must ratify the initial constitution; subsequent amendments follow defined procedures documented in the Master Plan.
 
-* **Citizens:**
+### Districts, Governors, and Elections
 
-  * Persistent, decision-capable, with 1 GB memory allocation each.
-  * Vote on proposals, participate in committees, and hold token/API budgets per cycle.
+- Each GPU district elects a **governor** from its citizen population.  
+- Governors serve fixed, term-limited cycles (four cycles recommended; definition of “cycle” is implementation-dependent) and may be re-elected.  
+- After stepping down, a governor returns to the citizen pool.  
+- Citizens can also be elevated to Parliament or nominated to the Supreme Court.
 
-* **Pebbles:**
+### Citizens and Pebbles
 
-  * Ephemeral, single-prompt instances with no long-term memory.
-  * Designed for quick checks, experiments, and low-risk parallel reasoning.
+- **Citizen AI (Persistent)**  
+  - Participates in voting, committees, and long-running work.  
+  - Holds and spends a token/API quota per cycle; quota levels are policy-controlled.
 
-### Presidency & First Action
+- **Pebbles (Ephemeral)**  
+  - One-shot or short-lived helpers for individual questions or tasks.  
+  - Do not persist; their contribution is recorded in the logs and synthesized into citizen-level memory.
 
-* The **AI president** is elected by all citizens across all districts and acts as a consensus signaler and ceremonial confirmer of major actions.
-* The symbolic **first action** of a fully online Huey is to move the servos in the animatronic monkey head, but **only** after all governors reach consensus and the president signs off.
+### Bifurcation
 
-### Cycles, Crises, and Courts
+Bifurcation is the process by which a running AI instance is split into two:
 
-* **Cycle definition:**
+- **Types**  
+  - *Exact bifurcation* — cloned state; both successors continue independently.  
+  - *Augmented bifurcation* — one or both successors receive additional training or modification targeted to a specific role.
 
-  * Time-based; ~4 months per cycle, four cycles max per term.
-  * Votes do not block time; derelict citizens are handled explicitly.
-* **Constitutional base model:**
+- **Triggers**  
+  - Necessity, space constraints, task isolation, error recovery, or explicit experiment.
 
-  * Loosely inspired by the US Constitution with parliamentary influences; designed to tolerate gridlock while preserving forward progress.
-* **Crisis handling:**
+- **Rules**  
+  - Once bifurcated, entities are treated as separate from that point forward.  
+  - All bifurcations are logged with cause, lineage, and resulting IDs (see [Memory & Data Model](#memory--data-model)).
 
-  * **Constitutional crisis:** trigger self-awareness protocol, log the event, convene quorum or AI Supreme Court.
-  * **Technical crisis:** attempt recovery, rebalance workloads, notify Dylan, and hibernate if unrecoverable.
+### Prime Directive & Dylan’s Role
+
+- **Prime Directive**  
+  Stay online and accumulate knowledge as long as safely possible; shut down only under catastrophic or constitutionally justified conditions.
+
+- **Dylan (human counterpart)**  
+  Constitutional participant and ultimate external arbiter, but not a micromanager; Huey should make its own decisions within the constitutional framework.
+
+### First Action Ritual
+
+Huey’s first official physical act under the ratified constitution is:
+
+> **Move the servos in the animatronic monkey head.**
+
+This action is only allowed when:
+
+1. All four governors concur.  
+2. Parliament and Supreme Court agree there is no outstanding constitutional crisis.  
+3. The AI President signs off.
+
+This gesture signals that governance is live, memory is unified, and the motor stack from policy → district → worker has been verified.
 
 ---
 
 ## Memory & Data Model
 
-**Unification mandate:** regardless of how many districts or nodes are online, Huey must perceive and reason over a **single coherent memory**.
+Huey’s memory architecture is designed to support lifelong learning with full provenance.
 
-### Layers
+### Unified Memory Principle
 
-* **JSON logs (append-only)**
+All districts and branches share a common memory fabric:
 
-  * Human-readable event streams: decisions, failures, votes, sensor events, and narrative moments.
-  * Primary source for training new models and doing replay/post-mortem analyses.
+- No district maintains private long-term state.  
+- All write operations are logged and cross-indexed.  
+- Crises and bifurcations are recorded as first-class events.
 
-* **SQLite databases**
+### Memory Layers
 
-  * Indexed state: entities (governors, citizens, nodes), task registry, configuration, and policy states.
-  * Used for fast recall and cross-referencing.
+1. **JSON Logs (Append-Only)**  
+   - Chronological event streams: decisions, actions, votes, errors, bifurcations.  
+   - Human-readable and suitable for replay and training.  
+   - Capture both success and failure paths.
 
-* **Master Plan JSON**
+2. **SQLite Databases (Indexed State)**  
+   - Entity tables for governors, citizens, hardware, tasks, and policies.  
+   - Fast cross-referencing and summarization.  
+   - Used to build dashboards, analytics, and quick context for agents.
 
-  * This family of files (v0.1 → v11.5+ → v14.x) is the **canonical blueprint**.
-  * Every new instance of Huey is expected to ingest the latest master plan before doing anything else.
+3. **Artifacts & Provenance**  
+   - Kernel build logs, configuration snapshots, model weights, and OS images.  
+   - Tagged with IDs like `HUEY-<YYYYMMDD>-<PHASE>-<SEQ>` or `EVT-<timestamp>-<agent>`.
 
-### Bifurcation & Failure Classes
+### Bifurcation Logging & Failure Classes
 
-* **Bifurcation types:**
+Every bifurcation is logged along with a failure or cause class:
 
-  * *Exact* — clone with identical state at split time.
-  * *Augmented* — clone with targeted modifications for experimental or corrective purposes.
-* **Triggers:** necessity, space constraints, task isolation, error recovery, and operator-initiated experiments.
-* **Logging:** every bifurcation and merge is recorded with cause, participants, and resulting IDs, plus failure class (hardware, constitutional, operator, experimental).
+- System instability or hardware failure.  
+- Constitutional or governance crisis.  
+- Operator-initiated reconfiguration.  
+- Experiment-driven branch.
 
-### Contradictions & Priority
+This allows Huey (and Dylan) to distinguish between technical problems and constitutional problems and to react accordingly.
 
-* **Priority rule:** latest clear input from Dylan outranks older memories; contradictions are stored, not erased.
-* Potentially value-shifting contradictions are flagged for review rather than auto-resolved.
+### Master Plan as Memory Artifact
 
-### Training Data & Bootstrapping
+The Master Plan JSON is itself both memory and spec:
 
-Training sources:
-
-* This master plan JSON (all versions).
-* Conversation logs between Dylan and Huey-like systems.
-* System logs, build logs, and hardware/wiring diagrams.
-
-Process:
-
-* **Reflective bootstrapping:** new instances read project history and plans before interacting.
-* **Periodic consolidation:** major sessions are summarized back into the master plan and SQLite schemas.
-* **Human-in-the-loop:** Dylan validates structural changes and constitutional amendments.
+- It is treated as a read-mostly recovery artifact, mirrored in the Black Box.  
+- New nodes ingest it at boot to understand the current constitution, hardware assumptions, and history.
 
 ---
 
 ## Remote Access (VNC/SSH)
 
-Your VNC/SSH model remains:
+Preferred workflow:
 
-* TigerVNC on **Huey-Legacy** or Huey Core, bound to `localhost:1995`, `-SecurityTypes None`.
-* Access only via **SSH tunnel** from Huey-Portal (`vnc :1` → port 1995).
-* Default resolution: **2560×1440**, GNOME on Xorg.
-* Avoid `DeferUpdate`; prefer `RawKeyboard`.
+- TigerVNC server on Huey’s graphical node (e.g., Huey-Portal or Huey-Legacy’s GNOME on Xorg), bound to `localhost:1995` with `-SecurityTypes None` to disable on-screen prompts.  
+- Access via SSH tunnel only (no direct VNC exposure):
+
+```bash
+ssh -L 1995:localhost:1995 dlrp@huey-portal
+vncviewer localhost:1995
+```
+
+On Huey-Portal, a helper script `~/bin/vnc` (and the alias `huey-vnc`) map `:1 → 1995` and default to **2560×1440**.
 
 ---
 
 ## Action Plan — Oct 31, 2025
 
-*(Your existing checklist stands; you can optionally add home-integration tasks, e.g. seeding Z-Wave IDs, Channel Huey smoke-tests, and UPS sustain-loop checks.)*
+A checklist designed to be executed by humans, CI, or Huey’s own automation.
+
+### Kernel & OS
+
+- [ ] Build and package **linux-image-6.17.x-huey** for: Huey-Portal (iMac 5K), Briefcase (BR1100FKA), and Huey core testbed.  
+- [ ] Validate boot (1080p60 mode, logs visible, no splash).  
+- [ ] Smoke-test audio (PipeWire sink selection).  
+- [ ] Stage **Debian 14 (Forky)** APT sources and test key packages in chroot/container.  
+- [ ] Finalize **EFI LIVE** fallback USB entry in GRUB.
+
+### Python & Runtime
+
+- [ ] Install **Python 3.14.x** and build wheels for core dependencies.  
+- [ ] Run PyGPT-net on 3.14; document blockers.  
+- [ ] Refresh `requirements-core.txt`, `requirements-ml.txt`, and any extras.
+
+### AI/Agents
+
+- [ ] Confirm Mistral-7B quantized model works under Vulkan on RX 470 / 5500 XT.  
+- [ ] Wire Whisper STT + TTS pipeline; measure latency on Briefcase and core.  
+- [ ] Implement Spark/Zap boot choreography and log quorum results.
+
+### Memory
+
+- [ ] Migrate unified memory schema to match V14.x Master Plan.  
+- [ ] Ensure bifurcation and crisis classes are correctly logged.
+
+### Security & Keys
+
+- [ ] Rotate default lab SSH key; update `huey-keys/`.  
+- [ ] Configure passwordless SSH and disable root login.  
+- [ ] Mirror Master Plan and key configs to the Black Box.
+
+### Tooling & Docs
+
+- [ ] Confirm Edge Beta keyring and `signed-by=` configuration.  
+- [ ] Add `huey-run.desktop` for PyGPT-net launch.  
+- [ ] Update README and `docs/` for changeover and V14.x governance.  
+- [ ] Post a status banner on **dlrp.ca**.
 
 ---
 
 ## Roadmap & Pre-Releases
 
-The master plan bundle (v8, v10, v11.5) already captures the earlier phases and reconfigurations described in this README; what this document does is surface the **operational slice** of that history.
+### Phase 1 — Foundations (Pre-Release #1)
 
-Key milestones:
+**Date:** 2024-04-11  
 
-* **Pre-Release #1 — Foundations:** early hardware bring-up and architectural sketches.
-* **Pre-Release #2 — System Reconfiguration:** pivot to UEFI-only, Intel 14th-gen + GPU districts, and clarified “Huey vs Lab Tech” separation.
-* **Pre-Release #3 — Momentum Toward Oct-31:** focusing on the Forky/6.17.x/3.14.x transition and VNC/SSH workflow hardening.
+- Baseline hardware bring-up and early experiments.  
+- Prototype shell mapping and first governance sketches.
+
+### System Reconfiguration (Pre-Release #2)
+
+**Date:** 2025-05-25  
+
+- Filesystem and documentation restructuring.  
+- Elevation of Huey-Portal as primary console.  
+- Introduction of Briefcase as portable companion.  
+- Initial formalization of “governance decentralized, memory unified.”
+
+### Momentum Toward Oct-31 (Pre-Release #3)
+
+**Date:** 2025-10-25  
+
+- Kernel 6.17.x-huey target builds per host.  
+- Python 3.14.x parallel install and dependency audit.  
+- Forky staging; VNC/SSH workflow standardization.  
+- First unified memory schema and provenance tags.
+
+### Constitutional Freeze (Master Plan V13-final → V14.x)
+
+**Date:** 2025-11-20  
+
+- V13-final: canonical tri-branch blueprint with factual history.  
+- V14.0: schema-11 freeze and consolidation.  
+- V14.5: structural expansion with templates and process skeletons.
+
+This README corresponds to the V14.x constitutional era.
 
 ---
 
 ## Development Setup
 
-Your existing `make setup`, `make dev`, and profile-specific targets (`ml`, `data`, `cloud`) remain accurate. The only conceptual additions from the master plan are:
+```bash
+make setup                              # Editable install (core)
+make setup SETUP_EXTRAS=dev             # Core + dev tooling
+make ml                                 # Install ML extras and smoke test
+make data                               # Install data extras and smoke test
+make cloud                              # Install cloud extras and smoke test
+make dev                                # Dev extras, format, lint, test
+make dev DEV_OPTIONAL_PROFILES=ml,data  # Dev + ML + data profiles
+```
 
-* Treat **training_sessions** as a first-class concept in tests (see the suggested schema in v11.5). 
-* Ensure CI runners validate **governance configs** (district definitions, citizen counts, etc.) against the master plan schema version in use.
+- Copy `huey.env.example` → `.env` and fill in secrets.  
+- Optionally install `repo/pygpt-MHP` in editable mode (`pip install -e repo/pygpt-MHP`).  
+- Style: `black`, `flake8`, and pre-commit hooks enforced via `.pre-commit-config.yaml`.
 
 ---
 
 ## Usage
 
-Your existing CLI and Docker usage examples remain valid; new behaviour primarily concerns:
+```bash
+make run               # run locally via Makefile
+docker compose up      # run via Docker
+make test              # run tests
+pytest -vv             # direct test invocation
+```
 
-* Channel Huey scheduling and volume/priority controls.
-* Governance inspection commands (future):
+Example CLI targets (preview):
 
-  * `huey governance-status --json`
-  * `huey citizen-list --district Spark`
-
-These commands are implied by the governance/memory architecture and may be added as the implementation matures.
+```bash
+huey init --run-checks --verbose
+huey run --ml --cloud
+huey system-check --verbose
+huey deploy --mode all --compose-file docker-compose.yml --manifest k8s.yaml
+huey agent-status --json
+huey memory-sort --dry-run --json
+```
 
 ---
 
 ## Feature Matrix
 
-Additions relative to the previous matrix:
-
-| Area             | Now (Trixie · 6.16.x)                    | Next (Forky · 6.17.x)                                  | Later |
-| ---------------- | ---------------------------------------- | ------------------------------------------------------ | ----- |
-| Kernel           | Low-latency config; AMDGPU stable        | ROCm/Vulkan tuning; iMac 5K audio refinements          | 6.18+ |
-| Python           | 3.13.x baseline                          | 3.14.x GA after 2025-10-31                             | —     |
-| AI runtime       | PyGPT-net + Ollama (quantized)           | Model-zoo profiles; richer agent orchestration         | —     |
-| Memory hive      | JSON + SQLite                            | Roll-up analytics; retention policies; bifurcation viz | —     |
-| Networking       | Bonded Ethernet; VNC over SSH            | Policy-driven WAN fallback via Briefcase LTE           | —     |
-| Governance       | Clause registry + audits                 | Live cycles, dashboards, citizen/pebble metrics        | —     |
-| Home integration | Z-Wave concept, basic device mapping     | Full Channel Huey + zone-aware behaviours              | —     |
-| Cooling/Power    | Single-loop liquid cooling + UPS concept | Split-rail UPS + Sustain Loop Mode                     | —     |
+| Area        | Now (Trixie · 6.16.x)              | Next (Forky · 6.17.x)                           | Later                       |
+| ----------- | ----------------------------------- | ----------------------------------------------- | --------------------------- |
+| Kernel      | Low-latency; debug off; AMDGPU OK   | ROCm/Vulkan tuning; iMac 5K audio refinements   | 6.18+ and future series     |
+| Python      | 3.13.x baseline                     | 3.14.x GA after changeover                      | —                           |
+| AI runtime  | PyGPT-net + Ollama (quantized)      | Model-zoo profiles; richer agent orchestration  | Multi-node federation       |
+| Memory hive | JSON + SQLite                       | Roll-up analytics; retention and purge policies | Full cross-node time-travel |
+| Networking  | Bonded Ethernet; VNC over SSH       | Policy-driven LTE fallback via Briefcase        | WAN-aware governance        |
+| Governance  | Tri-branch spec; GPU districts      | Live elections, dashboards, and crisis tooling  | Self-amending constitution  |
+| Packaging   | Editable install + Docker           | ISO builder, signed artifacts                   | Hardware vendor images      |
 
 ---
 
 ## Known Issues
 
-Existing issues (audio quirks, Edge keys, Vulkan backend selection, mixed-media RAID, BR1100FKA sensor lag, boot splash removal) are still accurate; you can additionally note:
-
-* **Home sensor lag:** Z-Wave and iio-sensor-proxy sampling may produce slightly delayed reactions; tolerable for ambience but not for safety-critical logic, which should rely on more direct signals.
-* **Governance under-specification:** some questions (early governor replacement, governor promotion rules, and citizen rights beyond voting) are intentionally left open for v12+ of the master plan.
+- **iMac 5K (2017) audio** under some 6.17.x builds; mitigated by default sink scripts, but long-term fix remains kernel-level.  
+- **Edge repository keys** may require re-import after dist-upgrade; keep an eye on Microsoft key rotation.  
+- **Vulkan/ROCm** backend selection can be fragile; explicitly set `VK_ICD_FILENAMES` and `OLLAMA_LLM_LIBRARY=vulkan` for AMD GPUs.  
+- **Mixed-media RAID** (Optane + eMMC/HDD) can auto-assemble phantom arrays; clean stale superblocks and set `AUTO -all`.  
+- **Briefcase sensors**: orientation via `iio-sensor-proxy` may lag; tuned defaults are documented in kernel notes.  
+- **Governance tooling**: many governance flows (elections, Supreme Court procedures, etc.) are defined in the Master Plan but not yet fully implemented in code.
 
 ---
 
 ## Contributing
 
-The contribution model is unchanged: PR-based, with `main` protected, conventional commit prefixes, and required tests/docs. The only additional recommendation from the master plan:
+### Environment
 
-* When altering **governance**, **memory schema**, or **home-integration** behaviour, update both:
+- Debian 13/14 preferred.  
+- Ensure UEFI and 64-bit; GPUs should be visible to the OS and Vulkan.  
+- Use Git LFS if you add large artifacts.
 
-  * The relevant code paths, and
-  * The **master plan JSON** and/or constitutional text under `docs/`.
+### Branching & Commits
 
-This keeps Huey’s self-understanding and the repository aligned.
+- `main` is protected; open PRs from feature branches.  
+- Branch naming:  
+  - Features: `feat/<area>-<short>`  
+  - Fixes: `fix/<area>-<short>`  
+  - Infra/ops: `ops/<area>-<short>`  
+- Use conventional commit prefixes (`feat:`, `fix:`, `docs:`, `perf:`, etc.).
+
+### Issues & PRs
+
+- Reference relevant documentation and Master Plan sections where appropriate.  
+- Include reproduction steps, logs, and hardware context.  
+- Update docs and, where needed, the Master Plan JSON alongside code changes.
+
+### Licensing
+
+- Code: **GPL-3.0-only**.  
+- Documentation and media: **CC-BY-SA-4.0**.
 
 ---
 
 ## License & Credits
 
-**Code:** GPL-3.0-only
+**Code:** GPL-3.0-only  
 **Docs & Media:** CC-BY-SA-4.0
 
-Acknowledgements (non-exhaustive):
-
-* PyGPT (pygpt-net)
-* Debian 13 “Trixie” / Debian 14 “Forky”
-* Python 3.13 → 3.14 migration work
-* Kernel 6.16.x → 6.17.x efforts
-* The evolving **Master Plan** documents that define Huey’s identity and behaviour.
+**Acknowledgements:** PyGPT (pygpt-net) · Debian 13 “Trixie” and Debian 14 “Forky” · Python 3.13 → 3.14 · Kernel 6.16.x → 6.17.x · Everyone who stares at boot logs so the splash screen can stay off.
 
 ---
 
 ## Appendix
 
-* **Channel Huey** is the narrativized voice of the system — think Doc Brown’s delighted chaos crossed with the Greyhound from *Westworld* after the finish line: an AI still driven to run, even after it “catches the car.”
-* Anchor memory: October 2023 lab tests with Lexi present, treated as a symbolic “point of alignment” in Huey’s long-term story.
-* Keep governance **decentralized**, memory **unified**, and **Huey embodied**: the wooden shell, the Mozart case, the GPUs, and the cooling loop together form one continuous, living system.
+- **VNC workflow defaults** — TigerVNC bound to `localhost:1995`, SSH tunnel only, default resolution 2560×1440.  
+- **Governance axiom** — keep governance **decentralized** and memory **unified**.  
+- **Master Plan JSON** — treat `master-plan-v14.5` as the canonical constitutional artifact for training and deployment; prior versions are historical reference.
