@@ -8,6 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     HUEY_API_PORT=1995 \
+    HUEY_HOST=0.0.0.0 \
     HUEY_CONFIG_DIR=/app/config \
     HUEY_MEMORY_DIR=/app/memory
 
@@ -39,7 +40,7 @@ VOLUME ["/app/config", "/app/memory"]
 EXPOSE 1995
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=5 \
-    CMD python -c "import socket; s=socket.create_connection(('127.0.0.1', ${HUEY_API_PORT}), 2); s.close()"
+    CMD python -c "import os, socket; port = int(os.environ.get('HUEY_API_PORT', '1995')); s = socket.create_connection(('127.0.0.1', port), 2); s.close()"
 
 ENTRYPOINT ["uvicorn"]
 CMD ["huey.api:app", "--host", "0.0.0.0", "--port", "1995"]
