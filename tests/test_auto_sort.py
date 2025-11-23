@@ -45,3 +45,16 @@ def test_auto_sort_missing_source(monkeypatch, tmp_path):
     monkeypatch.setenv("MEMORY_PATH", str(memory_root))
     with pytest.raises(FileNotFoundError):
         auto_sort_memory(source_dir=memory_root / "does-not-exist")
+
+
+def test_auto_sort_skips_hidden_files(monkeypatch, tmp_path):
+    memory_root = tmp_path / "memory"
+    monkeypatch.setenv("MEMORY_PATH", str(memory_root))
+    raw = _prepare_raw(memory_root)
+    hidden_file = raw / ".DS_Store"
+    hidden_file.write_text("metadata")
+
+    summary = auto_sort_memory()
+
+    assert hidden_file.exists()
+    assert ".DS_Store" in summary["skipped"]

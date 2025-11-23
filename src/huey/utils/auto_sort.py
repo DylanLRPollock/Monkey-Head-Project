@@ -100,6 +100,12 @@ def auto_sort_memory(
     -------
     dict
         A summary containing the moved and skipped files.
+
+    Notes
+    -----
+    Hidden files (those beginning with a period) are left untouched and are
+    included in the ``skipped`` list to avoid copying OS metadata into the
+    organised memory tree.
     """
 
     source_path = _normalise_source(source_dir)
@@ -113,6 +119,9 @@ def auto_sort_memory(
 
     for item in sorted(source_path.iterdir()):
         if not item.is_file():
+            continue
+        if item.name.startswith("."):
+            skipped.append(item.name)
             continue
         target_dir_name = _determine_target_dir(item)
         target_dir = destination_path / target_dir_name
