@@ -34,6 +34,8 @@ REQUIRED_TOOLS: Tuple[str, ...] = ("git", "python3")
 __all__ = [
     "logger",
     "ensure_admin",
+    "log_error",
+    "check_error",
     "check_os_support",
     "check_python_version",
     "system_check",
@@ -67,6 +69,22 @@ def ensure_admin() -> None:
                 "Unable to determine administrator privileges on Windows.",
                 exc_info=True,
             )
+
+
+def log_error(description: str) -> None:
+    """Log an error message through the module logger."""
+
+    logger.error(description)
+
+
+def check_error(command: object, description: str) -> None:
+    """Raise a :class:`RuntimeError` when a command returns a non-zero code."""
+
+    returncode = getattr(command, "returncode", 0)
+    if returncode != 0:
+        message = f"Error: {description} failed with error code {returncode}."
+        log_error(message)
+        raise RuntimeError(message)
 
 
 def _detect_linux_distribution() -> Tuple[str, str]:
