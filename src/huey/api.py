@@ -110,9 +110,9 @@ from monkey_head.hardware.plugins import (
     list_sensor_plugin_metadata,
     list_sensor_plugins,
 )
-from monkey_head.honeycomb_index import HoneycombIndex
-from monkey_head.honeycomb_monitor import HoneycombMonitor
-from monkey_head.honeycomb_storage import HoneycombStorage
+from huey.honeycomb.index import HoneycombIndex
+from huey.honeycomb.monitor import HoneycombMonitor
+from huey.honeycomb.storage import HoneycombStorage
 from monkey_head.network import NetworkManager
 from monkey_head.pdf_utils import find_pdf, list_available_pdfs
 from monkey_head.power import BatteryMonitor
