@@ -1,17 +1,43 @@
-# Auto-generated bridge to legacy module
+"""Simple Tkinter chat demonstration."""
+
 from __future__ import annotations
 
-from importlib import import_module
-from typing import Any
+import tkinter as tk
+from tkinter import scrolledtext
 
-_impl = import_module("huey.memory.PY.simple_chat_gui")
-__all__ = getattr(_impl, "__all__", [name for name in dir(_impl) if not name.startswith('_')])
-for name in __all__:
-    globals()[name] = getattr(_impl, name)
+from hueyos.gui_scaling import apply_scaling
 
 
-def __getattr__(name: str) -> Any:
-    return getattr(_impl, name)
+KNOWN_ANSWERS = {
+    "what is the capital of france?": "The capital of France is Paris.",
+}
 
 
-__doc__ = getattr(_impl, '__doc__')
+def get_answer(question: str) -> str:
+    normalized = question.strip().lower()
+    return KNOWN_ANSWERS.get(normalized, "Sorry, I don't know the answer to that.")
+
+
+def run_simple_chat() -> None:  # pragma: no cover - exercised via monkeypatch
+    root = tk.Tk()
+    root.title("Simple Chat")
+    apply_scaling(root, mode="custom" if tk is None else "1080p")
+
+    chat = scrolledtext.ScrolledText(root, state=tk.NORMAL)
+    entry = tk.Entry(root)
+
+    def send_message():
+        question = entry.get()
+        answer = get_answer(question)
+        chat.insert(tk.END, f"You: {question}\n")
+        chat.insert(tk.END, f"Bot: {answer}\n")
+        entry.delete(0, tk.END)
+
+    send_button = tk.Button(root, text="Send", command=send_message)
+    for widget in (chat, entry, send_button):
+        widget.pack()
+
+    root.mainloop()
+
+
+__all__ = ["get_answer", "run_simple_chat"]

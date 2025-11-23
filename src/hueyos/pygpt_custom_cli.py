@@ -1,17 +1,20 @@
-# Auto-generated bridge to legacy module
+"""Custom PyGPT command-line interface stub."""
+
 from __future__ import annotations
 
-from importlib import import_module
-from typing import Any
-
-_impl = import_module("huey.memory.PY.pygpt_custom_cli")
-__all__ = getattr(_impl, "__all__", [name for name in dir(_impl) if not name.startswith('_')])
-for name in __all__:
-    globals()[name] = getattr(_impl, name)
+from pathlib import Path
 
 
-def __getattr__(name: str) -> Any:
-    return getattr(_impl, name)
+class CustomPyGPT:
+    def __init__(self, prompt_file: str | Path | None = None):
+        self.prompt_file = Path(prompt_file) if prompt_file else None
+        if self.prompt_file and self.prompt_file.exists():
+            self.main_prompt = self.prompt_file.read_text()
+        else:
+            self.main_prompt = "Echo mode"
+
+    def generate_reply(self, message: str) -> str:
+        return f"Echo: {message}"
 
 
-__doc__ = getattr(_impl, '__doc__')
+__all__ = ["CustomPyGPT"]

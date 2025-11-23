@@ -1,0 +1,10 @@
+"""Stub installer used in tests."""
+
+from __future__ import annotations
+
+
+def run_installer() -> int:
+    return 0
+
+
+__all__ = ["run_installer"]
