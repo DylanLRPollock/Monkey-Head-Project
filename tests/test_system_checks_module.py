@@ -46,6 +46,19 @@ def test_check_os_support_warns_for_non_debian_linux(monkeypatch, caplog):
 def test_check_python_version_warns_on_experimental_release(monkeypatch, caplog):
     class FakeInfo:
         major = 3
+        minor = 15
+
+    monkeypatch.setattr(system_checks.sys, "version_info", FakeInfo())
+
+    with caplog.at_level(logging.WARNING):
+        system_checks.check_python_version()
+
+    assert "Python 3.15 detected" in caplog.text
+
+
+def test_check_python_version_accepts_primary_target(monkeypatch, caplog):
+    class FakeInfo:
+        major = 3
         minor = 14
 
     monkeypatch.setattr(system_checks.sys, "version_info", FakeInfo())
@@ -53,7 +66,7 @@ def test_check_python_version_warns_on_experimental_release(monkeypatch, caplog)
     with caplog.at_level(logging.WARNING):
         system_checks.check_python_version()
 
-    assert "Python 3.14 detected" in caplog.text
+    assert "Python 3.14" not in caplog.text
 
 
 def test_system_check_collects_expected_results(monkeypatch):
