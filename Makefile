@@ -3,7 +3,8 @@ SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c
 .PHONY: setup dev test run fmt lint clean ml data cloud pytest coverage lint-black lint-isort lint-ruff lint-flake8 docker-build docker-up docker-down
 
-PORT ?= 5151
+PORT ?= 1995
+HOST ?= 0.0.0.0
 PYTHON ?= python3
 PIP := $(PYTHON) -m pip
 SETUP_EXTRAS ?=
@@ -24,7 +25,7 @@ setup:
 test: lint pytest
 
 run:
-	$(PYTHON) -m uvicorn huey.api:app --host 0.0.0.0 --port $(PORT)
+	$(PYTHON) -m uvicorn huey.api:app --host $(HOST) --port $(PORT)
 
 fmt:
 	black . && isort .
@@ -66,17 +67,17 @@ ml:
 	else \
 		$(PIP) install -e .; \
 	fi
-	$(PYTHON) - <<-'PY'
-	        from llama_index.core import Document, VectorStoreIndex
-	
-	        documents = [
-	            Document(text="Huey is a friendly robotics research assistant."),
-	            Document(text="Huey loves banana milkshakes."),
-	]
-	index = VectorStoreIndex.from_documents(documents)
-	response = index.as_query_engine().query("What does Huey enjoy?")
-	print("Sample inference response:", response)
-	PY
+	$(PYTHON) - << 'PY'
+from llama_index.core import Document, VectorStoreIndex
+
+documents = [
+    Document(text="Huey is a friendly robotics research assistant."),
+    Document(text="Huey loves banana milkshakes."),
+]
+index = VectorStoreIndex.from_documents(documents)
+response = index.as_query_engine().query("What does Huey enjoy?")
+print("Sample inference response:", response)
+PY
 
 data:
 	if [ -n "$(strip $(DATA_EXTRAS))" ]; then \
@@ -84,19 +85,19 @@ data:
 	else \
 		$(PIP) install -e .; \
 	fi
-	$(PYTHON) - <<-'PY'
-	        import chromadb
-	
-	        client = chromadb.Client()
-	        collection = client.get_or_create_collection("makefile_demo")
-	        collection.add(
-	    ids=["1"],
-	    documents=["Huey keeps its research notes in a vector store."],
-	    metadatas=[{"source": "demo"}],
-	)
-	result = collection.query(query_texts=["research notes"], n_results=1)
-	print("Chroma query result:", result)
-	PY
+	$(PYTHON) - << 'PY'
+import chromadb
+
+client = chromadb.Client()
+collection = client.get_or_create_collection("makefile_demo")
+collection.add(
+    ids=["1"],
+    documents=["Huey keeps its research notes in a vector store."],
+    metadatas=[{"source": "demo"}],
+)
+result = collection.query(query_texts=["research notes"], n_results=1)
+print("Chroma query result:", result)
+PY
 
 cloud:
 	if [ -n "$(strip $(CLOUD_EXTRAS))" ]; then \
@@ -104,27 +105,27 @@ cloud:
 	else \
 		$(PIP) install -e .; \
 	fi
-	$(PYTHON) - <<-'PY'
-	        import urllib.request
-	
-	        import boto3  # noqa: F401 - ensure AWS SDK is installed
-	        from azure.identity import AzureAuthorityHosts  # noqa: F401 - ensure Azure SDK is installed
-	
-	providers = {
-	    "Azure": "https://management.azure.com/",
-	    "GCP": "https://www.googleapis.com/",
-	    "AWS": "https://sts.amazonaws.com/",
-	}
-	
-	for name, url in providers.items():
-	    try:
-	        with urllib.request.urlopen(url, timeout=5) as response:
-	            status = response.status
-	    except Exception as exc:  # pragma: no cover - depends on network availability
-	        print(f"{name} connectivity check failed: {exc}")
-	    else:
-	        print(f"{name} connectivity check succeeded (status {status})")
-	PY
+	$(PYTHON) - << 'PY'
+import urllib.request
+
+import boto3  # noqa: F401 - ensure AWS SDK is installed
+from azure.identity import AzureAuthorityHosts  # noqa: F401 - ensure Azure SDK is installed
+
+providers = {
+    "Azure": "https://management.azure.com/",
+    "GCP": "https://www.googleapis.com/",
+    "AWS": "https://sts.amazonaws.com/",
+}
+
+for name, url in providers.items():
+    try:
+        with urllib.request.urlopen(url, timeout=5) as response:
+            status = response.status
+    except Exception as exc:  # pragma: no cover - depends on network availability
+        print(f"{name} connectivity check failed: {exc}")
+    else:
+        print(f"{name} connectivity check succeeded (status {status})")
+PY
 
 dev:
 	if [ -n "$(strip $(DEV_OPTIONAL_PROFILES))" ]; then \
