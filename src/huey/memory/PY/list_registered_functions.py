@@ -4,9 +4,9 @@
 # www.dlrp.ca
 # HueyOS: List Registered Functions module (huey/memory/PY)
 
-"""Print functions registered in ``monkey_head.function_registry``."""
+"""Print functions registered in ``hueyos.function_registry``."""
 
-from monkey_head.function_registry import list_functions
+from hueyos.function_registry import list_functions
 
 
 def main() -> None:

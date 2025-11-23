@@ -5,7 +5,7 @@
 
 from types import SimpleNamespace
 
-from monkey_head.simple_chat_gui import get_answer, run_simple_chat
+from hueyos.simple_chat_gui import get_answer, run_simple_chat
 
 
 def test_get_answer_known():
@@ -61,10 +61,10 @@ def test_run_simple_chat(monkeypatch):
     )
     dummy_scrolled = SimpleNamespace(ScrolledText=lambda *a, **k: DummyWidget())
 
-    monkeypatch.setattr("monkey_head.simple_chat_gui.tk", dummy_tk)
-    monkeypatch.setattr("monkey_head.simple_chat_gui.scrolledtext", dummy_scrolled)
+    monkeypatch.setattr("hueyos.simple_chat_gui.tk", dummy_tk)
+    monkeypatch.setattr("hueyos.simple_chat_gui.scrolledtext", dummy_scrolled)
     monkeypatch.setattr(
-        "monkey_head.simple_chat_gui.apply_scaling",
+        "hueyos.simple_chat_gui.apply_scaling",
         lambda *a, **k: events.update({"scaled": True}),
     )
 

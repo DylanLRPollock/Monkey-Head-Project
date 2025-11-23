@@ -26,7 +26,7 @@ if shutil.which("ffmpeg") is None:
 
 spec = importlib.util.spec_from_file_location(
     "media_conversion",
-    str(Path(__file__).resolve().parents[1] / "monkey_head" / "media_conversion.py"),
+    str(Path(__file__).resolve().parents[1] / "hueyos" / "media_conversion.py"),
 )
 mc: ModuleType = importlib.util.module_from_spec(spec)
 assert spec.loader is not None

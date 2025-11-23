@@ -5,7 +5,7 @@
 
 import hashlib
 
-from monkey_head.utils.integrity import sha256_digest, verify_checksums
+from hueyos.utils.integrity import sha256_digest, verify_checksums
 
 
 def test_sha256_digest(tmp_path):

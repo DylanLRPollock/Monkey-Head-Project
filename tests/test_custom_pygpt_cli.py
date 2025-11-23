@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test Custom Pygpt Cli module (tests)
 
-from monkey_head.pygpt_custom_cli import CustomPyGPT
+from hueyos.pygpt_custom_cli import CustomPyGPT
 
 
 def test_generate_reply():

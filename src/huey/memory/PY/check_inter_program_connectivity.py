@@ -12,7 +12,7 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated:   06.12.2025
 # ==================================================
-"""Verify that monkey_head and pygpt_net modules import successfully."""
+"""Verify that hueyos and pygpt_net modules import successfully."""
 
 import importlib
 import sys
@@ -22,7 +22,7 @@ from pathlib import Path
 def check_inter_program_connectivity() -> bool:
     """Return ``True`` if required packages can be imported."""
     try:
-        importlib.import_module("monkey_head")
+        importlib.import_module("hueyos")
     except Exception:
         return False
 

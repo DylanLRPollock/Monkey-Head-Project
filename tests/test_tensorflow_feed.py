@@ -6,7 +6,7 @@
 import pytest
 
 tf = pytest.importorskip("tensorflow")
-from monkey_head.tensorflow_feed import train_from_project_sources
+from hueyos.tensorflow_feed import train_from_project_sources
 
 
 def test_train_from_project_sources():

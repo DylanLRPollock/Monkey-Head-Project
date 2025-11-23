@@ -35,14 +35,14 @@ except Exception:  # pragma: no cover - can't import GUI libs
     filedialog = None
     ttk = None
 
-from monkey_head.ai_tools_gui import run_ai_tools
-from monkey_head.config_toggle_gui import run_config_toggle_gui
-from monkey_head.dashboard import launch_dashboard
-from monkey_head.gui_scaling import apply_scaling
-from monkey_head.license_gui import show_license_gui
-from monkey_head.media_conversion import convert_media
-from monkey_head.scripts.preload_data import preload_all
-from monkey_head.services.container_management import (
+from hueyos.ai_tools_gui import run_ai_tools
+from hueyos.config_toggle_gui import run_config_toggle_gui
+from hueyos.dashboard import launch_dashboard
+from hueyos.gui_scaling import apply_scaling
+from hueyos.license_gui import show_license_gui
+from hueyos.media_conversion import convert_media
+from hueyos.scripts.preload_data import preload_all
+from hueyos.services.container_management import (
     build_docker_image,
     cleanup_images,
     cleanup_kubernetes,
@@ -54,7 +54,7 @@ from monkey_head.services.container_management import (
     scale_deployment,
     stop_containers,
 )
-from monkey_head.simple_chat_gui import run_simple_chat
+from hueyos.simple_chat_gui import run_simple_chat
 
 # Dark theme colors
 # Updated to use a black background with green text and

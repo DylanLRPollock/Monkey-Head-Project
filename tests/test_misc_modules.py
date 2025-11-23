@@ -16,16 +16,16 @@ pytest.importorskip("matplotlib")
 pytest.importorskip("networkx")
 pytest.importorskip("PIL.Image")
 
-from monkey_head.ai_processor import AIProcessor
-from monkey_head.chapter_splitter import split_chapters
-from monkey_head.error_handler import ErrorHandler
-from monkey_head.file_manager import FileManager
-from monkey_head.huey_checks import check_core_data
-from monkey_head.huey_core import process_core_data
-from monkey_head.huey_disk_manager_temp import manage_temp_files
-from monkey_head.huey_linux import check_linux_service
-from monkey_head.huey_remover import remove_files
-from monkey_head.huey_tkinter import create_tkinter_window
+from hueyos.ai_processor import AIProcessor
+from hueyos.chapter_splitter import split_chapters
+from hueyos.error_handler import ErrorHandler
+from hueyos.file_manager import FileManager
+from hueyos.huey_checks import check_core_data
+from hueyos.huey_core import process_core_data
+from hueyos.huey_disk_manager_temp import manage_temp_files
+from hueyos.huey_linux import check_linux_service
+from hueyos.huey_remover import remove_files
+from hueyos.huey_tkinter import create_tkinter_window
 
 
 def test_ai_processor(tmp_path):

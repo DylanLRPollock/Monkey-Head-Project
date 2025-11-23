@@ -17,9 +17,9 @@ import platform
 import subprocess
 import sys
 
-from monkey_head.core.system_checks import ensure_admin
-from monkey_head.license_cli import show_license_cli
-from monkey_head.license_gui import show_license_gui
+from hueyos.core.system_checks import ensure_admin
+from hueyos.license_cli import show_license_cli
+from hueyos.license_gui import show_license_gui
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 

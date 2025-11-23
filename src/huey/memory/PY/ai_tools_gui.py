@@ -42,8 +42,8 @@ import time
 from pathlib import Path
 from typing import Dict, List
 
-from monkey_head.agents.llm import LLMAdapter, LLMProvider
-from monkey_head.utils.paths import ensure_subdirectory, get_memory_path
+from hueyos.agents.llm import LLMAdapter, LLMProvider
+from hueyos.utils.paths import ensure_subdirectory, get_memory_path
 
 from .config_manager import ConfigManager
 

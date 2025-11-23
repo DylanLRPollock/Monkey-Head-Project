@@ -24,7 +24,7 @@ if shutil.which("ffmpeg") is None:
 
 # dynamically load the module to avoid import issues
 module_path = (
-    Path(__file__).resolve().parents[1] / "monkey_head" / "convert_mkv_to_mp4.py"
+    Path(__file__).resolve().parents[1] / "hueyos" / "convert_mkv_to_mp4.py"
 )
 spec = importlib.util.spec_from_file_location("c", module_path)
 module = importlib.util.module_from_spec(spec)

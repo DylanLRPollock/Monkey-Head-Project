@@ -7,11 +7,11 @@ import subprocess
 
 import pytest
 
-from monkey_head.honeycomb.backup import perform_rsync_snapshot, restore_snapshot
-from monkey_head.honeycomb.index import HoneycombIndex
-from monkey_head.honeycomb.monitor import HoneycombMonitor
-from monkey_head.honeycomb.retention import RetentionPolicy, parse_duration
-from monkey_head.honeycomb.storage import HoneycombStorage
+from hueyos.honeycomb.backup import perform_rsync_snapshot, restore_snapshot
+from hueyos.honeycomb.index import HoneycombIndex
+from hueyos.honeycomb.monitor import HoneycombMonitor
+from hueyos.honeycomb.retention import RetentionPolicy, parse_duration
+from hueyos.honeycomb.storage import HoneycombStorage
 
 
 def test_honeycomb_index_maps_extensions(tmp_path):
@@ -39,8 +39,8 @@ def test_honeycomb_monitor_reports_usage(tmp_path):
 
 
 def test_retention_policy_prunes_old_cells(tmp_path, monkeypatch):
-    import monkey_head.honeycomb.retention as retention_module
-    import monkey_head.honeycomb.storage as storage_module
+    import hueyos.honeycomb.retention as retention_module
+    import hueyos.honeycomb.storage as storage_module
 
     storage = HoneycombStorage(base_dir=tmp_path)
     index = HoneycombIndex(storage)
@@ -67,7 +67,7 @@ def test_parse_duration_supports_units():
 
 
 def test_backup_helpers_build_rsync_commands(tmp_path, monkeypatch):
-    import monkey_head.honeycomb.backup as backup_module
+    import hueyos.honeycomb.backup as backup_module
 
     source = tmp_path / "memory"
     destination = tmp_path / "snapshots"

@@ -7,7 +7,7 @@ database:
   port: 5432
   user: 'postgres'
   password: '${DB_PASSWORD}'
-  database: 'monkey_head'
+  database: 'hueyos'
 
 system:
   os: 'debian-trixie'

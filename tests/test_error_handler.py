@@ -13,13 +13,13 @@ import pytest
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1] / "huey" / "memory" / "PY"
 spec = importlib.util.spec_from_file_location(
-    "monkey_head.error_handler",
+    "hueyos.error_handler",
     PACKAGE_ROOT / "error_handler.py",
     submodule_search_locations=[str(PACKAGE_ROOT)],
 )
 module = importlib.util.module_from_spec(spec)
-sys.modules.setdefault("monkey_head", types.ModuleType("monkey_head"))
-sys.modules["monkey_head.error_handler"] = module
+sys.modules.setdefault("hueyos", types.ModuleType("hueyos"))
+sys.modules["hueyos.error_handler"] = module
 spec.loader.exec_module(module)  # type: ignore[union-attr]
 ErrorHandler = module.ErrorHandler
 

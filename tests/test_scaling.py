@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test Scaling module (tests)
 
-from monkey_head.gui_scaling import apply_scaling
+from hueyos.gui_scaling import apply_scaling
 
 
 class DummyTk:
@@ -41,7 +41,7 @@ class DummyFontModule:
 
 def test_apply_scaling_1080p(monkeypatch):
     module = DummyFontModule()
-    monkeypatch.setattr("monkey_head.gui_scaling.tkfont", module)
+    monkeypatch.setattr("hueyos.gui_scaling.tkfont", module)
     root = DummyRoot()
     apply_scaling(root, mode="1080p")
     assert root.tk.args == ("tk", "scaling", 1.0)
@@ -50,7 +50,7 @@ def test_apply_scaling_1080p(monkeypatch):
 
 def test_apply_scaling_4k(monkeypatch):
     module = DummyFontModule()
-    monkeypatch.setattr("monkey_head.gui_scaling.tkfont", module)
+    monkeypatch.setattr("hueyos.gui_scaling.tkfont", module)
     root = DummyRoot()
     apply_scaling(root, mode="4k")
     assert root.tk.args == ("tk", "scaling", 2.0)
@@ -59,7 +59,7 @@ def test_apply_scaling_4k(monkeypatch):
 
 def test_apply_scaling_custom(monkeypatch):
     module = DummyFontModule()
-    monkeypatch.setattr("monkey_head.gui_scaling.tkfont", module)
+    monkeypatch.setattr("hueyos.gui_scaling.tkfont", module)
     monkeypatch.setenv("SCREEN_FACTOR", "1.5")
     monkeypatch.setenv("SCREEN_FONT_SIZE", "12")
     monkeypatch.setenv("SCREEN_FONT_FAMILY", "TestFont")
