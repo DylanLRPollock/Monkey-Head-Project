@@ -425,9 +425,10 @@ class CrashRecoveryManager:
                 raise KeyError(f"Unknown monitored process: {name}")
             process.auto_restart_enabled = enabled
             process.manual_override_reason = reason if not enabled else None
+            name_sanitized = name.replace('\r', '').replace('\n', '')
             LOGGER.info(
                 "Manual override for %s set to %s (reason=%s)",
-                name,
+                name_sanitized,
                 enabled,
                 reason,
             )
