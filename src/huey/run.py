@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from typing import Callable
 
-_PYGPT_PREPARED = False
+from .pygpt_integration import prepare_pygpt
 
 
 def minimal_run() -> None:
@@ -57,46 +57,10 @@ def run_module(target: str) -> None:
         raise ImportError(f"Function {func_name} not found in {module_name}") from exc
     func()
 
-
-def _candidate_src_paths() -> list[Path]:
-    """Return candidate directories that may contain the PyGPT ``src`` tree."""
-
-    project_root = Path(__file__).resolve().parents[2]
-    return [
-        project_root / "pygpt",
-        project_root / "pygpt" / "src",
-        project_root / "src" / "huey" / "memory" / "PY" / "src",
-        project_root / "repo" / "pygpt-MHP" / "src",
-    ]
-
-
 def _prepare_pygpt() -> bool:
     """Ensure :mod:`pygpt_net` is importable either from site-packages or vendors."""
 
-    global _PYGPT_PREPARED
-    if _PYGPT_PREPARED:
-        return True
-
-    try:
-        importlib.import_module("pygpt_net")
-    except Exception:  # pragma: no cover - attempt to load from vendored sources
-        for candidate in _candidate_src_paths():
-            if not candidate.exists():
-                continue
-            resolved = str(candidate.resolve())
-            if resolved not in sys.path:
-                sys.path.insert(0, resolved)
-            try:
-                importlib.import_module("pygpt_net")
-            except Exception:  # pragma: no cover - keep searching
-                continue
-            else:
-                _PYGPT_PREPARED = True
-                return True
-        return False
-    else:
-        _PYGPT_PREPARED = True
-        return True
+    return prepare_pygpt()
 
 
 def _load_cli() -> Callable[..., None]:
