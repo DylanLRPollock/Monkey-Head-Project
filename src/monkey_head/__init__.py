@@ -13,8 +13,8 @@ from pathlib import Path
 from typing import Iterable, Set
 
 _PACKAGE_ROOT = Path(__file__).resolve().parent
-_PROJECT_ROOT = _PACKAGE_ROOT.parents[1]
-_HUEY_ROOT = _PROJECT_ROOT / "huey"
+_SRC_ROOT = _PACKAGE_ROOT.parents[1]
+_HUEY_ROOT = _SRC_ROOT / "huey"
 _LEGACY_ROOT = _HUEY_ROOT / "memory" / "PY"
 
 __path__ = [str(_PACKAGE_ROOT)]
@@ -23,8 +23,8 @@ if _HUEY_ROOT.exists():
 if _LEGACY_ROOT.exists():
     __path__.append(str(_LEGACY_ROOT))
 
-if str(_PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(_PROJECT_ROOT))
+if str(_SRC_ROOT) not in sys.path:
+    sys.path.insert(0, str(_SRC_ROOT))
 
 
 def _discover_exports(paths: Iterable[str]) -> Set[str]:

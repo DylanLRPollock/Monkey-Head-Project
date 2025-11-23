@@ -61,11 +61,11 @@ def run_module(target: str) -> None:
 def _candidate_src_paths() -> list[Path]:
     """Return candidate directories that may contain the PyGPT ``src`` tree."""
 
-    project_root = Path(__file__).resolve().parent.parent
+    project_root = Path(__file__).resolve().parents[2]
     return [
         project_root / "pygpt",
         project_root / "pygpt" / "src",
-        project_root / "huey" / "memory" / "PY" / "src",
+        project_root / "src" / "huey" / "memory" / "PY" / "src",
         project_root / "repo" / "pygpt-MHP" / "src",
     ]
 

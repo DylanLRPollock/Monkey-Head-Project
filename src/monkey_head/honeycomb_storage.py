@@ -95,8 +95,8 @@ class HoneycombStorage:
             if preferred.exists():
                 base = preferred
             else:
-                legacy = (root / "huey" / "memory").resolve()
-                base = legacy if legacy.exists() else preferred
+                packaged = (root / "src" / "huey" / "memory").resolve()
+                base = packaged if packaged.exists() else preferred
         target = base / "LOGS" / "honeycomb"
         target.mkdir(parents=True, exist_ok=True)
         return target
