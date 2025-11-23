@@ -25,9 +25,9 @@ from .base import BaseAgent
 
 class ReactAgent(BaseAgent):
     def __init__(self, *args, **kwargs):
-        super(ReactAgent, self).__init__(*args, **kwargs)
+        super(ReactAgent, self).__init__(*args, mode="step", **kwargs)
         self.id = "react"
-        self.mode = "step"  # step|plan
+        # self.mode = "step"  # step|plan
 
     def get_agent(self, window, kwargs: Dict[str, Any]):
         """
