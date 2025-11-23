@@ -1,7 +1,1 @@
-# Central constraints to stabilize resolution
-fastapi==0.121.2
-starlette==0.50.0
-pydantic==2.12.4
-uvicorn==0.38.0
-numpy==2.3.5
-transformers==4.57.1
+# Constraints
