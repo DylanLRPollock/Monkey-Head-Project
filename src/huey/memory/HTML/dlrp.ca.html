@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Page identity -->
+  <title>PAGE TITLE — Dylan L.R. Pollock</title>
+  <meta name="description" content="One-line summary of what this page is about.">
+  <!-- Example: href="https://dlrp.ca/huey/" -->
+  <link rel="canonical" href="https://dlrp.ca/PATH/">
+
+  <!-- Icons + PWA basics -->
+  <link rel="icon" href="/assets/img/favicon-512.png" type="image/png">
+  <link rel="apple-touch-icon" href="/assets/img/favicon-512.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0f0f0f">
+  <meta name="robots" content="index,follow">
+
+  <!-- OpenGraph -->
+  <meta property="og:site_name" content="Dylan L.R. Pollock">
+  <meta property="og:title" content="PAGE TITLE — Dylan L.R. Pollock">
+  <meta property="og:description" content="One-line summary of what this page is about.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://dlrp.ca/PATH/">
+  <meta property="og:image" content="/assets/img/og-default.svg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Monkey Head Project branding">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="PAGE TITLE — Dylan L.R. Pollock">
+  <meta name="twitter:description" content="One-line summary of what this page is about.">
+  <meta name="twitter:image" content="/assets/img/og-default.svg">
+
+  <!-- Optional JSON-LD: tweak name/url/description per page if desired -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "PAGE TITLE — Dylan L.R. Pollock",
+    "url": "https://dlrp.ca/PATH/",
+    "description": "One-line summary of what this page is about.",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "dlrp.ca",
+      "url": "https://dlrp.ca/"
+    }
+  }
+  </script>
+
+  <link rel="stylesheet" href="/assets/css/global.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header>
+    <div class="brand">
+      <a href="/">Dylan L.R. Pollock</a>
+    </div>
+
+    <!-- Mobile nav toggle: JS expects #navToggle and #navLinks -->
+    <button
+      class="nav-toggle"
+      id="navToggle"
+      aria-label="Toggle navigation"
+      aria-controls="navLinks"
+      aria-expanded="false"
+    >
+      ☰
+    </button>
+
+    <nav>
+      <ul id="navLinks">
+        <!-- On each page you can move `aria-current="page"` to the active link -->
+        <li><a href="/">Home</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/huey/">HueyOS</a></li>
+        <li><a href="/projects/">Projects</a></li>
+        <li><a href="/gallery/">Gallery</a></li>
+        <li><a href="/download/">Download</a></li>
+        <li>
+          <a
+            href="https://github.com/DylanLRPollock"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Theme toggle: wired to main.js -->
+    <button class="theme-toggle" aria-label="Toggle theme" id="themeToggle">🌙</button>
+  </header>
+
+  <main id="main" tabindex="-1">
+
+    <!-- ===== Block 1: Hero (keep for home / major overview pages) ===== -->
+    <section class="hero section">
+      <div class="wrap">
+        <div>
+          <!-- Hero title and one-sentence elevator pitch -->
+          <h1>Page title goes here</h1>
+          <p>
+            Short lead-in sentence that explains what this page is and why it matters.
+          </p>
+
+          <!-- Primary / secondary actions (e.g. HueyOS / Projects) -->
+          <a class="btn" href="/huey/">Primary call to action</a>
+          <a class="btn" href="/projects/" style="margin-left:8px">Secondary action</a>
+        </div>
+
+        <!-- Optional hero image / logo -->
+        <div>
+          <img
+            src="/assets/img/monkey-head-logo.png.webp"
+            alt="Monkey Head Project / HueyOS logo"
+            loading="lazy"
+            decoding="async"
+            style="
+              display:block;
+              max-width:100%;
+              height:auto;
+              border-radius:16px;
+              border:1px solid var(--border);
+              background:#0d0d10;
+            "
+          >
+        </div>
+      </div>
+    </section>
+    <!-- For simple text pages you can omit the hero and start directly with a .section -->
+
+    <!-- ===== Block 2: Core content section ===== -->
+    <section class="section">
+      <!-- Use one H1 per page; if hero is present, start with H2 here -->
+      <h2>Main section heading</h2>
+
+      <p>
+        Primary body copy for this page. Use standard HTML elements:
+        paragraphs, lists, code/pre blocks for config snippets, etc.
+      </p>
+
+      <h3>Optional sub-heading</h3>
+      <p>
+        Subsections under each H2 should use H3/H4 for clarity. This works well
+        for detailing governance, hardware specs, or project phases.
+      </p>
+    </section>
+
+    <!-- ===== Block 3: Grid / cards (for child pages, features, or sections) ===== -->
+    <section class="section">
+      <h2>Highlights or child pages</h2>
+
+      <div class="grid">
+        <article class="card">
+          <img
+            src="/assets/img/lab-robot.jpg.webp"
+            alt="HueyOS lab hardware on a bench"
+            loading="lazy"
+            decoding="async"
+          >
+          <div class="pad">
+            <h3>HueyOS overview</h3>
+            <p>High-level description with a link into the HueyOS hub.</p>
+            <p><a href="/huey/">Read more about HueyOS →</a></p>
+          </div>
+        </article>
+
+        <article class="card">
+          <img
+            src="/assets/img/ps-ultimate-front-open.jpg.webp"
+            alt="PlayStation Ultimate cabinet open"
+            loading="lazy"
+            decoding="async"
+          >
+          <div class="pad">
+            <h3>Projects</h3>
+            <p>Hardware builds like PlayStation Ultimate and the arcade cabinets.</p>
+            <p><a href="/projects/">View all projects →</a></p>
+          </div>
+        </article>
+
+        <article class="card">
+          <img
+            src="/assets/img/about-dylan-dog.jpg.webp"
+            alt="Dylan with dog"
+            loading="lazy"
+            decoding="async"
+          >
+          <div class="pad">
+            <h3>About &amp; lab notes</h3>
+            <p>Personal context, project history, and why Huey exists.</p>
+            <p><a href="/about/">Learn more →</a></p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== Block 4: Optional gallery (for /gallery/ or project photo dumps) ===== -->
+    <section class="section">
+      <h2>Gallery (optional)</h2>
+      <div class="gallery">
+        <figure>
+          <img
+            src="/assets/img/vp-dirty-leroy-playfield.jpg.webp"
+            alt="Virtual pinball playfield"
+            loading="lazy"
+            decoding="async"
+          >
+          <figcaption>Example caption for a key photo.</figcaption>
+        </figure>
+
+        <!-- Add more <figure> elements as needed -->
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>
+      © 2025 Dylan L. R. Pollock —
+      <a href="mailto:admin@dlrp.ca">admin@dlrp.ca</a> —
+      <a
+        href="https://github.com/DylanLRPollock"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub
+      </a>
+    </p>
+  </footer>
+
+  <script src="/assets/js/main.js"></script>
+</body>
+</html>
