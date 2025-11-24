@@ -1,5 +1,9 @@
-# [submodule "repo/pygpt-MHP"]
-#         path = repo/pygpt-MHP
-#         url = https://github.com/DylanLRPollock/pygpt-MHP.git
-#         branch = main
-#         shallow = true
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: .gitmodules
+[submodule "repo/py-gpt"]
+    path = repo/py-gpt
+    url = https://github.com/szczyglis-dev/py-gpt
+    branch = main
+    shallow = true

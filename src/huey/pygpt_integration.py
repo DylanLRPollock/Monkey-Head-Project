@@ -22,6 +22,8 @@ def candidate_src_paths(extra_paths: Iterable[str | os.PathLike[str]] | None = N
     default_paths = [
         project_root / "pygpt",
         project_root / "pygpt" / "src",
+        project_root / "repo" / "py-gpt",
+        project_root / "repo" / "py-gpt" / "src",
         project_root / "src" / "huey" / "memory" / "PY" / "src",
         project_root / "repo" / "pygpt-MHP" / "src",
     ]

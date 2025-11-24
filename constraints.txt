@@ -1,1 +1,123 @@
-# Constraints
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Global constraints for reproducible installs.
+#
+# This file is consumed by requirements.txt via:
+#   -c constraints.txt
+#
+# Strategy:
+# - Pin known, stable versions here.
+# - Keep requirements.txt focused on *what* is installed.
+# - Optionally grow this file to include all transitive pins once the stack stabilizes.
+
+# ---------------------------------------------------------------------------
+# Core async/runtime stack
+# ---------------------------------------------------------------------------
+
+# Async HTTP and concurrency
+aiohttp==3.13.2
+aiosqlite==0.21.0
+anyio==4.11.0
+attrs==25.4.0
+
+# TLS, CA bundle, and crypto primitives
+certifi==2025.11.12
+cryptography==45.0.4
+
+# Linux input support (only relevant on Linux)
+evdev==1.9.2
+
+# ---------------------------------------------------------------------------
+# API / web layer
+# ---------------------------------------------------------------------------
+
+# FastAPI application server
+fastapi==0.121.2
+
+# If/when you standardize on these, pin them here and
+# remove the version from requirements.txt (or keep both
+# in sync; constraints will still win during resolution).
+#
+# Examples (commented placeholders):
+# httpx==0.28.1          # HTTP client used by HueyOS workers
+# uvicorn==0.32.0        # ASGI server for FastAPI
+# websockets==13.1       # For WebSocket-based console or streaming APIs
+
+# ---------------------------------------------------------------------------
+# Serialization / parsing
+# ---------------------------------------------------------------------------
+
+# Uncomment and pin once decided:
+# orjson==3.10.7         # High-performance JSON
+# pyyaml==6.0.2          # For YAML config parsing
+# python-dotenv==1.0.1   # For environment file loading
+
+# ---------------------------------------------------------------------------
+# Storage / data layer
+# ---------------------------------------------------------------------------
+
+# Uncomment/pin as your storage and analytics layer stabilizes:
+# sqlalchemy==2.0.36      # If you add RDBMS backing
+# pandas==2.2.3           # For analytics or log introspection
+# numpy==2.1.3            # Numeric work / ML glue
+
+# ---------------------------------------------------------------------------
+# ML / model integration (Ollama / PyGPT / LLM tooling)
+# ---------------------------------------------------------------------------
+
+# These are intentionally placeholders; fill in as you standardize:
+# openai==1.54.0          # Cloud API client (if used)
+# tiktoken==0.8.0         # Token accounting
+# transformers==4.46.3    # If you add HF integration
+# accelerate==1.0.1       # For multi-GPU configs
+# sentencepiece==0.2.0    # Tokenizer for some models
+
+# ---------------------------------------------------------------------------
+# Cloud / external services (optional extras)
+# ---------------------------------------------------------------------------
+
+# Uncomment if/when you adopt specific clouds:
+# boto3==1.35.70          # AWS
+# google-cloud-storage==2.19.0
+# azure-storage-blob==12.23.0
+
+# ---------------------------------------------------------------------------
+# CLI / UX tooling
+# ---------------------------------------------------------------------------
+
+# typer==0.12.5           # CLI entrypoints
+# rich==13.9.4            # Pretty console output
+# click==8.1.7            # If you prefer Click directly
+
+# ---------------------------------------------------------------------------
+# Testing / QA toolchain
+# ---------------------------------------------------------------------------
+
+# pytest core + async helpers
+# pytest==8.3.3
+# pytest-asyncio==0.24.0
+# httpx==0.28.1           # Often used in API tests
+
+# Linting/formatting (if you want deterministic toolchain):
+# black==24.10.0
+# isort==5.13.2
+# ruff==0.7.0
+# mypy==1.13.0
+
+# ---------------------------------------------------------------------------
+# Documentation / tooling
+# ---------------------------------------------------------------------------
+
+# mkdocs==1.6.1
+# mkdocs-material==9.5.35
+# mkdocstrings[python]==0.26.2
+
+# ---------------------------------------------------------------------------
+# Notes
+# ---------------------------------------------------------------------------
+# 1. Keep this file as the *single source of truth* for versions.
+# 2. When you bump a version here, you can usually omit the version
+#    in requirements.txt (or keep them identical if you prefer).
+# 3. As the project stabilizes, consider fully pinning all key
+#    transitive dependencies here for maximum reproducibility.
