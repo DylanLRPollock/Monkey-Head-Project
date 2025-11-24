@@ -10,6 +10,10 @@ __pypackages__/
 .venv/
 venv/
 env/
+.python-version
+
+# Packaging metadata
+pip-wheel-metadata/
 
 # Dev/Tool caches
 .pytest_cache/
@@ -17,10 +21,21 @@ env/
 .ruff_cache/
 .cache/
 .huggingface/
+.tox/
+.nox/
+.hypothesis/
+
+# Coverage reports
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
 
 # IDE
 .vscode/
 .idea/
+.spyproject/
+.ropeproject/
 
 # OS
 .DS_Store
@@ -50,3 +65,6 @@ memory/*
 !memory/LOGS/.gitkeep
 !memory/RAW/
 !memory/RAW/.gitkeep
+
+# Local env/config (real env; example stays tracked)
+huey.env
