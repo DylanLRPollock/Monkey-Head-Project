@@ -1,3 +1,7 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Fresh install module
 """Entry point to perform a clean installation."""
 
 from __future__ import annotations
