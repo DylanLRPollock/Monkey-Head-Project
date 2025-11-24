@@ -1,2 +1,43 @@
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: flake8 configuration
+
 [flake8]
-extend-ignore = E203,E402,E501,W291,W293
+# Keep in sync with Black (see .pre-commit-config.yaml)
+max-line-length = 88
+
+# Black-compatible / project-specific ignores:
+# - E203: whitespace before ':' (Black formatting)
+# - E402: module level import not at top (used in shim/entrypoint modules)
+# - E501: line length (delegated to Black)
+# - W291: trailing whitespace (handled by pre-commit trailing-whitespace hook)
+# - W293: blank line contains whitespace (also handled by pre-commit)
+extend-ignore = E203, E402, E501, W291, W293
+
+# Enable core Flake8 checks plus flake8-bugbear (configured via pre-commit)
+# B950: soft maximum line length that works well with Black's 88-char style
+select = C, E, F, W, B, B950
+
+# Paths we do not want to lint (tooling, virtualenvs, build artifacts, caches)
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    .venv,
+    venv,
+    env,
+    .mypy_cache,
+    .ruff_cache,
+    .pytest_cache,
+    .idea,
+    .vscode
+
+# Per-file relaxations tuned for HueyOS layout
+per-file-ignores =
+    # Package __init__ can re-export symbols without tripping F401
+    src/huey/__init__.py: F401
+    # Root run shim and CLI modules may manipulate sys.path / imports at top-level
+    run.py: E402
+    src/huey/cli/*.py: E402
