@@ -140,6 +140,7 @@ indent_size = 2
 [.gitattributes]
 indent_style = space
 indent_size = 2
+
 [.gitignore]
 indent_style = space
 indent_size = 2
