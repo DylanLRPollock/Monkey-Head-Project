@@ -23,7 +23,9 @@ packaging==25.0 ; python_version >= "3.12" and python_version < "3.15"
 typing-extensions==4.15.0 ; python_version >= "3.12" and python_version < "3.15"
 setuptools==75.8.0 ; python_version >= "3.12" and python_version < "3.15"
 wheel==0.45.1 ; python_version >= "3.12" and python_version < "3.15"
-pip==25.0.1 ; python_version >= "3.12" and python_version < "3.15"
+
+# Security: fix pip fallback tar extraction (symlink escape / arbitrary overwrite)
+pip>=25.3 ; python_version >= "3.12" and python_version < "3.15"
 
 # --- ML + SDKs ---
 aiohappyeyeballs==2.6.1 ; python_version >= "3.12" and python_version < "3.15"
