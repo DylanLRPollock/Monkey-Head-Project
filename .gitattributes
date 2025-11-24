@@ -1,42 +1,115 @@
-# Normalize line endings for all text
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: .gitattributes
+
+###############################################################################
+# Core text handling / line endings
+###############################################################################
+
+# Normalize line endings for all text; store LF in the repo.
+# This overrides platform defaults so Windows checkouts also see LF.
 * text=auto eol=lf
 
-# Force LF for specific file types
-*.sh text eol=lf
-*.py text eol=lf
-*.yml text eol=lf
-*.yaml text eol=lf
-*.toml text eol=lf
-*.md text eol=lf
-*.env text eol=lf
-*.cfg text eol=lf
-*.ini text eol=lf
+# Explicit text types that must always be LF
+*.sh          text eol=lf
+*.bash        text eol=lf
+*.py          text eol=lf
+*.yml         text eol=lf
+*.yaml        text eol=lf
+*.toml        text eol=lf
+*.md          text eol=lf
+*.env         text eol=lf
+*.cfg         text eol=lf
+*.ini         text eol=lf
+*.txt         text eol=lf
+*.json        text eol=lf
+*.csv         text eol=lf
+*.tsv         text eol=lf
 
-# Treat these as binary (no diff/merge)
-*.png binary
-*.jpg binary
+# Project / infra files
+.gitattributes text eol=lf
+.gitignore     text eol=lf
+Dockerfile     text eol=lf
+docker-compose*.yml text eol=lf
+
+###############################################################################
+# Binary assets (no end-of-line normalization, no text diffs)
+###############################################################################
+
+# Images
+*.png  binary
+*.jpg  binary
 *.jpeg binary
-*.gif binary
-*.ico binary
-*.pdf binary
-*.mp4 binary
-*.mov binary
-*.wav binary
-*.mp3 binary
-*.zip binary
-*.tar binary
-*.gz binary
+*.gif  binary
+*.ico  binary
+*.bmp  binary
+*.tif  binary
+*.tiff binary
 
-# Generated artifacts (don't diff)
-*.min.js -diff
+# Documents/media
+*.pdf  binary
+*.mp4  binary
+*.mov  binary
+*.mkv  binary
+*.webm binary
+*.wav  binary
+*.mp3  binary
+*.flac binary
+*.ogg  binary
+
+# Archives / compressed artifacts
+*.zip  binary
+*.tar  binary
+*.gz   binary
+*.bz2  binary
+*.xz   binary
+*.7z   binary
+*.rar  binary
+*.iso  binary
+
+# Fonts and other opaque binary formats
+*.ttf   binary
+*.otf   binary
+*.woff  binary
+*.woff2 binary
+*.eot   binary
+
+###############################################################################
+# Generated / minified / lock files – avoid noisy diffs
+###############################################################################
+
+# Minified front-end bundles
+*.min.js  -diff
 *.min.css -diff
-*.lock -diff
 
-# Documentation / metadata
-docs/* linguist-documentation=true
+# Lock files (npm, pip, etc.) – treat as opaque blobs in diffs
+*.lock    -diff
 
+###############################################################################
+# Documentation / metadata / generated runtime data
+###############################################################################
+
+# All documentation treated as documentation for GitHub Linguist
+docs/** linguist-documentation=true
+
+# Memory and runtime data (if ever committed) are treated as generated
+memory/** linguist-generated=true
+
+###############################################################################
+# Vendored or third-party code (submodules, mirrors, etc.)
+###############################################################################
+
+# py-gpt submodule is treated as vendored code so it does not skew language stats.
+# (Path should match the submodule path defined in .gitmodules.)
+repo/py-gpt/** linguist-vendored=true
+
+###############################################################################
 # Export-ignore for release tarballs
-.github/ export-ignore
-tests/ export-ignore
-docs/ export-ignore
-scripts/dev/ export-ignore
+###############################################################################
+
+# Exclude CI, tests, docs, and dev-only scripts from `git archive` exports.
+.github/      export-ignore
+tests/        export-ignore
+docs/         export-ignore
+scripts/dev/  export-ignore
