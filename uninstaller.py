@@ -1,4 +1,7 @@
-"""Stub uninstaller for tests."""
+# Monkey Head Project
+# By: Dylan L.R. Pollock
+# www.dlrp.ca
+# HueyOS: Stub uninstaller for tests.
 
 from __future__ import annotations
 
