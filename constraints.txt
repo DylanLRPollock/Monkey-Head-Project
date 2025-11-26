@@ -33,7 +33,7 @@ evdev==1.9.2
 # ---------------------------------------------------------------------------
 
 # FastAPI application server
-fastapi==0.121.2
+fastapi==0.122.0
 
 # If/when you standardize on these, pin them here and
 # remove the version from requirements.txt (or keep both
