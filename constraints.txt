@@ -18,7 +18,7 @@
 # Async HTTP and concurrency
 aiohttp==3.13.2
 aiosqlite==0.21.0
-anyio==4.11.0
+anyio==4.12.0
 attrs==25.4.0
 
 # TLS, CA bundle, and crypto primitives
@@ -33,7 +33,7 @@ evdev==1.9.2
 # ---------------------------------------------------------------------------
 
 # FastAPI application server
-fastapi==0.121.2
+fastapi==0.123.5
 
 # If/when you standardize on these, pin them here and
 # remove the version from requirements.txt (or keep both
