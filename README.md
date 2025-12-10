@@ -365,6 +365,14 @@ pip install -e '.[ml]'    # ML toolchain
 pip install -e '.[data]'  # vector DB integrations
 pip install -e '.[cloud]' # optional cloud helpers
 
+# PyTorch (CPU wheels by default; Python 3.12 only)
+pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 \
+  --index-url https://download.pytorch.org/whl/cpu
+
+# Swap the index URL for GPU builds (example: CUDA 12.4)
+pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 \
+  --index-url https://download.pytorch.org/whl/cu124
+
 cp huey.env.example .env  # then edit secrets and ports
 ```
 
