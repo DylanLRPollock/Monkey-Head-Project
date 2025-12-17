@@ -57,8 +57,8 @@ ml = [
   "audioop-lts==0.2.2; python_version >= '3.13' and python_version < '3.15'",
   "pillow==11.1.0",
   "google-ai-generativelanguage==0.9.0",
-  "google-genai==1.54.0",
-  "google-generativeai==0.8.5",
+  "google-genai==1.55.0",
+  "google-generativeai==0.8.6",
   "llama-cloud==0.1.45",
   "llama-cloud-services==0.6.88",
   "llama-index==0.14.10",
@@ -74,11 +74,11 @@ ml = [
   "llama-index-llms-azure-openai==0.4.2",
   "llama-index-llms-deepseek==0.2.2",
   "llama-index-llms-gemini==0.6.1",
-  "llama-index-llms-google-genai==0.8.0",
+  "llama-index-llms-google-genai==0.8.2",
   "llama-index-llms-huggingface-api==0.6.1",
   "llama-index-llms-mistralai==0.9.0",
   "llama-index-llms-ollama==0.9.0",
-  "llama-index-llms-openai==0.6.10",
+  "llama-index-llms-openai==0.6.12",
   "llama-index-llms-openai-like==0.5.3",
   "llama-index-llms-perplexity==0.4.2",
   "llama-index-multi-modal-llms-openai==0.6.2",
@@ -99,8 +99,8 @@ ml = [
   "mistralai==1.9.11",
   "ollama==0.6.1",
   "onnxruntime==1.23.2",
-  "openai==2.9.0",
-  "openai-agents==0.6.2",
+  "openai==2.13.0",
+  "openai-agents==0.6.3",
   "pygpt-net>=0.3.0",
   "torch==2.5.1; python_version >= '3.12' and python_version < '3.13' and sys_platform != 'win32'",
   "torchaudio==2.5.1; python_version >= '3.12' and python_version < '3.13' and sys_platform != 'win32'",
@@ -113,7 +113,7 @@ ml = [
 
 data = [
   "chroma-hnswlib==0.7.6",
-  "chromadb==1.3.5",
+  "chromadb==1.3.7",
   "elastic-transport==9.2.0",
   "elasticsearch==9.2.0",
   "pinecone==8.0.0",
@@ -123,10 +123,10 @@ data = [
 ]
 
 cloud = [
-  "azure-core==1.36.0",
+  "azure-core==1.37.0",
   "azure-identity==1.25.1",
-  "boto3==1.42.6",
-  "botocore==1.42.6",
+  "boto3==1.42.11",
+  "botocore==1.42.11",
   "s3transfer==0.16.0",
 ]
 
@@ -135,16 +135,16 @@ dev = [
   "chromedriver-autoinstaller==0.6.4",
   "click==8.3.1",
   "coloredlogs==15.0.1",
-  "debugpy==1.8.17",
+  "debugpy==1.8.19",
   "docker==7.1.0",
   "flake8==7.3.0",
   "httpx==0.28.1",
   "isort==7.0.0",
-  "pre-commit==4.5.0",
+  "pre-commit==4.5.1",
   "pytest==8.3.4",
   "pytest-asyncio==1.3.0",
   "pytest-cov==7.0.0",
-  "ruff==0.14.8",
+  "ruff==0.14.9",
 ]
 
 [project.scripts]
