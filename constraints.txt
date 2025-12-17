@@ -70,7 +70,7 @@ accelerate==1.12.0
 torch==2.5.1 ; python_version >= "3.12" and python_version < "3.13" and sys_platform != "win32"
 torchvision==0.20.1 ; python_version >= "3.12" and python_version < "3.13" and sys_platform != "win32"
 torchaudio==2.5.1 ; python_version >= "3.12" and python_version < "3.13" and sys_platform != "win32"
-pillow==11.1.0
+pillow==12.0.0
 openai==2.9.0
 tiktoken==0.12.0
 transformers==4.57.3
