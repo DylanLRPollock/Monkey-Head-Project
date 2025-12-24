@@ -17,7 +17,7 @@
 
 # Async HTTP and concurrency
 aiohttp==3.13.2
-aiosqlite==0.21.0
+aiosqlite==0.22.1
 anyio==4.12.0
 attrs==25.4.0
 
@@ -33,7 +33,7 @@ evdev==1.9.2
 # ---------------------------------------------------------------------------
 
 # FastAPI application server
-fastapi==0.124.0
+fastapi==0.127.0
 
 # If/when you standardize on these, pin them here and
 # remove the version from requirements.txt (or keep both
@@ -71,7 +71,7 @@ torch==2.5.1 ; python_version >= "3.12" and python_version < "3.13" and sys_plat
 torchvision==0.20.1 ; python_version >= "3.12" and python_version < "3.13" and sys_platform != "win32"
 torchaudio==2.5.1 ; python_version >= "3.12" and python_version < "3.13" and sys_platform != "win32"
 pillow==11.1.0
-openai==2.9.0
+openai==2.14.0
 tiktoken==0.12.0
 transformers==4.57.3
 sentencepiece==0.2.1 ; python_version >= "3.13" and python_version < "3.15"
