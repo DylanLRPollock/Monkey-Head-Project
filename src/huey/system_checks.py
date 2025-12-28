@@ -119,7 +119,7 @@ def check_os_support() -> None:
 
 
 def check_python_version() -> None:
-    """Warn when running on experimental Python versions."""
+    """Warn when running on unsupported Python versions."""
 
     info = sys.version_info
     if isinstance(info, tuple):  # pragma: no cover - compatibility
@@ -127,9 +127,9 @@ def check_python_version() -> None:
     else:
         major = getattr(info, "major", 0)
         minor = getattr(info, "minor", 0)
-    if major == 3 and minor >= 14:
+    if major == 3 and (minor < 13 or minor >= 15):
         logger.warning(
-            "Python 3.%s detected. This version is experimental and not fully supported.",
+            "Python 3.%s detected. Supported versions are Python 3.13 and 3.14.",
             minor,
         )
 
