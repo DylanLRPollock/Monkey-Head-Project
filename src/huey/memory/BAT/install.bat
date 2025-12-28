@@ -15,9 +15,10 @@ REM ==================================================
 
 setlocal
 set "SCRIPT_DIR=%~dp0"
-set "INSTALL_SCRIPT=%SCRIPT_DIR%setup\Windows11\01-FULL.bat"
+for %%I in ("%SCRIPT_DIR%..\..\..\..") do set "ROOT_DIR=%%~fI"
+set "INSTALL_SCRIPT=%ROOT_DIR%\setup\Windows11\01-FULL.bat"
 
-pushd "%SCRIPT_DIR%"
+pushd "%ROOT_DIR%"
 if not exist "%INSTALL_SCRIPT%" (
     echo Installation script not found: %INSTALL_SCRIPT%
     popd
