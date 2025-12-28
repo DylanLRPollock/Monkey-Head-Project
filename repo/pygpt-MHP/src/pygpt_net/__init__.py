@@ -15,7 +15,7 @@ from typing import Final
 
 __all__ = ["__version__"]
 
-__version__ = "0.0.0-dev"
+__version__ = "2.6.67"
 
 _NLTK_ENV_VAR: Final[str] = "NLTK_DATA"
 _CUSTOM_ENV_VAR: Final[str] = "PYGPT_NLTK_DATA_DIR"

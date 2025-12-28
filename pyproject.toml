@@ -101,7 +101,7 @@ ml = [
   "onnxruntime==1.23.2",
   "openai==2.9.0",
   "openai-agents==0.6.2",
-  "pygpt-net>=0.3.0",
+  "pygpt-net>=2.6.67",
   "torch==2.5.1; python_version >= '3.12' and python_version < '3.13' and sys_platform != 'win32'",
   "torchaudio==2.5.1; python_version >= '3.12' and python_version < '3.13' and sys_platform != 'win32'",
   "torchvision==0.20.1; python_version >= '3.12' and python_version < '3.13' and sys_platform != 'win32'",
