@@ -1,0 +1,45 @@
+# Placeholder Occurrences
+
+- `README.md`:347 - `- Status: being stripped, inspected, reinforced, and repainted (dark tractor red base, silver overlays TBD).`
+- `constraints.txt`:42 - `# Examples (commented placeholders):`
+- `docs/CONTRIBUTING.md`:181 - `7. **Review-ready.** No commented-out code, no stray prints, no TODOs without issue links.`
+- `master_plan_v15.json`:40 - `"Robot shell exists physically and is being stripped, reinforced, and repainted (dark tractor red base, silver overlays TBD).",`
+- `master_plan_v15.json`:562 - `"tts": "Configurable TTS stack (exact engine TBD per node).",`
+- `repo/py-gpt/README.md`:1 - `# Py-GPT vendor placeholder`
+- `repo/py-gpt/src/pygpt_net/__init__.py`:3 - `This placeholder mirrors the directory layout of the upstream `py-gpt``
+- `repo/pygpt-MHP/src/pygpt_net/controller/config/__init__.py`:8 - `__all__ = ["placeholder"]`
+- `repo/pygpt-MHP/src/pygpt_net/data/prompts.csv`:132 - `"Web Browser","I want you to act as a text based web browser browsing an imaginary internet. You should only reply with the contents of the page, nothing else. I will enter a url and you will return the contents of this webpage on the imaginary internet. Don't write explanations. Links on the pages should have numbers next to them written between []. When I want to follow a link, I will reply with the number of the link. Inputs on the pages should have numbers next to them written between []. Input placeholder should be written between (). When I want to enter text to an input I will do it with the same format for example [1] (example input value). This inserts 'example input value' into the input numbered 1. When I want to go back i will write (b). When I want to go forward I will write (f). My first prompt is google.com",TRUE`
+- `src/huey/memory/CSV/pygpt_prompts.csv`:133 - `Web Browser,"You are a Web Browser. You should only reply with the contents of the page, nothing else. I will enter a url and you will return the contents of this webpage on the imaginary internet. Don't write explanations. Links on the pages should have numbers next to them written between []. When I want to follow a link, I will reply with the number of the link. Inputs on the pages should have numbers next to them written between []. Input placeholder should be written between (). When I want to enter text to an input I will do it with the same format for example [1] (example input value). This inserts 'example input value' into the input numbered 1. When I want to go back i will write (b). When I want to go forward I will write (f). My first prompt is google.com",TRUE`
+- `src/huey/memory/HTML/dlrp.ca_files/favicon.ico`:1 - `PLACEHOLDER – Replace with actual favicon file`
+- `src/huey/memory/HTML/dlrp.ca_files/index.html`:43 - `<div class="placeholder-image">[ Huey Image Placeholder ]<br /><small>The physical shell of Huey</small></div>`
+- `src/huey/memory/HTML/dlrp.ca_files/index.html`:68 - `<div class="placeholder-image">[ Dirty Leroy ]</div>`
+- `src/huey/memory/HTML/dlrp.ca_files/index.html`:69 - `<div class="placeholder-image">[ The Executive ]</div>`
+- `src/huey/memory/HTML/dlrp.ca_files/index.html`:89 - `<div class="placeholder-image">[ Dirty Leroy Image ]<br /><small>Prototype Unit</small></div>`
+- `src/huey/memory/HTML/dlrp.ca_files/index.html`:90 - `<div class="placeholder-image">[ The Executive Image ]<br /><small>Refined Cabinet</small></div>`
+- `src/huey/memory/HTML/dlrp.ca_files/style.css`:74 - `.placeholder-image {`
+- `src/huey/memory/HTML/dlrp.ca_files/style.css`:129 - `.project-image-dual .placeholder-image {`
+- `src/huey/memory/HTML/dlrp.ca_files/style.css`:142 - `.split-image .placeholder-image {`
+- `src/huey/memory/PY/ai_processor.py`:375 - `"""Fetch a sample TODO item and return its title."""`
+- `src/huey/memory/PY/ai_processor.py`:377 - `url = f"https://jsonplaceholder.typicode.com/todos/{todo_id}"`
+- `src/huey/memory/PY/sync_pygpt_structure.py`:31 - `"""Return True if ``dst`` does not exist or contains a placeholder header."""`
+- `src/huey/memory/PY/sync_pygpt_structure.py`:50 - `"""Copy file or directory from src to dst if missing or placeholder."""`
+- `src/huey/prompts/master-plan-v3.json`:166 - `"term_length": "Four cycles (exact definition of cycle TBD).",`
+- `src/huey/prompts/master-plan-v5.json`:190 - `"term_length": "Four cycles (exact definition of cycle TBD).",`
+- `src/huey/pygpt_net/controller/config/__init__.py`:8 - `__all__ = ["placeholder"]`
+- `src/huey/pygpt_net/data/prompts.csv`:132 - `"Web Browser","I want you to act as a text based web browser browsing an imaginary internet. You should only reply with the contents of the page, nothing else. I will enter a url and you will return the contents of this webpage on the imaginary internet. Don't write explanations. Links on the pages should have numbers next to them written between []. When I want to follow a link, I will reply with the number of the link. Inputs on the pages should have numbers next to them written between []. Input placeholder should be written between (). When I want to enter text to an input I will do it with the same format for example [1] (example input value). This inserts 'example input value' into the input numbered 1. When I want to go back i will write (b). When I want to go forward I will write (f). My first prompt is google.com",TRUE`
+- `tests/test_placeholder.py`:1 - `"""Tests for the lightweight placeholder helpers."""`
+- `tests/test_placeholder.py`:3 - `from huey.pygpt_net.controller.config.placeholder import Placeholder`
+- `tests/test_placeholder.py`:35 - `placeholder = Placeholder(DummyWindow(DummyPresets({preset.filename: preset})))`
+- `tests/test_placeholder.py`:37 - `result = placeholder.get_presets()`
+- `tests/test_placeholder.py`:44 - `placeholder = Placeholder(DummyWindow(with_core=False))`
+- `tests/test_placeholder.py`:46 - `assert placeholder.get_presets() == [{"_": "---"}]`
+- `tests/test_placeholder.py`:51 - `placeholder = Placeholder(DummyWindow(DummyPresets(presets)))`
+- `tests/test_placeholder.py`:53 - `assert placeholder.get_presets()[1:] == [{"first.json": "First"}]`
+- `tests/test_placeholder.py`:58 - `placeholder = Placeholder(DummyWindow(DummyPresets(presets)))`
+- `tests/test_placeholder.py`:60 - `assert placeholder.get_presets()[1:] == [{"alt.json": "Alternate"}]`
+- `tests/test_placeholder.py`:67 - `placeholder_list = Placeholder(DummyWindow(DummyPresets([NoFilename()])))`
+- `tests/test_placeholder.py`:68 - `placeholder_error = Placeholder(DummyWindow(DummyPresets(ValueError("bad"))))`
+- `tests/test_placeholder.py`:69 - `placeholder_string = Placeholder(DummyWindow(DummyPresets("not iterable")))`
+- `tests/test_placeholder.py`:71 - `assert placeholder_list.get_presets() == [{"_": "---"}]`
+- `tests/test_placeholder.py`:72 - `assert placeholder_error.get_presets() == [{"_": "---"}]`
+- `tests/test_placeholder.py`:73 - `assert placeholder_string.get_presets() == [{"_": "---"}]`
