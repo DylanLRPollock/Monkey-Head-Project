@@ -6,7 +6,7 @@
 **Author:** Dylan L. R. Pollock  
 **Official site:** https://www.dlrp.ca  
 **Contact:** admin@dlrp.ca  
-**License:** Code: GPL-3.0 • Docs/Media: CC-BY-SA-4.0  
+**License:** Code: GPL-3.0-only • Docs/Media: CC-BY-SA-4.0  
 **Status date:** 2025-12-11  
 
 > **HueyOS** is a modular robotic AI/OS designed to demonstrate that **any one person, given enough time, energy, and resources, can build a self-sufficient, expandable, and upgradable robot using today’s technology.**
@@ -15,7 +15,8 @@
 >
 > The system blends modern Linux, distributed local AI compute, and a constitutional multi-agent framework inside a custom-built robotic shell (Robotics V3).
 
-![License](https://img.shields.io/badge/license-GPLv3-blue)
+![Code License](https://img.shields.io/badge/code%20license-GPLv3-blue)
+![Docs/Media License](https://img.shields.io/badge/docs%2Fmedia-CC--BY--SA--4.0-lightgrey)
 ![Python](https://img.shields.io/badge/python-3.13.x-blue)
 
 ---
@@ -38,10 +39,10 @@ The project is transitioning from a pure “changeover” phase into a **realign
 - **Debian 14 “Forky”**
   - Deployed across **all lab devices** except the iMac 5K.
 - **2017 iMac 5K**
-  - Remains on **Debian 13 “Trixie”** with **kernel 6.18.2-hueyos-v1** for audio stability and daily use.
+  - Remains on **Debian 13 “Trixie”** with **kernel 6.12.x** for audio stability and daily use.
 - **Kernel baseline**
-  - 6.18.2-hueyos-v1 for new nodes and future Huey core.
-  - Older kernels (e.g., 6.16.x/6.17.x) acceptable only on legacy nodes where required.
+  - 6.17.x-huey for new nodes and future Huey core.
+  - Older kernels (e.g., 6.16.x) acceptable only on legacy nodes where required.
 - **Python**
   - **3.13.x** is the **operational baseline** for the lab and tooling.
   - Migration to **3.14.x** is **pending** and contingent on compatibility with **PyGPT / PyGPT-Net** and the broader dependency stack.
@@ -84,7 +85,7 @@ For early bring-up and testing:
 
 > This section is preserved as **historical context** for the Debian 14 “Forky” changeover and remains useful for scripts and runbooks, but the **January 7, 2026 Realignment** now reflects the current project direction.
 
-On **2025-10-31**, HueyOS began migrating to **Debian 14 “Forky,” kernel 6.18.2-hueyos-v1, and Python 3.14.x** (with packaging and CLI updates). The pre-changeover baseline was **Debian 13 “Trixie” + 6.16.x-huey**; after the changeover, new work targeted Forky and the 6.18.x-hueyos-v1 series by default.
+On **2025-10-31**, HueyOS began migrating to **Debian 14 “Forky,” kernel 6.17.x-huey, and Python 3.14.x** (with packaging and CLI updates). The pre-changeover baseline was **Debian 13 “Trixie” + 6.16.x-huey**; after the changeover, new work targeted Forky and the 6.17.x-huey series by default.
 
 Track day-of and follow-up updates in `docs/releases/2025-10-31-changeover.md`. Until all nodes were migrated, some machines temporarily remained on **Trixie + 6.16.x-huey** while adopting the new governance and memory model.
 
@@ -93,8 +94,8 @@ Track day-of and follow-up updates in `docs/releases/2025-10-31-changeover.md`. 
 - **Forky APT switch**  
   Use `sudo tools/upgrade_to_forky.sh` to apply the staged APT source flip and refresh the Microsoft Edge Beta signing key (see `docs/debian-forky-upgrade.md`).
 
-- **Kernel 6.18.2-hueyos-v1 build**  
-  Follow `docs/kernel-6.18.2-runbook.md` to rebuild and install the DKMS-free kernel, then record results in the release stub.
+- **Kernel 6.17.x-huey build**  
+  Follow `docs/kernel-6.17.3-runbook.md` to rebuild and install the DKMS-free kernel, then record results in the release stub.
 
 - **Python 3.14 virtualenv (Historical Target)**  
   Once packages land, rerun the commands in `docs/python314-upgrade-notes.md` to create the 3.14 environment and capture any blockers.  
@@ -130,12 +131,13 @@ Track day-of and follow-up updates in `docs/releases/2025-10-31-changeover.md`. 
 - [Contributing](#contributing)  
 - [License & Credits](#license--credits)  
 - [Appendix](#appendix)  
+- [A.I. Auto-Update](#ai-auto-update)  
 
 ---
 
 ## Overview
 
-HueyOS targets **Debian 13 “Trixie”** and **Debian 14 “Forky”** with a low-latency, custom **6.18.x-hueyos-v1** kernel, a **constitutional multi-agent governance model**, and a unified memory system.
+HueyOS targets **Debian 13 “Trixie”** and **Debian 14 “Forky”** with a low-latency, custom **6.16.x–6.17.x-huey** kernel, a **constitutional multi-agent governance model**, and a unified memory system.
 
 At a conceptual level:
 
@@ -206,7 +208,6 @@ If you change the governance model, hardware assumptions, or key policies, updat
 | `src/`                    | Python package source                                |
 | `tests/`                  | Unit & integration tests                             |
 | `repo/pygpt-MHP`          | Submodule: PyGPT-net integration                     |
-| `vendor/`                 | Vendored shims for optional dependencies in tests    |
 | `k8s/`                    | Optional Kubernetes manifests                        |
 | `Makefile`                | Common developer commands                            |
 | `pyproject.toml`          | Project metadata & dependencies                      |
@@ -349,7 +350,7 @@ These machines support the project but are not Huey itself:
   - Will become the home of the canonical i9-14900K + multi-GPU + RAID-10 NVMe stack.
 
 - **Huey-Portal**  
-  - **iMac 5K (2017)**; 48 GB RAM; Debian 13 Trixie; GNOME on Xorg; kernel 6.18.2-hueyos-v1 for audio stability.  
+  - **iMac 5K (2017)**; 48 GB RAM; Debian 13 Trixie; GNOME on Xorg; kernel 6.12.x for audio stability.  
   - Role: universal display/SSH terminal, daily driver, and preferred development environment.
 
 - **Huey-Hub (candidate)**  
@@ -419,10 +420,9 @@ This README and the current codebase are the live implementation layer over the 
   - UEFI-only for Huey core and future nodes; no legacy BIOS.
 
 - **Kernel**
-  - 6.18.2-hueyos-v1 on iMac 5K for audio stability.
+  - 6.12.x (Trixie) on iMac 5K for audio stability.
   - 6.16.x-huey: prior low-latency baseline.
-  - 6.17.x-huey: interim series for legacy nodes.
-  - 6.18.2-hueyos-v1: preferred series for new nodes and Huey Mode.
+  - 6.17.x-huey: preferred series for new nodes and Huey Mode.
   - Builds are tuned with:
     - DEBUG_INFO and friends disabled.
     - ZSTD compression and targeted drivers.
@@ -458,7 +458,7 @@ This README and the current codebase are the live implementation layer over the 
 
 - **Debian 13 (Trixie)** — stable baseline; amd64; UEFI.  
 - **Debian 14 (Forky)** — changeover target and future baseline for Huey core.  
-- **Kernels:** 6.16.x-huey (legacy), 6.17.x-huey (legacy), 6.18.2-hueyos-v1 (preferred).
+- **Kernels:** 6.16.x-huey (legacy), 6.17.x-huey (preferred).
 
 ### Minimal Install
 
@@ -533,15 +533,15 @@ Set `HUEY_BUILD_EXTRAS=ml,data,cloud` before `docker compose build` to bake extr
 
 ## Build Guides
 
-### Kernel 6.18.2-hueyos-v1 (Generic)
+### Kernel 6.17.x-huey (Generic)
 
 ```bash
 sudo apt install -y fakeroot kmod pahole flex bison libelf-dev libssl-dev \
   libncurses-dev bc rsync xz-utils cpio python3
 
-wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.18.2.tar.xz
-tar -xf linux-6.18.2.tar.xz
-cd linux-6.18.2
+wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.17.5.tar.xz
+tar -xf linux-6.17.5.tar.xz
+cd linux-6.17.5
 
 cp -v /boot/config-$(uname -r) .config
 yes "" | make olddefconfig
@@ -550,10 +550,10 @@ yes "" | make olddefconfig
   --disable KASAN --disable UBSAN --disable KCOV --disable FUNCTION_TRACER \
   --enable ZSTD --enable RD_ZSTD --enable EFI --enable EFI_STUB --enable EFI_VARS
 
-make -j"$(nproc)" bindeb-pkg LOCALVERSION=-hueyos-v1
+make -j"$(nproc)" bindeb-pkg
 
-sudo dpkg -i ../linux-image-6.18.2-hueyos-v1_*.deb ../linux-headers-6.18.2-hueyos-v1_*.deb
-sudo update-initramfs -c -k 6.18.2-hueyos-v1
+sudo dpkg -i ../linux-image-6.17.5-*.deb ../linux-headers-6.17.5-*.deb
+sudo update-initramfs -c -k 6.17.5
 sudo update-grub
 ```
 
@@ -771,9 +771,15 @@ On Huey-Portal, a helper script `~/bin/vnc` (and alias `huey-vnc`) maps `:1 → 
 
 ## Action Plan — Oct 31, 2025 (Historical)
 
-This checklist captured the original changeover work and remains useful as historical reference and partial baseline. The **January 2026 Realignment** supersedes it for current planning.
+This checklist captured the original changeover execution plan and remains useful as historical reference and partial baseline. The **January 2026 Realignment** supersedes it for current planning.
 
-(Contents unchanged from original README; see historical section for details.)
+- Canonical log + notes: `docs/releases/2025-10-31-changeover.md`  
+- Supporting runbooks:
+  - `docs/debian-forky-upgrade.md`
+  - `docs/kernel-6.17.3-runbook.md`
+  - `docs/python314-upgrade-notes.md`
+
+This README retains the high-level context; consult the changeover release document for step-by-step execution details.
 
 ---
 
@@ -799,7 +805,7 @@ This checklist captured the original changeover work and remains useful as histo
 
 **Date:** 2025-10-25  
 
-- Kernel 6.18.2-hueyos-v1 target builds per host.  
+- Kernel 6.17.x-huey target builds per host.  
 - Python 3.14.x parallel install and dependency audit.  
 - Forky staging; VNC/SSH workflow standardization.  
 - First unified memory schema and provenance tags.
@@ -855,9 +861,9 @@ huey memory-sort --dry-run --json
 
 ## Feature Matrix
 
-| Area        | Now (Trixie · 6.18.2)             | Next (Forky · 6.18.2-hueyos-v1)                 | Later                       |
+| Area        | Now (Trixie · 6.12/6.16)          | Next (Forky · 6.17.x)                           | Later                       |
 | ----------- | ---------------------------------- | ----------------------------------------------- | --------------------------- |
-| Kernel      | Low-latency; AMDGPU OK; audio-tuned on iMac | ROCm/Vulkan tuning; iMac audio refinements      | 6.19+ and future series     |
+| Kernel      | Low-latency; AMDGPU OK; audio-tuned on iMac | ROCm/Vulkan tuning; iMac audio refinements      | 6.18+ and future series     |
 | Python      | 3.13.x baseline                    | 3.14.x GA after compatibility work              | —                           |
 | AI runtime  | PyGPT-net + Ollama (quantized)     | Model-zoo profiles; richer agent orchestration  | Multi-node federation       |
 | Memory hive | JSON + SQLite                      | Roll-up analytics; retention/purge policies     | Full cross-node time-travel |
@@ -870,7 +876,7 @@ huey memory-sort --dry-run --json
 ## Known Issues
 
 - **iMac 5K (2017) audio**  
-  - Some kernels in the 6.17 series remain problematic; 6.18.2-hueyos-v1 is currently used for stability.
+  - Some kernels in the 6.17 series remain problematic; 6.12.x is currently used for stability.
 - **Edge repository keys**  
   - May require re-import after dist-upgrade.
 - **Vulkan/ROCm backend selection**  
@@ -919,7 +925,7 @@ huey memory-sort --dry-run --json
 **Code:** GPL-3.0-only  
 **Docs & Media:** CC-BY-SA-4.0  
 
-**Acknowledgements:** PyGPT (pygpt-net) · Debian 13 “Trixie” and Debian 14 “Forky” · Python 3.13 → 3.14 (planned) · Kernel 6.16 → 6.18.2-hueyos-v1 · Everyone who stares at boot logs so the splash screen can stay off.
+**Acknowledgements:** PyGPT (pygpt-net) · Debian 13 “Trixie” and Debian 14 “Forky” · Python 3.13 → 3.14 (planned) · Kernel 6.12/6.16 → 6.17.x · Everyone who stares at boot logs so the splash screen can stay off.
 
 ---
 
@@ -933,5 +939,5 @@ huey memory-sort --dry-run --json
 
 ## A.I. Auto-Update
 
-- **A.I.-Counterpart:** - Auto Review Complete.
-- **Human-Counterpart:** - In Process Of Manual Review.
+- **A.I. counterpart:** Auto review complete.  
+- **Human counterpart:** Manual review in progress.  
