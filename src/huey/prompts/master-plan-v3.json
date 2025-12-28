@@ -93,10 +93,10 @@
     },
     "kernels": {
       "examples": [
-        "6.17.5-hueyportable",
-        "6.17.8+hueyos-amd64"
+        "6.18.2-hueyos-v1",
+        "6.18.2+hueyos-amd64"
       ],
-      "project_standard_series": "6.17.x",
+      "project_standard_series": "6.18.x",
       "tuning_goals": [
         "Strip heavy debug/tracing for performance.",
         "Integrate required drivers directly into the kernel where practical.",
