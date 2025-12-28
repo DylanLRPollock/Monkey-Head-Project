@@ -15,9 +15,11 @@ REM ==================================================
 REM This script runs the project's tests using the virtual environment
 setlocal
 set "SCRIPT_DIR=%~dp0"
-set "ACTIVATE=%SCRIPT_DIR%venv\Scripts\activate.bat"
+for %%I in ("%SCRIPT_DIR%..\..\..\..") do set "ROOT_DIR=%%~fI"
+set "ACTIVATE=%ROOT_DIR%\venv\Scripts\activate.bat"
+set "LOG_DIR=%ROOT_DIR%\src\huey\memory\LOGS"
 
-pushd "%SCRIPT_DIR%"
+pushd "%ROOT_DIR%"
 if not exist "%ACTIVATE%" (
     echo Virtual environment not found. Please run install.bat first.
     popd
@@ -25,10 +27,9 @@ if not exist "%ACTIVATE%" (
     exit /b 1
 )
 call "%ACTIVATE%"
-if not exist memory\LOGS mkdir memory\LOGS
-set "LOG_FILE=memory\LOGS\test_results.log"
+if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
+set "LOG_FILE=%LOG_DIR%\test_results.log"
 echo Test run started at %DATE% %TIME% > "%LOG_FILE%"
-pytest -vv --cov=hueyos --cov-report=term >> "%LOG_FILE%" 2>&1
+pytest -vv --cov=huey --cov-report=term >> "%LOG_FILE%" 2>&1
 popd
 endlocal
-

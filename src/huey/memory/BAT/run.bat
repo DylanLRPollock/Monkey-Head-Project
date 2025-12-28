@@ -15,7 +15,8 @@ REM ==================================================
 REM This script launches the app using the virtual environment
 setlocal
 set "SCRIPT_DIR=%~dp0"
-set "ACTIVATE=%SCRIPT_DIR%venv\Scripts\activate.bat"
+for %%I in ("%SCRIPT_DIR%..\..\..\..") do set "ROOT_DIR=%%~fI"
+set "ACTIVATE=%ROOT_DIR%\venv\Scripts\activate.bat"
 
 if /I "%~1"=="help"       goto :help
 if /I "%~1"=="--help"     goto :help
@@ -24,7 +25,7 @@ if /I "%~1"=="tests"      goto :tests
 if /I "%~1"=="--tests"    goto :tests
 
 :run
-pushd "%SCRIPT_DIR%"
+pushd "%ROOT_DIR%"
 if not exist "%ACTIVATE%" (
     echo Virtual environment not found. Please run install.bat first.
     popd
@@ -32,13 +33,13 @@ if not exist "%ACTIVATE%" (
     exit /b 1
 )
 call "%ACTIVATE%"
-python run.py %*
+python "%ROOT_DIR%\run.py" %*
 popd
 endlocal
 goto :eof
 
 :tests
-pushd "%SCRIPT_DIR%"
+pushd "%ROOT_DIR%"
 if not exist "%ACTIVATE%" (
     echo Virtual environment not found. Please run install.bat first.
     popd
