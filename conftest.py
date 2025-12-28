@@ -31,8 +31,11 @@ import pytest
 # Ensure the ``src`` directory is importable without requiring installation.
 _PROJECT_ROOT = Path(__file__).resolve().parent
 _SRC_PATH = _PROJECT_ROOT / "src"
+_VENDOR_PATH = _PROJECT_ROOT / "vendor"
 if str(_SRC_PATH) not in sys.path:
     sys.path.insert(0, str(_SRC_PATH))
+if _VENDOR_PATH.is_dir() and str(_VENDOR_PATH) not in sys.path:
+    sys.path.insert(0, str(_VENDOR_PATH))
 
 
 # ---------------------------------------------------------------------------
