@@ -1,6 +1,6 @@
-# Linux 6.17.3 Upgrade Runbook (DKMS-Free)
+# Linux 6.18.2 Upgrade Runbook (DKMS-Free)
 
-This guide walks through building and deploying a DKMS-free Linux 6.17.3 kernel with
+This guide walks through building and deploying a DKMS-free Linux 6.18.2 kernel with
 Apple CS8409 audio support tuned for HueyOS hosts (for example, iMac18,3). It closely
 follows the proven playbook used during validation.
 
@@ -13,15 +13,15 @@ sudo apt install -y build-essential bc bison flex libelf-dev libssl-dev \
   git wget
 ```
 
-## 1. Fetch 6.17.3 sources and seed configuration
+## 1. Fetch 6.18.2 sources and seed configuration
 
 ```bash
 mkdir -p ~/kernels && cd ~/kernels
-wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.17.3.tar.xz
-tar -xf linux-6.17.3.tar.xz
-cd linux-6.17.3
+wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.18.2.tar.xz
+tar -xf linux-6.18.2.tar.xz
+cd linux-6.18.2
 
-# use the working 6.12 config as base
+# use the working kernel config as base
 cp -v /boot/config-$(uname -r) .config || zcat /proc/config.gz > .config
 yes "" | make olddefconfig
 ```
@@ -63,7 +63,7 @@ openssl req -new -x509 -newkey rsa:2048 -keyout MOK.priv -out MOK.pem \
 openssl x509 -outform der -in MOK.pem -out MOK.der
 sudo mokutil --import MOK.der   # enroll at the next reboot (blue MOK screen)
 
-cd ~/kernels/linux-6.17.3
+cd ~/kernels/linux-6.18.2
 ./scripts/config --enable CONFIG_MODULE_SIG
 ./scripts/config --enable CONFIG_MODULE_SIG_ALL
 ./scripts/config --set-str CONFIG_MODULE_SIG_KEY "$(readlink -f ~/keys/MOK.pem)"
@@ -73,12 +73,12 @@ yes "" | make olddefconfig
 ## 4. Build and install the kernel
 
 ```bash
-export LOCALVERSION=-huey+
+export LOCALVERSION=-hueyos-v1
 make -j"$(nproc)"
 sudo make modules_install INSTALL_MOD_STRIP=1
 sudo make install
 
-KV=$(make kernelrelease)          # expected: 6.17.3-huey+
+KV=$(make kernelrelease)          # expected: 6.18.2-hueyos-v1
 sudo update-initramfs -c -k "$KV"
 sudo update-grub
 ```
@@ -101,7 +101,7 @@ sudo update-initramfs -u -k "$KV"
 sudo reboot
 ```
 
-At the GRUB prompt select **6.17.3-huey+**.
+At the GRUB prompt select **6.18.2-hueyos-v1**.
 
 ## 6. Verify audio stack after boot
 
@@ -187,4 +187,4 @@ aplay -l
 pactl list short sinks
 ```
 
-Following this runbook yields a predictable, DKMS-free upgrade to **6.17.3-huey+** with an in-kernel CS8409 path and a clean fallback to SOF when required.
+Following this runbook yields a predictable, DKMS-free upgrade to **6.18.2-hueyos-v1** with an in-kernel CS8409 path and a clean fallback to SOF when required.

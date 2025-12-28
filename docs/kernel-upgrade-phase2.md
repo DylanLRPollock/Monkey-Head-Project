@@ -1,10 +1,10 @@
-# Kernel Upgrade Phase 2 (6.17.x Jump)
+# Kernel Upgrade Phase 2 (6.18.x Jump)
 
 This record captures the requested Phase 2 kernel upgrade activities. The work was
 performed inside the kata container, which limits kernel management features (no
 bootloader access, no running systemd instance, and no audio stack).
 
-## K-01 — Install distro kernel 6.17.x (baseline)
+## K-01 — Install distro kernel 6.18.x (baseline)
 
 * `sudo apt update`
   * Completed successfully; the package lists refreshed without error.
@@ -17,7 +17,7 @@ bootloader access, no running systemd instance, and no audio stack).
   * Still reports `6.12.13`, confirming that the runtime kernel remained
     unchanged after the failed installation attempt.
 
-## K-02 — Install packaged 6.17.x-huey build
+## K-02 — Install packaged 6.18.2-hueyos-v1 build
 
 Custom Huey kernel packages are not available in this environment. As a result the
 `dpkg -i` and `update-initramfs` steps were not executed.

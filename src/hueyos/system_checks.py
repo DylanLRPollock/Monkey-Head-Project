@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 SUPPORTED_DISTRO_ID = "debian"
 SUPPORTED_DISTRO_CODENAME = "forky"
-MIN_KERNEL_VERSION = Version("6.17.0")
+MIN_KERNEL_VERSION = Version("6.18.2")
 MIN_PYTHON_VERSION = (3, 14)
 MAX_PYTHON_VERSION = (3, 15)
 REQUIRED_TOOLS: Tuple[str, ...] = ("git", "python3")

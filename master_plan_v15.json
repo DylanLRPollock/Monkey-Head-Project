@@ -455,7 +455,7 @@
   "os_and_runtime": {
     "base_os": {
       "distribution": "Debian (Trixie for stable builds; Forky for experimental/testing).",
-      "kernel_family": "6.17.x+ custom Huey kernels tuned for performance and EFI-only boot.",
+      "kernel_family": "6.18.x (6.18.2-hueyos-v1) custom Huey kernels tuned for performance and EFI-only boot.",
       "desktop": {
         "default": "GNOME for comfort and broad usability.",
         "performance_option": "MATE for advanced users and low-overhead environments."

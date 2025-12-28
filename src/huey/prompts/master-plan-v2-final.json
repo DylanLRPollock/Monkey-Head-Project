@@ -81,7 +81,7 @@
   },
   "os_stack": {
     "base": "Debian 13 (Trixie preferred, Forky for testing)",
-    "kernels": ["6.17.5-hueyportable", "6.17.8+hueyos-amd64"],
+    "kernels": ["6.18.2-hueyos-v1", "6.18.2+hueyos-amd64"],
     "orchestrator": "PyGPT-net",
     "llm_server": "Ollama",
     "models": ["Mistral 7B-KM", "LLaMA 3.1", "DeepSeek-R1"],
