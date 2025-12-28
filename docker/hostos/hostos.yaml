@@ -1,5 +1,5 @@
 # HostOS Kubernetes manifest
-# Apply with: kubectl apply -f HostOS.yaml
+# Apply with: kubectl apply -f hostos.yaml
 apiVersion: v1
 kind: Namespace
 metadata:

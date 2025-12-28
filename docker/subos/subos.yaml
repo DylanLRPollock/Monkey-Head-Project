@@ -1,5 +1,5 @@
 # SubOS Kubernetes manifest
-# Apply with: kubectl apply -f SubOS.yaml
+# Apply with: kubectl apply -f subos.yaml
 apiVersion: v1
 kind: Namespace
 metadata:

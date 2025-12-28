@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-# HostOS toolbox image
+# NanoOS image (lightweight worker)
 FROM debian:trixie-slim
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -7,40 +7,28 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# System deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl gnupg \
       python3 python3-pip python3-venv \
       iproute2 iputils-ping dnsutils \
       git jq sudo nano vim less \
-      ufw \
     && rm -rf /var/lib/apt/lists/*
 
-# Optional: kubectl (latest stable)
-RUN curl -fsSL https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl \
-    && chmod +x /usr/local/bin/kubectl
-
-# Create app user
-ARG APP_USER=hostos
+ARG APP_USER=nanoos
 RUN useradd -m -s /bin/bash ${APP_USER} \
     && usermod -aG sudo ${APP_USER} \
-    && echo "${APP_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-hostos
+    && echo "${APP_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-nanoos
 
 WORKDIR /app
 
-# Copy requirements first for better layer caching
 COPY requirements.txt /app/requirements.txt
 RUN python3 -m pip install --upgrade pip \
     && pip install -r /app/requirements.txt
 
-# Copy application
-COPY HostOS.py /app/HostOS.py
+COPY nanoos.py /app/nanoos.py
 
-# Default environment
-ENV HOSTOS_PATH=/home/${APP_USER}/HostOS
+ENV NANOOS_PATH=/home/${APP_USER}/NanoOS
 
-# Switch to non-root
 USER ${APP_USER}
 
-# Helpful default command prints usage; override at run time
-CMD ["python3", "/app/HostOS.py", "--help"]
+CMD ["python3", "/app/nanoos.py", "--help"]
