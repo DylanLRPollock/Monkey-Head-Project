@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # ==================================================
-# Monkey Head Project - NanoOS Orchestrator
+# Monkey Head Project - SubOS Orchestrator
 # Overseen By: Dylan L.R. Pollock
 # Updated: 2025-08-09
 # ==================================================
-"""NanoOS setup and deployment orchestration."""
+"""SubOS setup and deployment orchestration."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from typing import Iterable
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-log = logging.getLogger("nanoos")
+log = logging.getLogger("subos")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -47,14 +47,14 @@ REQUIRED_APT = [
     "curl",
 ]
 SUPPORTED_OS = ["debian trixie", "debian testing", "debian bookworm", "debian stable"]
-DEFAULT_SERVICE_PORT = 8081
+DEFAULT_SERVICE_PORT = 8080
 
 
 def ensure_system_requirements(
     *,
     skip_os_check: bool = False,
     allowed_overrides: Iterable[str] | None = None,
-    min_free_gib: float = 4.0,
+    min_free_gib: float = 8.0,
 ) -> None:
     allowed = SUPPORTED_OS + list(allowed_overrides or [])
     utils_ensure_system_requirements(
@@ -67,16 +67,16 @@ def ensure_system_requirements(
 
 
 def apt_install() -> None:
-    log.info("Installing NanoOS tools…")
+    log.info("Installing SubOS tools…")
     apt_install_packages(REQUIRED_APT, log)
 
 
 def ensure_workspace(path: Path) -> None:
-    utils_ensure_workspace(path, "NANOOS_PATH", log)
+    utils_ensure_workspace(path, "SUBOS_PATH", log)
 
 
-def deploy_nanoos(workspace: Path, kube_manifest: Path) -> None:
-    log.info("Deploying NanoOS from %s", workspace)
+def deploy_subos(workspace: Path, kube_manifest: Path) -> None:
+    log.info("Deploying SubOS from %s", workspace)
     os.chdir(workspace)
 
     if shutil.which("docker"):
@@ -87,14 +87,14 @@ def deploy_nanoos(workspace: Path, kube_manifest: Path) -> None:
         log.warning("Docker not found; skipping docker compose step.")
 
     if kube_manifest.exists() and shutil.which("kubectl"):
-        run(["kubectl", "apply", "-f", str(kube_manifest)], log, check=False)
+        run(["kubectl", "apply", "-f", str(kube_manifest)], log)
     elif kube_manifest.exists():
         log.warning("kubectl not found; skipped applying %s", kube_manifest.name)
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="NanoOS setup & deployment")
-    parser.add_argument("--workspace", default=str(Path.home() / "NanoOS"))
+    parser = argparse.ArgumentParser(description="SubOS setup & deployment")
+    parser.add_argument("--workspace", default=str(Path.home() / "SubOS"))
     parser.add_argument("--service-port", type=int, default=DEFAULT_SERVICE_PORT)
     parser.add_argument("--skip-os-check", action="store_true")
     parser.add_argument(
@@ -106,7 +106,7 @@ def main() -> None:
     parser.add_argument(
         "--min-free-gib",
         type=float,
-        default=4.0,
+        default=8.0,
         help="Minimum recommended free space on / in GiB",
     )
     sub = parser.add_subparsers(dest="cmd")
@@ -116,7 +116,7 @@ def main() -> None:
 
     args = parser.parse_args()
     ws = Path(args.workspace)
-    kube_manifest = ws / "NanoOS.yaml"
+    kube_manifest = ws / "subos.yaml"
     cmd = args.cmd or "all"
 
     if cmd in ("setup", "all"):
@@ -131,7 +131,7 @@ def main() -> None:
         ensure_workspace(ws)
 
     if cmd in ("deploy", "all"):
-        deploy_nanoos(ws, kube_manifest)
+        deploy_subos(ws, kube_manifest)
 
     log.info("Done.")
 
@@ -140,5 +140,5 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:  # pragma: no cover - CLI tool
-        log.error("NanoOS failed: %s", e)
+        log.error("SubOS failed: %s", e)
         sys.exit(1)

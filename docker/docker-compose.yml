@@ -101,7 +101,7 @@ services:
   subos:
     <<: *service_defaults
     build:
-      context: docker/[2] SubOS
+      context: docker/subos
       dockerfile: Dockerfile
     image: subos:local
     profiles: ["subos"]
@@ -112,7 +112,7 @@ services:
   nanoos:
     <<: *service_defaults
     build:
-      context: docker/[3] NanoOS
+      context: docker/nanoos
       dockerfile: Dockerfile
     image: nanoos:local
     profiles: ["nanoos"]

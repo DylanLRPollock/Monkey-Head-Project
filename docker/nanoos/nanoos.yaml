@@ -1,5 +1,5 @@
 # NanoOS Kubernetes manifest (Deployment pattern)
-# Apply with: kubectl apply -f NanoOS.yaml
+# Apply with: kubectl apply -f nanoos.yaml
 apiVersion: v1
 kind: Namespace
 metadata:

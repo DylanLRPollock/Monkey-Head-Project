@@ -154,12 +154,12 @@ def main() -> None:
     )
     sub = parser.add_subparsers(dest="cmd")
     sub.add_parser("setup", help="Install packages, enable services, prepare workspace")
-    sub.add_parser("deploy", help="Run docker compose and apply HostOS.yaml")
+    sub.add_parser("deploy", help="Run docker compose and apply hostos.yaml")
     sub.add_parser("all", help="Run setup then deploy (default)")
 
     args = parser.parse_args()
     ws = Path(args.workspace)
-    kube_manifest = ws / "HostOS.yaml"
+    kube_manifest = ws / "hostos.yaml"
     cmd = args.cmd or "all"
 
     if cmd in ("setup", "all"):
