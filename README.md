@@ -206,6 +206,7 @@ If you change the governance model, hardware assumptions, or key policies, updat
 | `src/`                    | Python package source                                |
 | `tests/`                  | Unit & integration tests                             |
 | `repo/pygpt-MHP`          | Submodule: PyGPT-net integration                     |
+| `vendor/`                 | Vendored shims for optional dependencies in tests    |
 | `k8s/`                    | Optional Kubernetes manifests                        |
 | `Makefile`                | Common developer commands                            |
 | `pyproject.toml`          | Project metadata & dependencies                      |
