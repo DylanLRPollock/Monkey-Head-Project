@@ -59,14 +59,14 @@ def test_check_python_version_warns_on_experimental_release(monkeypatch, caplog)
 def test_check_python_version_accepts_primary_target(monkeypatch, caplog):
     class FakeInfo:
         major = 3
-        minor = 14
+        minor = 13
 
     monkeypatch.setattr(system_checks.sys, "version_info", FakeInfo())
 
     with caplog.at_level(logging.WARNING):
         system_checks.check_python_version()
 
-    assert "Python 3.14" not in caplog.text
+    assert "Python 3.13" not in caplog.text
 
 
 def test_system_check_collects_expected_results(monkeypatch):

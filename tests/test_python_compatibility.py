@@ -28,16 +28,16 @@ def _marker_allows(line: str, python_version: str) -> bool:
     return req.marker.evaluate({"python_version": python_version})
 
 
-def test_pygpt_marker_allows_python_314() -> None:
+def test_pygpt_marker_allows_python_313() -> None:
     line = _get_requirement_line("pygpt-net")
-    assert _marker_allows(line, "3.14")
+    assert _marker_allows(line, "3.13")
 
 
-def test_audio_bridge_allows_python_314() -> None:
+def test_audio_bridge_allows_python_313() -> None:
     line = _get_requirement_line("audioop-lts")
-    assert _marker_allows(line, "3.14")
+    assert _marker_allows(line, "3.13")
 
 
-def test_aifc_bridge_allows_python_314() -> None:
+def test_aifc_bridge_allows_python_313() -> None:
     line = _get_requirement_line("standard-aifc")
-    assert _marker_allows(line, "3.14")
+    assert _marker_allows(line, "3.13")

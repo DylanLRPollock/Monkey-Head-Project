@@ -2,7 +2,7 @@
 name = "hueyos"
 version = "0.2.0"
 description = "HueyOS: on-robot runtime for the Monkey Head Project (Huey)."
-requires-python = ">=3.11,<3.15"
+requires-python = ">=3.13,<3.15"
 readme = "README.md"
 authors = [
   { name = "Dylan L. R. Pollock" },
@@ -19,9 +19,8 @@ keywords = [
 classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
   "Operating System :: POSIX :: Linux",
 ]
@@ -168,7 +167,7 @@ where = ["src"]
 profile = "black"
 
 [tool.ruff]
-target-version = "py311"
+target-version = "py313"
 
 [tool.ruff.lint]
 ignore = ["E402"]
