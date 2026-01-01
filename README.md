@@ -197,18 +197,28 @@ If you change the governance model, hardware assumptions, or key policies, updat
 | `.github/`                | CI workflows, CODEOWNERS, issue/PR templates         |
 | `Dockerfile`              | Container image definition for HueyOS services       |
 | `docker-compose.yml`      | Compose stack (API, worker, optional Redis)          |
+| `boot/`                   | Boot assets and bootloader helpers                   |
+| `config/`                 | Configuration profiles and templates                 |
+| `dists/`                  | Distribution build artifacts                          |
 | `docker/`                 | Legacy orchestrator assets and experimental builds   |
 | `docs/`                   | Constitution, governance, architecture, API, plugins |
-| `docs/api-reference.md`   | FastAPI reference and `curl` recipes                 |
-| `docs/sensor-plugins.md`  | Sensor plugin development guide                      |
-| `master-plan-v15.json`    | Canonical Master Plan JSON consumed at runtime       |
+| `EFI/`                    | EFI boot media artifacts                             |
+| `firmware/`               | Firmware assets and notes                            |
+| `gui/`                    | GUI assets and prototypes                            |
 | `huey/`                   | Core runtime and service modules                     |
-| `huey/api/`               | FastAPI surface                                      |
+| `install/`                | Installer media and payloads                         |
+| `live/`                   | Live environment artifacts                           |
+| `master-plan-v15.json`    | Canonical Master Plan JSON consumed at runtime       |
+| `repo/pygpt-MHP/`         | Submodule: PyGPT-net integration                     |
+| `reports/`                | Audits, logs, and tracking reports                   |
+| `scripts/`                | Utility scripts                                      |
+| `secrets/`                | Local-only secrets (do not commit real credentials)  |
 | `setup/`                  | Installer scripts, ISO builder, provisioning configs |
+| `shared-host/`            | Shared host data for multi-node setups               |
 | `src/`                    | Python package source                                |
 | `tests/`                  | Unit & integration tests                             |
-| `repo/pygpt-MHP`          | Submodule: PyGPT-net integration                     |
-| `k8s/`                    | Optional Kubernetes manifests                        |
+| `tools/`                  | Maintenance utilities and one-off tooling            |
+| `vendor/`                 | Third-party vendored assets                          |
 | `Makefile`                | Common developer commands                            |
 | `pyproject.toml`          | Project metadata & dependencies                      |
 | `requirements*.txt`       | Core, ML, data, cloud dependency split               |

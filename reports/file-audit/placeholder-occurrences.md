@@ -3,8 +3,8 @@
 - `README.md`:347 - `- Status: being stripped, inspected, reinforced, and repainted (dark tractor red base, silver overlays TBD).`
 - `constraints.txt`:42 - `# Examples (commented placeholders):`
 - `docs/CONTRIBUTING.md`:181 - `7. **Review-ready.** No commented-out code, no stray prints, no TODOs without issue links.`
-- `master_plan_v15.json`:40 - `"Robot shell exists physically and is being stripped, reinforced, and repainted (dark tractor red base, silver overlays TBD).",`
-- `master_plan_v15.json`:562 - `"tts": "Configurable TTS stack (exact engine TBD per node).",`
+- `master-plan-v15.json`:40 - `"Robot shell exists physically and is being stripped, reinforced, and repainted (dark tractor red base, silver overlays TBD).",`
+- `master-plan-v15.json`:562 - `"tts": "Configurable TTS stack (exact engine TBD per node).",`
 - `repo/py-gpt/README.md`:1 - `# Py-GPT vendor placeholder`
 - `repo/py-gpt/src/pygpt_net/__init__.py`:3 - `This placeholder mirrors the directory layout of the upstream `py-gpt``
 - `repo/pygpt-MHP/src/pygpt_net/controller/config/__init__.py`:8 - `__all__ = ["placeholder"]`
