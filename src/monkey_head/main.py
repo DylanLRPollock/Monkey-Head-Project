@@ -13,6 +13,7 @@ import argparse
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Iterable, Tuple
 
+from monkey_head.pytorch_tools import device_summary
 
 @dataclass
 class _Route:
@@ -76,6 +77,11 @@ def version_info(version: str = "unknown") -> tuple[Dict[str, str], int]:
     return {"version": version}, 200
 
 
+@app.route("/pytorch/info", methods=["GET"])
+def pytorch_info() -> tuple[Dict[str, Any], int]:
+    return device_summary(), 200
+
+
 def parse_args(args: list[str] | None = None) -> argparse.Namespace:
     """Parse command-line arguments for the Monkey Head server."""
 
@@ -119,6 +125,7 @@ __all__ = [
     "health_check",
     "readiness_check",
     "version_info",
+    "pytorch_info",
     "parse_args",
     "run_setup",
     "main",
