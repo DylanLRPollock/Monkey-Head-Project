@@ -1,5 +1,4 @@
 # HueyOS unified requirements
--c constraints.txt
 
 # --- Core ---
 aiohttp==3.13.2 ; python_version >= "3.12" and python_version < "3.15"
