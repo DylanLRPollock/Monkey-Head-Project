@@ -1499,45 +1499,6 @@ Description: Linux for 64-bit PCs (meta-package)
  This package depends on the latest Linux kernel and modules for use on PCs
  with AMD64, Intel 64 or VIA Nano processors.
 
-Package: linux-headers-6.16.12
-Architecture: amd64
-Version: 1
-Priority: optional
-Section: kernel
-Source: linux-upstream
-Maintainer: dlrp <dlrp@Legion-Go.localdomain>
-Installed-Size: 52899
-Filename: pool/main/l/linux-upstream/linux-headers-6.16.12_1_amd64.deb
-Size: 9106076
-MD5sum: ec02d13c737ea5872aa4d990393cf363
-SHA1: aeacb280fd6f6b327d28f6dd51317b5054e1617e
-SHA256: 0861e9139bc5378953a4cf5c739af2fa06b87d7f4ce6be39860102ad56408513
-SHA512: 7e74cf35e1bff7a112bc51a6a02eaa5e5b90f016d7f592bf0e5b3b2c30c3c67d52ef4db39476c6dd20070b09decf737b21e97e2bc6a2e671d907cb5188e6d279
-Homepage: https://www.kernel.org/
-Description: Linux kernel headers for 6.16.12 on amd64
- This package provides kernel header files for 6.16.12 on amd64
- .
- This is useful for people who need to build external modules
-
-Package: linux-image-6.16.12
-Architecture: amd64
-Version: 1
-Priority: optional
-Section: kernel
-Source: linux-upstream
-Maintainer: dlrp <dlrp@Legion-Go.localdomain>
-Installed-Size: 22050
-Filename: pool/main/l/linux-upstream/linux-image-6.16.12_1_amd64.deb
-Size: 14737568
-MD5sum: 5e9fa6669678cd4aeb7d001d7e39f4e5
-SHA1: 10a6aebdfc6dcc677f617e1675240a90ce120ae5
-SHA256: c407ce52ef48d06d2e904d9a6acd754f03bc01818f87e8a568cd83c0d3eca60c
-SHA512: 0c3e23553e68ea755c2e5be370fa1ccb9c4610427d921b78913101ee1449827a9ff25fea001356d2ce12bdb48b7ad5c6c1f0a1c5825805551ddb6656cca73f00
-Homepage: https://www.kernel.org/
-Description: Linux kernel, version 6.16.12
- This package contains the Linux kernel, modules and corresponding other
- files, version: 6.16.12.
-
 Package: linux-libc-dev
 Architecture: amd64
 Version: 1
@@ -2798,4 +2759,3 @@ Description: X Keyboard Extension (XKB) configuration data
  designers have to send their layouts to several places.  The
  xkeyboard-config project has been launched at FreeDesktop in order
  to provide a central repository that could be used by all vendors.
-
