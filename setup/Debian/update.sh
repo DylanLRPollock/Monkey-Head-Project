@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# Monkey Head Project
-# By: Dylan L.R. Pollock
-# www.dlrp.ca
-# HueyOS: Update shell script (setup/DebianTrixie)
+# HueyOS Debian Forky Updater Script
+#
+# Part of the Monkey Head Project
+# Author: Dylan L.R. Pollock
+#
+# Website: https://dlrp.ca
+# Source:  https://github.com/DylanLRPollock/Monkey-Head-Project
+# License: GPL-3.0-only
+# Last-Updated: 2026-01-05
+#
+# Description:
+#   Updates HueyOS components on Debian Forky.
 
 set -euo pipefail
-# ==================================================
-# This file is a part of the 'Monkey Head Project'
-# Website:   https://dlrp.ca
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-# License:   https://opensource.org/license/gpl-3-0
-# Overseen By:   Dylan L.R. Pollock
-# Updated:   06.07.2025
-# ==================================================
 
 # Define the directory for the virtual environment
 VENV_DIR="venv"

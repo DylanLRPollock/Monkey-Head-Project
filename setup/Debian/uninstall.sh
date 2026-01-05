@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# Monkey Head Project
-# By: Dylan L.R. Pollock
-# www.dlrp.ca
-# HueyOS: Uninstall shell script (setup/DebianTrixie)
+# HueyOS Debian Forky Uninstaller Script
+#
+# Part of the Monkey Head Project
+# Author: Dylan L.R. Pollock
+#
+# Website: https://dlrp.ca
+# Source:  https://github.com/DylanLRPollock/Monkey-Head-Project
+# License: GPL-3.0-only
+# Last-Updated: 2026-01-05
+#
+# Description:
+#   Uninstalls HueyOS components on Debian Forky.
 
 set -euo pipefail
-# ==================================================
-# This file is a part of the 'Monkey Head Project'
-# Website:   https://dlrp.ca
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-# License:   https://opensource.org/license/gpl-3-0
-# Overseen By:   Dylan L.R. Pollock
-# Updated:   06.11.2025
-# ==================================================
 set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
