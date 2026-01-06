@@ -1,164 +1,198 @@
 # Security Policy
 
-The Monkey-Head-Project (**HueyOS**) takes security seriously. This policy explains what we support, how to report issues, and how we coordinate fixes, backports, and disclosure across the project’s on-robot runtime, helper tools, and reference deployments.
+**Project:** Monkey-Head-Project (**HueyOS**)
+**Last updated:** 2026-01-06
 
-HueyOS is typically deployed as an **offline-first**, self-hosted system with tightly scoped network surfaces. Even so, we treat every externally reachable interface (HTTP APIs, admin consoles, message queues, etc.) as potentially hostile and design our security posture accordingly.
+HueyOS takes security seriously. This policy explains what we support, how to report issues, and how we coordinate fixes, backports, releases, and disclosure across the project’s **on-robot runtime**, **helper tools**, and **reference deployments**.
+
+HueyOS is typically deployed as an **offline-first**, self-hosted system with tightly scoped network surfaces. Even so, we treat every externally reachable interface (HTTP APIs, admin consoles, message queues, IPC endpoints, artifact pipelines, etc.) as potentially hostile and design our security posture accordingly.
 
 ---
 
 ## Supported Versions
 
-We use semantic versioning (`MAJOR.MINOR.PATCH`):
+HueyOS uses semantic versioning (`MAJOR.MINOR.PATCH`):
 
-- **MAJOR:** Structural or incompatible changes to APIs, storage, or governance assumptions.
-- **MINOR:** Backward-compatible feature releases and roadmap milestones.
-- **PATCH:** Bugfix and security releases only.
+* **MAJOR:** Structural or incompatible changes to APIs, storage, or governance assumptions.
+* **MINOR:** Backward-compatible feature releases and roadmap milestones.
+* **PATCH:** Bugfix and security releases only.
 
-Security support normally covers **the current minor** and **the previous minor** lines. Older versions are unsupported unless explicitly noted in a security advisory (for example, if a widely used but older line requires a one-off fix).
+### Support window
+
+Security support normally covers:
+
+* **Current MINOR line** (e.g., `0.3.x`)
+* **Previous MINOR line** (e.g., `0.2.x`)
+
+Older versions are **unsupported** unless explicitly noted in a security advisory (for example, if an older line is widely deployed and warrants a one-off fix).
 
 > The table below is illustrative and is updated when new releases are cut and tagged.
 
-| Version / Line            | Status                                   |
-|---------------------------|------------------------------------------|
-| `0.3.x` (current)         | ✅ Actively supported                    |
-| `0.2.x` (previous)        | 🔶 Critical fixes only                   |
-| `< 0.2.0`                 | ❌ Unsupported                           |
-| `main` (default branch)   | ✅ Fixes land here before release        |
+| Version / Line          | Status                           |
+| ----------------------- | -------------------------------- |
+| `0.3.x` (current)       | ✅ Actively supported             |
+| `0.2.x` (previous)      | 🔶 Critical fixes only           |
+| `< 0.2.0`               | ❌ Unsupported                    |
+| `main` (default branch) | ✅ Fixes land here before release |
 
-**Additional notes**
+**Notes**
 
-- Security fixes generally first land on `main`, then are **backported** to supported minors as appropriate.
-- Development branches and feature branches are **not** covered by this policy; they may contain experimental or partially hardened code.
-- Distributors or downstream forks built on top of HueyOS should clearly document which upstream version/commit they track and apply their own support window.
+* Security fixes typically land on `main` first and are then **backported** to supported minor lines as appropriate.
+* Development and feature branches are **not** covered by this policy; they may contain experimental or partially hardened code.
+* Downstream forks/distributions should document the upstream version/commit they track and define their own support window.
 
-### Supported Platforms (runtime)
+---
 
-HueyOS is designed and tested primarily against the following environment:
+## Supported Platforms
 
-- **OS:**  
-  - Debian 13 “Trixie” (stable) — **primary supported** platform.  
-  - Debian 14 “Forky” — **staging/preview** only until explicitly promoted in release notes.
-- **Arch:**  
-  - `amd64` (x86_64). Other architectures (ARM, RISC-V, etc.) may work but are currently out of scope for security guarantees.
-- **Kernel:**  
-  - HueyOS tracks Linux LTS or near-LTS kernels with project-specific configuration (e.g., `6.x-huey*`).  
-  - The exact supported kernel series for each release are documented in the corresponding release notes and changelog.
+### Runtime environment
 
-**Virtualization and containers**
+HueyOS is designed and tested primarily against:
 
-- Running HueyOS inside containers (Docker, Podman, etc.) or virtual machines (KVM, VirtualBox, etc.) is supported **as long as** the underlying host matches the OS/arch/kernel assumptions above.
-- Container images and `docker-compose` files provided in this repository are considered **in scope**. Host misconfiguration outside documented recommendations is not.
+* **OS**
+
+  * Debian 13 “Trixie” (stable) — **primary supported** platform.
+  * Debian 14 “Forky” — **staging/preview** only until explicitly promoted in release notes.
+* **Architecture**
+
+  * `amd64` (x86_64). Other architectures (ARM, RISC‑V, etc.) may work, but are currently out of scope for security guarantees.
+* **Kernel**
+
+  * HueyOS tracks Linux LTS or near-LTS kernels with project-specific configuration (e.g., `6.x-huey*`).
+  * The supported kernel series per release are documented in that release’s notes/changelog.
+
+### Virtualization and containers
+
+* Running HueyOS in containers (Docker/Podman) or VMs (KVM/VirtualBox) is supported **as long as** the underlying host matches the OS/arch/kernel assumptions above.
+* Container images and `docker-compose` files provided in this repository are **in scope**. Host misconfiguration outside documented recommendations is not.
 
 ---
 
 ## Reporting a Vulnerability
 
-We strongly prefer **coordinated vulnerability disclosure**. Please use a **private channel** and provide enough information for us to reproduce the issue and understand its impact.
+We strongly prefer **coordinated vulnerability disclosure**. Please report vulnerabilities privately and include enough information to reproduce and assess impact.
 
-### Private Channels
+### Private reporting channels
 
-1. **GitHub – Private Vulnerability Report (preferred)**  
-   - Navigate to the repository → **Security** tab → **Report a vulnerability**.  
-   - This path automatically records the report, keeps details private, and helps us track fixes and advisories.
+1. **GitHub — Private Vulnerability Report (preferred)**
+   Repository → **Security** tab → **Report a vulnerability**
+   This records the report privately and supports coordinated fixes and advisories.
 
-2. **Email**  
-   - Address: **admin@dlrp.ca**  
-   - Subject line: `VULN: <short title>`  
-   - If you require encryption, indicate this in your first email (e.g., “Please send your PGP key”). We will reply with a public key and instructions.
+2. **Email**
 
-If you are unsure whether something qualifies as a vulnerability, err on the side of reporting it privately; we can help classify it.
+   * Address: **[admin@dlrp.ca](mailto:admin@dlrp.ca)**
+   * Subject: `VULN: <short title>`
+   * If you require encryption, say so in your first email (e.g., “Please send your PGP key”). We will reply with a public key and instructions.
 
-### What to Include
+If you are unsure whether something qualifies as a vulnerability, report it privately anyway; we can help classify it.
 
-The more detail you can safely provide, the faster and more accurately we can triage:
+### What to include
 
-- A clear **summary of the issue** and its **security impact** (e.g., “unauthenticated RCE via …”).
-- **Reproduction steps / PoC**, including:
-  - Exact commands, HTTP requests, or payloads used.
-  - Relevant configuration (e.g., `huey.env`, `docker-compose.yml`, or systemd units), with secrets redacted.
-  - Any necessary environment prerequisites (e.g., specific hardware, optional modules).
-- **Affected versions/commits and environment**:
-  - HueyOS version(s), Git commit hash, or branch.
-  - OS (e.g., Debian 13), architecture, kernel version.
-  - Any non-default dependencies, kernels, or external services in play.
-- Any **mitigations or workarounds** you’ve identified, even if partial.
-- Preferred **credit** (name/handle, link) or an explicit note if you prefer anonymity.
+The more detail you can safely provide, the faster we can triage:
 
-Please avoid opening public GitHub issues or pull requests that contain exploit details, stack traces with sensitive context, or configuration dumps until we have agreed on a disclosure timeline.
+* **Summary** of the issue and its **security impact** (e.g., “unauthenticated RCE via …”).
+* **Reproduction / PoC**, including:
+
+  * Exact commands, HTTP requests, payloads, and expected/observed results.
+  * Relevant configuration (`huey.env`, `docker-compose.yml`, systemd units), with secrets redacted.
+  * Environment prerequisites (hardware, optional modules, external services).
+* **Affected versions/commits and environment**
+
+  * HueyOS version(s), Git commit hash, or branch.
+  * OS, architecture, kernel version.
+  * Non-default dependencies/services in play.
+* Any **workarounds/mitigations** you’ve identified.
+* Preferred **credit** (name/handle/link) or a note if you prefer anonymity.
+
+### Please do not disclose publicly first
+
+Avoid opening public GitHub issues, discussions, or pull requests that contain exploit details, sensitive stack traces, or configuration dumps until we have agreed on a disclosure timeline.
+
+If you believe an issue is **actively exploited** or involves **credential leakage**, call that out clearly in the report subject/body so we can prioritize accordingly.
 
 ---
 
-## Triage & Service Levels (Targets)
+## Triage, Severity, and Response Targets
 
-We use CVSS v3.1 as a starting point for severity, combined with contextual factors (deployment mode, default configuration, reachable surfaces in typical HueyOS setups).
+We use **CVSS v3.1** as a starting point for severity, combined with contextual factors (deployment mode, default configuration, and reachability in typical HueyOS setups).
 
-**Target timelines (best-effort):**
+### Target timelines (best-effort)
 
-- **Acknowledgement:** within **72 hours** of receiving your report.
-- **Initial triage & severity assessment:** within **7 calendar days**.
-- **Fix/mitigation targets** (from acknowledgement):
-  - **Critical (CVSS ≥ 9.0):**  
-    Aim for a fix or robust mitigation within **14–21 days**.
-  - **High (7.0–8.9):**  
-    Aim for mitigation and/or patch within **21–30 days**.
-  - **Medium (4.0–6.9):**  
-    Aim for a fix or recommended mitigation within **30–60 days**.
-  - **Low (< 4.0):**  
-    Scheduled based on impact, complexity, and available capacity.
+* **Acknowledgement:** within **72 hours** of receiving the report.
+* **Initial triage & severity assessment:** within **7 calendar days**.
+* **Fix/mitigation targets** (from acknowledgement):
 
-These are **targets**, not guarantees. Complex issues, upstream dependencies, or hardware-specific problems may require more time; conversely, actively exploited issues may be resolved faster.
+  * **Critical (CVSS ≥ 9.0):** aim for a fix or robust mitigation within **14–21 days**
+  * **High (7.0–8.9):** aim for mitigation and/or patch within **21–30 days**
+  * **Medium (4.0–6.9):** aim for a fix or recommended mitigation within **30–60 days**
+  * **Low (< 4.0):** scheduled based on impact, complexity, and capacity
 
-### Triage Process
+These are targets, not guarantees. Complex issues, upstream dependencies, or hardware-specific problems may require more time; conversely, actively exploited issues may be resolved faster.
 
-During triage, we usually:
+### Triage process
 
-1. **Reproduce** the issue in a controlled environment, mirroring the reporter’s configuration where possible.
-2. **Confirm impact and scope**, including:
-   - Required privileges or preconditions.
-   - Potential for lateral movement or data exfiltration.
-   - Applicability to typical HueyOS deployments (on-robot vs. lab vs. test rigs).
-3. **Assign provisional severity** based on CVSS v3.1 and contextual risk.
-4. **Identify affected versions** and any relevant derivatives (e.g., example Docker deployments).
+During triage, we typically:
+
+1. **Reproduce** the issue in a controlled environment, mirroring the reporter’s setup where possible.
+2. **Confirm impact and scope**, including prerequisites, privileges, and realistic exploitation paths.
+3. **Assign provisional severity** (CVSS v3.1 + contextual risk).
+4. **Identify affected versions** and any relevant reference deployments.
 5. **Plan remediation**, including:
-   - Short-term mitigations (configuration or ACL changes).
-   - Long-term patches, architectural changes, or documentation updates.
-6. **Communicate** initial findings and planned next steps to the reporter.
 
-We provide **weekly status updates** to reporters while an issue remains open, or more frequently if there are important milestones or changes.
+   * Short-term mitigations (config changes, ACLs, firewall guidance)
+   * Longer-term patches (code, architecture, docs)
+6. **Communicate** findings and next steps to the reporter.
 
-### Severity Reference
+### Communication cadence
 
-| Severity  | CVSS (v3.1) |
-|-----------|-------------|
-| Critical  | 9.0–10.0    |
-| High      | 7.0–8.9     |
-| Medium    | 4.0–6.9     |
-| Low       | 0.1–3.9     |
+For each valid security report, we aim to:
 
-If your assessment suggests a different severity than ours (e.g., due to deployment realities we may have missed), you are welcome to share your reasoning and we will re-evaluate.
+* Provide **weekly updates** while an issue remains open, or more frequently around milestones (reproduction, patch ready, release scheduled).
+* Before publication, share:
+
+  * Planned release/disclosure timing
+  * High-level remediation notes and recommended operator actions
+* After publication, share:
+
+  * Link to the advisory
+  * Final affected/fixed versions
+  * Credit details (if requested)
+
+### Severity reference
+
+| Severity | CVSS (v3.1) |
+| -------: | ----------- |
+| Critical | 9.0–10.0    |
+|     High | 7.0–8.9     |
+|   Medium | 4.0–6.9     |
+|      Low | 0.1–3.9     |
+
+If your assessment differs (e.g., due to deployment realities we may have missed), share your reasoning and we will re-evaluate.
 
 ---
 
-## Coordinated Disclosure & Embargo
+## Coordinated Disclosure and Embargo
 
-Our default stance is that security issues should be disclosed responsibly and with sufficient time for users to patch.
+Our default stance is responsible disclosure with sufficient time for users to patch.
 
-- **Default embargo window:** **90 days** from acknowledgement of the report.
-- We may **shorten the embargo** if:
-  - There is credible evidence of active exploitation in the wild.
-  - The vulnerability is trivially exploitable and widely exposed by default.
-  - A fix or strong mitigation is available and simple to deploy.
-- We may **extend the embargo** by mutual agreement if:
-  - The issue is complex and requires substantial architectural change.
-  - There are dependencies on upstream fixes or coordination with other projects.
+* **Default embargo window:** **90 days** from acknowledgement.
+* We may **shorten the embargo** if:
 
-**Advisory publication**
+  * There is credible evidence of active exploitation
+  * The vulnerability is trivially exploitable and widely exposed by default
+  * A fix/mitigation is available and simple to deploy
+* We may **extend the embargo** by mutual agreement if:
 
-- Advisories are published via **GitHub Security Advisories** for this repository.
-- We request a **CVE ID** for qualifying issues and reference it in release notes, documentation, and the advisory itself.
-- Credits are included with the reporter’s permission. Anonymous or pseudonymous credit is fully supported.
+  * The issue is complex and requires substantial architectural change
+  * Upstream fixes or multi-party coordination are required
 
-If you intend to publish your own write-up, we ask that you coordinate timing with us so that users have access to patches or mitigations when details become public.
+### Advisory publication and CVEs
+
+* Advisories are published via **GitHub Security Advisories** for this repository.
+* For qualifying issues, we will **request a CVE** and reference it in the advisory, release notes, and documentation.
+* Credit is included with the reporter’s permission (anonymous/pseudonymous credit supported).
+
+If you intend to publish your own write-up, please coordinate timing with us so users have access to patches or mitigations when details become public.
 
 ---
 
@@ -166,74 +200,92 @@ If you intend to publish your own write-up, we ask that you coordinate timing wi
 
 When a vulnerability is confirmed:
 
-1. **Patches are developed and reviewed** on a private or restricted branch when appropriate.
-2. Once ready, patches are merged into `main` and, where feasible:
-   - **Backported** to all actively supported minor lines.
-   - Evaluated for backporting to older lines if they are widely deployed and the risk is high.
-3. A **security release** is cut for each affected maintained line:
-   - Security releases increment the `PATCH` component (e.g., `0.3.4` → `0.3.5`).
-   - Release notes clearly indicate that the version includes security fixes.
+1. **Patches are developed and reviewed** (on a private/restricted branch when appropriate).
+2. Fixes merge to `main` first, then (where feasible) are:
 
-Each security release will include:
+   * **Backported** to all supported minor lines
+   * Evaluated for backporting to older lines if widely deployed and risk is high
+3. We cut **security releases** per maintained line:
 
-- A summary of the vulnerability (or multiple vulnerabilities, if bundled).
-- Affected and fixed versions.
-- Mitigation or configuration guidance (including hardening steps for users who cannot upgrade immediately).
-- Any known limitations, caveats, or breaking-change risk.
+   * Security releases increment `PATCH` (e.g., `0.3.4` → `0.3.5`)
+   * Release notes clearly indicate security fixes
 
-In some cases, we may first ship **configuration-only mitigations** or documentation updates (for example, tightening sample `docker-compose` files or recommended firewall rules) ahead of a full patch when that meaningfully reduces risk quickly.
+Each security release includes:
+
+* Summary of the vulnerability (or multiple vulnerabilities, if bundled)
+* Affected and fixed versions
+* Mitigation guidance (hardening steps for users who cannot upgrade immediately)
+* Known limitations/caveats and any breaking-change risk
+
+In some cases, we may first ship **configuration-only mitigations** or documentation updates (tightening sample `docker-compose` defaults, recommended firewall rules, etc.) ahead of a full patch if that meaningfully reduces risk quickly.
+
+---
+
+## Credential and Secret Exposure
+
+If you believe you’ve found **leaked credentials or tokens** (in this repo, release artifacts, container images, logs, or CI outputs):
+
+* Contact us **immediately** via a private channel.
+* We will **revoke or rotate** affected secrets within **24 hours of confirmation** where feasible.
+* If end-users must take action (rotate their own keys, invalidate tokens), we will publish clear guidance in an advisory and/or release notes.
 
 ---
 
 ## Scope
 
-This policy defines what is considered **in scope** for security reporting and support.
+This policy defines what is **in scope** for security reporting and support.
 
-**In scope**
+### In scope
 
-- Code, configuration, and assets **in this repository**, including:
-  - Core HueyOS runtime.
-  - Example services (APIs, task runners, schedulers).
-  - Installer scripts, configuration templates, and deployment manifests provided here.
-  - Example Dockerfiles, `docker-compose.yml`, and related infrastructure definitions.
-- Security properties of **default configurations** documented in this project’s README and docs.
-- Official artifacts published under the project namespace (e.g., container images documented in the repo).
+* Code, configuration, and assets **in this repository**, including:
 
-**Out of scope**
+  * Core HueyOS runtime
+  * Helper tools and example services (APIs, task runners, schedulers)
+  * Installer scripts, configuration templates, and deployment manifests provided here
+  * Example Dockerfiles, `docker-compose.yml`, and related infrastructure definitions
+* Security properties of **default configurations** documented in the README/docs
+* Official artifacts published under the project namespace that are documented by this repository (e.g., referenced container images)
 
-- Vulnerabilities in **upstream dependencies**, including:
-  - Linux kernel, drivers, firmware, system libraries.
-  - Python runtime and standard library.
-  - Third-party Python packages, container base images, and external tools.
-  - Databases, message brokers, or reverse proxies used alongside HueyOS.
-  - These should be reported to their respective maintainers. If you are unsure, we can help route reports.
-- Issues that **require physical access** beyond what is reasonable to protect against in an on-robot context (e.g., direct bus probing, cold-boot attacks against lab hardware).
-- Pure **social engineering** attacks, phishing, or non-technical scams.
-- **Denial-of-service** issues that require unrealistic resource levels, or that have no practical remediation beyond “increase capacity” or “rate limit harder.”
-- Findings that are **deployment misconfigurations** outside our documented recommendations (e.g., binding an admin API directly to the public internet without authentication).
-- **Informational findings** without a clear security impact, such as:
-  - Generic banner disclosures.
-  - Version leaks without a plausible exploitation path.
-  - Non-sensitive debug logs in non-production environments.
+### Out of scope (with an important caveat)
 
-That said, we still appreciate reports that help clarify or improve documentation, especially if a particular misconfiguration is likely or easy to make.
+* Pure upstream vulnerabilities in:
+
+  * Linux kernel, drivers, firmware, system libraries
+  * Python runtime/stdlib
+  * Third-party packages, container base images, external tools
+  * Databases, message brokers, reverse proxies used alongside HueyOS
+    These should generally be reported to the upstream maintainers.
+
+**Caveat:** If an upstream issue becomes **exploitable through HueyOS defaults, integrations, or reference deployments**, report it to us as well. We can help coordinate mitigations, pinning, or upgrades on the HueyOS side while upstream fixes land.
+
+Also out of scope:
+
+* Attacks requiring **unreasonable physical access** for an on-robot context (e.g., direct bus probing, cold-boot lab attacks)
+* Pure **social engineering**, phishing, or non-technical scams
+* **Denial-of-service** issues that require unrealistic resources or have no practical remediation beyond “add capacity”
+  (However, DoS vectors with realistic attacker cost and feasible mitigations *are* in scope.)
+* Findings that are purely **deployment misconfigurations** outside documented recommendations
+  (e.g., binding an admin API to the public internet without authentication)
+* Purely **informational** findings without clear security impact (generic banners, low-value version leakage, non-sensitive debug logs in non-production)
+
+We still appreciate reports that help clarify documentation, especially if a misconfiguration is easy to make.
 
 ---
 
 ## Safe Harbor for Good-Faith Research
 
-We value and encourage good-faith security research on HueyOS and related components.
+We value and encourage good-faith security research on HueyOS.
 
 As long as you:
 
-- Comply with all applicable laws.
-- Respect the **privacy and data ownership** of others.
-- Do not intentionally access, modify, or exfiltrate data beyond what is strictly necessary to demonstrate impact.
-- Avoid degrading availability for other users (no large-scale DoS tests against multi-tenant services).
-- Do not retain sensitive data discovered during testing beyond what’s necessary to craft a report, and securely delete it afterwards.
-- Use the **private reporting channels** described above and allow reasonable time for remediation.
+* Comply with applicable laws
+* Respect privacy and data ownership
+* Do not intentionally access, modify, or exfiltrate data beyond what is necessary to demonstrate impact
+* Avoid degrading availability for others (no large-scale DoS against shared environments)
+* Do not retain sensitive data longer than necessary; securely delete it afterwards
+* Use the private reporting channels above and allow reasonable time for remediation
 
-…we will **not initiate legal action** against you solely for your security research on this project.
+…we will not initiate legal action against you solely for security research conducted in good faith on this project.
 
 If you are unsure whether a planned test falls within these bounds, contact us first and we can provide guidance.
 
@@ -241,104 +293,76 @@ If you are unsure whether a planned test falls within these bounds, contact us f
 
 ## Common Vulnerability Classes We Prioritize
 
-Because HueyOS is an offline-first, on-robot runtime with network-reachable APIs and local governance components, we prioritize the following classes of issues:
+Because HueyOS is an offline-first, on-robot runtime with network-reachable APIs and local governance components, we prioritize:
 
-- **Remote code execution and injection**
-  - Arbitrary code execution via HTTP APIs, IPC layers, task queues, or configuration deserialization.
-  - Template injection, command injection, or unsafe use of `eval`/subprocess calls.
+* **Remote code execution and injection**
 
-- **Privilege escalation and sandbox escape**
-  - Gaining higher OS privileges (e.g., from `hueyos` user to `root`).
-  - Escaping containers or restricted environments that are documented as security boundaries.
+  * RCE via HTTP APIs, IPC layers, task queues, configuration/serialization
+  * Template/command injection, unsafe `eval`, unsafe subprocess usage
+* **Privilege escalation and sandbox escape**
 
-- **Authentication / authorization weaknesses**
-  - Bypass or subversion of authentication flows for admin consoles or APIs.
-  - Broken role-based access control (RBAC) or permission checks.
-  - Session fixation, weak tokens, or predictable identifiers.
+  * Escalation from `hueyos` user to `root`
+  * Container escape where containers are documented as security boundaries
+* **Authentication/authorization weaknesses**
 
-- **Path traversal and filesystem attacks**
-  - Directory traversal via HTTP routes or file APIs.
-  - Symlink or hardlink attacks against temporary files, log files, or configuration paths.
-  - Unsafe default file permissions for secrets, keys, or sensitive logs.
+  * Auth bypass, broken RBAC/permission checks
+  * Session fixation, weak tokens, predictable identifiers
+* **Path traversal and filesystem attacks**
 
-- **Supply-chain and artifact integrity**
-  - Malicious dependencies, tampered distribution artifacts, or compromised build pipelines.
-  - Insecure update mechanisms, if any, that could be abused to deliver malicious code.
+  * Directory traversal via HTTP routes/file APIs
+  * Symlink/hardlink attacks on temp files/logs/config paths
+  * Unsafe default permissions for secrets/keys/sensitive logs
+* **Supply-chain and artifact integrity**
 
-- **Information disclosure**
-  - Leaks of secrets, keys, or credentials (including those accidentally committed).
-  - Exposure of sensitive logs, stack traces, or configuration files via web endpoints or misconfigured file servers.
-  - Inadvertent data exposure in backups or test artifacts.
+  * Malicious dependencies, tampered artifacts, compromised build pipelines
+  * Insecure update mechanisms (if present)
+* **Information disclosure**
 
-- **Insecure defaults and misconfigurable surfaces**
-  - Defaults that bind sensitive services to public interfaces without authentication.
-  - Defaults that disable encryption or integrity checks in ways that are easy to misuse.
+  * Leaks of secrets/keys/credentials (including accidental commits)
+  * Sensitive logs/stack traces/config exposure via endpoints
+  * Data exposure in backups/test artifacts
+* **Insecure defaults and sharp edges**
 
-If you believe you’ve found **leaked credentials or tokens** (whether in this repo, attached artifacts, or public logs):
-
-- Contact us **immediately** via a private channel.
-- We will **revoke or rotate** affected secrets within **24 hours of confirmation**.
-- If end-users must take action (e.g., rotate their own keys), we will publish guidance in an advisory or release note.
+  * Sensitive services bound to public interfaces by default
+  * Defaults that disable encryption/integrity in easy-to-misuse ways
 
 ---
 
-## Development & Hardening Practices (Policy Direction)
+## Development and Hardening Practices
 
-The following practices guide how we develop and harden HueyOS. They may not be fully implemented everywhere yet, but they describe the direction of travel:
+These practices guide HueyOS development and hardening. They may not be fully implemented everywhere yet, but they describe the direction of travel:
 
-- **Least privilege by default**
-  - Prefer running services as non-root users with minimal capabilities.
-  - Narrow filesystem, network, and kernel capabilities where possible (e.g., via systemd unit restrictions or container profiles).
+* **Least privilege by default**
 
-- **Secure configuration and documentation**
-  - Provide secure-by-default sample configs (`huey.env.example`, `docker-compose.yml`, systemd units).
-  - Clearly document any trade-offs when enabling risky or experimental features.
+  * Prefer non-root services with minimal capabilities
+  * Narrow filesystem/network/kernel capabilities (systemd sandboxing, container profiles)
+* **Secure defaults and documentation**
 
-- **Dependency hygiene**
-  - Keep dependencies as current as is practical, especially those with known security histories (web frameworks, cryptography, serialization, etc.).
-  - Review security advisories from upstream projects and react in a timely fashion.
+  * Secure-by-default sample configs (`huey.env.example`, `docker-compose.yml`, systemd units)
+  * Document trade-offs when enabling risky/experimental features
+* **Dependency hygiene**
 
-- **Code review and testing**
-  - Require review for security-sensitive changes.
-  - Add regression tests for fixed vulnerabilities where feasible, to prevent re-introduction.
-  - Use automated test suites (unit, integration) to catch common failure modes.
+  * Keep dependencies reasonably current, especially security-sensitive ones
+  * Track upstream advisories and react in a timely fashion
+* **Code review and testing**
 
-- **Defense-in-depth**
-  - Encourage isolation boundaries: containers, VMs, and network segmentation.
-  - Consider use of MAC frameworks (e.g., AppArmor, SELinux) and sandboxing primitives where appropriate.
-  - Handle temp files and IPC paths in secure ways (unique directories, safe permissions, avoiding predictable names).
+  * Require review for security-sensitive changes
+  * Add regression tests for fixed vulnerabilities where feasible
+  * Use automated unit/integration tests to prevent regressions
+* **Defense-in-depth**
 
-- **Secrets management**
-  - Avoid storing secrets in the repository or baked into images.
-  - Prefer environment variables or dedicated secret stores, with clear documentation for operators.
-  - Provide guidance for rotating keys and revoking access.
+  * Encourage containers/VMs and network segmentation
+  * Consider MAC frameworks (AppArmor/SELinux) where appropriate
+  * Secure temp files and IPC paths (unique dirs, safe permissions, avoid predictable names)
+* **Secrets management**
 
-These practices inform how we evaluate patches and designs. In some sub-components, implementation may lag behind the ideal; in others, the controls may be stricter.
-
----
-
-## Communication Cadence with Reporters
-
-For each valid security report, we aim to:
-
-- **Acknowledge** receipt within **72 hours**.
-- Provide an **initial triage outcome and severity** within **7 days**.
-- Send **weekly updates** while the issue remains open or until it transitions to a released advisory.
-- Before publication, share:
-  - Planned disclosure and release timelines.
-  - High-level remediation notes and any recommended administrator actions.
-- After release, send:
-  - A link to the published advisory.
-  - Final affected/fixed version lists.
-  - Credit details (if you requested attribution).
-
-If you ever feel communication has stalled, a polite ping on the original channel is welcome.
+  * Avoid committing secrets or baking them into images
+  * Prefer env vars or secret stores with clear operator guidance
+  * Document rotation and revocation procedures
 
 ---
 
 ## Example Email Report Template
-
-You can use the template below when reporting via email:
 
 ```text
 Subject: VULN: <short title> — impact <Critical/High/Medium/Low>
@@ -364,3 +388,4 @@ Additional notes:
 
 Reporter credit:
 <Name or handle; link if desired; anonymity preference>
+```
