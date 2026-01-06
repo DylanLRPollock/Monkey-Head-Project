@@ -70,6 +70,8 @@ class MainUI:
             raise RuntimeError("tkinter is not available")
 
         self.root = root
+        self.background_image = None
+        self.background_label = None
         mode = self.choose_screen_mode()
         apply_scaling(self.root, mode)
         self.apply_dark_theme()
@@ -80,6 +82,7 @@ class MainUI:
         self.setup_paths()
         self.create_menu()
         self.create_widgets()
+        self.apply_background_image()
         self.check_license()
 
     def apply_dark_theme(self) -> None:
@@ -117,6 +120,31 @@ class MainUI:
                 troughcolor=DARK_BG,
                 background=ACCENT_PURPLE,
             )
+
+    def _find_background_image(self) -> Path | None:
+        """Locate the HueyOS background image from the repository root."""
+        for parent in Path(__file__).resolve().parents:
+            candidate = parent / "HueyOS-background.png"
+            if candidate.exists():
+                return candidate
+        return None
+
+    def apply_background_image(self) -> None:
+        """Place the HueyOS background image behind the main window widgets."""
+        if tk is None:
+            return
+        image_path = self._find_background_image()
+        if image_path is None:
+            return
+        try:
+            self.background_image = tk.PhotoImage(file=str(image_path))
+        except Exception:
+            return
+        self.background_label = tk.Label(
+            self.root, image=self.background_image, bg=DARK_BG
+        )
+        self.background_label.place(relx=0, rely=0, relwidth=1, relheight=1)
+        self.background_label.lower()
 
     def choose_screen_mode(self) -> str:
         """Ask the user which display mode to use or read from ``SCREEN_MODE``."""
