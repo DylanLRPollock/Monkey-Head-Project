@@ -92,7 +92,7 @@ numpy==2.3.5 ; python_version >= "3.12" and python_version < "3.15"
 torch==2.5.1 ; python_version >= "3.12" and python_version < "3.13" and sys_platform != "win32"
 torchvision==0.20.1 ; python_version >= "3.12" and python_version < "3.13" and sys_platform != "win32"
 torchaudio==2.5.1 ; python_version >= "3.12" and python_version < "3.13" and sys_platform != "win32"
-pillow==12.0.0 ; python_version >= "3.12" and python_version < "3.15"
+pillow==12.1.0 ; python_version >= "3.12" and python_version < "3.15"
 
 # --- Data/Vector stores ---
 chroma-hnswlib==0.7.6 ; python_version >= "3.12" and python_version < "3.15"
