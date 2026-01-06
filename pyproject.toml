@@ -32,18 +32,18 @@ Issues = "https://github.com/DylanLRPollock/Monkey-Head-Project/issues"
 
 # Keep the on-robot footprint small; full stack available via extras
 dependencies = [
-  "aiohttp==3.12.13",
+  "aiohttp==3.13.2",
   "aiosqlite==0.21.0",
-  "anyio==4.9.0",
-  "attrs==25.3.0",
-  "certifi==2025.6.15",
+  "anyio==4.11.0",
+  "attrs==25.4.0",
+  "certifi==2025.11.12",
   "cryptography==45.0.4",
   "evdev==1.9.2; sys_platform == 'linux'",
-  "fastapi==0.115.13",
-  "pydantic==2.11.7",
-  "pydantic-settings==2.10.1",
-  "sse-starlette==3.0.2",
-  "starlette==0.46.2",
+  "fastapi==0.121.2",
+  "pydantic==2.12.4",
+  "pydantic-settings==2.12.0",
+  "sse-starlette==3.0.3",
+  "starlette==0.50.0",
   "uvicorn[standard]==0.34.3",
 ]
 
