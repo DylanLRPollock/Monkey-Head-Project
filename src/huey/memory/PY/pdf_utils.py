@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from .function_registry import register_function
-from .utils.paths import memory_candidates
+from huey.utils.paths import memory_candidates
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 

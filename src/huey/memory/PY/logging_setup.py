@@ -18,7 +18,7 @@ from hueyos.config_manager import ConfigManager
 
 __all__ = ["CriticalErrorHandler", "configure_logging"]
 
-from .utils.paths import get_logs_dir, get_memory_path
+from huey.utils.paths import get_logs_dir, get_memory_path
 
 
 class CriticalErrorHandler(logging.Handler):
