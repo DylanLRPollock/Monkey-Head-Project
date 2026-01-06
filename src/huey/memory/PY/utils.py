@@ -17,8 +17,6 @@ import logging
 from pathlib import Path
 from typing import Iterable, Optional
 
-from PIL import Image
-
 from .exceptions import InvalidInputError
 
 # Supported image formats for conversion
@@ -30,6 +28,12 @@ SUPPORTED_FORMATS: Iterable[str] = (
     "TIFF",
     "WEBP",
 )
+
+
+def _load_image_module():
+    from PIL import Image
+
+    return Image
 
 
 def setup_logging(config):
@@ -85,6 +89,7 @@ def convert_jpeg_to_png(jpeg_path: str, png_path: Optional[str] | None = None) -
     else:
         png_file = Path(png_path)
 
+    Image = _load_image_module()
     with Image.open(jpeg_file) as img:
         img.save(png_file, format="PNG")
 
@@ -130,6 +135,7 @@ def convert_image(
     else:
         out_file = Path(output_path)
 
+    Image = _load_image_module()
     with Image.open(img_file) as img:
         save_kwargs = {}
         if fmt == "JPEG" or fmt == "WEBP":
