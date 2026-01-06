@@ -10,6 +10,7 @@ from __future__ import annotations
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 
 import uninstaller
 
@@ -42,10 +43,11 @@ def run_repair(repo_url: str = REPO_URL) -> int:
             return clone.returncode
 
         print("Running installer from fresh clone...")
+        installer_path = Path(tmpdir) / "scripts" / "installers" / "installer.py"
         rc = subprocess.run(
             [
                 sys.executable,
-                "installer.py",
+                str(installer_path),
             ],
             cwd=tmpdir,
         ).returncode

@@ -5,7 +5,7 @@
 
 from unittest.mock import patch
 
-import fresh_install
+from scripts.installers import fresh_install
 
 
 def test_fresh_install_local_success():
