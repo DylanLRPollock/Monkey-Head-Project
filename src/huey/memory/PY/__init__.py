@@ -1,55 +1,23 @@
-# Monkey Head Project
-# By: Dylan L.R. Pollock
-# www.dlrp.ca
-# HueyOS: Package initializer for huey/memory/PY
+"""Compatibility namespace for legacy ``huey.memory`` modules."""
 
-from .container_management import (
-    build_docker_image,
-    cleanup_images,
-    cleanup_kubernetes,
-    get_container_logs,
-    get_pod_logs,
-    list_containers,
-    manage_containers,
-    manage_networks,
-    manage_volumes,
-    scale_deployment,
-    stop_containers,
-)
-from .environment_setup import (
-    checkout_branch,
-    clone_repository,
-    commit_and_push,
-    configure_git,
-    pull_latest,
-    setup_python_env,
-)
+from __future__ import annotations
 
-try:
-    from .home_assistant import call_service, get_state
-except Exception:  # pragma: no cover - optional dependency
-    call_service = None
-    get_state = None
+import importlib
+from typing import Iterable
 
-__all__ = [
-    "build_docker_image",
-    "cleanup_images",
-    "cleanup_kubernetes",
-    "get_container_logs",
-    "get_pod_logs",
-    "list_containers",
-    "manage_containers",
-    "manage_networks",
-    "manage_volumes",
-    "scale_deployment",
-    "stop_containers",
-    "checkout_branch",
-    "clone_repository",
-    "commit_and_push",
-    "configure_git",
-    "pull_latest",
-    "setup_python_env",
-]
+__all__: list[str] = ["PY"]
 
-if call_service:
-    __all__ += ["call_service", "get_state"]
+
+def __getattr__(name: str):  # pragma: no cover - thin import wrapper
+    """Dynamically resolve submodules shipped with HueyOS."""
+
+    try:
+        module = importlib.import_module(f"{__name__}.PY.{name}")
+    except ModuleNotFoundError as exc:  # pragma: no cover - error propagation
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}") from exc
+    globals()[name] = module
+    return module
+
+
+def __dir__() -> Iterable[str]:  # pragma: no cover - convenience helper
+    return sorted(set(__all__) | set(globals()))
