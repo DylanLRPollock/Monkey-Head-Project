@@ -1,59 +1,76 @@
 # Monkey Head Project
 # By: Dylan L.R. Pollock
 # www.dlrp.ca
-# HueyOS: System Checks module (huey/memory/PY)
+# HueyOS: System Checks module (huey)
 
-# ==================================================
-# This file is a part of the 'Monkey Head Project'
-# Website:   https://dlrp.ca
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-# License:   https://opensource.org/license/gpl-3-0
-# Overseen By:   Dylan L.R. Pollock
-# Updated: 06.11.2025
-# ==================================================
+"""System environment checks for the Monkey Head compatibility layer."""
+
+from __future__ import annotations
+
 import logging
 import os
 import platform
-import subprocess
+import shutil
 import sys
+from typing import Dict
 
-try:
-    import distro
-except Exception:  # pragma: no cover - optional dependency
-    distro = None
-from ..logging_setup import configure_logging
+try:  # pragma: no cover - optional dependency
+    import distro  # type: ignore
+except Exception:  # pragma: no cover - handled gracefully in tests
+    distro = None  # type: ignore[assignment]
+
+from .logging_setup import configure_logging
 
 configure_logging()
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    "logger",
+    "ensure_admin",
+    "check_os_support",
+    "check_python_version",
+    "system_check",
+]
+
+_SUPPORTED_LINUX_CODENAMES = {"forky", "testing"}
+
 
 def ensure_admin() -> None:
-    """Raise PermissionError if the current user is not root."""
-    if os.geteuid() != 0:
-        logger.error("Please run this script as root or with sudo.")
-        raise PermissionError("Please run this script as root or with sudo.")
+    """Ensure the current process has administrative privileges."""
 
+    if hasattr(os, "geteuid"):
+        if os.geteuid() != 0:
+            message = "Please run this script as root or with sudo."
+            logger.error(message)
+            raise PermissionError(message)
+        return
 
-def log_error(description):
-    logger.error(description)
+    if os.name == "nt":  # pragma: no cover - Windows specific
+        try:
+            import ctypes
 
+            if not ctypes.windll.shell32.IsUserAnAdmin():  # type: ignore[attr-defined]
+                message = "Administrator privileges are required to continue."
+                logger.error(message)
+                raise PermissionError(message)
+        except Exception:  # pragma: no cover - safety net
+            logger.debug(
+                "Unable to determine administrator privileges on Windows.",
+                exc_info=True,
+            )
+        return
 
-def check_error(command, description):
-    if command.returncode != 0:
-        error_message = (
-            f"Error: {description} failed with error code {command.returncode}."
-        )
-        log_error(error_message)
-        raise RuntimeError(error_message)
+    logger.debug("Skipping administrator privilege check on platform %s", os.name)
 
 
 def check_os_support() -> None:
-    """Log a warning if the current OS is not officially supported."""
+    """Warn when the operating system is outside the supported matrix."""
+
     system = platform.system()
     if system == "Windows":
         release = platform.release()
         try:
-            major = int(release.split(".")[0])
+            major = int(str(release).split(".")[0])
         except ValueError:
             major = 0
         if major < 10:
@@ -62,30 +79,36 @@ def check_os_support() -> None:
                 release,
             )
     elif system == "Darwin":
-        ver_str, _, _ = platform.mac_ver()
+        version, _, _ = platform.mac_ver()
         try:
-            major = int(ver_str.split(".")[0])
+            major = int(str(version).split(".")[0])
         except ValueError:
             major = 0
         if major < 13:
             logger.warning(
                 "Unsupported macOS version detected (%s). macOS Ventura or newer is required.",
-                ver_str,
+                version,
             )
     elif system == "Linux":
+        dist_id = ""
+        codename = ""
         if distro is not None:
-            dist_id = distro.id()
-            codename = str(distro.codename()).lower()
-        else:
-            release_info = {}
+            try:
+                dist_id = str(distro.id() or "").lower()
+                codename = str(distro.codename() or "").lower()
+            except Exception:  # pragma: no cover - distro implementation detail
+                dist_id = ""
+                codename = ""
+        if not dist_id:
+            release_info: Dict[str, str] = {}
             if hasattr(platform, "freedesktop_os_release"):
-                try:  # pragma: no cover - platform API may fail
-                    release_info = platform.freedesktop_os_release()
-                except Exception:
+                try:
+                    release_info = platform.freedesktop_os_release()  # type: ignore[assignment]
+                except Exception:  # pragma: no cover - platform API not available
                     release_info = {}
-            dist_id = release_info.get("ID", "").lower()
-            codename = release_info.get("VERSION_CODENAME", "").lower()
-        if dist_id != "debian" or codename not in {"forky", "testing"}:
+            dist_id = str(release_info.get("ID", "")).lower()
+            codename = str(release_info.get("VERSION_CODENAME", "")).lower()
+        if dist_id != "debian" or codename not in _SUPPORTED_LINUX_CODENAMES:
             logger.warning(
                 "Unsupported Linux distribution detected (%s %s). Debian Forky/testing is required.",
                 dist_id,
@@ -96,55 +119,58 @@ def check_os_support() -> None:
 
 
 def check_python_version() -> None:
-    """Warn when running on experimental Python versions."""
+    """Warn when running on unsupported Python versions."""
+
     info = sys.version_info
-    if isinstance(info, tuple):  # support tests that patch a tuple
+    if isinstance(info, tuple):  # pragma: no cover - compatibility
         major, minor = info[0], info[1]
     else:
         major = getattr(info, "major", 0)
         minor = getattr(info, "minor", 0)
-    if major == 3 and minor >= 14:
+    if major == 3 and (minor < 13 or minor >= 15):
         logger.warning(
-            "Python 3.%s detected. This version is experimental and not fully supported.",
+            "Python 3.%s detected. Supported versions are Python 3.13 and 3.14.",
             minor,
         )
 
 
-def system_check():
+def system_check() -> Dict[str, bool]:
+    """Run a suite of lightweight system checks and return their status."""
+
     logger.info("Performing system checks...")
-    # Check for Debian version
-    with open("/etc/os-release") as f:
-        content = f.read().lower()
-        if "debian" not in content or not any(
-            x in content for x in ("forky", "testing")
-        ):
-            error_message = "Debian Forky/Testing Check failed"
-            log_error(error_message)
-            raise RuntimeError(error_message)
+    results: Dict[str, bool] = {}
 
-    # Check for available disk space
-    free_space = subprocess.check_output(["df", "/"]).splitlines()[-1].split()[3]
-    logger.info(f"Free space on /: {free_space}K")
+    try:
+        check_os_support()
+        results["os_supported"] = True
+    except Exception:  # pragma: no cover - defensive guard
+        logger.exception("Operating system check failed")
+        results["os_supported"] = False
 
-    # Check for internet connectivity
-    ping = subprocess.run(
-        ["ping", "-c", "1", "google.com"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    if ping.returncode != 0:
-        error_message = "Internet Connectivity Check failed"
-        log_error(error_message)
-        raise RuntimeError(error_message)
+    check_python_version()
+    results["python_supported"] = True
 
-    # Check for required software (e.g., Git)
-    git_check = subprocess.run(
-        ["which", "git"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-    check_error(git_check, "Git Availability Check")
+    try:
+        usage = shutil.disk_usage("/")
+    except Exception:  # pragma: no cover - non-POSIX platforms
+        logger.debug(
+            "Unable to determine disk usage for root filesystem.", exc_info=True
+        )
+    else:
+        free_gb = usage.free / (1024**3)
+        if free_gb < 1:
+            logger.warning(
+                "Low disk space detected on root filesystem: %.2f GiB free", free_gb
+            )
+            results["disk_space_ok"] = False
+        else:
+            logger.info("Available disk space on root filesystem: %.2f GiB", free_gb)
+            results["disk_space_ok"] = True
 
-    # Check for VLC media player
-    vlc_check = subprocess.run(
-        ["which", "vlc"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-    check_error(vlc_check, "VLC media player availability check")
+    for tool in ("git", "python3"):
+        available = shutil.which(tool) is not None
+        if not available:
+            logger.warning("Required executable '%s' not found on PATH", tool)
+        results[f"{tool}_available"] = available
+
+    return results

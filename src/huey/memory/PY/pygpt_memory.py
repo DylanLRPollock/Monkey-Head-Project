@@ -1,35 +1,35 @@
 # Monkey Head Project
 # By: Dylan L.R. Pollock
 # www.dlrp.ca
-# HueyOS: Pygpt Memory module (huey/memory/PY)
+# HueyOS: Pygpt Memory module (huey)
+
+"""Simplified conversation memory helpers for Monkey Head's PyGPT integration."""
+
+from __future__ import annotations
 
 
-# ==================================================
-# This file is a part of the 'Monkey Head Project'
-# Website:   https://dlrp.ca
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-# License:   https://opensource.org/license/gpl-3-0
-# Overseen By:   Dylan L.R. Pollock
-# Updated: 06.08.2025
-# ==================================================
 class Memory:
-    """Simple in-memory store for conversation history."""
+    """A minimal conversation buffer compatible with the legacy PyGPT tooling."""
 
-    def __init__(self):
-        self._messages = []
+    def __init__(self) -> None:
+        self._messages: list[dict[str, str]] = []
 
     def add_user_message(self, content: str) -> None:
-        """Store a user message."""
+        """Store a user-authored message in the conversation history."""
+
         self._messages.append({"role": "user", "content": content})
 
     def add_assistant_message(self, content: str) -> None:
-        """Store an assistant message."""
+        """Store an assistant-authored message in the conversation history."""
+
         self._messages.append({"role": "assistant", "content": content})
 
-    def get_messages(self):
-        """Return the stored conversation history."""
+    def get_messages(self) -> list[dict[str, str]]:
+        """Return a shallow copy of the stored conversation history."""
+
         return list(self._messages)
 
     def clear(self) -> None:
-        """Remove all stored messages."""
+        """Remove all stored conversation history."""
+
         self._messages.clear()

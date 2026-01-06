@@ -1,4 +1,4 @@
-"""Logging helpers for the legacy Huey memory package."""
+"""Logging helpers for the Monkey Head compatibility layer."""
 
 from __future__ import annotations
 
@@ -11,10 +11,14 @@ try:  # pragma: no cover - optional GUI dependency
     import tkinter as tk
     from tkinter import messagebox
 except Exception:  # pragma: no cover - can't import GUI libs
-    tk = None
-    messagebox = None
+    tk = None  # type: ignore[assignment]
+    messagebox = None  # type: ignore[assignment]
 
 from hueyos.config_manager import ConfigManager
+
+__all__ = ["CriticalErrorHandler", "configure_logging"]
+
+from .utils.paths import get_logs_dir, get_memory_path
 
 
 class CriticalErrorHandler(logging.Handler):
@@ -41,7 +45,14 @@ def _resolve_log_path(log_file: str) -> Path:
     raw_path = Path(str(log_file).strip())
     if raw_path.is_absolute():
         return raw_path
-    return Path.cwd() / raw_path
+
+    parts = raw_path.parts
+    if parts and parts[0] == "memory":
+        base_dir = Path(__file__).resolve().parents[1]
+        return (base_dir / raw_path).resolve()
+
+    base_memory = get_memory_path(create=True)
+    return (base_memory / raw_path).resolve()
 
 
 def _parse_int(value: object, default: int) -> int:
@@ -62,7 +73,7 @@ def _load_logging_settings(config_path: Optional[str]) -> dict[str, object]:
         "logging",
         {
             "log_level": "INFO",
-            "log_file": "memory/LOGS/hueyos.log",
+            "log_file": "LOGS/hueyos.log",
             "log_max_bytes": 10_485_760,
             "log_backup_count": 5,
         },
@@ -70,12 +81,13 @@ def _load_logging_settings(config_path: Optional[str]) -> dict[str, object]:
 
 
 def configure_logging(config_path: Optional[str] = None) -> logging.Logger:
-    """Configure root logger using settings from main.config."""
+    """Configure the root logger using settings from the configuration file."""
 
     logging_cfg = _load_logging_settings(config_path)
+    default_logs_dir = get_logs_dir()
 
     log_level = str(logging_cfg.get("log_level", "INFO")).upper()
-    log_file_value = logging_cfg.get("log_file", "memory/LOGS/hueyos.log")
+    log_file_value = logging_cfg.get("log_file", "LOGS/hueyos.log")
     max_bytes = _parse_int(logging_cfg.get("log_max_bytes", 10_485_760), 10_485_760)
     backup_count = _parse_int(logging_cfg.get("log_backup_count", 5), 5)
 
@@ -84,7 +96,6 @@ def configure_logging(config_path: Optional[str] = None) -> logging.Logger:
         return logger
 
     logger.setLevel(getattr(logging, log_level, logging.INFO))
-
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
@@ -96,13 +107,17 @@ def configure_logging(config_path: Optional[str] = None) -> logging.Logger:
             log_dir.mkdir(parents=True, exist_ok=True)
         except Exception:
             log_path = Path(log_path.name)
+    elif log_dir and log_dir == default_logs_dir.resolve():
+        default_logs_dir.mkdir(parents=True, exist_ok=True)
 
     file_handler = logging.handlers.RotatingFileHandler(
         log_path, maxBytes=max_bytes, backupCount=backup_count
     )
     file_handler.setFormatter(formatter)
+
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
+
     gui_handler = CriticalErrorHandler()
     gui_handler.setLevel(logging.CRITICAL)
     gui_handler.setFormatter(formatter)
@@ -111,6 +126,3 @@ def configure_logging(config_path: Optional[str] = None) -> logging.Logger:
     logger.addHandler(stream_handler)
     logger.addHandler(gui_handler)
     return logger
-
-
-__all__ = ["CriticalErrorHandler", "configure_logging"]
