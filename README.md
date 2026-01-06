@@ -212,6 +212,7 @@ If you change the governance model, hardware assumptions, or key policies, updat
 | `repo/pygpt-MHP/`         | Submodule: PyGPT-net integration                     |
 | `reports/`                | Audits, logs, and tracking reports                   |
 | `scripts/`                | Utility scripts                                      |
+| `scripts/installers/`     | Install/repair/uninstall entry points               |
 | `secrets/`                | Local-only secrets (do not commit real credentials)  |
 | `setup/`                  | Installer scripts, ISO builder, provisioning configs |
 | `shared-host/`            | Shared host data for multi-node setups               |

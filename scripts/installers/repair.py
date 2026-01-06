@@ -9,7 +9,8 @@ This module provides a single entry point, :func:`run_repair`, which:
 
 1. Invokes the local uninstaller to remove the current installation.
 2. Clones a fresh copy of the repository into a temporary directory.
-3. Runs ``installer.py`` from that checkout using the current Python interpreter.
+3. Runs ``scripts/installers/installer.py`` from that checkout using the current
+   Python interpreter.
 
 The function always returns an integer exit code:
 
@@ -24,7 +25,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-import uninstaller
+from . import uninstaller
 
 
 def _run(
@@ -82,8 +83,8 @@ def run_repair(repo_url: str) -> int:
        aborts immediately and that code is returned.
     2. Creates a temporary directory and performs a shallow clone
        (``--depth 1``) of ``repo_url`` into it.
-    3. Locates ``installer.py`` in the checkout root and invokes it with the
-       current Python interpreter (``sys.executable``).
+3. Locates ``scripts/installers/installer.py`` in the checkout root and
+   invokes it with the current Python interpreter (``sys.executable``).
     4. Returns the installer exit code, or a non-zero value if any step fails.
 
     Parameters
@@ -126,12 +127,13 @@ def run_repair(repo_url: str) -> int:
                 sys.stderr.write(clone.stderr)
             return clone.returncode
 
-        # Step 3: locate and run installer.py from the freshly cloned tree.
-        installer = checkout / "installer.py"
+        # Step 3: locate and run scripts/installers/installer.py from the freshly cloned tree.
+        installer = checkout / "scripts" / "installers" / "installer.py"
         if not installer.is_file():
             # No installer script present; fail with a generic non-zero code.
             sys.stderr.write(
-                f"repair: expected installer.py at {installer!s} but it was not found.\n"
+                "repair: expected scripts/installers/installer.py at "
+                f"{installer!s} but it was not found.\n"
             )
             return 1
 

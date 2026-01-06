@@ -20,9 +20,9 @@ non-zero code if the uninstall phase fails.
 
 from __future__ import annotations
 
-import installer
-import repair
-import uninstaller
+from . import installer
+from . import repair
+from . import uninstaller
 
 
 def run_fresh_install(source: str = "local", repo_url: str | None = None) -> int:

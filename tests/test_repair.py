@@ -7,7 +7,7 @@ import subprocess
 import sys
 from unittest.mock import patch
 
-import repair
+from scripts.installers import repair
 
 
 class DummyCompleted:
@@ -29,16 +29,20 @@ def test_run_repair_success(tmp_path):
         assert rc == 0
         uninst.assert_called_once()
         run_mock.assert_any_call(
-            ["git", "clone", "repo-url", str(tmp_path)],
+            ["git", "clone", "--depth", "1", "repo-url", str(tmp_path)],
+            cwd=None,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            text=True,
+            check=False,
         )
         run_mock.assert_any_call(
-            [
-                sys.executable,
-                "installer.py",
-            ],
+            [sys.executable, str(tmp_path / "scripts" / "installers" / "installer.py")],
             cwd=str(tmp_path),
+            stdout=None,
+            stderr=None,
+            text=True,
+            check=False,
         )
 
 
