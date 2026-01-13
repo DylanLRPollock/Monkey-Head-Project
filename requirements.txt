@@ -110,7 +110,7 @@ duckdb==1.4.2 ; python_version >= "3.12" and python_version < "3.15"
 pandas==2.3.3 ; python_version >= "3.12" and python_version < "3.15"
 
 # --- Cloud SDKs ---
-azure-core==1.36.0 ; python_version >= "3.12" and python_version < "3.15"
+azure-core==1.38.0 ; python_version >= "3.12" and python_version < "3.15"
 azure-identity==1.25.1 ; python_version >= "3.12" and python_version < "3.15"
 boto3==1.42.6 ; python_version >= "3.12" and python_version < "3.15"
 botocore==1.42.6 ; python_version >= "3.12" and python_version < "3.15"
