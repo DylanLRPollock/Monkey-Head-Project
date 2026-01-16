@@ -140,7 +140,7 @@ uv==0.9.25 ; python_version >= "3.12" and python_version < "3.15"
 ipython==8.27.0 ; python_version >= "3.12" and python_version < "3.15"
 rich==14.2.0 ; python_version >= "3.12" and python_version < "3.15"
 flake8==7.3.0 ; python_version >= "3.12" and python_version < "3.15"
-flake8-bugbear==24.8.19 ; python_version >= "3.12" and python_version < "3.15"
+flake8-bugbear==25.11.29 ; python_version >= "3.12" and python_version < "3.15"
 bandit==1.9.2 ; python_version >= "3.12" and python_version < "3.15"
 
 # --- Audio IO (optional by marker only) ---
