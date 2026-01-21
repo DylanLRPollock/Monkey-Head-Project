@@ -1,0 +1,7 @@
+aptitude
+aptitude-common
+libcwidget4:amd64
+libdpkg-perl
+libfile-fcntllock-perl
+libsigc++-2.0-0v5:amd64
+libxapian30:amd64
