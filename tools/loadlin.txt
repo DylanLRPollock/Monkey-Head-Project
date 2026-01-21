@@ -39,7 +39,7 @@ LOADLIN User Guide                                                  96-04-28
 3.2.2 Quick help
 3.2.3 Starting linux from a batch file (LINUX.BAT)
 3.2.4 Loading Ramdisks with newer kernels
-3.2.5 Floppies and Ramdisks using older kernels ( Linux < 1.3.48 )
+3.2.5 Floppys and Ramdisks using older kernels ( Linux < 1.3.48 )
 3.2.6 System constraints
 3.3   Booting from CONFIG.SYS
 3.3.1 Example of a CONFIG.SYS file (DOS)
@@ -68,25 +68,25 @@ LOADLIN User Guide                                                  96-04-28
       LOADLIN is the safest way to boot Linux from your hard disk,
       if you have a bootable DOS-partition besides Linux on your machine.
 
-      Most Linux newbies are too impatient to read the very good (but also
+      Most Linux-newbees are too impatient to read the very good (but also
       long) documentation of LILO (the standard Linux loader), and start
       using it incorrectly, resulting in an unbootable DOS after this
       (the MBR gets overwritten, 'fdisk /MBR' not always repairs).
       For those impatient ones LOADLIN is the best loader to start with.
 
       LOADLIN needs not to be installed in any way, it is usable as is
-      and the kernel images can reside on any DOS accessible medium
-      (even on a network drive). This also makes LOADLIN an excellent
+      and the kernel images can reside on any DOS accessable medium
+      (even on a network drive). This also makes LOADLIN an exellent
       tool, if it comes to boot your Linux after a crash and a
       filesystem restore from backup medium (you must run LILO after
       this, but you can't if you have not yet booted, isn't it?).
 
-      Many CD-ROM producers already have seen the advantage of starting
+      Many CDrom producers already have seen the advantage of starting
       the Linux-installation process by means of LOADLIN, because it
       runs out of the box. And using DOS to push Linux on the road
       isn't wrong, if you have DOS (or Windows 95 DOS mode) available.
       With LOADLIN you can directly boot Linux from the CD without
-      needing an intermediate boot floppy.
+      needing an intermediate bootfloppy.
 
                          --------- +++  --------
 
@@ -133,7 +133,7 @@ LOADLIN User Guide                                                  96-04-28
 
       2. Any compressed linux kernel image  (zImage, bzImage).
          NOTE: zImage is the old kernel binary format, bzImage is the
-         new one ( kernel version >= 1.3.73), which can have a compressed
+         new one ( kernel version >= 1.3.73), which can have a commpressed
          size of 1Meg, hence taking kernels up to 2Meg uncompressed.
          In the following we will refer only to zImage, though you may
          put a bzImage in place of it.
@@ -323,7 +323,7 @@ LOADLIN User Guide                                                  96-04-28
 
       The non-initrd method, i.e. _not_ LOADLIN loads the ramdisk
       but the kernel does it from a floppy, has changed with Linux 1.3.48.
-      It now looks like this:
+      It now look like this:
 
          C\LOADLIN> loadlin zimage root=/dev/fd0 rw load_ramdisk=1
 
@@ -332,11 +332,11 @@ LOADLIN User Guide                                                  96-04-28
          C\LOADLIN> loadlin zimage root=/dev/fd0 rw load_ramdisk=1 prompt_ramdisk=1
 
       The size of the ramdisk is allocated dynamically.
-      NOTE: In all cases the ramdisk image may be compressed (gzipped)
+      NOTE: In all cases the ramdisk image may be compressed (gziped)
 
 
 
-3.2.5 Floppies and Ramdisks using older kernels ( Linux < 1.3.48 )
+3.2.5 Floppys and Ramdisks using older kernels ( Linux < 1.3.48 )
       -----------------------------------------------------------
 
       If LOADLIN encounters  ramdisk=xxxx  together with  root=/dev/fdx
@@ -366,16 +366,16 @@ LOADLIN User Guide                                                  96-04-28
 3.2.6 System constraints
       ------------------
 
-      With LOADLIN-1.6 there are _very_ few constraints left, given you
+      With LOADLIN-1.6 there are _very_ few contraints left, given you
       use a newer kernel, because the kernel now supports LOADLIN and
       aids to overcome the restrictions of old LOADLIN-1.5.
-      The * (asterisk) marked parts below only apply, if your kernel
+      The * (asterix) marked parts below only apply, if your kernel
       is an old one (not supporting LOADLIN).
 
       *  There must be enough memory to load the compressed kernel image
          (between the start of LOADLIN and 090000h).
 
-      -  If loading newer kernels, you must have enough conventional
+      -  If loading newer kernels, you must have enough konventional
          plus extended/XMS/VCPI memory to temporary hold the image
          (and eventually the ramdisk image)
 
@@ -383,7 +383,7 @@ LOADLIN User Guide                                                  96-04-28
          tells you what you really have.
 
       *  The setup program and LOADLIN itself go into 090000h ... 09B000h,
-         therefore you MUST have 640 K byte of base memory.
+         therefor you MUST have 640 K byte of base memory.
 
       -  Starting with Linux 1.1.43 the setup program does no longer
          fit into 2 K, so it is made of variable size and will grow
@@ -431,7 +431,7 @@ LOADLIN User Guide                                                  96-04-28
 
          NOTE:
 
-         Maybe that your VCPI server does garbage collection before
+         May be that your VCPI server does garbage collection before
          entering protected mode, so please BE PATIENT, especially
          on systems with many mega bytes !
 
@@ -518,8 +518,8 @@ LOADLIN User Guide                                                  96-04-28
       ...
       ---------------------------------------------------
 
-      This will avoid booting directly into the GUI and will give you a
-      normal DOS prompt when choosing menuitem W95.
+      This will avoid booting directly into the GUI and will you get a
+      normal DOS prompt when chosing menuitem W95.
       ( To enter the GUI you only have to type:     C:>win    )
       Logo=0 switches the (graphics) logo off.
       There have been reports, that together with some graphic cards,
@@ -584,7 +584,7 @@ LOADLIN User Guide                                                  96-04-28
          [LINUX]
          shell=c:\loadlin\loadlin.exe @c:\loadlin\params
 
-         You may overwrite params which are _in_ the file by
+         You may ovewrite params which are _in_ the file by
          those coming behind the @..., such as
 
          [LINUX]
@@ -677,24 +677,24 @@ LOADLIN User Guide                                                  96-04-28
       (as reported by Jacek Zapala zapala@if.pw.edu.pl ).
       It can happen that the CPU is in realmode, but PAGING is enabled !
       This is possible, but neither documented nor supported by INTEL.
-      Maybe the motherboard's BIOS is mapping shadow ram this way,
+      May be the motherboard's BIOS is mapping shadow ram this way,
       or one of those old and strange EMM managers is used,
       but probably this is an indication of a not exactly compatible
-      486 clone. The -clone switch bypasses the CR0 check and assumes
-      V86 if an EMM manager is found.
+      486 clone. The -clone switch byepasses the CR0 check and assumes
+      V86 if an EMM manger is found.
       But of course this EMM manager must not use real paging !
 
       On the other hand, if LOADLIN detects V86 _and_ you are sure that the
       machine is in _real_ realmode, then you may use the -f switch
       in order to force LOADLIN to 'detect' realmode.
-      NOTE: This option is intentionally not mentioned elsewhere, because
-      it really is dangerous.
+      NOTE: This option intentionaly is not mentioned elsewere, because
+      it realy is dangerous.
 
 
 5.2.  Description of debug output (-v,-t,-d)
       --------------------------------------
 
-      The output produced by the -v, -t or -d options occurs at the point at
+      The ouput produced by the -v, -t or -d options occurs at the point at
       which the boot sector and setup are loaded and updated by LOADLIN.
       The information is that seen by Linux, but in the case of -t and -d,
       the zimage file is not loaded and linux is not started.
@@ -738,7 +738,7 @@ LOADLIN User Guide                                                  96-04-28
       or
         SetupIntercept: YES, patching setup code  <- using Javier's method
       or
-        SetupIntercept: YES, legal intercept      <- ditto, but legal Setup
+        SetupIntercept: YES, legal intercept      <- dito, but legal Setup
                                                      (compiled in patches)
 
 
@@ -781,7 +781,7 @@ LOADLIN User Guide                                                  96-04-28
 
       ... and PLEASE, PLEASE, PLEASE:
           Check your "Reply to" path for a valid E-Mail address,
-          I get many "bounced" mails back ! It's no fun having
+          I get many "bounced" mails back ! It's not a fun having
           answered your mail for the trash.
 
                          --------- +++  --------
@@ -791,15 +791,15 @@ LOADLIN User Guide                                                  96-04-28
 7.    Contributions and Credits
       =========================
 
-      Version-1.6 of LOADLIN is part of a jointly developed new
-      booting strategy (bzImage+initrd) for both LILO and LOADLIN,
+      Version-1.6 of LOADLIN ist part of a jointly developed new
+      booting strategie (bzImage+initrd) for both LILO and LOADLIN,
       so I say many thanks to Werner Almesberger for cooperating with me.
 
       Thanks to Hubert Mantel from S.u.S.E GmbH, who compiled 'lots'
-      of kernels with the bzImage+initrd patches, and tested them heavily
+      of kernels with the bzImage+initr patches, and testet them havily
       on several  machines. Without him the patches never would have
       stabilized as quickly.
-      He was also the first to realize a reasonable working /linuxrc.
+      He also was the first to realize a reasonable working /linuxrc.
 
       This program would be absolutely superfluous without Linus Torvalds,
       and thanks to him for putting our patches into the official kernel.
@@ -833,7 +833,7 @@ LOADLIN User Guide                                                  96-04-28
 
       Thanks also to all the ALPHA testers, who responded on my
       "call for testers". The list is too long to put it here,
-      but some of them did heavy testing:
+      but some of them did heavy testings:
 
       Michael Goddard, US
       Shih-Hua Chao, US
