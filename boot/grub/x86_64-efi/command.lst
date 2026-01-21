@@ -56,6 +56,8 @@
 *terminfo: terminfo
 *test_blockarg: test_blockarg
 *testspeed: testspeed
+*tpm2_key_protector_clear: tpm2_key_protector
+*tpm2_key_protector_init: tpm2_key_protector
 *tr: tr
 *trust: pgp
 *verify_detached: pgp
@@ -75,9 +77,14 @@ cat: minicmd
 cbmemc: cbmemc
 chainloader: chain
 clear: normal
+cmosclean: cmostest
+cmosdump: cmosdump
+cmosset: cmostest
+cmostest: cmostest
 configfile: configfile
 continue: normal
 coreboot_boottime: cbtime
+cryptocheck: diskfilter
 cutmem: mmap
 date: date
 distrust: pgp
@@ -174,6 +181,7 @@ terminal_output: terminal
 test: test
 testload: testload
 time: time
+tpm2_dump_pcr: tpm2_key_protector
 true: true
 usb: usbtest
 videoinfo: videoinfo

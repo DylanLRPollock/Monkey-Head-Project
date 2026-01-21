@@ -6,11 +6,13 @@ macho:
 memrw: extcmd
 terminfo: extcmd
 f2fs: fshelp
+gcry_sm3: crypto gcry_sha512
 part_gpt:
 romfs: fshelp
 read: extcmd
 lsefimmap:
 aout:
+gcry_sm4: crypto
 gcry_arcfour: crypto
 tftp: net
 newc: archelp
@@ -30,10 +32,9 @@ backtrace:
 zstd:
 jfs:
 help: extcmd normal
-cbls: cbtable
-gfxterm_menu: font functional_test normal procfs video_fb
-gcry_idea: crypto
 configfile: normal
+cbls: cbtable
+gcry_idea: crypto
 tr: extcmd
 shift_test: functional_test
 ohci: boot cs5536 usb
@@ -41,6 +42,7 @@ spkmodem: terminfo
 afs: fshelp
 usb_keyboard: keylayouts usb
 xzio: crypto
+gcry_gost28147: crypto mpi
 search_fs_file:
 syslinuxcfg: extcmd normal
 wrmsr:
@@ -58,32 +60,33 @@ appleldr: boot
 gfxterm: font video
 xfs: fshelp
 testspeed: extcmd normal
-functional_test: btrfs extcmd video video_fb
 cpio_be: archelp
+functional_test: btrfs extcmd video video_fb
 bswap_test: functional_test
 sleep: extcmd normal
 memdisk:
 gcry_rijndael: crypto
 mdraid09_be: diskfilter
 gettext:
-gcry_sha1: crypto
+gcry_sha1: crypto gcry_sha512
 hfspluscomp: gzio hfsplus
+cmp: extcmd
 offsetio:
 file: elf extcmd macho offsetio
 random: hexdump
-cmp: extcmd
 usbserial_usbdebug: serial usb usbserial_common
 video_colors:
 morse:
 hashsum: crypto extcmd normal
 halt: acpi
 usb:
+rsa_sexp_test: functional_test gcry_rsa pubkey
 gfxterm_background: bitmap bitmap_scale extcmd gfxterm video video_colors
-gcry_dsa: mpi pgp
+gcry_dsa: crypto mpi pgp pubkey
 search_fs_uuid:
 keystatus: extcmd
+dsa_sexp_test: functional_test gcry_dsa pubkey
 geli: crypto cryptodisk gcry_sha256 gcry_sha512 pbkdf2
-cmdline_cat_test: font functional_test normal procfs video_fb
 linux: boot mmap relocator video
 rdmsr: extcmd
 part_sun:
@@ -99,14 +102,16 @@ gcry_blowfish: crypto
 bfs: fshelp
 test:
 nilfs2: fshelp
-gcry_rsa: mpi pgp
-cryptodisk: crypto extcmd procfs
+gcry_rsa: crypto mpi pgp pubkey
+cryptodisk: crypto extcmd key_protector procfs
 nativedisk:
-minicmd:
+minicmd: cryptodisk
 ata: scsi
 signature_test: functional_test procfs
+key_protector:
 udf: fshelp
 gzio: gcry_crc
+gcry_aria: crypto
 xnu_uuid: gcry_md5
 uhci: usb
 pata: ata
@@ -116,10 +121,12 @@ terminal:
 div:
 ehci: boot cs5536 usb
 crypto:
+gcry_stribog: crypto gcry_sha512
 part_bsd: part_msdos
 cs5536:
 luks2: afsplitter crypto cryptodisk json pbkdf2
 gcry_sha512: crypto
+gcry_keccak: crypto
 password: crypto normal
 fshelp:
 sleep_test: datetime functional_test
@@ -131,7 +138,9 @@ bli: part_gpt
 exfctest: functional_test
 zfsinfo: zfs
 ldm: diskfilter part_gpt part_msdos
+cmostest:
 eval: normal
+gcry_gostr3411_94: crypto gcry_gost28147 gcry_sha512
 part_dvh:
 lssal:
 ext2: fshelp
@@ -142,6 +151,7 @@ videoinfo: video
 btrfs: gzio lzopio raid6rec zstd
 lsmmap: mmap
 strtoull_test: functional_test
+erofs: fshelp
 bitmap:
 multiboot: boot elf linux mmap net relocator video
 ntfs: fshelp
@@ -151,24 +161,26 @@ png: bitmap bufio
 json:
 jpeg: bitmap bufio
 macbless: disk
+div_test: div functional_test
 parttool: normal
 regexp: extcmd normal
-div_test: div functional_test
 usbserial_pl2303: serial usb usbserial_common
 cpio: archelp
-gcry_rmd160: crypto
+gcry_rmd160: crypto gcry_sha512
 fat: fshelp
 ufs1_be:
 archelp:
+gcry_salsa20: crypto
+asn1_test: asn1 functional_test
 http: net
 raid6rec: diskfilter
-zfs: gzio
+zfs: gzio zstd
 lsefisystab:
 minix2:
 lsacpi: acpi extcmd
+datehook: datetime
 bitmap_scale: bitmap
 loadenv: disk extcmd
-datehook: datetime
 probe: extcmd
 minix3:
 tar: archelp
@@ -176,6 +188,7 @@ loadbios:
 hfs: fshelp
 boot:
 procfs: archelp
+tpm2_key_protector: asn1 extcmd key_protector tss2
 keylayouts:
 progress: normal
 kernel:
@@ -188,29 +201,31 @@ serial: extcmd terminfo
 zfscrypt: crypto extcmd gcry_rijndael gcry_sha1 pbkdf2 zfs
 efi_uga: video video_fb
 dm_nv: diskfilter
-luks: afsplitter crypto cryptodisk pbkdf2
 cmp_test: functional_test
+asn1:
+luks: afsplitter crypto cryptodisk pbkdf2
 font: bufio video
 raid5rec: diskfilter
 crc64: crypto
 datetime:
 efifwsetup:
-video:
 ctz_test: functional_test
+video:
 cbmemc: cbtable normal terminfo
+cmosdump:
 hfsplus: fshelp
 gcry_cast5: crypto
 extcmd:
 squash4: fshelp gzio lzopio xzio
 part_plan:
 minix_be:
-gcry_whirlpool: crypto
-gcry_tiger: crypto
+gcry_whirlpool: crypto gcry_sha512
+gcry_tiger: crypto gcry_sha512
 fixvideo:
 search: extcmd search_fs_file search_fs_uuid search_label
 lspci: extcmd
-video_fb:
 cbtime: cbtable
+video_fb:
 peimage: setjmp
 minix3_be:
 trig:
@@ -219,25 +234,27 @@ gcry_twofish: crypto
 priority_queue:
 plainmount: crypto cryptodisk extcmd
 part_dfly:
+gcry_blake2: crypto
 xnu_uuid_test: functional_test
 diskfilter:
 testload:
 part_apple:
 hexdump: extcmd
 date: datetime
-gcry_sha256: crypto
+gcry_sha256: crypto gcry_sha512
 pbkdf2: crypto
 ls: datetime extcmd normal
 usbserial_common: serial usb
 ntfscomp: ntfs
 lzopio: crypto
+tss2:
 video_cirrus: video video_fb
 hello: extcmd
 scsi:
 linux16: boot linux mmap relocator video
 ahci: ata boot
-normal: boot bufio crypto datetime extcmd gettext net terminal
-pgp: crypto extcmd gcry_sha1 mpi
+normal: boot bufio crypto cryptodisk datetime extcmd gettext net terminal
+pgp: crypto extcmd gcry_sha1 mpi pubkey
 cat: extcmd
 ufs1:
 mdraid09: diskfilter
@@ -254,7 +271,7 @@ multiboot2: acpi boot elf linux mmap net relocator video
 setjmp:
 mdraid1x: diskfilter
 legacycfg: crypto gcry_md5 normal password
-mpi: crypto
+mpi: crypto gcry_keccak
 play:
 part_amiga:
 efi_gop: video video_fb
@@ -262,8 +279,9 @@ minix:
 echo: extcmd
 lsefi:
 gcry_serpent: crypto
-gcry_md4: crypto
-gcry_md5: crypto
+gcry_md4: crypto gcry_sha512
+gcry_md5: crypto gcry_sha512
+pubkey: crypto mpi
 gcry_camellia: crypto
 at_keyboard: boot keylayouts
 part_msdos:

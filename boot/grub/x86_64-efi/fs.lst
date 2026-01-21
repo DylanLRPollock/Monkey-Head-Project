@@ -5,6 +5,7 @@ btrfs
 cbfs
 cpio
 cpio_be
+erofs
 exfat
 ext2
 f2fs
