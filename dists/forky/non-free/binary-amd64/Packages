@@ -1,0 +1,51 @@
+Package: libfishcamp1t64
+Architecture: amd64
+Version: 1.2+20220607003151-3
+Priority: optional
+Section: non-free/libs
+Source: libfishcamp
+Maintainer: Debian Astronomy Team <debian-astro-maintainers@lists.alioth.debian.org>
+Installed-Size: 204
+Provides: libfishcamp1 (= 1.2+20220607003151-3)
+Depends: libc6 (>= 2.14), libusb-1.0-0 (>= 2:1.0.22)
+Conflicts: libfishcamp1 (<< 1.2+20220607003151-3)
+Replaces: libfishcamp1
+Filename: pool/non-free/libf/libfishcamp/libfishcamp1t64_1.2+20220607003151-3_amd64.deb
+Size: 45044
+MD5sum: ee44998cd912436d6b37067bdf0bb7ba
+SHA1: c67ceca1278031cf3f07a0b2c57ecf99c431163a
+SHA256: 2306b3d50ad3df8d09d7d4a574007ee41cc07a20871ea3f931a0387f69181734
+SHA512: 8305e2937e5149640b7b5b93931301afcf7722b93a825685b34356de08001100930c0cb6eb0ec4176ee8b01ad0bb14757d35eb32ba69aa4598cfe427207f7cf5
+Homepage: https://github.com/indilib/indi-3rdparty
+Description: library for cameras made by Fishcamp Engineering
+ This package contains a library for CCD cameras made
+ by Fishcamp Engineering.
+ .
+ This package contains the library.
+
+Package: libsbig4t64
+Architecture: amd64
+Version: 4.9.9-7
+Priority: optional
+Section: non-free/libs
+Source: libsbig
+Maintainer: Debian Astronomy Team <debian-astro-maintainers@lists.alioth.debian.org>
+Installed-Size: 464
+Provides: libsbig4 (= 4.9.9-7)
+Depends: libc6 (>= 2.14), libusb-1.0-0 (>= 2:1.0.8), fxload
+Conflicts: libsbig4 (<< 4.9.9-7)
+Filename: pool/non-free/libs/libsbig/libsbig4t64_4.9.9-7_amd64.deb
+Size: 124660
+MD5sum: 46ebf9e680974547efa0c9c620415488
+SHA1: 73c2e619ff6b66da1485408171a50bba0dc21bbb
+SHA256: bda90ebd867b53d5221de2363ef50d8f9a766d963ead386e5fea38a1545d7366
+SHA512: 00d4805fee8fecea323af28376df1a5fe6baf9a3ffe8122eac645f255b7d22b050a81f91b2dbd974f6455aaae3407a5f1319799e9fdcd5fa6310e40fae75a436
+Homepage: https://github.com/indilib/indi-3rdparty
+Description: Santa Barbra Instrument Group (SBIG) Universal Library Driver
+ The Official Santa Barbra Instrument Group (SBIG) Universal Library
+ Driver is used by applications to access and control the USB,
+ Parallel Port, and Ethernet versions of the CCD cameras and filter
+ wheels including SBIG ST-7/8/9/10/2K cameras, ST-L cameras, and
+ ST-402/1603/3200 cameras. The firmware is included for all classes of
+ cameras.
+

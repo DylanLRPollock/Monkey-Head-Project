@@ -1,0 +1,6 @@
+Archive: testing
+Origin: Debian
+Label: Debian
+Acquire-By-Hash: yes
+Component: main
+Architecture: amd64
