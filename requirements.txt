@@ -137,7 +137,7 @@ types-requests==2.32.4.20250913 ; python_version >= "3.12" and python_version < 
 types-PyYAML==6.0.12.20250915 ; python_version >= "3.12" and python_version < "3.15"
 pip-tools==7.5.2 ; python_version >= "3.12" and python_version < "3.15"
 uv==0.9.25 ; python_version >= "3.12" and python_version < "3.15"
-ipython==8.27.0 ; python_version >= "3.12" and python_version < "3.15"
+ipython==9.9.0 ; python_version >= "3.12" and python_version < "3.15"
 rich==14.2.0 ; python_version >= "3.12" and python_version < "3.15"
 flake8==7.3.0 ; python_version >= "3.12" and python_version < "3.15"
 flake8-bugbear==24.8.19 ; python_version >= "3.12" and python_version < "3.15"
