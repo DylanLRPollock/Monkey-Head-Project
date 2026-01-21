@@ -1,0 +1,11 @@
+^pci:v000014E4d00001639sv.*sd.*bc.*sc.*i.*$
+^pci:v000014E4d0000163Asv.*sd.*bc.*sc.*i.*$
+^pci:v000014E4d0000163Bsv.*sd.*bc.*sc.*i.*$
+^pci:v000014E4d0000163Csv.*sd.*bc.*sc.*i.*$
+^pci:v000014E4d0000164Asv.*sd.*bc.*sc.*i.*$
+^pci:v000014E4d0000164Asv0000103Csd00003101bc.*sc.*i.*$
+^pci:v000014E4d0000164Asv0000103Csd00003106bc.*sc.*i.*$
+^pci:v000014E4d0000164Csv.*sd.*bc.*sc.*i.*$
+^pci:v000014E4d000016AAsv.*sd.*bc.*sc.*i.*$
+^pci:v000014E4d000016AAsv0000103Csd00003102bc.*sc.*i.*$
+^pci:v000014E4d000016ACsv.*sd.*bc.*sc.*i.*$

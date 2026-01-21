@@ -1,0 +1,15 @@
+^pci:v00004444d00000016sv.*sd.*bc.*sc.*i.*$
+^pci:v00004444d00000803sv.*sd.*bc.*sc.*i.*$
+^usb:v0CCDp0039d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$
+^usb:v1164p0602d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$
+^usb:v1164p0622d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$
+^usb:v11BAp1001d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$
+^usb:v11BAp1003d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$
+^usb:v2040p2400d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$
+^usb:v2040p2900d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$
+^usb:v2040p2950d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$
+^usb:v2040p7300d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$
+^usb:v2040p7500d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$
+^usb:v2040p7501d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$
+^usb:v2040p7502d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$
+^usb:v2040p7510d.*dc.*dsc.*dp.*ic.*isc.*ip.*in.*$

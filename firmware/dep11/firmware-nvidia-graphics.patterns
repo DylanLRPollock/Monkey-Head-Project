@@ -1,0 +1,8 @@
+^of:N.*T.*Cnvidia,gk20a$
+^of:N.*T.*Cnvidia,gk20aC.*$
+^of:N.*T.*Cnvidia,gm20b$
+^of:N.*T.*Cnvidia,gm20bC.*$
+^of:N.*T.*Cnvidia,gp10b$
+^of:N.*T.*Cnvidia,gp10bC.*$
+^pci:v000010DEd.*sv.*sd.*bc03sc.*i.*$
+^pci:v000012D2d.*sv.*sd.*bc03sc.*i.*$
