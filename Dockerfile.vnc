@@ -1,0 +1,54 @@
+FROM pygpt:local
+
+USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    xvfb x11vnc novnc websockify openbox xterm x11-utils \
+    libxcb-cursor0 \
+    libxcomposite1 libxdamage1 libxrandr2 libxss1 libxtst6 \
+    libasound2 libglib2.0-0 libnss3 libdbus-1-3 \
+    libxkbcommon-x11-0 libx11-xcb1 libx11-6 libxext6 libxi6 libxrender1 \
+    libfontconfig1 libfreetype6 \
+    libpipewire-0.3-0 \
+    ffmpeg \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN cat > /usr/local/bin/start-vnc-pygpt.sh <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+export DISPLAY=:1
+export QT_X11_NO_MITSHM=1
+
+# Start virtual X server
+Xvfb :1 -screen 0 1280x720x24 -nolisten tcp &
+
+# Wait for Xvfb
+for i in {1..50}; do
+  if xdpyinfo -display :1 >/dev/null 2>&1; then
+    break
+  fi
+  sleep 0.1
+done
+
+# Window manager
+openbox &
+
+# VNC server
+x11vnc -display :1 -forever -shared -nopw -rfbport 5900 &
+
+# noVNC web bridge on port 1995
+websockify --web=/usr/share/novnc/ 1995 localhost:5900 &
+
+# Launch PyGPT
+exec pygpt --workdir=/data
+EOF
+
+RUN chmod +x /usr/local/bin/start-vnc-pygpt.sh
+
+# Run as the non-root user that exists in pygpt:local
+USER pygpt
+WORKDIR /home/pygpt
+
+EXPOSE 1995
+CMD ["/usr/local/bin/start-vnc-pygpt.sh"]
