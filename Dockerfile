@@ -1,9 +1,14 @@
 # syntax=docker/dockerfile:1.7
 
-ARG PYTHON_VERSION=3.13-slim
+# "Full" (non-slim) default. Override at build time if you want slim:
+#   docker build --build-arg PYTHON_VERSION=3.13-slim -t hueyos .
+ARG PYTHON_VERSION=3.13
 FROM python:${PYTHON_VERSION} AS hueyos
 
+# Optional extras from pyproject.toml, e.g.:
+#   docker build --build-arg HUEY_EXTRAS="dev,gpu" -t hueyos:extras .
 ARG HUEY_EXTRAS=""
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
@@ -22,6 +27,7 @@ COPY README.md pyproject.toml ./
 COPY src ./src
 
 # Install HueyOS with optional extras controlled by the build argument.
+# (Cache mount provides speed; no --no-cache-dir so pip can actually reuse it.)
 RUN --mount=type=cache,target=/root/.cache/pip,id=pip-install,sharing=locked \
     if [ -n "${HUEY_EXTRAS}" ]; then \
         python -m pip install ".[${HUEY_EXTRAS}]"; \
@@ -37,6 +43,7 @@ RUN useradd --create-home --shell /bin/bash huey \
 
 USER huey
 
+# Runtime directories usually bind-mounted when running with Compose.
 VOLUME ["/app/config", "/app/memory"]
 
 EXPOSE 1995
