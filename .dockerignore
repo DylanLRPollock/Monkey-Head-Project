@@ -1,0 +1,15 @@
+.git/
+
+__pycache__/
+
+*.pyc
+
+.venv/
+
+memory/
+
+config/
+
+*.log
+
+dist/, build/, *.egg-info/
