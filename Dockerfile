@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-ARG PYTHON_VERSION=3.11-slim
+ARG PYTHON_VERSION=3.13-slim
 FROM python:${PYTHON_VERSION} AS hueyos
 
 ARG HUEY_EXTRAS=""
