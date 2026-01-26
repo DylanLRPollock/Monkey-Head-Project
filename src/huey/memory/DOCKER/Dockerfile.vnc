@@ -1,0 +1,81 @@
+FROM pygpt:local
+
+USER root
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Headless desktop + VNC/noVNC stack + gosu to drop privileges for PyGPT
+RUN apt-get update && apt-get install -y \
+    xvfb x11vnc novnc websockify openbox xterm x11-utils \
+    gosu \
+    # Optional quality-of-life: reduces warnings and enables media tools if needed
+    libpipewire-0.3-0 ffmpeg \
+ && rm -rf /var/lib/apt/lists/*
+
+# Prepare X socket directory at build time (no runtime chmod on /tmp)
+RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp /tmp/.X11-unix
+
+# Startup script:
+# - Starts Xvfb/Openbox/x11vnc/websockify
+# - Serves noVNC on port 1995 (or NOVNC_PORT env)
+# - Runs PyGPT as user "pygpt" via gosu
+RUN cat > /usr/local/bin/start-vnc-pygpt.sh <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+# --------- Runtime knobs (override with -e ...) ----------
+RES="${RES:-1920x1080}"                 # 1920x1080, 2560x1440, 3840x2160
+ENABLE_RESIZE="${ENABLE_RESIZE:-1}"     # 1 = allow resize (xrandr), 0 = fixed size
+NOVNC_PORT="${NOVNC_PORT:-1995}"        # noVNC listen port (served by websockify)
+
+# Safe, broadly compatible defaults:
+# -noxdamage often improves redraw correctness
+# -ncache improves responsiveness
+# encodings: keep simple; noVNC sometimes negotiates poorly with exotic settings
+VNC_EXTRA_FLAGS="${VNC_EXTRA_FLAGS:--noxdamage -ncache 10 -encodings tight}"
+
+export DISPLAY=:1
+export QT_X11_NO_MITSHM=1
+# Keep QtWebEngine stable in containers (software GL path)
+export QTWEBENGINE_CHROMIUM_FLAGS="${QTWEBENGINE_CHROMIUM_FLAGS:---disable-gpu --use-gl=swiftshader}"
+
+# Ensure X socket directory exists (perms already set at build time)
+mkdir -p /tmp/.X11-unix || true
+
+# Start X server
+Xvfb :1 -screen 0 "${RES}x24" -nolisten tcp &
+
+# Wait for X
+for i in {1..100}; do
+  if xdpyinfo -display :1 >/dev/null 2>&1; then
+    break
+  fi
+  sleep 0.1
+done
+
+# Window manager
+openbox &
+
+# VNC server
+XRANDR_FLAG=""
+if [[ "${ENABLE_RESIZE}" == "1" ]]; then
+  XRANDR_FLAG="-xrandr"
+fi
+
+# Prefer IPv4 bind noise-free; x11vnc handles clients fine via localhost anyway
+x11vnc -display :1 -forever -shared -nopw -rfbport 5900 ${XRANDR_FLAG} ${VNC_EXTRA_FLAGS} &
+
+# noVNC web client on NOVNC_PORT, landing on vnc.html (no directory listing)
+websockify --web=/usr/share/novnc/ --index vnc.html "${NOVNC_PORT}" localhost:5900 &
+
+# Run PyGPT as non-root
+exec gosu pygpt pygpt --workdir=/data
+EOF
+
+# Fix CRLF if edited on Windows; ensure executable
+RUN sed -i 's/\r$//' /usr/local/bin/start-vnc-pygpt.sh \
+ && chmod +x /usr/local/bin/start-vnc-pygpt.sh
+
+EXPOSE 1995
+ENTRYPOINT ["/usr/local/bin/start-vnc-pygpt.sh"]
+CMD []
