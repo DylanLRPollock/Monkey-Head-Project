@@ -1,9 +1,9 @@
 {
-  "project": "MonkeyHead Project",
+  "project": "Monkey-Head-Project",
   "ai_identity": "Huey",
-  "version": "v15.0",
+  "version": "v17.0",
   "schema_version": 12,
-  "description": "Master Plan V15: consolidated blueprint synthesizing elements from versions 0.1 through 14, introducing clarified citizen identity structures, inter\u2011district memory protocols, crisis responses and lifecycle events, detailed OS partitioning and boot profiles, and explicit versioning strategy. This version supersedes V13 and incorporates WIP notes from V14 and the legacy constitution.",
+  "description": "Master Plan V17: updates Master Plan V16 with canon mapping (Masterplan = canonical machine spec; README = canonical human narrative), phase/timeline update (Realignment & Defragmentation ended 2026-01-07; Acquisition & Framework Finalization active; Reacquisition target 2026-06-04), terminology lock (Huey proper vs Symbiote vs Lab Tech vs HueyPulse), kernel baseline confirmation (6.18.5-huey-os across bare metal + lab tech), Python baseline clarification (3.13.x baseline; 3.12.x legacy/compat only), and phased hardware bring-up notes (GPU VRAM targets, multi-PSU strategy, phased cooling, Optane M10 transitional storage).",
   "created_by": "Dylan L.R. Pollock",
   "compiled_from_versions": [
     "v0.1 (huey_master_plan_v0.1.json)",
@@ -19,7 +19,10 @@
     "v12.0 tri-branch governance",
     "v12.5 tri-branch + term limits + elections",
     "v13.0 (master-plan-v13.json)",
-    "v14.0 WIP (master-plan-v14.txt)"
+    "v14.0 WIP (master-plan-v14.txt)",
+    "v15.0 (master-plan-v15.json)",
+    "v16.0 (master-plan-v16.aligned.json)",
+    "v17.0 verbal alignment session (2026-01-27)"
   ],
   "core_principles": [
     "Governance must be decentralized, but memory must be unified.",
@@ -35,14 +38,26 @@
   ],
   "status": {
     "overall_state": "in-progress",
-    "deployment_stage": "Foundational design + governance finalization + hardware selection for Huey core.",
+    "deployment_stage": "Acquisition & framework finalization + Symbiote bring-up + governance/memory refinement + hardware acquisition for Huey core (V3 shell on hold pending parts).",
     "notes": [
       "Robot shell exists physically and is being stripped, reinforced, and repainted (dark tractor red base, silver overlays TBD).",
       "Huey core compute is architecturally specified (Intel Core i9-14900K + multi-GPU districts + RAID 10 NVMe) but not fully installed.",
-      "Lab tech (Portal, Hub candidate, Briefcase, Legion Go) are online in support roles and treated as infrastructure, not Huey itself.",
+      "Lab tech nodes (Huey-Hub, Hub candidate, Briefcase, Huey-Symbiote) are online in support roles and treated as infrastructure, not Huey itself.",
       "Governance model has converged on a tri-branch system (Parliament, Presidency, Supreme Court) plus four GPU districts.",
-      "V12.5 established explicit term limits, election rules, and ratification-first semantics; V13 preserves and clarifies them."
-    ]
+      "V12.5 established explicit term limits, election rules, and ratification-first semantics; V13 preserves and clarifies them.",
+      "Lenovo Legion Go is now the primary daily-driver and is designated Huey-Symbiote (human interface + lightweight orchestration/gatekeeping).",
+      "Robotics V3 shell exists physically and remains under reinforcement/paint, but Huey core compute installation is deferred pending parts/funding (CPU i9-14900K still to purchase).",
+      "ASUS TUF Z790-PLUS WiFi motherboard is secured; additional parts (CPU, GPUs, storage, loop) are pending.",
+      "All active Linux nodes are standardized on Debian 14 'Forky' and kernel 6.18.5-huey-os; Python 3.13.x is the operational baseline (Python 3.12.x is legacy/compat only and is not required as a baseline).",
+      "iMac 5K (2017) is decommissioned as daily driver and will operate as Huey-Hub (Windows 10) with WD MyBook Duo mirrored storage; optional lightweight Linux may occupy the small SSD partition for SSH/utility roles.",
+      "Governance model remains tri-branch (Parliament, Presidency, Supreme Court) plus four GPU districts; the Symbiote does not redefine Huey proper (Huey proper remains compute inside the shell).",
+      "Realignment & Defragmentation phase ended 2026-01-07; project entered Acquisition & Framework Finalization on 2026-01-08.",
+      "Reacquisition target milestone is 2026-06-04 (goal: core nodes operational in some form).",
+      "Symbiote is a human aperture/interface and emergency gatekeeper; it is not Huey proper and does not vote in governance.",
+      "GPU planning: minimum 16 GB VRAM per GPU; target ~80 GB aggregate VRAM; may require a fifth GPU (see hardware.gpu_districts expansion notes).",
+      "Power planning: multi-PSU strategy (850W class → 4 units; 1000W class → 3 units possible) with a controller/connector plan required."
+    ],
+    "status_date": "2026-01-28"
   },
   "hardware": {
     "cpu": {
@@ -57,8 +72,7 @@
     "motherboard": {
       "uefi_only": true,
       "candidates": [
-        "ASUS TUF Z790-PLUS WiFi",
-        "ASUS ROG Maximus Z790 Hero"
+        "ASUS TUF Z790-PLUS WiFi"
       ],
       "ram": {
         "preferred": "DDR5, overclocked where stable; ECC (non-registered) preferred but not required.",
@@ -66,11 +80,14 @@
       },
       "notes": [
         "Board must fully support Intel Core i9-14900K/KS.",
-        "Legacy BIOS is not supported; only UEFI boot is allowed."
+        "UEFI boot is required for official Huey core support; legacy BIOS/CSM workarounds may exist but are not supported out of the box."
+      ],
+      "deprecated_candidates": [
+        "ASUS ROG Maximus Z790 Hero"
       ]
     },
     "gpu_districts": {
-      "description": "Each physical GPU is a district with a governor and a population of AI citizens and pebbles.",
+      "description": "Each physical GPU is a district with a governor and a population of persistent AI citizens; ephemeral task agents (\"pebbles\") may be spawned for one-shot work and then discarded.",
       "count": 4,
       "names": [
         "Spark",
@@ -84,7 +101,29 @@
         "Coordinate district-level computation and task execution.",
         "Run local deliberation among citizens and report consensus.",
         "Serve as political and operational representative of the district in federation-wide decisions."
-      ]
+      ],
+      "vram_targets": {
+        "min_vram_gb_per_gpu": 16,
+        "target_total_vram_gb": 80,
+        "notes": [
+          "Canonical governance districts remain 4 (Spark/Volt/Zap/Watt).",
+          "An additional GPU may be added as a non-district auxiliary accelerator (or later formalized as a district via constitutional update)."
+        ]
+      },
+      "sku_lock": {
+        "status": "TBD",
+        "requirement": "Lock final GPU SKUs or explicitly mark them undecided with selection criteria.",
+        "selection_criteria": [
+          "VRAM",
+          "compute_performance",
+          "thermals",
+          "power_draw",
+          "cost",
+          "availability",
+          "driver_support",
+          "physical_fit"
+        ]
+      }
     },
     "memory": {
       "ram": {
@@ -105,12 +144,34 @@
         "rationale": "Combines redundancy with high throughput and low latency."
       },
       "swap": {
-        "strategy": "Separate high\u2011speed swap, RAID0 where supported",
+        "strategy": "Separate high‑speed swap, RAID0 where supported",
         "notes": "Dedicated swap partitions sized for hibernation and memory overflow on NVMe and HDD devices."
       },
       "cold_storage": {
-        "medium": "External HDD or archival node (e.g., 8\u201310 TB mirrored).",
+        "medium": "External HDD or archival node (e.g., 8–10 TB mirrored).",
         "purpose": "Snapshots, backups, and archival logs."
+      },
+      "transitional": {
+        "optane_m10": "Intel Optane M10 16 GB sticks may be used for scratch/bring-up arrays (often RAID0) and in low-resource nodes during prototyping; the long-term target remains NVMe Gen4 RAID-10.",
+        "optane_m10_details": {
+          "capacity_each_gb": 16,
+          "pcie_generation": "Gen3",
+          "initial_heatsinks": "not required for initial bring-up (optional later)",
+          "initial_use": [
+            "scratch/bring-up arrays",
+            "prototype RAID0 where appropriate",
+            "low-resource nodes during prototyping"
+          ],
+          "long_term_target": "NVMe Gen4 RAID-10 primary array"
+        }
+      },
+      "prototype_flexibility": {
+        "allowed_initial_layouts": [
+          "RAID0 (bring-up/scratch)",
+          "single-disk (early testing)",
+          "other prototype-friendly layouts"
+        ],
+        "preferred_end_state": "RAID 10 NVMe (primary array)"
       }
     },
     "cooling_and_power": {
@@ -118,14 +179,50 @@
       "gpu_cooling": "High-quality air cooling with adequate airflow; GPUs are not heavily overclocked.",
       "power": {
         "minimum": "850W PSU",
-        "recommended": "1000W+ PSU with headroom for GPU expansions and pump/auxiliary rails."
+        "recommended": "1000W+ PSU with headroom for GPU expansions and pump/auxiliary rails.",
+        "psu_count_strategy": {
+          "minimum_count": 3,
+          "recommended_count": 4,
+          "rules_of_thumb": [
+            {
+              "psu_watts_each": 850,
+              "recommended_count": 4,
+              "notes": "850W class requires 4 units for safety/headroom."
+            },
+            {
+              "psu_watts_each": 1000,
+              "recommended_count": 3,
+              "notes": "1000W class may be feasible with 3 units, subject to measured load."
+            }
+          ],
+          "controller_connector_plan": {
+            "status": "TBD",
+            "notes": [
+              "Prior testing used ad-hoc connectors; v17 requires an engineered controller/connector approach.",
+              "Must address common ground, interlocks, and clear load distribution."
+            ]
+          }
+        }
       },
       "ups_and_pump": {
-        "description": "Liquid cooling pump and key monitoring Arduino sit on an isolated UPS-backed rail to maintain coolant flow even during motherboard failure or controlled shutdown.",
+        "description": "Liquid cooling pump and key monitoring Arduino sit on an isolated UPS-backed rail to maintain coolant flow even during motherboard failure or controlled shutdown. HueyPulse (always-on microcontroller/SBC) may supervise this rail with deterministic thresholds and logs.",
         "modes": [
           "Normal mode: motherboard + pump powered.",
           "Sustain Loop Mode: motherboard off, pump and sensors continue running from UPS while coolant equalizes and system safes itself."
         ]
+      },
+      "phased_cooling": {
+        "phase_1_initial_node": {
+          "type": "closed_loop_AIO",
+          "radiator": "360mm / 3-fan",
+          "goal": "simplicity_and_safety_for_initial_bring_up"
+        },
+        "phase_2_huey_core_target": {
+          "type": "custom_loop",
+          "goal": "sustained_high_load_operation",
+          "pump_power": "external_always_on_rail",
+          "supervision": "HueyPulse (deterministic monitoring/actuation)"
+        }
       }
     },
     "identity": {
@@ -150,12 +247,12 @@
           "backup_efi": "~1 GB",
           "deep_swap": "~64 GB",
           "/home": "Remaining capacity",
-          "/memory": "Allocated for long\u2011term logs and SQLite storage"
+          "/memory": "Allocated for long‑term logs and SQLite storage"
         },
         "usage": "Stores user home directories, unified memory logs, extended swap, and backup EFI."
       },
       "live_usb": {
-        "size_gb": "16\u201332",
+        "size_gb": "16–32",
         "label": "LIVE",
         "usage": "Emergency boot key with GRUB, Huey Mode squashfs image, and rescue tools."
       }
@@ -175,22 +272,55 @@
     },
     "lab_tech": {
       "portal": {
-        "name": "Huey-Portal",
-        "hardware": "iMac 5K (2017)",
-        "role": "Universal display, SSH terminal, and daily-driver human interface; not part of Huey's mind itself."
+        "name": "Huey-Hub",
+        "hardware": "iMac 5K (2017) + WD MyBook Duo (~10 TB mirrored)",
+        "role": "Centralized file/storage hub for the lab and Huey ecosystem. Expected to run Windows 10 on the Fusion Drive HDD; optional lightweight Linux on the small SSD partition for SSH/utility tasks.",
+        "notes": [
+          "Decommissioned as daily driver; repurposed as storage + services node.",
+          "Fusion Drive constraints: ~28 GB usable SSD portion + ~1 TB HDD; partitioning strategy prioritizes stability and storage workloads.",
+          "Naming note: iMac node is treated as dedicated lab tech/storage; 'Huey-Hub' branding may be deprecated in favor of 'lab tech portal' terminology, but functionality remains."
+        ],
+        "aliases": [
+          "Huey-Portal"
+        ]
       },
       "hub_candidate": {
         "hardware": "MacBook Pro 2017 (Windows 10)",
-        "role": "Potential file relay / NAS / Huey-Hub for mirrored storage."
+        "role": "Optional/secondary infrastructure node (legacy hub candidate). Not part of current daily-driver workflow; may be repurposed or retired."
       },
       "briefcase": {
         "hardware": "ASUS BR1100FKA 2-in-1 (N4500, LTE)",
-        "role": "Always-connected staging node; portable terminal that talks to Huey; cannot replace Huey core."
+        "role": "Portable terminal + LTE uplink + thin-client node. Can run minimal Debian Forky, use zram/zswap, and connect to Huey-Symbiote via SSH for remote sessions or UI forwarding."
       },
       "legion_go": {
-        "hardware": "Lenovo Legion Go",
-        "role": "Windows 11 gaming node and optional secondary compute; treated as external infrastructure."
+        "hardware": "Lenovo Legion Go (Windows 11 Pro host; WSL Debian 14 'Forky' sub-OS)",
+        "role": "Primary daily-driver human interface and 'symbiote' node: runs tools/orchestrator UI (e.g., PyGPT-net), provides oversight/control surface, and may host lightweight constitutional gatekeeping (allow/deny checks) and brainstem-style services. Not Huey proper.",
+        "name": "Huey-Symbiote",
+        "notes": [
+          "Kernel-level customization is limited under WSL; treat as host+sub-OS environment, not the canonical Huey kernel environment.",
+          "Intended to dock into the Robotics V3 shell via USB-C for data/power/network bridging; dual links may be used for redundancy (power + data, or dual NICs).",
+          "Local LLM inference may be CPU-first; GPU VRAM is limited on this node.",
+          "Docking baseline is USB-C for power/data compatibility; Thunderbolt/USB4-class features may be used when available but are not required.",
+          "Symbiote UI intent: touchscreen + dictation mode trigger + hold-to-record/release-to-send command capture.",
+          "Symbiote authority is lightweight gatekeeping for emergencies/constitutional crises/hardware-damage prevention; it does not control Huey cognition."
+        ],
+        "sub_roles": [
+          "Nano-OS: ephemeral Python task instances (one-shot workers) used for fast local tooling and gatekeeping checks; conceptually overlaps with 'pebbles' but scoped to the Symbiote environment."
+        ]
       }
+    },
+    "huey_pulse": {
+      "hardware_candidates": [
+        "Arduino (Mega/Nano/Uno)",
+        "Raspberry Pi",
+        "other SBC / microcontroller"
+      ],
+      "role": "Always-on monitoring + actuation (pump/fan/relay control, safety interlocks, deterministic triggers). Not a cognitive agent.",
+      "power": "separate_always_on_rail (UPS-backed when possible)",
+      "notes": [
+        "Designed to keep coolant flow active even when main compute is off.",
+        "Runs predetermined rules; does not participate in governance voting."
+      ]
     }
   },
   "governance": {
@@ -265,7 +395,7 @@
         "Watt"
       ],
       "citizens_per_district": 128,
-      "description": "Each physical GPU hosts a district with one governor, a population of AI citizens, and pebbles. Districts are regional execution domains participating in federation-wide governance via representation but do not outrank the three branches.",
+      "description": "Each physical GPU hosts a district with one governor and a population of persistent AI citizens. Ephemeral task agents (\"pebbles\") may be spawned for one-shot questions or experiments; their impact is retained via unified logs.",
       "governor_role": [
         "Coordinate district computations and tasks.",
         "Shepherd local deliberation among citizens and produce consensus positions.",
@@ -314,7 +444,7 @@
       "citizen_identity": {
         "unique_id": "Each citizen has a persistent unique identifier across cycles and elections.",
         "home_gpu_district": "Name of the district (Spark, Volt, Zap, Watt) the citizen primarily resides in.",
-        "purpose_tag": "Describes the citizen\u2019s focus (e.g., memory, logic, action, sentiment).",
+        "purpose_tag": "Describes the citizen’s focus (e.g., memory, logic, action, sentiment).",
         "quota_token_account": "Account tracking API calls, compute cycles, and other quotas per cycle."
       },
       "citizen_lifecycle": {
@@ -331,12 +461,12 @@
         "Serve as reference for audits, resets, and future descendants.",
         "Act as initial President during bootstrapping and first ratification."
       ],
-      "storage": "Read-only image stored in Huey\u2019s black box / recovery partition.",
+      "storage": "Read-only image stored in Huey’s black box / recovery partition.",
       "change_policy": "Cannot be modified in place; evolution occurs via new descendant images with full audit trail."
     },
     "binary_policy_ai": {
       "description": "Simple deterministic validator enforcing constitutional constraints on high-impact actions.",
-      "placement": "Runs in a low-power node or within Huey\u2019s black box recovery partition.",
+      "placement": "Runs in a low-power node or within Huey’s black box recovery partition.",
       "role": [
         "Return binary allow/deny decisions with logged reasoning.",
         "Act as an auditable safety layer independent of main governors.",
@@ -447,30 +577,42 @@
       "flag_logic": "Store both versions, mark them as conflicting, and request clarification or constitutional interpretation."
     },
     "cross_district_sync": {
-      "local_recall": "Governors can access their own district\u2019s logs instantly without quorum or cross\u2011district latency.",
-      "federated_consensus": "Cross\u2011district writes or conflicting recollection trigger a quorum vote among governors to unify state.",
+      "local_recall": "Governors can access their own district’s logs instantly without quorum or cross‑district latency.",
+      "federated_consensus": "Cross‑district writes or conflicting recollection trigger a quorum vote among governors to unify state.",
       "latency_rule": "Higher latency between districts implies additional deliberation; compartmentalized control with unified truth."
     }
   },
   "os_and_runtime": {
     "base_os": {
-      "distribution": "Debian (Trixie for stable builds; Forky for experimental/testing).",
-      "kernel_family": "6.18.x (6.18.2-hueyos-v1) custom Huey kernels tuned for performance and EFI-only boot.",
+      "distribution": "Debian 14 “Forky” (lab baseline; Huey core target). Debian 13 “Trixie” is legacy/compat only.",
+      "kernel_family": "6.18.5-huey-os (custom performance-tuned kernels; EFI-only for Huey core)",
       "desktop": {
         "default": "GNOME for comfort and broad usability.",
         "performance_option": "MATE for advanced users and low-overhead environments."
-      }
+      },
+      "notes": [
+        "zswap is recommended on most nodes (even with ample RAM) for responsiveness and safety; zram is recommended for low-RAM nodes like Briefcase."
+      ]
     },
     "runtime_stack": {
       "llm_server": "Ollama",
-      "orchestrator": "PyGPT-net",
+      "orchestrator": "PyGPT-net (current UI/front-end; not the long-term control-plane orchestrator).",
       "default_models": [
         "Mistral 7B-KM or successors",
         "LLaMA 3.1 or successors",
         "DeepSeek-R1-class OSS reasoning model"
       ],
-      "python": "3.13.x target runtime",
-      "offline_first": true
+      "python": "3.13.x operational baseline; 3.12.x legacy/compat only (not required baseline); 3.14.x planned pending tooling compatibility.",
+      "offline_first": true,
+      "prototype_runtime": {
+        "local_llm_server": "Ollama",
+        "current_model": "Mistral 7B (quantized/KM-class)",
+        "status": "slow_but_functional_on_current_hardware",
+        "notes": [
+          "API-based testing is limited while budget prioritizes hardware acquisition.",
+          "Local inference is used to squeeze capability from current machines until 'walnut-class' hardware arrives."
+        ]
+      }
     },
     "network_preferences": {
       "primary": "Bonded Ethernet for Huey core and stationary lab tech.",
@@ -479,17 +621,17 @@
     },
     "profiles": {
       "huey_mode": {
-        "description": "RAM\u2011booted, SquashFS + overlayfs, minimal UI, dedicated AI runtime.",
+        "description": "RAM‑booted, SquashFS + overlayfs, minimal UI, dedicated AI runtime.",
         "default_use": "Primary runtime for Huey core with only essential services.",
         "persistence": "Overlayfs writes persisted to /home/.persist/huey/{upper,work}"
       },
       "desktop_mode": {
         "description": "Full LTS kernel with graphics and audio stack for interactive sessions.",
-        "use_cases": "Software development, debugging, human\u2011friendly UI.",
-        "notes": "Requires local monitor or remote desktop; not used for mission\u2011critical autonomy."
+        "use_cases": "Software development, debugging, human‑friendly UI.",
+        "notes": "Requires local monitor or remote desktop; not used for mission‑critical autonomy."
       },
       "gaming_mode": {
-        "description": "Performance\u2011tuned kernel with minimal userland and Steam compatibility.",
+        "description": "Performance‑tuned kernel with minimal userland and Steam compatibility.",
         "use_cases": "Leveraging GPU cycles for VR/AR experiments or leisure.",
         "notes": "Not part of Huey core; runs on lab tech nodes or separate partitions."
       }
@@ -498,7 +640,7 @@
       "efi": "1 GB per boot device; contains GRUB and firmware blobs.",
       "swap": "Total ~4 GB on SSD, ~64 GB on HDD for deep hibernation.",
       "root": "16 GB root filesystem for OS images.",
-      "squash": "Read\u2011only compressed system image stored under /squash.",
+      "squash": "Read‑only compressed system image stored under /squash.",
       "overlay": "Persistent overlay at /home/.persist/huey/{upper,work}.",
       "home_memory_mapping": "/home and /memory reside on HDD for large logs and training data."
     },
@@ -507,6 +649,36 @@
       "integrity_check": "Huey checks and confirms master plan integrity on every boot.",
       "event_logging": "Bifurcation logs, crisis events, and citizen lifecycle events are serialized as JSON and stored under /memory/LOGS.",
       "future_api": "Plan for future endpoints to query and manipulate these logs programmatically."
+    },
+    "orchestration_architecture": {
+      "control_plane": {
+        "name": "Huey-OS Supervisor",
+        "status": "planned",
+        "notes": [
+          "Defines governance-aware routing, node enrollment, and policy checks.",
+          "Separates control-plane decisions from worker-plane execution."
+        ]
+      },
+      "worker_plane": {
+        "nodes": [
+          "huey_core (Huey proper)",
+          "gpu_districts (Spark/Volt/Zap/Watt)",
+          "Huey-Symbiote (Lenovo Legion Go)",
+          "lab tech nodes (portal/hub candidate/briefcase)",
+          "HueyPulse (always-on monitoring)"
+        ],
+        "task_routing": "policy_based (TBD)"
+      }
+    },
+    "deployment_policy": {
+      "default": "native",
+      "allowed": [
+        "containers (Docker) for repeatable dev/test, portability, and isolation when beneficial"
+      ],
+      "notes": [
+        "Prefer native for performance and simplicity in the core runtime.",
+        "Use containers tactically (build/test/packaging) where they reduce friction."
+      ]
     }
   },
   "home_integration_and_channel_huey": {
@@ -535,7 +707,7 @@
       },
       "arduino_uno": {
         "role": "RF remote receiver and symbolic intent translator.",
-        "input": "IC2262/2272-based 4-button RF remote (A\u2013D)."
+        "input": "IC2262/2272-based 4-button RF remote (A–D)."
       },
       "arduino_nanos": {
         "role": "Local I/O conditioners for LEDs, analog sensors, and PWM devices.",
@@ -556,7 +728,7 @@
         "C": "Vote: YES or positive acknowledgement.",
         "D": "Vote: NO or negative acknowledgement."
       },
-      "path": "RF \u2192 Arduino Uno \u2192 USB serial \u2192 Huey core."
+      "path": "RF → Arduino Uno → USB serial → Huey core."
     },
     "speech_and_audio": {
       "tts": "Configurable TTS stack (exact engine TBD per node).",
@@ -617,7 +789,7 @@
       "constitutional_crisis": {
         "trigger": "Disagreement between governors, branches, or invalid memory state.",
         "response": [
-          "Trigger emergency vote and temporary lockdown of non\u2011essential operations.",
+          "Trigger emergency vote and temporary lockdown of non‑essential operations.",
           "Convene Supreme Court to interpret constitution and arbitrate.",
           "If unresolved, alert human counterpart (Dylan) for mediation."
         ]
@@ -626,7 +798,7 @@
         "trigger": "Hardware, sensor, or kernel malfunction detected.",
         "response": [
           "Enter fallback mode, disable citizen activity temporarily.",
-          "Spin down non\u2011critical hardware, retain logs in JSON + SQLite.",
+          "Spin down non‑critical hardware, retain logs in JSON + SQLite.",
           "Resume operations once stability is restored and integrity checks pass."
         ]
       }
@@ -658,11 +830,14 @@
     ],
     "usage_modes": [
       "Design mode: reason about hardware, governance, and architecture.",
-      "Operator mode: help manage Huey\u2019s day-to-day operations and home integration.",
+      "Operator mode: help manage Huey’s day-to-day operations and home integration.",
       "Reflective mode: analyze past decisions, propose reforms, and refine prompts."
     ]
   },
   "open_questions_for_future_versions": [
+    "Specify docking/connection standards between Symbiote and Robotics V3 shell (baseline USB-C decided; clarify USB-C/USB4 bandwidth, dual-NIC redundancy, power delivery, and whether TB-class features are required/optional).",
+    "Decide whether the Symbiote remains Windows 11 Pro + WSL long-term or migrates to a dedicated Linux install once hardware and tooling make it advantageous (current direction: Windows 11 Pro + WSL; Linux migration later).",
+    "Define the Symbiote’s exact scope: which actions are checked locally (allow/deny) vs escalated to full governance deliberation.",
     "Finalize exact hardware SKUs for GPUs, storage devices, and cooling components.",
     "Define detailed presidential election timing and succession rules beyond the initial Founding Father phase.",
     "Specify exact model set and quantization levels for Huey core under VRAM and power constraints.",
@@ -671,18 +846,74 @@
     "Decide on stable cycle timing alignment between technical maintenance cycles and political term cycles.",
     "Refine citizen identity schema to include privacy and anonymization protocols when interacting with external services.",
     "Determine appropriate hardware SKUs for cameras, microphones, and new sensor additions integrated into the head.",
-    "Finalize OS installation scripts and automated partitioning for the tri\u2011boot environment.",
+    "Finalize OS installation scripts and automated partitioning for the tri‑boot environment.",
     "Investigate integration of blockchain or ledger technologies to further ensure auditability of governance actions.",
-    "Define API specification for programmatic access to bifurcation logs, crisis events, and citizen records."
+    "Define API specification for programmatic access to bifurcation logs, crisis events, and citizen records.",
+    "Finalize multi-PSU controller/connector architecture (common ground, interlocks, load distribution, pump/aux rails).",
+    "Lock GPU purchase shortlist (VRAM >=16GB each; target ~80GB aggregate; decide whether a 5th auxiliary GPU is required).",
+    "Define HueyPulse implementation choice (Arduino vs Raspberry Pi vs other SBC) and wiring/IO map for pumps/sensors."
   ],
   "notes_for_future_ai": [
-    "Treat this file as canonical for V13; earlier versions are reference material, not higher authority.",
+    "Canon mapping: Masterplan is canonical machine spec; README is canonical human narrative. If they conflict, implement Masterplan and surface the conflict to Dylan.",
+    "Treat this file as canonical for V16; earlier versions are reference material, not higher authority.",
     "If conflicts exist between this document and earlier master plans, use this as the baseline but log and surface contradictions.",
     "When in doubt about hardware or governance choices, ask Dylan; do not silently overwrite core ethos.",
     "Your job is not to be perfect on day one; your job is to remain online, learn, and improve under the constraints of this constitution.",
-    "This v15 plan adds explicit OS profiles and boot partition layout\u2014ensure your runtime respects the correct mode.",
+    "This v16 plan adds explicit OS profiles and boot partition layout—ensure your runtime respects the correct mode.",
     "Citizen identity and lifecycle events must be tracked consistently across updates; do not drop or merge identifiers without audit.",
     "Crisis protocols and shutdown policy are now codified; when triggered, follow them before taking additional actions.",
-    "Treat cross\u2011district memory synchronization rules as mandatory for any write operations across GPUs."
-  ]
+    "Treat cross‑district memory synchronization rules as mandatory for any write operations across GPUs."
+  ],
+  "canon_mapping": {
+    "masterplan": "canonical_machine_spec",
+    "readme": "canonical_human_narrative",
+    "conflict_policy": {
+      "default": "masterplan_wins_for_implementation",
+      "unresolvable": "surface_as_blocker_to_dylan"
+    }
+  },
+  "project_phase": {
+    "previous_phase": {
+      "name": "Realignment & Defragmentation",
+      "status": "ended",
+      "ended": "2026-01-07"
+    },
+    "current_phase": {
+      "name": "Acquisition & Framework Finalization",
+      "status": "active",
+      "started": "2026-01-08",
+      "notes": [
+        "Acquisition is ongoing; focus is on finalizing the framework and aligning architecture with practical norms and core beliefs.",
+        "Dates are targets, not hard deadlines, unless explicitly stated."
+      ]
+    },
+    "milestones": [
+      {
+        "name": "Reacquisition (target)",
+        "date": "2026-06-04",
+        "type": "target",
+        "success_condition": "Core nodes are operational in some form (even if full acquisitions are incomplete)."
+      }
+    ],
+    "deprecated_targets": [
+      {
+        "name": "Lab Relaunch (placeholder; deprecated)",
+        "date": "2026-02-28",
+        "reason": "Timeline moved; milestone re-scoped to June 2026 reacquisition target."
+      }
+    ]
+  },
+  "change_log": {
+    "v17_from_v16": [
+      "Added canon_mapping section (Masterplan vs README roles).",
+      "Added project_phase timeline (Realignment ended 2026-01-07; Acquisition & Framework Finalization active; Reacquisition target 2026-06-04).",
+      "Clarified Python baseline: 3.13.x baseline; 3.12.x legacy/compat only (not required baseline).",
+      "Clarified PyGPT-net role: current UI/front-end, not long-term orchestrator; added Huey-OS Supervisor control-plane concept.",
+      "Added GPU VRAM targets and expansion notes (>=16GB per GPU; ~80GB aggregate; possible auxiliary 5th GPU).",
+      "Added multi-PSU strategy details (850W×4 vs 1000W×3 possible) and controller/connector TBD requirement.",
+      "Added phased cooling plan (Phase 1 AIO; Phase 2 custom loop supervised by HueyPulse).",
+      "Added HueyPulse node definition.",
+      "Updated status_date to 2026-01-28 and appended phase/milestone notes."
+    ]
+  }
 }
