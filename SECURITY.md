@@ -1,17 +1,23 @@
 # Security Policy
 
 **Project:** Monkey-Head-Project (**HueyOS**)
-**Last updated:** 2026-01-06
+**Last updated:** 2026-01-28
 
 HueyOS takes security seriously. This policy explains what we support, how to report issues, and how we coordinate fixes, backports, releases, and disclosure across the project’s **on-robot runtime**, **helper tools**, and **reference deployments**.
 
-HueyOS is typically deployed as an **offline-first**, self-hosted system with tightly scoped network surfaces. Even so, we treat every externally reachable interface (HTTP APIs, admin consoles, message queues, IPC endpoints, artifact pipelines, etc.) as potentially hostile and design our security posture accordingly.
+HueyOS is typically deployed as an **offline-first**, self-hosted system with tightly scoped network surfaces. As of **V17**, physical robot actuation ("Huey proper") remains intentionally gated; most externally reachable surfaces today exist on **Symbiote and lab infrastructure nodes**. Even so, we treat every externally reachable interface (HTTP APIs, admin consoles, message queues, IPC endpoints, artifact pipelines, etc.) as potentially hostile and design our security posture accordingly.
 
 ---
 
 ## Supported Versions
 
 HueyOS uses semantic versioning (`MAJOR.MINOR.PATCH`):
+
+> **Era-based governance note**
+> While internal releases may use semantic versioning for artifacts, the project is primarily organized into **era-based master plan versions** (e.g., **V17**).
+> Security posture, deployment assumptions, and supported configurations should be interpreted relative to the active Master Plan era.
+
+
 
 * **MAJOR:** Structural or incompatible changes to APIs, storage, or governance assumptions.
 * **MINOR:** Backward-compatible feature releases and roadmap milestones.
@@ -58,7 +64,7 @@ HueyOS is designed and tested primarily against:
   * `amd64` (x86_64). Other architectures (ARM, RISC‑V, etc.) may work, but are currently out of scope for security guarantees.
 * **Kernel**
 
-  * HueyOS tracks Linux LTS or near-LTS kernels with project-specific configuration (e.g., `6.x-huey*`).
+  * HueyOS tracks explicit, documented kernel baselines with project-specific configuration (current baseline: **6.18.5-huey-os**).
   * The supported kernel series per release are documented in that release’s notes/changelog.
 
 ### Virtualization and containers
