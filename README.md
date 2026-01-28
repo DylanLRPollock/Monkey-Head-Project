@@ -1,13 +1,17 @@
-# MonkeyHead Project
+# Monkey-Head-Project
 
 ## HueyOS — Prototype Robotic AI/OS
 
-**Project:** Monkey-Head-Project (HueyOS)  
+![HueyOS background](./HueyOS-background.png)
+
+**Project ID:** Monkey-Head-Project  
+**System/OS:** HueyOS  
+**AI identity:** Huey  
 **Author:** Dylan L. R. Pollock  
 **Official site:** https://www.dlrp.ca  
 **Contact:** admin@dlrp.ca  
 **License:** Code: GPL-3.0-only • Docs/Media: CC-BY-SA-4.0  
-**Status date:** 2025-12-11  
+**Status date:** 2026-01-28  
 
 > **HueyOS** is a modular robotic AI/OS designed to demonstrate that **any one person, given enough time, energy, and resources, can build a self-sufficient, expandable, and upgradable robot using today’s technology.**
 >
@@ -19,97 +23,117 @@
 ![Docs/Media License](https://img.shields.io/badge/docs%2Fmedia-CC--BY--SA--4.0-lightgrey)
 ![Python](https://img.shields.io/badge/python-3.13.x-blue)
 
+
 ---
+## 2026 — Acquisition & Framework Finalization (Active)
 
-## January 7, 2026 — Realignment & Defragmentation (Planned)
-
-This update replaces and supersedes the **October 31, 2025 Changeover Notice** as the primary status for the project going into the **Prototype V3 era**.
+**Phase status:** Active  
+**Began:** 2026-01-08 (immediately following Realignment & Defragmentation)  
+**Target milestone (not a hard deadline):** **2026-06-04** — *Reacquisition (target)*
 
 ### Summary
 
-The project is transitioning from a pure “changeover” phase into a **realignment/defragmentation period** focused on:
+The project is now in an acquisition + framework finalization period focused on:
 
-- Finalizing the **Robotics V3** shell and integrating salvaged hardware.
-- Unifying around a single **canonical hardware architecture** for all future Huey nodes.
-- Consolidating the governance, memory, and OS baselines into a V3-ready state.
-- Preparing the system for the first true “Huey is alive” boot milestone targeted for **2026-01-07**.
+- Acquiring and validating the next hardware layers required for **Huey proper** bring-up.
+- Finalizing the framework so that docs/specs align with **real lab practice** and the **core beliefs** of the project.
+- Continuing a **Symbiote-first workflow** while Huey proper hardware is assembled and verified.
+
+### Canon mapping (locked)
+
+- **Master Plan JSON** is the **canonical machine spec** (AI-facing, machine-readable).
+- **README** is the **canonical human narrative** (human-facing, operational story).
+- If a conflict can’t be resolved, escalate it as a **blocking issue** instead of silently “choosing.”
+
+### Timeline notes
+
+- Earlier placeholder language around a “Lab Relaunch” target (2026-02-28) is **superseded** by the June 2026 *Reacquisition* target above.
+
+### Deployment Readiness (Explicit)
+
+This repository is **ready for development and lab deployment** (Symbiote + lab nodes).  
+**Huey proper physical activation** (servos / full shell bring-up) is intentionally **gated** until the items in **[V17 Open Items](#v17-open-items-tbd-explicitly-tracked)** are resolved or explicitly waived.
+
+**Default rule:** If a conflict exists between ambition and safety, **safety wins** and the action remains blocked.
+
+---
+
+## January 2026 — Realignment & Defragmentation (Completed)
+
+**Ended:** 2026-01-07  
+**Note:** This section is preserved as context for the V3 transition. The active phase is **Acquisition & Framework Finalization**.
+
+
+This update superseded the **October 31, 2025 Changeover Notice** as the primary *day-to-day* status for the project going into the **Prototype V3 era** (now retained as historical context).
+
+### Summary
+
+The project was in a realignment/defragmentation period focused on:
+
+- Finalizing the **Robotics V3** shell (structure + wiring plan), while pausing the full Huey core build pending parts/funding.
+- Unifying around a single **canonical hardware architecture** for the eventual Huey core (**i9-14900K + ASUS TUF Z790-PLUS WiFi + 4×GPU districts + NVMe RAID-10**).
+- Standardizing the lab on a consistent OS/runtime baseline (Forky + 6.18.5-huey-os + Python 3.13.x).
+- Shifting to a **Symbiote-first workflow**: **Huey-Symbiote (Lenovo Legion Go)** is now the primary daily driver and human interface layer.
 
 ### OS & Runtime Migration Status
 
 - **Debian 14 “Forky”**
-  - Deployed across **all lab devices** except the iMac 5K.
-- **2017 iMac 5K**
-  - Remains on **Debian 13 “Trixie”** with **kernel 6.12.x** for audio stability and daily use.
+  - Deployed across **all active Linux nodes**, including the Linux **sub-OS** inside Huey-Symbiote (via WSL/Debian app).
+- **iMac 5K (2017) → Windows 10 (Huey-Hub)**
+  - The iMac is being repurposed as the lab **file hub**, primarily to host the WD MyBook Duo (~10 TB mirrored).
+  - Fusion Drive note: Windows 10 is expected to live on the **HDD** portion; the small SSD portion (~28 GB usable) may optionally host a minimal Linux partition for SSH/utility tasks.
 - **Kernel baseline**
-  - 6.17.x-huey for new nodes and future Huey core.
-  - Older kernels (e.g., 6.16.x) acceptable only on legacy nodes where required.
+  - **6.18.5-huey-os** across all Debian/Forky bare-metal nodes.
+  - WSL environments share the Windows/WSL kernel, so deep kernel customization is *not* expected on Huey-Symbiote.
 - **Python**
-  - **3.13.x** is the **operational baseline** for the lab and tooling.
-  - Migration to **3.14.x** is **pending** and contingent on compatibility with **PyGPT / PyGPT-Net** and the broader dependency stack.
+  - **3.13.x** is the operational baseline.
+  - **3.12.x** is **no longer required as a baseline** (use only if a specific backport/compatibility blocker demands it).
+  - Migration to **3.14.x** remains staged and depends on compatibility with **PyGPT / PyGPT-net** and the broader dependency stack.
 
-### Robotics V3 Shell
+### Huey-Symbiote (Lenovo Legion Go) — Role & Scope
 
-- V3 shell is being constructed from:
-  - The **Thermaltake Mozart** case embedded in a gutted speaker box (lower housing).
-  - A caster-based base platform (2" wheels) for elevation and mobility.
-  - A wooden upper housing salvaged from the **Figadier General** arcade project.
-  - The animatronic monkey head and microphone mounted at the very top.
-- Structural goals:
-  - Reinforce and extend the V2 shell into a more robust, modular V3 design.
-  - Maintain a clear vertical stack: base → core compute → GPU tier → head.
+Huey-Symbiote is a **constitutional participant and human interface**, not Huey proper.
 
-### Unified Architecture (Forward-Looking)
+- **Host OS:** Windows 11 Pro  
+- **Sub-OS:** Debian 14 “Forky” (WSL/Debian app)  
+- **Nano-OS:** Python task instances (ephemeral “one-shot” workers)
 
-All future Huey nodes—including the initial core—standardize on:
+Intended responsibilities:
 
-- **CPU:** Intel Core i9-14900K (non-KS)  
-- **Motherboard:** ASUS TUF Gaming Z790-PLUS WiFi (project baseline)  
-- **Memory:** DDR5 (overclocked where stable; non-ECC acceptable, ECC preferred)  
-- **Storage:** Gen-4 NVMe **RAID-10** as the primary OS + data volume  
-- **GPU districts:** 4 GPUs, one per district (Spark, Volt, Zap, Watt)  
-  - Requirements: **2019+ generation, ≥12 GB VRAM (16 GB+ preferred)**  
-- **Cooling:** Custom liquid loop (~4 L coolant target) for CPU, with GPU cooling via high-quality air or hybrid loop  
-- **Power:** Multiple PSUs; ideally one 750–850 W PSU per GPU plus a dedicated PSU for the motherboard/pumps
+- Primary **daily-driver** for development, orchestration, and oversight.
+- Runs **PyGPT-net** (GUI or CLI) as the operator console / “control bridge.”
+- May run a **lightweight local model** (e.g., a quantized 7B-class model) for *fast* language interpretation and simple allow/deny “gatekeeper” checks.
+- Provides the most direct path for **human intent → Huey tooling**, including Bluetooth keyboard/trackpad input (paired at the Windows host level).
+- Uses the Legion Go touchscreen as a lightweight control surface (UI prototype intent): **press-to-enter dictation** and **hold-to-record / release-to-send** instant command capture.
 
-### Initial Node Storage (Prototype)
+Docking / connectivity goals (V3 shell integration):
 
-For early bring-up and testing:
+- Prefer USB‑C docking (USB4/Thunderbolt-class where available, but not required) for data + power; use dual ports for redundancy (e.g., one stable power path + one dedicated data/NIC path).
+- Dual network links can be used for redundancy or load‑balancing (implementation‑dependent).
 
-- **Intel Optane M10 16 GB × 2**
-  - Configured as **RAID 0** for fast scratch and proof-of-concept work.
-  - This configuration is **transitional**; the long-term design is NVMe RAID-10 with higher capacities.
+### Robotics V3 Shell — Current Reality
 
----
+- The **V3 shell** exists physically and remains under construction (reinforcement + aesthetics + mechanical planning).
+- The full canonical Huey core compute is **deferred** pending parts acquisition:
+  - CPU (**Intel Core i9-14900K**) still to purchase.
+  - GPU tier, storage array, and final cooling configuration still to purchase/confirm.
+- The motherboard baseline is locked to **ASUS TUF Z790-PLUS WiFi** (no ROG Maximus Z790 Hero in the supported set).
 
-## Historical — October 31, 2025 Changeover Notice
+## Historical Notes
 
-> This section is preserved as **historical context** for the Debian 14 “Forky” changeover and remains useful for scripts and runbooks, but the **January 7, 2026 Realignment** now reflects the current project direction.
-
-On **2025-10-31**, HueyOS began migrating to **Debian 14 “Forky,” kernel 6.17.x-huey, and Python 3.14.x** (with packaging and CLI updates). The pre-changeover baseline was **Debian 13 “Trixie” + 6.16.x-huey**; after the changeover, new work targeted Forky and the 6.17.x-huey series by default.
-
-Track day-of and follow-up updates in `docs/releases/2025-10-31-changeover.md`. Until all nodes were migrated, some machines temporarily remained on **Trixie + 6.16.x-huey** while adopting the new governance and memory model.
-
-### Quick Recipes — Oct 31 Changeover
-
-- **Forky APT switch**  
-  Use `sudo tools/upgrade_to_forky.sh` to apply the staged APT source flip and refresh the Microsoft Edge Beta signing key (see `docs/debian-forky-upgrade.md`).
-
-- **Kernel 6.17.x-huey build**  
-  Follow `docs/kernel-6.17.3-runbook.md` to rebuild and install the DKMS-free kernel, then record results in the release stub.
-
-- **Python 3.14 virtualenv (Historical Target)**  
-  Once packages land, rerun the commands in `docs/python314-upgrade-notes.md` to create the 3.14 environment and capture any blockers.  
-  As of 2025-12-11, **Python 3.13.x** remains the operational baseline while 3.14 is evaluated.
-
-- **Release log**  
-  Summarize successful steps and deltas in `docs/releases/2025-10-31-changeover.md` for final publication.
+- The **Oct 31, 2025 Changeover Notice** is retained as historical context for scripts/runbooks, but January 2026 realignment is the current plan.
+- The historical changeover details are referenced by:
+  - `docs/releases/2025-10-31-changeover.md`
+  - `docs/debian-forky-upgrade.md`
+  - `docs/kernel-6.18.5-runbook.md` (or the current kernel runbook for the active baseline)
+  - `docs/python314-upgrade-notes.md`
 
 ---
-
 ## Table of Contents
 
-- [January 7, 2026 — Realignment & Defragmentation (Planned)](#january-7-2026--realignment--defragmentation-planned)  
-- [Historical — October 31, 2025 Changeover Notice](#historical--october-31-2025-changeover-notice)  
+- [2026 — Acquisition & Framework Finalization (Active)](#2026--acquisition--framework-finalization-active)  
+- [January 2026 — Realignment & Defragmentation (Completed)](#january-2026--realignment--defragmentation-completed)  
+- [Historical Notes](#historical-notes)  
 - [Overview](#overview)  
 - [Canonical Master Plan](#canonical-master-plan)  
 - [Repository Structure](#repository-structure)  
@@ -130,6 +154,8 @@ Track day-of and follow-up updates in `docs/releases/2025-10-31-changeover.md`. 
 - [Known Issues](#known-issues)  
 - [Contributing](#contributing)  
 - [License & Credits](#license--credits)  
+- [V17 Open Items (TBD, explicitly tracked)](#v17-open-items-tbd-explicitly-tracked)  
+- [Changelog](#changelog)  
 - [Appendix](#appendix)  
 - [A.I. Auto-Update](#ai-auto-update)  
 
@@ -137,7 +163,7 @@ Track day-of and follow-up updates in `docs/releases/2025-10-31-changeover.md`. 
 
 ## Overview
 
-HueyOS targets **Debian 13 “Trixie”** and **Debian 14 “Forky”** with a low-latency, custom **6.16.x–6.17.x-huey** kernel, a **constitutional multi-agent governance model**, and a unified memory system.
+HueyOS targets **Debian 14 “Forky”** as the baseline (with **6.18.5-huey-os** performance-tuned kernels on bare metal). Debian 13 “Trixie” is treated as legacy/compat when required, a **constitutional multi-agent governance model**, and a unified memory system.
 
 At a conceptual level:
 
@@ -170,17 +196,17 @@ At a conceptual level:
 
 The **Master Plan JSON** is the canonical, machine-readable blueprint for Huey’s hardware, governance, memory model, OS layout, and lifecycle logic.
 
-- **Current canonical file:** `master-plan-v15.json` (Master Plan V15.0)  
+- **Current canonical file:** `master-plan-v17.json` (Master Plan V17.0)  
 - **Schema version:** 12  
-- **Role:** Consolidated blueprint synthesizing prior versions (0.1 through 14), introducing clarified citizen identity structures, inter-district memory protocols, crisis responses, lifecycle events, OS partitioning/boot profiles, and explicit versioning strategy.  
+- **Role:** Builds on V15 with a Symbiote-first operational model (Lenovo Legion Go as the primary human interface and lightweight gatekeeper), updated lab infrastructure roles (iMac → Huey-Hub on Windows 10), and an updated kernel baseline (6.18.5-huey-os).
 
 Key points:
 
 - **Single source of truth**  
-  The Master Plan defines the governance structure, hardware requirements, memory architecture, OS profiles (Huey Mode, Desktop Mode, Gaming Mode), and key lifecycle milestones.  
+  The Master Plan defines the governance structure, hardware requirements, memory architecture, OS profiles (Huey Mode, Desktop Mode, Gaming Mode), and key lifecycle milestones.
 
 - **Schema discipline**  
-  V15 uses **schema v12**; all new content must conform to this schema to remain machine-consumable by Huey and tooling.  
+  V17 continues to use **schema v12**; all new content should remain machine-consumable by Huey tooling.
 
 - **Relationship to this README**  
   - This README is the **human-facing narrative** and operational guide.  
@@ -208,7 +234,8 @@ If you change the governance model, hardware assumptions, or key policies, updat
 | `huey/`                   | Core runtime and service modules                     |
 | `install/`                | Installer media and payloads                         |
 | `live/`                   | Live environment artifacts                           |
-| `master-plan-v15.json`    | Canonical Master Plan JSON consumed at runtime       |
+| `master-plan-v17.json`    | Canonical Master Plan JSON consumed at runtime (v17) |
+| `master-plan-v16.json`    | Prior Master Plan JSON (historical reference)        |
 | `repo/pygpt-MHP/`         | Submodule: PyGPT-net integration                     |
 | `reports/`                | Audits, logs, and tracking reports                   |
 | `scripts/`                | Utility scripts                                      |
@@ -301,7 +328,7 @@ Huey’s hardware is described in two layers:
 1. **Canonical Huey Core** — long-term target spec defined by the Master Plan.  
 2. **Current Lab Nodes** — the machines actually on the floor today.
 
-### Canonical Huey Core (Master Plan V15.x)
+### Canonical Huey Core (Master Plan V16.x)
 
 The canonical core is a single node housed inside the robot shell:
 
@@ -311,19 +338,22 @@ The canonical core is a single node housed inside the robot shell:
   - Minimum accepted for derivative builds: 13th-gen Intel i7 (Huey proper standard is 14th-gen i9).  
 
 - **Motherboard**  
-  - UEFI-only; legacy BIOS is not supported.  
-  - Project baseline: **ASUS TUF Z790-PLUS WiFi** (other Z790 candidates possible if fully compatible).  
+  - UEFI-only (official); legacy BIOS/CSM may be possible with workarounds but is not supported out of the box.  
+  - Project baseline: **ASUS TUF Z790-PLUS WiFi** (the only officially supported motherboard for the canonical core at this time).  
   - RAM:
     - Preferred: DDR5 (overclocked where stable); ECC (non-registered) preferred but not required.
-    - DDR4 acceptable only in early or lab-only nodes.
+    - DDR4 is acceptable as a minimum for transitional builds; DDR5 remains the project standard where feasible.
 
 - **GPU Districts**  
   - Four physical GPUs, one per district (Spark, Volt, Zap, Watt).  
   - Each district hosts ~128 persistent citizens and pebbles and has its own governor.  
   - GPU requirements:
     - Release year: 2019+  
-    - VRAM: ≥12 GB (16 GB+ preferred)  
+    - VRAM: ≥12 GB (16 GB+ preferred; **v17 raises the baseline to ≥16 GB for district GPUs**)  
     - Sufficient bandwidth for concurrent local models.
+    - **V17 target:** ~**80 GB total VRAM** aggregate across the GPU tier.
+    - **Optional:** a **5th auxiliary GPU** may be added for overflow compute (districts remain Spark/Volt/Zap/Watt unless the constitution expands).
+
 
 - **Memory (RAM)**  
   - Minimum type: DDR4; **project standard: DDR5**.  
@@ -333,15 +363,24 @@ The canonical core is a single node housed inside the robot shell:
   - Primary array: **RAID-10** of PCIe Gen 4 NVMe SSDs for OS, models, logs, and active datasets.  
   - Swap: dedicated high-speed swap (RAID-0 or dedicated NVMe) sized for hibernation and overflow.  
   - Cold storage: external HDD/NAS (e.g., 8–10 TB mirrored) for backups and archives.
+  - Transitional/legacy: Intel **Optane M10 (16 GB)** sticks may be used for scratch/bring-up arrays and in low-resource nodes; they are being phased out in favor of full-capacity NVMe RAID‑10.
 
 - **Cooling & Power**  
-  - CPU: custom liquid loop inside the Thermaltake Mozart case and robot shell.  
+  - CPU: custom liquid loop inside the Thermaltake Mozart case and robot shell.
+  - **Phase 1 bring-up (v17):** closed-loop AIO for simplicity/safety (target: **360mm / 3‑fan radiator**).
+  - **Phase 2 (expansion):** custom loop + pumps supervised by **HueyPulse** so cooling can continue even when main compute is off.  
   - GPU: high-quality air cooling (or hybrid) with adequate airflow; no extreme overclocks.  
   - PSU:
     - Minimum: 850 W for modest configurations.
     - Recommended: 1000 W+ with headroom for four GPUs, pumps, and auxiliary rails.
+    - **Multi-PSU strategy (v17):**
+      - **Minimum:** 3 strong PSUs (depending on GPU count and power class)
+      - **Recommended:** 4 strong PSUs
+      - **Rule of thumb:** **850W units → plan for 4**, **1000W units → may be feasible with 3**
+    - **Controller / connector plan:** TBD — prior testing used ad‑hoc connectors; v17 requires a properly engineered approach (common ground, safety interlocks, load distribution).
   - UPS-backed pump rail:
-    - Pump and key monitoring microcontrollers remain powered during shutdown to maintain coolant flow (“Sustain Loop Mode”).  
+    - Pump and key monitoring microcontrollers remain powered during shutdown to maintain coolant flow (“Sustain Loop Mode”).
+  - **UPS selection (v17):** model not locked; initial approach may use **refurbished** units or a **DIY** build (standardize later).
 
 - **Identity / Embodiment**  
   - Huey proper is **only** the compute physically inside the shell (CPU, GPUs, storage, control microcontrollers).
@@ -349,42 +388,59 @@ The canonical core is a single node housed inside the robot shell:
 
 ### Current Lab Nodes (Support Infrastructure)
 
-These machines support the project but are not Huey itself:
+These machines support the project but are **not Huey proper** (Huey proper remains the compute physically integrated into the Robotics V3 shell).
+
+**Officially supported / actively used nodes (current):**
+
+- **Huey-Symbiote** *(primary daily driver)*  
+  - Hardware: **Lenovo Legion Go** (docked/undocked; often used with external display)  
+  - Host OS: **Windows 11 Pro**  
+  - Sub-OS: **Debian 14 “Forky”** via WSL/Debian app  
+  - Role: primary human interface + development workstation + orchestration console (PyGPT-net). Can host lightweight “gatekeeper” logic and/or CPU-first local inference for quick interpretation tasks.
+
+- **Briefcase** *(portable terminal / thin client)*  
+  - Hardware: **ASUS BR1100FKA 2‑in‑1** (N4500, LTE)  
+  - OS: minimal **Debian 14 “Forky”**  
+  - Role: portable SSH terminal and LTE uplink. Intended to run lean (zram/zswap) and remote into Huey‑Symbiote and/or future Huey core.
+
+- **Huey-Hub** *(file hub / storage node)*  
+  - Hardware: **iMac 5K (2017)** + **WD MyBook Duo (~10 TB mirrored)**  
+  - OS: **Windows 10** (bare metal)  
+  - Role: centralized storage hub for the lab and Huey ecosystem. Fusion Drive constraint: Windows is expected to live on the HDD; optional lightweight Linux may occupy the small SSD portion for SSH/utility tasks.
+
+**Robotics hardware (in-progress):**
+
+- **Huey-Legacy / Robotics V3 Shell**  
+  - Physical shell: wooden frame + Thermaltake Mozart case embedded in a speaker box + animatronic monkey head  
+  - Status: being reinforced and prepared for eventual canonical core installation (i9‑14900K + 4×GPU districts + RAID‑10 NVMe). Core compute installation is currently **on hold** pending parts/funding.
+
+**Legacy / historical node roles (preserved context):**
+
+> These entries are retained to avoid losing project history. Some roles are **superseded** by the v17 Symbiote-first workflow.
 
 - **Huey Core / Huey Prime (testbed)**  
   - ATX tower; ITX **BD795I-SE** board; Ryzen 9 7945HX; DDR5-5200; dual Intel Optane M10 16 GB (RAID 0 test array); Radeon RX 5500 XT 8 GB.  
   - Role: development, kernel building, and early inference; stepping stone toward i9-14900K canonical core.
 
-- **Huey-Legacy (Robotic Shell V2 → V3)**  
-  - Physical shell: wooden frame + Thermaltake Mozart case embedded in a speaker box.  
-  - Status: being stripped, inspected, reinforced, and repainted (dark tractor red base, silver overlays TBD).  
-  - Will become the home of the canonical i9-14900K + multi-GPU + RAID-10 NVMe stack.
+- **Huey-Portal (historical role)**  
+  - **iMac 5K (2017)** previously ran Debian (Trixie) as a universal display/SSH terminal.  
+  - v17 reality: the iMac is repurposed primarily as **lab tech + storage hub** (Windows on HDD; optional minimal Linux utility partition on the SSD sliver).
 
-- **Huey-Portal**  
-  - **iMac 5K (2017)**; 48 GB RAM; Debian 13 Trixie; GNOME on Xorg; kernel 6.12.x for audio stability.  
-  - Role: universal display/SSH terminal, daily driver, and preferred development environment.
+- **Huey-Hub (historical candidate)**  
+  - **MacBook Pro 2017** (Windows 10).  
+  - Role: potential file hub/NAS candidate (if reactivated), hosting external RAID (e.g., WD MyBook Duo 10 TB).
 
-- **Huey-Hub (candidate)**  
-  - **MacBook Pro 2017**, Windows 10.  
-  - Role: potential file hub/NAS, hosting external RAID (e.g., WD MyBook Duo 10 TB).
-
-- **Briefcase (formerly Huey-Portable)**  
-  - **ASUS BR1100FKA** 11.6", N4500, 4 GB RAM, 128 GB eMMC, LTE.  
-  - Dual-boot: Windows 11 (internal) + Debian Forky (Optane).  
-  - Role: portable terminal, LTE uplink, and note/voice-memo ingestion into Huey’s unified memory.
-
-- **Legion Go**  
-  - **Lenovo Legion Go** (Z1) with Sharp 4K TV.  
-  - Role: gaming, occasional compute helper; considered lab tech, not Huey.
+- **Legion Go (superseded role)**  
+  - Historically treated as gaming/occasional compute helper.  
+  - v17 reality: promoted to **Huey‑Symbiote** (Windows 11 Pro + WSL/Debian) as the primary human interface.
 
 - **Black Box Unit (planned)**  
   - Internal safety and recovery node inside Huey’s shell.  
   - Role:
     - Store critical configuration, Master Plan, and constitutional texts.
     - Host the Founding Father AI image and binary policy AI.
-    - Provide a fallback boot and recovery environment.  
+    - Provide a fallback boot and recovery environment.
 
----
 
 ## History & Origins
 
@@ -410,40 +466,46 @@ The Monkey-Head-Project has a long pre-history that informs HueyOS’s current d
   - External machines were demoted to **lab tech**.
 - Governance moved from CPU-centric to **GPU-centric**, with each GPU representing a district hosting its own governor and populace.
 
-### Master Plan Evolution (V0.1 → V15)
+### Master Plan Evolution (V0.1 → V17)
 
 - V0.1 defined a skeleton (orchestration node, black box, portable, portal, hub, inference layer, governance, memory, network, training).
 - V2-final introduced GPU districts and the citizen/pebble distinction.
 - V11–V12 formalized tri-branch governance and term limits.
 - V13 established a unified schema and deep constitutional detail.
 - V14 consolidated templates and structural expansions.
-- **V15.0** is the current consolidated Master Plan, superseding V13 and incorporating WIP from V14 plus legacy constitutional texts.  
+- **V15.0** became the consolidated blueprint synthesizing v0.1–v14 (citizen identity, inter-district memory protocols, crisis responses, OS partitioning/boot profiles, and explicit versioning strategy).
+- **V16.0** updates the operational reality: Symbiote-first workflow (Legion Go), iMac repurposed as Huey-Hub on Windows 10, kernel baseline at 6.18.5-huey-os, motherboard candidate narrowed to ASUS TUF Z790-PLUS WiFi only, and clarified “citizen vs pebble” semantics.
 
-This README and the current codebase are the live implementation layer over the V15 era.
+This README and the current codebase are the live implementation layer over the V17 era.
 
 ---
 
 ## Software Stack
 
 - **OS baseline**
-  - Debian 13 (Trixie) for the iMac 5K (Huey-Portal) and certain stable nodes.
-  - Debian 14 (Forky) for new deployments, lab nodes, and the future Huey core.
-  - UEFI-only for Huey core and future nodes; no legacy BIOS.
+  - **Debian 14 “Forky”** is the baseline for all active Linux nodes and for the Symbiote’s Linux sub-OS (WSL/Debian app).
+  - **Windows 11 Pro** is the host OS for **Huey‑Symbiote** (human interface layer).
+  - **Windows 10** is the host OS for **Huey‑Hub** (storage node / file hub).
+  - Huey core remains **UEFI-first** by design; legacy BIOS/CSM is not supported out of the box.
 
 - **Kernel**
-  - 6.12.x (Trixie) on iMac 5K for audio stability.
-  - 6.16.x-huey: prior low-latency baseline.
-  - 6.17.x-huey: preferred series for new nodes and Huey Mode.
-  - Builds are tuned with:
-    - DEBUG_INFO and friends disabled.
-    - ZSTD compression and targeted drivers.
-    - EFI/EFI_STUB/EFI_VARS enabled.
+  - **6.18.5-huey-os** is the current bare-metal baseline across Debian/Forky installs in the lab.
+  - WSL environments share the Windows/WSL kernel; deep kernel customization is therefore not expected on Huey‑Symbiote.
+
+- **Python**
+  - **3.13.x** is the operational baseline for HueyOS tooling and services.
+  - **3.12.x** is **legacy/exception-only** (avoid unless required by a specific dependency).
+  - **3.14.x** is a staged migration goal pending PyGPT/PyGPT‑net and dependency readiness.
 
 - **AI runtime**
-  - **PyGPT-net** as orchestrator and nervous system.
-  - **Ollama** as local LLM server (models such as Mistral-7B-KM, LLaMA 3.1, DeepSeek-class OSS reasoning models).
+  - **PyGPT-net** as the primary operator console / interface layer (v17: **not** treated as the long-term constitutional orchestrator/control plane).
+  - **Ollama** as local LLM server (quantized models by default in early stages).
   - Whisper (or equivalent) for STT; TTS stack is pluggable.
-  - Agent orchestration maps citizens/pebbles to model endpoints and GPU districts.
+  - Agent orchestration maps citizens/ephemeral workers to model endpoints and (eventually) GPU districts.
+
+- **Container policy (v17)**
+  - Default: run services **native** (performance + simplicity).
+  - Allowed: **Docker/containers** for repeatable dev/test, portability, and CI where it helps.
 
 - **UI & Channel Huey**
   - Minimalist green-on-black terminal aesthetic with accent colours.
@@ -453,13 +515,13 @@ This README and the current codebase are the live implementation layer over the 
   - “Channel Huey” overlays unify CLI, web UI, audio, and physical robot feedback.
 
 - **Networking**
-  - Preferred: bonded Ethernet to a high-end router (e.g., ASUS GT-AC5300 or successor).
-  - Fallback: Wi-Fi and LTE (via Briefcase) for WAN access, WAN-aware governance, and remote status.
+  - Preferred: bonded Ethernet for fixed nodes and the eventual Huey core.
+  - Fallback: Wi‑Fi and LTE (via Briefcase) for remote status, updates, and light telepresence.
+  - Network access remains policy-driven and logged.
 
 - **Security**
-  - SSH key-based access; default lab key plus per-person keys.
-  - Root login allowed only during bring-up; disabled afterwards.
-  - Black Box stores recovery keys, founding images, and Master Plan.
+  - SSH key-based access; per-node keys preferred.
+  - Treat Huey‑Hub (Windows 10 storage) as infrastructure: minimize exposed services, keep backups, and harden access.
 
 ---
 
@@ -467,9 +529,9 @@ This README and the current codebase are the live implementation layer over the 
 
 ### Supported Targets (Current Focus)
 
-- **Debian 13 (Trixie)** — stable baseline; amd64; UEFI.  
-- **Debian 14 (Forky)** — changeover target and future baseline for Huey core.  
-- **Kernels:** 6.16.x-huey (legacy), 6.17.x-huey (preferred).
+- **Debian 14 (Forky)** — current baseline; amd64; UEFI.  
+- **Debian 13 (Trixie)** — legacy/compat only (use when required).  
+- **Kernels:** **6.18.5-huey-os** (current baseline); older 6.16/6.17 series are historical/legacy.
 
 ### Minimal Install
 
@@ -544,15 +606,15 @@ Set `HUEY_BUILD_EXTRAS=ml,data,cloud` before `docker compose build` to bake extr
 
 ## Build Guides
 
-### Kernel 6.17.x-huey (Generic)
+### Kernel 6.18.5-huey-os (Generic)
 
 ```bash
 sudo apt install -y fakeroot kmod pahole flex bison libelf-dev libssl-dev \
   libncurses-dev bc rsync xz-utils cpio python3
 
-wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.17.5.tar.xz
-tar -xf linux-6.17.5.tar.xz
-cd linux-6.17.5
+wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.18.5.tar.xz
+tar -xf linux-6.18.5.tar.xz
+cd linux-6.18.5
 
 cp -v /boot/config-$(uname -r) .config
 yes "" | make olddefconfig
@@ -563,12 +625,14 @@ yes "" | make olddefconfig
 
 make -j"$(nproc)" bindeb-pkg
 
-sudo dpkg -i ../linux-image-6.17.5-*.deb ../linux-headers-6.17.5-*.deb
-sudo update-initramfs -c -k 6.17.5
+sudo dpkg -i ../linux-image-6.18.5-*.deb ../linux-headers-6.18.5-*.deb
+sudo update-initramfs -c -k 6.18.5
 sudo update-grub
 ```
 
-#### iMac 5K (2017) — Notes
+#### iMac 5K (2017) — Legacy Linux Notes (optional)
+
+> Note: The iMac is currently planned to run Windows 10 as **Huey‑Hub**. Keep this section only if you also maintain a Linux partition (e.g., on the small SSD portion of the Fusion Drive).
 
 - GNOME on Xorg recommended.
 - Force 1080p60 during early boot if needed via kernel cmdline.
@@ -766,19 +830,23 @@ Huey’s memory architecture is designed for **lifelong learning**, **auditabili
 
 ## Remote Access (VNC/SSH)
 
-Preferred workflow:
+Preferred workflow (for Linux graphical sessions):
 
-- Run TigerVNC on Huey’s graphical node (e.g., Huey-Portal), bound to `localhost:1995` with `-SecurityTypes None`.
+- Run TigerVNC on the target Linux node (bare metal Debian/Forky, or the Symbiote’s Linux sub‑OS), bound to `localhost:1995` with `-SecurityTypes None`.
 - Access via SSH tunnel only (no direct VNC exposure):
 
 ```bash
-ssh -L 1995:localhost:1995 dlrp@huey-portal
+ssh -L 1995:localhost:1995 <user>@<huey-node>
 vncviewer localhost:1995
 ```
 
-On Huey-Portal, a helper script `~/bin/vnc` (and alias `huey-vnc`) maps `:1 → 1995` and defaults to **2560×1440**.
+Notes:
+
+- On Windows hosts, treat VNC as “Linux UI plumbing” (WSL or a Linux node). For Windows UI, prefer native Windows remote tooling.
+- Keep the VNC server bound to localhost and rely on SSH tunnels for exposure control.
 
 ---
+
 
 ## Action Plan — Oct 31, 2025 (Historical)
 
@@ -787,7 +855,7 @@ This checklist captured the original changeover execution plan and remains usefu
 - Canonical log + notes: `docs/releases/2025-10-31-changeover.md`  
 - Supporting runbooks:
   - `docs/debian-forky-upgrade.md`
-  - `docs/kernel-6.17.3-runbook.md`
+  - `docs/kernel-6.18.5-runbook.md`
   - `docs/python314-upgrade-notes.md`
 
 This README retains the high-level context; consult the changeover release document for step-by-step execution details.
@@ -872,32 +940,38 @@ huey memory-sort --dry-run --json
 
 ## Feature Matrix
 
-| Area        | Now (Trixie · 6.12/6.16)          | Next (Forky · 6.17.x)                           | Later                       |
-| ----------- | ---------------------------------- | ----------------------------------------------- | --------------------------- |
-| Kernel      | Low-latency; AMDGPU OK; audio-tuned on iMac | ROCm/Vulkan tuning; iMac audio refinements      | 6.18+ and future series     |
-| Python      | 3.13.x baseline                    | 3.14.x GA after compatibility work              | —                           |
-| AI runtime  | PyGPT-net + Ollama (quantized)     | Model-zoo profiles; richer agent orchestration  | Multi-node federation       |
-| Memory hive | JSON + SQLite                      | Roll-up analytics; retention/purge policies     | Full cross-node time-travel |
-| Networking  | Bonded Ethernet; VNC over SSH      | Policy-driven LTE fallback via Briefcase        | WAN-aware governance        |
-| Governance  | Tri-branch spec; GPU districts     | Live elections, dashboards, crisis tooling      | Self-amending constitution  |
-| Packaging   | Editable install + Docker          | ISO builder, signed artifacts                   | Hardware vendor images      |
+| Area        | Now (Forky · 6.18.5-huey-os)                     | Next (Forky · 6.18.x+)                                 | Later                          |
+| ----------- | ------------------------------------------------- | ------------------------------------------------------ | ------------------------------ |
+| Kernel      | 6.18.5-huey-os baseline on bare metal; WSL uses host kernel | Further hardening + reproducible build/runbooks         | 6.19+ and future series        |
+| Python      | 3.13.x baseline (3.12.x legacy/exception-only)    | 3.14.x GA after PyGPT/PyGPT-net + deps stabilize       | —                              |
+| AI runtime  | PyGPT-net + Ollama (quantized)                    | Model-zoo profiles; richer agent orchestration          | Multi-node federation          |
+| Memory hive | JSON + SQLite                                     | Roll-up analytics; retention/purge policies             | Full cross-node time-travel    |
+| Networking  | Bonded Ethernet; SSH-first; LTE fallback via Briefcase | Policy-driven multi-link redundancy (Symbiote dock)   | WAN-aware governance           |
+| Governance  | Tri-branch spec; GPU districts (design locked)    | Live elections, dashboards, crisis tooling              | Self-amending constitution     |
+| Packaging   | Editable install + Docker                         | ISO builder, signed artifacts                           | Hardware vendor images         |
 
 ---
 
 ## Known Issues
 
-- **iMac 5K (2017) audio**  
-  - Some kernels in the 6.17 series remain problematic; 6.12.x is currently used for stability.
-- **Edge repository keys**  
-  - May require re-import after dist-upgrade.
-- **Vulkan/ROCm backend selection**  
-  - Can be fragile; explicitly set `VK_ICD_FILENAMES` and `OLLAMA_LLM_LIBRARY=vulkan` for AMD GPUs.
-- **Mixed-media RAID**  
+- **WSL kernel limitations (Huey‑Symbiote)**
+  - WSL shares the Windows/WSL kernel; you can’t swap in HueyOS custom kernels inside WSL.
+  - Some low-level hardware and driver workflows (certain GPU paths, advanced networking) may differ from bare-metal Debian.
+
+- **iMac Fusion Drive constraints (Huey‑Hub)**
+  - The SSD portion is small (~28 GB usable). If you dual-boot or add a Linux utility partition, keep expectations realistic and prioritize stability.
+
+- **Edge repository keys**
+  - May require re-import after dist-upgrade on Debian nodes.
+
+- **Vulkan/ROCm backend selection**
+  - Can be fragile; explicitly set `VK_ICD_FILENAMES` and `OLLAMA_LLM_LIBRARY=vulkan` where applicable (especially on AMD GPU nodes).
+
+- **Mixed-media RAID**
   - Optane + eMMC/HDD can auto-assemble phantom arrays; clean stale superblocks and set `AUTO -all`.
-- **Briefcase sensors**  
-  - Orientation via `iio-sensor-proxy` may lag; tuned defaults documented in kernel notes.
-- **Governance tooling**  
-  - Many flows (elections, Supreme Court procedures, dashboards) are defined in the Master Plan but not yet fully implemented in code.
+
+- **Briefcase resource limits**
+  - The N4500 + 4 GB RAM profile benefits strongly from zram/zswap and thin-client workflows (SSH into Symbiote/core).
 
 ---
 
@@ -936,17 +1010,52 @@ huey memory-sort --dry-run --json
 **Code:** GPL-3.0-only  
 **Docs & Media:** CC-BY-SA-4.0  
 
-**Acknowledgements:** PyGPT (pygpt-net) · Debian 13 “Trixie” and Debian 14 “Forky” · Python 3.13 → 3.14 (planned) · Kernel 6.12/6.16 → 6.17.x · Everyone who stares at boot logs so the splash screen can stay off.
+**Acknowledgements:** PyGPT (pygpt-net) · Debian 13 “Trixie” and Debian 14 “Forky” · Python 3.13 → 3.14 (planned) · Kernel 6.18.5-huey-os baseline · Everyone who stares at boot logs so the splash screen can stay off.
 
 ---
+
+## V17 Open Items (TBD, explicitly tracked)
+
+These items are **not** being ignored; they are intentionally left open until testing or acquisition constraints resolve them:
+
+1. **GPU SKUs** — final shortlist + purchase criteria (minimum 16 GB VRAM each; target ~80 GB aggregate; optional 5th GPU).
+2. **PSU controller / connector architecture** — grounding, safety interlocks, load distribution, pump rail strategy.
+3. **Custom loop bill of materials** (Phase 2) — pumps, blocks, rads, sensors, coolant volume targets.
+4. **UPS standard** — model/capacity targets (initially refurbished or DIY is acceptable).
+5. **Memory replication policy** — what is authoritative, where durability lives, how replication and conflict resolution work.
+6. **Thermal & power crisis thresholds** — trip points + escalation ladder.
+7. **Docking minimum spec** — USB‑C/USB4 bandwidth expectations, NIC strategy, redundancy.
+
 
 ## Appendix
 
 - **VNC workflow defaults** — TigerVNC bound to `localhost:1995`, SSH tunnel only, default resolution 2560×1440.  
 - **Governance axiom** — keep governance **decentralized** and memory **unified**.  
-- **Master Plan JSON** — treat `master-plan-v15.json` as the canonical constitutional artifact for training and deployment; prior versions are historical reference only.  
+- **Master Plan JSON** — treat `master-plan-v17.json` as the canonical constitutional artifact for training and deployment; prior versions (including `master-plan-v16.json`) are historical reference only.  
 
 ---
+
+## Changelog
+
+### v17 (2026-01-28)
+
+- Phase update:
+  - Realignment & Defragmentation marked **completed** (ended **2026-01-07**).
+  - New active phase: **Acquisition & Framework Finalization**.
+  - New target milestone: **2026-06-04** (*Reacquisition target*).
+- Canon mapping lock clarified (Master Plan = machine spec; README = human narrative).
+- Python baseline clarified:
+  - **3.13.x** remains baseline.
+  - **3.12.x** is now legacy/exception-only.
+- GPU baseline tightened:
+  - District GPUs target **≥16 GB VRAM** minimum (prior ≥12 GB is transitional only).
+  - Target **~80 GB VRAM aggregate**; optional **5th GPU** for overflow compute.
+- Power strategy clarified:
+  - Multi‑PSU guidance (850W→4, 1000W→3 possible), controller/connector plan remains TBD.
+- Cooling phased plan clarified (AIO bring-up → custom loop under HueyPulse supervision).
+- PyGPT-net scope clarified (operator console / interface layer; not the long-term constitutional orchestrator).
+- Container policy stated (native by default; containers allowed for dev/test).
+
 
 ## A.I. Auto-Update
 
