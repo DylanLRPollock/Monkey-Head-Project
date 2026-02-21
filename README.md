@@ -1,6 +1,6 @@
 # Monkey-Head-Project
 
-## HueyOS — Prototype Robotic AI/OS
+## HueyOS — Prototype Robotic AI/OS (Offline-First · Retro-Tech Revival)
 
 ![HueyOS background](./HueyOS-background.png)
 
@@ -23,6 +23,43 @@
 ![Docs/Media License](https://img.shields.io/badge/docs%2Fmedia-CC--BY--SA--4.0-lightgrey)
 ![Python](https://img.shields.io/badge/python-3.13.x-blue)
 
+
+---
+## Offline-First Contract (Explicit)
+
+HueyOS is designed to run **primarily offline**.
+
+Internet connectivity is treated as a **tool**, not a dependency. When used, it should be **explicitly enabled**, **logged**, and (when relevant) **quota/token-metered** under governance rules.
+
+### Works offline by default
+- Local LLM inference (e.g., Ollama + quantized models early-stage)
+- Local governance deliberation (district + tri-branch)
+- Local memory hive (append-only logs + SQLite indexing)
+- Local automation/control loops (HueyPulse + microcontrollers)
+- Local development + lab operations (docs, builds, datasets, media curation)
+
+### Uses the internet only when intentionally enabled
+- OS/package updates (maintenance windows)
+- Model downloads (curated, pinned)
+- Optional API calls (governed, metered, auditable)
+
+**Default rule:** If there is a conflict between ambition and safety, **safety wins** and the action remains blocked.
+
+---
+
+## Retro-Tech Revival Doctrine (Breathing New Life into Old Tech)
+
+HueyOS is a framework for turning “old” or repurposed hardware into useful roles within a coherent system.
+
+Legacy machines are not treated as waste; they become **infrastructure**:
+
+- **Portals** — displays/terminals into Huey tooling (SSH/VNC/dashboards)
+- **Hubs** — archival storage + backup fabric (mirrors, cold storage, indexing)
+- **Briefcases** — portable terminals + field diagnostics + LTE uplinks
+- **Instruments** — retro-modern UI/AV presence (“Channel Huey”)
+- **Controllers** — deterministic safety/control nodes (HueyPulse, Arduino-class microcontrollers)
+
+This doctrine aligns with the project’s ethos: **revive old tech by giving it a constitutional place** in the Huey ecosystem.
 
 ---
 ## 2026 — Acquisition & Framework Finalization (Active)
@@ -131,6 +168,8 @@ Docking / connectivity goals (V3 shell integration):
 ---
 ## Table of Contents
 
+- [Offline-First Contract (Explicit)](#offline-first-contract-explicit)  
+- [Retro-Tech Revival Doctrine (Breathing New Life into Old Tech)](#retro-tech-revival-doctrine-breathing-new-life-into-old-tech)  
 - [2026 — Acquisition & Framework Finalization (Active)](#2026--acquisition--framework-finalization-active)  
 - [January 2026 — Realignment & Defragmentation (Completed)](#january-2026--realignment--defragmentation-completed)  
 - [Historical Notes](#historical-notes)  
@@ -163,7 +202,7 @@ Docking / connectivity goals (V3 shell integration):
 
 ## Overview
 
-HueyOS targets **Debian 14 “Forky”** as the baseline (with **6.18.5-huey-os** performance-tuned kernels on bare metal). Debian 13 “Trixie” is treated as legacy/compat when required, a **constitutional multi-agent governance model**, and a unified memory system.
+HueyOS targets **Debian 14 “Forky”** as the baseline (with **6.18.5-huey-os** performance-tuned kernels on bare metal). Debian 13 “Trixie” is treated as legacy/compat when required. HueyOS implements a **constitutional multi-agent governance model** and a unified memory system.
 
 At a conceptual level:
 
@@ -328,7 +367,7 @@ Huey’s hardware is described in two layers:
 1. **Canonical Huey Core** — long-term target spec defined by the Master Plan.  
 2. **Current Lab Nodes** — the machines actually on the floor today.
 
-### Canonical Huey Core (Master Plan V16.x)
+### Canonical Huey Core (Master Plan V17 era; core spec originated in V16)
 
 The canonical core is a single node housed inside the robot shell:
 
@@ -567,7 +606,8 @@ python -m pip install --upgrade pip
 pip install -e .          # core runtime
 pip install -e '.[ml]'    # ML toolchain
 pip install -e '.[data]'  # vector DB integrations
-pip install -e '.[cloud]' # optional cloud helpers
+# Optional (internet/API helpers):
+# pip install -e '.[cloud]'
 
 # PyTorch (CPU wheels by default; Python 3.13.x)
 pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 \
@@ -587,7 +627,10 @@ cp huey.env.example .env  # then edit secrets and ports
 huey init --run-checks --verbose
 
 # Launch multi-agent runtime (CLI + ML + optional cloud)
-huey run --ml --cloud
+huey run --ml
+
+# Optional (if cloud helpers are installed and enabled):
+# huey run --ml --cloud
 
 # Optional: start FastAPI control surface
 uvicorn huey.api:app --reload
@@ -600,7 +643,9 @@ docker compose build
 docker compose up -d
 ```
 
-Set `HUEY_BUILD_EXTRAS=ml,data,cloud` before `docker compose build` to bake extra profiles into the container image.
+Set `HUEY_BUILD_EXTRAS=ml,data` before `docker compose build` to bake extra profiles into the container image.
+
+Optional (internet/API helpers): set `HUEY_BUILD_EXTRAS=ml,data,cloud` before `docker compose build`.
 
 ---
 
@@ -929,7 +974,10 @@ Example CLI targets (preview):
 
 ```bash
 huey init --run-checks --verbose
-huey run --ml --cloud
+huey run --ml
+
+# Optional (if cloud helpers are installed and enabled):
+# huey run --ml --cloud
 huey system-check --verbose
 huey deploy --mode all --compose-file docker-compose.yml --manifest k8s.yaml
 huey agent-status --json
