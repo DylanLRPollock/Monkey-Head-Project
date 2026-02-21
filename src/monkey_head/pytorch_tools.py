@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 import random
+from pathlib import Path
 from typing import Any, Dict, Iterable, Sequence, Tuple
 
 import numpy as np
@@ -95,6 +96,36 @@ def sample_tensor(shape: Iterable[int], device: torch.device | None = None) -> t
     return torch.randn(tuple(shape), device=device)
 
 
+def load_state_dict_checkpoint(
+    model: nn.Module,
+    checkpoint_path: str | Path,
+    *,
+    map_location: str | torch.device = "cpu",
+    strict: bool = True,
+    trusted_source: bool = False,
+) -> nn.Module:
+    """Load a state dict checkpoint into ``model`` with an explicit trust gate.
+
+    PyTorch checkpoint loading is still pickle-based, including many
+    ``weights_only=True`` flows. To reduce accidental RCE exposure, callers must
+    explicitly mark the source as trusted before this helper will invoke
+    :func:`torch.load`.
+    """
+
+    if not trusted_source:
+        raise PermissionError(
+            "Refusing to load checkpoint with torch.load from an untrusted source. "
+            "Review the artifact, or prefer a non-pickle format (for example safetensors), "
+            "then call with trusted_source=True."
+        )
+
+    state = torch.load(checkpoint_path, map_location=map_location, weights_only=True)
+    if isinstance(state, dict) and "state_dict" in state:
+        state = state["state_dict"]
+    model.load_state_dict(state, strict=strict)
+    return model
+
+
 __all__ = [
     "TorchDeviceInfo",
     "get_device",
@@ -103,4 +134,5 @@ __all__ = [
     "build_mlp",
     "tensor_stats",
     "sample_tensor",
+    "load_state_dict_checkpoint",
 ]
