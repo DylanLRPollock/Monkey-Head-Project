@@ -11,7 +11,7 @@
 **Official site:** https://www.dlrp.ca  
 **Contact:** admin@dlrp.ca  
 **License:** Code: GPL-3.0-only • Docs/Media: CC-BY-SA-4.0  
-**Status date:** 2026-01-28  
+**Status date:** 2026-02-27  
 
 > **HueyOS** is a modular robotic AI/OS designed to demonstrate that **any one person, given enough time, energy, and resources, can build a self-sufficient, expandable, and upgradable robot using today’s technology.**
 >
@@ -23,6 +23,14 @@
 ![Docs/Media License](https://img.shields.io/badge/docs%2Fmedia-CC--BY--SA--4.0-lightgrey)
 ![Python](https://img.shields.io/badge/python-3.13.x-blue)
 
+---
+## Executive Summary (TL;DR)
+
+- **Offline-first AI OS**: HueyOS runs primarily offline; internet is an explicitly enabled, logged tool.  
+- **Reacquisition target (2026-06-04)**: **core node initialized** by this date (even if not all GPU districts are online yet). Full multi-district deployment follows later in 2026.  
+- **Kernel direction**: lab is moving from the 6.18.x baseline to a **6.19.x stable track**, with active testing of **Linux 7.0-rc**; upstream **7.0 stable** is expected around **mid-April 2026** (RC cadence dependent).  
+- **Storage direction**: transition away from Optane M10 scratch arrays toward **PCIe Gen4 NVMe (Samsung 990 class)** and eventual **NVMe RAID-10** as the primary array.  
+- **Python baseline**: **3.13.x** remains the day-to-day baseline; 3.14.x is gated on PyGPT/PyGPT-net ecosystem support.
 
 ---
 ## Offline-First Contract (Explicit)
@@ -67,6 +75,17 @@ This doctrine aligns with the project’s ethos: **revive old tech by giving it 
 **Phase status:** Active  
 **Began:** 2026-01-08 (immediately following Realignment & Defragmentation)  
 **Target milestone (not a hard deadline):** **2026-06-04** — *Reacquisition (target)*
+
+### What “Reacquisition (2026-06-04)” means in practice (current stance)
+
+By **2026-06-04**, the goal is not “everything finished” — it is **Huey core initialization**:
+
+- The **core node boots cleanly**, runs the baseline services, and can ingest/operate on real-world data.
+- The system may be running **partial GPU bring-up** (or even CPU-first inference) while the full district GPU tier is still being acquired.
+- Multi-district governance and large-scale experiments are expected **after** core bring-up, once hardware arrives and stability is proven.
+
+(Translation: *June 4th is “core up,” not “full deployment.”*)
+
 
 ### Summary
 
@@ -168,6 +187,7 @@ Docking / connectivity goals (V3 shell integration):
 ---
 ## Table of Contents
 
+- [Executive Summary (TL;DR)](#executive-summary-tldr)
 - [Offline-First Contract (Explicit)](#offline-first-contract-explicit)  
 - [Retro-Tech Revival Doctrine (Breathing New Life into Old Tech)](#retro-tech-revival-doctrine-breathing-new-life-into-old-tech)  
 - [2026 — Acquisition & Framework Finalization (Active)](#2026--acquisition--framework-finalization-active)  
@@ -202,7 +222,7 @@ Docking / connectivity goals (V3 shell integration):
 
 ## Overview
 
-HueyOS targets **Debian 14 “Forky”** as the baseline (with **6.18.5-huey-os** performance-tuned kernels on bare metal). Debian 13 “Trixie” is treated as legacy/compat when required. HueyOS implements a **constitutional multi-agent governance model** and a unified memory system.
+HueyOS targets **Debian 14 “Forky”** as the baseline (with a performance-tuned **6.19.x stable kernel track** on bare metal, and a forward-testing track on **Linux 7.0-rc**). Debian 13 “Trixie” is treated as legacy/compat when required. HueyOS implements a **constitutional multi-agent governance model** and a unified memory system.
 
 At a conceptual level:
 
@@ -237,7 +257,7 @@ The **Master Plan JSON** is the canonical, machine-readable blueprint for Huey�
 
 - **Current canonical file:** `master-plan-v17.json` (Master Plan V17.0)  
 - **Schema version:** 12  
-- **Role:** Builds on V15 with a Symbiote-first operational model (Lenovo Legion Go as the primary human interface and lightweight gatekeeper), updated lab infrastructure roles (iMac → Huey-Hub on Windows 10), and an updated kernel baseline (6.18.5-huey-os).
+- **Role:** Builds on V15 with a Symbiote-first operational model (Lenovo Legion Go as the primary human interface and lightweight gatekeeper), updated lab infrastructure roles (iMac → Huey-Hub on Windows 10), and an updated kernel baseline (6.18.5-huey-os in Master Plan V17; **kernel policy is now transitioning to 6.19.x + Linux 7.0-rc** and will be reflected in the next Master Plan bump).
 
 Key points:
 
@@ -395,11 +415,14 @@ The canonical core is a single node housed inside the robot shell:
 
 
 - **Memory (RAM)**  
-  - Minimum type: DDR4; **project standard: DDR5**.  
-  - Capacity sized for multiple concurrent models and agent workloads.
+  - Minimum: **16 GB** (bootstrapping / bring-up minimum).
+  - Recommended: **32 GB DDR5** (baseline).
+  - Core-node target: **32–64 GB DDR5** (sweet spot for early multi-agent + local model work).
+  - Board capability is higher (e.g., 96 GB+ depending on DIMM density), but this is not currently required.
 
 - **Storage**  
-  - Primary array: **RAID-10** of PCIe Gen 4 NVMe SSDs for OS, models, logs, and active datasets.  
+  - Primary array: **RAID-10** of PCIe Gen 4 NVMe SSDs for OS, models, logs, and active datasets.
+  - Planned NVMe family (current leaning): **Samsung 990-class** drives (exact SKU/size still flexible).
   - Swap: dedicated high-speed swap (RAID-0 or dedicated NVMe) sized for hibernation and overflow.  
   - Cold storage: external HDD/NAS (e.g., 8–10 TB mirrored) for backups and archives.
   - Transitional/legacy: Intel **Optane M10 (16 GB)** sticks may be used for scratch/bring-up arrays and in low-resource nodes; they are being phased out in favor of full-capacity NVMe RAID‑10.
@@ -528,7 +551,10 @@ This README and the current codebase are the live implementation layer over the 
   - Huey core remains **UEFI-first** by design; legacy BIOS/CSM is not supported out of the box.
 
 - **Kernel**
-  - **6.18.5-huey-os** is the current bare-metal baseline across Debian/Forky installs in the lab.
+  - **Stable track (lab):** 6.19.x (performance-tuned HueyOS configs/patches as needed).
+  - **Development track (forward testing):** Linux **7.0-rc** (for early enablement and to front-run the next major baseline).
+  - Expected upstream **7.0 stable** landing: **mid-April 2026** (subject to upstream RC cadence).
+  - **Legacy baseline (historical):** 6.18.5-huey-os (kept for rollback and reference).
   - WSL environments share the Windows/WSL kernel; deep kernel customization is therefore not expected on Huey‑Symbiote.
 
 - **Python**
@@ -570,7 +596,7 @@ This README and the current codebase are the live implementation layer over the 
 
 - **Debian 14 (Forky)** — current baseline; amd64; UEFI.  
 - **Debian 13 (Trixie)** — legacy/compat only (use when required).  
-- **Kernels:** **6.18.5-huey-os** (current baseline); older 6.16/6.17 series are historical/legacy.
+- **Kernels:** **6.19.x** (stable track) • **7.0-rc** (development/forward-testing) • **6.18.5-huey-os** (legacy rollback/reference).
 
 ### Minimal Install
 
@@ -651,7 +677,46 @@ Optional (internet/API helpers): set `HUEY_BUILD_EXTRAS=ml,data,cloud` before `d
 
 ## Build Guides
 
-### Kernel 6.18.5-huey-os (Generic)
+### Kernel Track (6.19.x stable / 7.0-rc development)
+
+```bash
+# Pick a kernel version:
+# - Stable track example: 6.19.3 (or newer 6.19.x)
+# - Dev track example: 7.0-rc1 (or newer -rc)
+KVER="7.0-rc1"   # change as needed
+
+sudo apt install -y fakeroot kmod pahole flex bison libelf-dev libssl-dev   libncurses-dev bc rsync xz-utils cpio python3
+
+# Source (kernel.org)
+BASE_MAJOR="${KVER%%.*}"
+# RC tarballs live under .../vX.x/testing/, stable tarballs under .../vX.x/
+if [[ "$KVER" == *"-rc"* ]]; then
+  BASE_URL="https://cdn.kernel.org/pub/linux/kernel/v${BASE_MAJOR}.x/testing"
+else
+  BASE_URL="https://cdn.kernel.org/pub/linux/kernel/v${BASE_MAJOR}.x"
+fi
+wget "${BASE_URL}/linux-${KVER}.tar.xz"
+tar -xf "linux-${KVER}.tar.xz"
+cd "linux-${KVER}"
+
+# Start from current config and normalize
+cp -v "/boot/config-$(uname -r)" .config
+yes "" | make olddefconfig
+
+# Example tuning knobs (adjust to taste)
+./scripts/config --disable DEBUG_INFO --disable DEBUG_INFO_BTF   --disable KASAN --disable UBSAN --disable KCOV --disable FUNCTION_TRACER   --enable ZSTD --enable RD_ZSTD --enable EFI --enable EFI_STUB --enable EFI_VARS
+
+# Debian packages
+make -j"$(nproc)" bindeb-pkg
+
+sudo dpkg -i ../linux-image-*.deb ../linux-headers-*.deb
+sudo update-initramfs -c -k "${KVER}"
+sudo update-grub
+```
+
+### Legacy Kernel 6.18.5-huey-os (Rollback Build Guide)
+
+> Use only for rollback/reference. Current policy is 6.19.x stable + 7.0-rc forward-testing.
 
 ```bash
 sudo apt install -y fakeroot kmod pahole flex bison libelf-dev libssl-dev \
@@ -674,6 +739,7 @@ sudo dpkg -i ../linux-image-6.18.5-*.deb ../linux-headers-6.18.5-*.deb
 sudo update-initramfs -c -k 6.18.5
 sudo update-grub
 ```
+
 
 #### iMac 5K (2017) — Legacy Linux Notes (optional)
 
@@ -990,7 +1056,7 @@ huey memory-sort --dry-run --json
 
 | Area        | Now (Forky · 6.18.5-huey-os)                     | Next (Forky · 6.18.x+)                                 | Later                          |
 | ----------- | ------------------------------------------------- | ------------------------------------------------------ | ------------------------------ |
-| Kernel      | 6.18.5-huey-os baseline on bare metal; WSL uses host kernel | Further hardening + reproducible build/runbooks         | 6.19+ and future series        |
+| Kernel      | 6.19.x stable track on bare metal; 7.0-rc forward-testing; WSL uses host kernel | 7.0 stable adoption + reproducible build/runbooks       | 7.1+ and future series        |
 | Python      | 3.13.x baseline (3.12.x legacy/exception-only)    | 3.14.x GA after PyGPT/PyGPT-net + deps stabilize       | —                              |
 | AI runtime  | PyGPT-net + Ollama (quantized)                    | Model-zoo profiles; richer agent orchestration          | Multi-node federation          |
 | Memory hive | JSON + SQLite                                     | Roll-up analytics; retention/purge policies             | Full cross-node time-travel    |
@@ -1058,7 +1124,7 @@ huey memory-sort --dry-run --json
 **Code:** GPL-3.0-only  
 **Docs & Media:** CC-BY-SA-4.0  
 
-**Acknowledgements:** PyGPT (pygpt-net) · Debian 13 “Trixie” and Debian 14 “Forky” · Python 3.13 → 3.14 (planned) · Kernel 6.18.5-huey-os baseline · Everyone who stares at boot logs so the splash screen can stay off.
+**Acknowledgements:** PyGPT (pygpt-net) · Debian 13 “Trixie” and Debian 14 “Forky” · Python 3.13 → 3.14 (planned) · Kernel 6.19.x (stable) + 7.0-rc (dev) track · Everyone who stares at boot logs so the splash screen can stay off.
 
 ---
 
@@ -1073,6 +1139,8 @@ These items are **not** being ignored; they are intentionally left open until te
 5. **Memory replication policy** — what is authoritative, where durability lives, how replication and conflict resolution work.
 6. **Thermal & power crisis thresholds** — trip points + escalation ladder.
 7. **Docking minimum spec** — USB‑C/USB4 bandwidth expectations, NIC strategy, redundancy.
+8. **RAM kit selection** — pick final DDR5 SKU(s) for the 32–64 GB core-node target.
+9. **Kernel 7.0 transition policy** — define what “supported” means during RC testing (pinning, rollback, CI gates, and a stable baseline).
 
 
 ## Appendix
@@ -1084,6 +1152,18 @@ These items are **not** being ignored; they are intentionally left open until te
 ---
 
 ## Changelog
+
+### v17.1 (2026-02-27)
+
+- Reacquisition clarified:
+  - **2026-06-04** is treated as a **core-initialization target** (core up, experimenting possible), not a guarantee that all four GPU districts are fully online.
+- Kernel policy updated:
+  - Transitioning from the historical 6.18.x baseline to a **6.19.x stable track**, with active forward-testing on **Linux 7.0-rc**.
+- Hardware notes updated:
+  - Storage leaning: **Samsung 990-class NVMe** for the eventual NVMe RAID-10.
+  - RAM sizing clarified: **16 GB minimum**, **32 GB recommended**, **32–64 GB target** for initial core bring-up.
+- Governance timing clarified:
+  - Term cycles remain unchanged (4-month cycles); full governance stress-testing is planned **after** the core-up milestone.
 
 ### v17 (2026-01-28)
 
@@ -1108,4 +1188,4 @@ These items are **not** being ignored; they are intentionally left open until te
 ## A.I. Auto-Update
 
 - **A.I. counterpart:** Auto review complete.  
-- **Human counterpart:** Manual review in progress.  
+- **Human counterpart:** Manual review in progress.
