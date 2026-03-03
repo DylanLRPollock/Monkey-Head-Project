@@ -254,7 +254,7 @@ llama-index-vector-stores-qdrant==0.8.8 ; python_version >= "3.10" and python_ve
 llama-index-vector-stores-redis==0.6.2 ; python_version >= "3.10" and python_version < "3.14"
 llama-index-workflows==2.14.0 ; python_version >= "3.10" and python_version < "3.14"
 lxml==6.0.2 ; python_version >= "3.10" and python_version < "3.14"
-lxml-html-clean==0.4.3 ; python_version >= "3.10" and python_version < "3.14"
+lxml-html-clean==0.4.4 ; python_version >= "3.10" and python_version < "3.14"
 markdown==3.10.1 ; python_version >= "3.10" and python_version < "3.14"
 markdown-it-py==4.0.0 ; python_version >= "3.10" and python_version < "3.14"
 markdownify==1.2.2 ; python_version >= "3.10" and python_version < "3.14"
