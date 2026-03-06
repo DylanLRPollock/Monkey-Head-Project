@@ -167,7 +167,7 @@ dev = [
   "flake8-bugbear==25.11.29",
   "httpx==0.28.1",
   "ipython==9.10.0",
-  "isort==7.0.0",
+  "isort==8.0.1",
   "mypy==1.19.1",
   "pip-tools==7.5.3",
   "pre-commit==4.5.1",
