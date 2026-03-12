@@ -151,6 +151,14 @@ function update_system_packages() {
 
     local project_root="$1"
     local updater=""
+    local audio_packages=(
+        ffmpeg
+        libasound2-dev
+        libportaudio2
+        libportaudiocpp0
+        portaudio19-dev
+        libsndfile1
+    )
 
     echo "System update requested. Target apt codename: ${DEBIAN_CODENAME}"
 
@@ -180,6 +188,9 @@ function update_system_packages() {
     echo "Running apt update + dist-upgrade ..."
     run_as_root apt-get update -y
     run_as_root apt-get dist-upgrade -y
+
+    echo "Ensuring audio runtime packages for PyGPT/PyGPT-net are installed ..."
+    run_as_root apt-get install -y --no-install-recommends "${audio_packages[@]}"
 }
 
 function git_pull_updates() {
@@ -262,6 +273,15 @@ function update_python_deps() {
 
     echo "Reinstalling project in editable mode ..."
     "$pip_bin" install -e "$project_root"
+
+    echo "Updating PyGPT-net and audio Python dependencies ..."
+    "$pip_bin" install --upgrade "pygpt-net>=2.6.67" pydub sounddevice soundfile
+
+    local submodule_path="$project_root/repo/pygpt-MHP"
+    if [[ -d "$submodule_path" ]]; then
+        echo "Reinstalling local pygpt-MHP integration in editable mode ..."
+        "$pip_bin" install -e "$submodule_path"
+    fi
 
     # Optional extras
     declare -A extras_map=(

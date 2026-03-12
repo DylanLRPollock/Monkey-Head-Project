@@ -52,6 +52,14 @@ BASE_PACKAGES=(
     gnupg
     ca-certificates
 )
+AUDIO_SYSTEM_PACKAGES=(
+    ffmpeg
+    libasound2-dev
+    libportaudio2
+    libportaudiocpp0
+    portaudio19-dev
+    libsndfile1
+)
 GUI_PACKAGES=(
     mate-desktop-environment-core
 )
@@ -253,6 +261,8 @@ function update_sources() {
 function install_packages() {
     echo "Installing required packages ..."
     apt-get install -y --no-install-recommends "${BASE_PACKAGES[@]}"
+    echo "Installing audio runtime packages for PyGPT/PyGPT-net ..."
+    apt-get install -y --no-install-recommends "${AUDIO_SYSTEM_PACKAGES[@]}"
     if [[ $INSTALL_GUI -eq 1 ]]; then
         echo "Installing optional GUI packages ..."
         apt-get install -y --no-install-recommends "${GUI_PACKAGES[@]}"
@@ -367,6 +377,15 @@ function install_python_requirements() {
                 echo "Unknown extras group '$extra' (supported: ml,data,cloud)" >&2
             fi
         done
+    fi
+
+    echo "Installing PyGPT-net and audio Python dependencies ..."
+    "$pip_bin" install --upgrade "pygpt-net>=2.6.67" pydub sounddevice soundfile
+
+    local submodule_path="$PROJECT_ROOT/repo/pygpt-MHP"
+    if [[ -d $submodule_path ]]; then
+        echo "Installing local pygpt-MHP integration in editable mode ..."
+        "$pip_bin" install -e "$submodule_path"
     fi
 }
 
