@@ -18,9 +18,15 @@ from typing import Any, Dict
 
 
 class BaseAgent:
-    def __init__(self, *args, **kwargs):
-        self.id = ""
-        self.mode = "step"  # step|plan
+    def __init__(
+        self,
+        *args,
+        agent_id: str = "",
+        mode: str = "step",
+        **kwargs,
+    ):
+        self.id = agent_id
+        self.mode = mode  # step|plan
 
     def get_mode(self) -> str:
         """

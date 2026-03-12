@@ -23,9 +23,9 @@ from .base import BaseAgent
 
 class OpenAIAgent(BaseAgent):
     def __init__(self, *args, **kwargs):
-        super(OpenAIAgent, self).__init__(*args, **kwargs)
-        self.id = "openai"
-        self.mode = "step"  # step|plan
+        super(OpenAIAgent, self).__init__(
+            *args, agent_id="openai", mode="step", **kwargs
+        )
 
     def get_agent(self, window, kwargs: Dict[str, Any]):
         """

@@ -131,7 +131,6 @@ class NetworkManager:
             return None
         with contextlib.suppress(ValueError):
             return float(value)
-        return None
 
     def _interface_category(self, name: str) -> str:
         if name in LOOPBACK_INTERFACES:

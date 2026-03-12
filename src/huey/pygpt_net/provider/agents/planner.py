@@ -26,9 +26,9 @@ from .base import BaseAgent
 
 class PlannerAgent(BaseAgent):
     def __init__(self, *args, **kwargs):
-        super(PlannerAgent, self).__init__(*args, **kwargs)
-        self.id = "planner"
-        self.mode = "plan"  # step|plan
+        super(PlannerAgent, self).__init__(
+            *args, agent_id="planner", mode="plan", **kwargs
+        )
 
     def get_agent(self, window, kwargs: Dict[str, Any]):
         """

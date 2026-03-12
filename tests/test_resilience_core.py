@@ -3,6 +3,8 @@
 # www.dlrp.ca
 # HueyOS: Test Resilience Core module (tests)
 
+import logging
+
 import pytest
 
 from hueyos.core.resilience import (
@@ -108,3 +110,45 @@ def test_emergency_governance_controller_requires_quorum():
     controller.request_authorised_action(
         actor="spark", approvals=["zap"], action="shed-load"
     )
+
+
+def test_resilience_logs_strip_control_characters(caplog):
+    controller = EmergencyGovernanceController(required_approvals=2)
+    controller.register_service(
+        "svc\r\nname",
+        stop=lambda: None,
+        start=lambda: None,
+    )
+
+    manager = CrashRecoveryManager(watchdog=DummyWatchdog())
+    manager.register_process(
+        "proc\r\nname",
+        health_check=lambda: True,
+        restart=lambda: None,
+    )
+
+    with caplog.at_level(logging.INFO, logger="huey.core.resilience"):
+        controller.enter_emergency_mode(
+            triggered_by="spark\r\ninject",
+            reason="grid\r\nfault",
+            approvals=["zap\r\nok"],
+        )
+        controller.exit_emergency_mode(
+            requested_by="spark\r\ninject",
+            approvals=["zap\r\nok"],
+        )
+        controller.request_authorised_action(
+            actor="spark\r\ninject",
+            approvals=["zap\r\nok"],
+            action="shed\r\nload",
+        )
+        manager.toggle_auto_restart(
+            "proc\r\nname",
+            False,
+            reason="maint\r\nwindow",
+        )
+        manager.manual_restart("proc\r\nname")
+
+    messages = [record.getMessage() for record in caplog.records]
+    assert messages
+    assert all("\r" not in message and "\n" not in message for message in messages)

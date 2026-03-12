@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Iterable, Set
 
 _PACKAGE_ROOT = Path(__file__).resolve().parent
-_SRC_ROOT = _PACKAGE_ROOT.parents[1]
+_SRC_ROOT = _PACKAGE_ROOT.parent
 _HUEY_ROOT = _SRC_ROOT / "huey"
 _LEGACY_ROOT = _HUEY_ROOT / "memory" / "PY"
 
@@ -31,7 +31,7 @@ def _discover_exports(paths: Iterable[str]) -> Set[str]:
     names: Set[str] = set()
     for entry in paths:
         base = Path(entry)
-        if not base.exists():
+        if not base.exists() or not base.is_dir():
             continue
         for item in base.iterdir():
             if item.name.startswith("_"):

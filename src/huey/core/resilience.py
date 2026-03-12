@@ -87,7 +87,8 @@ class MonitoredProcess:
         except Exception as exc:  # pragma: no cover - defensive logging path
             healthy = False
             self.metadata["health_error"] = str(exc)
-            LOGGER.exception("Health check for %%s raised an exception", self.name)
+            safe_name = self.name.replace("\r", "").replace("\n", "")
+            LOGGER.exception("Health check for %s raised an exception", safe_name)
         self.healthy = healthy
         self.last_heartbeat = time.time()
         return healthy
@@ -230,18 +231,23 @@ class EmergencyGovernanceController:
             self.active_since = time.time()
             self.reason = reason
             self.triggered_by = triggered_by
+            safe_triggered_by = triggered_by.replace("\r", "").replace("\n", "")
+            safe_reason = reason.replace("\r", "").replace("\n", "")
             LOGGER.warning(
-                "Emergency mode activated by %s with reason: %s", triggered_by, reason
+                "Emergency mode activated by %s with reason: %s",
+                safe_triggered_by,
+                safe_reason,
             )
             for service in self._services.values():
                 if service.essential:
                     continue
+                safe_service_name = service.name.replace("\r", "").replace("\n", "")
                 try:
                     service.stop()
-                    LOGGER.info("Stopped non-essential service: %s", service.name)
+                    LOGGER.info("Stopped non-essential service: %s", safe_service_name)
                 except Exception:  # pragma: no cover - defensive logging
                     LOGGER.exception(
-                        "Failed to stop non-essential service %s", service.name
+                        "Failed to stop non-essential service %s", safe_service_name
                     )
 
     def exit_emergency_mode(
@@ -256,20 +262,29 @@ class EmergencyGovernanceController:
                 )
                 return
             approval_identities = self._validate_approvals(approvals, requested_by)
+            safe_requested_by = requested_by.replace("\r", "").replace("\n", "")
+            safe_approval_identities = [
+                approval.replace("\r", "").replace("\n", "")
+                for approval in approval_identities
+            ]
             LOGGER.warning(
                 "Emergency mode exit authorised by %s (approvals=%s)",
-                requested_by,
-                approval_identities,
+                safe_requested_by,
+                safe_approval_identities,
             )
             for service in self._services.values():
                 if service.start is None:
                     continue
+                safe_service_name = service.name.replace("\r", "").replace("\n", "")
                 try:
                     service.start()
-                    LOGGER.info("Restarted service after emergency: %s", service.name)
+                    LOGGER.info(
+                        "Restarted service after emergency: %s", safe_service_name
+                    )
                 except Exception:  # pragma: no cover - defensive logging
                     LOGGER.exception(
-                        "Failed to restart service %s after emergency", service.name
+                        "Failed to restart service %s after emergency",
+                        safe_service_name,
                     )
             self.state = EmergencyState.NORMAL
             self.active_since = None
@@ -282,12 +297,18 @@ class EmergencyGovernanceController:
     ) -> None:
         """Validate quorum before allowing an emergency-only action."""
 
-        self._validate_approvals(approvals, actor)
+        approved_identities = self._validate_approvals(list(approvals), actor)
+        safe_action = action.replace("\r", "").replace("\n", "")
+        safe_actor = actor.replace("\r", "").replace("\n", "")
+        safe_approved_identities = [
+            approval.replace("\r", "").replace("\n", "")
+            for approval in approved_identities
+        ]
         LOGGER.info(
             "Action '%s' authorised by %s with approvals %s",
-            action,
-            actor,
-            sorted(set(approvals) | {actor}),
+            safe_action,
+            safe_actor,
+            safe_approved_identities,
         )
 
     def status(self) -> Dict[str, Any]:
@@ -345,14 +366,16 @@ class CrashRecoveryManager:
                 restart_callback=restart,
                 auto_restart_enabled=auto_restart,
             )
-            LOGGER.debug("Registered monitored process: %s", name)
+            safe_name = name.replace("\r", "").replace("\n", "")
+            LOGGER.debug("Registered monitored process: %s", safe_name)
 
     def unregister_process(self, name: str) -> None:
         """Stop monitoring a previously registered process."""
 
         with self._lock:
             self._processes.pop(name, None)
-            LOGGER.debug("Unregistered monitored process: %s", name)
+            safe_name = name.replace("\r", "").replace("\n", "")
+            LOGGER.debug("Unregistered monitored process: %s", safe_name)
 
     def poll(self) -> List[CrashEvent]:
         """Check the health of all processes and restart crashed ones."""
@@ -365,7 +388,7 @@ class CrashRecoveryManager:
                     continue
                 metadata: Dict[str, Any] = {}
                 restarted = False
-                message = "Process reported unhealthy state"
+                safe_process_name = process.name.replace("\r", "").replace("\n", "")
                 if process.auto_restart_enabled:
                     try:
                         process.restart()
@@ -375,7 +398,8 @@ class CrashRecoveryManager:
                         metadata["restart_error"] = str(exc)
                         message = f"Automatic restart failed: {exc}"
                         LOGGER.exception(
-                            "Automatic restart failed for process %s", process.name
+                            "Automatic restart failed for process %s",
+                            safe_process_name,
                         )
                 else:
                     metadata["manual_override"] = process.manual_override_reason or True
@@ -391,7 +415,7 @@ class CrashRecoveryManager:
                 self._event_log.append(event)
                 LOGGER.warning(
                     "Crash detected for process %s (auto_restart=%s, restarted=%s)",
-                    process.name,
+                    safe_process_name,
                     process.auto_restart_enabled,
                     restarted,
                 )
@@ -425,12 +449,17 @@ class CrashRecoveryManager:
                 raise KeyError(f"Unknown monitored process: {name}")
             process.auto_restart_enabled = enabled
             process.manual_override_reason = reason if not enabled else None
-            name_sanitized = name.replace('\r', '').replace('\n', '')
+            name_sanitized = name.replace("\r", "").replace("\n", "")
+            reason_sanitized = (
+                reason.replace("\r", "").replace("\n", "")
+                if reason is not None
+                else None
+            )
             LOGGER.info(
                 "Manual override for %s set to %s (reason=%s)",
                 name_sanitized,
                 enabled,
-                reason,
+                reason_sanitized,
             )
             return self._serialise_process(process)
 
@@ -449,7 +478,7 @@ class CrashRecoveryManager:
             if process is None:
                 raise KeyError(f"Unknown monitored process: {name}")
             process.restart()
-            name_sanitized = name.replace('\r', '').replace('\n', '')
+            name_sanitized = name.replace("\r", "").replace("\n", "")
             LOGGER.info("Manual restart executed for process %s", name_sanitized)
 
     def statuses(self) -> List[Dict[str, Any]]:

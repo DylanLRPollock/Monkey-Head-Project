@@ -174,41 +174,36 @@ class AIProcessor:
 
         directive = instruction or self.default_instruction
         model_name = self.model or self._OLLAMA_DEFAULT_MODEL
-        backend_label = self._llm_backend or "offline"
-        status = "offline"
-
-        if self._llm_backend is not None and self._llm_client is not None:
-            try:
-                response, used_fallback = self._process_with_llm(text, directive)
-            except Exception:  # pragma: no cover - optional dependency failure
-                self._logger.debug(
-                    "LLM backend '%s' failed, falling back",
-                    self._llm_backend,
-                    exc_info=True,
-                )
-                response = self._fallback_process(text)
-                backend_label = f"{self._llm_backend}-error"
-                status = "error"
-            else:
-                status = "fallback" if used_fallback else "success"
-                backend_label = (
-                    f"{self._llm_backend}-fallback"
-                    if used_fallback
-                    else self._llm_backend
-                )
-                self._log_interaction(
-                    prompt=text,
-                    response=response,
-                    instruction=directive,
-                    backend=backend_label,
-                    model=model_name,
-                    status=status,
-                )
-                return response
-        else:
+        if self._llm_backend is None or self._llm_client is None:
             response = self._fallback_process(text)
-            backend_label = "offline"
-            status = "offline"
+            self._log_interaction(
+                prompt=text,
+                response=response,
+                instruction=directive,
+                backend="offline",
+                model=model_name,
+                status="offline",
+            )
+            return response
+
+        try:
+            response, used_fallback = self._process_with_llm(text, directive)
+        except Exception:  # pragma: no cover - optional dependency failure
+            self._logger.debug(
+                "LLM backend '%s' failed, falling back",
+                self._llm_backend,
+                exc_info=True,
+            )
+            response = self._fallback_process(text)
+            backend_label = f"{self._llm_backend}-error"
+            status = "error"
+        else:
+            backend_label = (
+                f"{self._llm_backend}-fallback"
+                if used_fallback
+                else self._llm_backend
+            )
+            status = "fallback" if used_fallback else "success"
 
         self._log_interaction(
             prompt=text,

@@ -61,7 +61,11 @@ class SensorManager:
             plugin.setup()
             self._sensors[name] = plugin
             self._configs[name] = plugin.config.copy()
-        LOGGER.info("Registered sensor %s using plugin %s", name, plugin_name)
+        safe_name = name.replace("\r", "").replace("\n", "")
+        safe_plugin_name = plugin_name.replace("\r", "").replace("\n", "")
+        LOGGER.info(
+            "Registered sensor %s using plugin %s", safe_name, safe_plugin_name
+        )
         return plugin
 
     def add_plugins(
@@ -81,7 +85,10 @@ class SensorManager:
             sensor.setup()
             self._sensors[sensor.name] = sensor
             self._configs[sensor.name] = sensor.config.copy()
-        LOGGER.info("Registered sensor %s using pre-instantiated plugin", sensor.name)
+        safe_sensor_name = sensor.name.replace("\r", "").replace("\n", "")
+        LOGGER.info(
+            "Registered sensor %s using pre-instantiated plugin", safe_sensor_name
+        )
 
     def remove_sensor(self, name: str) -> None:
         """Remove a sensor from the manager."""
@@ -92,7 +99,8 @@ class SensorManager:
         if sensor:
             with suppress(Exception):
                 sensor.shutdown()
-            LOGGER.info("Removed sensor %s", name)
+            safe_name = name.replace("\r", "").replace("\n", "")
+            LOGGER.info("Removed sensor %s", safe_name)
 
     # ------------------------------------------------------------------
     # Introspection
@@ -133,7 +141,10 @@ class SensorManager:
             try:
                 reading = sensor.capture()
             except Exception:
-                LOGGER.exception("Sensor %s failed to capture reading", sensor.name)
+                safe_sensor_name = sensor.name.replace("\r", "").replace("\n", "")
+                LOGGER.exception(
+                    "Sensor %s failed to capture reading", safe_sensor_name
+                )
                 continue
             self._record_reading(reading)
             readings.append(reading)
@@ -175,8 +186,9 @@ class SensorManager:
             try:
                 queue.put_nowait(reading)
             except asyncio.QueueFull:  # pragma: no cover - best effort delivery
+                safe_name = reading.name.replace("\r", "").replace("\n", "")
                 LOGGER.debug(
-                    "Dropping sensor reading for %s due to full queue", reading.name
+                    "Dropping sensor reading for %s due to full queue", safe_name
                 )
 
     async def stream(

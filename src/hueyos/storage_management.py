@@ -6,7 +6,7 @@ import os
 import shutil
 import time
 from pathlib import Path
-from typing import Iterable, List
+from typing import List
 
 
 class StorageManager:

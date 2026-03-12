@@ -322,8 +322,6 @@ def _cmd_run(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:  # pragma: no cover - interactive usage
         return 130
 
-    return 0
-
 
 def _cmd_system_check(args: argparse.Namespace) -> int:
     from hueyos.system_checks import system_check

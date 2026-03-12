@@ -4,6 +4,7 @@
 # HueyOS: Test Honeycomb Management module (tests)
 
 import subprocess
+import importlib
 
 import pytest
 
@@ -39,8 +40,8 @@ def test_honeycomb_monitor_reports_usage(tmp_path):
 
 
 def test_retention_policy_prunes_old_cells(tmp_path, monkeypatch):
-    import hueyos.honeycomb.retention as retention_module
-    import hueyos.honeycomb.storage as storage_module
+    retention_module = importlib.import_module("hueyos.honeycomb.retention")
+    storage_module = importlib.import_module("hueyos.honeycomb.storage")
 
     storage = HoneycombStorage(base_dir=tmp_path)
     index = HoneycombIndex(storage)
@@ -67,7 +68,7 @@ def test_parse_duration_supports_units():
 
 
 def test_backup_helpers_build_rsync_commands(tmp_path, monkeypatch):
-    import hueyos.honeycomb.backup as backup_module
+    backup_module = importlib.import_module("hueyos.honeycomb.backup")
 
     source = tmp_path / "memory"
     destination = tmp_path / "snapshots"
