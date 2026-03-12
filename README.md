@@ -277,6 +277,8 @@ If you change the governance model, hardware assumptions, or key policies, updat
 
 ## Repository Structure
 
+> Looking to reorganize the repo layout? See `docs/repository-restructure-recommendation.md` for the staged migration plan and `docs/repository-restructure-inventory.md` for the concrete move/rename/fix checklist.
+
 | Path                      | Description                                           |
 | ------------------------- | ----------------------------------------------------- |
 | `.github/`                | CI workflows, CODEOWNERS, issue/PR templates         |
