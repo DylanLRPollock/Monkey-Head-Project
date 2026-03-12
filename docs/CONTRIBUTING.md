@@ -5,7 +5,7 @@
 Thank you for your interest in contributing. This document explains the workflow, tooling, and quality bars for changes to **HueyOS** and related components.
 
 > TL;DR checklist
-> - Use Python **3.14.x** (3.13 remains legacy/pre-changeover; `audioop-lts`/`standard-aifc` wheels tracked for 3.14).
+> - Use Python **3.13.x** as the day-to-day baseline (3.14 remains a supported migration target, but not the default toolchain here).
 > - Create an isolated environment and install dependencies.  
 > - Enable `pre-commit` hooks.  
 > - Follow **Conventional Commits** and branch naming.  
@@ -47,8 +47,8 @@ If your change meaningfully alters public behavior or APIs, it **must** include 
 
 ## Prerequisites
 
-- Python **3.14.x** installed and available on PATH
-  - If you use `pyenv`: `pyenv install 3.14.0 && pyenv local 3.14.0` (3.13.x is legacy/pre-changeover only)
+- Python **3.13.x** installed and available on PATH
+  - If you use `pyenv`: `pyenv install 3.13.12 && pyenv local 3.13.12`
 - Git ≥ 2.40
 - Make (optional but convenient)
 - Docker (optional) if you run sandboxed plugins or containers during tests

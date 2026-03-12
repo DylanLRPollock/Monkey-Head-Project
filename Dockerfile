@@ -1,4 +1,5 @@
-FROM python:3.12-bookworm
+ARG PYTHON_VERSION=3.13-bookworm
+FROM python:${PYTHON_VERSION}
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # build tooling for pip packages with C extensions (like PyAudio)
@@ -19,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && rm -rf /var/lib/apt/lists/*
 
 RUN python -m pip install --no-cache-dir --upgrade pip \
- && pip install --no-cache-dir pygpt-net
+ && pip install --no-cache-dir pygpt-net==2.0.154
 
 # (optional) run as non-root at runtime
 RUN useradd -m -u 1000 pygpt && mkdir -p /data && chown -R pygpt:pygpt /data

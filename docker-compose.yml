@@ -18,7 +18,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        PYTHON_VERSION: ${HUEY_PYTHON_VERSION:-3.11-slim}
+        PYTHON_VERSION: ${HUEY_PYTHON_VERSION:-3.13-bookworm}
         HUEY_EXTRAS: ${HUEY_BUILD_EXTRAS:-ml,data,cloud}
     image: ${HUEY_IMAGE:-hueyos:latest}
     container_name: ${HUEY_API_CONTAINER:-hueyos-api}
