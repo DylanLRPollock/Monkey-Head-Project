@@ -115,6 +115,16 @@ def launch_manager_ui() -> None:
     root.mainloop()
 
 
+
+
+def launch_install_gui() -> None:
+    """Start the graphical installer flow with required license confirmation."""
+
+    from hueyos.install_gui import launch_install_gui as start_install_gui
+
+    start_install_gui()
+
+
 def main(argv: list[str] | None = None) -> None:
     """Entry point used by the ``run`` wrapper script."""
 
@@ -160,6 +170,11 @@ def main(argv: list[str] | None = None) -> None:
         "--manager-ui",
         action="store_true",
         help="Launch the Tkinter program manager",
+    )
+    parser.add_argument(
+        "--install-gui",
+        action="store_true",
+        help="Launch the graphical installer (requires license acceptance)",
     )
     parser.add_argument(
         "--sys-code",
@@ -234,6 +249,10 @@ def main(argv: list[str] | None = None) -> None:
         launch_manager_ui()
         return
 
+    if args.install_gui:
+        launch_install_gui()
+        return
+
     from .system_checks import check_os_support, check_python_version
 
     check_os_support()
@@ -272,6 +291,7 @@ __all__ = [
     "launch_cli",
     "launch_gui",
     "launch_manager_ui",
+    "launch_install_gui",
     "main",
     "minimal_run",
     "run_module",
