@@ -8,7 +8,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 HOSTOS_MODULE = (
-    Path(__file__).resolve().parents[1] / "docker" / "hostos" / "hostos.py"
+    Path(__file__).resolve().parents[1] / "infra" / "docker" / "docker" / "hostos" / "hostos.py"
 )
 spec = importlib.util.spec_from_file_location("hostos_module", HOSTOS_MODULE)
 HostOS = importlib.util.module_from_spec(spec)

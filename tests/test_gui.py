@@ -3,22 +3,35 @@
 # www.dlrp.ca
 # HueyOS: Test Gui module (tests)
 
+import importlib.util
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from gui.main_ui import MainUI
+import pytest
+
+GUI_MAIN_UI_MODULE = Path(__file__).resolve().parents[1] / "apps" / "huey-gui" / "main_ui.py"
+
+if not GUI_MAIN_UI_MODULE.exists():
+    pytest.skip("GUI module not available in this repository layout", allow_module_level=True)
+
+spec = importlib.util.spec_from_file_location("gui.main_ui", GUI_MAIN_UI_MODULE)
+main_ui = importlib.util.module_from_spec(spec)
+assert spec and spec.loader
+spec.loader.exec_module(main_ui)
+MainUI = main_ui.MainUI
 
 
 def test_check_license_calls_gui():
     ui = MainUI.__new__(MainUI)
-    with patch("gui.main_ui.show_license_gui") as gui_call:
+    with patch.object(main_ui, "show_license_gui") as gui_call:
         MainUI.check_license(ui)
         gui_call.assert_called_once()
 
 
 def test_show_license_calls_gui():
     ui = MainUI.__new__(MainUI)
-    with patch("gui.main_ui.show_license_gui") as gui_call:
+    with patch.object(main_ui, "show_license_gui") as gui_call:
         MainUI.show_license(ui)
         gui_call.assert_called_once()
 
@@ -27,8 +40,8 @@ def test_show_data_summary_displays_info():
     ui = MainUI.__new__(MainUI)
     sample = {"prompts": [1, 2], "memory": {"a": ["x", "y"]}}
     with (
-        patch("gui.main_ui.preload_all", return_value=sample),
-        patch("gui.main_ui.messagebox.showinfo") as info,
+        patch.object(main_ui, "preload_all", return_value=sample),
+        patch.object(main_ui.messagebox, "showinfo") as info,
     ):
         MainUI.show_data_summary(ui)
         info.assert_called_once()
@@ -37,7 +50,7 @@ def test_show_data_summary_displays_info():
 def test_choose_screen_mode_env(monkeypatch):
     ui = MainUI.__new__(MainUI)
     monkeypatch.setenv("SCREEN_MODE", "1080p")
-    with patch("gui.main_ui.simpledialog.askstring") as ask:
+    with patch.object(main_ui.simpledialog, "askstring") as ask:
         mode = MainUI.choose_screen_mode(ui)
         ask.assert_not_called()
         assert mode == "1080p"
@@ -46,7 +59,7 @@ def test_choose_screen_mode_env(monkeypatch):
 def test_choose_screen_mode_env_custom(monkeypatch):
     ui = MainUI.__new__(MainUI)
     monkeypatch.setenv("SCREEN_MODE", "custom")
-    with patch("gui.main_ui.simpledialog.askstring") as ask:
+    with patch.object(main_ui.simpledialog, "askstring") as ask:
         mode = MainUI.choose_screen_mode(ui)
         ask.assert_not_called()
         assert mode == "custom"
@@ -56,7 +69,7 @@ def test_choose_screen_mode_prompt():
     ui = MainUI.__new__(MainUI)
     with (
         patch.dict("os.environ", {}, clear=True),
-        patch("gui.main_ui.simpledialog.askstring", return_value="4k"),
+        patch.object(main_ui.simpledialog, "askstring", return_value="4k"),
     ):
         mode = MainUI.choose_screen_mode(ui)
         assert mode == "4k"
@@ -66,9 +79,9 @@ def test_choose_screen_mode_prompt_custom(monkeypatch):
     ui = MainUI.__new__(MainUI)
     with (
         patch.dict("os.environ", {}, clear=True),
-        patch("gui.main_ui.simpledialog.askstring", return_value="custom"),
-        patch("gui.main_ui.simpledialog.askfloat", return_value=1.5) as askf,
-        patch("gui.main_ui.simpledialog.askinteger", return_value=12) as aski,
+        patch.object(main_ui.simpledialog, "askstring", return_value="custom"),
+        patch.object(main_ui.simpledialog, "askfloat", return_value=1.5) as askf,
+        patch.object(main_ui.simpledialog, "askinteger", return_value=12) as aski,
     ):
         mode = MainUI.choose_screen_mode(ui)
         assert mode == "custom"
@@ -83,7 +96,7 @@ def test_build_image_calls_runner():
     with (
         patch.object(MainUI, "_run_container_func") as runner,
         patch.object(MainUI, "log_message"),
-        patch("gui.main_ui.threading.Thread") as th,
+        patch.object(main_ui.threading, "Thread") as th,
     ):
         th.side_effect = lambda target, args: SimpleNamespace(
             start=lambda: target(*args)
@@ -99,7 +112,7 @@ def test_deploy_kubernetes_calls_runner():
     with (
         patch.object(MainUI, "_run_container_func") as runner,
         patch.object(MainUI, "log_message"),
-        patch("gui.main_ui.threading.Thread") as th,
+        patch.object(main_ui.threading, "Thread") as th,
     ):
         th.side_effect = lambda target, args: SimpleNamespace(
             start=lambda: target(*args)
@@ -113,11 +126,11 @@ def test_scale_deployment_prompt_collects_input():
     ui.status_label = SimpleNamespace(config=lambda **_: None)
     ui.progress = SimpleNamespace(start=lambda: None, stop=lambda: None)
     with (
-        patch("gui.main_ui.simpledialog.askstring", return_value="demo"),
-        patch("gui.main_ui.simpledialog.askinteger", return_value=2),
+        patch.object(main_ui.simpledialog, "askstring", return_value="demo"),
+        patch.object(main_ui.simpledialog, "askinteger", return_value=2),
         patch.object(MainUI, "_run_container_func") as runner,
         patch.object(MainUI, "log_message"),
-        patch("gui.main_ui.threading.Thread") as th,
+        patch.object(main_ui.threading, "Thread") as th,
     ):
         th.side_effect = lambda target, args: SimpleNamespace(
             start=lambda: target(*args)
@@ -131,17 +144,17 @@ def test_convert_media_prompt_runs_thread():
     ui.status_label = SimpleNamespace(config=lambda **_: None)
     ui.progress = SimpleNamespace(start=lambda: None, stop=lambda: None)
     with (
-        patch("gui.main_ui.filedialog.askopenfilename", return_value="in.wav"),
-        patch(
-            "gui.main_ui.filedialog.asksaveasfilename",
+        patch.object(main_ui.filedialog, "askopenfilename", return_value="in.wav"),
+        patch.object(
+            main_ui.filedialog, "asksaveasfilename",
             return_value="out.mp3",
         ),
-        patch(
-            "gui.main_ui.simpledialog.askstring",
+        patch.object(
+            main_ui.simpledialog, "askstring",
             side_effect=["128k", "libx264"],
         ),
-        patch("gui.main_ui.convert_media") as conv,
-        patch("gui.main_ui.threading.Thread") as th,
+        patch.object(main_ui, "convert_media") as conv,
+        patch.object(main_ui.threading, "Thread") as th,
         patch.object(MainUI, "log_message"),
     ):
         th.side_effect = lambda target, args: SimpleNamespace(
@@ -156,8 +169,8 @@ def test_convert_media_prompt_runs_thread():
 def test_launch_simple_chat_runs_thread():
     ui = MainUI.__new__(MainUI)
     with (
-        patch("gui.main_ui.run_simple_chat") as run_chat,
-        patch("gui.main_ui.threading.Thread") as th,
+        patch.object(main_ui, "run_simple_chat") as run_chat,
+        patch.object(main_ui.threading, "Thread") as th,
         patch.object(MainUI, "log_message"),
     ):
         th.side_effect = lambda target=None, args=(): SimpleNamespace(
@@ -170,8 +183,8 @@ def test_launch_simple_chat_runs_thread():
 def test_launch_ai_tools_runs_thread():
     ui = MainUI.__new__(MainUI)
     with (
-        patch("gui.main_ui.run_ai_tools") as run_tools,
-        patch("gui.main_ui.threading.Thread") as th,
+        patch.object(main_ui, "run_ai_tools") as run_tools,
+        patch.object(main_ui.threading, "Thread") as th,
         patch.object(MainUI, "log_message"),
     ):
         th.side_effect = lambda target=None, args=(): SimpleNamespace(
@@ -185,7 +198,7 @@ def test_clear_log_invokes_delete():
     ui = MainUI.__new__(MainUI)
     dummy_log = SimpleNamespace(delete=lambda *a, **k: None)
     ui.log_text = dummy_log
-    with patch("gui.main_ui.tk", SimpleNamespace(END="end")):
+    with patch.object(main_ui, "tk", SimpleNamespace(END="end")):
         with patch.object(dummy_log, "delete") as delete:
             MainUI.clear_log(ui)
             delete.assert_called_once_with("1.0", "end")
