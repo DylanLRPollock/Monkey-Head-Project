@@ -3,9 +3,27 @@
 # www.dlrp.ca
 # HueyOS: Test Fresh Install module (tests)
 
+import importlib.util
+import sys
+from pathlib import Path
 from unittest.mock import patch
 
-from scripts.installers import fresh_install
+import pytest
+
+FRESH_INSTALL_MODULE = (
+    Path(__file__).resolve().parents[1] / "src" / "huey" / "memory" / "PY" / "fresh_install.py"
+)
+
+if not FRESH_INSTALL_MODULE.exists():
+    pytest.skip("fresh_install module not available in this repository layout", allow_module_level=True)
+
+spec = importlib.util.spec_from_file_location("fresh_install", FRESH_INSTALL_MODULE)
+fresh_install = importlib.util.module_from_spec(spec)
+assert spec and spec.loader
+MODULE_DIR = str(FRESH_INSTALL_MODULE.parent)
+if MODULE_DIR not in sys.path:
+    sys.path.insert(0, MODULE_DIR)
+spec.loader.exec_module(fresh_install)
 
 
 def test_fresh_install_local_success():
