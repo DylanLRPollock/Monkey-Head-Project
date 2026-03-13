@@ -2,7 +2,7 @@
 
 ## HueyOS — Prototype Robotic AI/OS (Offline-First · Retro-Tech Revival)
 
-![HueyOS background](./HueyOS-background.png)
+![HueyOS background](./assets/images/HueyOS-background.png)
 
 **Project ID:** Monkey-Head-Project  
 **System/OS:** HueyOS  
@@ -282,28 +282,20 @@ If you change the governance model, hardware assumptions, or key policies, updat
 | Path                      | Description                                           |
 | ------------------------- | ----------------------------------------------------- |
 | `.github/`                | CI workflows, CODEOWNERS, issue/PR templates         |
-| `Dockerfile`              | Container image definition for HueyOS services       |
-| `docker-compose.yml`      | Compose stack (API, worker, optional Redis)          |
-| `boot/`                   | Boot assets and bootloader helpers                   |
+| `infra/docker/`           | Dockerfiles, compose definitions, and container assets |
+| `platform/boot/`          | GRUB, EFI, and legacy boot media artifacts           |
 | `config/`                 | Configuration profiles and templates                 |
-| `dists/`                  | Distribution build artifacts                          |
-| `docker/`                 | Legacy orchestrator assets and experimental builds   |
+| `platform/packaging/`     | Distribution artifacts (`dists/`, `pool/`, `firmware/`) |
 | `docs/`                   | Constitution, governance, architecture, API, plugins |
-| `EFI/`                    | EFI boot media artifacts                             |
-| `firmware/`               | Firmware assets and notes                            |
-| `gui/`                    | GUI assets and prototypes                            |
+| `apps/huey-gui/`          | GUI assets and prototypes                            |
 | `huey/`                   | Core runtime and service modules                     |
-| `install/`                | Installer media and payloads                         |
-| `live/`                   | Live environment artifacts                           |
+| `platform/installers/`    | Debian/macOS/Windows/Linux installer assets          |
 | `master-plan-v17.json`    | Canonical Master Plan JSON consumed at runtime (v17) |
-| `master-plan-v16.json`    | Prior Master Plan JSON (historical reference)        |
-| `repo/pygpt-MHP/`         | Submodule: PyGPT-net integration                     |
-| `reports/`                | Audits, logs, and tracking reports                   |
+| `integrations/pygpt/`     | PyGPT and PyGPT-net integration sources              |
+| `archives/releases/`      | Versioned release artifacts and checksums            |
 | `scripts/`                | Utility scripts                                      |
-| `scripts/installers/`     | Install/repair/uninstall entry points               |
-| `secrets/`                | Local-only secrets (do not commit real credentials)  |
-| `setup/`                  | Installer scripts, ISO builder, provisioning configs |
-| `shared-host/`            | Shared host data for multi-node setups               |
+| `platform/installers/shared/installers/` | Install/repair/uninstall entry points      |
+| `infra/secrets/`          | Local-only secrets (do not commit real credentials)  |
 | `src/`                    | Python package source                                |
 | `tests/`                  | Unit & integration tests                             |
 | `tools/`                  | Maintenance utilities and one-off tooling            |
@@ -315,7 +307,7 @@ If you change the governance model, hardware assumptions, or key policies, updat
 | `huey.env.example`        | Example environment variables                        |
 | `LICENSE`                 | GPL-3.0-only (code), CC-BY-SA-4.0 (docs/media)       |
 
-> Clone with `--recurse-submodules` or run `git submodule update --init --recursive` to fetch `repo/pygpt-MHP`.
+> Clone with `--recurse-submodules` or run `git submodule update --init --recursive` to fetch integrations in `integrations/pygpt/`.
 
 ---
 
@@ -1024,7 +1016,7 @@ make dev DEV_OPTIONAL_PROFILES=ml,data  # Dev + ML + data profiles
 ```
 
 - Copy `huey.env.example` → `.env` and fill in secrets.  
-- Optionally install `repo/pygpt-MHP` in editable mode (`pip install -e repo/pygpt-MHP`).  
+- Optionally install PyGPT-net in editable mode (`pip install -e integrations/pygpt/pygpt-mhp`).  
 - Style enforcement: `black`, `flake8`, and pre-commit hooks via `.pre-commit-config.yaml`.
 
 ---
@@ -1047,7 +1039,7 @@ huey run --ml
 # Optional (if cloud helpers are installed and enabled):
 # huey run --ml --cloud
 huey system-check --verbose
-huey deploy --mode all --compose-file docker-compose.yml --manifest k8s.yaml
+huey deploy --mode all --compose-file infra/docker/docker-compose.yml --manifest k8s.yaml
 huey agent-status --json
 huey memory-sort --dry-run --json
 ```
