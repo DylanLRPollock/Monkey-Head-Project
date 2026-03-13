@@ -53,3 +53,20 @@ def test_main_delegates_to_run_module(monkeypatch):
     huey_run.main(["--module", "pkg.module:func"])
 
     assert invoked["target"] == "pkg.module:func"
+
+
+def test_main_install_gui_invokes_launcher(monkeypatch):
+    from huey import run as huey_run
+
+    called: dict[str, bool] = {}
+
+    monkeypatch.setattr(huey_run, "launch_install_gui", lambda: called.setdefault("install", True))
+    monkeypatch.setattr(
+        huey_run,
+        "launch_gui",
+        lambda: (_ for _ in ()).throw(AssertionError("unexpected launch_gui")),
+    )
+
+    huey_run.main(["--install-gui"])
+
+    assert called["install"] is True
