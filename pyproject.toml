@@ -114,7 +114,7 @@ ml = [
   "onnxruntime==1.24.3",
   "openai==1.109.1",
   "openai-agents==0.3.3",
-  "pillow==10.4.0",
+  "pillow==12.1.1",
   "pygpt-net==2.0.154",
   "safetensors==0.7.0",
   "sentencepiece==0.2.1",
