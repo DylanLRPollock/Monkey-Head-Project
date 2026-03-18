@@ -168,7 +168,7 @@ coverage==7.13.4
 croniter==6.0.0
 cssselect==1.4.0
 ctranslate2==4.7.1
-cuda-bindings==12.9.4 ; platform_machine == 'x86_64' and sys_platform == 'linux'
+cuda-bindings==13.2.0 ; platform_machine == 'x86_64' and sys_platform == 'linux'
 cuda-pathfinder==1.4.2 ; platform_machine == 'x86_64' and sys_platform == 'linux'
 dataclasses-json==0.6.7
 decorator==5.2.1
