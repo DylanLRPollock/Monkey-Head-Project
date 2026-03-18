@@ -206,7 +206,7 @@ google-resumable-media==2.8.0
 googleapis-common-protos==1.73.0
 gpsoauth==2.0.0
 greenlet==3.3.2
-griffe==1.15.0
+griffe==2.0.0
 grpc-google-iam-v1==0.14.3
 grpcio==1.78.0
 grpcio-status==1.71.2
