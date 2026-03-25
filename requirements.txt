@@ -340,7 +340,7 @@ pyinstaller==6.19.0
 pyinstaller-hooks-contrib==2026.3
 pyjwt==2.11.0
 pyparsing==3.3.2
-pypdf==5.9.0
+pypdf==6.9.2
 pypika==0.51.1
 pyproject-hooks==1.2.0
 pyreadline3==3.5.4 ; sys_platform == 'win32'
