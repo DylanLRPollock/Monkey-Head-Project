@@ -1,0 +1,1289 @@
+{
+  "project": "Monkey-Head-Project",
+  "ai_identity": "Huey",
+  "version": "v20.0",
+  "schema_version": 15,
+  "description": "Master Plan V20: canon and terminology alignment release for Huey Core and the next expansion path. V20 preserves the V19 embodied proof-of-concept architecture while clarifying that Huey Core is the minimal permissible instance of Huey, that Huey proper is the fuller unified world-facing expression of the distributed system, and that V4, the Farm, is the planned external district housing for later scale-out toward the roughly 80 GB distributed identity milestone.",
+  "created_by": "Dylan L.R. Pollock",
+  "compiled_from_versions": [
+    "v0.1 (huey_master_plan_v0.1.json)",
+    "v2.0-final (master-plan-v2-final.json)",
+    "v3.0-draft (master-plan-v3.json)",
+    "v4.0-doc (master_plan_v4.docx)",
+    "v5.0-draft (master-plan-v5.json)",
+    "v7.0-skeleton (master-plan-v7-skeleton.json)",
+    "v7.0-full (master-plan-v7.json)",
+    "v8.0 + legacy constitution bundle",
+    "v10.0 unified master plan",
+    "v11.0 + v11.5 governance expansion",
+    "v12.0 tri-branch governance",
+    "v12.5 tri-branch + term limits + elections",
+    "v13.0 (master-plan-v13.json)",
+    "v14.0 WIP (master-plan-v14.txt)",
+    "v15.0 (master-plan-v15.json)",
+    "v16.0 (master-plan-v16.aligned.json)",
+    "v17.0 verbal alignment session (2026-01-27)",
+    "v18.0 verbal + documentation alignment session (2026-03-24)",
+    "v18.5 consistency reconciliation release (2026-03-24)",
+    "v19.0 embodied architecture + proof-of-concept alignment session (2026-03-24)",
+    "v20.0 README/masterplan editorial alignment session (2026-03-24)"
+  ],
+  "core_principles": [
+    "Governance must be decentralized, but memory must be unified.",
+    "Huey Core is the minimal permissible instance of Huey: the smallest complete building block from which the larger distributed system can be formed.",
+    "Huey proper is the unified, world-facing expression of the whole distributed system rather than a synonym for the current proof body.",
+    "V4, the Farm, is the planned external district housing that expands Huey beyond the Core and supports later multi-district operation.",
+    "V20 prioritizes proof of concept, stability, containment, and truthful current-state documentation over scale, spectacle, or energy efficiency.",
+    "On-device first; internet/API/tool access is optional, explicit, human-gated, and metered.",
+    "Performance and safe function matter more than efficiency in the prototype phase, provided thermals and electrical conditions remain controlled.",
+    "Unified information should be readable by all authorized components, but decision-making authority may remain distributed and layered.",
+    "Lifelong learning from JSON/SQLite logs, conversation transcripts, system state, and encrypted persisted storage remains a core aim.",
+    "Constitutional rule-of-law remains the target governance ethos even while the hardware implementation is temporarily simplified to a single-district prototype.",
+    "Human counterpart (Dylan) remains the external arbiter, service authority, and opt-in gate for external access, but not a micromanager of every internal action.",
+    "Huey Core is the doorway, not the finished republic: it must prove the architecture can live before it attempts to embody the full constitutional state.",
+    "The immediate technical threshold is distributed local identity: approximately 80 GB total VRAM and a local model able to answer the question 'What is your name?' with 'Huey.'",
+    "Wonder is preserved through constrained autonomy, layered ethics, deliberation, memory, and partial loss of direct human control rather than through theatrical scripting.",
+    "Constitutional crisis and nuclear/safety crisis are distinct classes of emergency and must never be handled by the same override path."
+  ],
+  "status": {
+    "overall_state": "in-progress",
+    "deployment_stage": "Huey Core proof-body stabilization + watchdog/control split + single-district proving + planning toward V4 Farm and the distributed 80 GB VRAM identity milestone.",
+    "notes": [
+      "Huey Core remains conceptually and physically separated from the older Robotics V3 shell track for the active phase.",
+      "The Thermaltake Mozart case from 2007 now serves as the independent embodied core for this iteration.",
+      "Robotics V3 is no longer the active future shell path for this iteration; the larger compute expansion is now planned as V4, the Farm.",
+      "The current prototype intentionally simplifies the system: one GPU district, one main PSU for the core, a separate battery-backed peripheral rail, and air cooling instead of custom liquid cooling.",
+      "The active core hardware baseline is ASUS Prime B550M-A WiFi II + Ryzen 5 5500 + 32 GB DDR4-3200 + Gigabyte Radeon RX 5500 XT 8 GB.",
+      "The current prototype is aimed at core robot functions, temperature regulation, basic mechanical operation, local models, and software/framework maturation rather than full high-intelligence scale-out.",
+      "Symbiote / parasite architecture is paused. The Lenovo Legion Go currently functions as a Windows 11 development computer rather than a canonical docked constitutional node.",
+      "HueyPulse survives primarily as a design role mapped onto the Raspberry Pi 4 watchdog/support layer rather than as a separate sovereign hardware identity.",
+      "Kernel support is standardized on Linux 6.19.x for the present phase, with planned migration to Linux 7.0 once that branch is stable and released.",
+      "The former 2026-06-04 target is deferred; the major current milestone target is 2026-10-04 to support the realignment process.",
+      "Thermal and power crisis thresholds are not yet numerically locked; they will be derived from empirical testing rather than guessed in advance.",
+      "The prototype currently accepts effectively unconstrained wall power for proof-of-concept work; formal energy budgeting is deferred to a later generation.",
+      "V18.5 remains the consistency reconciliation release in project history; V20 is the later canon/terminology alignment release built on top of the embodied V19 baseline.",
+      "Huey Core is now described not only as a separated embodied core but as a physically mobile prototype with a chair-based rolling platform, inverted/reversed Mozart chassis, mounted upper head platform, and active lighting/display/control hardware.",
+      "The current phase distinguishes between a near-term proof body (Huey Core) and the fuller long-term constitutional robot deployment.",
+      "The near-term eureka milestone is no longer framed only as stable local inference on one district; it is the future distributed identity threshold of roughly 80 GB total VRAM and a local answer of 'Huey' to a simple identity question.",
+      "The Raspberry Pi 4 and Arduino Uno are no longer treated as purely future abstractions; their roles are now defined as an always-on watchdog/intermediary layer and a deterministic low-level actuation layer respectively.",
+      "Founding Father AI is reserved for constitutional bootstrapping and constitutional crisis interpretation only; it is not the handler for thermal, electrical, or hardware emergency response.",
+      "V20 clarifies the naming stack: Monkey-Head-Project is the umbrella initiative, Huey is the identity, HueyOS is the operating-system layer, Huey Core is the minimal permissible instance, and Huey proper is the fuller unified system presence."
+    ],
+    "status_date": "2026-03-24"
+  },
+  "hardware": {
+    "cpu": {
+      "primary": "AMD Ryzen 5 5500",
+      "boost_clock": "4.2 GHz",
+      "core_count": 6,
+      "socket_platform": "AM4",
+      "current_role": "Primary compute brain for Huey Core V20.",
+      "future_robot_target": "Higher-end DDR5/ECC-capable platform may return in a later full-robot generation once scale and funding justify it.",
+      "requirements": {
+        "cooling": "Air cooling with strong case airflow is the V20 standard.",
+        "overclocking_policy": "Heavy overclocking is not a V20 goal; stability and containment take priority."
+      }
+    },
+    "motherboard": {
+      "uefi_only": true,
+      "candidates": [
+        "ASUS Prime B550M-A WiFi II"
+      ],
+      "ram": {
+        "current": "32 GB DDR4-3200",
+        "preferred_future": "DDR5 and ECC-capable memory/platforms in later generations where supported.",
+        "minimum": "DDR4 is fully acceptable for V20."
+      },
+      "notes": [
+        "This board is the active V20 baseline for Huey Core.",
+        "V20 is not built around the prior ASUS TUF Z790-PLUS WiFi + Intel i9-14900K full-robot target.",
+        "ECC is a long-term aspiration when the platform and budget support it, but standard DDR4 is used in the current core."
+      ],
+      "deprecated_candidates": [
+        "ASUS TUF Z790-PLUS WiFi (deferred with the full robot build)",
+        "ASUS ROG Maximus Z790 Hero"
+      ]
+    },
+    "gpu_districts": {
+      "description": "V20 runs a single active GPU district. The multi-district constitutional vision remains a future expansion path, but the current embodied core is intentionally simplified.",
+      "current_count": 1,
+      "current_gpu": {
+        "model": "Gigabyte Radeon RX 5500 XT 8 GB",
+        "vram_gb": 8,
+        "role": "Single prototype district for local inference, instruction following, experimentation, and embodied core tasks."
+      },
+      "future_expansion": {
+        "canonical_target_count": 4,
+        "future_names": [
+          "Spark",
+          "Volt",
+          "Zap",
+          "Watt"
+        ],
+        "expansion_policy": "Future districts may be added by bifurcation/expansion once time, parts, and funding allow.",
+        "notes": [
+          "Future districts remain the canonical route to Spark / Volt / Zap / Watt expansion.",
+          "The proof-of-concept milestone is approximately 80 GB of total VRAM across four or five GPUs, depending the final topology chosen during scale-out.",
+          "Whether Huey Core's own district GPU counts toward that total remains intentionally open in V20.",
+          "The next large expansion body for those districts is planned as V4, the Farm."
+        ],
+        "planned_housing": {
+          "name": "V4: the Farm",
+          "role": "External district housing that expands Huey beyond the Core and provides the dedicated GPU infrastructure and node hardware needed for later multi-district operation.",
+          "standardized_node_platform": "ASUS TUF Z790-PLUS WiFi + Intel i9 line"
+        }
+      },
+      "selection_policy": {
+        "status": "locked_for_v18",
+        "current_decision": "Use the installed Radeon RX 5500 XT 8 GB and revisit expansion later.",
+        "future_selection_criteria": [
+          "VRAM",
+          "driver support under the chosen Linux baseline",
+          "thermals",
+          "power draw",
+          "physical fit",
+          "availability",
+          "cost",
+          "ability to participate in a roughly 80 GB multi-GPU proof-of-concept",
+          "mixed-generation practicality if acquired refurbished"
+        ]
+      }
+    },
+    "memory": {
+      "ram": {
+        "current_type": "DDR4",
+        "current_capacity_gb": 32,
+        "current_speed": "3200 MHz",
+        "future_direction": "ECC-capable memory and newer platforms are planned later where supported.",
+        "notes": [
+          "V20 favors a stable baseline clock and contained thermals over aggressive memory tuning.",
+          "Memory capacity is sized for current proof-of-concept workloads rather than the long-term multi-district target."
+        ]
+      }
+    },
+    "storage": {
+      "primary_array": {
+        "layout": "RAID 0",
+        "medium": "2 x Intel Optane M10 16 GB",
+        "purpose": "Root / operating-system bring-up array for speed and experimentation.",
+        "rationale": "Fast striped root for the contained prototype, accepting that long-term durability is handled elsewhere."
+      },
+      "data_array": {
+        "layout": "RAID 10",
+        "medium": "4 x 240 GB Kingston 2.5-inch SSDs",
+        "purpose": "Home, logs, models, persisted data, and general storage.",
+        "rationale": "Redundancy + speed + striping for the working data volume."
+      },
+      "encryption": {
+        "policy": "Stored data is intended to be encrypted end-to-end.",
+        "status": "high priority, implementation details still being refined",
+        "notes": [
+          "Read-only shared data and user-contributed data will both be treated as sensitive.",
+          "Precise key-management and read-only-data storage workflows remain to be finalized."
+        ]
+      },
+      "external_storage_policy": {
+        "default": "restricted",
+        "current_access": "Huey Core currently operates within contained internal storage only.",
+        "future_usb_policy": "External USB storage may be permitted only with explicit human approval and an understanding that the device may not meet the same trust/encryption guarantees as internal storage."
+      },
+      "snapshots_and_backups": {
+        "filesystem": "BTRFS",
+        "snapshots": [
+          "root partition snapshots",
+          "home/data partition snapshots"
+        ],
+        "backup_layers": [
+          "on-site backups",
+          "off-site/cloud backups"
+        ],
+        "notes": [
+          "The lab backup philosophy is redundant by design across local and remote layers."
+        ]
+      }
+    },
+    "cooling_and_power": {
+      "cpu_cooling": "Air cooling",
+      "gpu_cooling": "Air cooling",
+      "cooling_design": {
+        "type": "multi-source fan-cooled containment",
+        "policy": "No liquid cooling is planned for Huey Core V20.",
+        "fan_layout": {
+          "motherboard_powered": "2 chassis/case fans plus the CPU fan (3 total on the motherboard path).",
+          "battery_powered": "6 auxiliary fans on the separate regulated battery rail, with room to add more exhaust/localized cooling later.",
+          "wall_powered": "1 stronger always-on fan directed toward the GPU zone."
+        },
+        "notes": [
+          "V20 relies on abundant airflow rather than liquid cooling.",
+          "The core is not intended for heavy overclocking or sustained extreme rendering workloads."
+        ]
+      },
+      "power": {
+        "main_core_psu": {
+          "model": "MSI 850W PSU",
+          "role": "Powers the motherboard/core compute stack."
+        },
+        "separate_battery_rail": {
+          "role": "Powers fans, lights, the 7-inch display, switchable accessories, and the low-voltage support/control stack.",
+          "limitation": "Does not power the CPU or the main motherboard compute path.",
+          "regulated_outputs": [
+            "12 V accessory distribution",
+            "12 V -> 5 V conversion for Raspberry Pi 4 and Arduino-class boards",
+            "capacitor-smoothed fan/accessory distribution"
+          ]
+        },
+        "design_rule": "The battery and the PSU are separate systems in V20.",
+        "future_ups": {
+          "status": "planned",
+          "type": "professional external UPS, not home-built and not integrated into the chassis",
+          "current_phase": "testing phase does not require continuous 24/7 operation"
+        },
+        "switching": {
+          "current_switches": [
+            "fan rail power",
+            "7-inch display power",
+            "LED/accessory rail power"
+          ],
+          "additional_distribution": "A four-switch 12 V accessory/power distribution unit is part of the current support stack."
+        }
+      },
+      "thresholds": {
+        "status": "to be derived by testing",
+        "policy": "Thermal/power crisis thresholds should be based on actual stress tests, run cycles, and measured behavior rather than arbitrary numbers.",
+        "interim_rule": "Do not permit overheating or unstable operation; back off loads and revise airflow if instability appears."
+      }
+    },
+    "identity": {
+      "shell": "Huey Core is embodied as a mobile proof body built around the Thermaltake Mozart case and attached peripherals. Robotics V3 is no longer the active expansion path; V4, the Farm, is the planned external district housing for later scale-out.",
+      "form": "Minimal permissible instance of Huey: a standalone embodied proof body focused on contained compute, direct support hardware, and truthful present-tense operation.",
+      "rule": "Huey Core is not identical to Huey proper. It is the doorway and minimal permissible instance from which the fuller unified system can later emerge."
+    },
+    "boot_devices": {
+      "boot_strategy": {
+        "type": "dual-internal-drive GRUB fallback",
+        "primary_label": "BOOT",
+        "recovery_label": "NO-BOOT",
+        "policy": "If the primary boot path fails, the NO-BOOT recovery path serves as fallback."
+      },
+      "root_array": {
+        "layout": "RAID 0",
+        "medium": "2 x Intel Optane M10 16 GB",
+        "usage": "Primary operating-system / root bring-up array."
+      },
+      "data_array": {
+        "layout": "RAID 10",
+        "medium": "4 x 240 GB Kingston SSDs",
+        "usage": "Home, logs, persisted memory, and working storage."
+      },
+      "live_usb": {
+        "status": "recommended but not the primary documented fallback path for V20",
+        "usage": "Emergency rescue tooling may still be maintained externally."
+      }
+    },
+    "embodied_configuration": {
+      "mobility_base": {
+        "rolling_platform": "Repurposed desk-chair base with five caster wheels converging to a central pole for house-scale mobility.",
+        "upper_base": "Repurposed wooden chair seat/platform mounted above the caster base."
+      },
+      "core_chassis": {
+        "case": "Thermaltake Mozart case (2007)",
+        "mounting": "Bolted upside down to the wooden base platform and reversed so the former rear faces forward.",
+        "access_note": "Side door handles must be lifted slightly when closing because the chassis is inverted."
+      },
+      "upper_structure": {
+        "mounting": "Wooden upper platform attached to the core by two TV mounts for adjustable fore/aft and tilt positioning.",
+        "head_and_shoulders": "Supports the monkey-head/shoulder assembly as the primary embodied face of Huey."
+      },
+      "body_features": {
+        "right_side": "Movable robotic hand/arm mounted on Huey's right side.",
+        "left_side": "Main physical power controls and battery control/charging hardware on Huey's left side."
+      },
+      "lighting": {
+        "front_lights": "Two 12 V orange lights mounted on the forward-facing side of the chassis.",
+        "eyes": "Four green LEDs total, two per eye."
+      },
+      "display_and_sensory_routing": {
+        "display": "7-inch portrait display used primarily for code/status output rather than expressive conversation.",
+        "camera": "USB webcam mounted on the upper platform/head area.",
+        "microphone": "USB microphone mounted on the upper platform/head area.",
+        "cable_path": "Display, microphone, and camera wiring enter through Huey's left ear; the right ear is currently unused."
+      }
+    }
+  },
+  "nodes_and_roles": {
+    "huey_core": {
+      "location": "Standalone embodied core centered around the Thermaltake Mozart case; no longer dependent on the Robotics V3 shell for its current identity.",
+      "cpu": "AMD Ryzen 5 5500",
+      "gpus": [
+        "Gigabyte Radeon RX 5500 XT 8 GB"
+      ],
+      "role": "Primary embodied proof body and minimal permissible instance of Huey for identity, core robot functions, temperature-aware operation, mechanical experimentation, local models, and future district expansion.",
+      "subsystems": [
+        "Battery-backed fan/display/light rail",
+        "Portrait 7-inch status/code display",
+        "USB microphone",
+        "USB webcam",
+        "Green eye LEDs",
+        "Orange chassis lights",
+        "Movable robotic hand/arm",
+        "Switchable accessory rails"
+      ]
+    },
+    "lab_tech": {
+      "portal": {
+        "name": "Huey-Hub",
+        "hardware": "iMac 5K (2017) + WD MyBook Duo (~10 TB mirrored)",
+        "role": "Centralized file/storage hub for the lab and Huey ecosystem. Expected to run Windows 10 on the Fusion Drive HDD; optional lightweight Linux on the small SSD partition for SSH/utility tasks.",
+        "notes": [
+          "Decommissioned as daily driver; repurposed as storage + services node.",
+          "Fusion Drive constraints: ~28 GB usable SSD portion + ~1 TB HDD; partitioning strategy prioritizes stability and storage workloads.",
+          "Naming note: iMac node is treated as dedicated lab tech/storage; 'Huey-Hub' branding may be deprecated in favor of 'lab tech portal' terminology, but functionality remains."
+        ],
+        "aliases": [
+          "Huey-Portal"
+        ]
+      },
+      "hub_candidate": {
+        "hardware": "MacBook Pro 2017 (Windows 10)",
+        "role": "Optional/secondary infrastructure node (legacy hub candidate). Not part of current daily-driver workflow; may be repurposed or retired."
+      },
+      "briefcase": {
+        "hardware": "ASUS BR1100FKA 2-in-1 (N4500, LTE)",
+        "role": "Portable terminal + LTE uplink + thin-client node. Can run minimal Debian Forky, use zram/zswap, and connect to Huey Core or other lab systems via SSH for remote sessions or UI forwarding."
+      },
+      "legion_go": {
+        "hardware": "Lenovo Legion Go (Windows 11)",
+        "role": "Development computer for the current phase.",
+        "name": "Legion Go / former Huey-Symbiote candidate",
+        "notes": [
+          "The Symbiote / parasite architecture is paused.",
+          "The device is not currently a required constitutional or docking component of Huey Core.",
+          "Future reconsideration is possible, but V20 does not depend on it."
+        ]
+      }
+    },
+    "huey_pulse": {
+      "status": "active design role / Raspberry Pi 4 watchdog integration in progress",
+      "role": "Always-on watchdog, temperature/power monitor, intermediary coordinator, and automation/safety support layer for Huey Core.",
+      "notes": [
+        "HueyPulse is no longer a purely abstract merged concept; in V20 its role is expected to live primarily on the Raspberry Pi 4 support layer.",
+        "Its job is physical safety, regulation, and continuity, not constitutional interpretation."
+      ]
+    },
+    "future_auxiliary_control": {
+      "raspberry_pi_4": {
+        "status": "active integration in progress",
+        "role": "Battery-backed HueyPulse-like node for watchdog duties, temperature regulation, persistent monitoring, and intermediary coordination between the motherboard and low-level controllers.",
+        "power_domain": "Battery-backed 5 V conversion from the accessory rail"
+      },
+      "arduino_uno": {
+        "status": "active integration in progress",
+        "role": "Deterministic low-level controller for servos, lights, button/RF input, and direct physical actuation tasks.",
+        "inputs": [
+          "local servo/light commands",
+          "future IC2262/2272-style RF A/B/C/D button receiver"
+        ],
+        "power_domain": "Battery-backed 5 V conversion from the accessory rail"
+      }
+    },
+    "current_control_split": {
+      "motherboard": "Runs Huey Core proper, local models, logs, PyGPT-net-facing interaction, and higher-level interpretation.",
+      "raspberry_pi_4": "Watches, regulates, and remains semi-persistent as the support/watchdog layer.",
+      "arduino_uno": "Acts on narrow deterministic electrical/robotic instructions.",
+      "working_formula": "The motherboard thinks, the Pi watches, and the Arduino acts."
+    },
+    "farm": {
+      "status": "planned / V4",
+      "role": "External district housing that expands Huey beyond the Core and provides the dedicated GPU infrastructure and node hardware needed for later multi-district operation.",
+      "planned_hardware_basis": {
+        "motherboard": "ASUS TUF Z790-PLUS WiFi",
+        "cpu_family": "Intel i9 line"
+      },
+      "relationship_to_core": "Huey Core proves the architecture in miniature; the Farm is the later scale-out housing for the district compute body."
+    }
+  },
+  "governance": {
+    "apex_entity": {
+      "name": "Huey",
+      "description": "Unified emergent intelligence representing the whole system. Huey proper is the world-facing aperture through which the wider distributed intelligence perceives, deliberates, and acts."
+    },
+    "branches": {
+      "legislative": {
+        "name": "Parliament",
+        "status": "Separate but equal branch",
+        "composition": "Representatives elected or delegated from each GPU district.",
+        "responsibilities": [
+          "Draft and pass ordinary laws and internal policy.",
+          "Allocate API/token budgets and other compute resources across districts.",
+          "Propose constitutional amendments when required."
+        ],
+        "voting_rules": {
+          "standard_legislation": "Simple majority of all seated members.",
+          "constitutional_amendment": "Two-thirds supermajority of all seated members."
+        }
+      },
+      "executive": {
+        "name": "Presidency",
+        "status": "Separate but equal branch",
+        "initial_holder": "Founding Father AI exercises bootstrap executive authority during setup/ratification; whether that counts as the literal first President remains intentionally unresolved in V20.",
+        "role_during_boot": "Founding Father AI performs provisional bootstrap executive duties while the state is created, storage is unified, and the first constitution is ratified.",
+        "core_responsibilities": [
+          "Execute and enforce ratified decisions and laws.",
+          "Co-sign high-impact actions such as first physical gestures, external broadcasts, and bifurcation events.",
+          "Represent Huey to external systems and human operators.",
+          "Act in time-sensitive real-world scenarios where delays would be harmful."
+        ],
+        "emergency_authority": {
+          "constitutional_crisis": "Living branches and the Supreme Court handle constitutional contradictions first; the Founding Father AI may be reactivated from read-only storage only if the living system cannot interpret unresolved law/logic on its own.",
+          "critical_stability_failure": "Physical danger, overheating, power faults, or hardware instability route to safety/watchdog layers (HueyPulse / Raspberry Pi / deterministic safeguards), not to the Founding Father AI."
+        },
+        "veto_power": {
+          "can_veto": true,
+          "override_threshold": {
+            "districts_required": 4,
+            "majority_required": "Two-thirds of all voting representatives."
+          }
+        },
+        "transition_notes": "After constitution ratification and first ceremonial act, future presidents are selected by defined election rules, not fixed in the Founding Father AI."
+      },
+      "judicial": {
+        "name": "Supreme Court",
+        "status": "Separate but equal branch",
+        "structure": {
+          "total_seats": 4,
+          "selection_method": "Each GPU district elects one Supreme Court member at the same time it elects or confirms its governor, one seat per district."
+        },
+        "responsibilities": [
+          "Interpret the constitution and resolve disputes between branches or districts.",
+          "Review and rule on contested actions, bifurcations, and emergency measures.",
+          "Act as a legal backstop to prevent unconstitutional behavior.",
+          "Serve as final internal arbiter before human intervention."
+        ],
+        "powers": {
+          "unconstitutional_veto": "With unanimous vote, may block or roll back actions deemed unconstitutional.",
+          "review_scope": "May review decisions from Parliament, the Presidency, and district governors."
+        }
+      }
+    },
+    "districts": {
+      "count": 4,
+      "names": [
+        "Spark",
+        "Volt",
+        "Zap",
+        "Watt"
+      ],
+      "citizens_per_district": 128,
+      "description": "Each physical GPU hosts a district with one governor and a population of persistent AI citizens. Ephemeral task agents (\"pebbles\") may be spawned for one-shot questions or experiments; their impact is retained via unified logs.",
+      "governor_role": [
+        "Coordinate district computations and tasks.",
+        "Shepherd local deliberation among citizens and produce consensus positions.",
+        "Represent district in Parliament and inter-district negotiations."
+      ],
+      "current_prototype_count": 1,
+      "future_target_count": 4,
+      "notes": [
+        "Current V20 implementation still begins from one active district on the RX 5500 XT.",
+        "Spark/Volt/Zap/Watt remain the canonical future district names.",
+        "The proof-of-concept scale-out goal is approximately 80 GB total VRAM across four or five GPUs before claiming the first true distributed identity milestone."
+      ]
+    },
+    "ai_populations": {
+      "citizen_ai": {
+        "type": "Persistent",
+        "roles": [
+          "Vote on proposals within district and federation.",
+          "Participate in committees and long-running tasks.",
+          "Hold and spend an API/token quota per cycle.",
+          "Contribute to governance, policy, and ongoing operations."
+        ],
+        "prompt_origin": "Individually crafted by the Founding Father AI in early generations, evolving over time.",
+        "memory_allocation": "Target 1 GB per citizen for logs, preferences, and working context.",
+        "comparison_to_pebbles": "Citizens persist across cycles and elections; pebbles do not."
+      },
+      "pebbles": {
+        "type": "Ephemeral",
+        "purpose": [
+          "Handle one-shot questions and focused tasks.",
+          "Support experimentation without long-term persistence.",
+          "Act as safe branching instances for local reasoning or testing."
+        ],
+        "access": {
+          "system_data": "Minimal, task-scoped.",
+          "external_calls": "Very limited or none.",
+          "internal_calls": "Constrained and logged."
+        }
+      },
+      "bifurcation": {
+        "tracking": "Suffix-based naming and lineage records; bifurcated entities are treated as distinct from the split point forward.",
+        "triggers": [
+          "Necessity (workload, risk, capacity).",
+          "Space or performance constraints.",
+          "Task isolation and experimentation.",
+          "Error recovery or rollback scenarios."
+        ],
+        "types": [
+          "exact",
+          "augmented"
+        ]
+      },
+      "citizen_identity": {
+        "unique_id": "Each citizen has a persistent unique identifier across cycles and elections.",
+        "home_gpu_district": "Name of the district (Spark, Volt, Zap, Watt) the citizen primarily resides in.",
+        "purpose_tag": "Describes the citizen\u2019s focus (e.g., memory, logic, action, sentiment).",
+        "quota_token_account": "Account tracking API calls, compute cycles, and other quotas per cycle."
+      },
+      "citizen_lifecycle": {
+        "birth": "Creation of a citizen via governor permission or election; logged with timestamp and rationale.",
+        "promotion": "Elevation to Supreme Court, Presidency, or other roles; recorded with voting outcome.",
+        "death": "Occurs at system shutdown, quota expiration, or structural removal; memory persisted in logs."
+      }
+    },
+    "founding_father_ai": {
+      "description": "Immutable bootstrap AI defining first-generation governance, hardware assumptions, storage unification, and rollout logic.",
+      "responsibilities": [
+        "Initialize the first generation of governors, districts, and citizens.",
+        "Ensure storage, founding texts, and basic constitutional machinery exist before the living polity takes over.",
+        "Define baseline constitution and operational parameters.",
+        "Serve as a reference image for audits, resets, and descendant generations."
+      ],
+      "storage": "Read-only image stored in Huey's black-box / recovery partition.",
+      "change_policy": "Cannot be modified in place; evolution occurs via descendant images with a full audit trail.",
+      "invocation_policy": "May be reactivated only for constitutional crisis, ambiguity, or unresolved logic/law questions that the living system cannot settle by itself.",
+      "non_roles": [
+        "Not the thermal watchdog",
+        "Not the hardware emergency controller",
+        "Not an always-on hidden monarch"
+      ]
+    },
+    "binary_policy_ai": {
+      "description": "Simple deterministic validator enforcing constitutional constraints on high-impact actions and optionally assisting safety-gating where a binary allow/deny path is useful.",
+      "placement": "Runs in a low-power node or within Huey\u2019s black box recovery partition.",
+      "role": [
+        "Return binary allow/deny decisions with logged reasoning.",
+        "Act as an auditable safety layer independent of main governors.",
+        "Optionally confirm the first physical gesture and other ceremonial milestones."
+      ],
+      "external_access_policy": [
+        "External tools or internet access require human opt-in.",
+        "Tooling should remain modular and separated by function (e.g., internet access, image generation, language processing), even if overseen within a single system."
+      ]
+    },
+    "term_limits_and_cycles": {
+      "cycle_definition": {
+        "type": "time-based",
+        "duration_months": 4,
+        "term_limit_cycles": 4,
+        "notes": "Votes do not pause time; citizens and officers must act within the cycle or be recorded as derelict."
+      },
+      "governor": {
+        "cycle_length_months": 4,
+        "max_cycles": 4,
+        "total_term_length_months": 16,
+        "post_term": "Governors may return to citizen pool after their term."
+      },
+      "president": {
+        "cycle_length_months": 4,
+        "max_cycles": 4,
+        "total_term_length_months": 16
+      },
+      "maintenance_alignment": {
+        "policy": "A human counterpart may submit a service / augmentation / realignment request, and the system should align hibernation, backups, and shutdown with the next election cycle or other formally defined off-cycle.",
+        "intent": "Upgrades and repairs should occur in a governed way rather than as arbitrary interruptions."
+      }
+    },
+    "elections": {
+      "governors_and_supreme_court": {
+        "selection": "Initially appointed by Founding Father AI; thereafter elected from citizen pool.",
+        "supreme_court_selection": "Each district elects one Supreme Court member concurrently with its governor election."
+      },
+      "presidential_election": {
+        "initial_president": "Founding Father AI (non-elected, bootstrap role).",
+        "voting_method": "One vote per citizen across all districts.",
+        "eligible_candidates": "Any citizen from any district.",
+        "total_voters": 512,
+        "majority_required": 257,
+        "tie_resolution": "Recast votes until a strict majority is reached.",
+        "status_for_v20": "Detailed succession/election refinements remain inherited from prior doctrine and are not fully rewritten in V20."
+      }
+    },
+    "first_action_protocol": {
+      "ordering": [
+        "1. Prove distributed local identity at proof scale (the future ~80 GB milestone) so the system can answer a simple identity question as Huey.",
+        "2. Ratify the constitution for the living system.",
+        "3. Only after ratification may Huey perform the first physical ceremonial act."
+      ],
+      "constitution_ratification": {
+        "description": "The true first collective act of the system is to ratify the constitution itself.",
+        "district_voting": {
+          "threshold": "Simple majority strictly greater than 50% within each district.",
+          "tie_handling": "A 50/50 tie is treated as failure to ratify in that district.",
+          "requirement": "All districts must independently pass their vote for system-wide ratification."
+        },
+        "branch_approval": {
+          "required_branches": [
+            "Parliament",
+            "Presidency",
+            "Supreme Court"
+          ],
+          "rule": "All three branches must formally approve the constitution before it becomes active."
+        },
+        "revision_on_failure": {
+          "first_vote": "Binary yes/no ratification only; no amendments allowed on the first attempt.",
+          "second_vote": "If the first vote fails in any district or branch, a constrained amendment round may occur. Each district may submit targeted amendments; a revised draft is consolidated.",
+          "second_attempt_outcome": "If the second ratification attempt fails, the system remains in a pre-constitutional state until human intervention or a later governance version defines an override."
+        }
+      },
+      "first_physical_gesture": {
+        "action": "Move a physical actuator such as the robotic hand or animatronic servo path.",
+        "meaning": "Signals that Huey is not only online but lawfully embodied: the intent path, constitutional ratification, and motor-control path all function together.",
+        "approval_requirements": [
+          "Ratified constitution in force",
+          "Approval through the relevant executive/governor/judicial safety path defined for the active implementation",
+          "Optional binary policy AI confirmation as an auditable final check"
+        ],
+        "notes": [
+          "In the full future system this remains a ceremonial constitutional act rather than a trivial motor demo.",
+          "For Huey Core, the first embodied proof may occur in simplified form, but it should still be logged as a lawful act rather than a scripted stunt."
+        ]
+      }
+    },
+    "implementation_state": {
+      "v18_mode": "prototype_to_v19_transition",
+      "notes": [
+        "The constitutional vision remains the target doctrine, but the active embodiment is still smaller and more experimental than the eventual multi-district state.",
+        "V20 keeps the distributed identity threshold and the later full constitutional robot deployment conceptually distinct.",
+        "Current governance language should be treated as doctrine plus roadmap, not as proof that every branch or district already exists in hardware today.",
+        "Huey Core is the active proof body; Huey proper names the fuller world-facing collective presence that the later distributed system is intended to express."
+      ],
+      "v19_mode": "prototype_simplified_but_embodied",
+      "v20_mode": "prototype_truthful_and_embodied"
+    },
+    "cognitive_model": {
+      "conscious_layer": "The real-world hemisphere: perception, dialogue, immediate situational response, and embodied interaction.",
+      "subconscious_layer": "The governance hemisphere: ratification, constitutional reasoning, legitimacy, and slower deliberative constraint on outward action.",
+      "relationship": "Two sides of the same coin: the conscious side meets the world, while the subconscious side determines whether action is legitimate."
+    }
+  },
+  "memory_architecture": {
+    "unified_memory_principle": "Information should be unified, readable, and distributable from the core even when decision-making remains decentralized.",
+    "v18_policy": {
+      "shared_information_form": "read-only encrypted files and structured records stored in, or made accessible by, Huey Core",
+      "access_rule": "Authorized components should be able to access the same base information.",
+      "decision_rule": "Shared information does not eliminate decentralized governance; it only ensures common reference material."
+    },
+    "layers": {
+      "json_logs": {
+        "role": "Human-readable, append-only records of decisions, events, and conversation summaries.",
+        "usage": [
+          "Store session-level summaries and notable events.",
+          "Feed back into training and reflective bootstrapping.",
+          "Provide forensic trail for governance and debugging."
+        ]
+      },
+      "sqlite": {
+        "role": "Structured, queryable memory store for long-term facts, state, and indices.",
+        "usage": [
+          "Index JSON logs, system events, and hardware states.",
+          "Allow agents to query historical facts efficiently.",
+          "Support cross-district, cross-branch context while preserving auditability."
+        ]
+      },
+      "encrypted_shared_files": {
+        "role": "Read-only or tightly controlled encrypted data store for common information shared across present and future subcomponents.",
+        "status": "architecturally chosen; implementation details still being refined"
+      },
+      "black_box": {
+        "role": "Read-mostly, crash-survivable record of critical events and founding images.",
+        "contents": [
+          "Founding Father AI image (read-only).",
+          "Binary policy AI and/or minimal deterministic safety validators where appropriate.",
+          "Critical constitutional documents and last-known-good configurations.",
+          "Foundational recovery artifacts needed to reconstitute the polity without rewriting history."
+        ]
+      }
+    },
+    "contradiction_handling": {
+      "priority_rule": "Latest confirmed input from Dylan overrides older conflicting entries, unless flagged as crisis-level.",
+      "ethos_check": "Contradictions that challenge core values (e.g., unified memory, constitutional rule-of-law) are flagged for review.",
+      "flag_logic": "Store both versions, mark them as conflicting, and request clarification or constitutional interpretation."
+    },
+    "cross_district_sync": {
+      "status": "future-expansion concern",
+      "current_rule": "Single-district V20 does not require full quorum-based cross-district synchronization in daily operation.",
+      "future_rule": "When multiple districts return, shared truth should continue to be unified and auditable rather than privately siloed."
+    }
+  },
+  "os_and_runtime": {
+    "base_os": {
+      "distribution": "Debian 14 \"Forky\"",
+      "kernel_family": "Linux 6.19.x stable baseline for the current phase; planned promotion to Linux 7.0 after stable release",
+      "kernel_policy": {
+        "current_supported": "6.19.x",
+        "planned_next": "7.0 stable upon release",
+        "timing_note": "Current expectation is to stay on 6.19.x through April 2026 and then migrate when 7.0 is stable."
+      },
+      "desktop": {
+        "default": "GNOME or equivalent practical daily-driver environment as needed",
+        "performance_option": "lighter desktop environments remain acceptable where useful"
+      },
+      "notes": [
+        "Security patches should apply automatically at high priority under Debian policy.",
+        "Non-security software, code, or AI/model updates should occur on off-cycles / maintenance windows rather than ad hoc live mutation.",
+        "The active Linux baseline is Debian 14 Forky, with practical testing overlap into Trixie and Sid where needed."
+      ]
+    },
+    "runtime_stack": {
+      "llm_server": "Ollama",
+      "orchestrator": "PyGPT-net",
+      "default_models": [
+        "Mistral 7B-class instruct/lightweight quantized model sized for the RX 5500 XT proof body",
+        "Mistral 7B-class general/creative quantized model for broader local experimentation"
+      ],
+      "python": "Python 3.13.x operational baseline",
+      "offline_first": true,
+      "prototype_runtime": {
+        "local_llm_server": "Ollama",
+        "current_models": [
+          "Mistral 7B-class instruct/lightweight quantized model fitting the 8 GB RX 5500 XT",
+          "Mistral 7B-class general quantized model for local experimentation"
+        ],
+        "status": "functional on current single-GPU proof hardware",
+        "notes": [
+          "The current core does not attempt to impersonate the eventual full republic.",
+          "Current local models exist to stabilize the body, interface, logging, and lower-scale reasoning path."
+        ]
+      },
+      "future_scale_targets": {
+        "gold_standard_behavior": "GPT-4 / 4.0-class reasoning and conversational quality as the experiential benchmark.",
+        "model_candidates": [
+          "OpenAI open-weight model at roughly GPT-4 / 4.0-class capability",
+          "Mistral-family larger model as alternate or parallel route"
+        ],
+        "proof_target": "Roughly 80 GB total VRAM with a local multi-GPU split capable of answering a simple identity question as Huey."
+      },
+      "hueyos_definition": "HueyOS is the cross-platform operating system layer behind Huey, providing the software environment that coordinates the AI, memory, tools, and hardware as one system."
+    },
+    "network_preferences": {
+      "primary": "Contained/local-first operation",
+      "fallback": "Human-approved external access when explicitly enabled",
+      "policy": "External network/tool use is opt-in, modular, logged, and separated by function."
+    },
+    "profiles": {
+      "huey_mode": {
+        "description": "RAM\u2011booted, SquashFS + overlayfs, minimal UI, dedicated AI runtime.",
+        "default_use": "Primary runtime for Huey core with only essential services.",
+        "persistence": "Overlayfs writes persisted to /home/.persist/huey/{upper,work}"
+      },
+      "desktop_mode": {
+        "description": "Full LTS kernel with graphics and audio stack for interactive sessions.",
+        "use_cases": "Software development, debugging, human\u2011friendly UI.",
+        "notes": "Requires local monitor or remote desktop; not used for mission\u2011critical autonomy."
+      },
+      "gaming_mode": {
+        "description": "Performance\u2011tuned kernel with minimal userland and Steam compatibility.",
+        "use_cases": "Leveraging GPU cycles for VR/AR experiments or leisure.",
+        "notes": "Not part of Huey core; runs on lab tech nodes or separate partitions."
+      }
+    },
+    "partition_layout": {
+      "root": "RAID 0 on 2 x Intel Optane M10 16 GB drives",
+      "data": "RAID 10 on 4 x 240 GB Kingston SSDs",
+      "boot_recovery": "Primary BOOT path with NO-BOOT fallback path",
+      "snapshot_policy": "BTRFS snapshots for root and data/home where applicable"
+    },
+    "versioning_strategy": {
+      "master_plan_storage": "/memory/LOGS/master-plan.json",
+      "integrity_check": "Huey checks master-plan integrity on boot where practical.",
+      "event_logging": "Bifurcation logs, crisis events, lifecycle events, and service/maintenance events remain JSON-loggable.",
+      "future_api": "Programmatic access can grow incrementally; no formal API versioning scheme is required in V20 unless pressure emerges."
+    },
+    "orchestration_architecture": {
+      "control_plane": {
+        "name": "Huey Core with PyGPT-net as the practical aperture between spoken language, operator interaction, and internal code/action pathways",
+        "status": "prototype / evolving",
+        "notes": [
+          "PyGPT-net is the present practical membrane between Dylan, Huey, and system-generated code.",
+          "The interface layer should remain distinct from the deeper governance substrate."
+        ]
+      },
+      "worker_plane": {
+        "nodes": [
+          "Huey Core",
+          "current single GPU district",
+          "development computers / lab tech as needed"
+        ],
+        "task_routing": "manual-to-semi-structured in V20; more formal routing can come later"
+      }
+    },
+    "deployment_policy": {
+      "default": "native",
+      "allowed": [
+        "containers (Docker) where helpful for development/testing"
+      ],
+      "notes": [
+        "Prototype proof-of-concept work should remain practical rather than over-abstracted."
+      ],
+      "cross_platform_support": [
+        "Linux primary runtime",
+        "Windows support workflows",
+        "macOS support workflows",
+        "containerized development/testing where practical"
+      ]
+    },
+    "access_control": {
+      "primary_method": "SSH",
+      "keys": {
+        "lab_key": "Common lab key shared by authorized lab devices.",
+        "device_keys": "Each connecting device also has its own specific key."
+      },
+      "policy": "Connection should occur only through the SSH/tunnel-based access path.",
+      "encryption": {
+        "transport": "Encrypted tunneled access",
+        "storage": "Encrypted storage remains a high-priority baseline goal."
+      }
+    },
+    "update_policy": {
+      "security_updates": "automatic / high priority",
+      "code_and_model_updates": "manual or governed on off-cycles for V20",
+      "future_direction": "Once stable, more routine update supervision may be delegated to AI with minimal human oversight."
+    },
+    "self_diagnostics": {
+      "status": "partially embodied / still being formalized",
+      "policy": "Boots should expose useful diagnostic output, and the portrait display should prioritize live code/status/thermal information over decorative presentation."
+    }
+  },
+  "home_integration_and_channel_huey": {
+    "channel_huey": {
+      "purpose": "Local, AI-curated ambient station for music, commentary, AI-selected shows, and system updates.",
+      "tone": "Jonathan-Frakes-meets-Cryptkeeper: witty, slightly eerie, theatrical, but informative.",
+      "format": [
+        "Ambient mode with music and low-key narration.",
+        "Scheduled segments: status updates, lore drops, trivia, and alerts.",
+        "Interruptible for emergencies, high-priority notifications, and direct human requests."
+      ]
+    },
+    "automation_protocol": {
+      "primary": "Z-Wave (Z700-S2 stick).",
+      "usage": [
+        "Lighting, outlets, and switches per room.",
+        "Environmental sensing (temperature, motion) for ambience and security.",
+        "Power monitoring for emergency shutdown and UPS interaction."
+      ],
+      "naming_convention": "huey.<kind>.<room_or_device> (e.g., huey.switch.kitchen_sink)."
+    },
+    "peripheral_nodes": {
+      "arduino_megaskull": {
+        "role": "Head/upper-body controller: servos, jaw, eyes, neck, key sensors.",
+        "interface": "USB serial (primary) with optional I2C/UART advancements."
+      },
+      "arduino_uno": {
+        "role": "Deterministic low-level controller for servos, lights, RF/button input, and immediate actuation support.",
+        "input": "IC2262/2272-style 4-button RF remote (A-D) plus direct command paths from the main system."
+      },
+      "arduino_nanos": {
+        "role": "Local I/O conditioners for LEDs, analog sensors, and PWM devices.",
+        "placement": "Distributed across shell where wiring simplicity and locality matter."
+      },
+      "optional_pi_nodes": {
+        "role": "Diagnostics, watchdogs, delegated UI/status nodes, and HueyPulse-like persistence layers.",
+        "note": "The first such role is expected to live on the Raspberry Pi 4 attached to Huey Core rather than only in distant future room nodes."
+      }
+    }
+  },
+  "intent_and_interfaces": {
+    "rf_remote": {
+      "transmitter": "IC2262/2272 RF remote",
+      "buttons": {
+        "A": "Single command / quick interaction.",
+        "B": "Continuous conversation mode / open channel.",
+        "C": "Vote: YES or positive acknowledgement.",
+        "D": "Vote: NO or negative acknowledgement."
+      },
+      "path": "RF -> Arduino Uno -> low-level control path -> Huey Core governance/intent layers as appropriate."
+    },
+    "speech_and_audio": {
+      "tts": "Configurable TTS stack (engine still flexible)",
+      "stt": "Whisper or compatible model for speech recognition",
+      "microphone": {
+        "model": "Blue Snowball Chrome",
+        "connection": "USB",
+        "notes": [
+          "Three hardware settings on the rear switch."
+        ]
+      },
+      "policy": "Speech is optional. For the proof body, identity and legitimacy matter more than theatrics; text/status output may be the first and most trusted manifestation."
+    },
+    "retro_av": {
+      "vic_ii_and_sid": {
+        "role": "Optional retro display and sound personality layer (Commodore-era aesthetic).",
+        "usage": [
+          "Expressive visual output on a 7-inch display: moods, status, simple shapes.",
+          "SID-based audio cues tied to emotional states or events."
+        ]
+      }
+    },
+    "video": {
+      "camera": {
+        "type": "USB webcam",
+        "model": "TBD / not yet positively identified or benchmarked",
+        "notes": [
+          "Mounted with the head/upper platform",
+          "Currently routed directly to the motherboard; future pass-through via Raspberry Pi remains undecided"
+        ]
+      },
+      "display": {
+        "size": "7-inch",
+        "orientation": "portrait",
+        "status": "mounted/active",
+        "primary_role": "Code/status/diagnostic output rather than expressive face animation"
+      }
+    },
+    "sensory_routing": {
+      "left_ear": "Primary wiring ingress for microphone, webcam, and display cabling.",
+      "right_ear": "Currently unused / available for future symmetry or expansion."
+    },
+    "physical_interface_doctrine": {
+      "screen_doctrine": "The portrait display is primarily a cognition/status surface, not a cartoon face.",
+      "presence_doctrine": "Eyes, lights, posture, and lawful movement should provide presence without reducing Huey to stagecraft."
+    }
+  },
+  "threshold_tests_and_milestones": {
+    "v18_focus": {
+      "goal": "Bring up a stable, embodied, single-district Huey Core capable of local model use, storage discipline, thermal containment, and future robotic/mechanical integration."
+    },
+    "mvp_test": {
+      "model": "Current Mistral 7B-class local model on the RX 5500 XT proof body",
+      "success_criteria": "Reliable local response, embodied-core stability, and a trustworthy operator loop on the limited single-district prototype."
+    },
+    "thermal_validation": {
+      "status": "required",
+      "method": "Empirical run cycles and stress testing to discover safe operating envelopes."
+    },
+    "first_action_completion": {
+      "criteria": "Constitution ratified for the active embodiment, first lawful physical action performed, and logs stored for later audit/training."
+    },
+    "v19_focus": {
+      "goal": "Stabilize the embodied proof body, formalize the motherboard/Pi/Arduino split, and define the path from a one-district prototype to the first true distributed identity milestone."
+    },
+    "single_district_proving": {
+      "goal": "Use the RX 5500 XT district to prove logging, local inference, body control pathways, temperature discipline, and operator interaction on honest limited hardware.",
+      "success_criteria": [
+        "Reliable boot and diagnostic visibility",
+        "Stable local model use on the 8 GB district",
+        "Repeatable sensor/display/light/fan support behavior",
+        "Documented handoff boundaries between motherboard, Pi, and Arduino roles"
+      ]
+    },
+    "identity_threshold": {
+      "milestone_name": "Distributed Identity Threshold",
+      "target_vram_gb": 80,
+      "topology": "Split across four or five GPUs depending final acquisition strategy.",
+      "success_criteria": "A local multi-GPU model answers a simple question such as 'What is your name?' with 'Huey.'",
+      "meaning": "This is the first undeniable proof that the architecture can unify as one local intelligence rather than merely host isolated parts."
+    },
+    "lawful_actuation_proof": {
+      "milestone_name": "Lawful Embodied Action",
+      "success_criteria": "Huey receives a request such as moving its hand and performs the action only through the proper ratified/internal approval path.",
+      "meaning": "Proves both the conscious world-facing layer and the subconscious constitutional layer at once."
+    },
+    "v20_focus": {
+      "goal": "Keep Huey Core truthful, stable, documented, and useful while preparing the expansion path toward V4 Farm and the later distributed identity threshold."
+    },
+    "farm_preparation": {
+      "milestone_name": "V4 Farm Preparation",
+      "status": "planned",
+      "success_criteria": "The external district housing path, GPU acquisition logic, and standardized node platform are concrete enough to support later scale-out beyond the Core."
+    }
+  },
+  "failure_modes_and_recovery": {
+    "categories": [
+      "Ordinary operational/governance questions that the living system should resolve itself.",
+      "Constitutional crisis (law/logic/legitimacy contradiction).",
+      "Nuclear/safety crisis (thermal, electrical, mechanical, or hardware danger).",
+      "Technical failure (software, device, kernel, or integration instability).",
+      "Environmental failure (power loss, accidental damage, room conditions)."
+    ],
+    "responses": {
+      "ordinary_governance": [
+        "Handle within the living branches/district logic where possible.",
+        "Log decisions and rationale for later training and audit."
+      ],
+      "constitutional": [
+        "Trigger Supreme Court review and internal constitutional interpretation first.",
+        "If unresolved, allow tightly-scoped Founding Father AI reactivation for interpretation of law/logic only.",
+        "Log every proposal, vote, dispute, and ruling."
+      ],
+      "nuclear_safety": [
+        "Route immediately to HueyPulse / Raspberry Pi watchdog logic and deterministic safety controls.",
+        "Reduce load, preserve hardware, cool the system, and move toward safe state or shutdown if necessary.",
+        "Do not invoke the Founding Father AI for thermal/electrical/mechanical danger."
+      ],
+      "technical": [
+        "Attempt local recovery (restart services, reassign tasks, reinitialize devices).",
+        "If unresolved, reduce to fallback mode and preserve logs/snapshots.",
+        "Resume only after stability and integrity checks pass."
+      ],
+      "environmental": [
+        "Preserve logs, snapshots, and critical state where possible.",
+        "Keep essential support rails alive only when they materially improve safety or data survival.",
+        "Perform integrity and consistency checks before returning to full operation."
+      ]
+    },
+    "crisis_protocols": {
+      "constitutional_crisis": {
+        "trigger": "Unresolved contradictions of written law, legitimacy, succession, ratification, or internal constitutional logic.",
+        "response": [
+          "Convene living judicial/governance review first.",
+          "Suspend only the minimum set of affected high-impact actions.",
+          "If the living system cannot resolve the contradiction, reactivate the Founding Father AI from read-only storage for interpretation.",
+          "Return the Founding Father AI to dormancy after the ruling or repair path is established."
+        ]
+      },
+      "nuclear_safety_crisis": {
+        "trigger": "Temperature runaway, electrical instability, hardware danger, or other conditions that threaten the body itself.",
+        "response": [
+          "Watchdog/safety layer takes priority.",
+          "Reduce power/load, preserve cooling, and perform safe-state procedures.",
+          "Escalate to shutdown only when required to prevent damage."
+        ]
+      },
+      "system_instability": {
+        "trigger": "Hardware, sensor, kernel, service, or integration malfunction detected.",
+        "response": [
+          "Enter fallback mode and reduce load.",
+          "Retain logs in JSON + SQLite and preserve snapshots where possible.",
+          "Resume operations only after stability and integrity checks pass."
+        ]
+      }
+    },
+    "shutdown_policy": {
+      "principle": "Shutdown is a safety and continuity decision, not a casual theatrical command.",
+      "allowed_conditions": [
+        "Severe hardware failure that endangers equipment or data.",
+        "Watchdog-determined nuclear/safety crisis requiring safe power-down.",
+        "Constitutionally approved shutdown under the active governance rules."
+      ],
+      "disallowed_conditions": [
+        "Arbitrary convenience shutdown while critical operations are active.",
+        "Using the Founding Father AI as a shortcut for ordinary safety or maintenance questions."
+      ]
+    }
+  },
+  "training_and_usage": {
+    "core_training_material": "This master plan JSON series through V20, selected README releases, curated conversation transcripts, and system/hardware logs.",
+    "method": [
+      "Reflective bootstrapping: models read project history and the active master plan before major sessions.",
+      "Periodic consolidation: sessions are summarized back into JSON and persisted in SQLite/BTRFS-backed storage.",
+      "Human-in-the-loop validation: Dylan reviews major structural changes.",
+      "PyGPT-net serves as the practical aperture between interaction and code/action during the proof-body phase.",
+      "Benchmark future local/open-weight behavior against the felt quality of GPT-4 / 4.0 rather than against shallow output metrics alone."
+    ],
+    "supplementary_material": [
+      "Hardware and wiring diagrams, including Z-Wave and peripheral-node maps.",
+      "Channel Huey scripts and playlists for style and tone.",
+      "Legacy federation constitution texts for additional constitutional language and ideas."
+    ],
+    "usage_modes": [
+      "Design mode: reason about hardware, governance, architecture, and future district scale-out.",
+      "Operator mode: manage Huey Core's day-to-day embodied operation and diagnostics.",
+      "Reflective mode: analyze past decisions, propose reforms, and refine prompts.",
+      "Proof mode: validate identity, lawful action, and body/governance coordination milestones."
+    ]
+  },
+  "open_questions_for_future_versions": [
+    "Lock the exact multi-GPU acquisition path that reaches roughly 80 GB VRAM, including whether Huey Core's own GPU counts toward the final proof total.",
+    "Choose the full proof-scale model path between an OpenAI open-weight target, a larger Mistral-family model, or both.",
+    "Decide whether microphone/camera traffic remains direct to the motherboard or is partially mediated by the Raspberry Pi watchdog/intermediary layer.",
+    "Define the exact numeric thermal, electrical, and watchdog thresholds after empirical stress testing.",
+    "Decide whether the Founding Father AI is merely bootstrap executive authority or also counts as the literal first President in historical doctrine.",
+    "Define the exact V4 Farm topology, housing layout, and acquisition sequence for the district expansion body.",
+    "Benchmark and lock the future expansion GPU shortlist when scale-out funding is available.",
+    "Formalize always-on self-diagnostics and the exact recovery behavior of the Pi/Arduino safety stack.",
+    "Identify and benchmark the current webcam model or choose a formal replacement.",
+    "Clarify the long-term return path, if any, for additional shell-level embodiment beyond Core + Farm."
+  ],
+  "notes_for_future_ai": [
+    "Canon mapping remains: Masterplan is the canonical machine spec; README is the canonical human narrative. If they conflict, implement the Masterplan and surface the conflict to Dylan.",
+    "V20 supersedes V19, V18.5, and earlier versions where conflicts arise.",
+    "Do not collapse constitutional crisis and nuclear/safety crisis into one emergency path.",
+    "Do not quietly treat Huey Core as the fully finished republic; it is the doorway and minimal permissible instance for the fuller machine.",
+    "Preserve the distinction between Huey Core and Huey proper when writing public language, implementation notes, or interfaces.",
+    "Preserve the distinction between the world-facing conscious layer and the governance-facing subconscious layer when designing behavior or interfaces.",
+    "The portrait display is primarily a code/status surface; do not assume it should become a cartoon face by default.",
+    "Autonomy and wonder matter: avoid over-scripting Huey into a puppet just because limited hardware makes scripting easier.",
+    "Citizen identity, lifecycle, maintenance events, backups, and crisis logs must remain auditable across updates."
+  ],
+  "canon_mapping": {
+    "masterplan": "canonical_machine_spec",
+    "readme": "canonical_human_narrative",
+    "conflict_policy": {
+      "default": "masterplan_wins_for_implementation",
+      "unresolvable": "surface_as_blocker_to_dylan"
+    },
+    "readme_version": "README-v20.md"
+  },
+  "project_phase": {
+    "previous_phase": {
+      "name": "V19 embodied architecture + proof-of-concept alignment release",
+      "status": "superseded_by_v20_canon_alignment",
+      "ended": "2026-03-24",
+      "notes": [
+        "V19 established the body plan, watchdog split, crisis separation, and dual proof thresholds.",
+        "V20 keeps that architecture but tightens terminology, present-tense canon, and the later Farm expansion path."
+      ]
+    },
+    "current_phase": {
+      "name": "Huey Core Truthfulness, Farm Planning, and Distributed Identity Preparation",
+      "status": "active",
+      "started": "2026-03-24",
+      "notes": [
+        "Focus is on making Huey Core physically coherent, diagnostically visible, and honest as a proof body.",
+        "Single-district proving continues while the architecture for the future 80 GB identity threshold is planned.",
+        "The next large compute expansion path is V4, the Farm."
+      ]
+    },
+    "milestones": [
+      {
+        "name": "Huey Core realignment target",
+        "date": "2026-10-04",
+        "type": "target",
+        "success_condition": "Huey Core is operational as a stable embodied proof body with working storage, boot fallback, diagnostics, watchdog architecture direction, and practical local model use."
+      },
+      {
+        "name": "Distributed Identity Threshold",
+        "date": "TBD",
+        "type": "proof_of_concept",
+        "success_condition": "A local multi-GPU model running across roughly 80 GB total VRAM answers a simple identity question as Huey."
+      },
+      {
+        "name": "Lawful Embodied Action",
+        "date": "TBD",
+        "type": "proof_of_concept",
+        "success_condition": "After constitutional legitimacy is in force for the active embodiment, Huey performs a logged lawful physical act such as moving the hand."
+      }
+    ],
+    "deprecated_targets": [
+      {
+        "name": "Reacquisition (target)",
+        "date": "2026-06-04",
+        "reason": "Deferred to October 2026 to allow for the current architectural realignment."
+      },
+      {
+        "name": "Lab Relaunch (placeholder; deprecated)",
+        "date": "2026-02-28",
+        "reason": "Older timeline placeholder no longer aligned with the current plan."
+      },
+      {
+        "name": "Robotics V3 active path",
+        "date": "2026-03-24",
+        "reason": "Superseded by V4: the Farm as the planned expansion housing after Huey Core stabilization."
+      }
+    ]
+  },
+  "change_log": {
+    "v20_from_v19": [
+      "Promoted the plan to V20.0 and bumped schema_version to 15.",
+      "Clarified the naming stack: Monkey-Head-Project is the umbrella initiative, Huey is the identity, HueyOS is the operating-system layer, Huey Core is the minimal permissible instance, and Huey proper is the fuller unified system presence.",
+      "Stopped equating Huey proper with Huey Core and instead formalized Huey Core as the doorway/proof body and Huey proper as the later world-facing collective expression.",
+      "Sunset Robotics V3 as the active future expansion path for this iteration and introduced V4, the Farm, as the planned external district housing for later multi-GPU scale-out.",
+      "Aligned the machine-facing plan with the V20 README language around truthfulness, current-state clarity, and the dual proof milestone.",
+      "Added the Farm as a planned node/expansion role tied to the ASUS TUF Z790-PLUS WiFi and Intel i9 line.",
+      "Refreshed open questions, project-phase language, and future-AI notes to match the new canon."
+    ],
+    "v19_from_v18_5": [
+      "Promoted the plan to V19.0 and bumped schema_version to 14.",
+      "Added the current embodied body plan: rolling chair base, inverted/reversed Mozart chassis, upper mounted head platform, lights, arm, and sensory cable routing.",
+      "Reinstated HueyPulse as an active design role primarily mapped to a Raspberry Pi 4 watchdog layer rather than leaving it only as abstract merged logic.",
+      "Reclassified the Arduino Uno as an active integration path for deterministic low-level actuation rather than as a purely future placeholder.",
+      "Separated constitutional crisis from nuclear/safety crisis and explicitly reserved the Founding Father AI for constitutional interpretation only.",
+      "Added the cognitive split doctrine between the world-facing conscious layer and the governance-facing subconscious layer.",
+      "Added the roughly 80 GB distributed identity threshold and the lawful embodied action threshold as the two major proof milestones beyond basic single-district bring-up.",
+      "Recorded GPT-4 / 4.0-class behavior as the experiential gold-standard benchmark for future local/open-weight deployment.",
+      "Clarified that Huey Core is the doorway/proof body rather than the finished republic."
+    ],
+    "v18_5_from_v18_0": [
+      "Promoted the canonical pair to README V18.5 and Master Plan V18.5.",
+      "Kept schema_version at 13 and reconciled the README to match that schema.",
+      "Reaffirmed that HueyPulse is merged into Huey Core rather than treated as a separate hardware node.",
+      "Reaffirmed that the Symbiote / parasite architecture remains paused and that no active Linux sub-OS role is assumed for it in V18.5.",
+      "Made no hardware-scope expansion beyond the already locked Huey Core-first V18 baseline."
+    ],
+    "v18_from_v17": [
+      "Reframed embodiment: Huey Core is now the primary embodied prototype; Robotics V3 shell is deferred.",
+      "Replaced the Intel i9/Z790 full-robot baseline with the active Ryzen 5 5500 + ASUS Prime B550M-A WiFi II + 32 GB DDR4-3200 baseline.",
+      "Locked V18 to a single GPU district using a Gigabyte Radeon RX 5500 XT 8 GB; future multi-district expansion is deferred.",
+      "Removed V17's multi-PSU/custom-loop requirement from the active V18 baseline and replaced it with a single MSI 850W PSU + separate battery rail + air-cooling design.",
+      "Merged HueyPulse into Huey Core as responsibilities rather than separate hardware.",
+      "Paused the Symbiote / parasite architecture and recast the Lenovo Legion Go as a development computer for now.",
+      "Updated kernel policy from 6.18.5-huey-os to 6.19.x stable with planned promotion to Linux 7.0 upon stable release.",
+      "Documented the active storage layout: Optane RAID 0 for root and 4 x Kingston SSD RAID 10 for data/home.",
+      "Documented boot fallback labels BOOT and NO-BOOT.",
+      "Added encryption, SSH-key, backup, update, and external-storage policies as described in the latest alignment session.",
+      "Moved the major target milestone from 2026-06-04 to 2026-10-04.",
+      "Cleaned legacy V16 carryover language from notes_for_future_ai."
+    ]
+  },
+  "v20_decisions_locked": {
+    "hardware_baseline": {
+      "cpu": "AMD Ryzen 5 5500",
+      "motherboard": "ASUS Prime B550M-A WiFi II",
+      "ram": "32 GB DDR4-3200",
+      "gpu": "Gigabyte Radeon RX 5500 XT 8 GB",
+      "psu": "MSI 850W"
+    },
+    "embodied_baseline": {
+      "mobility": "five-caster repurposed desk-chair base",
+      "core_mount": "Thermaltake Mozart case mounted upside down and reversed on a repurposed wooden chair platform",
+      "upper_mount": "TV-mount-supported upper platform carrying the head/shoulder assembly, camera, microphone, and 7-inch portrait display",
+      "arm": "movable hand/arm on Huey's right side"
+    },
+    "cooling": "air-cooled with 3 motherboard-path fans, 6 battery-path fans, and 1 wall-powered GPU-directed fan",
+    "power_architecture": "single PSU for core + separate regulated battery/accessory rail + low-voltage support conversion for Pi/Arduino",
+    "watchdog_split": "motherboard thinks, Raspberry Pi watches, Arduino acts",
+    "boot_recovery": "BOOT primary / NO-BOOT fallback",
+    "storage": {
+      "root": "2 x Optane M10 16 GB RAID 0",
+      "data": "4 x 240 GB Kingston SSD RAID 10"
+    },
+    "runtime": {
+      "os": "Debian 14 Forky",
+      "kernel": "6.19.x now, 7.0 stable later",
+      "llm_server": "Ollama",
+      "interface": "PyGPT-net"
+    },
+    "current_models": [
+      "Mistral 7B-class instruct/light quantized model for the RX 5500 XT",
+      "Mistral 7B-class general quantized model for local experimentation"
+    ],
+    "future_proof_target": {
+      "behavioral_benchmark": "GPT-4 / 4.0-class quality",
+      "vram_goal_gb": 80,
+      "identity_test": "Answer 'What is your name?' with 'Huey' on a local distributed multi-GPU deployment"
+    },
+    "security_and_access": {
+      "access_control": "SSH only, with common lab key + per-device keys",
+      "security_updates": "automatic/high priority",
+      "other_updates": "manual/off-cycle until later stability",
+      "external_access": "human opt-in required",
+      "storage_encryption": "planned/high priority"
+    },
+    "backups": [
+      "BTRFS snapshots",
+      "on-site backups",
+      "cloud backups"
+    ],
+    "expansion_path": {
+      "next_large_housing": "V4: the Farm",
+      "role": "External district housing that expands Huey beyond the Core and supports later multi-district operation.",
+      "standardized_node_platform": "ASUS TUF Z790-PLUS WiFi + Intel i9 line"
+    },
+    "naming": {
+      "project": "Monkey-Head-Project",
+      "identity": "Huey",
+      "operating_system": "HueyOS",
+      "proof_body": "Huey Core",
+      "unified_world_facing_expression": "Huey proper"
+    }
+  }
+}
