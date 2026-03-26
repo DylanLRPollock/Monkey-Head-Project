@@ -34,7 +34,7 @@ setup(
     packages=find_packages(where="hueyos"),
     package_dir={"": "hueyos"},
     install_requires=[
-        "requests==2.32.4",
+        "requests==2.33.0",
         "httpx==0.28.1",
         "aiohttp==3.13.3",
         "websockets==15.0.1",
