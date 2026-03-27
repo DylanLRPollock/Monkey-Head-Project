@@ -1,0 +1,17 @@
+interface:
+  display_name: text cleanup
+  short_description: extract text from uploaded files and convert raw, unformatted,
+    or partially corrupted text into readable output using preserve, correct, or augmented
+    modes. use when chatgpt needs to clean up notes, transcripts, articles, emails,
+    ocr output, copied passages, or similar text from txt, pdf, md, json, and related
+    formats, while preserving order and meaning and marking corrections inline when
+    changes are made.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
