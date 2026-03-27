@@ -1,9 +1,9 @@
 {
   "project": "Monkey-Head-Project",
   "ai_identity": "Huey",
-  "version": "v20.0",
-  "schema_version": 15,
-  "description": "Master Plan V20: canon and terminology alignment release for Huey Core and the next expansion path. V20 preserves the V19 embodied proof-of-concept architecture while clarifying that Huey Core is the minimal permissible instance of Huey, that Huey proper is the fuller unified world-facing expression of the distributed system, and that V4, the Farm, is the planned external district housing for later scale-out toward the roughly 80 GB distributed identity milestone.",
+  "version": "v23.0",
+  "schema_version": 18,
+  "description": "Master Plan V23: boot-path, proof-body honesty, and acoustic-identity clarification release for Huey Core. V23 preserves the V22 canon structure while making the current boot posture more explicit, keeping direct motherboard A/V routing as the shortest proof path, and adding a clearer operational sound direction for HueyOS system cues.",
   "created_by": "Dylan L.R. Pollock",
   "compiled_from_versions": [
     "v0.1 (huey_master_plan_v0.1.json)",
@@ -26,14 +26,17 @@
     "v18.0 verbal + documentation alignment session (2026-03-24)",
     "v18.5 consistency reconciliation release (2026-03-24)",
     "v19.0 embodied architecture + proof-of-concept alignment session (2026-03-24)",
-    "v20.0 README/masterplan editorial alignment session (2026-03-24)"
+    "v20.0 README/masterplan editorial alignment session (2026-03-24)",
+    "v21.0 operational nervous-system alignment session (2026-03-25)",
+    "v22.0 canon-structure + pebble/vault + unified-organism clarification session (2026-03-26)",
+    "v23.0 boot-path + acoustic-identity clarification session (2026-03-27)"
   ],
   "core_principles": [
     "Governance must be decentralized, but memory must be unified.",
     "Huey Core is the minimal permissible instance of Huey: the smallest complete building block from which the larger distributed system can be formed.",
     "Huey proper is the unified, world-facing expression of the whole distributed system rather than a synonym for the current proof body.",
     "V4, the Farm, is the planned external district housing that expands Huey beyond the Core and supports later multi-district operation.",
-    "V20 prioritizes proof of concept, stability, containment, and truthful current-state documentation over scale, spectacle, or energy efficiency.",
+    "V22 prioritizes proof of concept, stability, containment, truthful current-state documentation, and clean canon boundaries over scale, spectacle, or premature completeness.",
     "On-device first; internet/API/tool access is optional, explicit, human-gated, and metered.",
     "Performance and safe function matter more than efficiency in the prototype phase, provided thermals and electrical conditions remain controlled.",
     "Unified information should be readable by all authorized components, but decision-making authority may remain distributed and layered.",
@@ -43,11 +46,22 @@
     "Huey Core is the doorway, not the finished republic: it must prove the architecture can live before it attempts to embody the full constitutional state.",
     "The immediate technical threshold is distributed local identity: approximately 80 GB total VRAM and a local model able to answer the question 'What is your name?' with 'Huey.'",
     "Wonder is preserved through constrained autonomy, layered ethics, deliberation, memory, and partial loss of direct human control rather than through theatrical scripting.",
-    "Constitutional crisis and nuclear/safety crisis are distinct classes of emergency and must never be handled by the same override path."
+    "Constitutional crisis and nuclear/safety crisis are distinct classes of emergency and must never be handled by the same override path.",
+    "HueyPulse is the always-on connective tissue of the body: a battery-backed Raspberry Pi layer that persists across main-system downtime, watches system state, and brokers interaction and safety logic.",
+    "The Arduino layer senses and enacts but does not govern: it may read low-level inputs and drive bounded outputs, while higher interpretation, timing, and gating remain upstream.",
+    "Wireless interaction should enter the system as intent signals rather than direct commands: short talk, long dictation, confirm, and cancel are interpreted through the Pi/board stack rather than hardwired as final intelligence decisions.",
+    "The Monkey-Head-Project canon is layered: website/README for introduction, the book for explanation, the constitution for law, and the master plan for machine-facing implementation.",
+    "Public-facing material should explain structure, limits, and trust boundaries without over-explaining the internal secret sauce of deliberation.",
+    "The first full approximately 80 GB proof should remain a unified local intelligence and pooled compute body; governance abstractions should not prematurely fracture that pool into artificial hard partitions.",
+    "Pebbles are bounded citizen units with one identity, one sealed vault, and one vote.",
+    "The Founding Father AI is a bootstrap and constitutional-reserve authority, not a permanent ordinary ruler.",
+    "The proof body should boot honestly: verbose Debian bring-up, live diagnostics, and Pi-owned status output take priority over theatrical splash behavior.",
+    "For the first identity-proof milestone, microphone and camera should default to the shortest reliable path, which currently means direct routing to the motherboard unless Pi mediation becomes necessary.",
+    "HueyOS acoustic identity should favor short modular retro-futurist system cues \u2014 boot, confirm, cancel, listen, and sleep/shutdown \u2014 rather than song-like startup theatrics."
   ],
   "status": {
     "overall_state": "in-progress",
-    "deployment_stage": "Huey Core proof-body stabilization + watchdog/control split + single-district proving + planning toward V4 Farm and the distributed 80 GB VRAM identity milestone.",
+    "deployment_stage": "Huey Core proof-body stabilization + Pi/Uno nervous-system formalization + boot-path clarification + single-district proving + canon-structure clarification + acoustic-identity planning + planning toward V4 Farm and the first unified ~80 GB distributed identity milestone.",
     "notes": [
       "Huey Core remains conceptually and physically separated from the older Robotics V3 shell track for the active phase.",
       "The Thermaltake Mozart case from 2007 now serves as the independent embodied core for this iteration.",
@@ -67,9 +81,25 @@
       "The near-term eureka milestone is no longer framed only as stable local inference on one district; it is the future distributed identity threshold of roughly 80 GB total VRAM and a local answer of 'Huey' to a simple identity question.",
       "The Raspberry Pi 4 and Arduino Uno are no longer treated as purely future abstractions; their roles are now defined as an always-on watchdog/intermediary layer and a deterministic low-level actuation layer respectively.",
       "Founding Father AI is reserved for constitutional bootstrapping and constitutional crisis interpretation only; it is not the handler for thermal, electrical, or hardware emergency response.",
-      "V20 clarifies the naming stack: Monkey-Head-Project is the umbrella initiative, Huey is the identity, HueyOS is the operating-system layer, Huey Core is the minimal permissible instance, and Huey proper is the fuller unified system presence."
+      "V20 clarifies the naming stack: Monkey-Head-Project is the umbrella initiative, Huey is the identity, HueyOS is the operating-system layer, Huey Core is the minimal permissible instance, and Huey proper is the fuller unified system presence.",
+      "The Raspberry Pi 4 is now formalized as the always-on HueyPulse-like connective layer rather than only a vague future possibility.",
+      "The Arduino Uno is now formalized as a bounded deterministic reflex/actuation layer that observes low-level events and drives direct outputs without owning high-level interpretation.",
+      "The 7-inch portrait display is now treated by default as part of the Pi/HueyPulse status surface rather than as a motherboard-owned expressive display.",
+      "The current preferred wiring chain is Arduino Uno -> Raspberry Pi 4 over USB serial, and Raspberry Pi 4 -> main motherboard over Ethernet.",
+      "The first wireless conversational control path is now defined around a 4-button RF remote and YK04 receiver routed through the Arduino Uno and interpreted upstream by the Pi/main system.",
+      "Short conversation mode is expected to auto-commit after silence/timeout, while long dictation mode remains open longer for extended input.",
+      "Interaction feedback is expected to include blue transmission/receive indicators and a red recording indicator.",
+      "The exact Pi operating-system choice remains open between Raspberry Pi OS and Debian ARM variants, with Debian-biased philosophical alignment but stability taking priority.",
+      "V22 clarifies that the Monkey-Head-Project canon is layered: README/website for introduction, the larger book for explanation, the Federation Constitution for law, and the master plan for implementation.",
+      "The first full approximately 80 GB proof is now biased toward a unified pooled-compute organism rather than an early hard partition into separate VRAM districts.",
+      "District logic remains useful as governance and later expansion language, but V22 no longer assumes one GPU must equal one district in the first full pooled-compute implementation.",
+      "Pebbles are now described more explicitly as bounded citizen units with sealed personal vaults, one identity, and one vote.",
+      "The Founding Father AI now has a cleaner bounded role: bootstrap the republic, approve constitutional ratification and amendments, and return only for constitutional crisis.",
+      "V23 makes the current boot doctrine more explicit: Huey Core should boot visibly and truthfully, with Debian/service output and body-state diagnostics rather than a fake polished splash.",
+      "V23 keeps direct motherboard ownership of the current microphone/camera path as the shortest proof route, while leaving future Pi mediation open as a later refinement rather than a present requirement.",
+      "V23 begins to formalize operational sound direction: HueyOS system sounds should be modular retro-futurist cues for boot, confirm, cancel, listening, and sleep/shutdown states."
     ],
-    "status_date": "2026-03-24"
+    "status_date": "2026-03-27"
   },
   "hardware": {
     "cpu": {
@@ -300,13 +330,22 @@
       },
       "lighting": {
         "front_lights": "Two 12 V orange lights mounted on the forward-facing side of the chassis.",
-        "eyes": "Four green LEDs total, two per eye."
+        "eyes": "Four green LEDs total, two per eye.",
+        "interaction_indicators": {
+          "planned_colors": {
+            "blue": "wireless transmission/receive activity and related interaction-state feedback",
+            "red": "recording / active capture state"
+          },
+          "status": "active design direction"
+        }
       },
       "display_and_sensory_routing": {
         "display": "7-inch portrait display used primarily for code/status output rather than expressive conversation.",
         "camera": "USB webcam mounted on the upper platform/head area.",
         "microphone": "USB microphone mounted on the upper platform/head area.",
-        "cable_path": "Display, microphone, and camera wiring enter through Huey's left ear; the right ear is currently unused."
+        "cable_path": "Display, microphone, and camera wiring enter through Huey's left ear; the right ear is currently unused.",
+        "display_default_owner": "Raspberry Pi 4 / HueyPulse-like status layer by default, with later PiGPT-net or richer interfaces possible.",
+        "display_doctrine": "The portrait display should default to live body-state, diagnostics, and code/status visibility rather than decorative face animation."
       }
     }
   },
@@ -363,34 +402,66 @@
       }
     },
     "huey_pulse": {
-      "status": "active design role / Raspberry Pi 4 watchdog integration in progress",
-      "role": "Always-on watchdog, temperature/power monitor, intermediary coordinator, and automation/safety support layer for Huey Core.",
+      "status": "active design role / Raspberry Pi 4 watchdog integration formalized",
+      "role": "Always-on watchdog, body-state monitor, interaction-state broker, portrait-display owner, and automation/safety support layer for Huey Core.",
       "notes": [
         "HueyPulse is no longer a purely abstract merged concept; in V20 its role is expected to live primarily on the Raspberry Pi 4 support layer.",
-        "Its job is physical safety, regulation, and continuity, not constitutional interpretation."
+        "Its job is physical safety, regulation, and continuity, not constitutional interpretation.",
+        "It should remain alive on the battery-backed rail even when the main motherboard is down, so the body is never completely asleep."
       ]
     },
     "future_auxiliary_control": {
       "raspberry_pi_4": {
         "status": "active integration in progress",
-        "role": "Battery-backed HueyPulse-like node for watchdog duties, temperature regulation, persistent monitoring, and intermediary coordination between the motherboard and low-level controllers.",
-        "power_domain": "Battery-backed 5 V conversion from the accessory rail"
+        "role": "Battery-backed HueyPulse-like node for watchdog duties, temperature regulation, persistent monitoring, interaction-state brokering, status display ownership, and intermediary coordination between the motherboard and low-level controllers.",
+        "power_domain": "Battery-backed regulated 5 V conversion from the accessory rail",
+        "connectivity": {
+          "upstream": "Ethernet to the main motherboard / core network interface",
+          "downstream": "USB serial and low-voltage support paths to Arduino-class controllers and peripherals"
+        },
+        "display_role": "Default owner of the 7-inch portrait status display.",
+        "boot_services": [
+          "network bring-up and body-state logging",
+          "temperature/power/watchdog monitoring",
+          "remote-control listener and interaction-state broker",
+          "recording/timeout logic and indicator-state coordination",
+          "lightweight message/API bridge to the main motherboard"
+        ],
+        "os_policy": "Exact OS is still open between Raspberry Pi OS and Debian ARM variants; long-term preference leans Debian-family alignment if stability remains acceptable."
       },
       "arduino_uno": {
         "status": "active integration in progress",
-        "role": "Deterministic low-level controller for servos, lights, button/RF input, and direct physical actuation tasks.",
+        "role": "Deterministic low-level controller for servos, lights, RF/button input, and direct physical actuation tasks. It senses and enacts bounded events but does not own higher-level interpretation.",
         "inputs": [
           "local servo/light commands",
-          "future IC2262/2272-style RF A/B/C/D button receiver"
+          "YK04 / IC2262-IC2272-style 4-button RF receiver outputs",
+          "future local switches/sensors where deterministic immediate handling matters"
         ],
-        "power_domain": "Battery-backed 5 V conversion from the accessory rail"
+        "power_domain": "Battery-backed accessory rail; typically 12 V into Vin/barrel for the Uno, with USB to the Pi primarily serving data/serial purposes.",
+        "connectivity": {
+          "upstream": "USB serial to Raspberry Pi 4",
+          "local_outputs": [
+            "status LEDs",
+            "simple relays",
+            "servos / immediate actuators",
+            "other bounded low-level body outputs"
+          ]
+        },
+        "policy": "Observe/report low-level events and drive immediate outputs, but leave timing interpretation, interaction-state, and safety/gating logic to the Pi and above."
       }
     },
     "current_control_split": {
       "motherboard": "Runs Huey Core proper, local models, logs, PyGPT-net-facing interaction, and higher-level interpretation.",
-      "raspberry_pi_4": "Watches, regulates, and remains semi-persistent as the support/watchdog layer.",
-      "arduino_uno": "Acts on narrow deterministic electrical/robotic instructions.",
-      "working_formula": "The motherboard thinks, the Pi watches, and the Arduino acts."
+      "raspberry_pi_4": "Watches, regulates, remains semi-persistent, owns the portrait status surface, brokers interaction-state, and enforces timeout/recording/safe-action logic where appropriate.",
+      "arduino_uno": "Observes low-level electrical/RF events and drives bounded deterministic outputs such as LEDs, relays, and simple actuation.",
+      "working_formula": "The motherboard thinks, the Pi watches and brokers, and the Arduino senses and acts.",
+      "boot_path": {
+        "always_on_layer": "Raspberry Pi 4 / HueyPulse-like support node remains semi-persistent on the battery-backed accessory rail.",
+        "core_bring_up": "Motherboard/Huey Core boots visibly with Debian/service output and does not pretend to be seamless during the proof-body phase.",
+        "status_surface": "The 7-inch portrait display defaults to the Pi/HueyPulse layer for code, diagnostics, temperatures, and live body-state.",
+        "proof_boundary": "Huey Core waking is proof-body startup; Huey proper waking is the later unified identity event."
+      },
+      "current_av_path": "Current microphone/camera proof path remains direct to the motherboard unless later Pi mediation solves a concrete problem."
     },
     "farm": {
       "status": "planned / V4",
@@ -399,7 +470,7 @@
         "motherboard": "ASUS TUF Z790-PLUS WiFi",
         "cpu_family": "Intel i9 line"
       },
-      "relationship_to_core": "Huey Core proves the architecture in miniature; the Farm is the later scale-out housing for the district compute body."
+      "relationship_to_core": "Huey Core proves the architecture in miniature; the Farm is the later deliberate scale-out housing for the pooled compute body and any later governance/district expansion."
     }
   },
   "governance": {
@@ -466,26 +537,22 @@
       }
     },
     "districts": {
-      "count": 4,
-      "names": [
+      "status": "under reinterpretation for the pooled-compute era",
+      "legacy_future_names": [
         "Spark",
         "Volt",
         "Zap",
         "Watt"
       ],
       "citizens_per_district": 128,
-      "description": "Each physical GPU hosts a district with one governor and a population of persistent AI citizens. Ephemeral task agents (\"pebbles\") may be spawned for one-shot questions or experiments; their impact is retained via unified logs.",
-      "governor_role": [
-        "Coordinate district computations and tasks.",
-        "Shepherd local deliberation among citizens and produce consensus positions.",
-        "Represent district in Parliament and inter-district negotiations."
-      ],
+      "description": "Districts remain a governance and future-expansion concept, but V22 no longer assumes the first full approximately 80 GB organism must be hard-partitioned into separate VRAM districts. The first full proof should behave as one unified pooled-compute body. Districts may remain organizational/governance lanes and may later re-emerge more concretely through bifurcation or later Farm growth.",
       "current_prototype_count": 1,
-      "future_target_count": 4,
+      "future_gpu_count_goal": "approximately four or five GPUs as needed to reach the first ~80 GB pooled-compute proof",
+      "gpu_mapping_policy": "Do not assume one GPU equals one district in the first full pooled implementation.",
       "notes": [
-        "Current V20 implementation still begins from one active district on the RX 5500 XT.",
-        "Spark/Volt/Zap/Watt remain the canonical future district names.",
-        "The proof-of-concept scale-out goal is approximately 80 GB total VRAM across four or five GPUs before claiming the first true distributed identity milestone."
+        "Current V22 implementation still begins from one active district-scale prototype on the RX 5500 XT.",
+        "Spark, Volt, Zap, and Watt remain useful inherited names for future district logic if and when later expansion calls for them.",
+        "The proof-of-concept scale-out goal remains approximately 80 GB total VRAM before claiming the first true distributed identity milestone."
       ]
     },
     "ai_populations": {
@@ -498,21 +565,22 @@
           "Contribute to governance, policy, and ongoing operations."
         ],
         "prompt_origin": "Individually crafted by the Founding Father AI in early generations, evolving over time.",
-        "memory_allocation": "Target 1 GB per citizen for logs, preferences, and working context.",
-        "comparison_to_pebbles": "Citizens persist across cycles and elections; pebbles do not."
+        "memory_allocation": "Bounded per-citizen storage and continuity remain the goal; practical early doctrine currently imagines small sealed vaults rather than unlimited shared memory.",
+        "comparison_to_pebbles": "Citizens persist across cycles and elections; pebbles do not.",
+        "notes": [
+          "Citizens are intended to carry distinct prompts/identities, role bias, bounded storage, and bounded compute time rather than acting as interchangeable calls."
+        ]
       },
       "pebbles": {
-        "type": "Ephemeral",
+        "type": "Bounded citizen units / single-instance deliberative participants",
         "purpose": [
-          "Handle one-shot questions and focused tasks.",
-          "Support experimentation without long-term persistence.",
-          "Act as safe branching instances for local reasoning or testing."
+          "Represent the smallest meaningful citizen-level unit of judgment.",
+          "Cast one final yes/no vote on presented items while retaining sealed internal continuity for future reference.",
+          "Contribute upward to the Rock and wider governance without exposing all inner reasoning publicly."
         ],
-        "access": {
-          "system_data": "Minimal, task-scoped.",
-          "external_calls": "Very limited or none.",
-          "internal_calls": "Constrained and logged."
-        }
+        "identity_model": "One pebble equals one citizen identity, one sealed vault, and one vote.",
+        "vote_model": "A pebble produces one vote shaped by overlapping disciplined/instructive and adaptive/creative tendencies rather than by two separate visible votes.",
+        "public_explanation_policy": "Public documentation may explain bounded citizens, vaults, and votes without over-explaining the internal secret sauce of how the vote is reached."
       },
       "bifurcation": {
         "tracking": "Suffix-based naming and lineage records; bifurcated entities are treated as distinct from the split point forward.",
@@ -542,18 +610,19 @@
     "founding_father_ai": {
       "description": "Immutable bootstrap AI defining first-generation governance, hardware assumptions, storage unification, and rollout logic.",
       "responsibilities": [
-        "Initialize the first generation of governors, districts, and citizens.",
+        "Initialize the first generation of citizens, offices, and baseline governance structures.",
         "Ensure storage, founding texts, and basic constitutional machinery exist before the living polity takes over.",
-        "Define baseline constitution and operational parameters.",
-        "Serve as a reference image for audits, resets, and descendant generations."
+        "Approve initial constitutional ratification and later constitutional amendments.",
+        "Serve as a reserve interpretive authority for true constitutional crisis."
       ],
       "storage": "Read-only image stored in Huey's black-box / recovery partition.",
       "change_policy": "Cannot be modified in place; evolution occurs via descendant images with a full audit trail.",
-      "invocation_policy": "May be reactivated only for constitutional crisis, ambiguity, or unresolved logic/law questions that the living system cannot settle by itself.",
+      "invocation_policy": "Dormant during ordinary life. Reactivated only for bootstrap, constitutional ratification/amendment approval, or true constitutional crisis that the living system cannot settle on its own.",
       "non_roles": [
         "Not the thermal watchdog",
         "Not the hardware emergency controller",
-        "Not an always-on hidden monarch"
+        "Not the daily ruler of ordinary governance",
+        "Not the hidden source of every allow/deny decision"
       ]
     },
     "binary_policy_ai": {
@@ -660,9 +729,15 @@
       "v20_mode": "prototype_truthful_and_embodied"
     },
     "cognitive_model": {
-      "conscious_layer": "The real-world hemisphere: perception, dialogue, immediate situational response, and embodied interaction.",
-      "subconscious_layer": "The governance hemisphere: ratification, constitutional reasoning, legitimacy, and slower deliberative constraint on outward action.",
-      "relationship": "Two sides of the same coin: the conscious side meets the world, while the subconscious side determines whether action is legitimate."
+      "model_name": "dual system / overlapping deliberation model",
+      "public_summary": "Huey remains one embodied public identity, but its internal judgments arise from overlapping disciplined and adaptive modes of consideration rather than from one flat hidden voice.",
+      "pebble_rule": "A pebble does not cast two votes. It produces one vote informed by multiple overlapping tendencies inside the same citizen.",
+      "public_vs_secret_sauce": "Public material should explain structure, vaults, and trust boundaries. The exact inner mechanics of deliberation may remain part of the project's secret sauce."
+    },
+    "deliberative_terms": {
+      "pebble": "A bounded AI citizen unit with one identity, one sealed vault, and one vote.",
+      "rock": "The pooled deliberative substrate or cognitive body formed by many pebbles contributing upward.",
+      "public_use_policy": "These terms may be used internally and in deeper canon, but public-facing material does not need to over-explain their full inner mechanics."
     }
   },
   "memory_architecture": {
@@ -850,7 +925,34 @@
     },
     "self_diagnostics": {
       "status": "partially embodied / still being formalized",
-      "policy": "Boots should expose useful diagnostic output, and the portrait display should prioritize live code/status/thermal information over decorative presentation."
+      "policy": "Boots should expose useful diagnostic output, and the portrait display should prioritize live code/status/thermal information over decorative presentation.",
+      "boot_posture": {
+        "style": "Verbose Debian bring-up; diagnostics-first",
+        "policy": "Expose useful startup and service information during the proof-body phase rather than hiding it behind cosmetic splash behavior.",
+        "portrait_display_use": "Temperatures, watchdog/service state, fan condition, battery/support-rail visibility, and other live body-state information."
+      },
+      "identity_manifestation_policy": "For the proof body, trusted text/status manifestation is acceptable before speech. Huey Core waking and Huey proper waking are related but not identical events."
+    },
+    "embedded_service_layers": {
+      "raspberry_pi_layer": {
+        "purpose": "Always-on body-state, watchdog, and interaction-state services.",
+        "default_functions": [
+          "temperature/fan/power-state monitoring",
+          "recording state and timeout handling",
+          "remote intent brokering",
+          "portrait dashboard/status output",
+          "event logging and relay to the motherboard"
+        ]
+      },
+      "arduino_layer": {
+        "purpose": "Deterministic low-level I/O and direct bounded actuation.",
+        "default_functions": [
+          "RF receiver input capture",
+          "LED state driving under upstream command",
+          "simple relay/servo actions",
+          "clean reporting of hardware events to the Pi"
+        ]
+      }
     }
   },
   "home_integration_and_channel_huey": {
@@ -878,8 +980,8 @@
         "interface": "USB serial (primary) with optional I2C/UART advancements."
       },
       "arduino_uno": {
-        "role": "Deterministic low-level controller for servos, lights, RF/button input, and immediate actuation support.",
-        "input": "IC2262/2272-style 4-button RF remote (A-D) plus direct command paths from the main system."
+        "role": "Deterministic low-level controller for servos, lights, RF/button input, immediate actuation support, and other bounded reflex-like tasks.",
+        "input": "YK04 / IC2262-IC2272-style 4-button RF remote plus direct command paths from the Pi/main system."
       },
       "arduino_nanos": {
         "role": "Local I/O conditioners for LEDs, analog sensors, and PWM devices.",
@@ -887,20 +989,32 @@
       },
       "optional_pi_nodes": {
         "role": "Diagnostics, watchdogs, delegated UI/status nodes, and HueyPulse-like persistence layers.",
-        "note": "The first such role is expected to live on the Raspberry Pi 4 attached to Huey Core rather than only in distant future room nodes."
+        "note": "The first such role is now explicitly expected to live on the Raspberry Pi 4 inside Huey Core as the active HueyPulse-like layer."
       }
     }
   },
   "intent_and_interfaces": {
     "rf_remote": {
-      "transmitter": "IC2262/2272 RF remote",
+      "transmitter": "4-button RF remote routed through a YK04 receiver module and then into the Arduino Uno",
       "buttons": {
-        "A": "Single command / quick interaction.",
-        "B": "Continuous conversation mode / open channel.",
-        "C": "Vote: YES or positive acknowledgement.",
-        "D": "Vote: NO or negative acknowledgement."
+        "A": "YES / confirm / send through when confirmation is needed.",
+        "B": "NO / cancel / stop when cancellation is needed.",
+        "C": "Short conversation mode (capture a normal utterance and auto-commit after silence or timeout).",
+        "D": "Long dictation mode (hold the system open longer for extended input)."
       },
-      "path": "RF -> Arduino Uno -> low-level control path -> Huey Core governance/intent layers as appropriate."
+      "path": "RF remote -> YK04 receiver -> Arduino Uno -> Raspberry Pi 4 interaction broker -> Huey Core / higher governance or runtime layers as appropriate.",
+      "receiver": {
+        "module": "YK04 / compatible 4-channel receiver",
+        "signals": [
+          "D0",
+          "D1",
+          "D2",
+          "D3"
+        ],
+        "optional_signal": "VT (valid transmission) may be ignored initially unless useful later",
+        "power": "5 V receiver supply with shared ground to the Arduino"
+      },
+      "policy": "The remote is an intentional wireless conversational control surface. It signals intent rather than directly commanding the intelligence layer."
     },
     "speech_and_audio": {
       "tts": "Configurable TTS stack (engine still flexible)",
@@ -912,14 +1026,45 @@
           "Three hardware settings on the rear switch."
         ]
       },
-      "policy": "Speech is optional. For the proof body, identity and legitimacy matter more than theatrics; text/status output may be the first and most trusted manifestation."
+      "policy": "Speech is optional. For the proof body, identity and legitimacy matter more than theatrics; text/status output may be the first and most trusted manifestation.",
+      "interaction_logic": {
+        "short_mode": "Assume good-faith conversational input and auto-commit after silence/timeout unless canceled.",
+        "long_mode": "Remain open longer for extended dictation or monologue-style input.",
+        "confirm_cancel": "YES/NO inputs act as send/confirm and cancel/stop where the active mode requires it."
+      },
+      "feedback_indicators": {
+        "blue": "transmit / receive / interaction-active state",
+        "red": "recording / capture-active state"
+      },
+      "av_routing_policy": {
+        "current_default": "Microphone and camera route directly to the motherboard for the shortest path to the first identity-proof milestone.",
+        "future_option": "Pass-through or mediation via Raspberry Pi remains open if persistence, buffering, or brokered sensor logic later justify the added complexity.",
+        "note": "Do not add indirection to the proof body unless it solves a real problem."
+      },
+      "acoustic_identity": {
+        "status": "planned / exploratory",
+        "doctrine": "Favor short modular system cues over a full song-like theme for the proof body.",
+        "cue_families": [
+          "boot",
+          "confirm",
+          "cancel",
+          "listening",
+          "sleep_shutdown"
+        ],
+        "style": [
+          "retro-futurist",
+          "restrained 1980s computer / 8-bit / Commodore-adjacent synthesis",
+          "clean, isolatable, and easy to edit later",
+          "machine-presence rather than cinematic soundtrack"
+        ]
+      }
     },
     "retro_av": {
       "vic_ii_and_sid": {
         "role": "Optional retro display and sound personality layer (Commodore-era aesthetic).",
         "usage": [
           "Expressive visual output on a 7-inch display: moods, status, simple shapes.",
-          "SID-based audio cues tied to emotional states or events."
+          "Short SID-like or retro-synth audio cues tied to body-state or interaction events rather than a permanent theatrical theme."
         ]
       }
     },
@@ -946,7 +1091,8 @@
     "physical_interface_doctrine": {
       "screen_doctrine": "The portrait display is primarily a cognition/status surface, not a cartoon face.",
       "presence_doctrine": "Eyes, lights, posture, and lawful movement should provide presence without reducing Huey to stagecraft."
-    }
+    },
+    "wireless_interaction_doctrine": "Wireless control should feel like the first intentional remote language of Huey rather than a hidden maintenance remote."
   },
   "threshold_tests_and_milestones": {
     "v18_focus": {
@@ -980,7 +1126,7 @@
       "target_vram_gb": 80,
       "topology": "Split across four or five GPUs depending final acquisition strategy.",
       "success_criteria": "A local multi-GPU model answers a simple question such as 'What is your name?' with 'Huey.'",
-      "meaning": "This is the first undeniable proof that the architecture can unify as one local intelligence rather than merely host isolated parts."
+      "meaning": "This is the first undeniable proof that the architecture can unify as one local intelligence rather than merely host isolated parts. The proof should remain a pooled compute organism first, with later governance/district abstractions layered on top."
     },
     "lawful_actuation_proof": {
       "milestone_name": "Lawful Embodied Action",
@@ -1071,7 +1217,7 @@
     }
   },
   "training_and_usage": {
-    "core_training_material": "This master plan JSON series through V20, selected README releases, curated conversation transcripts, and system/hardware logs.",
+    "core_training_material": "This master plan JSON series through V22, selected README releases, curated conversation transcripts, the explanatory project book/compendium, the Federation Constitution, and system/hardware logs.",
     "method": [
       "Reflective bootstrapping: models read project history and the active master plan before major sessions.",
       "Periodic consolidation: sessions are summarized back into JSON and persisted in SQLite/BTRFS-backed storage.",
@@ -1101,7 +1247,13 @@
     "Benchmark and lock the future expansion GPU shortlist when scale-out funding is available.",
     "Formalize always-on self-diagnostics and the exact recovery behavior of the Pi/Arduino safety stack.",
     "Identify and benchmark the current webcam model or choose a formal replacement.",
-    "Clarify the long-term return path, if any, for additional shell-level embodiment beyond Core + Farm."
+    "Clarify the long-term return path, if any, for additional shell-level embodiment beyond Core + Farm.",
+    "Lock the exact Raspberry Pi OS choice for the always-on HueyPulse-like node (Raspberry Pi OS vs Debian ARM variants).",
+    "Define the exact serial/message protocol between Arduino Uno and Raspberry Pi 4 for RF intents, LEDs, relays, and simple actuation.",
+    "Finalize which LED and indicator outputs are Pi-commanded versus locally driven defaults on the Arduino layer.",
+    "Benchmark and lock the portrait status dashboard layout for the Pi-owned 7-inch display in portrait mode.",
+    "Whether later Pi-mediated microphone/webcam routing is worth the added complexity after the current direct motherboard proof path succeeds.",
+    "What the final operational HueyOS cue library should be for boot / confirm / cancel / listen / sleep states once prompt-driven sound exploration settles."
   ],
   "notes_for_future_ai": [
     "Canon mapping remains: Masterplan is the canonical machine spec; README is the canonical human narrative. If they conflict, implement the Masterplan and surface the conflict to Dylan.",
@@ -1112,7 +1264,13 @@
     "Preserve the distinction between the world-facing conscious layer and the governance-facing subconscious layer when designing behavior or interfaces.",
     "The portrait display is primarily a code/status surface; do not assume it should become a cartoon face by default.",
     "Autonomy and wonder matter: avoid over-scripting Huey into a puppet just because limited hardware makes scripting easier.",
-    "Citizen identity, lifecycle, maintenance events, backups, and crisis logs must remain auditable across updates."
+    "Citizen identity, lifecycle, maintenance events, backups, and crisis logs must remain auditable across updates.",
+    "Do not hide the Pi/Arduino split under vague language when writing implementation notes: the Pi is the always-on connective tissue, and the Arduino is the bounded reflex/actuation layer.",
+    "The RF remote should be treated as a first wireless conversational interface, not merely as an arbitrary maintenance accessory.",
+    "Default display ownership belongs to the Pi/HueyPulse layer unless there is a strong reason to hand it elsewhere.",
+    "Do not force the explanatory book, constitution, README, and master plan into one voice; they serve different jobs inside the same canon.",
+    "Do not over-explain the secret sauce of pebble deliberation in public-facing materials.",
+    "Treat the first full approximately 80 GB proof as one unified pooled-compute organism unless Dylan later explicitly decides to hard-partition it."
   ],
   "canon_mapping": {
     "masterplan": "canonical_machine_spec",
@@ -1121,7 +1279,9 @@
       "default": "masterplan_wins_for_implementation",
       "unresolvable": "surface_as_blocker_to_dylan"
     },
-    "readme_version": "README-v20.md"
+    "readme_version": "README-v23.md",
+    "book": "canonical_explanatory_volume",
+    "constitution": "canonical_legal_companion"
   },
   "project_phase": {
     "previous_phase": {
@@ -1134,13 +1294,15 @@
       ]
     },
     "current_phase": {
-      "name": "Huey Core Truthfulness, Farm Planning, and Distributed Identity Preparation",
+      "name": "Huey Core Nervous-System Formalization, Farm Planning, and Distributed Identity Preparation",
       "status": "active",
       "started": "2026-03-24",
       "notes": [
         "Focus is on making Huey Core physically coherent, diagnostically visible, and honest as a proof body.",
         "Single-district proving continues while the architecture for the future 80 GB identity threshold is planned.",
-        "The next large compute expansion path is V4, the Farm."
+        "The next large compute expansion path is V4, the Farm.",
+        "The Raspberry Pi / Arduino service boundaries and the first wireless conversational control path are now part of the active design lock-in for the proof body.",
+        "V22 adds canon layering and tighter pebble/founding-authority language without changing the embodied proof-body baseline."
       ]
     },
     "milestones": [
@@ -1222,9 +1384,36 @@
       "Added encryption, SSH-key, backup, update, and external-storage policies as described in the latest alignment session.",
       "Moved the major target milestone from 2026-06-04 to 2026-10-04.",
       "Cleaned legacy V16 carryover language from notes_for_future_ai."
+    ],
+    "v21_from_v20": [
+      "Promoted the plan to V21.0 and bumped schema_version to 16.",
+      "Formalized the Raspberry Pi 4 as the always-on HueyPulse-like body-state, watchdog, and interaction-brokering node rather than leaving it only as a general support concept.",
+      "Formalized the Arduino Uno as the bounded deterministic reflex/actuation layer that senses low-level events and drives immediate outputs without owning higher-level interpretation.",
+      "Assigned default ownership of the 7-inch portrait display to the Pi/HueyPulse layer as a persistent status and diagnostics surface.",
+      "Locked in the preferred current wiring/communication chain: Arduino Uno -> Raspberry Pi 4 over USB serial, and Raspberry Pi 4 -> main motherboard over Ethernet.",
+      "Updated the RF remote doctrine around the YK04 receiver path and the four-button conversational control surface (YES, NO, short conversation, long dictation).",
+      "Added interaction-state doctrine for timeout-based short mode, longer dictation mode, and blue/red indicator feedback.",
+      "Expanded the embedded runtime/service sections so the body-state, remote-state, and dashboard responsibilities are explicit in the machine-facing spec."
+    ],
+    "v22_from_v21": [
+      "Promoted the plan to V22.0 and bumped schema_version to 17.",
+      "Added an explicit canonical document stack: public narrative, explanatory book, constitution, and machine-facing master plan.",
+      "Clarified that public-facing materials should explain trust boundaries and structure without over-explaining internal deliberative secret sauce.",
+      "Refined the Founding Father AI into a bootstrap and constitutional-reserve authority rather than an ordinary top-layer ruler.",
+      "Clarified pebble doctrine around one identity, one sealed vault, and one vote.",
+      "Reframed the first full approximately 80 GB proof as a unified pooled-compute organism first, with governance districts treated more cautiously as future/organizational abstractions rather than automatic hard VRAM partitions.",
+      "Updated the cognitive-model language from a flat conscious/subconscious split toward a dual-system overlapping-deliberation model."
+    ],
+    "v23_from_v22": [
+      "Promoted the plan to V23.0 and bumped schema_version to 18.",
+      "Clarified the current boot doctrine: verbose Debian bring-up, diagnostics-first startup, and explicit separation between Huey Core waking and Huey proper waking.",
+      "Locked the current proof-path posture that microphone and camera stay directly routed to the motherboard unless Pi mediation later solves a concrete problem.",
+      "Expanded self-diagnostics and control-split language around the Pi-owned portrait status surface and live body-state visibility.",
+      "Added a first formal acoustic-identity direction for HueyOS: short modular retro-futurist system cues rather than a full theatrical startup theme.",
+      "Updated the README linkage and status date for the V23 documentation pass."
     ]
   },
-  "v20_decisions_locked": {
+  "v21_decisions_locked": {
     "hardware_baseline": {
       "cpu": "AMD Ryzen 5 5500",
       "motherboard": "ASUS Prime B550M-A WiFi II",
@@ -1284,6 +1473,55 @@
       "operating_system": "HueyOS",
       "proof_body": "Huey Core",
       "unified_world_facing_expression": "Huey proper"
-    }
-  }
+    },
+    "pi_and_arduino_split": {
+      "pi": "Always-on body-state, watchdog, interaction-broker, and portrait-display owner.",
+      "arduino": "Bounded deterministic reflex/actuation layer for RF input, LEDs, simple relays, and immediate hardware actions.",
+      "chain": "Arduino Uno -> Raspberry Pi 4 over USB serial -> main motherboard over Ethernet"
+    },
+    "wireless_interaction": {
+      "receiver": "YK04 / compatible 4-channel RF receiver routed through the Arduino Uno",
+      "button_map": {
+        "A": "YES / confirm",
+        "B": "NO / cancel",
+        "C": "Short conversation",
+        "D": "Long dictation"
+      },
+      "logic": "Short mode auto-commits after silence/timeout; long mode stays open longer; final interpretation remains upstream."
+    },
+    "display": "7-inch portrait display defaults to Pi/HueyPulse ownership for live body-state and status output."
+  },
+  "canonical_documents": {
+    "public_narrative": {
+      "website": "Public-facing introduction and live project presence.",
+      "readme": "Canonical human-facing narrative inside the repository."
+    },
+    "explanatory_volume": {
+      "name": "Monkey-Head-Project book / compendium",
+      "purpose": "Human-readable explanatory volume covering thesis, origin, architecture, hardware logic, governance rationale, and long-term direction."
+    },
+    "constitution": {
+      "name": "Federation Constitution",
+      "purpose": "Formal governance, authority, ratification, amendment, and crisis-handling document kept distinct from the explanatory book."
+    },
+    "machine_spec": {
+      "name": "master-plan-v22.json",
+      "purpose": "Canonical machine-facing implementation and alignment specification."
+    },
+    "readme": "README-v23.md",
+    "master_plan": "master-plan-v23.json"
+  },
+  "v22_decisions_locked": {
+    "canon_stack": "README/website for introduction, book for explanation, constitution for law, master plan for machine-facing implementation.",
+    "founding_father_role": "bootstrap + ratification/amendment approval + constitutional crisis reserve only",
+    "pebble_rule": "one identity, one sealed vault, one vote",
+    "first_full_proof": "approximately 80 GB pooled compute behaving as one local intelligence before any premature hard district partitioning",
+    "public_policy": "explain structure and trust boundaries publicly; keep hard-to-explain inner deliberative mechanics as secret sauce"
+  },
+  "v23_decisions_locked": [
+    "Boot truth over splash theatrics during the proof-body phase.",
+    "Pi-owned portrait diagnostics remain the default status surface posture.",
+    "Direct motherboard microphone/camera routing remains the shortest current proof path.",
+    "HueyOS system sounds are treated as modular operational cues, not as a full song-first identity layer."
+  ]
 }

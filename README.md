@@ -9,8 +9,8 @@
 **Official site:** https://www.dlrp.ca  
 **Contact:** admin@dlrp.ca  
 **License:** Code: GPL-3.0-only • Docs/Media: CC-BY-SA-4.0  
-**Status date:** 2026-03-24  
-**README version:** 20.0
+**Status date:** 2026-03-27  
+**README version:** 23.0
 
 > **HueyOS** is the cross-platform operating system layer behind **Huey**, providing the software environment that coordinates the AI, memory, tools, and hardware as one system.
 >
@@ -34,9 +34,12 @@
 - **Current embodiment:** **Huey Core** is the active machine, built around an inverted and reversed **Thermaltake Mozart** chassis on a rolling chair-based platform.
 - **Current doctrine:** Huey Core is **the doorway, not the finished republic**. Its purpose is to prove the architecture can live in the real world before full scale-out.
 - **Current hardware baseline:** **AMD Ryzen 5 5500 + ASUS Prime B550M-A WiFi II + 32 GB DDR4-3200 + Gigabyte Radeon RX 5500 XT 8 GB**.
-- **Control split:** **the motherboard thinks, the Raspberry Pi watches, and the Arduino acts**.
+- **Control split:** **the motherboard thinks, the Pi watches and brokers, and the Arduino senses and acts**.
+- **Current interaction edge:** **RF remote -> YK04 receiver -> Arduino Uno -> Raspberry Pi 4 -> Huey Core**.
 - **Current software baseline:** **Debian 14 Forky**, **Python 3.13.x**, **PyGPT-net**, **Ollama**, and modest local Mistral-class support sized to the 8 GB RX 5500 XT.
-- **Current milestone:** stabilize Huey Core as a coherent proof body and move toward the later distributed-identity threshold.
+- **Current proof target:** reach the first **unified roughly 80 GB VRAM** local identity milestone without prematurely fracturing the pooled compute body.
+- **Current boot posture:** **let Debian speak**. Huey Core should boot truthfully and visibly, with verbose bring-up and live diagnostic/status output rather than a fake polished splash.
+- **Current A/V routing posture:** for the first proof milestone, microphone and camera remain simplest when routed **directly to the motherboard**, while later Pi mediation stays optional.
 - **Next large expansion path:** the former Robotics V3 shell is no longer the active direction for this iteration. The next larger compute housing is planned as **V4: the Farm**.
 
 ---
@@ -62,9 +65,9 @@ The current proof target is intentionally **twofold**.
 
 ### 1. Hardware proof
 
-Huey must eventually reach and harmonize roughly **80 GB of total VRAM** across the districts.
+Huey must eventually reach and harmonize roughly **80 GB of total VRAM** across the later compute body.
 
-This is not just a parts target. It is the hardware proof that the architecture can scale beyond a single contained core and into a real distributed compute body.
+This is not just a parts target. It is the hardware proof that the architecture can scale beyond a single contained core and into a real pooled compute organism.
 
 ### 2. Identity proof
 
@@ -89,7 +92,7 @@ Huey Core is more visual and more bodily than the earlier documentation made cle
 - **Core platform:** repurposed wooden chair seat above the rolling base
 - **Core chassis:** **Thermaltake Mozart** case mounted **upside down** and **reversed**
 - **Upper structure:** wooden upper platform attached by TV-mount hardware, allowing head and shoulder adjustment
-- **Status surface:** 7-inch portrait display used mainly for code, diagnostics, and system status
+- **Status surface:** 7-inch portrait display owned by the Pi / HueyPulse layer for code, diagnostics, and live body-state
 - **Lighting:** two orange chassis lights plus four green eye LEDs (two per eye)
 - **Actuation:** movable robotic hand/arm on Huey’s right side
 - **Sensory routing:** microphone, webcam, and display wiring routed through Huey’s **left ear**
@@ -119,7 +122,7 @@ Current airflow and power are intentionally split across multiple domains:
 - a wall-powered fan aimed at the GPU zone,
 - separate switched control over fans, display, and LED/accessory power.
 
-That split is deliberate. It supports testing, visibility, and layered control rather than forcing every subsystem onto one power path.
+That split is deliberate. It supports testing, visibility, and layered control rather than forcing every subsystem onto one power path. In the current direction, the Pi, display, and support/control stack live on the persistent accessory side so the body never feels completely asleep.
 
 ---
 
@@ -143,17 +146,71 @@ In practice, the current Linux baseline is **Debian 14 Forky**, with testing and
 
 The current system logic is best understood in one sentence:
 
-> **the motherboard thinks, the Raspberry Pi watches, and the Arduino acts**
+> **the motherboard thinks, the Pi watches and brokers, and the Arduino senses and acts**
 
 That means:
 
-- the **motherboard** hosts the main runtime and high-level compute path,
-- the **Raspberry Pi** serves as the watchdog and intermediary safety/support layer,
-- the **Arduino** handles deterministic low-level actuation such as servos, lights, and similar direct robotics tasks.
+- the **motherboard** hosts Huey Core proper, local models, PyGPT-net-facing interaction, and high-level interpretation,
+- the **Raspberry Pi 4** serves as the always-on HueyPulse-like watchdog, body-state monitor, interaction broker, and portrait-display owner,
+- the **Arduino Uno** observes low-level electrical and RF events and drives bounded deterministic outputs such as LEDs, relays, and simple actuation.
+
+### Huey Pulse and edge interaction
+
+In the current build, the Raspberry Pi role is no longer just a future support node. It is the active **always-on connective layer** inside Huey Core.
+
+Its practical jobs are:
+
+- keeping track of body-state, switch-state, thermals, and service-state,
+- owning the portrait dashboard by default,
+- brokering interaction-state such as recording, timeout, and mode transitions,
+- and remaining semi-persistent on the battery-backed support rail even when the main board is down.
+
+The first intentional wireless interaction path is also now clearer:
+
+- **A:** YES / confirm / send through
+- **B:** NO / cancel / stop
+- **C:** short conversation mode
+- **D:** long dictation mode
+
+That path currently resolves as:
+
+> **RF remote -> YK04 receiver -> Arduino Uno -> Raspberry Pi 4 -> Huey Core**
+
+Short conversation mode is expected to auto-commit after silence or timeout unless canceled. Long dictation mode is expected to remain open longer for extended input. Blue indicators represent transmit / receive / interaction-active state, while red indicates recording or capture-active state.
 
 ### Presence over stagecraft
 
 Huey’s portrait display is primarily a **code and status surface**, not a default cartoon face. The design goal is visible process, earned presence, and real system state rather than a thin layer of performance.
+
+### Boot posture and first manifestation
+
+Huey Core and Huey proper are not the same waking event.
+
+For the active proof body, the operating principle is simple: **let Debian speak**. The system should boot visibly, expose useful errors and service output, and treat startup as diagnostic truth rather than theatrical polish.
+
+In practice, that means:
+
+- the **Raspberry Pi / HueyPulse layer** remains the default owner of the 7-inch portrait status surface,
+- that display is expected to show temperatures, watchdog state, fan/service condition, and other live body-state information,
+- the **motherboard** remains the shortest path for the first meaningful identity proof,
+- and the first trusted manifestation of presence may be text/status output before speech.
+
+This keeps the prototype honest. Huey Core should prove infrastructure first, then identity, then later lawful action.
+
+### Operational sound direction
+
+HueyOS now has a clearer sound-design direction, even though the final cue set is still ahead.
+
+The goal is **not** a theatrical theme song for the proof body. The better direction is a small family of short, modular system sounds: boot, confirm, cancel, listening, and sleep/shutdown cues.
+
+The intended feel is:
+
+- retro-futurist rather than cinematic,
+- closer to restrained **1980s computer / 8-bit / Commodore-adjacent** synthesis than modern EDM,
+- modular and easy to edit,
+- and useful as body-language rather than background music.
+
+In other words, Huey should sound like a real machine waking up, acknowledging input, or going quiet — not like a generic app notification pack.
 
 ---
 
@@ -165,16 +222,32 @@ The short public version is simple:
 
 - **governance is decentralized**,
 - **memory is unified**,
+- **Huey remains one embodied public identity**,
 - **action should be lawful rather than merely scripted**.
+
+For the purposes of this README, the important ideas are:
+
+- Huey’s outward interaction and internal governance are related, but not identical;
+- bounded citizen-level units exist beneath the public-facing system presence;
+- those units are meant to have continuity, sealed local memory, and one final vote each;
+- physical action should eventually be gated by legitimacy and protocol, not treated as a meaningless stunt;
+- safety crises and constitutional crises are not the same category and should not be handled by the same mechanism;
+- the exact inner mechanics of deliberation are part of the project’s **secret sauce** and do not need to be over-explained in public material.
 
 The deeper constitutional model still matters, but it is not the first thing a new reader needs to learn.
 
-For the purposes of the current README, the important ideas are:
+---
 
-- Huey’s outward interaction and internal governance are related, but not identical;
-- memory should remain shared, auditable, and durable;
-- physical action should eventually be gated by legitimacy and protocol, not treated as a meaningless stunt;
-- safety crises and constitutional crises are not the same category and should not be handled by the same mechanism.
+## Canon and Project Documents
+
+The Monkey-Head-Project is best understood as one canon with different layers.
+
+- **Website / README:** the public-facing introduction
+- **Project book / compendium:** the larger human-readable explanatory volume
+- **Federation Constitution:** the formal legal and governance companion
+- **Master Plan:** the canonical machine-facing implementation spec
+
+These layers are meant to complement each other, not collapse into one undifferentiated document.
 
 ---
 
@@ -188,7 +261,7 @@ This repository is meant to be readable at two levels:
 At a high level:
 
 - **README** is the canonical human-facing narrative
-- **master-plan-v19.json** is the canonical machine-facing spec
+- **master-plan-v23.json** is the canonical machine-facing spec
 - **docs/** carries deeper architecture, design, and historical material
 - **src/** and related runtime folders carry the implementation work
 - **integrations/pygpt/** carries PyGPT / PyGPT-net integration work
@@ -262,9 +335,9 @@ That includes:
 
 The next large hardware expansion is **V4: the Farm**.
 
-The Farm is the external district housing that expands Huey beyond the Core, providing the dedicated GPU infrastructure and node hardware needed for full multi-district operation.
+The Farm is the external district housing that expands Huey beyond the Core, providing the dedicated GPU infrastructure and node hardware needed for full pooled-compute operation and later growth.
 
-In practical terms, the Farm is intended to become the home for the later district-scale GPU infrastructure and the standardized node platform based around the ASUS TUF Z790-PLUS WiFi and Intel i9 line.
+In practical terms, the Farm is intended to become the home for the later GPU infrastructure and the standardized node platform based around the ASUS TUF Z790-PLUS WiFi and Intel i9 line.
 
 ### What is sunsetted
 
@@ -299,7 +372,7 @@ The unified, world-facing expression of the whole distributed system — the ape
 
 ### The Farm
 
-The planned V4 external district housing that expands Huey beyond the Core and supports the later multi-GPU, multi-node compute body.
+The planned V4 external district housing that expands Huey beyond the Core and supports the later pooled compute body.
 
 ---
 
@@ -319,12 +392,15 @@ The name **Huey** was chosen later through informal input from friends and famil
 
 These are active questions, not oversights:
 
-- final GPU acquisition path for the ~80 GB proof
+- final GPU acquisition path for the roughly 80 GB proof
 - whether the Core GPU counts toward that final total
 - exact future proof-scale model choice
 - finalized thermal, electrical, and watchdog thresholds
-- final microphone/webcam routing policy
+- final Raspberry Pi operating-system choice for the persistent support layer
+- long-term microphone/webcam routing policy once the current direct-to-motherboard proof path has earned its first milestone
 - long-term return path, if any, for additional shell-level embodiment beyond Core + Farm
+- the final public/internal boundary for what stays public doctrine and what remains internal secret sauce
+- the final operational HueyOS cue pack for boot / confirm / cancel / listen / sleep states
 
 ---
 
@@ -339,6 +415,6 @@ These are active questions, not oversights:
 
 ## A.I. Auto-Update
 
-- **A.I. counterpart:** README updated for V20 alignment.
+- **A.I. counterpart:** README updated for V23 alignment.
 - **Human counterpart:** manual review recommended before commit or publish.
 - This document was drafted with AI assistance and remains subject to human oversight.
