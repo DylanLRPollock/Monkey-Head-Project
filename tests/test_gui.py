@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 import pytest
 
-GUI_MAIN_UI_MODULE = Path(__file__).resolve().parents[1] / "apps" / "huey-gui" / "main_ui.py"
+GUI_MAIN_UI_MODULE = Path(__file__).resolve().parents[1] / "apps" / "huey_gui" / "main_ui.py"
 
 if not GUI_MAIN_UI_MODULE.exists():
     pytest.skip("GUI module not available in this repository layout", allow_module_level=True)

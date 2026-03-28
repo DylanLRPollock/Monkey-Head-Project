@@ -25,7 +25,7 @@ This is the concrete inventory requested for the next restructuring pass.
 ### Runtime/app code boundaries
 - `src/huey/scripts/` → `apps/huey-core/scripts/`
 - `src/huey/prompts/OLD/` → `archives/prompts/legacy/`
-- `gui/` → `apps/huey-gui/` (if still active) or `archives/gui-prototypes/` (if deprecated)
+- `gui/` → `apps/huey_gui/` (if still active) or `archives/gui-prototypes/` (if deprecated)
 - `docker/` + `Dockerfile` + `Dockerfile.vnc` + `docker-compose.yml` → `infra/docker/`
 - `repo/pygpt-MHP/` + `repo/py-gpt/` → `integrations/pygpt/`
 
