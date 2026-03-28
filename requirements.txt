@@ -242,7 +242,7 @@ kubernetes==35.0.0
 langchain==1.2.12
 langchain-classic==1.0.2
 langchain-community==0.4.1
-langchain-core==1.2.18
+langchain-core==1.2.22
 langchain-experimental==0.4.1
 langchain-openai==1.1.9
 langchain-text-splitters==1.1.1
