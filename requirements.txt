@@ -277,7 +277,7 @@ mypy-extensions==1.1.0
 nest-asyncio==1.6.0
 networkx==3.6.1
 newspaper3k==0.2.8
-nltk==3.9.3
+nltk==3.9.4
 nodeenv==1.10.0
 nvidia-cublas-cu12==12.8.4.1 ; platform_machine == 'x86_64' and sys_platform == 'linux'
 nvidia-cuda-cupti-cu12==12.8.90 ; platform_machine == 'x86_64' and sys_platform == 'linux'
