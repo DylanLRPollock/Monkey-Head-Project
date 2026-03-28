@@ -1,6 +1,3 @@
-## README.md paste-ready
-
-```markdown
 # Monkey-Head-Project
 
 ## HueyOS — Prototype Embodied AI Core/OS (Offline-First · Governance + Memory · Retro-Tech Revival)
