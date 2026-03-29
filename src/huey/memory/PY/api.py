@@ -1879,3 +1879,17 @@ def admin_health_check() -> Dict[str, str]:
     """Delegate to the primary health endpoint for administrative callers."""
 
     return healthz()
+
+def main() -> None:
+    import os
+    import uvicorn
+
+    host = os.getenv("HUEY_HOST", "0.0.0.0")
+    port = int(os.getenv("HUEY_PORT", "1995"))
+    reload = os.getenv("HUEY_RELOAD", "").strip().lower() in {"1", "true", "yes", "on"}
+
+    uvicorn.run("huey.api:app", host=host, port=port, reload=reload)
+
+
+if __name__ == "__main__":
+    main()
