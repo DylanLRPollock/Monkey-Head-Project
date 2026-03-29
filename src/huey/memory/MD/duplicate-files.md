@@ -2,14 +2,14 @@
 
 ## Duplicate Group (4 files)
 - SHA-256: `6403203dd5a0867eb14d104ee8a73730bd72dd9ad92e78d996a6dba0a5dcfc01`
-  - `.disk/base_components`
+  - `platform/iso/.disk/base_components`
   - `firmware/dep11/firmware-ath9k-htc.component`
   - `firmware/dep11/firmware-carl9170.component`
   - `firmware/dep11/firmware-linux-free.component`
 
 ## Duplicate Group (4 files)
 - SHA-256: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`
-  - `.disk/base_installable`
+  - `platform/iso/.disk/base_installable`
   - `boot/grub/x86_64-efi/fdt.lst`
   - `shared-host/.gitkeep`
   - `src/huey/memory/LOGS/.gitkeep`
