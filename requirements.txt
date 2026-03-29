@@ -34,7 +34,7 @@ google-ai-generativelanguage==0.6.15
 google-genai==1.66.0
 google-generativeai==0.8.6
 huggingface-hub==1.7.1
-llama-cloud==0.1.46
+llama-cloud==1.6.0
 llama-cloud-services==0.6.94
 llama-index==0.13.0
 llama-index-core==0.12.52.post1
