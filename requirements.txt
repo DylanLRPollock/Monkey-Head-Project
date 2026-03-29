@@ -154,7 +154,7 @@ annotated-doc==0.0.4
 annotated-types==0.7.0
 asttokens==3.0.1
 authlib==1.6.9
-av==16.1.0
+av==17.0.0
 azure-cognitiveservices-speech==1.48.2
 banks==2.4.1
 bcrypt==5.0.0
