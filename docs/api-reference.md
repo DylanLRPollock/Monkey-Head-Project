@@ -2,7 +2,7 @@
 
 The FastAPI application in `huey.api:app` exposes HueyOS automation,
 telemetry, and governance capabilities. The examples below assume the server is
-running locally via `uvicorn huey.api:app --reload` on port `8000`.
+running locally via `uvicorn huey.api:app --host 0.0.0.0 --port 1995 --reload` on port `1995`.
 
 Each endpoint is grouped by tag and includes an example request with the shape
 of the JSON response produced by the default in-memory fixtures.
@@ -13,7 +13,7 @@ of the JSON response produced by the default in-memory fixtures.
 Lightweight readiness probe.
 
 ```bash
-curl -s http://localhost:8000/healthz
+curl -s http://localhost:1995/healthz
 ```
 
 ```json
@@ -25,7 +25,7 @@ Returns host metrics, memory location, and OS details gathered by
 `_build_system_status()`.【F:src/huey/api.py†L704-L756】【F:src/huey/api.py†L818-L832】
 
 ```bash
-curl -s http://localhost:8000/system/status
+curl -s http://localhost:1995/system/status
 ```
 
 ```json
@@ -52,7 +52,7 @@ curl -s http://localhost:8000/system/status
 Submit a task to the cooperative scheduler.【F:src/huey/api.py†L832-L858】
 
 ```bash
-curl -sX POST http://localhost:8000/tasks \
+curl -sX POST http://localhost:1995/tasks \
   -H 'Content-Type: application/json' \
   -d '{
     "command": "calibrate-lidar",
@@ -96,7 +96,7 @@ curl -sX POST http://localhost:8000/tasks \
 List scheduler tasks with optional `status` query filters.【F:src/huey/api.py†L858-L874】
 
 ```bash
-curl -s 'http://localhost:8000/tasks?status=queued&status=running'
+curl -s 'http://localhost:1995/tasks?status=queued&status=running'
 ```
 
 ```json
@@ -117,7 +117,7 @@ curl -s 'http://localhost:8000/tasks?status=queued&status=running'
 Retrieve a single task record.【F:src/huey/api.py†L874-L885】
 
 ```bash
-curl -s http://localhost:8000/tasks/tsk_01HZYQ6BQJ6ZQK6J7P3Y4YV7H6
+curl -s http://localhost:1995/tasks/tsk_01HZYQ6BQJ6ZQK6J7P3Y4YV7H6
 ```
 
 _Response identical to the submission payload above._
@@ -126,7 +126,7 @@ _Response identical to the submission payload above._
 Cancel a pending or running task.【F:src/huey/api.py†L885-L898】
 
 ```bash
-curl -sX POST http://localhost:8000/tasks/tsk_01HZYQ6B…/cancel
+curl -sX POST http://localhost:1995/tasks/tsk_01HZYQ6B…/cancel
 ```
 
 ```json
@@ -158,7 +158,7 @@ curl -sX POST http://localhost:8000/tasks/tsk_01HZYQ6B…/cancel
 Enumerate available sensor plugins and metadata.【F:src/huey/api.py†L904-L913】
 
 ```bash
-curl -s http://localhost:8000/sensors/plugins
+curl -s http://localhost:1995/sensors/plugins
 ```
 
 ```json
@@ -181,7 +181,7 @@ List configured sensor instances, including provenance and configuration.
 【F:src/huey/api.py†L915-L930】
 
 ```bash
-curl -s http://localhost:8000/sensors
+curl -s http://localhost:1995/sensors
 ```
 
 ```json
@@ -201,7 +201,7 @@ curl -s http://localhost:8000/sensors
 Register a new sensor instance.【F:src/huey/api.py†L932-L956】
 
 ```bash
-curl -sX POST http://localhost:8000/sensors/register \
+curl -sX POST http://localhost:1995/sensors/register \
   -H 'Content-Type: application/json' \
   -d '{"name": "ambient", "plugin": "dummy.temperature", "config": {"baseline": 19.5}}'
 ```
@@ -214,7 +214,7 @@ curl -sX POST http://localhost:8000/sensors/register \
 Remove a sensor instance from the manager.【F:src/huey/api.py†L958-L969】
 
 ```bash
-curl -sX DELETE http://localhost:8000/sensors/ambient
+curl -sX DELETE http://localhost:1995/sensors/ambient
 ```
 
 ```json
@@ -225,7 +225,7 @@ curl -sX DELETE http://localhost:8000/sensors/ambient
 Capture a fresh reading from a single sensor.【F:src/huey/api.py†L971-L989】
 
 ```bash
-curl -sX POST http://localhost:8000/sensors/shop-temp-1/poll
+curl -sX POST http://localhost:1995/sensors/shop-temp-1/poll
 ```
 
 ```json
@@ -245,7 +245,7 @@ curl -sX POST http://localhost:8000/sensors/shop-temp-1/poll
 Poll every configured sensor.【F:src/huey/api.py†L991-L998】
 
 ```bash
-curl -sX POST http://localhost:8000/sensors/poll
+curl -sX POST http://localhost:1995/sensors/poll
 ```
 
 ```json
@@ -269,7 +269,7 @@ curl -sX POST http://localhost:8000/sensors/poll
 Return honeycomb-backed history for a sensor.【F:src/huey/api.py†L1000-L1013】
 
 ```bash
-curl -s 'http://localhost:8000/sensors/shop-temp-1/history?limit=3'
+curl -s 'http://localhost:1995/sensors/shop-temp-1/history?limit=3'
 ```
 
 ```json
@@ -290,7 +290,7 @@ curl -s 'http://localhost:8000/sensors/shop-temp-1/history?limit=3'
 Server-sent events stream for a single sensor.【F:src/huey/api.py†L1015-L1025】
 
 ```bash
-curl -N http://localhost:8000/sensors/shop-temp-1/stream
+curl -N http://localhost:1995/sensors/shop-temp-1/stream
 ```
 
 _Streamed lines in `data: {…}` format containing JSON readings._
@@ -299,7 +299,7 @@ _Streamed lines in `data: {…}` format containing JSON readings._
 Server-sent events stream for all sensors.【F:src/huey/api.py†L1027-L1031】
 
 ```bash
-curl -N http://localhost:8000/sensors/stream
+curl -N http://localhost:1995/sensors/stream
 ```
 
 ## Network
@@ -308,7 +308,7 @@ curl -N http://localhost:8000/sensors/stream
 Report connectivity status, interface inventory, and timestamps.【F:src/huey/api.py†L1033-L1040】
 
 ```bash
-curl -s http://localhost:8000/network/status
+curl -s http://localhost:1995/network/status
 ```
 
 ```json
@@ -329,7 +329,7 @@ curl -s http://localhost:8000/network/status
 Ensure wired connectivity with Wi-Fi failover.【F:src/huey/api.py†L1042-L1048】
 
 ```bash
-curl -sX POST http://localhost:8000/network/ensure
+curl -sX POST http://localhost:1995/network/ensure
 ```
 
 ```json
@@ -352,7 +352,7 @@ curl -sX POST http://localhost:8000/network/ensure
 Expose current battery metrics.【F:src/huey/api.py†L1050-L1056】
 
 ```bash
-curl -s http://localhost:8000/power/battery
+curl -s http://localhost:1995/power/battery
 ```
 
 ```json
@@ -368,7 +368,7 @@ curl -s http://localhost:8000/power/battery
 Report whether a safe shutdown is recommended.【F:src/huey/api.py†L1058-L1066】
 
 ```bash
-curl -s http://localhost:8000/power/should-shutdown
+curl -s http://localhost:1995/power/should-shutdown
 ```
 
 ```json
@@ -379,7 +379,7 @@ curl -s http://localhost:8000/power/should-shutdown
 Initiate a shutdown sequence via the battery monitor.【F:src/huey/api.py†L1068-L1074】
 
 ```bash
-curl -sX POST http://localhost:8000/power/shutdown
+curl -sX POST http://localhost:1995/power/shutdown
 ```
 
 ```json
@@ -396,7 +396,7 @@ curl -sX POST http://localhost:8000/power/shutdown
 List PDFs accessible to HueyOS, optionally scoping the search directory.【F:src/huey/api.py†L1109-L1121】
 
 ```bash
-curl -s http://localhost:8000/memory/pdfs
+curl -s http://localhost:1995/memory/pdfs
 ```
 
 ```json
@@ -410,7 +410,7 @@ curl -s http://localhost:8000/memory/pdfs
 Resolve a filesystem path for a specific PDF.【F:src/huey/api.py†L1124-L1135】
 
 ```bash
-curl -s http://localhost:8000/memory/pdfs/governance-overview.pdf
+curl -s http://localhost:1995/memory/pdfs/governance-overview.pdf
 ```
 
 ```json
@@ -425,7 +425,7 @@ curl -s http://localhost:8000/memory/pdfs/governance-overview.pdf
 Execute the auto-sort pipeline with optional dry-run support.【F:src/huey/api.py†L1138-L1155】
 
 ```bash
-curl -sX POST http://localhost:8000/memory/auto-sort \
+curl -sX POST http://localhost:1995/memory/auto-sort \
   -H 'Content-Type: application/json' \
   -d '{"source_dir": "memory/RAW", "destination_root": "memory", "dry_run": true}'
 ```
@@ -444,7 +444,7 @@ Return aggregated honeycomb utilisation metrics produced by `HoneycombMonitor`.
 【F:src/huey/api.py†L1158-L1185】
 
 ```bash
-curl -s http://localhost:8000/memory/honeycomb/usage?window_days=14
+curl -s http://localhost:1995/memory/honeycomb/usage?window_days=14
 ```
 
 ```json
@@ -471,7 +471,7 @@ curl -s http://localhost:8000/memory/honeycomb/usage?window_days=14
 Process text with `AIProcessor`, optionally streaming chunks.【F:src/huey/api.py†L1189-L1230】
 
 ```bash
-curl -sX POST http://localhost:8000/ai/process-text \
+curl -sX POST http://localhost:1995/ai/process-text \
   -H 'Content-Type: application/json' \
   -d '{"text": "HueyOS harmonises robotics and governance."}'
 ```
@@ -488,7 +488,7 @@ Enable streaming with `?stream=true` to receive chunked responses.
 Return the arithmetic mean of supplied numbers.【F:src/huey/api.py†L1232-L1245】
 
 ```bash
-curl -sX POST http://localhost:8000/ai/compute-mean \
+curl -sX POST http://localhost:1995/ai/compute-mean \
   -H 'Content-Type: application/json' \
   -d '{"numbers": [18, 24, 42]}'
 ```
@@ -501,7 +501,7 @@ curl -sX POST http://localhost:8000/ai/compute-mean \
 Expose lightweight analytics generated by the AI processor.【F:src/huey/api.py†L1247-L1265】
 
 ```bash
-curl -sX POST http://localhost:8000/ai/analyze-text \
+curl -sX POST http://localhost:1995/ai/analyze-text \
   -H 'Content-Type: application/json' \
   -d '{"text": "Spark orchestrates collaborative autonomy."}'
 ```
@@ -523,7 +523,7 @@ Snapshot of the emergency governance controller including approvals and managed
 services.【F:src/huey/api.py†L1239-L1256】
 
 ```bash
-curl -s http://localhost:8000/governance/emergency/status
+curl -s http://localhost:1995/governance/emergency/status
 ```
 
 ```json
@@ -545,7 +545,7 @@ curl -s http://localhost:8000/governance/emergency/status
 Activate emergency mode once quorum requirements are met.【F:src/huey/api.py†L1260-L1277】
 
 ```bash
-curl -sX POST http://localhost:8000/governance/emergency/enter \
+curl -sX POST http://localhost:1995/governance/emergency/enter \
   -H 'Content-Type: application/json' \
   -d '{
         "triggered_by": "spark",
@@ -573,7 +573,7 @@ curl -sX POST http://localhost:8000/governance/emergency/enter \
 Return to normal operations with the required approvals.【F:src/huey/api.py†L1280-L1295】
 
 ```bash
-curl -sX POST http://localhost:8000/governance/emergency/exit \
+curl -sX POST http://localhost:1995/governance/emergency/exit \
   -H 'Content-Type: application/json' \
   -d '{"requested_by": "spark", "approvals": ["volt", "watt"]}'
 ```
@@ -597,7 +597,7 @@ curl -sX POST http://localhost:8000/governance/emergency/exit \
 Validate a dual-authorised action during emergency mode.【F:src/huey/api.py†L1298-L1313】
 
 ```bash
-curl -sX POST http://localhost:8000/governance/emergency/action \
+curl -sX POST http://localhost:1995/governance/emergency/action \
   -H 'Content-Type: application/json' \
   -d '{"actor": "spark", "approvals": ["volt"], "action": "restart-reactor"}'
 ```
@@ -612,7 +612,7 @@ curl -sX POST http://localhost:8000/governance/emergency/action \
 Return service state tracked by `_SERVICE_STATES`.【F:src/huey/api.py†L1316-L1321】
 
 ```bash
-curl -s http://localhost:8000/admin/services
+curl -s http://localhost:1995/admin/services
 ```
 
 ```json
@@ -628,7 +628,7 @@ curl -s http://localhost:8000/admin/services
 Mark a service as running.【F:src/huey/api.py†L1323-L1332】
 
 ```bash
-curl -sX POST http://localhost:8000/admin/services/zap-agent/start
+curl -sX POST http://localhost:1995/admin/services/zap-agent/start
 ```
 
 ```json
@@ -639,7 +639,7 @@ curl -sX POST http://localhost:8000/admin/services/zap-agent/start
 Mark a service as stopped.【F:src/huey/api.py†L1335-L1344】
 
 ```bash
-curl -sX POST http://localhost:8000/admin/services/zap-agent/stop
+curl -sX POST http://localhost:1995/admin/services/zap-agent/stop
 ```
 
 ```json
@@ -650,7 +650,7 @@ curl -sX POST http://localhost:8000/admin/services/zap-agent/stop
 Run the full system check suite and return pass/fail information.【F:src/huey/api.py†L1346-L1354】
 
 ```bash
-curl -sX POST http://localhost:8000/admin/system-check
+curl -sX POST http://localhost:1995/admin/system-check
 ```
 
 ```json
@@ -664,7 +664,7 @@ curl -sX POST http://localhost:8000/admin/system-check
 Delegate to the `/healthz` endpoint for administrative contexts.【F:src/huey/api.py†L1356-L1360】
 
 ```bash
-curl -sX POST http://localhost:8000/admin/health-check
+curl -sX POST http://localhost:1995/admin/health-check
 ```
 
 ```json
@@ -677,7 +677,7 @@ curl -sX POST http://localhost:8000/admin/health-check
 List monitored processes and their health metadata.【F:src/huey/api.py†L1035-L1044】
 
 ```bash
-curl -s http://localhost:8000/resilience/monitors
+curl -s http://localhost:1995/resilience/monitors
 ```
 
 ```json
@@ -698,7 +698,7 @@ curl -s http://localhost:8000/resilience/monitors
 Toggle automatic restarts for a monitored process.【F:src/huey/api.py†L1046-L1060】
 
 ```bash
-curl -sX POST http://localhost:8000/resilience/monitors/ollama/override \
+curl -sX POST http://localhost:1995/resilience/monitors/ollama/override \
   -H 'Content-Type: application/json' \
   -d '{"auto_restart": false, "reason": "maintenance"}'
 ```
@@ -719,7 +719,7 @@ curl -sX POST http://localhost:8000/resilience/monitors/ollama/override \
 Force a manual restart, regardless of override state.【F:src/huey/api.py†L1063-L1075】
 
 ```bash
-curl -sX POST http://localhost:8000/resilience/monitors/ollama/restart
+curl -sX POST http://localhost:1995/resilience/monitors/ollama/restart
 ```
 
 ```json
@@ -738,7 +738,7 @@ curl -sX POST http://localhost:8000/resilience/monitors/ollama/restart
 Return crash events detected since the previous poll.【F:src/huey/api.py†L1078-L1096】
 
 ```bash
-curl -sX POST http://localhost:8000/resilience/poll
+curl -sX POST http://localhost:1995/resilience/poll
 ```
 
 ```json
@@ -759,7 +759,7 @@ curl -sX POST http://localhost:8000/resilience/poll
 Send a heartbeat to the systemd watchdog client.【F:src/huey/api.py†L1099-L1106】
 
 ```bash
-curl -sX POST http://localhost:8000/resilience/watchdog/ping
+curl -sX POST http://localhost:1995/resilience/watchdog/ping
 ```
 
 ```json
