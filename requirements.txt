@@ -154,7 +154,7 @@ annotated-doc==0.0.4
 annotated-types==0.7.0
 asttokens==3.0.1
 authlib==1.6.9
-av==16.1.0
+av==17.0.0
 azure-cognitiveservices-speech==1.48.2
 banks==2.4.1
 bcrypt==5.0.0
@@ -206,7 +206,7 @@ google-resumable-media==2.8.0
 googleapis-common-protos==1.73.1
 gpsoauth==2.0.0
 greenlet==3.3.2
-griffe==1.15.0
+griffe==2.0.0
 grpc-google-iam-v1==0.14.3
 grpcio==1.78.0
 grpcio-status==1.78.0
@@ -340,7 +340,7 @@ pyinstaller==6.19.0
 pyinstaller-hooks-contrib==2026.3
 pyjwt==2.12.1
 pyparsing==3.3.2
-pypdf==5.9.0
+pypdf==6.9.2
 pypika==0.51.1
 pyproject-hooks==1.2.0
 pyreadline3==3.5.4 ; sys_platform == 'win32'

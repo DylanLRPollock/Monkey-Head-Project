@@ -98,7 +98,7 @@ pre-commit run --all-files
 ### Run the API locally
 If the repository includes a FastAPI app at `huey/api.py`:
 ```bash
-python -m uvicorn huey.api:app --host 0.0.0.0 --port 5151 --reload
+python -m uvicorn huey.api:app --host 0.0.0.0 --port 1995 --reload
 ```
 
 ### Configuration
