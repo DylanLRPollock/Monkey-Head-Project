@@ -43,7 +43,7 @@ dependencies = [
   "pydantic-settings==2.13.1",
   "PyYAML==6.0.3",
   "python-multipart==0.0.22",
-  "requests==2.32.5",
+  "requests==2.33.0",
   "sse-starlette==3.3.2",
   "starlette==0.52.1",
   "typing-extensions==4.15.0",
