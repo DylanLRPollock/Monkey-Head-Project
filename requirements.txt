@@ -75,7 +75,7 @@ mistralai==1.12.4
 numpy==2.4.3
 ollama==0.6.1
 onnxruntime==1.24.3
-openai==1.109.1
+openai==2.30.0
 openai-agents==0.3.3
 pillow==12.1.1
 pygpt-net==2.0.154
