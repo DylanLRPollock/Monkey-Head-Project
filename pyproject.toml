@@ -106,7 +106,7 @@ ml = [
   "llama-index-readers-twitter==0.3.0",
   "llama-index-readers-web==0.4.5",
   "llama-index-utils-huggingface==0.3.0",
-  "llama-index-workflows==1.3.0",
+  "llama-index-workflows==2.17.1",
   "llama-parse==0.6.94",
   "mistralai==1.12.4",
   "numpy==2.4.3",
