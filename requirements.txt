@@ -19,7 +19,7 @@ PyYAML==6.0.3
 python-multipart==0.0.22
 requests==2.33.0
 sse-starlette==3.3.2
-starlette==0.52.1
+starlette==1.0.0
 typing-extensions==4.15.0
 uvicorn[standard]==0.41.0; sys_platform != 'emscripten'
 
