@@ -88,7 +88,7 @@ torch==2.10.0; sys_platform != 'win32'
 torchaudio==2.10.0; sys_platform != 'win32'
 torchvision==0.25.0; sys_platform != 'win32'
 traitlets==5.14.3
-transformers==4.57.6
+transformers==5.4.0
 
 # --- Data/Vector stores ---
 chroma-hnswlib==0.7.6
