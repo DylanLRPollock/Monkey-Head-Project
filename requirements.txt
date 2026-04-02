@@ -1,3 +1,20 @@
+# Monkey-Head-Project / HueyOS
+# Full pinned dependency baseline for reproducible developer, lab, and staging installs.
+# Target Python: 3.13.x
+# Package/runtime contract: see pyproject.toml and README v25.
+#
+# Typical usage:
+#   pip install -r requirements.txt
+#   pip install -c constraints.txt -e .
+#   pip install -c constraints.txt -e ".[dev]"
+#
+# Notes:
+# - This file is the heavy, fully pinned baseline.
+# - constraints.txt now carries the shared anchor pins used by editable installs and extras.
+# - Platform-specific markers remain inline where needed.
+
+-c constraints.txt
+
 # HueyOS requirements
 
 # --- Core ---
