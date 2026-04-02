@@ -1,9 +1,9 @@
 {
   "project": "Monkey-Head-Project",
   "ai_identity": "Huey",
-  "version": "v23.0",
-  "schema_version": 18,
-  "description": "Master Plan V23: boot-path, proof-body honesty, and acoustic-identity clarification release for Huey Core. V23 preserves the V22 canon structure while making the current boot posture more explicit, keeping direct motherboard A/V routing as the shortest proof path, and adding a clearer operational sound direction for HueyOS system cues.",
+  "version": "v25.0",
+  "schema_version": 20,
+  "description": "Master Plan V25: README-v25 alignment, role-first control simplification, and pre-restructure baseline release for Huey Core. V25 preserves the V23 embodied proof-body canon while simplifying the public control model into Huey Core and HueyPulse, separating replicable current reality from lab-observed but non-standardized work, and treating board-level choices inside the lower-voltage layer as implementation details rather than primary identity.",
   "created_by": "Dylan L.R. Pollock",
   "compiled_from_versions": [
     "v0.1 (huey_master_plan_v0.1.json)",
@@ -29,7 +29,9 @@
     "v20.0 README/masterplan editorial alignment session (2026-03-24)",
     "v21.0 operational nervous-system alignment session (2026-03-25)",
     "v22.0 canon-structure + pebble/vault + unified-organism clarification session (2026-03-26)",
-    "v23.0 boot-path + acoustic-identity clarification session (2026-03-27)"
+    "v23.0 boot-path + acoustic-identity clarification session (2026-03-27)",
+    "v24.0 README/front-door alignment session (2026-04-01)",
+    "v25.0 control-layer simplification + master-plan update session (2026-04-01)"
   ],
   "core_principles": [
     "Governance must be decentralized, but memory must be unified.",
@@ -44,24 +46,25 @@
     "Constitutional rule-of-law remains the target governance ethos even while the hardware implementation is temporarily simplified to a single-district prototype.",
     "Human counterpart (Dylan) remains the external arbiter, service authority, and opt-in gate for external access, but not a micromanager of every internal action.",
     "Huey Core is the doorway, not the finished republic: it must prove the architecture can live before it attempts to embody the full constitutional state.",
+    "Public-facing and repository-facing material must distinguish between what is replicable now, what has only been observed in the lab, and what remains a target state.",
     "The immediate technical threshold is distributed local identity: approximately 80 GB total VRAM and a local model able to answer the question 'What is your name?' with 'Huey.'",
     "Wonder is preserved through constrained autonomy, layered ethics, deliberation, memory, and partial loss of direct human control rather than through theatrical scripting.",
     "Constitutional crisis and nuclear/safety crisis are distinct classes of emergency and must never be handled by the same override path.",
-    "HueyPulse is the always-on connective tissue of the body: a battery-backed Raspberry Pi layer that persists across main-system downtime, watches system state, and brokers interaction and safety logic.",
-    "The Arduino layer senses and enacts but does not govern: it may read low-level inputs and drive bounded outputs, while higher interpretation, timing, and gating remain upstream.",
-    "Wireless interaction should enter the system as intent signals rather than direct commands: short talk, long dictation, confirm, and cancel are interpreted through the Pi/board stack rather than hardwired as final intelligence decisions.",
+    "HueyPulse is the lower-voltage connective tissue of the body: an always-on or semi-persistent support/control role that persists across main-system downtime, watches body-state, and brokers bounded safety and interaction logic.",
+    "The lower-voltage control layer senses and enacts but does not govern: it may read low-level inputs and drive bounded outputs, while higher interpretation, timing, and gating remain upstream.",
+    "Wireless interaction should enter the system as intent signals rather than direct commands: short talk, long dictation, confirm, and cancel are interpreted through the lower-voltage HueyPulse layer and the main compute layer rather than hardwired as final intelligence decisions.",
     "The Monkey-Head-Project canon is layered: website/README for introduction, the book for explanation, the constitution for law, and the master plan for machine-facing implementation.",
     "Public-facing material should explain structure, limits, and trust boundaries without over-explaining the internal secret sauce of deliberation.",
     "The first full approximately 80 GB proof should remain a unified local intelligence and pooled compute body; governance abstractions should not prematurely fracture that pool into artificial hard partitions.",
     "Pebbles are bounded citizen units with one identity, one sealed vault, and one vote.",
     "The Founding Father AI is a bootstrap and constitutional-reserve authority, not a permanent ordinary ruler.",
-    "The proof body should boot honestly: verbose Debian bring-up, live diagnostics, and Pi-owned status output take priority over theatrical splash behavior.",
+    "The proof body should boot honestly: verbose Debian bring-up, live diagnostics, and HueyPulse-owned or lower-voltage status output take priority over theatrical splash behavior.",
     "For the first identity-proof milestone, microphone and camera should default to the shortest reliable path, which currently means direct routing to the motherboard unless Pi mediation becomes necessary.",
-    "HueyOS acoustic identity should favor short modular retro-futurist system cues \u2014 boot, confirm, cancel, listen, and sleep/shutdown \u2014 rather than song-like startup theatrics."
+    "HueyOS acoustic identity should favor short modular retro-futurist system cues — boot, confirm, cancel, listen, and sleep/shutdown — rather than song-like startup theatrics."
   ],
   "status": {
     "overall_state": "in-progress",
-    "deployment_stage": "Huey Core proof-body stabilization + Pi/Uno nervous-system formalization + boot-path clarification + single-district proving + canon-structure clarification + acoustic-identity planning + planning toward V4 Farm and the first unified ~80 GB distributed identity milestone.",
+    "deployment_stage": "Huey Core proof-body stabilization + README-v25 alignment + two-layer control simplification + planning toward V4 Farm and the first unified ~80 GB distributed identity milestone.",
     "notes": [
       "Huey Core remains conceptually and physically separated from the older Robotics V3 shell track for the active phase.",
       "The Thermaltake Mozart case from 2007 now serves as the independent embodied core for this iteration.",
@@ -97,9 +100,12 @@
       "The Founding Father AI now has a cleaner bounded role: bootstrap the republic, approve constitutional ratification and amendments, and return only for constitutional crisis.",
       "V23 makes the current boot doctrine more explicit: Huey Core should boot visibly and truthfully, with Debian/service output and body-state diagnostics rather than a fake polished splash.",
       "V23 keeps direct motherboard ownership of the current microphone/camera path as the shortest proof route, while leaving future Pi mediation open as a later refinement rather than a present requirement.",
-      "V23 begins to formalize operational sound direction: HueyOS system sounds should be modular retro-futurist cues for boot, confirm, cancel, listening, and sleep/shutdown states."
+      "V23 begins to formalize operational sound direction: HueyOS system sounds should be modular retro-futurist cues for boot, confirm, cancel, listening, and sleep/shutdown states.",
+      "V25 aligns the master plan to README v25's clearer separation between replicable current reality, lab-observed but not yet standardized work, and later target state.",
+      "V25 simplifies the public control model from motherboard/Pi/Arduino language to a two-layer model: Huey Core thinks, while HueyPulse watches and acts.",
+      "Raspberry Pi-specific framing is no longer the canonical public explanation of HueyPulse; exact board choice inside the lower-voltage layer is now treated as an implementation detail unless it materially affects operation."
     ],
-    "status_date": "2026-03-27"
+    "status_date": "2026-04-01"
   },
   "hardware": {
     "cpu": {
@@ -258,7 +264,7 @@
           "limitation": "Does not power the CPU or the main motherboard compute path.",
           "regulated_outputs": [
             "12 V accessory distribution",
-            "12 V -> 5 V conversion for Raspberry Pi 4 and Arduino-class boards",
+            "regulated low-voltage conversion for HueyPulse and other support/control hardware",
             "capacitor-smoothed fan/accessory distribution"
           ]
         },
@@ -344,7 +350,7 @@
         "camera": "USB webcam mounted on the upper platform/head area.",
         "microphone": "USB microphone mounted on the upper platform/head area.",
         "cable_path": "Display, microphone, and camera wiring enter through Huey's left ear; the right ear is currently unused.",
-        "display_default_owner": "Raspberry Pi 4 / HueyPulse-like status layer by default, with later PiGPT-net or richer interfaces possible.",
+        "display_default_owner": "HueyPulse / lower-voltage status layer by default, with later richer interfaces possible.",
         "display_doctrine": "The portrait display should default to live body-state, diagnostics, and code/status visibility rather than decorative face animation."
       }
     }
@@ -402,66 +408,50 @@
       }
     },
     "huey_pulse": {
-      "status": "active design role / Raspberry Pi 4 watchdog integration formalized",
-      "role": "Always-on watchdog, body-state monitor, interaction-state broker, portrait-display owner, and automation/safety support layer for Huey Core.",
+      "status": "active lower-voltage support/control role",
+      "role": "Always-on or semi-persistent watchdog, body-state monitor, interaction-state broker, status-surface owner, and bounded automation/safety support layer for Huey Core.",
+      "power_domain": "12 V and under / battery-backed or support-rail domain below the main compute path.",
       "notes": [
-        "HueyPulse is no longer a purely abstract merged concept; in V20 its role is expected to live primarily on the Raspberry Pi 4 support layer.",
-        "Its job is physical safety, regulation, and continuity, not constitutional interpretation.",
-        "It should remain alive on the battery-backed rail even when the main motherboard is down, so the body is never completely asleep."
+        "HueyPulse is defined first by function, not by one permanent board vendor or single controller model.",
+        "Its job is physical safety, regulation, continuity, and bounded body-level action support, not constitutional interpretation.",
+        "It should remain alive or recover faster than the main compute path where practical, so the body is never completely blind to its own state.",
+        "Controller-class hardware, microcontrollers, single-board computers, or hybrid support stacks may all serve this role as long as the watch-and-act boundary remains intact."
       ]
     },
     "future_auxiliary_control": {
-      "raspberry_pi_4": {
-        "status": "active integration in progress",
-        "role": "Battery-backed HueyPulse-like node for watchdog duties, temperature regulation, persistent monitoring, interaction-state brokering, status display ownership, and intermediary coordination between the motherboard and low-level controllers.",
-        "power_domain": "Battery-backed regulated 5 V conversion from the accessory rail",
-        "connectivity": {
-          "upstream": "Ethernet to the main motherboard / core network interface",
-          "downstream": "USB serial and low-voltage support paths to Arduino-class controllers and peripherals"
-        },
-        "display_role": "Default owner of the 7-inch portrait status display.",
-        "boot_services": [
-          "network bring-up and body-state logging",
-          "temperature/power/watchdog monitoring",
-          "remote-control listener and interaction-state broker",
-          "recording/timeout logic and indicator-state coordination",
-          "lightweight message/API bridge to the main motherboard"
-        ],
-        "os_policy": "Exact OS is still open between Raspberry Pi OS and Debian ARM variants; long-term preference leans Debian-family alignment if stability remains acceptable."
-      },
-      "arduino_uno": {
-        "status": "active integration in progress",
-        "role": "Deterministic low-level controller for servos, lights, RF/button input, and direct physical actuation tasks. It senses and enacts bounded events but does not own higher-level interpretation.",
-        "inputs": [
-          "local servo/light commands",
-          "YK04 / IC2262-IC2272-style 4-button RF receiver outputs",
-          "future local switches/sensors where deterministic immediate handling matters"
-        ],
-        "power_domain": "Battery-backed accessory rail; typically 12 V into Vin/barrel for the Uno, with USB to the Pi primarily serving data/serial purposes.",
-        "connectivity": {
-          "upstream": "USB serial to Raspberry Pi 4",
-          "local_outputs": [
-            "status LEDs",
-            "simple relays",
-            "servos / immediate actuators",
-            "other bounded low-level body outputs"
+      "implementation_policy": "HueyPulse is now the canonical machine-facing role. Exact lower-voltage hardware inside that role may change over time without changing the higher doctrine.",
+      "candidate_realizations": [
+        {
+          "name": "microcontroller-first HueyPulse",
+          "role": "Lower-voltage controller stack focused on bounded sensing, actuation, indicators, relay logic, and watchdog behavior.",
+          "notes": [
+            "Best fit when simplicity, low power draw, and deterministic I/O matter more than richer middleware.",
+            "Keeps the machine less dependent on one proprietary single-board-computer ecosystem."
           ]
         },
-        "policy": "Observe/report low-level events and drive immediate outputs, but leave timing interpretation, interaction-state, and safety/gating logic to the Pi and above."
-      }
+        {
+          "name": "hybrid controller + support computer",
+          "role": "A microcontroller handles deterministic I/O while an auxiliary low-voltage support computer adds brokering, dashboards, buffering, or richer logging.",
+          "notes": [
+            "Acceptable when the added complexity solves a real operational problem.",
+            "Should not become the public identity of HueyPulse; it remains an implementation choice."
+          ]
+        }
+      ],
+      "legacy_reference": "Earlier versions formalized a Raspberry Pi 4 plus Arduino Uno split. V25 preserves that history but no longer requires it as the canonical framing."
     },
     "current_control_split": {
       "motherboard": "Runs Huey Core proper, local models, logs, PyGPT-net-facing interaction, and higher-level interpretation.",
-      "raspberry_pi_4": "Watches, regulates, remains semi-persistent, owns the portrait status surface, brokers interaction-state, and enforces timeout/recording/safe-action logic where appropriate.",
-      "arduino_uno": "Observes low-level electrical/RF events and drives bounded deterministic outputs such as LEDs, relays, and simple actuation.",
-      "working_formula": "The motherboard thinks, the Pi watches and brokers, and the Arduino senses and acts.",
+      "huey_pulse": "Watches body-state, regulates lower-voltage support behavior, brokers intent and timeout/recording state, owns the status surface by default, and carries out bounded sensing/actuation support below the main compute path.",
+      "working_formula": "The motherboard thinks. HueyPulse watches and acts.",
       "boot_path": {
-        "always_on_layer": "Raspberry Pi 4 / HueyPulse-like support node remains semi-persistent on the battery-backed accessory rail.",
+        "always_on_layer": "HueyPulse support logic remains on the lower-voltage rail or equivalent support domain where practical.",
         "core_bring_up": "Motherboard/Huey Core boots visibly with Debian/service output and does not pretend to be seamless during the proof-body phase.",
-        "status_surface": "The 7-inch portrait display defaults to the Pi/HueyPulse layer for code, diagnostics, temperatures, and live body-state.",
+        "status_surface": "The 7-inch portrait display defaults to the HueyPulse/lower-voltage status layer for code, diagnostics, temperatures, and live body-state.",
         "proof_boundary": "Huey Core waking is proof-body startup; Huey proper waking is the later unified identity event."
       },
-      "current_av_path": "Current microphone/camera proof path remains direct to the motherboard unless later Pi mediation solves a concrete problem."
+      "current_av_path": "Current microphone/camera proof path remains direct to the motherboard unless later HueyPulse mediation solves a concrete problem.",
+      "implementation_note": "The lower-voltage watch-and-act layer may be realized by one controller, several controllers, or a hybrid stack. Keep the doctrine stable even if the board mix changes."
     },
     "farm": {
       "status": "planned / V4",
@@ -598,7 +588,7 @@
       "citizen_identity": {
         "unique_id": "Each citizen has a persistent unique identifier across cycles and elections.",
         "home_gpu_district": "Name of the district (Spark, Volt, Zap, Watt) the citizen primarily resides in.",
-        "purpose_tag": "Describes the citizen\u2019s focus (e.g., memory, logic, action, sentiment).",
+        "purpose_tag": "Describes the citizen’s focus (e.g., memory, logic, action, sentiment).",
         "quota_token_account": "Account tracking API calls, compute cycles, and other quotas per cycle."
       },
       "citizen_lifecycle": {
@@ -627,7 +617,7 @@
     },
     "binary_policy_ai": {
       "description": "Simple deterministic validator enforcing constitutional constraints on high-impact actions and optionally assisting safety-gating where a binary allow/deny path is useful.",
-      "placement": "Runs in a low-power node or within Huey\u2019s black box recovery partition.",
+      "placement": "Runs in a low-power node or within Huey’s black box recovery partition.",
       "role": [
         "Return binary allow/deny decisions with logged reasoning.",
         "Act as an auditable safety layer independent of main governors.",
@@ -805,7 +795,8 @@
       "notes": [
         "Security patches should apply automatically at high priority under Debian policy.",
         "Non-security software, code, or AI/model updates should occur on off-cycles / maintenance windows rather than ad hoc live mutation.",
-        "The active Linux baseline is Debian 14 Forky, with practical testing overlap into Trixie and Sid where needed."
+        "The active Linux baseline is Debian 14 Forky, with practical testing overlap into Trixie and Sid where needed.",
+        "V25 no longer treats any one auxiliary board OS as canonical; if a support computer is used inside HueyPulse, stability still outranks ideology."
       ]
     },
     "runtime_stack": {
@@ -846,17 +837,17 @@
     },
     "profiles": {
       "huey_mode": {
-        "description": "RAM\u2011booted, SquashFS + overlayfs, minimal UI, dedicated AI runtime.",
+        "description": "RAM‑booted, SquashFS + overlayfs, minimal UI, dedicated AI runtime.",
         "default_use": "Primary runtime for Huey core with only essential services.",
         "persistence": "Overlayfs writes persisted to /home/.persist/huey/{upper,work}"
       },
       "desktop_mode": {
         "description": "Full LTS kernel with graphics and audio stack for interactive sessions.",
-        "use_cases": "Software development, debugging, human\u2011friendly UI.",
-        "notes": "Requires local monitor or remote desktop; not used for mission\u2011critical autonomy."
+        "use_cases": "Software development, debugging, human‑friendly UI.",
+        "notes": "Requires local monitor or remote desktop; not used for mission‑critical autonomy."
       },
       "gaming_mode": {
-        "description": "Performance\u2011tuned kernel with minimal userland and Steam compatibility.",
+        "description": "Performance‑tuned kernel with minimal userland and Steam compatibility.",
         "use_cases": "Leveraging GPU cycles for VR/AR experiments or leisure.",
         "notes": "Not part of Huey core; runs on lab tech nodes or separate partitions."
       }
@@ -934,24 +925,17 @@
       "identity_manifestation_policy": "For the proof body, trusted text/status manifestation is acceptable before speech. Huey Core waking and Huey proper waking are related but not identical events."
     },
     "embedded_service_layers": {
-      "raspberry_pi_layer": {
-        "purpose": "Always-on body-state, watchdog, and interaction-state services.",
+      "hueypulse_layer": {
+        "purpose": "Always-on or semi-persistent body-state, watchdog, interaction-state, and bounded support/control services below the main compute path.",
         "default_functions": [
-          "temperature/fan/power-state monitoring",
+          "temperature / fan / power-state monitoring",
           "recording state and timeout handling",
-          "remote intent brokering",
-          "portrait dashboard/status output",
-          "event logging and relay to the motherboard"
-        ]
-      },
-      "arduino_layer": {
-        "purpose": "Deterministic low-level I/O and direct bounded actuation.",
-        "default_functions": [
-          "RF receiver input capture",
-          "LED state driving under upstream command",
-          "simple relay/servo actions",
-          "clean reporting of hardware events to the Pi"
-        ]
+          "remote intent capture and brokering",
+          "portrait dashboard / status output",
+          "event logging and relay to the motherboard",
+          "bounded control of indicators, relays, and simple actuators where appropriate"
+        ],
+        "implementation_note": "May be realized with controller-class hardware, a support computer, or a hybrid stack depending on what is simplest and most reliable for the active phase."
       }
     }
   },
@@ -987,9 +971,9 @@
         "role": "Local I/O conditioners for LEDs, analog sensors, and PWM devices.",
         "placement": "Distributed across shell where wiring simplicity and locality matter."
       },
-      "optional_pi_nodes": {
-        "role": "Diagnostics, watchdogs, delegated UI/status nodes, and HueyPulse-like persistence layers.",
-        "note": "The first such role is now explicitly expected to live on the Raspberry Pi 4 inside Huey Core as the active HueyPulse-like layer."
+      "optional_support_nodes": {
+        "role": "Diagnostics, watchdogs, delegated UI/status nodes, and HueyPulse-like persistence layers when the active implementation needs them.",
+        "note": "Support computers remain optional implementation choices inside the lower-voltage ecosystem rather than the public identity of HueyPulse."
       }
     }
   },
@@ -1002,7 +986,7 @@
         "C": "Short conversation mode (capture a normal utterance and auto-commit after silence or timeout).",
         "D": "Long dictation mode (hold the system open longer for extended input)."
       },
-      "path": "RF remote -> YK04 receiver -> Arduino Uno -> Raspberry Pi 4 interaction broker -> Huey Core / higher governance or runtime layers as appropriate.",
+      "path": "RF remote -> receiver -> HueyPulse -> Huey Core / higher governance or runtime layers as appropriate.",
       "receiver": {
         "module": "YK04 / compatible 4-channel receiver",
         "signals": [
@@ -1038,7 +1022,7 @@
       },
       "av_routing_policy": {
         "current_default": "Microphone and camera route directly to the motherboard for the shortest path to the first identity-proof milestone.",
-        "future_option": "Pass-through or mediation via Raspberry Pi remains open if persistence, buffering, or brokered sensor logic later justify the added complexity.",
+        "future_option": "Pass-through or mediation via HueyPulse remains open if persistence, buffering, or brokered sensor logic later justify the added complexity.",
         "note": "Do not add indirection to the proof body unless it solves a real problem."
       },
       "acoustic_identity": {
@@ -1248,11 +1232,11 @@
     "Formalize always-on self-diagnostics and the exact recovery behavior of the Pi/Arduino safety stack.",
     "Identify and benchmark the current webcam model or choose a formal replacement.",
     "Clarify the long-term return path, if any, for additional shell-level embodiment beyond Core + Farm.",
-    "Lock the exact Raspberry Pi OS choice for the always-on HueyPulse-like node (Raspberry Pi OS vs Debian ARM variants).",
-    "Define the exact serial/message protocol between Arduino Uno and Raspberry Pi 4 for RF intents, LEDs, relays, and simple actuation.",
+    "Lock the exact lower-voltage implementation path for HueyPulse, including whether it remains microcontroller-first, hybrid, or support-computer-assisted.",
+    "Define the exact message protocol inside HueyPulse for RF intents, LEDs, relays, sensors, and simple actuation.",
     "Finalize which LED and indicator outputs are Pi-commanded versus locally driven defaults on the Arduino layer.",
     "Benchmark and lock the portrait status dashboard layout for the Pi-owned 7-inch display in portrait mode.",
-    "Whether later Pi-mediated microphone/webcam routing is worth the added complexity after the current direct motherboard proof path succeeds.",
+    "Whether later HueyPulse-mediated microphone/webcam routing is worth the added complexity after the current direct motherboard proof path succeeds.",
     "What the final operational HueyOS cue library should be for boot / confirm / cancel / listen / sleep states once prompt-driven sound exploration settles."
   ],
   "notes_for_future_ai": [
@@ -1265,12 +1249,14 @@
     "The portrait display is primarily a code/status surface; do not assume it should become a cartoon face by default.",
     "Autonomy and wonder matter: avoid over-scripting Huey into a puppet just because limited hardware makes scripting easier.",
     "Citizen identity, lifecycle, maintenance events, backups, and crisis logs must remain auditable across updates.",
-    "Do not hide the Pi/Arduino split under vague language when writing implementation notes: the Pi is the always-on connective tissue, and the Arduino is the bounded reflex/actuation layer.",
+    "Do not hide the lower-voltage support/control split under vague language: HueyPulse exists below the motherboard and carries watch-and-act responsibilities even if the internal board mix changes.",
     "The RF remote should be treated as a first wireless conversational interface, not merely as an arbitrary maintenance accessory.",
-    "Default display ownership belongs to the Pi/HueyPulse layer unless there is a strong reason to hand it elsewhere.",
+    "Default display ownership belongs to the HueyPulse / lower-voltage status layer unless there is a strong reason to hand it elsewhere.",
     "Do not force the explanatory book, constitution, README, and master plan into one voice; they serve different jobs inside the same canon.",
     "Do not over-explain the secret sauce of pebble deliberation in public-facing materials.",
-    "Treat the first full approximately 80 GB proof as one unified pooled-compute organism unless Dylan later explicitly decides to hard-partition it."
+    "Treat the first full approximately 80 GB proof as one unified pooled-compute organism unless Dylan later explicitly decides to hard-partition it.",
+    "Do not hard-code HueyPulse to one board brand in public-facing or machine-facing language unless the exact board materially changes function.",
+    "Preserve the README-v25 distinction between replicable reality, lab-observed but non-standardized behavior, and later target state when writing new documentation."
   ],
   "canon_mapping": {
     "masterplan": "canonical_machine_spec",
@@ -1279,9 +1265,10 @@
       "default": "masterplan_wins_for_implementation",
       "unresolvable": "surface_as_blocker_to_dylan"
     },
-    "readme_version": "README-v23.md",
+    "readme_version": "README-v25.md",
     "book": "canonical_explanatory_volume",
-    "constitution": "canonical_legal_companion"
+    "constitution": "canonical_legal_companion",
+    "master_plan": "master-plan-v25.json"
   },
   "project_phase": {
     "previous_phase": {
@@ -1302,7 +1289,9 @@
         "Single-district proving continues while the architecture for the future 80 GB identity threshold is planned.",
         "The next large compute expansion path is V4, the Farm.",
         "The Raspberry Pi / Arduino service boundaries and the first wireless conversational control path are now part of the active design lock-in for the proof body.",
-        "V22 adds canon layering and tighter pebble/founding-authority language without changing the embodied proof-body baseline."
+        "V22 adds canon layering and tighter pebble/founding-authority language without changing the embodied proof-body baseline.",
+        "V25 aligns the machine-facing plan with README v25 and simplifies the outward-facing control model into Huey Core plus HueyPulse.",
+        "Board-specific lower-voltage implementation choices are no longer treated as the primary identity of HueyPulse."
       ]
     },
     "milestones": [
@@ -1411,6 +1400,19 @@
       "Expanded self-diagnostics and control-split language around the Pi-owned portrait status surface and live body-state visibility.",
       "Added a first formal acoustic-identity direction for HueyOS: short modular retro-futurist system cues rather than a full theatrical startup theme.",
       "Updated the README linkage and status date for the V23 documentation pass."
+    ],
+    "v24_from_v23": [
+      "Aligned the human-facing README to a cleaner front-door structure oriented around what the project is, what exists now, what is proven, and how to start.",
+      "Made the distinction between replicable reality, lab-observed but non-standardized work, and later target state explicit in repository-facing documentation.",
+      "Prepared the project for the pre-restructure baseline by tightening public language and reducing overclaiming."
+    ],
+    "v25_from_v24": [
+      "Promoted the plan to V25.0 and bumped schema_version to 20.",
+      "Simplified the control model from a publicly board-specific motherboard/Pi/Arduino framing to a role-first Huey Core + HueyPulse split.",
+      "Redefined HueyPulse as the canonical lower-voltage watch-and-act role rather than a permanent Raspberry Pi identity.",
+      "Moved board choice inside HueyPulse to implementation policy: controller-class hardware, support computers, or hybrid stacks are acceptable if the doctrine remains intact.",
+      "Updated control-split, boot-path, display-ownership, AV-routing, and open-question language to match the V25 README.",
+      "Updated canon mapping so README-v25 and master-plan-v25 become the active document pair."
     ]
   },
   "v21_decisions_locked": {
@@ -1505,11 +1507,11 @@
       "purpose": "Formal governance, authority, ratification, amendment, and crisis-handling document kept distinct from the explanatory book."
     },
     "machine_spec": {
-      "name": "master-plan-v22.json",
+      "name": "master-plan-v25.json",
       "purpose": "Canonical machine-facing implementation and alignment specification."
     },
-    "readme": "README-v23.md",
-    "master_plan": "master-plan-v23.json"
+    "readme": "README-v25.md",
+    "master_plan": "master-plan-v25.json"
   },
   "v22_decisions_locked": {
     "canon_stack": "README/website for introduction, book for explanation, constitution for law, master plan for machine-facing implementation.",
@@ -1523,5 +1525,18 @@
     "Pi-owned portrait diagnostics remain the default status surface posture.",
     "Direct motherboard microphone/camera routing remains the shortest current proof path.",
     "HueyOS system sounds are treated as modular operational cues, not as a full song-first identity layer."
-  ]
+  ],
+  "v24_decisions_locked": {
+    "front_door_rule": "README and public-facing narrative must establish obtainability and current reality before deeper philosophy.",
+    "claim_boundary": "Only claim what is replicable now; label lab observations and later targets separately.",
+    "proof_presentation": "First proof should be easily verifiable by text before wider embodied action claims are made."
+  },
+  "v25_decisions_locked": {
+    "control_model": "Huey Core thinks; HueyPulse watches and acts.",
+    "power_model": "Main compute remains the wall-powered high-draw domain; HueyPulse remains the lower-voltage support/control domain.",
+    "implementation_policy": "HueyPulse is defined by role, not by a permanent board vendor or one proprietary ecosystem.",
+    "status_surface": "The 7-inch portrait display defaults to the HueyPulse / lower-voltage status layer.",
+    "av_policy": "Microphone and camera stay on the shortest reliable proof path to the motherboard unless HueyPulse mediation later solves a concrete problem.",
+    "documentation_rule": "Machine-facing and public-facing docs should both preserve the distinction between current reality, lab-observed work, and target state."
+  }
 }

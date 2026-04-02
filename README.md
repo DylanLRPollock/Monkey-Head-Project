@@ -1,215 +1,403 @@
 # Monkey-Head-Project
 
-## HueyOS — Prototype Embodied AI Core/OS (Offline-First · Governance + Memory · Retro-Tech Revival)
+## HueyOS — Offline-First Embodied AI / OS
 
-**Project:** Monkey-Head-Project  
+**Project ID:** Monkey-Head-Project  
+**System / OS:** HueyOS  
 **AI identity:** Huey  
-**OS/runtime layer:** HueyOS (Python)  
-**Primary embodied proof body:** Huey Core  
-**Author/maintainer:** Dylan L. R. Pollock  
-**Official site:** https://www.dlrp.ca  
+**Human counterpart:** Dylan L.R. Pollock  
+**Site:** https://www.dlrp.ca  
 **Contact:** admin@dlrp.ca  
+**License:** Code: GPL-3.0-only · Docs / Media: CC-BY-SA-4.0  
+**README version:** 25.0  
+**Status:** Pre-restructure baseline / active proof-body phase
 
-**Licensing:** Code: GPL-3.0-only • Docs/Media: CC-BY-SA-4.0  
-**Package name (Python):** `hueyos`  
-**Package version (SemVer):** `0.2.0`  
-**Master plan (era spec):** `v23.0`  
-**Status date:** 2026-03-28 (America/Toronto)
-
----
-
-## Executive summary
-
-Monkey-Head-Project is an offline-first robotics + governance experiment: build a real embodied AI system (**Huey**) that can run locally, remember coherently, and act through lawful, auditable control boundaries.
-
-The project is currently centered on **Huey Core**: the *minimal permissible instance* of Huey—the smallest complete building block from which the larger distributed system can be formed. Huey Core is intentionally honest and diagnostic-first: it should **boot visibly**, log continuously, and prioritize stability over theatrics.
-
-### What this repository is
-
-This repo contains:
-
-- A Python runtime and control surface (**HueyOS**) including a FastAPI API, CLI tooling, scheduling primitives, sensor/telemetry scaffolding, and resilience hooks.
-- A machine-facing canonical spec (**master-plan-v23.json**) and supporting docs/runbooks.
-- Infrastructure scaffolding (installers, packaging artifacts, Docker/orchestrator scripts, integration stubs).
-- “Canon” content (thesis materials, Federation constitution chapters, and the **Ozymandias** chapter that frames risk/impermanence).
-
-### The proof-target in one sentence
-
-> Build a locally-running, distributed compute body that can answer **“What is your name?” → “Huey.”** at the ~**80 GB VRAM** pooled scale, then demonstrate **lawful embodied action** (movement) after governance legitimacy is in force.
+> HueyOS is the software and operating-system layer behind Huey: the environment that coordinates local AI, memory, tools, hardware, and embodied control into one offline-first system.
+>
+> This project is built on a simple twofold thesis:
+> 1. a real embodied AI robot can be built with today’s technology;
+> 2. one person, given enough time, energy, and resources, can build it.
+>
+> Governance remains **decentralized** while memory remains **unified**.
 
 ---
 
-## Purpose and proof targets
+## Start here
 
-### Project purpose
+This repository is meant to work at more than one depth.
 
-1) **Embodiment thesis:** A real embodied AI robot can be built with today’s technology.  
-2) **Solo-builder thesis:** One person—given enough time, energy, and resources—can build it.
+- If you want the **short version**, start with **What this project is**, **What exists now**, and **Quick start**.
+- If you want the **technical version**, continue into **Architecture**, **Repository map**, and **Build, run, and deploy**.
+- If you want the **deeper canon**, use the **master plan**, the **constitution**, and the longer explanatory documents.
 
-HueyOS exists to make those claims testable: it provides “on-robot runtime” scaffolding, memory discipline, and governance boundaries rather than a single monolithic demo.
-
-### Proof targets
-
-**Primary proof-target (identity at scale):**
-- **Hardware threshold:** roughly **80 GB total VRAM** in the pooled compute body (final topology may be 4–5 GPUs).  
-- **Identity threshold:** a local, distributed model must answer:
-  - **Q:** “What is your name?”  
-  - **A:** “Huey.”
-
-**Secondary proof-target (lawful embodied action):**
-- A physical action (e.g., moving the hand/actuator) occurs only after:
-  - governance legitimacy is established for the active embodiment, and  
-  - the action travels through the correct approval/gating path.
+The goal is not to present Huey as an unreachable finished machine. The goal is to make the current system understandable, modular, and buildable.
 
 ---
 
-## System architecture
+## What this project is
 
-### Hardware split
+The **Monkey-Head-Project** is the umbrella initiative.
 
-Huey’s current control doctrine is deliberately layered:
+**Huey** is the AI and robotic identity being built within that initiative.
 
-- **Motherboard / main compute:** “thinks” (inference, orchestration, high-level plans, logs, operator UI)
-- **Raspberry Pi (HueyPulse role):** “watches + brokers” (always-on watchdog, state bridging, safety gating, diagnostic screen ownership)
-- **Arduino layer:** “senses + acts” (bounded deterministic IO; reflex-grade outputs; no governance authority)
+**HueyOS** is the software and operating-system layer behind Huey.
 
-> Working formula: **the motherboard thinks, the Pi watches and brokers, and the Arduino senses and acts.**
+**Huey Core** is the current machine: the active embodied proof body and the **minimal permissible instance of Huey**.
 
-**UNSPECIFIED:** exact serial protocol, baud rate, and message schema for Arduino⇄Pi.  
-**UNSPECIFIED:** concrete GPIO pin maps / relay boards / servo drivers by hardware revision.
-
-### HueyPulse and Huey roles
-
-- **Huey (identity):** the unified system presence (world-facing intelligence).
-- **Huey Core (proof body):** minimal permissible instance of Huey.
-- **HueyPulse (role):** the *always-on connective tissue* (battery-backed Pi layer that persists across main downtime and brokers safety + status).
-- **HueyOS (software layer):** the runtime coordinating memory, tools, hardware interfaces, and governance mechanics.
-
-### Mermaid architecture diagram
-
-```mermaid
-flowchart TB
-  subgraph BODY["Embodied System"]
-    subgraph CORE["Huey Core (Motherboard / Main Compute)"]
-      API["HueyOS API (FastAPI)"]
-      CLI["Huey CLI (huey)"]
-      SCHED["Scheduler + Task Records"]
-      MEM["Unified Memory (JSON logs + SQLite/Honeycomb + encrypted shared files)"]
-      LLM["Local Model Runtime (Ollama / PyGPT-net aperture)"]
-    end
-
-    subgraph PULSE["HueyPulse Layer (Raspberry Pi — always-on)"]
-      WATCH["Watchdog + Safety Broker"]
-      DASH["Portrait Status Screen Owner"]
-      BRIDGE["Bridge: intents/events ↔ main compute"]
-    end
-
-    subgraph IO["Deterministic IO Layer (Arduino)"]
-      RF["RF Receiver / Buttons"]
-      LED["LEDs / Indicators"]
-      RELAY["Relays / Simple Actuation"]
-    end
-  end
-
-  RF --> IO
-  IO --> BRIDGE
-  BRIDGE --> API
-  BRIDGE --> CLI
-  WATCH --> BRIDGE
-  API --> MEM
-  CLI --> MEM
-  API --> SCHED
-  SCHED --> LLM
-  LLM --> API
-  DASH --> WATCH
-```
-
-### OS baseline
-
-This repo targets Linux-first deployments. In policy terms:
-- Debian **13 “Trixie”** is treated as the primary supported stable baseline.
-- Debian **14 “Forky”** is treated as staging/preview until explicitly promoted in release notes.
-
-**UNSPECIFIED:** which Debian ARM variant (or Raspberry Pi OS) is chosen for the Pi layer—stability rules over ideology.
+The point of Huey Core is not to pretend the full republic already exists. Its job is to prove the architecture can live in the real world before the larger system is scaled outward.
 
 ---
 
-## Governance and doctrine
+## What exists now
 
-### Governance model
+Huey Core is the current, present-tense machine.
 
-At the “canon” level, the project targets constitutional rule-of-law with decentralized governance but unified memory. In practice, this repo implements foundations and scaffolding: API surface, resilience hooks, telemetry, and task scheduling.
+It is the active embodied prototype used to validate:
 
-Key governance concepts present in the canon/spec include:
-- **Tri-branch structure:** legislative / executive / judicial (future-facing constitutional model).
-- **District language:** useful for governance and later scale-out; early pooled-compute proofs should not artificially hard-partition the organism.
-- **Crisis separation:** *constitutional crisis* ≠ *nuclear/safety crisis*. They must never share the same override path.
+- physical layout and embodied control,
+- local AI usefulness,
+- storage and recovery discipline,
+- power and thermal containment,
+- the separation between high-power compute and low-voltage body-state control,
+- and the path toward the later distributed system.
 
-### Cornerstone doctrine
+### Current baseline
 
-**Cornerstone** is the project’s rule for what must not drift:
+- **CPU:** AMD Ryzen 5 5500  
+- **Motherboard:** ASUS Prime B550M-A WiFi II  
+- **Memory:** 32 GB DDR4-3200  
+- **GPU:** Gigabyte Radeon RX 5500 XT 8 GB  
+- **Main PSU:** MSI 850W  
+- **OS baseline:** Debian 14 Forky  
+- **Python baseline:** 3.13.x  
+- **Runtime stack:** PyGPT-net + Ollama  
+- **Current local model posture:** modest Mistral-class local support sized to the 8 GB RX 5500 XT
 
-- A **read-only, change-controlled core** of founding artifacts (Founding Father AI image + last-known-good governance documents + recovery configs).
-- If Cornerstone contents must be edited in place, that is treated as **constitutional failure** and triggers a **new republic instance** (restart with preserved history, not silent mutation).
+---
 
-Implementation intent:
-- Cornerstone lives in the **black-box / recovery** layer (read-mostly, crash-survivable).
-- Evolution occurs via **descendant images with an audit trail**, not mutation in place.
+## What is proven, observed, and targeted
 
-**UNSPECIFIED:** exact encryption scheme, key custody, and attestation method for Cornerstone storage.
+One of the most important rules of this repository is that it must distinguish between what is real now, what has been observed in the lab, and what is still a target.
 
-### Ozymandias doctrine
+### Replicable now
 
-“Ozymandias” is the project’s cautionary chapter and framing: ambition is necessary, but every system can decay—through hubris, drift, or failure to preserve truth.
+These are the things this repository is prepared to claim directly:
 
-Operational meaning for HueyOS:
-- Log reality honestly; do not hide failure behind theatrics.
-- Preserve history across “republics” (iterations). A reset is not amnesia; it is an audited fork.
-- Treat permanence as an illusion: design for replacement, rollback, and continuity-of-record.
+- Huey Core exists as a physical proof body.
+- The project runs as an offline-first local system.
+- The current hardware baseline is real and in active use.
+- The project is organized around a clear split between a high-power compute layer and a lower-voltage body-state / actuation layer.
+- The repository contains the human-facing narrative, the machine-facing master plan, and the infrastructure needed to keep developing the system.
+
+### Observed in the lab, but not yet standardized
+
+These are things that have been validated in practice or in lab-side experimentation, but are not yet being claimed as cleanly reproducible for outside builders:
+
+- aspects of scale-out logic,
+- aspects of pooled-compute orchestration,
+- parts of the longer bifurcation pathway,
+- and some larger proof-of-concept behaviors outside the exact active proof body.
+
+They matter, but they should not be overstated.
+
+### Target state
+
+These are the larger targets that define where the project is going:
+
+- roughly **80 GB total VRAM** in the later pooled compute body,
+- a unified local identity threshold,
+- lawful embodied action after the correct ratification path exists,
+- and a later external expansion body known as **V4: the Farm**.
+
+---
+
+## The current proof target
+
+The current proof target is intentionally **twofold**.
+
+### 1. Hardware proof
+
+The architecture must eventually reach roughly **80 GB of total VRAM** across the later compute body.
+
+This is the hardware proof that Huey can scale beyond one contained proof body and into a real pooled local compute organism.
+
+### 2. Identity proof
+
+A local distributed model running across that later hardware must be able to answer a simple identity question correctly:
+
+> **What is your name?**  
+> **Huey.**
+
+Neither half is enough on its own.
+
+- The VRAM threshold proves scale and topology.
+- The identity response proves orchestration, continuity, and unified local presence.
+
+A later companion milestone is **lawful embodied action**: a physical act such as movement, signaling, or another body-level response after the proper ratification and control path exists.
+
+### Proof doctrine
+
+The first valid proof is expected to be **easy to verify by text**.
+
+That does not mean the project is text-only. It means the first threshold should be observable, testable, and difficult to fake. Full-system capability and embodied behavior belong to the next stage, after the system has crossed the first honest identity threshold.
+
+---
+
+## Architecture
+
+The public architecture is deliberately simple.
+
+### System roles
+
+Huey is divided into two public-facing layers:
+
+- **Huey Core** — the main compute layer that **thinks**
+- **HueyPulse** — the lower-voltage support and control layer that **watches and acts**
+
+That split is more important than the exact controller brand or board choice inside the lower-voltage layer.
+
+### 1. Huey Core — the think layer
+
+Huey Core is the wall-powered primary compute domain.
+
+Its job is to handle:
+
+- local models,
+- higher-level interpretation,
+- orchestration,
+- logs,
+- memory-facing runtime behavior,
+- and the shortest current proof path for microphone and camera input.
+
+### 2. HueyPulse — the watch and act layer
+
+HueyPulse is the lower-voltage support and control layer.
+
+Its job is to handle:
+
+- body-state monitoring,
+- low-level sensing,
+- bounded deterministic actuation,
+- recording / timeout / mode-state support,
+- indicator logic,
+- and persistence of basic body-awareness when the main compute path is down.
+
+Publicly, HueyPulse should be understood as a **role**, not as a commitment to one permanent proprietary board choice.
+
+Implementation may use controller-class hardware, support boards, or revised low-voltage logic over time. What matters is the function:
+
+- it runs below the main compute layer,
+- it stays closer to the body,
+- and it exists to watch, report, and carry out bounded action cleanly.
+
+### Working formula
+
+> **The motherboard thinks. HueyPulse watches and acts.**
+
+### Power domains
+
+The architecture is also grounded in how the machine is powered:
+
+- **Huey Core / motherboard layer:** wall-powered, high-draw, primary compute domain
+- **HueyPulse layer:** low-voltage support domain, typically 12 V and under, used for persistent body-state, controller logic, sensors, lights, and bounded actuation
+
+That split is deliberate. It keeps the system from collapsing into one monolithic power path, and it allows the body to remain partially alive, visible, and regulated even when the main compute path is down.
+
+---
+
+## Interaction and boot posture
+
+### Current interaction edge
+
+The current interaction direction is simple:
+
+**remote or local input -> HueyPulse -> Huey Core**
+
+That keeps body-level sensing and intent capture separate from final higher-level interpretation.
+
+### Display doctrine
+
+The 7-inch portrait display is primarily a **status and code surface**, not a default cartoon face.
+
+Its job is to show:
+
+- diagnostics,
+- temperatures,
+- watchdog / support-state information,
+- body-state information,
+- and truthful system output.
+
+### Boot doctrine
+
+Huey Core should boot **honestly**.
+
+That means:
+
+- visible Debian bring-up,
+- useful diagnostics,
+- live service visibility,
+- real body-state information,
+- and no fake polished splash that pretends the prototype is further along than it is.
+
+Huey Core waking and Huey proper waking are related, but they are not the same event.
+
+---
+
+## Current physical form
+
+Huey Core is built around a physically embodied proof body rather than a generic tower on a desk.
+
+### Body plan
+
+- repurposed desk-chair rolling base
+- wooden upper base / platform
+- inverted and reversed Thermaltake Mozart chassis
+- upper mounted head and shoulder structure on TV-mount hardware
+- 7-inch portrait status display
+- orange chassis lights
+- green eye LEDs
+- right-side robotic hand / arm
+- microphone, webcam, and display wiring routed through Huey’s left ear
+
+### Storage layout
+
+- **Root / OS:** RAID 0 on 2 × Intel Optane M10 16 GB drives
+- **Data / home:** RAID 10 on 4 × 240 GB Kingston SATA SSDs
+- **Recovery direction:** BOOT / NO-BOOT fallback strategy
+
+### Cooling and power
+
+Huey Core is **fan-cooled**, not liquid-cooled.
+
+Power and cooling are intentionally split across separate domains:
+
+- motherboard-powered cooling for the main compute path
+- battery-backed or separate low-voltage support distribution for support systems
+- switched control over fans, display, lights, and other body-level support hardware
+
+That split exists so the machine can remain partially alive, visible, and regulated even when the main board is down.
+
+---
+
+## Sound direction
+
+HueyOS is not aiming for a theatrical startup song.
+
+The better direction is a modular family of short operational cues:
+
+- boot
+- confirm
+- cancel
+- listening
+- sleep / shutdown
+
+The intended feel is:
+
+- retro-futurist,
+- restrained,
+- computer-like rather than cinematic,
+- easy to revise later,
+- and useful as machine presence rather than soundtrack.
+
+---
+
+## Governance and trust boundaries
+
+This project does not treat AI control as one flat process.
+
+At the public level, the important rules are simple:
+
+- governance is decentralized,
+- memory is unified,
+- physical action should eventually be lawful rather than merely scripted,
+- constitutional crisis and hardware / safety crisis are not the same thing,
+- and public-facing documents should explain trust boundaries clearly without exposing every piece of inner deliberative logic.
+
+### Current reality
+
+The human counterpart currently remains the final external decision-maker because Huey is still in the proof-body phase.
+
+The long-term goal is not permanent micromanagement. The long-term goal is a system that can meaningfully carry part of its own authority.
+
+### Cornerstone
+
+Cornerstone is the rule for what must not drift.
+
+It is the read-only, change-controlled layer of founding materials and recovery-critical doctrine. If Cornerstone must be manually altered in place, that should be treated as a constitutional failure event rather than a routine edit.
+
+### Ozymandias
+
+Ozymandias is the cautionary doctrine.
+
+Its public meaning is simple:
+
+- log reality honestly,
+- do not hide failure behind theatrics,
+- preserve history across restarts and later republics,
+- and treat continuity as something that must be protected rather than assumed.
+
+The deeper constitutional and doctrinal model exists, but this README is not the place to unpack every inner mechanism.
+
+---
+
+## Canon stack
+
+The Monkey-Head-Project is one canon with distinct layers.
+
+### Public introduction
+- website
+- README
+
+### Explanation
+- project book / compendium
+
+### Law
+- Federation Constitution
+
+### Machine-facing implementation
+- master plan
+
+These layers are meant to complement each other, not collapse into one document.
 
 ---
 
 ## Repository map
 
-This is a high-signal map of the repo’s “working surfaces.” It is not an exhaustive inventory of every artifact.
+This repository is moving toward a cleaner long-term structure.
 
-| Path | What it is | Why it exists | Notes |
-|---|---|---|---|
-| `README.md` | Human-facing narrative | Orientation + doctrine | This file |
-| `master-plan-v23.json` | Canonical machine-facing spec | Ground truth for architecture + milestones | Era-spec, not SemVer |
-| `docs/` | Deep documentation and runbooks | Governance, deployment, audits, phases | Start at `docs/index.md` |
-| `src/` | Python source code (packages) | `hueyos` runtime + `huey` compatibility tree | Most development happens here |
-| `apps/` | App/UI entry points | GUI + tools | May be evolving |
-| `integrations/` | Integrations & vendored adapters | PyGPT-related integrations | Expect refactors during rewrite |
-| `infra/` | Infrastructure definitions | Docker compose + Dockerfiles | Deployment scaffolding |
-| `platform/` | Platform artifacts and installers | Debian install scripts, packaging artifacts | Some scripts may be out-of-sync |
-| `tests/` | Automated tests | CI and regression safety net | Pytest |
-| `Makefile` | Developer workflow targets | `make dev`, `make lint`, `make run` | See “Build & run” |
-| `pyproject.toml` | Packaging + dependencies | Defines `hueyos` + extras | Python `>=3.13,<3.15` |
-| `requirements.txt` | Pinned dependency set | Legacy / full environment pinning | Large; use when needed |
-| `SECURITY.md` | Security policy | Reporting + supported versions | Read before deploying externally |
-| `LICENSE` | GPLv3 license for code | Legal terms | Docs/media are CC-BY-SA-4.0 |
+### Core reference points
+
+- **README.md** — canonical human-facing narrative
+- **master-plan-v23.json** — canonical machine-facing implementation spec
+- **requirements.txt** — pinned dependency baseline
+- **pyproject.toml** — package and install contract
+- **Makefile** — development and local run convenience targets
+
+### Working repository areas
+
+- **docs/** — architecture, design, audits, and deeper reference material
+- **src/** — implementation work and importable packages
+- **apps/** — runnable entry points and app-facing surfaces
+- **integrations/** — adapter and vendored integration work
+- **infra/** — Docker, orchestration, and infrastructure support
+- **platform/** — installers, packaging artifacts, and platform-specific setup
+- **archives/** — frozen release payloads, legacy material, and snapshots
+- **assets/** — static project media
+- **tests/** — automated test coverage and regression safety net
+
+If the implementation and the narrative ever conflict, the master plan wins for machine-facing implementation, and the conflict should be surfaced and corrected rather than ignored.
 
 ---
 
-## Build, run, and deploy
+## Quick start
 
-### Prerequisites
+### Current baseline
 
-**Minimum for local dev (recommended):**
-- Git (with submodules if used)
-- Python **3.13.x** (project packaging requires `>=3.13,<3.15`)
-- `make` (optional but matches CI workflows)
+- Python 3.13.x
+- Debian 14 Forky
+- local, Linux-first development posture
 
-**Optional system dependencies (depending on features):**
-- **FFmpeg** (media conversion utilities call `ffmpeg`)
-- Docker + Docker Compose plugin (container workflows)
-- `kubectl` (if using Kubernetes manifests)
-- Audio toolchain libs (PortAudio / ALSA) if enabling live audio IO
-
-**UNSPECIFIED:** exact GPU stack requirements per district (ROCm/Vulkan choices depend on host).
-
-### Install (local development)
+### Basic setup
 
 ```bash
 git clone --recurse-submodules https://github.com/DylanLRPollock/Monkey-Head-Project.git
@@ -218,21 +406,14 @@ cd Monkey-Head-Project
 python3.13 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-
-# install core
 pip install -e .
-
-# developer toolchain (mirrors CI)
 pip install -e ".[dev]"
 ```
 
-### Run (API)
+### First bring-up
 
 ```bash
-# default: Makefile uses huey.api:app
 make run
-# or explicitly:
-python -m uvicorn huey.api:app --host 0.0.0.0 --port 1995
 ```
 
 Health check:
@@ -241,211 +422,120 @@ Health check:
 curl -fsS http://127.0.0.1:1995/healthz
 ```
 
-**UNSPECIFIED:** production binding rules (reverse proxy / TLS termination / authn) — do not expose the API publicly without hardening.
-
-### Run (CLI)
-
-After `pip install -e .`, the `huey` command should be available:
+### CLI path
 
 ```bash
-# Initialize memory directories (and optionally run system checks)
 huey init --run-checks --verbose
-
-# Launch runtime
 huey run --cli
 ```
 
-### “Profiles” / optional dependency groups
+### Notes
 
-The package defines extras such as `ml`, `data`, and `cloud`.
-
-```bash
-pip install -e ".[ml]"
-pip install -e ".[data]"
-pip install -e ".[cloud]"
-```
-
-**Known limitation:** installing *multiple* extras together may be dependency-resolution sensitive depending on pinned constraints. If a combined install fails, install one extra at a time or fall back to a known-good pinned environment file. (See QA + rollback policy.)
-
-### Deployment modes and commands
-
-| Goal | Command | Where it runs | Notes |
-|---|---|---|---|
-| Dev setup + format + lint + tests | `make dev` | Laptop / lab node | Runs `pre-commit`, lint, pytest |
-| Run API | `make run` | Huey Core / dev node | Default port `1995` |
-| Lint | `make lint` | CI/local | Uses black/isort/ruff/flake8 |
-| Coverage | `make coverage` | CI/local | Expects packages importable |
-| Docker Compose (scaffold) | `cd infra/docker && docker compose up -d` | Host with Docker | Uses `infra/docker/docker-compose.yml` |
-| Orchestrator: HostOS | `python infra/docker/docker/hostos/hostos.py all` | Debian host | Opens VNC port (default `5901`) |
-| Orchestrator: SubOS | `python infra/docker/docker/subos/subos.py all` | Debian host | Default service port `8080` |
-| Orchestrator: NanoOS | `python infra/docker/docker/nanoos/nanoos.py all` | Debian host | Default service port `8081` |
-| Debian installer script | `sudo platform/installers/debian/Debian/install-deb.sh` | Debian host | **May reference files that are UNSPECIFIED / out-of-sync** |
-
-**Secrets:** Do not commit credentials. Use `.env` / secret store. Template files should contain placeholders marked `UNSPECIFIED`.
-
-### Deployment flow: staging → pre-release → freeze → rewrite
-
-This repo is approaching a “big rewrite and restructure.” Use this controlled pipeline:
-
-```mermaid
-flowchart LR
-  A["staging (integration)"] --> B["pre-release tag (v84.3-pre)"]
-  B --> C["freeze (no new features)"]
-  C --> D["rewrite/restructure branch"]
-  D --> E["release (new baseline + migration docs)"]
-  E --> A
-```
-
-**Interpretation:**
-- **staging:** accumulate changes; keep CI green; keep docs aligned.
-- **pre-release (v84.3-pre):** last “ship-it” package before the rewrite; stabilize docs + interfaces.
-- **freeze:** only bugfixes, security gates, and packaging cleanup.
-- **rewrite:** restructure repo layout and replace legacy shims; publish migration notes.
-- **release:** cut a coherent new baseline with updated folder map + updated installer paths.
-
-**UNSPECIFIED:** exact branch names, tag naming for HueyOS SemVer vs site versions, and releaser identity/permissions.
-
-### Release checklist (pre-release / freeze)
-
-| Item | Standard | Pass criteria |
-|---|---|---|
-| CI green | `lint` + `tests` jobs succeed | GitHub Actions green |
-| Run locally | API starts and `/healthz` returns | 200 OK |
-| Docs aligned | README + master plan + docs coherent | No contradictions left unflagged |
-| Security gate | No secrets in repo; auth posture documented | `SECURITY.md` satisfied |
-| Rollback plan | Snapshot/tag strategy documented | Rollback steps tested |
-| Archive | Prior plans + artifacts preserved | Old versions discoverable |
+- `requirements.txt` is a pinned environment baseline and may be heavier than a minimal install.
+- Some deployment and installer surfaces are still being cleaned up as part of the restructure phase.
+- Do not expose the API publicly without hardening authentication, binding, and secret handling first.
 
 ---
 
-## Quality, security, and rollback
+## Naming guide
 
-### Acceptance criteria
+### Monkey-Head-Project
+The umbrella initiative.
 
-This README is “deployable” when:
+### Huey
+The unified AI and robotic identity.
 
-1) A new developer can install `hueyos` locally (Python 3.13.x) and run:
-   - `make lint`
-   - `make coverage`
-   - `make run` and hit `/healthz`
+### HueyOS
+The software and operating-system layer behind Huey.
 
-2) The repo explains—without hand-waving—how the system splits authority:
-   - Motherboard vs Pi (HueyPulse) vs Arduino
+### Huey Core
+The minimal permissible instance of Huey and the current embodied proof body.
 
-3) The governance doctrine is explicit about:
-   - Cornerstone immutability requirements
-   - Ozymandias risk framing
-   - Separation of constitutional crisis vs nuclear/safety crisis
+### HueyPulse
+The lower-voltage watch-and-act layer that supports body-state awareness, bounded actuation, and persistent control logic below the main compute path.
 
-4) Security posture is explicit about:
-   - offline-first defaults
-   - secret handling
-   - production hardening requirements before external exposure
+### Huey proper
+The larger unified, world-facing expression of the eventual distributed system.
 
-### QA checklist (operator / CI)
-
-| Area | Check | Command / method | Expected |
-|---|---|---|---|
-| Packaging | Editable install works | `pip install -e .` | Succeeds |
-| CLI | CLI entrypoint exists | `huey --help` | Shows commands |
-| API boot | API starts | `make run` | Server listens |
-| Health probe | Health route | `curl -fsS http://127.0.0.1:1995/healthz` | JSON `{status: ok}` |
-| Lint | Style gates | `make lint` | Pass |
-| Tests | Unit tests | `pytest -q` | Pass |
-| Coverage | Coverage run | `make coverage` | Produces report |
-| FFmpeg integration | Media conversion path | `ffmpeg -version` (system) | Present when features used |
-| Secrets | Leak prevention | secret scan / review | No tokens committed |
-| Governance safety | Emergency separation | review docs + code | No shared override paths |
-
-### Security and privacy gating
-
-**Offline-first by default.** Network/tool access should be:
-- optional,
-- explicit,
-- logged,
-- human-gated.
-
-**API exposure warning:** The HueyOS API includes administrative and governance endpoints. Do not bind publicly without authentication/authorization gates.
-
-**Credential hygiene:**
-- Store secrets in a secrets manager or `.env` file.
-- In docs and templates: secrets must be written as `UNSPECIFIED`.
-
-### Rollback and archival policy
-
-**Core rule:** a reset is not amnesia.
-
-When rollback is needed:
-- Preserve the complete prior “republic instance” as an archived snapshot:
-  - Git tag + release notes
-  - master plan version copy
-  - logs and telemetry snapshots (where applicable)
-- Restore a known-good state:
-  - revert to tagged commit
-  - restore BTRFS snapshots (if used)
-  - validate boot + `/healthz` + minimal CLI before re-enabling optional workloads
-
-**UNSPECIFIED:** exact snapshot commands for your host (BTRFS layout depends on deployment).
+### The Farm
+The planned V4 external district housing that expands Huey beyond the Core.
 
 ---
 
-## Contributing, license, and glossary
+## Roadmap
 
-### Contributing
+### Current phase
+Huey Core proof-body stabilization.
 
-Contributions are welcome—especially docs corrections, tests, and hardening work.
+That means:
 
-Workflow expectations:
-- Use Python **3.13.x**
-- Prefer small PRs with tests
-- Follow Conventional Commits (`feat:`, `fix:`, `docs:`)
-- Never commit secrets
+- embodied stability,
+- thermal and power validation,
+- local model usefulness,
+- recovery discipline,
+- visible diagnostics,
+- and documentation that accurately reflects the machine as it exists.
 
-See: `docs/CONTRIBUTING.md`.
+### Next major expansion
+**V4: the Farm**
 
-### License
+The Farm is the planned external district housing for the later pooled compute body and standardized node expansion.
 
-- **Code:** GPL-3.0-only (see `LICENSE`)
-- **Docs/Media:** CC-BY-SA-4.0 (as declared in project documentation)
+### What is sunsetted for this iteration
 
-### Glossary
+- Robotics V3 as the active future shell path
+- Symbiote / parasite docking as an active architecture path
+- Pi-specific public framing as the primary explanation of HueyPulse
 
-- **Huey:** the unified system identity (world-facing intelligence).
-- **HueyOS:** the operating-system/runtime layer coordinating memory, tools, and hardware.
-- **Huey Core:** minimal permissible instance of Huey; embodied proof body.
-- **Huey proper:** future full unified world-facing expression across the distributed organism.
-- **HueyPulse:** always-on connective tissue (Pi role) that survives downtime and brokers safety + status.
-- **Arduino layer:** bounded deterministic I/O and actuation (no governance authority).
-- **Cornerstone:** immutable founding artifacts + recovery state; should not be edited in place.
-- **Ozymandias:** doctrine and chapter framing impermanence, drift, humility, and audit-first continuity.
-- **Constitutional crisis:** contradiction of law/legitimacy that requires judicial interpretation.
-- **Nuclear/safety crisis:** thermal/electrical/mechanical danger that routes to deterministic safety controls.
-- **Master plan:** machine-facing canonical spec (era-based; e.g., `v23.0`).
-- **SemVer version:** software artifact versioning (e.g., `0.2.0`).
+These remain part of project history, but not the active present-tense direction of the public README.
 
 ---
 
-## Release notes
+## Project origin
 
-### v84.3-pre (pre-release package before rewrite) — notes
+The name is literal.
 
-This label is used as the “last stable package” before the big restructure/rewrite.
-- Goal: freeze outward-facing interfaces and docs so the rewrite can happen without losing the canon.
-- Scope: documentation alignment, release hygiene, deployment clarity, QA gating.
+Around 2015–2016, the search for a workable robotic or animatronic head led to a 2005 WowWee animatronic monkey head. Two units were acquired and used as the earliest viable vessel for the long-running robot build.
 
-**UNSPECIFIED:** the exact mapping between `v84.3-pre` and HueyOS SemVer tags (`v0.2.0`, `v0.3.0`, etc.). Maintain both if needed:
-- `vX.Y.Z` for packaged HueyOS releases
-- `v84.x` for website/canon snapshots
+That is where the Monkey-Head-Project gets its name.
 
-### HueyOS `0.2.0` (current package version)
-
-- Provides the FastAPI API surface, CLI tooling, and core dependencies profile.
-- Optional extras exist for ML/data/cloud but may need careful dependency management.
+The name **Huey** came later and stuck because it fit the machine’s identity and atmosphere.
 
 ---
 
-## Contact
+## Current open questions
 
-- Email: admin@dlrp.ca
-- Issues: GitHub Issues (preferred for non-security bugs)
-- Security: follow `SECURITY.md` (private reporting preferred)
+These are active questions, not omissions:
+
+- the final GPU acquisition path for the roughly 80 GB proof
+- whether the Core GPU counts toward that future total
+- the final proof-scale model path
+- finalized thermal, electrical, and watchdog thresholds
+- the final internal board/controller realization of HueyPulse over time
+- long-term microphone / webcam routing policy after the current direct-to-core proof path
+- long-term shell-level embodiment beyond Core + Farm, if any
+- the final public vs internal boundary for what remains secret sauce
+- the final operational HueyOS cue pack
+
+---
+
+## License
+
+**Code:** GPL-3.0-only  
+**Docs / Media:** CC-BY-SA-4.0
+
+---
+
+## Notes
+
+This README is meant to be the repository’s front door.
+
+It should stay:
+
+- accurate,
+- readable,
+- restrained,
+- present-tense,
+- and honest about what exists now versus what is planned later.
+
+This document was prepared with AI assistance and remains subject to human oversight.
