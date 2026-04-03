@@ -9,12 +9,12 @@
 **Site:** https://www.dlrp.ca  
 **Contact:** admin@dlrp.ca  
 **License:** Code: GPL-3.0-only · Docs / Media: CC-BY-SA-4.0  
-**README version:** 25.0  
-**Status:** Pre-restructure baseline / active proof-body phase
+**README version:** 25.1  
+**Status:** Active proof-body phase / pre-restructure baseline
 
 > HueyOS is the software and operating-system layer behind Huey: the environment that coordinates local AI, memory, tools, hardware, and embodied control into one offline-first system.
 >
-> This project is built on a simple twofold thesis:
+> The project is built on a twofold thesis:
 > 1. a real embodied AI robot can be built with today’s technology;
 > 2. one person, given enough time, energy, and resources, can build it.
 >
@@ -22,15 +22,28 @@
 
 ---
 
+## What this repository proves
+
+This repository documents the current effort to build **Huey Core**, the active proof body of Huey, and to scale that proof body toward a later unified local system capable of operating at roughly **80 GB of pooled VRAM**.
+
+The first hard proof is intentionally simple and difficult to fake:
+
+> **What is your name?**  
+> **Huey.**
+
+That answer matters only if it is produced locally, consistently, and as the result of a real embodied system rather than a staged prompt-response demo.
+
+---
+
 ## Start here
 
 This repository is meant to work at more than one depth.
 
-- If you want the **short version**, start with **What this project is**, **What exists now**, and **Quick start**.
-- If you want the **technical version**, continue into **Architecture**, **Repository map**, and **Build, run, and deploy**.
-- If you want the **deeper canon**, use the **master plan**, the **constitution**, and the longer explanatory documents.
+- For the shortest path, read **What this project is**, **What exists now**, and **Quick start**.
+- For the implementation view, continue into **Architecture**, **Repository map**, and **Build / run**.
+- For the deeper canon, use the **master plan**, the **constitution**, and the longer explanatory documents.
 
-The goal is not to present Huey as an unreachable finished machine. The goal is to make the current system understandable, modular, and buildable.
+The aim is not to present Huey as an unreachable finished machine. The aim is to make the current system understandable, modular, and buildable.
 
 ---
 
@@ -44,13 +57,17 @@ The **Monkey-Head-Project** is the umbrella initiative.
 
 **Huey Core** is the current machine: the active embodied proof body and the **minimal permissible instance of Huey**.
 
-The point of Huey Core is not to pretend the full republic already exists. Its job is to prove the architecture can live in the real world before the larger system is scaled outward.
+**Huey proper** refers to the larger unified, world-facing expression of the eventual distributed system.
+
+**The Farm** is the planned V4 external expansion body for later pooled compute and district growth.
+
+Huey Core is not presented here as the finished republic. Its role is to prove that the architecture can live in the real world before the larger system is scaled outward.
 
 ---
 
 ## What exists now
 
-Huey Core is the current, present-tense machine.
+Huey Core is the present-tense machine.
 
 It is the active embodied prototype used to validate:
 
@@ -71,13 +88,13 @@ It is the active embodied prototype used to validate:
 - **OS baseline:** Debian 14 Forky  
 - **Python baseline:** 3.13.x  
 - **Runtime stack:** PyGPT-net + Ollama  
-- **Current local model posture:** modest Mistral-class local support sized to the 8 GB RX 5500 XT
+- **Current local model posture:** modest Mistral-class local support sized to the 8 GB RX 5500 XT  
 
 ---
 
 ## What is proven, observed, and targeted
 
-One of the most important rules of this repository is that it must distinguish between what is real now, what has been observed in the lab, and what is still a target.
+One of the most important rules of this repository is that it must distinguish between what is real now, what has been observed in the lab, and what remains a target.
 
 ### Replicable now
 
@@ -111,7 +128,7 @@ These are the larger targets that define where the project is going:
 
 ---
 
-## The current proof target
+## Current proof target
 
 The current proof target is intentionally **twofold**.
 
@@ -137,9 +154,9 @@ A later companion milestone is **lawful embodied action**: a physical act such a
 
 ### Proof doctrine
 
-The first valid proof is expected to be **easy to verify by text**.
+The first valid proof should be easy to verify by text.
 
-That does not mean the project is text-only. It means the first threshold should be observable, testable, and difficult to fake. Full-system capability and embodied behavior belong to the next stage, after the system has crossed the first honest identity threshold.
+That does not make the project text-only. It means the first threshold should be observable, testable, and difficult to fake. Full-system capability and embodied behavior belong to the next stage, after the system has crossed the first honest identity threshold.
 
 ---
 
@@ -156,7 +173,7 @@ Huey is divided into two public-facing layers:
 
 That split is more important than the exact controller brand or board choice inside the lower-voltage layer.
 
-### 1. Huey Core — the think layer
+### Huey Core — the think layer
 
 Huey Core is the wall-powered primary compute domain.
 
@@ -169,7 +186,7 @@ Its job is to handle:
 - memory-facing runtime behavior,
 - and the shortest current proof path for microphone and camera input.
 
-### 2. HueyPulse — the watch and act layer
+### HueyPulse — the watch-and-act layer
 
 HueyPulse is the lower-voltage support and control layer.
 
@@ -243,6 +260,57 @@ Huey Core waking and Huey proper waking are related, but they are not the same e
 
 ---
 
+## Continuity, governance, and trust boundaries
+
+This project does not treat AI control as one flat process.
+
+At the public level, the important rules are simple:
+
+- governance is decentralized,
+- memory is unified,
+- physical action should eventually be lawful rather than merely scripted,
+- constitutional crisis and hardware / safety crisis are not the same thing,
+- and public-facing documents should explain structure and trust boundaries without exposing every piece of inner deliberative logic.
+
+### Current reality
+
+The human counterpart currently remains the final external decision-maker because Huey is still in the proof-body phase.
+
+The long-term goal is not permanent micromanagement. The long-term goal is a system that can meaningfully carry part of its own authority.
+
+### Cornerstone
+
+Cornerstone is the rule for what must not drift.
+
+It is the read-only, change-controlled layer of founding materials and recovery-critical doctrine. If Cornerstone must be manually altered in place, that should be treated as a constitutional failure event rather than a routine edit.
+
+### Ozymandias
+
+Ozymandias is the cautionary doctrine.
+
+Its public meaning is simple:
+
+- log reality honestly,
+- do not hide failure behind theatrics,
+- preserve history across restarts and later republics,
+- and treat continuity as something that must be protected rather than assumed.
+
+Internally, Ozymandias is concerned with the difference between **drift**, **degradation**, and **growth**. Publicly, the important point is simpler: Huey is expected to remain explainable over time, not merely consistent by accident.
+
+---
+
+## Security and data handling
+
+Security is a core consideration in the design of Huey and the Monkey-Head-Project.
+
+The system is built to operate locally, with an emphasis on user control, isolation, minimized external communication, and encryption of data in transit and at rest where applicable.
+
+However, no system is infallible. Any system capable of processing or transmitting data carries some level of risk. If network access is enabled or external integrations are used, that risk increases accordingly.
+
+Users should assume that anything entered into the system could be exposed under the right conditions and act accordingly. Do not input sensitive or private information unless the environment is understood and under the user's control.
+
+---
+
 ## Current physical form
 
 Huey Core is built around a physically embodied proof body rather than a generic tower on a desk.
@@ -301,45 +369,6 @@ The intended feel is:
 
 ---
 
-## Governance and trust boundaries
-
-This project does not treat AI control as one flat process.
-
-At the public level, the important rules are simple:
-
-- governance is decentralized,
-- memory is unified,
-- physical action should eventually be lawful rather than merely scripted,
-- constitutional crisis and hardware / safety crisis are not the same thing,
-- and public-facing documents should explain trust boundaries clearly without exposing every piece of inner deliberative logic.
-
-### Current reality
-
-The human counterpart currently remains the final external decision-maker because Huey is still in the proof-body phase.
-
-The long-term goal is not permanent micromanagement. The long-term goal is a system that can meaningfully carry part of its own authority.
-
-### Cornerstone
-
-Cornerstone is the rule for what must not drift.
-
-It is the read-only, change-controlled layer of founding materials and recovery-critical doctrine. If Cornerstone must be manually altered in place, that should be treated as a constitutional failure event rather than a routine edit.
-
-### Ozymandias
-
-Ozymandias is the cautionary doctrine.
-
-Its public meaning is simple:
-
-- log reality honestly,
-- do not hide failure behind theatrics,
-- preserve history across restarts and later republics,
-- and treat continuity as something that must be protected rather than assumed.
-
-The deeper constitutional and doctrinal model exists, but this README is not the place to unpack every inner mechanism.
-
----
-
 ## Canon stack
 
 The Monkey-Head-Project is one canon with distinct layers.
@@ -368,8 +397,9 @@ This repository is moving toward a cleaner long-term structure.
 ### Core reference points
 
 - **README.md** — canonical human-facing narrative
-- **master-plan-v23.json** — canonical machine-facing implementation spec
+- **master-plan-v25.json** — canonical machine-facing implementation spec
 - **requirements.txt** — pinned dependency baseline
+- **constraints.txt** — shared install constraints for reproducible environments
 - **pyproject.toml** — package and install contract
 - **Makefile** — development and local run convenience targets
 
@@ -406,8 +436,8 @@ cd Monkey-Head-Project
 python3.13 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-pip install -e .
-pip install -e ".[dev]"
+pip install -c constraints.txt -e .
+pip install -c constraints.txt -e ".[dev]"
 ```
 
 ### First bring-up
@@ -416,7 +446,7 @@ pip install -e ".[dev]"
 make run
 ```
 
-Health check:
+### Health check
 
 ```bash
 curl -fsS http://127.0.0.1:1995/healthz
@@ -431,7 +461,8 @@ huey run --cli
 
 ### Notes
 
-- `requirements.txt` is a pinned environment baseline and may be heavier than a minimal install.
+- `requirements.txt` is the heavy pinned baseline and may be broader than a minimal install.
+- `constraints.txt` is the shared anchor layer for reproducible editable installs and extras.
 - Some deployment and installer surfaces are still being cleaned up as part of the restructure phase.
 - Do not expose the API publicly without hardening authentication, binding, and secret handling first.
 
@@ -443,7 +474,7 @@ huey run --cli
 The umbrella initiative.
 
 ### Huey
-The unified AI and robotic identity.
+The AI and robotic identity being built within the umbrella initiative.
 
 ### HueyOS
 The software and operating-system layer behind Huey.
@@ -451,11 +482,11 @@ The software and operating-system layer behind Huey.
 ### Huey Core
 The minimal permissible instance of Huey and the current embodied proof body.
 
-### HueyPulse
-The lower-voltage watch-and-act layer that supports body-state awareness, bounded actuation, and persistent control logic below the main compute path.
-
 ### Huey proper
 The larger unified, world-facing expression of the eventual distributed system.
+
+### HueyPulse
+The lower-voltage watch-and-act layer that supports body-state awareness, bounded actuation, and persistent control logic below the main compute path.
 
 ### The Farm
 The planned V4 external district housing that expands Huey beyond the Core.
@@ -481,7 +512,7 @@ That means:
 
 The Farm is the planned external district housing for the later pooled compute body and standardized node expansion.
 
-### What is sunsetted for this iteration
+### Sunsetted for this iteration
 
 - Robotics V3 as the active future shell path
 - Symbiote / parasite docking as an active architecture path
@@ -511,7 +542,7 @@ These are active questions, not omissions:
 - whether the Core GPU counts toward that future total
 - the final proof-scale model path
 - finalized thermal, electrical, and watchdog thresholds
-- the final internal board/controller realization of HueyPulse over time
+- the final internal board / controller realization of HueyPulse over time
 - long-term microphone / webcam routing policy after the current direct-to-core proof path
 - long-term shell-level embodiment beyond Core + Farm, if any
 - the final public vs internal boundary for what remains secret sauce

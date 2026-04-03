@@ -1,9 +1,9 @@
 {
   "project": "Monkey-Head-Project",
   "ai_identity": "Huey",
-  "version": "v25.0",
+  "version": "v25.1",
   "schema_version": 20,
-  "description": "Master Plan V25: README-v25 alignment, role-first control simplification, and pre-restructure baseline release for Huey Core. V25 preserves the V23 embodied proof-body canon while simplifying the public control model into Huey Core and HueyPulse, separating replicable current reality from lab-observed but non-standardized work, and treating board-level choices inside the lower-voltage layer as implementation details rather than primary identity.",
+  "description": "Master Plan V25.1: README-v25.1 alignment, controlled-vocabulary cleanup, security-language clarification, and continued role-first control simplification for Huey Core and HueyPulse. V25.1 preserves the embodied proof-body canon, keeps the distinction between replicable current reality, lab-observed but non-standardized work, and target state, and updates the machine-facing spec to match the clearer public-facing README.",
   "created_by": "Dylan L.R. Pollock",
   "compiled_from_versions": [
     "v0.1 (huey_master_plan_v0.1.json)",
@@ -31,14 +31,15 @@
     "v22.0 canon-structure + pebble/vault + unified-organism clarification session (2026-03-26)",
     "v23.0 boot-path + acoustic-identity clarification session (2026-03-27)",
     "v24.0 README/front-door alignment session (2026-04-01)",
-    "v25.0 control-layer simplification + master-plan update session (2026-04-01)"
+    "v25.0 control-layer simplification + master-plan update session (2026-04-01)",
+    "v25.1 README/master-plan sync session (2026-04-02)"
   ],
   "core_principles": [
     "Governance must be decentralized, but memory must be unified.",
     "Huey Core is the minimal permissible instance of Huey: the smallest complete building block from which the larger distributed system can be formed.",
     "Huey proper is the unified, world-facing expression of the whole distributed system rather than a synonym for the current proof body.",
     "V4, the Farm, is the planned external district housing that expands Huey beyond the Core and supports later multi-district operation.",
-    "V22 prioritizes proof of concept, stability, containment, truthful current-state documentation, and clean canon boundaries over scale, spectacle, or premature completeness.",
+    "The current phase prioritizes proof of concept, stability, containment, truthful current-state documentation, and clean canon boundaries over scale, spectacle, or premature completeness.",
     "On-device first; internet/API/tool access is optional, explicit, human-gated, and metered.",
     "Performance and safe function matter more than efficiency in the prototype phase, provided thermals and electrical conditions remain controlled.",
     "Unified information should be readable by all authorized components, but decision-making authority may remain distributed and layered.",
@@ -60,11 +61,12 @@
     "The Founding Father AI is a bootstrap and constitutional-reserve authority, not a permanent ordinary ruler.",
     "The proof body should boot honestly: verbose Debian bring-up, live diagnostics, and HueyPulse-owned or lower-voltage status output take priority over theatrical splash behavior.",
     "For the first identity-proof milestone, microphone and camera should default to the shortest reliable path, which currently means direct routing to the motherboard unless Pi mediation becomes necessary.",
-    "HueyOS acoustic identity should favor short modular retro-futurist system cues — boot, confirm, cancel, listen, and sleep/shutdown — rather than song-like startup theatrics."
+    "HueyOS acoustic identity should favor short modular retro-futurist system cues — boot, confirm, cancel, listen, and sleep/shutdown — rather than song-like startup theatrics.",
+    "Security should be described honestly: local-first, user-controlled, and encrypted where applicable, but never treated as infallible; enabling networked or external integration increases risk and must be treated accordingly."
   ],
   "status": {
     "overall_state": "in-progress",
-    "deployment_stage": "Huey Core proof-body stabilization + README-v25 alignment + two-layer control simplification + planning toward V4 Farm and the first unified ~80 GB distributed identity milestone.",
+    "deployment_stage": "Huey Core proof-body stabilization + README/master-plan v25.1 alignment + two-layer control simplification + planning toward V4 Farm and the first unified ~80 GB distributed identity milestone.",
     "notes": [
       "Huey Core remains conceptually and physically separated from the older Robotics V3 shell track for the active phase.",
       "The Thermaltake Mozart case from 2007 now serves as the independent embodied core for this iteration.",
@@ -103,9 +105,12 @@
       "V23 begins to formalize operational sound direction: HueyOS system sounds should be modular retro-futurist cues for boot, confirm, cancel, listening, and sleep/shutdown states.",
       "V25 aligns the master plan to README v25's clearer separation between replicable current reality, lab-observed but not yet standardized work, and later target state.",
       "V25 simplifies the public control model from motherboard/Pi/Arduino language to a two-layer model: Huey Core thinks, while HueyPulse watches and acts.",
-      "Raspberry Pi-specific framing is no longer the canonical public explanation of HueyPulse; exact board choice inside the lower-voltage layer is now treated as an implementation detail unless it materially affects operation."
+      "Raspberry Pi-specific framing is no longer the canonical public explanation of HueyPulse; exact board choice inside the lower-voltage layer is now treated as an implementation detail unless it materially affects operation.",
+      "V25.1 brings the machine-facing plan into tighter alignment with the README-v25.1 front-door structure and controlled vocabulary.",
+      "V25.1 replaces overly absolute security language with a more accurate local-first, encryption-where-applicable, non-infallible security posture.",
+      "README-facing terminology now stays strict: Monkey-Head-Project is the umbrella, Huey is the identity, Huey Core is the current proof body, Huey proper is the later unified expression, HueyOS is the software layer, and the Farm is the later expansion body."
     ],
-    "status_date": "2026-04-01"
+    "status_date": "2026-04-02"
   },
   "hardware": {
     "cpu": {
@@ -211,11 +216,12 @@
         "rationale": "Redundancy + speed + striping for the working data volume."
       },
       "encryption": {
-        "policy": "Stored data is intended to be encrypted end-to-end.",
+        "policy": "Encrypt data at rest and in transit where applicable.",
         "status": "high priority, implementation details still being refined",
         "notes": [
-          "Read-only shared data and user-contributed data will both be treated as sensitive.",
-          "Precise key-management and read-only-data storage workflows remain to be finalized."
+          "Local-first control and minimized unnecessary external communication remain the preferred posture.",
+          "No system is treated as infallible; if external networking or integrations are enabled, risk increases accordingly.",
+          "Precise key-management and storage workflows remain to be finalized."
         ]
       },
       "external_storage_policy": {
@@ -1265,10 +1271,10 @@
       "default": "masterplan_wins_for_implementation",
       "unresolvable": "surface_as_blocker_to_dylan"
     },
-    "readme_version": "README-v25.md",
+    "readme_version": "README-v25.1.md",
     "book": "canonical_explanatory_volume",
     "constitution": "canonical_legal_companion",
-    "master_plan": "master-plan-v25.json"
+    "master_plan": "master-plan-v25.1.json"
   },
   "project_phase": {
     "previous_phase": {
@@ -1291,7 +1297,8 @@
         "The Raspberry Pi / Arduino service boundaries and the first wireless conversational control path are now part of the active design lock-in for the proof body.",
         "V22 adds canon layering and tighter pebble/founding-authority language without changing the embodied proof-body baseline.",
         "V25 aligns the machine-facing plan with README v25 and simplifies the outward-facing control model into Huey Core plus HueyPulse.",
-        "Board-specific lower-voltage implementation choices are no longer treated as the primary identity of HueyPulse."
+        "Board-specific lower-voltage implementation choices are no longer treated as the primary identity of HueyPulse.",
+        "V25.1 keeps the embodied and machine-facing plan synchronized with README-v25.1's stricter terminology, proof-first framing, and clearer security language."
       ]
     },
     "milestones": [
@@ -1413,6 +1420,13 @@
       "Moved board choice inside HueyPulse to implementation policy: controller-class hardware, support computers, or hybrid stacks are acceptable if the doctrine remains intact.",
       "Updated control-split, boot-path, display-ownership, AV-routing, and open-question language to match the V25 README.",
       "Updated canon mapping so README-v25 and master-plan-v25 become the active document pair."
+    ],
+    "v25_1_from_v25": [
+      "Promoted the plan to V25.1 without changing the overall schema shape.",
+      "Aligned the machine-facing document to README-v25.1's proof-first opening and controlled vocabulary.",
+      "Clarified security posture: local-first, encryption where applicable, and no blanket claim of infallibility.",
+      "Updated canon mapping so README-v25.1 and master-plan-v25.1 are the active document pair.",
+      "Adjusted the current-phase principle language so it no longer refers to the V22 phase by mistake."
     ]
   },
   "v21_decisions_locked": {
@@ -1507,11 +1521,11 @@
       "purpose": "Formal governance, authority, ratification, amendment, and crisis-handling document kept distinct from the explanatory book."
     },
     "machine_spec": {
-      "name": "master-plan-v25.json",
+      "name": "master-plan-v25.1.json",
       "purpose": "Canonical machine-facing implementation and alignment specification."
     },
-    "readme": "README-v25.md",
-    "master_plan": "master-plan-v25.json"
+    "readme": "README-v25.1.md",
+    "master_plan": "master-plan-v25.1.json"
   },
   "v22_decisions_locked": {
     "canon_stack": "README/website for introduction, book for explanation, constitution for law, master plan for machine-facing implementation.",
@@ -1538,5 +1552,17 @@
     "status_surface": "The 7-inch portrait display defaults to the HueyPulse / lower-voltage status layer.",
     "av_policy": "Microphone and camera stay on the shortest reliable proof path to the motherboard unless HueyPulse mediation later solves a concrete problem.",
     "documentation_rule": "Machine-facing and public-facing docs should both preserve the distinction between current reality, lab-observed work, and target state."
+  },
+  "security_and_data_handling": {
+    "posture": "local-first, user-controlled, minimized external communication, and encryption where applicable",
+    "non_guarantee": "No system is infallible. Any system that processes or transmits data carries some level of risk.",
+    "network_risk_rule": "If network access or external integrations are enabled, risk increases accordingly and should be treated as such.",
+    "user_rule": "Users should avoid inputting sensitive or private information unless the environment is understood and under their control."
+  },
+  "v25_1_decisions_locked": {
+    "readme_alignment": "Machine-facing language should support the proof-first README structure without overloading the front door with deep doctrine.",
+    "controlled_vocabulary": "Use Monkey-Head-Project, Huey, Huey Core, Huey proper, HueyOS, HueyPulse, and the Farm as distinct terms with distinct meanings.",
+    "security_posture": "Describe security as local-first and encryption-where-applicable, but never as absolute or infallible.",
+    "public_boundary": "Public-facing material should explain structure, trust boundaries, and current reality clearly while keeping internal deliberative secret sauce abstracted."
   }
 }
