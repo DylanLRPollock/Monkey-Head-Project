@@ -41,8 +41,11 @@ rm -rf "$WORK" && mkdir -p "$WORK"
 cd "$WORK"
 
 # --- build kernel 7.0.x → .debs ---
-wget -q https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${KVER}.tar.xz
-tar -xf linux-${KVER}.tar.xz
+KMAJOR="${KVER%%.*}"
+KSERIES_PATH="v${KMAJOR}.x"
+KERNEL_TARBALL="linux-${KVER}.tar.xz"
+wget -q "https://cdn.kernel.org/pub/linux/kernel/${KSERIES_PATH}/${KERNEL_TARBALL}"
+tar -xf "${KERNEL_TARBALL}"
 cd linux-${KVER}
 # generate a fresh baseline kernel config instead of inheriting host settings
 make defconfig
