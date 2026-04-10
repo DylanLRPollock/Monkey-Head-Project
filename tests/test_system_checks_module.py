@@ -10,6 +10,8 @@ from __future__ import annotations
 import logging
 from types import SimpleNamespace
 
+import pytest
+
 from hueyos import system_checks
 
 
@@ -162,6 +164,89 @@ def test_check_kernel_policy_accepts_lab_role_for_lab_mode(monkeypatch):
     assert result["production_supported"] is False
     assert result["lab_supported"] is True
     assert result["is_lab_kernel"] is True
+
+
+@pytest.mark.parametrize(
+    ("release", "expected_role"),
+    [
+        ("7.0.0-hueyos-core", "core"),
+        ("7.0.0-hueyos-pulse", "pulse"),
+    ],
+)
+def test_check_kernel_policy_accepts_stable_production_kernel_roles(
+    monkeypatch, release, expected_role
+):
+    monkeypatch.setattr(system_checks.platform, "release", lambda: release)
+
+    result = system_checks.check_kernel_policy()
+
+    assert result["production_supported"] is True
+    assert result["lab_supported"] is True
+    assert result["runtime_allowed"] is True
+    assert result["detected_role"] == expected_role
+    assert result["errors"] == []
+
+
+def test_check_kernel_policy_accepts_rc_lab_kernel(monkeypatch):
+    monkeypatch.setattr(
+        system_checks.platform,
+        "release",
+        lambda: "7.0.0-rc7-hueyos-lab",
+    )
+
+    result = system_checks.check_kernel_policy()
+
+    assert result["production_supported"] is False
+    assert result["lab_supported"] is True
+    assert result["is_release_candidate"] is True
+    assert result["runtime_allowed"] is False
+    assert result["detected_role"] == "lab"
+    assert result["errors"] == []
+
+
+def test_check_kernel_policy_rejects_missing_family_suffix(monkeypatch):
+    monkeypatch.setattr(system_checks.platform, "release", lambda: "7.0.0")
+
+    result = system_checks.check_kernel_policy()
+
+    assert result["production_supported"] is False
+    assert result["lab_supported"] is False
+    assert result["family_role_present"] is False
+    assert "missing the 'hueyos-<role>' family/role suffix" in result["errors"][0]
+
+
+@pytest.mark.parametrize(
+    "release",
+    [
+        "7.0.0-hueyos--core",
+        "7.0.0-hueyos-core$",
+    ],
+)
+def test_check_kernel_policy_rejects_malformed_role_segment(monkeypatch, release):
+    monkeypatch.setattr(system_checks.platform, "release", lambda: release)
+
+    result = system_checks.check_kernel_policy()
+
+    assert result["production_supported"] is False
+    assert result["lab_supported"] is False
+    assert result["role_valid"] is False
+    assert "invalid HueyOS role segment" in result["errors"][0]
+
+
+def test_check_kernel_policy_disallows_rc_build_for_production_mode(monkeypatch):
+    monkeypatch.setattr(
+        system_checks.platform,
+        "release",
+        lambda: "7.0.0-rc7-hueyos-core",
+    )
+
+    result = system_checks.check_kernel_policy()
+
+    assert result["is_release_candidate"] is True
+    assert result["production_supported"] is False
+    assert result["runtime_policy"] == "production"
+    assert result["runtime_allowed"] is False
+    assert result["lab_supported"] is True
 
 
 def test_system_check_collects_expected_results(monkeypatch):
