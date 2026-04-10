@@ -38,16 +38,14 @@ RUN useradd -m dlrp && chown -R dlrp:dlrp /subos-workdir
 USER dlrp
 
 # Set up VNC server
-RUN mkdir /root/.vnc
-RUN echo "dlrp" | vncpasswd -f > /root/.vnc/passwd
-RUN chmod 600 /root/.vnc/passwd
+RUN mkdir -p /home/dlrp/.vnc && chmod 700 /home/dlrp/.vnc
 
 # Set up VNC session startup script
-RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &" > /root/.vnc/xstartup
-RUN chmod +x /root/.vnc/xstartup
+RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &" > /home/dlrp/.vnc/xstartup
+RUN chmod +x /home/dlrp/.vnc/xstartup
 
 # Expose the necessary port(s)
 EXPOSE 5901
 
 # Define the command to run when the container starts
-CMD ["vncserver", "-geometry", "1280x800", "-depth", "24", "-localhost", "no", ":1"]
+CMD ["bash", "-lc", "set -euo pipefail; : \"${VNC_PASSWORD:?VNC_PASSWORD must be set at runtime}\"; printf '%s\\n' \"$VNC_PASSWORD\" | vncpasswd -f > \"$HOME/.vnc/passwd\"; chmod 600 \"$HOME/.vnc/passwd\"; exec vncserver -geometry 1280x800 -depth 24 -localhost yes :1"]
