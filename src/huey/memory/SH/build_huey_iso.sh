@@ -18,30 +18,65 @@ set -euo pipefail
 # wish to change OUTWIN to "/mnt/c/Users/admin/Desktop/${ISO_NAME}".
 
 # --- config ---
-ROLE="${HUEY_ROLE:-core}"
+PROFILE="${HUEY_PROFILE:-${HUEY_ROLE:-core}}"
 KVER="7.0.0"
 LOCALVER="${LOCALVER:-}"
 
-case "${ROLE}" in
-  core|pulse|lab)
+usage() {
+  cat <<'EOF_USAGE'
+Usage: build_huey_iso.sh [--profile <core|pulse>] [--help]
+
+Build a HueyOS ISO using a kernel profile.
+
+Options:
+  -p, --profile   Kernel profile to use (core or pulse).
+  -h, --help      Show this help text.
+EOF_USAGE
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -p|--profile)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing value for $1" >&2
+        usage >&2
+        exit 1
+      fi
+      PROFILE="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+done
+
+case "${PROFILE}" in
+  core|pulse)
     ;;
   *)
-    echo "Unsupported role '${ROLE}'. Use core, pulse, or lab." >&2
+    echo "Unsupported profile '${PROFILE}'. Use core or pulse." >&2
     exit 1
     ;;
 esac
 
 if [[ -z "${LOCALVER}" ]]; then
-  LOCALVER="-hueyos-${ROLE}"
+  LOCALVER="-hueyos-${PROFILE}"
 fi
 
-ISO_NAME="${ISO_NAME:-huey-${ROLE}-v1.0-amd64}"
+ISO_NAME="${ISO_NAME:-huey-${PROFILE}-v1.0-amd64}"
 # Output directory set to shared folder rather than Windows desktop.
 OUTWIN="${OUTWIN:-/home/oai/share/${ISO_NAME}}"
 WORK="$HOME/huey-iso-build"
 JOBS="$(nproc)"
 
-echo "Role: ${ROLE}"
+echo "Profile: ${PROFILE}"
 echo "Kernel local version: ${LOCALVER}"
 echo "ISO name: ${ISO_NAME}"
 echo "Using output directory: $OUTWIN"
@@ -76,9 +111,9 @@ if [[ ! -x "${CONFIG_ASSEMBLER}" ]]; then
   exit 1
 fi
 
-# generate a repo-managed role-aware kernel config:
-#   kernel/base.config + kernel/<role>.config -> .config
-"${CONFIG_ASSEMBLER}" "${ROLE}" .config "${KERNEL_CONFIG_DIR}"
+# generate a repo-managed kernel profile config:
+#   kernel/base.config + kernel/<profile>.config -> .config
+"${CONFIG_ASSEMBLER}" "${PROFILE}" .config "${KERNEL_CONFIG_DIR}"
 make olddefconfig
 make -j"$JOBS" bindeb-pkg LOCALVERSION="${LOCALVER}" KDEB_PKGVERSION=1
 cd ..
@@ -128,7 +163,7 @@ mkdir -p "${INC}"/{boot,dists,doc,EFI,firmware,huey,install,install.amd,iso,isol
 # minimal README on the ISO root
 cat > "${INC}/README.md" <<EOF_README
 # Huey ISO
-UEFI-only, amd64. Kernel 7.0.x${LOCALVER}. Role: ${ROLE}. Custom Debian Forky live + installer image for Monkey-Head-Project.
+UEFI-only, amd64. Kernel 7.0.x${LOCALVER}. Profile: ${PROFILE}. Custom Debian Forky live + installer image for Monkey-Head-Project.
 EOF_README
 
 # build
