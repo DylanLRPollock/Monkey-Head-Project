@@ -10,11 +10,10 @@ from __future__ import annotations
 import logging
 import os
 import platform
+import re
 import shutil
 import sys
 from typing import Dict, Tuple
-
-from packaging.version import InvalidVersion, Version
 
 try:  # pragma: no cover - optional dependency on Linux only
     import distro  # type: ignore
@@ -26,7 +25,8 @@ logger = logging.getLogger(__name__)
 
 SUPPORTED_DISTRO_ID = "debian"
 SUPPORTED_DISTRO_CODENAME = "forky"
-MIN_KERNEL_VERSION = Version("6.18.2")
+SUPPORTED_KERNEL_FAMILY = "hueyos"
+KERNEL_ROLE_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 MIN_PYTHON_VERSION = (3, 13)
 MAX_PYTHON_VERSION = (3, 15)
 REQUIRED_TOOLS: Tuple[str, ...] = ("git", "python3")
@@ -136,33 +136,65 @@ def check_os_support() -> bool:
 
 
 def _extract_kernel_version(raw_release: str) -> str:
-    """Normalise the kernel release string for comparison."""
+    """Return the numeric kernel version prefix from a release string."""
 
     version = raw_release.split("-")[0]
     version = version.split("+")[0]
     return version.strip()
 
 
-def _check_kernel_version() -> bool:
-    """Return ``True`` when the running kernel meets the minimum requirement."""
+def _extract_kernel_role(raw_release: str) -> str:
+    """Extract the HueyOS kernel role segment from a release string."""
+
+    lowered = raw_release.strip().lower()
+    marker = f"{SUPPORTED_KERNEL_FAMILY}-"
+    index = lowered.find(marker)
+    if index < 0:
+        return ""
+
+    role_start = index + len(marker)
+    remainder = lowered[role_start:]
+    if not remainder:
+        return ""
+
+    role = re.split(r"[+._]", remainder, maxsplit=1)[0]
+    return role.strip()
+
+
+def _check_kernel_naming() -> bool:
+    """Return ``True`` when the running kernel follows HueyOS family/role naming."""
 
     release = platform.release()
     version_str = _extract_kernel_version(release)
-    try:
-        version = Version(version_str)
-    except InvalidVersion:
+    if not version_str:
         logger.warning("Unable to parse kernel version from release '%s'", release)
         return False
 
-    if version < MIN_KERNEL_VERSION:
+    lowered = release.strip().lower()
+    if f"{SUPPORTED_KERNEL_FAMILY}-" not in lowered:
         logger.warning(
-            "Kernel version %s is below the required minimum of %s.",
-            version,
-            MIN_KERNEL_VERSION,
+            "Kernel release '%s' is missing the '%s-<role>' family/role suffix.",
+            release,
+            SUPPORTED_KERNEL_FAMILY,
+        )
+        return False
+
+    role = _extract_kernel_role(lowered)
+    if not role or not KERNEL_ROLE_PATTERN.match(role):
+        logger.warning(
+            "Kernel release '%s' has an invalid HueyOS role segment '%s'.",
+            release,
+            role or "missing",
         )
         return False
 
     return True
+
+
+def _check_kernel_version() -> bool:
+    """Compatibility wrapper for legacy callers expecting this function name."""
+
+    return _check_kernel_naming()
 
 
 def check_python_version() -> bool:
