@@ -32,7 +32,38 @@ PRODUCTION_KERNEL_ROLES = frozenset({"core", "pulse"})
 DEFAULT_RUNTIME_POLICY = "production"
 MIN_PYTHON_VERSION = (3, 13)
 MAX_PYTHON_VERSION = (3, 15)
-REQUIRED_TOOLS: Tuple[str, ...] = ("git", "python3")
+BASE_REQUIRED_TOOLS: Tuple[str, ...] = (
+    "git",
+    "python3",
+    "bash",
+    "systemctl",
+    "journalctl",
+    "modprobe",
+    "udevadm",
+    "ip",
+    "mount",
+)
+
+ROLE_REQUIRED_TOOLS: Dict[str, Tuple[str, ...]] = {
+    "core": (
+        "lsblk",
+        "blkid",
+        "findmnt",
+        "partprobe",
+        "mdadm",
+        "cryptsetup",
+        "lvdisplay",
+    ),
+    "pulse": (
+        "lsblk",
+        "blkid",
+        "findmnt",
+        "tc",
+        "ethtool",
+        "nmcli",
+        "iostat",
+    ),
+}
 
 __all__ = [
     "logger",
@@ -329,11 +360,23 @@ def check_python_version() -> bool:
     return supported
 
 
-def _check_required_tools() -> Dict[str, bool]:
+def _required_tools_for_role(role: str) -> Tuple[str, ...]:
+    """Return required executables for the detected kernel role."""
+
+    normalized_role = role.strip().lower()
+    role_tools = ROLE_REQUIRED_TOOLS.get(normalized_role, ())
+    ordered_tools: list[str] = []
+    for tool in (*BASE_REQUIRED_TOOLS, *role_tools):
+        if tool not in ordered_tools:
+            ordered_tools.append(tool)
+    return tuple(ordered_tools)
+
+
+def _check_required_tools(role: str = "") -> Dict[str, bool]:
     """Return a mapping of required tool names to their availability."""
 
     results: Dict[str, bool] = {}
-    for tool in REQUIRED_TOOLS:
+    for tool in _required_tools_for_role(role):
         available = shutil.which(tool) is not None
         if not available:
             logger.warning("Required executable '%s' not found on PATH", tool)
@@ -353,7 +396,7 @@ def system_check() -> Dict[str, Any]:
     results["kernel_policy"] = kernel_policy
     results["python_supported"] = check_python_version()
 
-    tool_results = _check_required_tools()
+    tool_results = _check_required_tools(str(kernel_policy.get("detected_role", "")))
     for name, status in tool_results.items():
         results[f"{name}_available"] = status
     results["tools_available"] = all(tool_results.values()) if tool_results else True
