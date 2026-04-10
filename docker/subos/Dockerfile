@@ -36,18 +36,28 @@ COPY . .
 # Correcting user creation and usage
 RUN useradd -m dlrp && chown -R dlrp:dlrp /subos-workdir
 USER dlrp
+ENV HOME=/home/dlrp
 
 # Set up VNC server
-RUN mkdir /root/.vnc
-RUN echo "dlrp" | vncpasswd -f > /root/.vnc/passwd
-RUN chmod 600 /root/.vnc/passwd
+RUN mkdir -p "$HOME/.vnc"
 
 # Set up VNC session startup script
-RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &" > /root/.vnc/xstartup
-RUN chmod +x /root/.vnc/xstartup
+RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &" > "$HOME/.vnc/xstartup"
+RUN chmod +x "$HOME/.vnc/xstartup"
+
+# Start VNC with a runtime-provided password and localhost-only binding
+RUN printf '%s\n' '#!/bin/bash' \
+    'set -euo pipefail' \
+    ': "${VNC_PASSWORD:?Set VNC_PASSWORD at runtime}"' \
+    'mkdir -p "$HOME/.vnc"' \
+    'printf "%s" "$VNC_PASSWORD" | vncpasswd -f > "$HOME/.vnc/passwd"' \
+    'chmod 600 "$HOME/.vnc/passwd"' \
+    'exec vncserver -geometry 1280x800 -depth 24 -localhost yes :1' \
+    > /usr/local/bin/start-vnc.sh \
+ && chmod +x /usr/local/bin/start-vnc.sh
 
 # Expose the necessary port(s)
 EXPOSE 5901
 
 # Define the command to run when the container starts
-CMD ["vncserver", "-geometry", "1280x800", "-depth", "24", "-localhost", "no", ":1"]
+CMD ["/usr/local/bin/start-vnc.sh"]
