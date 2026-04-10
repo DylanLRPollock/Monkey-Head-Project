@@ -71,4 +71,4 @@ RUN chmod +x "$HOME/.vnc/xstartup"
 EXPOSE 5901
 
 # Define the command to run when the container starts
-CMD ["/usr/local/bin/start-vnc.sh", "-geometry", "1280x800", "-depth", "24", "-localhost", "no", ":1"]
+CMD ["/usr/local/bin/start-vnc.sh", "-geometry", "1280x800", "-depth", "24", "-localhost", "yes", ":1"]
