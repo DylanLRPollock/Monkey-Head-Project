@@ -69,6 +69,26 @@ def test_check_python_version_accepts_primary_target(monkeypatch, caplog):
     assert "Python 3.13" not in caplog.text
 
 
+def test_check_kernel_naming_accepts_hueyos_family_role(monkeypatch, caplog):
+    monkeypatch.setattr(system_checks.platform, "release", lambda: "6.18.2-hueyos-core")
+
+    with caplog.at_level(logging.WARNING):
+        supported = system_checks._check_kernel_naming()
+
+    assert supported is True
+    assert "Kernel release" not in caplog.text
+
+
+def test_check_kernel_naming_rejects_non_hueyos_suffix(monkeypatch, caplog):
+    monkeypatch.setattr(system_checks.platform, "release", lambda: "6.18.2-generic")
+
+    with caplog.at_level(logging.WARNING):
+        supported = system_checks._check_kernel_naming()
+
+    assert supported is False
+    assert "family/role suffix" in caplog.text
+
+
 def test_system_check_collects_expected_results(monkeypatch):
     def fake_os_check():
         return None
