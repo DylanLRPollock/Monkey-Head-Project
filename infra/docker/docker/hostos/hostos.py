@@ -49,7 +49,7 @@ REQUIRED_APT = [
     "curl",
     "ufw",
 ]
-SUPPORTED_OS = ["debian trixie", "debian testing", "debian bookworm", "debian stable"]
+SUPPORTED_OS = ["debian forky", "debian testing", "debian bookworm", "debian stable"]
 DEFAULT_VNC_PORT = 5901
 
 

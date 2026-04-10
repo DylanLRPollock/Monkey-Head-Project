@@ -168,7 +168,7 @@ function update_system_packages() {
         "$project_root/huey/memory/PY/update_sources_to_testing.py"
         "$project_root/huey/memory/PY/update_sources_to_codename.py"
         "$project_root/huey/memory/PY/update_sources_to_debian.py"
-        "$project_root/huey/memory/PY/update_sources_to_trixie.py"
+        "$project_root/huey/memory/PY/update_sources_to_trixie.py"  # migration-only fallback for legacy nodes
     )
 
     for c in "${candidates[@]}"; do

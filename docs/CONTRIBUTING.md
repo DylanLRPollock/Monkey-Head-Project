@@ -155,7 +155,7 @@ test/<area>-<summary>
 Examples:
 - `feat/api-job-queue`
 - `fix/io-timeout`
-- `docs/setup-trixie`
+- `docs/setup-forky`
 
 ### Conventional Commits
 Prefix messages with a type and optional scope. Examples:

@@ -13,7 +13,7 @@ set -euo pipefail
 # Overseen By:   Dylan L.R. Pollock
 # Updated:   06.11.2025
 # ==================================================
-# Huey.sh - Prepare a Debian Trixie environment and
+# Huey.sh - Prepare a Debian Forky environment and
 # auto-install the Monkey Head Project for running Huey
 
 set -e
@@ -30,9 +30,9 @@ function ensure_root() {
 }
 
 function update_system() {
-    local codename="${DEBIAN_CODENAME:-trixie}"
+    local codename="${DEBIAN_CODENAME:-forky}"
     echo "Updating system to Debian ${codename}..."
-    python3 "$(dirname "$0")/scripts/update_sources_to_trixie.py" "$codename" || true
+    python3 "$(dirname "$0")/scripts/update_sources_to_forky.py" "$codename" || true
     apt-get update -y
     apt-get upgrade -y
 }

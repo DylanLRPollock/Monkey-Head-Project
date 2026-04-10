@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # HostOS toolbox image
-FROM debian:trixie-slim
+FROM debian:forky-slim
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \

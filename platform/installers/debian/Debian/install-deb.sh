@@ -240,7 +240,7 @@ function update_sources() {
         "$PROJECT_ROOT/huey/memory/PY/update_sources_to_testing.py"
         "$PROJECT_ROOT/huey/memory/PY/update_sources_to_codename.py"
         "$PROJECT_ROOT/huey/memory/PY/update_sources_to_debian.py"
-        "$PROJECT_ROOT/huey/memory/PY/update_sources_to_trixie.py"
+        "$PROJECT_ROOT/huey/memory/PY/update_sources_to_trixie.py"  # migration-only fallback for legacy nodes
     )
 
     for candidate in "${candidates[@]}"; do
