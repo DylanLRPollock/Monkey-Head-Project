@@ -68,15 +68,17 @@ wget -q "https://cdn.kernel.org/pub/linux/kernel/${KSERIES_PATH}/${KERNEL_TARBAL
 tar -xf "${KERNEL_TARBALL}"
 cd linux-${KVER}
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
-CONFIG_ASSEMBLER="${REPO_ROOT}/kernel/assemble_kernel_config.sh"
+CONFIG_ASSEMBLER="${REPO_ROOT}/scripts/kernel/assemble_config.sh"
+KERNEL_CONFIG_DIR="${REPO_ROOT}/kernel"
 
 if [[ ! -x "${CONFIG_ASSEMBLER}" ]]; then
   echo "Missing config assembly script: ${CONFIG_ASSEMBLER}" >&2
   exit 1
 fi
 
-# generate a role-aware kernel config instead of inheriting host settings
-"${CONFIG_ASSEMBLER}" "${ROLE}" .config
+# generate a repo-managed role-aware kernel config:
+#   kernel/base.config + kernel/<role>.config -> .config
+"${CONFIG_ASSEMBLER}" "${ROLE}" .config "${KERNEL_CONFIG_DIR}"
 make olddefconfig
 make -j"$JOBS" bindeb-pkg LOCALVERSION="${LOCALVER}" KDEB_PKGVERSION=1
 cd ..
