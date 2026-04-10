@@ -44,13 +44,8 @@ cd "$WORK"
 wget -q https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${KVER}.tar.xz
 tar -xf linux-${KVER}.tar.xz
 cd linux-${KVER}
-# seed config from running kernel if available
-if [ -f "/boot/config-$(uname -r)" ]; then
-  cp "/boot/config-$(uname -r)" .config
-  yes "" | make olddefconfig
-else
-  make defconfig
-fi
+# generate a fresh baseline kernel config instead of inheriting host settings
+make defconfig
 make -j"$JOBS" bindeb-pkg LOCALVERSION="${LOCALVER}" KDEB_PKGVERSION=1
 cd ..
 
