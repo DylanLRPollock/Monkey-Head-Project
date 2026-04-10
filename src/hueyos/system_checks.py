@@ -29,6 +29,7 @@ SUPPORTED_KERNEL_FAMILY = "hueyos"
 KERNEL_ROLE_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 LAB_KERNEL_ROLES = frozenset({"lab", "test"})
 PRODUCTION_KERNEL_ROLES = frozenset({"core", "pulse"})
+DEFAULT_RUNTIME_POLICY = "production"
 MIN_PYTHON_VERSION = (3, 13)
 MAX_PYTHON_VERSION = (3, 15)
 REQUIRED_TOOLS: Tuple[str, ...] = ("git", "python3")
@@ -164,6 +165,20 @@ def _extract_kernel_role(raw_release: str) -> str:
     return role.strip()
 
 
+def _parse_numeric_kernel_prefix(version_str: str) -> Tuple[int, ...]:
+    """Convert a dotted kernel version prefix into a numeric tuple."""
+
+    if not version_str:
+        return ()
+
+    parts = []
+    for segment in version_str.split("."):
+        if not segment.isdigit():
+            break
+        parts.append(int(segment))
+    return tuple(parts)
+
+
 def _is_release_candidate_kernel(raw_release: str) -> bool:
     """Return ``True`` when the kernel release includes an ``-rcN`` segment."""
 
@@ -187,17 +202,24 @@ def check_kernel_policy() -> Dict[str, Any]:
     release = platform.release()
     version_str = _extract_kernel_version(release)
     lowered = release.strip().lower()
+    runtime_policy = DEFAULT_RUNTIME_POLICY
 
     result: Dict[str, Any] = {
         "release": release,
         "version": version_str,
+        "version_prefix": _parse_numeric_kernel_prefix(version_str),
         "family": SUPPORTED_KERNEL_FAMILY,
+        "detected_family": "",
         "family_role_present": f"{SUPPORTED_KERNEL_FAMILY}-" in lowered,
+        "detected_role": "",
         "role": "",
         "role_valid": False,
+        "is_lab_kernel": False,
         "is_release_candidate": False,
         "production_supported": False,
         "lab_supported": False,
+        "runtime_policy": runtime_policy,
+        "runtime_allowed": False,
         "errors": [],
     }
 
@@ -217,6 +239,8 @@ def check_kernel_policy() -> Dict[str, Any]:
         return result
 
     role = _extract_kernel_role(lowered)
+    result["detected_family"] = SUPPORTED_KERNEL_FAMILY
+    result["detected_role"] = role
     result["role"] = role
     role_valid = bool(role and KERNEL_ROLE_PATTERN.match(role))
     result["role_valid"] = role_valid
@@ -234,6 +258,7 @@ def check_kernel_policy() -> Dict[str, Any]:
     result["is_release_candidate"] = is_rc
     is_production_role = role in PRODUCTION_KERNEL_ROLES
     is_lab_role = role in LAB_KERNEL_ROLES
+    result["is_lab_kernel"] = is_lab_role
 
     production_supported = is_production_role and not is_rc
     lab_supported = is_production_role or is_lab_role
@@ -242,6 +267,7 @@ def check_kernel_policy() -> Dict[str, Any]:
 
     result["production_supported"] = production_supported
     result["lab_supported"] = lab_supported
+    result["runtime_allowed"] = production_supported
 
     if is_rc and not lab_supported:
         message = (

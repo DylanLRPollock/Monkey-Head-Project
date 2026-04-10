@@ -128,6 +128,12 @@ def test_check_kernel_policy_supports_rc_in_lab_mode(monkeypatch):
     assert result["production_supported"] is False
     assert result["lab_supported"] is True
     assert result["is_release_candidate"] is True
+    assert result["detected_family"] == system_checks.SUPPORTED_KERNEL_FAMILY
+    assert result["detected_role"] == "core"
+    assert result["version_prefix"] == (7, 0, 0)
+    assert result["is_lab_kernel"] is False
+    assert result["runtime_policy"] == system_checks.DEFAULT_RUNTIME_POLICY
+    assert result["runtime_allowed"] is False
 
 
 def test_check_kernel_policy_accepts_pulse_in_both_modes(monkeypatch):
@@ -141,6 +147,7 @@ def test_check_kernel_policy_accepts_pulse_in_both_modes(monkeypatch):
 
     assert result["production_supported"] is True
     assert result["lab_supported"] is True
+    assert result["runtime_allowed"] is True
 
 
 def test_check_kernel_policy_accepts_lab_role_for_lab_mode(monkeypatch):
@@ -154,6 +161,7 @@ def test_check_kernel_policy_accepts_lab_role_for_lab_mode(monkeypatch):
 
     assert result["production_supported"] is False
     assert result["lab_supported"] is True
+    assert result["is_lab_kernel"] is True
 
 
 def test_system_check_collects_expected_results(monkeypatch):
