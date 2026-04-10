@@ -13,7 +13,7 @@ import platform
 import re
 import shutil
 import sys
-from typing import Dict, Tuple
+from typing import Any, Dict, Tuple
 
 try:  # pragma: no cover - optional dependency on Linux only
     import distro  # type: ignore
@@ -28,6 +28,7 @@ SUPPORTED_DISTRO_CODENAME = "forky"
 SUPPORTED_KERNEL_FAMILY = "hueyos"
 KERNEL_ROLE_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 LAB_KERNEL_ROLES = frozenset({"lab", "test"})
+PRODUCTION_KERNEL_ROLES = frozenset({"core", "pulse"})
 MIN_PYTHON_VERSION = (3, 13)
 MAX_PYTHON_VERSION = (3, 15)
 REQUIRED_TOOLS: Tuple[str, ...] = ("git", "python3")
@@ -39,6 +40,7 @@ __all__ = [
     "check_error",
     "check_os_support",
     "check_python_version",
+    "check_kernel_policy",
     "system_check",
     "platform",
     "shutil",
@@ -173,43 +175,85 @@ def _is_release_candidate_kernel(raw_release: str) -> bool:
 
 
 def _check_kernel_naming() -> bool:
-    """Return ``True`` when the running kernel follows HueyOS family/role naming."""
+    """Return ``True`` when the running kernel satisfies production policy."""
+
+    kernel_result = check_kernel_policy()
+    return bool(kernel_result["production_supported"])
+
+
+def check_kernel_policy() -> Dict[str, Any]:
+    """Evaluate kernel naming and policy support for production and lab modes."""
 
     release = platform.release()
     version_str = _extract_kernel_version(release)
-    if not version_str:
-        logger.warning("Unable to parse kernel version from release '%s'", release)
-        return False
-
     lowered = release.strip().lower()
-    if f"{SUPPORTED_KERNEL_FAMILY}-" not in lowered:
-        logger.warning(
-            "Kernel release '%s' is missing the '%s-<role>' family/role suffix.",
-            release,
-            SUPPORTED_KERNEL_FAMILY,
+
+    result: Dict[str, Any] = {
+        "release": release,
+        "version": version_str,
+        "family": SUPPORTED_KERNEL_FAMILY,
+        "family_role_present": f"{SUPPORTED_KERNEL_FAMILY}-" in lowered,
+        "role": "",
+        "role_valid": False,
+        "is_release_candidate": False,
+        "production_supported": False,
+        "lab_supported": False,
+        "errors": [],
+    }
+
+    if not version_str:
+        message = f"Unable to parse kernel version from release '{release}'"
+        logger.warning(message)
+        result["errors"].append(message)
+        return result
+
+    if not result["family_role_present"]:
+        message = (
+            f"Kernel release '{release}' is missing the "
+            f"'{SUPPORTED_KERNEL_FAMILY}-<role>' family/role suffix."
         )
-        return False
+        logger.warning(message)
+        result["errors"].append(message)
+        return result
 
     role = _extract_kernel_role(lowered)
-    if not role or not KERNEL_ROLE_PATTERN.match(role):
-        logger.warning(
-            "Kernel release '%s' has an invalid HueyOS role segment '%s'.",
-            release,
-            role or "missing",
+    result["role"] = role
+    role_valid = bool(role and KERNEL_ROLE_PATTERN.match(role))
+    result["role_valid"] = role_valid
+
+    if not role_valid:
+        message = (
+            f"Kernel release '{release}' has an invalid HueyOS role segment "
+            f"'{role or 'missing'}'."
         )
-        return False
+        logger.warning(message)
+        result["errors"].append(message)
+        return result
 
     is_rc = _is_release_candidate_kernel(lowered)
-    if is_rc and role not in LAB_KERNEL_ROLES:
-        logger.warning(
-            "Kernel release '%s' uses an rc kernel, which is only supported for %s roles.",
-            release,
-            ", ".join(sorted(LAB_KERNEL_ROLES)),
-        )
-        return False
+    result["is_release_candidate"] = is_rc
+    is_production_role = role in PRODUCTION_KERNEL_ROLES
+    is_lab_role = role in LAB_KERNEL_ROLES
 
-    if role in LAB_KERNEL_ROLES:
-        kernel_type = "release-candidate" if is_rc else "lab/stable"
+    production_supported = is_production_role and not is_rc
+    lab_supported = is_production_role or is_lab_role
+    if is_rc:
+        lab_supported = lab_supported or is_production_role
+
+    result["production_supported"] = production_supported
+    result["lab_supported"] = lab_supported
+
+    if is_rc and not lab_supported:
+        message = (
+            f"Kernel release '{release}' uses an rc kernel outside accepted lab roles "
+            f"({', '.join(sorted(LAB_KERNEL_ROLES))}) and production roles "
+            f"({', '.join(sorted(PRODUCTION_KERNEL_ROLES))})."
+        )
+        logger.warning(message)
+        result["errors"].append(message)
+
+    if is_lab_role:
+        kernel_type = "release-candidate" if is_rc else "stable/lab"
         logger.info(
             "Detected explicit HueyOS %s kernel role '%s' (%s).",
             SUPPORTED_KERNEL_FAMILY,
@@ -217,7 +261,10 @@ def _check_kernel_naming() -> bool:
             kernel_type,
         )
 
-    return True
+    if is_production_role and not is_rc:
+        logger.info("Detected production-ready HueyOS kernel role '%s'.", role)
+
+    return result
 
 
 def _check_kernel_version() -> bool:
@@ -268,14 +315,16 @@ def _check_required_tools() -> Dict[str, bool]:
     return results
 
 
-def system_check() -> Dict[str, bool]:
+def system_check() -> Dict[str, Any]:
     """Run the suite of system checks and return their boolean results."""
 
     logger.info("Performing system checks...")
-    results: Dict[str, bool] = {}
+    results: Dict[str, Any] = {}
 
     results["os_supported"] = check_os_support()
-    results["kernel_supported"] = _check_kernel_version()
+    kernel_policy = check_kernel_policy()
+    results["kernel_supported"] = bool(kernel_policy["production_supported"])
+    results["kernel_policy"] = kernel_policy
     results["python_supported"] = check_python_version()
 
     tool_results = _check_required_tools()
