@@ -1,6 +1,9 @@
 # 2025-10-31 Changeover — Forky Standard • Kernel 7.0 Active Line • 7.0.0-rc7 Lab Gateway
 
 ## Summary
+> **Status:** Active release guidance for the 7.0 line.
+> Any 6.18.2 mention in this file is historical context only.
+
 This changeover note supersedes earlier 6.18.2 migration-era framing.
 
 As of this release line:

@@ -13,6 +13,7 @@
 
 > **Current state:** Hardware enablement is standardized on the **Forky + 7.0 kernel family** line.  
 > The former **6.16.12 → 6.18.2 migration-era line** is now historical and is no longer the deployment target for active systems.
+> Any 6.18.2 references in this guide are legacy context markers only, not implementation targets.
 
 ## Kernel Model and Role Split
 
