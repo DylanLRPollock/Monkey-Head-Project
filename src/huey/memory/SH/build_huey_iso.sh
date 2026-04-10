@@ -7,7 +7,9 @@
 set -euo pipefail
 
 # This script builds a UEFI-only amd64 ISO using Debian live-build
-# and a custom Linux kernel version 7.0.x-hueyos-v1 for Debian Forky.
+# and a custom Linux kernel version 7.0.x with role-aware local version
+# naming (for example: -hueyos-core, -hueyos-pulse, -hueyos-lab)
+# for Debian Forky.
 # Because this container environment
 # doesn't provide a Windows filesystem under /mnt/c, the output
 # directory (OUTWIN) is pointed at the shared folder so that the ISO
@@ -16,14 +18,32 @@ set -euo pipefail
 # wish to change OUTWIN to "/mnt/c/Users/admin/Desktop/${ISO_NAME}".
 
 # --- config ---
-ISO_NAME="huey-v1.0-amd64"
+ROLE="${HUEY_ROLE:-core}"
 KVER="7.0.0"
-LOCALVER="-hueyos-v1"
+LOCALVER="${LOCALVER:-}"
+
+case "${ROLE}" in
+  core|pulse|lab)
+    ;;
+  *)
+    echo "Unsupported role '${ROLE}'. Use core, pulse, or lab." >&2
+    exit 1
+    ;;
+esac
+
+if [[ -z "${LOCALVER}" ]]; then
+  LOCALVER="-hueyos-${ROLE}"
+fi
+
+ISO_NAME="${ISO_NAME:-huey-${ROLE}-v1.0-amd64}"
 # Output directory set to shared folder rather than Windows desktop.
 OUTWIN="${OUTWIN:-/home/oai/share/${ISO_NAME}}"
 WORK="$HOME/huey-iso-build"
 JOBS="$(nproc)"
 
+echo "Role: ${ROLE}"
+echo "Kernel local version: ${LOCALVER}"
+echo "ISO name: ${ISO_NAME}"
 echo "Using output directory: $OUTWIN"
 
 # --- prerequisites ---
@@ -47,8 +67,17 @@ KERNEL_TARBALL="linux-${KVER}.tar.xz"
 wget -q "https://cdn.kernel.org/pub/linux/kernel/${KSERIES_PATH}/${KERNEL_TARBALL}"
 tar -xf "${KERNEL_TARBALL}"
 cd linux-${KVER}
-# generate a fresh baseline kernel config instead of inheriting host settings
-make defconfig
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
+CONFIG_ASSEMBLER="${REPO_ROOT}/kernel/assemble_kernel_config.sh"
+
+if [[ ! -x "${CONFIG_ASSEMBLER}" ]]; then
+  echo "Missing config assembly script: ${CONFIG_ASSEMBLER}" >&2
+  exit 1
+fi
+
+# generate a role-aware kernel config instead of inheriting host settings
+"${CONFIG_ASSEMBLER}" "${ROLE}" .config
+make olddefconfig
 make -j"$JOBS" bindeb-pkg LOCALVERSION="${LOCALVER}" KDEB_PKGVERSION=1
 cd ..
 
@@ -95,9 +124,9 @@ chmod +x config/hooks/normal/90-grub-default.chroot
 INC="config/includes.binary"
 mkdir -p "${INC}"/{boot,dists,doc,EFI,firmware,huey,install,install.amd,iso,isolinux,live,monkey-head-project,pics,pool,secrets}
 # minimal README on the ISO root
-cat > "${INC}/README.md" <<'EOF_README'
+cat > "${INC}/README.md" <<EOF_README
 # Huey ISO
-UEFI-only, amd64. Kernel 7.0.x-hueyos-v1. Custom Debian Forky live + installer image for Monkey-Head-Project.
+UEFI-only, amd64. Kernel 7.0.x${LOCALVER}. Role: ${ROLE}. Custom Debian Forky live + installer image for Monkey-Head-Project.
 EOF_README
 
 # build
@@ -115,8 +144,8 @@ sudo cp -f "$ISO_BUILT" "${OUTWIN}/${ISO_NAME}.iso"
 sudo xorriso -osirrox on -indev "$ISO_BUILT" -extract / "$OUTWIN"
 
 # also place kernel debs at the root with the exact names you want
-sudo cp -f "../${HDR_DEB}" "${OUTWIN}/linux-headers-${KVER}_${KVER}-1_amd64.deb"
-sudo cp -f "../${IMG_DEB}" "${OUTWIN}/linux-image-${KVER}_${KVER}-1_amd64.deb"
+sudo cp -f "../${HDR_DEB}" "${OUTWIN}/linux-headers-${KVER}${LOCALVER}_${KVER}-1_amd64.deb"
+sudo cp -f "../${IMG_DEB}" "${OUTWIN}/linux-image-${KVER}${LOCALVER}_${KVER}-1_amd64.deb"
 sudo cp -f "../${LIBC_DEB}" "${OUTWIN}/linux-libc-dev_${KVER}-1_amd64.deb"
 
 echo "Wrote: ${OUTWIN}"
