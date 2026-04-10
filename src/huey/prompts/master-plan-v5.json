@@ -103,7 +103,7 @@
   },
   "os_stack": {
     "base_distribution": {
-      "primary": "Debian 13 (Trixie)",
+      "primary": "Debian 14 (Forky)",
       "testing": "Debian 14 (Forky) on selected nodes",
       "uefi_only": true
     },
@@ -152,7 +152,7 @@
       {
         "name": "Huey-Portal",
         "role": "Universal display and SSH terminal; Dylan\u2019s daily driver",
-        "hardware": "iMac 5K 2017 running Debian Trixie"
+        "hardware": "iMac 5K 2017 running Debian Forky"
       },
       {
         "name": "Huey-Hub",

@@ -1,5 +1,5 @@
 # Use Debian slim base image; release can be overridden at build time
-ARG DEBIAN_RELEASE=trixie
+ARG DEBIAN_RELEASE=forky
 FROM debian:${DEBIAN_RELEASE}-slim
 
 # Define maintainer or author of the Dockerfile

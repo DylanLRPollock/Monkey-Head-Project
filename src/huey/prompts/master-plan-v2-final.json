@@ -80,7 +80,7 @@
     "rules": "Only the system inside the shell is Huey proper"
   },
   "os_stack": {
-    "base": "Debian 13 (Trixie preferred, Forky for testing)",
+    "base": "Debian 14 (Forky preferred, Trixie migration-only)",
     "kernels": ["6.18.2-hueyos-v1", "6.18.2+hueyos-amd64"],
     "orchestrator": "PyGPT-net",
     "llm_server": "Ollama",

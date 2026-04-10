@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # NanoOS image (lightweight worker)
-FROM debian:trixie-slim
+FROM debian:forky-slim
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \

@@ -1,5 +1,5 @@
-# Base: Python 3.12 on Debian Trixie (good wheel coverage / stability)
-FROM python:3.12-trixie
+# Base: Python 3.12 on Debian Forky (good wheel coverage / stability)
+FROM python:3.12-forky
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \

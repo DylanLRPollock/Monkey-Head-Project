@@ -37,7 +37,7 @@ services:
       args:
         PYTHON_VERSION: "3.13.5"
         PYTHON_NEXT_VERSION: "3.14.0"
-        DEBIAN_VERSION: "trixie"
+        DEBIAN_VERSION: "forky"
     working_dir: /workspace
     env_file: [.env]
     environment:
@@ -71,7 +71,7 @@ services:
 
   debian-tools:
     <<: *service_defaults
-    image: debian:trixie
+    image: debian:forky
     profiles: ["tools"]
     command: ["sleep","infinity"]
     working_dir: /workspace

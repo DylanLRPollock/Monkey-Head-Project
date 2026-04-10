@@ -801,7 +801,7 @@
       "notes": [
         "Security patches should apply automatically at high priority under Debian policy.",
         "Non-security software, code, or AI/model updates should occur on off-cycles / maintenance windows rather than ad hoc live mutation.",
-        "The active Linux baseline is Debian 14 Forky, with practical testing overlap into Trixie and Sid where needed.",
+        "The active Linux baseline is Debian 14 Forky, with practical migration overlap into Trixie (legacy only) and Sid where needed.",
         "V25 no longer treats any one auxiliary board OS as canonical; if a support computer is used inside HueyPulse, stability still outranks ideology."
       ]
     },

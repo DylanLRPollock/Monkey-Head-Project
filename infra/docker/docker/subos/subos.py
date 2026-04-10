@@ -46,7 +46,7 @@ REQUIRED_APT = [
     "python3-venv",
     "curl",
 ]
-SUPPORTED_OS = ["debian trixie", "debian testing", "debian bookworm", "debian stable"]
+SUPPORTED_OS = ["debian forky", "debian testing", "debian bookworm", "debian stable"]
 DEFAULT_SERVICE_PORT = 8080
 
 

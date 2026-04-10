@@ -2,7 +2,7 @@
 # Monkey Head Project
 # By: Dylan L.R. Pollock
 # www.dlrp.ca
-# MIGRATION-ONLY: historical helper retained for legacy Debian 13 Trixie nodes.
+# HueyOS: Update Sources To Forky module (huey/memory/PY)
 
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
@@ -12,11 +12,11 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated:   06.09.2025
 # ==================================================
-"""MIGRATION-ONLY (historical): update /etc/apt/sources.list to a Debian release.
+"""Utility to update /etc/apt/sources.list to a specified Debian release.
 
-This legacy script defaults to ``trixie`` for old nodes. Active installs should
-use ``update_sources_to_forky.py`` instead. A different release codename may
-be supplied as the first command line argument for migration work.
+By default the script switches all repository entries to ``forky`` but a
+different release codename (e.g. ``testing``) may be supplied as the first
+command line argument.
 """
 
 import os
@@ -27,7 +27,7 @@ import sys
 SOURCE_FILE = "/etc/apt/sources.list"
 BACKUP_FILE = SOURCE_FILE + ".bak"
 
-DEFAULT_RELEASE = "trixie"
+DEFAULT_RELEASE = "forky"
 
 APT_LINE_RE = re.compile(r"^(\s*deb(?:-src)?(?:\s+\[.*?\])?\s+\S+\s+)(\S+)(.*)$")
 
