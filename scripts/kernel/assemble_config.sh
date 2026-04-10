@@ -6,6 +6,7 @@ usage() {
 Usage: scripts/kernel/assemble_config.sh <role: core|pulse|lab> <output-config> [kernel-config-dir]
 
 Build a kernel .config by layering kernel/base.config with a role profile.
+Supports role fragments via lines like: # include fragments/<name>.config
 Uses merge_config.sh when available, otherwise uses a deterministic fallback.
 USAGE
 }
@@ -41,6 +42,34 @@ if [[ ! -f "${ROLE_CONFIG}" ]]; then
   echo "Missing role config: ${ROLE_CONFIG}" >&2
   exit 1
 fi
+
+expand_config() {
+  local input="$1"
+  local root_dir="$2"
+  local stack="${3:-}"
+
+  local abs_input
+  abs_input="$(cd "$(dirname "${input}")" && pwd)/$(basename "${input}")"
+
+  if [[ ":${stack}:" == *":${abs_input}:"* ]]; then
+    echo "Detected recursive include while expanding ${abs_input}" >&2
+    exit 1
+  fi
+
+  while IFS= read -r line || [[ -n "${line}" ]]; do
+    if [[ "${line}" =~ ^#[[:space:]]*include[[:space:]]+(.+)$ ]]; then
+      local include_rel="${BASH_REMATCH[1]}"
+      local include_file="${root_dir}/${include_rel}"
+      if [[ ! -f "${include_file}" ]]; then
+        echo "Missing included fragment: ${include_file}" >&2
+        exit 1
+      fi
+      expand_config "${include_file}" "${root_dir}" "${stack}:${abs_input}"
+    else
+      printf '%s\n' "${line}"
+    fi
+  done < "${input}"
+}
 
 find_merge_config() {
   local candidates=()
@@ -119,15 +148,18 @@ deterministic_merge() {
 
 mkdir -p "$(dirname "${OUTPUT_CONFIG}")"
 
-if MERGE_CONFIG_PATH="$(find_merge_config)"; then
-  temp_dir="$(mktemp -d)"
-  trap 'rm -rf "${temp_dir}"' EXIT
+temp_dir="$(mktemp -d)"
+trap 'rm -rf "${temp_dir}"' EXIT
 
+EXPANDED_ROLE_CONFIG="${temp_dir}/role.expanded.config"
+expand_config "${ROLE_CONFIG}" "${KERNEL_CONFIG_DIR}" > "${EXPANDED_ROLE_CONFIG}"
+
+if MERGE_CONFIG_PATH="$(find_merge_config)"; then
   cp "${BASE_CONFIG}" "${temp_dir}/.config"
-  (cd "${temp_dir}" && bash "${MERGE_CONFIG_PATH}" -m .config "${ROLE_CONFIG}" >/dev/null)
+  (cd "${temp_dir}" && bash "${MERGE_CONFIG_PATH}" -m .config "${EXPANDED_ROLE_CONFIG}" >/dev/null)
   cp "${temp_dir}/.config" "${OUTPUT_CONFIG}"
   echo "Assembled kernel config for role '${ROLE}' using merge_config.sh -> ${OUTPUT_CONFIG}" >&2
 else
-  deterministic_merge "${BASE_CONFIG}" "${ROLE_CONFIG}" "${OUTPUT_CONFIG}"
+  deterministic_merge "${BASE_CONFIG}" "${EXPANDED_ROLE_CONFIG}" "${OUTPUT_CONFIG}"
   echo "Assembled kernel config for role '${ROLE}' using deterministic fallback -> ${OUTPUT_CONFIG}" >&2
 fi
