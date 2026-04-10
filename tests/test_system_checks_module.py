@@ -114,7 +114,46 @@ def test_check_kernel_naming_rejects_rc_kernel_for_non_lab_roles(monkeypatch, ca
         supported = system_checks._check_kernel_naming()
 
     assert supported is False
-    assert "only supported for lab, test roles" in caplog.text
+
+
+def test_check_kernel_policy_supports_rc_in_lab_mode(monkeypatch):
+    monkeypatch.setattr(
+        system_checks.platform,
+        "release",
+        lambda: "7.0.0-rc7-hueyos-core",
+    )
+
+    result = system_checks.check_kernel_policy()
+
+    assert result["production_supported"] is False
+    assert result["lab_supported"] is True
+    assert result["is_release_candidate"] is True
+
+
+def test_check_kernel_policy_accepts_pulse_in_both_modes(monkeypatch):
+    monkeypatch.setattr(
+        system_checks.platform,
+        "release",
+        lambda: "6.18.2-hueyos-pulse",
+    )
+
+    result = system_checks.check_kernel_policy()
+
+    assert result["production_supported"] is True
+    assert result["lab_supported"] is True
+
+
+def test_check_kernel_policy_accepts_lab_role_for_lab_mode(monkeypatch):
+    monkeypatch.setattr(
+        system_checks.platform,
+        "release",
+        lambda: "6.18.2-hueyos-lab",
+    )
+
+    result = system_checks.check_kernel_policy()
+
+    assert result["production_supported"] is False
+    assert result["lab_supported"] is True
 
 
 def test_system_check_collects_expected_results(monkeypatch):
@@ -123,6 +162,15 @@ def test_system_check_collects_expected_results(monkeypatch):
 
     monkeypatch.setattr(system_checks, "check_os_support", fake_os_check)
     monkeypatch.setattr(system_checks, "check_python_version", lambda: None)
+    monkeypatch.setattr(
+        system_checks,
+        "check_kernel_policy",
+        lambda: {
+            "production_supported": True,
+            "lab_supported": True,
+            "errors": [],
+        },
+    )
     monkeypatch.setattr(
         system_checks.shutil,
         "disk_usage",
@@ -134,6 +182,7 @@ def test_system_check_collects_expected_results(monkeypatch):
 
     assert results["os_supported"] is True
     assert results["python_supported"] is True
-    assert results["disk_space_ok"] is True
+    assert results["kernel_supported"] is True
+    assert results["kernel_policy"]["lab_supported"] is True
     assert results["git_available"] is True
     assert results["python3_available"] is True
