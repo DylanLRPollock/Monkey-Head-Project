@@ -36,6 +36,28 @@ COPY . .
 # Non-root User:
 # Correcting user creation and usage
 RUN useradd -m dlrp && chown -R dlrp:dlrp /subos-workdir
+
+# Add a startup wrapper that configures VNC auth from runtime env vars.
+RUN cat <<'EOF' > /usr/local/bin/start-vnc.sh
+#!/bin/bash
+set -euo pipefail
+
+if [ -z "${VNC_PASSWORD:-}" ]; then
+    echo "ERROR: VNC_PASSWORD is required at runtime." >&2
+    exit 1
+fi
+
+mkdir -p "$HOME/.vnc"
+chmod 700 "$HOME/.vnc"
+umask 077
+printf '%s\n' "$VNC_PASSWORD" | vncpasswd -f > "$HOME/.vnc/passwd"
+chmod 600 "$HOME/.vnc/passwd"
+unset VNC_PASSWORD
+
+exec vncserver "$@"
+EOF
+RUN chmod +x /usr/local/bin/start-vnc.sh
+
 USER dlrp
 
 # Set up VNC server
@@ -49,4 +71,4 @@ RUN chmod +x "$HOME/.vnc/xstartup"
 EXPOSE 5901
 
 # Define the command to run when the container starts
-CMD ["vncserver", "-geometry", "1280x800", "-depth", "24", "-localhost", "no", ":1"]
+CMD ["/usr/local/bin/start-vnc.sh", "-geometry", "1280x800", "-depth", "24", "-localhost", "no", ":1"]
