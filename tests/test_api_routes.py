@@ -546,3 +546,85 @@ async def test_sensor_streaming_and_invalid_registration(monkeypatch):
         )
 
     assert failure.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_telemetry_ai_recent_redacts_sensitive_fields(monkeypatch):
+    from hueyos.utils.persistence import AIInteraction
+
+    monkeypatch.setattr(
+        api_module.TELEMETRY_STORE,
+        "fetch_recent_ai_results",
+        lambda limit=25: [
+            AIInteraction(
+                timestamp=1234.5,
+                prompt="secret-token=ABC123",
+                response="classified-output",
+                model="llama3",
+                backend="ollama",
+                instruction="do secret thing",
+                metadata={"secret": "value"},
+                status="success",
+            )
+        ],
+        raising=True,
+    )
+
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.get("/telemetry/ai/recent")
+
+    assert response.status_code == 200
+    payload = response.json()["records"][0]
+    assert payload["prompt"] == "[redacted]"
+    assert payload["response"] == "[redacted]"
+    assert payload["instruction"] is None
+    assert payload["metadata"] == {}
+
+
+@pytest.mark.asyncio
+async def test_dashboard_redacts_ai_prompts_and_responses(monkeypatch):
+    from hueyos.utils.persistence import AIInteraction
+
+    observed = {}
+
+    def _capture_dashboard(system, battery, sensor_records, ai_records, catalog):
+        observed["ai_records"] = ai_records
+        return "dashboard"
+
+    monkeypatch.setattr(api_module, "_render_dashboard", _capture_dashboard, raising=True)
+    monkeypatch.setattr(
+        api_module.TELEMETRY_STORE,
+        "fetch_recent_sensor_readings",
+        lambda limit=10: [],
+        raising=True,
+    )
+    monkeypatch.setattr(
+        api_module.TELEMETRY_STORE,
+        "fetch_recent_ai_results",
+        lambda limit=10: [
+            AIInteraction(
+                timestamp=1234.5,
+                prompt="secret-token=ABC123",
+                response="classified-output",
+                model="llama3",
+                backend="ollama",
+                instruction="do secret thing",
+                metadata={"secret": "value"},
+                status="success",
+            )
+        ],
+        raising=True,
+    )
+
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.get("/dashboard")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert getattr(payload, "content", None) == "dashboard"
+    assert observed["ai_records"][0].prompt == "[redacted]"
+    assert observed["ai_records"][0].response == "[redacted]"
+    assert observed["ai_records"][0].instruction is None
+    assert observed["ai_records"][0].metadata == {}

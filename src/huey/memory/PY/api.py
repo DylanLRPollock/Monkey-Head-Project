@@ -670,6 +670,8 @@ class EmergencyActionRequest(BaseModel):
 
 
 TELEMETRY_STORE = TelemetryStore()
+
+_REDACTED_TELEMETRY_TEXT = "[redacted]"
 try:
     AI_PROCESSOR = AIProcessor(telemetry_store=TELEMETRY_STORE)
 except TypeError:  # Backwards compatibility for stub AIProcessor in tests
@@ -910,6 +912,21 @@ def _build_system_status() -> SystemStatusResponse:
 def _collect_accelerator_models(refresh: bool = False) -> List[AcceleratorInfoModel]:
     catalog = AI_PROCESSOR.get_model_catalog(refresh=refresh)
     return [AcceleratorInfoModel(**info) for info in catalog.get("accelerators", [])]
+
+
+def _redact_ai_interaction(record: AIInteraction) -> AIInteraction:
+    """Return a copy of ``record`` with sensitive textual fields redacted."""
+
+    return AIInteraction(
+        timestamp=record.timestamp,
+        prompt=_REDACTED_TELEMETRY_TEXT,
+        response=_REDACTED_TELEMETRY_TEXT,
+        model=record.model,
+        backend=record.backend,
+        instruction=None,
+        metadata={},
+        status=record.status,
+    )
 
 
 def _render_dashboard(
@@ -1435,16 +1452,16 @@ def list_recent_ai_interactions(
     records = TELEMETRY_STORE.fetch_recent_ai_results(limit=limit)
     payload = [
         AIInteractionRecord(
-            timestamp=record.timestamp,
-            prompt=record.prompt,
-            response=record.response,
-            model=record.model,
-            backend=record.backend,
-            instruction=record.instruction,
-            metadata=record.metadata,
-            status=record.status,
+            timestamp=redacted.timestamp,
+            prompt=redacted.prompt,
+            response=redacted.response,
+            model=redacted.model,
+            backend=redacted.backend,
+            instruction=redacted.instruction,
+            metadata=redacted.metadata,
+            status=redacted.status,
         )
-        for record in records
+        for redacted in (_redact_ai_interaction(record) for record in records)
     ]
     return AIInteractionResponse(records=payload)
 
@@ -1456,7 +1473,10 @@ def dashboard() -> HTMLResponse:
     system = _build_system_status()
     battery = BATTERY_MONITOR.get_status()
     sensor_records = TELEMETRY_STORE.fetch_recent_sensor_readings(limit=10)
-    ai_records = TELEMETRY_STORE.fetch_recent_ai_results(limit=10)
+    ai_records = [
+        _redact_ai_interaction(record)
+        for record in TELEMETRY_STORE.fetch_recent_ai_results(limit=10)
+    ]
     try:
         catalog = AI_PROCESSOR.get_model_catalog()
     except Exception:  # pragma: no cover - optional dependency failure
