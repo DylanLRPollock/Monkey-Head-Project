@@ -7,7 +7,8 @@ LABEL maintainer="admin@subos.com"
 
 # Set environment variables to minimize issues and configure Python not to create .pyc files
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    HOME=/home/dlrp
 
 # Update the package repository and install necessary packages
 # Using 'apt-get install -y --no-install-recommends' to keep the installation small
@@ -38,11 +39,11 @@ RUN useradd -m dlrp && chown -R dlrp:dlrp /subos-workdir
 USER dlrp
 
 # Set up VNC server
-RUN mkdir /root/.vnc
+RUN mkdir -p "$HOME/.vnc"
 
 # Set up VNC session startup script
-RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &" > /root/.vnc/xstartup
-RUN chmod +x /root/.vnc/xstartup
+RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &" > "$HOME/.vnc/xstartup"
+RUN chmod +x "$HOME/.vnc/xstartup"
 
 # Expose the necessary port(s)
 EXPOSE 5901
