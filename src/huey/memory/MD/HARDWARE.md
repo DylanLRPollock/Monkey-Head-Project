@@ -12,7 +12,7 @@
 **Kernel Family**: HueyOS **7.0-based** custom RT kernels
 
 > **Current state:** Hardware enablement is standardized on the **Forky + 7.0 kernel family** line.  
-> The former **6.16.12 → 6.18.2-hueyos-v1** migration path is now historical and is no longer the deployment target for active systems.
+> The former **6.16.12 → 6.18.2 migration-era line** is now historical and is no longer the deployment target for active systems.
 
 ## Kernel Model and Role Split
 
