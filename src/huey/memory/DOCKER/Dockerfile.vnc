@@ -27,6 +27,7 @@ set -euo pipefail
 RES="${RES:-1920x1080}"                 # 1920x1080, 2560x1440, 3840x2160
 ENABLE_RESIZE="${ENABLE_RESIZE:-1}"     # 1 = allow resize (xrandr), 0 = fixed size
 NOVNC_PORT="${NOVNC_PORT:-1995}"        # noVNC listen port (served by websockify)
+VNC_PASSWORD="${VNC_PASSWORD:-}"        # VNC password (auto-generated if empty)
 
 # Safe, broadly compatible defaults:
 # -noxdamage often improves redraw correctness
@@ -62,8 +63,17 @@ if [[ "${ENABLE_RESIZE}" == "1" ]]; then
   XRANDR_FLAG="-xrandr"
 fi
 
+if [[ -z "${VNC_PASSWORD}" ]]; then
+  VNC_PASSWORD="$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 20)"
+  echo "[start-vnc-pygpt] Generated VNC password: ${VNC_PASSWORD}"
+fi
+
+VNC_PASSWD_FILE="/tmp/x11vnc.pass"
+x11vnc -storepasswd "${VNC_PASSWORD}" "${VNC_PASSWD_FILE}" >/dev/null
+chmod 600 "${VNC_PASSWD_FILE}"
+
 # Prefer IPv4 bind noise-free; x11vnc handles clients fine via localhost anyway
-x11vnc -display :1 -forever -shared -nopw -rfbport 5900 ${XRANDR_FLAG} ${VNC_EXTRA_FLAGS} &
+x11vnc -display :1 -forever -shared -rfbauth "${VNC_PASSWD_FILE}" -rfbport 5900 ${XRANDR_FLAG} ${VNC_EXTRA_FLAGS} &
 
 # noVNC web client on NOVNC_PORT, landing on vnc.html (no directory listing)
 websockify --web=/usr/share/novnc/ --index vnc.html "${NOVNC_PORT}" localhost:5900 &
