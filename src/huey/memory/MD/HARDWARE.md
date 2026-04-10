@@ -1,4 +1,4 @@
-# Hardware Enablement Guide — Huey OS (Debian Trixie · Kernel 6.16.12 → Forky · Kernel 6.18.2-hueyos-v1 migration)
+# Hardware Enablement Guide — Huey OS (Forky Standard · HueyOS 7.0 Kernel Family)
 
 **System Platform**: Supermicro X9QRI-F+  
 **Chipset**: Intel C602  
@@ -8,10 +8,27 @@
 **Storage**: 2 × Kingston SSD 240 GB (RAID)  
 **Bluetooth**: ASUS USB-BT500  
 **Wi-Fi**: USB 2.4GHz adapter
-**OS Base**: Debian “Trixie” (testing) → migrating to Debian “Forky” (testing/next)
-**Kernel**: Custom 6.16.12 RT with modular driver flags → migrating to 6.18.2-hueyos-v1 RT tree
+**OS Base**: Debian “Forky” (standardized baseline)
+**Kernel Family**: HueyOS **7.0-based** custom RT kernels
 
-> **Lifecycle update:** Kernel **6.16.x** has reached upstream EOL. Production images remain on **6.16.12** while the migration to **6.18.2-hueyos-v1** on **Debian “Forky”** is now underway (validation window kicked off **2025-10-31**).
+> **Current state:** Hardware enablement is standardized on the **Forky + 7.0 kernel family** line.  
+> The former **6.16.12 → 6.18.2-hueyos-v1** migration path is now historical and is no longer the deployment target for active systems.
+
+## Kernel Model and Role Split
+
+HueyOS now separates kernel responsibilities into two maintained lanes:
+
+- **Core kernel lane (hueyos-core-7.0-rt)**  
+  Stable hardware baseline for boot, storage, networking, and platform management.
+- **Pulse kernel lane (hueyos-pulse-7.0-rt)**  
+  Rapid-iteration lane for scheduler tuning, AI workload latency controls, and feature experiments.
+
+### Operational policy
+
+- **Core** is the default for production and recovery images.
+- **Pulse** is for validated performance profiles and staged rollout.
+- Both lanes share the same hardware compatibility matrix and required firmware set documented below.
+- Promotion path is **Pulse → Core** only after soak validation and regression sign-off.
 
 ---
 
@@ -80,8 +97,11 @@
    sudo dpkg -i *.deb
    ```
 
-3. **Build Custom Kernel 6.18.2-hueyos-v1**
-   - _Transition note:_ 6.18.x RT configs are staged in `huey/memory/SH/` for the Forky switchover; keep both trees buildable until the final cutover.
+3. **Build a HueyOS 7.0 Kernel (Core or Pulse lane)**
+   - Select lane target:
+     - `hueyos-core-7.0-rt` for production/stability
+     - `hueyos-pulse-7.0-rt` for performance staging
+   - Keep config parity across both lanes for hardware enablement flags.
    Minimum `.config` flags:
    - `CONFIG_AHCI`
    - `CONFIG_XHCI_HCD`
@@ -111,7 +131,8 @@
 - All initialization logic checks `intel-microcode` presence before citizenship is granted
 - Z-Wave mesh should come online with default Debian GPIO bus overlays
 - All installation logs should be mirrored to `/var/log/huey_bootstrap/` (RAID)
+- Core/Pulse lane selection must be recorded in deployment metadata for audit and rollback control
 
 ---
 
-*Guide maintained by Huey AI for Dylan · Last updated: 2025-10-15*
+*Guide maintained by Huey AI for Dylan · Last updated: 2026-04-10*
