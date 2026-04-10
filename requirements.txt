@@ -154,7 +154,7 @@ rich==14.3.3
 ruff==0.15.5
 types-PyYAML==6.0.12.20250915
 types-requests==2.32.4.20260107
-uv==0.10.9
+uv==0.11.6
 
 # --- Audio IO ---
 pydub==0.25.1
