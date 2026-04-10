@@ -7,10 +7,8 @@
 set -euo pipefail
 
 # This script builds a UEFI-only amd64 ISO using Debian live-build
-# and a custom Linux kernel version 6.18.2-hueyos-v1. It is adapted from the
-# user‑provided instructions while being prepped for the Debian “Forky” /
-# kernel 6.18.x migration (comments note the pending switch while earlier
-# baselines remain the production floor). Because this container environment
+# and a custom Linux kernel version 7.0.x-hueyos-v1 for Debian Forky.
+# Because this container environment
 # doesn't provide a Windows filesystem under /mnt/c, the output
 # directory (OUTWIN) is pointed at the shared folder so that the ISO
 # and its extracted contents can be accessed from outside the
@@ -19,7 +17,7 @@ set -euo pipefail
 
 # --- config ---
 ISO_NAME="huey-v1.0-amd64"
-KVER="6.18.2"
+KVER="7.0.0"
 LOCALVER="-hueyos-v1"
 # Output directory set to shared folder rather than Windows desktop.
 OUTWIN="${OUTWIN:-/home/oai/share/${ISO_NAME}}"
@@ -42,7 +40,7 @@ sudo apt-get install -y \
 rm -rf "$WORK" && mkdir -p "$WORK"
 cd "$WORK"
 
-# --- build kernel 6.18.2 → .debs ---
+# --- build kernel 7.0.x → .debs ---
 wget -q https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${KVER}.tar.xz
 tar -xf linux-${KVER}.tar.xz
 cd linux-${KVER}
@@ -64,14 +62,14 @@ IMG_DEB="linux-image-${KVER}${LOCALVER}_1_amd64.deb"
 HDR_DEB="linux-headers-${KVER}${LOCALVER}_1_amd64.deb"
 LIBC_DEB="linux-libc-dev_${KVER}-1_amd64.deb"
 
-# --- live-build config (UEFI-only, amd64, Debian 13 “trixie”) ---
+# --- live-build config (UEFI-only, amd64, Debian Forky) ---
 BUILD="$WORK/live"
 mkdir -p "$BUILD"
 cd "$BUILD"
 
 lb config \
   --architectures amd64 \
-  --distribution trixie \
+  --distribution forky \
   --binary-images iso \
   --bootloader grub-efi \
   --debian-installer live \
@@ -101,7 +99,7 @@ mkdir -p "${INC}"/{boot,dists,doc,EFI,firmware,huey,install,install.amd,iso,isol
 # minimal README on the ISO root
 cat > "${INC}/README.md" <<'EOF_README'
 # Huey ISO
-UEFI-only, amd64. Kernel 6.18.2-hueyos-v1. Custom Debian 13 (Trixie) live + installer image for Monkey-Head-Project.
+UEFI-only, amd64. Kernel 7.0.x-hueyos-v1. Custom Debian Forky live + installer image for Monkey-Head-Project.
 EOF_README
 
 # build
