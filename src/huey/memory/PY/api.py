@@ -1884,7 +1884,7 @@ def main() -> None:
     import os
     import uvicorn
 
-    host = os.getenv("HUEY_HOST", "0.0.0.0")
+    host = os.getenv("HUEY_HOST", "127.0.0.1")
     port = int(os.getenv("HUEY_PORT", "1995"))
     reload = os.getenv("HUEY_RELOAD", "").strip().lower() in {"1", "true", "yes", "on"}
 
