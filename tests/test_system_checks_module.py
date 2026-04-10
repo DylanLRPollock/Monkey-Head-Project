@@ -89,6 +89,34 @@ def test_check_kernel_naming_rejects_non_hueyos_suffix(monkeypatch, caplog):
     assert "family/role suffix" in caplog.text
 
 
+def test_check_kernel_naming_accepts_lab_rc_kernel(monkeypatch, caplog):
+    monkeypatch.setattr(
+        system_checks.platform,
+        "release",
+        lambda: "7.0.0-rc7-hueyos-lab",
+    )
+
+    with caplog.at_level(logging.INFO):
+        supported = system_checks._check_kernel_naming()
+
+    assert supported is True
+    assert "Detected explicit HueyOS hueyos kernel role 'lab'" in caplog.text
+
+
+def test_check_kernel_naming_rejects_rc_kernel_for_non_lab_roles(monkeypatch, caplog):
+    monkeypatch.setattr(
+        system_checks.platform,
+        "release",
+        lambda: "7.0.0-rc7-hueyos-core",
+    )
+
+    with caplog.at_level(logging.WARNING):
+        supported = system_checks._check_kernel_naming()
+
+    assert supported is False
+    assert "only supported for lab, test roles" in caplog.text
+
+
 def test_system_check_collects_expected_results(monkeypatch):
     def fake_os_check():
         return None
