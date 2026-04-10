@@ -27,6 +27,7 @@ SUPPORTED_DISTRO_ID = "debian"
 SUPPORTED_DISTRO_CODENAME = "forky"
 SUPPORTED_KERNEL_FAMILY = "hueyos"
 KERNEL_ROLE_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
+LAB_KERNEL_ROLES = frozenset({"lab", "test"})
 MIN_PYTHON_VERSION = (3, 13)
 MAX_PYTHON_VERSION = (3, 15)
 REQUIRED_TOOLS: Tuple[str, ...] = ("git", "python3")
@@ -161,6 +162,16 @@ def _extract_kernel_role(raw_release: str) -> str:
     return role.strip()
 
 
+def _is_release_candidate_kernel(raw_release: str) -> bool:
+    """Return ``True`` when the kernel release includes an ``-rcN`` segment."""
+
+    lowered = raw_release.strip().lower()
+    marker = f"-{SUPPORTED_KERNEL_FAMILY}-"
+    marker_index = lowered.find(marker)
+    candidate_segment = lowered if marker_index < 0 else lowered[:marker_index]
+    return re.search(r"-rc\d+\b", candidate_segment) is not None
+
+
 def _check_kernel_naming() -> bool:
     """Return ``True`` when the running kernel follows HueyOS family/role naming."""
 
@@ -187,6 +198,24 @@ def _check_kernel_naming() -> bool:
             role or "missing",
         )
         return False
+
+    is_rc = _is_release_candidate_kernel(lowered)
+    if is_rc and role not in LAB_KERNEL_ROLES:
+        logger.warning(
+            "Kernel release '%s' uses an rc kernel, which is only supported for %s roles.",
+            release,
+            ", ".join(sorted(LAB_KERNEL_ROLES)),
+        )
+        return False
+
+    if role in LAB_KERNEL_ROLES:
+        kernel_type = "release-candidate" if is_rc else "lab/stable"
+        logger.info(
+            "Detected explicit HueyOS %s kernel role '%s' (%s).",
+            SUPPORTED_KERNEL_FAMILY,
+            role,
+            kernel_type,
+        )
 
     return True
 
