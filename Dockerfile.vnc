@@ -20,6 +20,12 @@ set -euo pipefail
 export DISPLAY=:1
 export QT_X11_NO_MITSHM=1
 
+: "${VNC_PASSWORD:?VNC_PASSWORD environment variable must be set}"
+
+VNC_PASSWD_FILE="/tmp/x11vnc.pass"
+x11vnc -storepasswd "${VNC_PASSWORD}" "${VNC_PASSWD_FILE}" >/dev/null
+chmod 600 "${VNC_PASSWD_FILE}"
+
 # Start virtual X server
 Xvfb :1 -screen 0 1280x720x24 -nolisten tcp &
 
@@ -35,7 +41,7 @@ done
 openbox &
 
 # VNC server
-x11vnc -display :1 -forever -shared -nopw -rfbport 5900 &
+x11vnc -display :1 -forever -shared -rfbauth "${VNC_PASSWD_FILE}" -rfbport 5900 &
 
 # noVNC web bridge on port 1995
 websockify --web=/usr/share/novnc/ 1995 localhost:5900 &
