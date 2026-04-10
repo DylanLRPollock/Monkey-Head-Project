@@ -39,8 +39,6 @@ USER dlrp
 
 # Set up VNC server
 RUN mkdir /root/.vnc
-RUN echo "dlrp" | vncpasswd -f > /root/.vnc/passwd
-RUN chmod 600 /root/.vnc/passwd
 
 # Set up VNC session startup script
 RUN echo "#!/bin/bash\nxrdb $HOME/.Xresources\nstartmate &" > /root/.vnc/xstartup
