@@ -81,7 +81,12 @@
   },
   "os_stack": {
     "base": "Debian 14 (Forky preferred, Trixie migration-only)",
-    "kernels": ["6.18.2-hueyos-v1", "6.18.2+hueyos-amd64"],
+    "kernels": [
+      "7.0.0-hueyos-core",
+      "7.0.0-hueyos-pulse",
+      "7.0.0-rc7-hueyos-lab"
+    ],
+    "legacy_context": "Historical 6.18.2 references remain only for compatibility archives and fixtures; active guidance follows role-based 7.0 kernel naming.",
     "orchestrator": "PyGPT-net",
     "llm_server": "Ollama",
     "models": ["Mistral 7B-KM", "LLaMA 3.1", "DeepSeek-R1"],

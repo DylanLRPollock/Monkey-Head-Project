@@ -1,7 +1,7 @@
 # 2025-10-31 Changeover — Forky Standard • Kernel 7.0 Active Line • 7.0.0-rc7 Lab Gateway
 
 ## Summary
-This changeover note supersedes the earlier `6.18.2-hueyos-v1` framing.
+This changeover note supersedes earlier 6.18.2 migration-era framing.
 
 As of this release line:
 - **Debian 14 "Forky" is the standard platform baseline** for project operations.
@@ -10,7 +10,7 @@ As of this release line:
 
 ## What changed
 - Platform posture updated from one-off migration messaging to **Forky-as-standard** messaging.
-- Kernel guidance moved from `6.18.2-hueyos-v1` baseline language to **7.0 active-line governance**.
+- Kernel guidance moved from 6.18.2 migration-era baseline language to **7.0 active-line governance**.
 - `7.0.0-rc7` explicitly classified as a **lab/qualification entry point**, not production default.
 - Release communications updated to avoid treating any `-rc` kernel as generally stable.
 
@@ -30,7 +30,7 @@ As of this release line:
 4. Validate release notes, runbooks, and rollout checklists reference stable 7.0.x for production.
 
 ## Known issues
-- Any reference that still describes `6.18.2-hueyos-v1` as the baseline should be treated as historical and updated.
+- Any reference that still describes 6.18.2 migration-era kernels as the baseline should be treated as historical and updated.
 
 ## Rollback
 - If a 7.0 trial fails validation, roll affected lab nodes back to the currently approved production stable kernel and re-enter qualification after remediation.
