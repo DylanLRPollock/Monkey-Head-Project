@@ -11,9 +11,10 @@ the platform and how to operate core services.
 - [Honeycomb storage operations](honeycomb-storage.md)
 - [API reference](api-reference.md)
 - [Governance & resilience](governance.md)
-- [Linux 6.18.2 upgrade runbook](kernel-6.18.2-runbook.md)
-- [Kernel upgrade Phase 2 log](kernel-upgrade-phase2.md)
+- [Linux 6.18.2 migration note (legacy archive)](kernel-6.18.2-runbook.md)
+- [Kernel upgrade Phase 2 runbook (7.0 active line)](kernel-upgrade-phase2.md)
 - [Phase 9 rollback hooks report](phase-9-rollback.md)
+- [6.18.2 reference classification](version-reference-classification.md)
 
 ## CLI quick reference
 

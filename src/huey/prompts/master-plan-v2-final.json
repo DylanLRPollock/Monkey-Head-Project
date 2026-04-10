@@ -46,8 +46,15 @@
       "purpose": "One-shot tasks, answering, decision assistance"
     },
     "bifurcation": {
-      "types": ["exact", "augmented"],
-      "triggers": ["necessity", "space", "task isolation"],
+      "types": [
+        "exact",
+        "augmented"
+      ],
+      "triggers": [
+        "necessity",
+        "space",
+        "task isolation"
+      ],
       "tracked_by": "versioning and suffix naming"
     },
     "presidency": {
@@ -81,14 +88,24 @@
   },
   "os_stack": {
     "base": "Debian 13 (Trixie preferred, Forky for testing)",
-    "kernels": ["6.18.2-hueyos-v1", "6.18.2+hueyos-amd64"],
+    "kernels": [
+      "7.0.0-hueyos-core",
+      "7.0.0-hueyos-pulse",
+      "7.0.0-rc7-hueyos-lab"
+    ],
     "orchestrator": "PyGPT-net",
     "llm_server": "Ollama",
-    "models": ["Mistral 7B-KM", "LLaMA 3.1", "DeepSeek-R1"],
+    "models": [
+      "Mistral 7B-KM",
+      "LLaMA 3.1",
+      "DeepSeek-R1"
+    ],
     "runtime": "Python 3.13.x",
     "desktop": "GNOME for comfort, MATE for performance",
     "offline_first": true,
-    "network": "Wi-Fi fallback, Ethernet bonded preferred"
+    "network": "Wi-Fi fallback, Ethernet bonded preferred",
+    "kernel_standard_series": "7.0.x",
+    "legacy_kernel_context": "6.18.2-hueyos-v1 is retained only as historical archive context."
   },
   "intent_interface": {
     "remote": {

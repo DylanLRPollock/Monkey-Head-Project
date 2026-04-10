@@ -109,14 +109,18 @@
     },
     "kernels": {
       "examples": [
-        "6.18.2-hueyos-v1",
-        "6.18.2+hueyos-amd64"
+        "7.0.0-hueyos-core",
+        "7.0.0-hueyos-pulse",
+        "7.0.0-rc7-hueyos-lab"
       ],
-      "project_standard_series": "6.18.x",
+      "project_standard_series": "7.0.x",
       "tuning_goals": [
         "Strip heavy debug/tracing for performance.",
         "Integrate required drivers directly into the kernel where practical.",
         "Use ZSTD compression for faster decompression at boot."
+      ],
+      "legacy_context_notes": [
+        "6.18.2-hueyos-v1 remains historical context only for archive analysis."
       ]
     },
     "runtime": {
