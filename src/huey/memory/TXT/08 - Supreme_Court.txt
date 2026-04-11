@@ -374,9 +374,10 @@ For the current book, the cleanest rule is:
 In practical terms:
 - ordinary rulings = majority of sitting lawful bench,
 - major constitutional revision or identity-layer rulings = at least three of four in the mature district court,
+- direct blocking or rollback of an already-taken act as unconstitutional = unanimous vote of the full sitting lawful bench,
 - a tie = no final ruling, triggering the deadlock path.
 
-This preserves the spirit of the old two-thirds safeguard while remaining honest to newer district-linked court doctrine.
+This preserves the spirit of the older two-thirds safeguard, aligns with the newer district-linked court doctrine, and still reserves the strongest direct judicial veto for the strongest judicial consensus.
 
 
 XI. Composition of the Court

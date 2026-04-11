@@ -13,7 +13,7 @@ A machine may boot, answer, move, log, and speak while quietly becoming somethin
 
 This chapter defines that structure.
 
-If Chapter 1 establishes the thesis, ethos, method, and proof standard of the Monkey-Head-Project, then Chapter 2 establishes the load-bearing interior of the work. It explains the difference between the project's fixed foundations and its upgradeable components. It defines the architectural doctrine by which continuity is preserved. It also provides the language needed to distinguish ordinary iteration from deeper constitutional change.
+If Chapter 1 establishes the thesis, ethos, method, and proofcase of the Monkey-Head-Project, then Chapter 2 establishes the load-bearing interior of the work. It explains the difference between the project's fixed foundations and its upgradeable components. It defines the architectural doctrine by which continuity is preserved. It also provides the language needed to distinguish ordinary iteration from deeper constitutional change.
 
 This chapter is therefore about more than preference. It is about identity, continuity, and lawful evolution.
 
@@ -62,7 +62,7 @@ At minimum, Cornerstone includes the following classes of things:
    Huey is not a flat assistant, a puppet, or an unchecked sovereign. It is a governed system built around distributed authority, unified memory, lawful review, and bounded autonomy.
 
 3. Crisis distinctions
-   Constitutional crisis and nuclear or safety crisis are separate classes of emergency. They must never be collapsed into a single override path.
+   Constitutional Crisis and Nuclear / Safety Crisis are separate classes of emergency. They must never be collapsed into a single override path.
 
 4. Continuity doctrine
    Prior meaningful decisions may be revised, but not erased. History is reference, not absolution. Continuity is maintained through explainability and preserved lineage, not static sameness.

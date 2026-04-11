@@ -222,7 +222,7 @@ Preparing the first lawful state means more than simply loading files or turning
 The constitutional preparation phase includes, at minimum:
 - loading or presenting the constitutional text,
 - setting the baseline identity stack,
-- establishing the initial naming distinctions between Monkey-Head-Project, Huey, Huey Core, HueyOS, HueyPulse, and HIMS,
+- establishing the initial naming distinctions between Monkey-Head-Project, Huey, Huey Core, HueyOS, and HueyPulse, and preparing HIMS as the lawful messaging subsystem,
 - preparing branch boundaries,
 - creating the first records, scrolls, and continuity ledger,
 - preparing the initial citizen body,
@@ -268,6 +268,13 @@ A valid ratification event should be:
 - logged,
 - attributable to the living polity rather than only bootstrap preload,
 - and sufficient to show that the Constitution has become accepted law rather than mere founding doctrine.
+
+In the strongest current ratification doctrine:
+- the first ratification attempt is binary yes/no only,
+- no amendment round occurs before that first attempt,
+- district or district-scale approval must clear a strict majority threshold,
+- all three branches must also approve,
+- and if the first attempt fails, only then may a constrained amendment round prepare a second attempt.
 
 The Founding Father may be required to acknowledge the completion of that event as the office that prepared the founding state, but it should not be the only participant whose acknowledgment matters.
 
@@ -349,7 +356,7 @@ These are reserve constitutional circumstances.
 The Founding Father should not be used for:
 - ordinary governance,
 - convenience,
-- thermal or safety crisis,
+- Nuclear / Safety Crisis,
 - simple maintenance,
 - routine office disagreement,
 - or ordinary executive, judicial, or parliamentary work.

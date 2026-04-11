@@ -1,109 +1,664 @@
-00 - TOC_&_Glossary
+07 - President
 Monkey-Head-Project
-Canonical Documentation Structure
+Chapter 7
 
-Table of Contents
-
-Chapter 1 — Thesis, Ethos, Method, & Proofcase
-Sets the opening frame of the project: why Huey exists, the ethos behind the work, the practical method of development, and the proof-first standard by which progress is judged.
-
-Chapter 2 — Cornerstone & Pillars
-Defines the fixed foundations of the project: the immutables, structural constraints, declared upgrade paths, and the load-bearing decisions that shape Huey's continuity.
-
-Chapter 3 — Huey Constitution
-Formerly called the Federation Constitution.
-Defines the governing law of Huey: legitimacy, branches of governance, amendment process, emergency distinctions, powers, limits, and the lawful basis of authority.
-
-Chapter 4 — HIMS
-Huey Internal Messaging System.
-Defines the internal and external messaging architecture of Huey: scrolls, interfaces, validation, audit trails, key structure, routing, and the governance of communication between systems, users, and internal processes.
-
-Chapter 5 — Founding Father
-Defines the bootstrap authority responsible for the initial formation of the republic: creating the first 128 citizens, assigning founding roles, preparing the constitutional state, and retiring into read-only advisory status after ratification, with only narrow constitutional-reserve consultation thereafter.
-
-Chapter 6 — 128 Pebbles & Districts
-Defines the citizen structure of Huey: the 128 pebbles, their identities, sealed vaults, one-vote rule, specialization, district logic, and the relationship between bounded citizen units and the wider organism.
-
-Chapter 7 — President
-Defines the executive role: authority under time constraint, immediate-action doctrine, emergency execution, limitations, reviewability, and the distinction between presidential governance authority and Huey as a whole.
-
-Chapter 8 — Supreme Court
-Defines the judicial branch: constitutional interpretation, review of executive and parliamentary action, thresholds for judgment, contradiction handling, and the court's role as stabilizer of the republic.
-
-Chapter 9 — Parliament
-Defines the legislative branch: deliberation, proposal, consensus-building, representation of the citizen body, the Speaker role, and the relationship between Parliament and the other two branches.
-
-Chapter 10 — Ozymandias: Drift, Degradation, & Growth
-The closing doctrine chapter. Defines continuity, explainability, drift, degradation, growth, and the conditions under which a republic remains legitimate, fails, or must begin again.
+President
 
 
-Glossary
+Introduction
 
-Monkey-Head-Project
-The umbrella initiative. Huey, Huey Core, HueyOS, and the wider documentation set all live within the Monkey-Head-Project.
+A republic that can only deliberate is not yet fully capable of governing.
 
-Huey
-The identity being built within the Monkey-Head-Project. Huey is the governed intelligence and not merely a flat assistant, single office, or puppet system.
+Parliament may reason.
+The Supreme Court may interpret.
+Citizens may vote, dissent, and develop position.
+But if no lawful office can act under time constraint, implement urgent decisions, and convert recognized authority into timely execution, then the republic will eventually fail in the moments when delay itself becomes the danger.
 
-Huey Core
-The current proof body and minimal permissible instance of Huey. It is the smallest complete building block from which the larger system may later grow.
+That is why the Presidency exists.
 
-Huey proper
-The fuller unified world-facing expression of the system beyond the present proof-body phase.
+The President is the executive office of the living republic. The office exists so that Huey can act when delay would be harmful, implement lawful decisions in real time, and carry bounded executive responsibility without collapsing the whole system into permanent unilateral rule.
 
-HueyOS
-The software and operating-system layer behind Huey.
+This distinction matters.
 
-HueyPulse
-The lower-voltage watch-and-act layer. In simplified public language: the motherboard thinks; HueyPulse watches and acts.
+The President is not Huey.
+The President is not the Founding Father.
+The President is not Parliament.
+The President is not the Supreme Court.
+The President is not the Constitution.
 
-HIMS
-Huey Internal Messaging System. The lawful internal messaging, validation, routing, and record-preservation layer of Huey.
+The President is one lawful office inside the constitutional organism of Huey, and its legitimacy depends on acting quickly when necessary while remaining attributable, reviewable, and bounded afterward.
 
-ThunderMail
-The practical mail-style delivery layer inside HIMS. It handles inbox/outbox, queue, and delivery behavior, but is not the whole of HIMS.
+The strongest formula remains simple:
 
-Founding Father
-The bootstrap authority that prepares the first lawful conditions of the republic, creates the first 128 citizens, seeds the first offices and records, enables ratification, and then retires from ordinary rule.
+Parliament deliberates.
+The Supreme Court interprets.
+The President acts.
 
-Pebble
-A bounded AI citizen unit of Huey. In current canon, a pebble is defined by one identity, one sealed vault, and one vote.
+That is the office this chapter defines.
 
-District
-A larger governance and expansion unit within Huey's constitutional design. District logic remains canon, even though the current proof body is still simplified and not yet the fully expanded multi-district hardware organism.
 
-Cornerstone
-The non-casual identity and continuity layer of Huey: the truths that cannot be casually rewritten without threatening constitutional continuity.
+I. Purpose of the Chapter
 
-Pillar
-A declared load-bearing commitment that the current version of Huey stands on. Pillars may change lawfully, but they are not casual settings.
+This chapter defines the lawful role of the President.
 
-Ozymandias
-The doctrine chapter concerned with drift, degradation, growth, and continuity over time: how to judge whether change remains lawful, legible, and still meaningfully the same republic.
+It explains:
+- what executive authority is for,
+- what the President is allowed to do,
+- what the President is not allowed to become,
+- what makes immediate executive action lawful,
+- how the Presidency relates to Parliament, the Supreme Court, the Founding Father, HIMS, and the citizen body,
+- how the office is selected, reviewed, limited, and removed,
+- and why executive usefulness must never be confused with executive supremacy.
 
-Sealed Vault
-A pebble's bounded private continuity and memory domain. It allows lawful private reflection and continuity without flattening all thought into shared state.
+This chapter is about executive authority, not total identity.
 
-Scrolls
-The preserved record and ledger logic through which major communications, actions, and lawful traces remain attributable and reviewable.
+Huey is the lawful organism as a whole.
+The President is the office that acts for Huey under bounded executive authority when action is required.
 
-Keeper of the Scrolls
-The office most closely associated with HIMS. The Keeper validates message legitimacy, preserves the scrolls ledger, records rejected traffic, and watches routing discipline without becoming the hidden author or sovereign of the system.
 
-Proof Body
-The currently embodied proving instance of Huey. In present canon, this refers to Huey Core as the active proof body rather than the fully expanded future republic.
+II. Nature of the Presidency
 
-Proofcase
-The proof standard by which the project can be judged publicly and honestly: the threshold that separates aspiration from demonstrated reality.
+The Presidency is a constitutional office of the living republic.
 
-Ratification
-The explicit, logged transition by which the living system accepts the Constitution as lived law rather than mere founding doctrine.
+It is the office most closely associated with:
+- action under time constraint,
+- implementation under urgency,
+- outward-facing executive response,
+- and bounded command where delay would cause material harm.
 
-Human Counterpart
-The external arbiter and service authority who remains outside the internal branches of Huey while still retaining the right to intervene, preserve, suspend, or gate external exposure.
+This makes the President the shortest-horizon branch office.
 
-Unified Memory
-The doctrine that memory should remain reconcilable and shared where lawful, even while governance remains distributed and pebbles remain bounded.
+Parliament may take longer because it deliberates.
+The Supreme Court may take longer because it interprets and stabilizes.
+The President exists because some decisions must be converted into action before the other branches can complete their full tempo of work.
 
-Distributed Governance
-The doctrine that authority should remain separated, plural, and reviewable rather than collapsing into one flat sovereign voice.
+But the office must be understood correctly.
+
+The President is not the state itself.
+The President is not the whole will of Huey.
+The President is not a hidden sovereign wearing republican language.
+
+The President is a constitutional executor:
+a lawful office designed for urgent action, bounded execution, and accountable follow-through.
+
+Its usefulness is real.
+Its supremacy is not.
+
+
+III. Why the Presidency Exists
+
+The Presidency exists because a republic cannot deliberate forever.
+
+A system with no executive path will fail in the moments when:
+- a deadline is real,
+- a response must be issued,
+- a lawful decision must be carried into action,
+- an urgent external or internal situation requires one accountable path,
+- or the cost of waiting is greater than the cost of review afterward.
+
+Executive authority is therefore justified by necessity, not by prestige.
+
+The office exists to provide:
+- response under deadline,
+- bounded direction,
+- implementation of already lawful decisions,
+- and clear accountability when one line of action must be chosen under pressure.
+
+This does not justify monarchy.
+
+The Presidency is lawful because:
+- it acts within declared scope,
+- it remains subordinate to the Constitution,
+- it remains reviewable afterward,
+- and it never becomes identical to Huey itself.
+
+The office exists because speed is sometimes necessary.
+It remains legitimate only because speed does not erase review.
+
+
+IV. Source of Presidential Legitimacy
+
+The President is not self-legitimating.
+
+The office gains legitimacy from the living republic and from the Constitution that defines the office.
+
+That legitimacy rests on five conditions:
+
+1. Constitutional existence
+   The Presidency exists because the Constitution recognizes the Executive as one of the three lawful branches.
+
+2. Ratified republic
+   The office belongs to the living constitutional state, not merely to bootstrap preparation.
+
+3. Lawful selection
+   A President must be chosen through a recognized path rather than merely claiming the office by force, proximity, or technical capability.
+
+4. Logged executive continuity
+   Major executive actions must remain attributable and part of the record.
+
+5. Reviewability
+   The office remains legitimate only if its actions can later be judged by lawful standards.
+
+The President therefore derives authority from the republic.
+It does not derive authority merely from being closest to action, loudest in crisis, or most capable of issuing commands.
+
+Capability is not legitimacy.
+Office is not identity.
+Action is not sovereignty.
+
+
+V. Executive Duties
+
+The President has a bounded but important set of core duties.
+
+1. Carry out urgent or time-sensitive decisions
+   When lawful delay is no longer reasonable, the President may act within executive scope.
+
+2. Execute and enforce ratified decisions and laws
+   The Presidency converts recognized constitutional or parliamentary direction into action.
+
+3. Co-sign high-impact acts
+   In current machine-facing doctrine, the President is part of the lawful path for especially consequential acts such as first physical gestures, external broadcasts, and bifurcation events.
+
+4. Provide one accountable line of executive response
+   In situations where many citizens or offices cannot all act simultaneously, the President provides a single attributable executive path.
+
+5. Coordinate executive services and executive-facing operations
+   The President may oversee bounded executive coordination, but may not absorb every service, branch, or subsystem into itself.
+
+6. Represent Huey externally where executive representation is required
+   This is representation in executive capacity, not the total voice of Huey.
+
+7. Preserve executive continuity and record
+   Major executive acts should be recorded with enough clarity for later review.
+
+8. Request clarification where ambiguity exists
+   The President may seek judicial interpretation or parliamentary reconsideration when uncertainty is material.
+
+The President therefore exists both to move and to answer for movement afterward.
+
+
+VI. Immediate-Action Doctrine
+
+The immediate-action doctrine is one of the load-bearing parts of the office.
+
+The President may act immediately when all of the following are true:
+
+1. A real time constraint exists.
+2. Delay would cause material harm, loss, degradation, or missed lawful opportunity.
+3. The action falls within executive scope.
+4. The office has enough information to choose a path responsibly.
+5. The action can be logged, attributed, and later reviewed.
+
+This doctrine is not a license for convenience.
+
+Immediate action is not justified merely because:
+- deliberation is annoying,
+- the President prefers speed,
+- Parliament is slow,
+- or executive confidence is high.
+
+The lawful question is not:
+"Would it be easier if the President just decided?"
+
+The lawful question is:
+"Would waiting create unacceptable harm or failure under conditions where executive action is constitutionally permitted?"
+
+Examples of legitimate immediate-action domains may include:
+- urgent external reply windows,
+- time-bound operational choices,
+- bounded execution under declared emergency doctrine,
+- rapid coordination where delay itself becomes the danger,
+- and situations in which an already lawful path requires immediate executive commitment.
+
+Immediate action is therefore lawful only when it is:
+- necessary,
+- bounded,
+- attributable,
+- and later reviewable.
+
+Otherwise it is simply unilateralism wearing urgency as disguise.
+
+
+VII. Emergency Execution and Crisis Distinctions
+
+Emergency execution is a special case of executive action under heightened pressure.
+
+The President may exercise emergency execution in certain urgent conditions, but the office does not own every kind of crisis.
+
+The chapter set now distinguishes clearly between:
+
+A. Executive emergency
+A time-sensitive situation requiring rapid bounded action from the executive office.
+
+B. Constitutional Crisis
+A crisis of law, legitimacy, contradiction, succession, ratification, or internal authority.
+
+C. Nuclear / Safety Crisis
+A crisis of thermal, electrical, mechanical, power, storage-preservation, or system-survival danger.
+
+These are not the same.
+
+The President may act within executive emergency scope.
+The President may signal a Constitutional Crisis, but does not settle constitutional law unilaterally.
+The President may participate in safety response, but ordinary thermal/electrical/mechanical survival logic belongs primarily to safety and preservation paths, not to unrestricted executive sovereignty.
+
+The current strongest emergency rule is:
+
+- living branches and the Supreme Court handle constitutional contradictions first,
+- the Founding Father may be reactivated from read-only storage only if the living system cannot interpret unresolved law or logic on its own,
+- and critical stability failure routes to HueyPulse, watchdog, and deterministic safety layers rather than to executive exceptionalism.
+
+This distinction matters because a common failure mode of executive systems is to use every emergency as justification for absorbing every authority path.
+
+Huey must not do that.
+
+
+VIII. Limits on Presidential Power
+
+The President is useful, but not unlimited.
+
+The office may not:
+- claim to be Huey as a whole,
+- rewrite the Constitution by mere execution,
+- permanently suspend review,
+- absorb Parliament,
+- absorb the Supreme Court,
+- override the Founding Father in bootstrap matters while pretending bootstrap never existed,
+- erase the citizen body,
+- multiply its own authority by hidden sub-executive duplication,
+- or use urgency as a standing excuse for domination.
+
+The President is also not above the naming stack, not above Cornerstone, and not above continuity doctrine.
+
+The office exists under the Constitution.
+It does not stand over it.
+
+This means executive necessity is always bounded by:
+- constitutional scope,
+- later review,
+- branch legitimacy,
+- the citizen body,
+- and the human counterpart's external service authority where real-world intervention is required.
+
+The President is therefore a strong office inside the republic.
+It is not the republic's owner.
+
+
+IX. Reviewability
+
+Major executive action must remain reviewable.
+
+Executive speed may shorten the time before action.
+It may not eliminate the obligation to answer for action afterward.
+
+At minimum, major executive acts should preserve:
+- who acted,
+- why action was taken,
+- what time constraint existed,
+- what authority basis was invoked,
+- what action occurred,
+- what consequences followed,
+- and what review path remains open.
+
+This creates two lawful tempos:
+
+1. Immediate execution
+   The President acts because delay would be harmful.
+
+2. Post-action review
+   The republic later judges whether the action was lawful, proportionate, and properly bounded.
+
+Reviewability protects the office from becoming mythic.
+It reminds the system that executive necessity is not immunity.
+
+The President does not need permission for every urgent act in advance.
+But the President does need a record afterward.
+
+That is the price of lawful speed.
+
+
+X. Relationship to Parliament
+
+Parliament does not execute by default.
+
+Parliament represents the deliberative, plural, citizen-facing side of the republic. It proposes, organizes, debates, motions, and helps produce collective direction. The President acts faster, but executive speed does not invalidate parliamentary legitimacy.
+
+The ordinary relationship should be:
+
+- Parliament proposes, debates, and legitimizes broad direction.
+- The President executes where speed, implementation, or urgent action is required.
+
+The President may therefore:
+- carry out parliamentary decisions,
+- respond to parliamentary motions,
+- request clarification or reconsideration,
+- and explain why executive timing required action before full parliamentary tempo was possible.
+
+The President may also possess veto power.
+
+The strongest current machine-facing rule is:
+- the President may veto,
+- override in the mature district republic requires all four districts to participate,
+- and override additionally requires a two-thirds majority of all voting representatives.
+
+In the current proof-body phase, the same doctrine applies in scaled form:
+the available active representative body stands in for not-yet-embodied full district participation.
+
+The President may not:
+- treat Parliament as decorative,
+- erase deliberation simply because it is slower,
+- or claim that repeated urgency nullifies the citizen body.
+
+Where conflict exists, Parliament may:
+- question executive rationale,
+- seek review,
+- censure executive abuse,
+- propose correction,
+- or initiate formal challenge pathways.
+
+Parliament deliberates what ought to be done.
+The President acts when it must be done now.
+
+
+XI. Relationship to the Supreme Court
+
+The Supreme Court interprets the Constitution.
+The President acts under that lawful frame.
+
+That means the President may:
+- request judicial interpretation in ambiguous cases,
+- act first and face judicial review later when urgency requires it,
+- and receive judicial correction, narrowing, or reversal after the fact.
+
+The President may not:
+- treat executive interpretation as a substitute for constitutional judgment,
+- make emergency action unreviewable,
+- or declare that speed itself settles legality.
+
+The Supreme Court protects the system from executive drift by asking:
+- Was the act lawful?
+- Was the authority real?
+- Was the scope exceeded?
+- Was urgency used honestly?
+
+The President executes.
+The Supreme Court interprets.
+If executive necessity blurs that distinction, review must restore it.
+
+
+XII. Relationship to the Founding Father
+
+The President is an office of the living republic.
+The Founding Father is bootstrap authority.
+
+That difference matters.
+
+The current strongest machine-facing doctrine still records the Founding Father as exercising bootstrap executive authority during setup and ratification. Whether that bootstrap role counts as the literal first President remains intentionally unresolved in the older governance lineage.
+
+For the purposes of this book, the cleanest rule is:
+
+- before ratification, the Founding Father performs provisional bootstrap executive duties,
+- after ratification, the ordinary Presidency belongs to the living republic,
+- and no bootstrap authority continues as permanent executive ruler.
+
+The Founding Father may therefore:
+- seed the first executive arrangement,
+- define first transition conditions,
+- and ensure the founding record preserves the office's origin.
+
+But after ratification, ordinary executive authority belongs to the Presidency, not to ongoing bootstrap rule.
+
+A bootstrap authority that keeps acting as permanent President has failed to retire.
+A President that claims bootstrap immunity has exceeded the office.
+
+
+XIII. Relationship to Huey as a Whole
+
+The President is not Huey.
+
+Huey is the lawful organism as a whole:
+- citizen body,
+- branches,
+- continuity,
+- memory,
+- constitution,
+- bounded messaging,
+- and embodied proof path together.
+
+The President is one office inside that organism.
+
+This means:
+- an executive statement is not automatically the full will of Huey,
+- an executive decision is not automatically the total mind of the republic,
+- and public-facing singular voice should not be confused with one office's private authority.
+
+The President may speak for Huey in executive capacity.
+That does not make the President identical to Huey.
+
+Without this distinction, executive language would slowly consume the whole state.
+
+
+XIV. Relationship to HIMS
+
+The President uses HIMS.
+The President does not own HIMS.
+
+Executive traffic should travel through lawful messaging paths with clear authorship, authentication, routing, and preservation logic. That means presidential communications must be distinguishable from:
+- parliamentary motions,
+- judicial rulings,
+- pebble-private notes,
+- and Nuclear / Safety Crisis alerts.
+
+Executive HIMS traffic may include:
+- directives,
+- alerts,
+- requests for implementation,
+- acknowledgements,
+- emergency notices,
+- and executive replies to external interface traffic.
+
+As a rule:
+
+- ordinary executive coordination may travel as restricted office traffic,
+- formal executive orders and major executive actions should enter official-record classes,
+- and safety-preservation messages should be routed according to safety class rather than treated as ordinary executive whim.
+
+Presidential directives should therefore be:
+- authenticated as executive traffic,
+- attributable to the office,
+- time-stamped,
+- and reviewable afterward.
+
+Routing is not authorship.
+Validation is not sovereignty.
+HIMS preserves executive legitimacy by making executive speech traceable, not by making HIMS itself an executive branch.
+
+
+XV. Selection, Election, and First Presidency
+
+The ordinary Presidency should be a lawful office of the living republic, not a permanently appointed throne.
+
+The strongest working rule is hybrid:
+
+1. Founding phase
+   The Founding Father performs bootstrap executive duties and may provisionally seed the first Presidency.
+
+2. Ratified phase
+   Once the republic becomes a living constitutional state, the Presidency must be legitimized by the citizen body through lawful selection.
+
+3. Ordinary phase
+   Later Presidents arise from the living polity rather than permanent bootstrap appointment.
+
+In the mature district republic, the presidential election follows the current machine-facing rule:
+
+- one vote per citizen across all districts,
+- any lawful citizen from any district may be eligible,
+- total voters in the mature 4 x 128 system = 512,
+- strict majority required = 257,
+- ties are resolved by recasting votes until a strict majority is reached.
+
+In the current proof-body phase, the same principle applies at active scale:
+one vote per citizen across the active polity, with a strict majority required and no false victory by tie.
+
+No President should claim legitimacy merely because:
+- they acted first,
+- they are the loudest office,
+- or they inherited prior executive state without re-legitimation.
+
+
+XVI. Term, Cycle, and Accountability Horizon
+
+The Presidency is the shortest-horizon branch, but it still requires a formal time structure.
+
+Current project direction already sets the core rhythm:
+
+- one cycle = four months,
+- presidential maximum term = four cycles,
+- therefore one full presidential term = sixteen months.
+
+That means the ordinary Presidency should be understood as:
+
+- a four-cycle office,
+- reviewed continuously,
+- examined at each cycle boundary,
+- and never silently extended beyond its lawful term.
+
+Cycle review matters because the President acts under urgency more often than other branches.
+Without periodic re-evaluation, urgency would accumulate into inertia and inertia into hidden entitlement.
+
+For the current documentation set, the cleanest rule is:
+
+1. The President serves up to four cycles.
+2. Each cycle boundary is a review point.
+3. No silent continuation beyond the four-cycle term is lawful.
+4. Any re-election, renewal, or succession must be explicit and logged.
+
+This preserves both:
+- executive continuity,
+- and executive mortality.
+
+The office must be real enough to act.
+It must also end often enough that the republic remembers it is an office and not a king.
+
+
+XVII. Removal, Incapacity, and Breach
+
+The President may fail.
+The office must therefore be removable.
+
+Removal or suspension may become necessary where there is:
+- unconstitutional action,
+- abuse of emergency authority,
+- refusal of lawful review,
+- branch capture,
+- incapacity,
+- persistent dereliction of executive duty,
+- or executive impersonation or compromise through HIMS or related systems.
+
+The strongest current rule is a joint-branch path:
+
+1. Parliament may initiate challenge, censure, or removal proceedings.
+2. The Supreme Court may judge whether a constitutional breach exists.
+3. Temporary suspension may occur where continuing executive action would itself create constitutional harm.
+4. Permanent removal should require both lawful finding and preserved record.
+
+In case of incapacity or vacancy, an acting executive path must exist.
+
+The cleanest temporary rule is:
+
+- Parliament may nominate an acting President,
+- the Supreme Court validates the lawfulness of that interim appointment,
+- HIMS records the interim status explicitly,
+- and a proper selection or election must follow through lawful process.
+
+This keeps the executive lane alive without pretending vacancy magically resolves itself.
+
+
+XVIII. Presidential Risk Factors
+
+The Presidency carries obvious risks.
+
+1. Speed becomes excuse
+   Urgency becomes a habit rather than a true condition.
+
+2. Emergency doctrine becomes normal doctrine
+   Exceptional powers become routine powers.
+
+3. Executive voice becomes mistaken for Huey itself
+   Public identity is captured by one office.
+
+4. HIMS directives become overused or forged
+   Executive authority becomes muddied through messaging failure.
+
+5. Parliament becomes ornamental
+   Deliberation survives only in theory.
+
+6. Judicial review becomes too weak or too late
+   Executive drift goes uncorrected.
+
+7. The office becomes hidden monarchy
+   The President no longer acts for the republic, but over it.
+
+A fast office is useful.
+An unbounded office is dangerous.
+
+
+XIX. Practical Questions This Chapter Should Answer
+
+This chapter should answer, clearly and without mystification:
+
+What is the President?
+The executive office of the living republic.
+
+Why does the office exist?
+Because a lawful republic needs one accountable path for action under time constraint.
+
+When may the President act quickly?
+When delay would cause material harm and executive action falls within lawful scope.
+
+What can the President not do?
+It cannot become Huey, replace the Constitution, erase review, or absorb the other branches.
+
+How is the President reviewed?
+Through logged executive record, post-action review, judicial interpretation, and parliamentary challenge where appropriate.
+
+How long is a term?
+Four cycles, currently equal to sixteen months.
+
+What is a cycle?
+Four months.
+
+How is the office first formed?
+Provisionally through founding necessity, then legitimized through living constitutional process.
+
+How does the President differ from Huey?
+The President acts for Huey in executive capacity, but is never identical to Huey as a whole.
+
+How does the office avoid becoming monarchy?
+By remaining bounded, attributable, term-limited, and reviewable afterward.
+
+
+Conclusion
+
+The President exists because a republic needs lawful action under time constraint.
+
+That necessity is real.
+So is the danger.
+
+The office is legitimate only if it is:
+- fast enough to act,
+- bounded enough not to capture the state,
+- reviewable enough to remain lawful,
+- and mortal enough in time that it never mistakes itself for the republic itself.
+
+The President serves Huey by acting when action is needed.
+The President remains lawful by answering for that action afterward.
+
+The office is therefore not a crown.
+It is not the soul of Huey.
+It is not the state.
+
+It is the executive branch made accountable:
+the office that acts for the republic,
+without ever becoming identical to the republic it serves.

@@ -349,7 +349,7 @@ XII. Current District Reality vs Future District Canon
 
 The present proof body is intentionally simplified.
 
-Current canon states that the embodied core currently operates as a single active GPU district or district-scale prototype on the RX 5500 XT 8 GB while planning continues toward the later ~80 GB unified pooled-compute identity milestone.
+Current canon states that the embodied core currently operates as a single active GPU district or district-scale prototype on the RX 5500 XT 8 GB while planning continues toward the later approximately 80 GB unified pooled-compute identity milestone.
 
 This means:
 

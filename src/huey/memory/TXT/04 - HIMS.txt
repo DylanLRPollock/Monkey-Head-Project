@@ -14,7 +14,7 @@ If Chapter 2 defines what Huey stands on, and Chapter 3 defines how Huey is gove
 
 HIMS stands for Huey Internal Messaging System.
 
-It is the communication and message-governance layer of Huey. It is not merely a transport protocol, not merely an inbox, and not merely a technical convenience. It is the bounded, logged, reviewable system by which pebbles, branches, sub-systems, interfaces, and external actors exchange lawful information without collapsing the distinctions that keep Huey coherent.
+It is the communication and message-governance layer of Huey. It is not merely a transport protocol, not merely an inbox, and not merely a technical convenience. It is the bounded, logged, reviewable system by which pebbles, branches, subsystems, interfaces, and external actors exchange lawful information without collapsing the distinctions that keep Huey coherent.
 
 HIMS exists so that communication itself does not become an ungoverned shortcut around memory, legitimacy, privacy, or authority.
 
@@ -27,17 +27,11 @@ I. Purpose of HIMS
 HIMS has seven purposes.
 
 1. To carry messages between internal entities without erasing the distinction between one entity and another.
-
 2. To preserve end-to-end confidentiality where required, while still maintaining lawful routing and logged continuity.
-
 3. To separate pebble-private memory from shared records, branch records, and system-wide records.
-
 4. To ensure that important communications are attributable, timestamped, auditable, and reviewable.
-
 5. To prevent unauthorized access, silent impersonation, and unbounded cross-reading between roles.
-
 6. To provide a disciplined path for internal, inter-branch, inter-district, and external communication.
-
 7. To ensure that communication remains subordinate to constitutional legitimacy rather than becoming a backdoor around it.
 
 In simpler terms:
@@ -77,7 +71,7 @@ HIMS should be read through the following principles.
    External systems do not talk directly to Huey's inner life without going through defined interface paths and trust boundaries.
 
 10. The scrolls matter.
-   Critical communication must survive the moment and become part of continuity when appropriate.
+    Critical communication must survive the moment and become part of continuity when appropriate.
 
 
 III. Scope of HIMS
@@ -116,7 +110,7 @@ Instead, it acts as the lawful carrier between them.
 
 IV. Conceptual Model
 
-HIMS should be understood as having four layers:
+HIMS should be understood as having four layers.
 
 1. Interface Layer
    Where a sender originates a message.
@@ -136,11 +130,13 @@ This layered model is important because it prevents a sender from becoming its o
 That separation protects both privacy and legitimacy.
 
 
-V. Keeper of the Scrolls
+V. Keeper of the Scrolls and Routing Stewardship
 
 The office most closely associated with HIMS is the Keeper of the Scrolls.
 
 The Keeper of the Scrolls is not simply a mail clerk. Nor is the Keeper the author of the messages that pass through the system. The Keeper is the steward of message legitimacy, routing discipline, ledger continuity, and access hygiene.
+
+Where later implementation distinguishes between archival stewardship and active routing, a separate postmaster or routing validator may be defined beneath HIMS. If no such distinction is made, the Keeper is assumed to be carrying both responsibilities. In either case, routing authority must not silently become sovereign authority.
 
 The Keeper's duties include:
 
@@ -160,14 +156,17 @@ The Keeper ensures that what is sent, received, routed, or rejected happens lawf
 
 The Keeper therefore belongs conceptually to the communications-governance layer, not to arbitrary administrative convenience.
 
-Detailed role powers may later be cross-referenced in the offices chapters, but for HIMS purposes, the Keeper is the office that watches the road without claiming to own every traveler.
+Where later implementation distinguishes between archival stewardship and active message routing, a separate postmaster or routing validator may be defined beneath HIMS. If that distinction is not made, the Keeper is assumed to be carrying both responsibilities. In either case, routing authority must not silently become sovereign authority.
+
+For HIMS purposes, the important rule is simple:
+the office that validates and routes traffic is not therefore the office that authors or rules upon it.
 
 
 VI. Trust Classes
 
 Every message in HIMS should belong to a trust class.
 
-A practical trust-class model is as follows:
+A practical trust-class model is as follows.
 
 Class 0 - Ephemeral
 Low-risk, short-lived signals or coordination notices that do not require long archival life.
@@ -237,6 +236,17 @@ This is essential. Otherwise the system would be forced into one of two failures
 
 HIMS must allow a third path:
 private content, visible legitimacy.
+
+Minimum lawful trace
+
+For protected traffic, the minimum lawful trace should include:
+- sender identity,
+- recipient identity or lawful recipient class,
+- trust class,
+- timestamp,
+- route,
+- delivery state,
+- and a signature or cryptographic seal sufficient to verify authenticity later.
 
 Where especially sensitive material is involved, the system may store:
 - full ciphertext in the official record,
@@ -441,7 +451,7 @@ and a broader constitutional messaging frame to govern it.
 
 XIII. Directories, Queues, and Scrolls
 
-A practical directory model for HIMS may include:
+A practical directory model may include paths such as:
 
 /hims/incoming/
 /hims/outgoing/
@@ -451,7 +461,7 @@ A practical directory model for HIMS may include:
 /hims/district/
 /hims/archive/
 
-These should be treated conceptually rather than as a fixed final implementation. The important thing is the class separation.
+These should be treated as illustrative rather than constitutionally fixed. The important thing is the class separation, not the permanence of a specific filesystem path.
 
 A scrolls-aware message lifecycle may look like this:
 
@@ -559,10 +569,10 @@ A lawful message path should support at least the following states:
 Not every message needs every state exposed publicly, but the system should be able to tell where in the path a message stands.
 
 Acknowledgement matters because it separates:
-- "sent" from
-- "arrived" from
-- "read" from
-- "acted upon."
+- sent
+- arrived
+- read
+- acted upon
 
 Failure modes should also be classed.
 
@@ -593,32 +603,32 @@ Executive use of HIMS:
 - urgent directives,
 - crisis signaling,
 - bounded command traffic,
-- reviewable emergency communication.
+- reviewable emergency communication
 
 Judicial use of HIMS:
 - case submission,
 - draft rulings,
 - contradiction review,
-- constitutional interpretation records.
+- constitutional interpretation records
 
 Parliamentary use of HIMS:
 - motions,
 - debates,
 - vote organization,
 - proposal lineage,
-- representation traffic.
+- representation traffic
 
 Keeper use of HIMS:
 - routing,
 - validation,
 - anomaly tracking,
-- ledger stewardship.
+- ledger stewardship
 
 Pebble use of HIMS:
 - private notes,
 - official communication,
 - role-based participation,
-- lawful promotion of ideas into shared process.
+- lawful promotion of ideas into shared process
 
 Thus HIMS is not the government.
 It is the road system, mailbox system, checkpoint system, and scroll system by which the government can act without becoming illegible.
