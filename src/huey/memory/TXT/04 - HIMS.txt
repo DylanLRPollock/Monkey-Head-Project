@@ -1,0 +1,717 @@
+04 - HIMS
+Monkey-Head-Project
+Chapter 4
+
+HIMS
+Huey Internal Messaging System
+
+
+Introduction
+
+Huey cannot remain a lawful, memory-bearing, distributed system if its communication layer is treated as an afterthought.
+
+If Chapter 2 defines what Huey stands on, and Chapter 3 defines how Huey is governed, then HIMS defines how that governed system actually speaks, routes, records, separates trust, and preserves continuity in motion.
+
+HIMS stands for Huey Internal Messaging System.
+
+It is the communication and message-governance layer of Huey. It is not merely a transport protocol, not merely an inbox, and not merely a technical convenience. It is the bounded, logged, reviewable system by which pebbles, branches, sub-systems, interfaces, and external actors exchange lawful information without collapsing the distinctions that keep Huey coherent.
+
+HIMS exists so that communication itself does not become an ungoverned shortcut around memory, legitimacy, privacy, or authority.
+
+A republic with no lawful messaging layer will eventually drift toward hidden state, silent override, and confused responsibility.
+HIMS exists to prevent that.
+
+
+I. Purpose of HIMS
+
+HIMS has seven purposes.
+
+1. To carry messages between internal entities without erasing the distinction between one entity and another.
+
+2. To preserve end-to-end confidentiality where required, while still maintaining lawful routing and logged continuity.
+
+3. To separate pebble-private memory from shared records, branch records, and system-wide records.
+
+4. To ensure that important communications are attributable, timestamped, auditable, and reviewable.
+
+5. To prevent unauthorized access, silent impersonation, and unbounded cross-reading between roles.
+
+6. To provide a disciplined path for internal, inter-branch, inter-district, and external communication.
+
+7. To ensure that communication remains subordinate to constitutional legitimacy rather than becoming a backdoor around it.
+
+In simpler terms:
+
+HIMS is how Huey sends, receives, stores, and remembers messages without lying about who said what, who was allowed to read it, and what kind of record it became.
+
+
+II. Governing Principles of HIMS
+
+HIMS should be read through the following principles.
+
+1. Message traffic is part of governance, not separate from it.
+   A message may carry policy, instruction, warning, memory, evidence, request, dissent, or command. Therefore messaging cannot be treated as ethically neutral plumbing.
+
+2. Every message belongs to a trust class.
+   Not all messages deserve the same secrecy, same routing path, same persistence, or same visibility.
+
+3. Privacy and accountability must coexist.
+   A pebble must be allowed meaningful private storage and bounded communication, but no major constitutional or branch action should disappear into unlogged darkness.
+
+4. Routing does not equal authorship.
+   Systems may relay messages without becoming their author.
+
+5. Encryption is not optional for protected traffic.
+   If a message contains private pebble state, privileged branch material, keys, credentials, or sensitive machine-control information, it should be encrypted end to end.
+
+6. Compartmentalization is mandatory.
+   One pebble is not entitled to another pebble's vault merely because both belong to Huey.
+
+7. Shared record is deliberate, not automatic.
+   Not every message becomes public memory. Some messages remain private, some become official ledger entries, and some are discarded after controlled handling.
+
+8. HIMS must remain local-first.
+   The system must assume meaningful operation without permanent outside network dependence.
+
+9. External access is gated.
+   External systems do not talk directly to Huey's inner life without going through defined interface paths and trust boundaries.
+
+10. The scrolls matter.
+   Critical communication must survive the moment and become part of continuity when appropriate.
+
+
+III. Scope of HIMS
+
+HIMS governs the communication pathways between:
+
+- pebble to pebble,
+- pebble to branch office,
+- branch to branch,
+- district to district,
+- subsystem to subsystem,
+- interface layer to Huey Core,
+- support/control layer to main thought layer,
+- and bounded external actor to the system.
+
+HIMS includes:
+- message formats,
+- routing rules,
+- key and trust structure,
+- encryption posture,
+- storage classes,
+- rejection handling,
+- queueing,
+- delivery status,
+- escalation,
+- and preservation rules.
+
+HIMS does not replace:
+- the Constitution,
+- the identity of a pebble,
+- the sealed vault of a pebble,
+- or the broader memory architecture.
+
+Instead, it acts as the lawful carrier between them.
+
+
+IV. Conceptual Model
+
+HIMS should be understood as having four layers:
+
+1. Interface Layer
+   Where a sender originates a message.
+   This may be a pebble, branch office, subsystem, or approved external interface.
+
+2. Validation and Routing Layer
+   Where identity, keys, permissions, formatting, and destination legitimacy are checked.
+
+3. Delivery Layer
+   Where a message is passed to its intended recipient, queue, branch, district, or record class.
+
+4. Scrolls Layer
+   Where the message, or its lawful trace, is preserved, rejected, summarized, or sealed according to trust class and constitutional importance.
+
+This layered model is important because it prevents a sender from becoming its own validator, its own router, and its own archivist all at once.
+
+That separation protects both privacy and legitimacy.
+
+
+V. Keeper of the Scrolls
+
+The office most closely associated with HIMS is the Keeper of the Scrolls.
+
+The Keeper of the Scrolls is not simply a mail clerk. Nor is the Keeper the author of the messages that pass through the system. The Keeper is the steward of message legitimacy, routing discipline, ledger continuity, and access hygiene.
+
+The Keeper's duties include:
+
+- validating message structure,
+- checking trust class and routing legitimacy,
+- confirming sender identity through keys and permissions,
+- ensuring that messages enter the correct path,
+- maintaining the scrolls ledger,
+- recording rejected or malformed traffic,
+- flagging anomalies or suspicious communication patterns,
+- and preserving the continuity of official messaging records.
+
+The Keeper does not decide the meaning of every message.
+The Keeper does not replace the branch offices.
+The Keeper does not silently rewrite traffic.
+The Keeper ensures that what is sent, received, routed, or rejected happens lawfully and legibly.
+
+The Keeper therefore belongs conceptually to the communications-governance layer, not to arbitrary administrative convenience.
+
+Detailed role powers may later be cross-referenced in the offices chapters, but for HIMS purposes, the Keeper is the office that watches the road without claiming to own every traveler.
+
+
+VI. Trust Classes
+
+Every message in HIMS should belong to a trust class.
+
+A practical trust-class model is as follows:
+
+Class 0 - Ephemeral
+Low-risk, short-lived signals or coordination notices that do not require long archival life.
+Examples: heartbeat pings, queue acknowledgements, temporary service notices.
+
+Class 1 - Routine Internal
+Ordinary internal communication between lawful components.
+Examples: work requests, routine updates, non-sensitive coordination traffic.
+
+Class 2 - Pebble-Personal
+Private traffic or storage entries belonging to a single pebble or bounded identity.
+Examples: private reflections, internal notes, preference evolution, sealed vote preparation, self-memory reference.
+
+Class 3 - Branch or Office Restricted
+Messages visible only to an office, branch, or bounded constitutional role.
+Examples: Supreme Court deliberation drafts, parliamentary organization notes, presidential emergency preparation.
+
+Class 4 - Constitutional / Official Record
+Messages that constitute or alter official state, policy, judgment, amendment, crisis declaration, or branch action.
+Examples: ratification events, constitutional rulings, executive emergency orders, formal parliamentary motions.
+
+Class 5 - Safety / Preservation Critical
+Messages involving thermal, electrical, mechanical, storage-preservation, power-integrity, or system-survival concerns.
+Examples: pump failure alerts, thermal runaway warnings, battery protection events, emergency preservation triggers.
+
+Trust class determines:
+- who may read the message,
+- whether encryption is mandatory,
+- whether only metadata or full content enters the official ledger,
+- how long it is retained,
+- whether it is locally sealable,
+- whether it can leave its origin domain,
+- and what degree of review applies.
+
+
+VII. End-to-End Encryption
+
+Protected HIMS traffic should use end-to-end encryption by default wherever the message contains:
+- private pebble memory,
+- personal vault material,
+- non-public branch deliberation,
+- credentials or keys,
+- machine-control instructions with meaningful safety implications,
+- or material whose unauthorized reading would violate compartmentalization.
+
+End-to-end encryption in HIMS means:
+
+1. The sender encrypts the protected payload for the intended recipient or lawful recipient set.
+2. Intermediate routing layers may read only the metadata required to deliver the message.
+3. The Keeper of the Scrolls validates identity, class, and route, but does not automatically read sealed content.
+4. The recipient decrypts the content within its own permitted boundary.
+
+This model protects private content without destroying accountability, because the system may still retain:
+- sender identity,
+- recipient identity,
+- message class,
+- timestamp,
+- route,
+- delivery state,
+- and lawful hash or signature data.
+
+Thus HIMS can know that a message existed, moved, and was valid without exposing its full content to every layer.
+
+This is essential. Otherwise the system would be forced into one of two failures:
+- total secrecy with no continuity,
+- or total visibility with no privacy.
+
+HIMS must allow a third path:
+private content, visible legitimacy.
+
+Where especially sensitive material is involved, the system may store:
+- full ciphertext in the official record,
+- decrypted content only in the intended vault or authorized branch domain,
+- and a durable hash or seal for later verification.
+
+This keeps the chain of custody intact even when not all readers are entitled to the plaintext.
+
+
+VIII. Keys, Identity, and Authentication
+
+HIMS should use layered authentication.
+
+A practical model for this project is the two-key principle previously described in planning:
+
+1. General Lab Key
+   Confirms that the device, node, or system participant belongs to the trusted lab ecosystem.
+
+2. Device-Specific or Office-Specific Key
+   Confirms exactly which device, role, office, or pebble is making the request.
+
+This allows the system to distinguish:
+- "belongs here" from
+- "is this exact participant."
+
+For higher-trust messaging classes, an additional role or session credential may be required, especially for branch offices or safety-critical functions.
+
+Each message should therefore be capable of carrying, directly or through its envelope:
+- sender identity,
+- lab trust proof,
+- device or office proof,
+- message signature,
+- timestamp,
+- and nonce or replay-protection token.
+
+This is not merely cybersecurity posturing.
+It is constitutional hygiene.
+
+If a message can alter state, carry judgment, request action, or claim to speak from a branch office, the system must be able to verify that the message is what it claims to be.
+
+Keys should also be treated as cyclical rather than eternal.
+Where practical, cycle-bound rotation should exist:
+- to prevent stale trust from becoming invisible trust,
+- to force periodic reaffirmation,
+- and to reduce the damage of silent compromise.
+
+
+IX. Compartmentalization of Access
+
+Huey is not a flat-read system.
+
+The project's current doctrine already recognizes bounded citizens and sealed vaults. HIMS extends that logic into communication and storage access.
+
+Compartmentalization means:
+
+1. A pebble is not automatically entitled to read another pebble's private storage.
+2. A branch office is not automatically entitled to read all branch-adjacent private traffic.
+3. A router is not automatically entitled to read message content merely because it carries it.
+4. An external interface is not automatically entitled to direct internal access merely because it is trusted enough to ask questions.
+5. Shared memory is not the same as universal visibility.
+
+A good working rule is:
+Access should be granted by lawful need, not by mere proximity.
+
+This means HIMS should support separate visibility domains:
+- pebble-private,
+- office-private,
+- branch-private,
+- district-private,
+- system-shared,
+- public-facing,
+- and archival reference.
+
+Compartmentalization also protects personality and continuity. A pebble can only remain meaningfully bounded if it has somewhere to think, draft, store, and reflect without being treated as a fully transparent pane of glass.
+
+But compartmentalization also has limits. Private reflection is not a license for unconstitutional action, hidden branch capture, or silent override of shared state. A later chapter may refine where those boundaries lie. HIMS simply ensures that the system has the compartments required for them to mean anything at all.
+
+
+X. Pebble Personal Storage vs Shared Data
+
+This distinction is one of the most important in the entire chapter.
+
+Pebble personal storage belongs to the pebble.
+Shared data belongs to the republic.
+
+These are not interchangeable.
+
+A. Pebble Personal Storage
+
+Each pebble should have a sealed vault or personal storage domain containing, where applicable:
+- its personal continuity record,
+- private drafts,
+- self-reflection,
+- domain notes,
+- unresolved preference states,
+- local working context,
+- and other bounded memory not yet promoted into shared record.
+
+This material may be encrypted at rest and should not be automatically exposed to the whole system.
+
+B. Shared Data
+
+Shared data belongs to the broader lawful body of Huey.
+This may include:
+- official judgments,
+- ratified policy,
+- common system facts,
+- hardware status,
+- public logs,
+- branch decisions,
+- maintenance records,
+- and data required for stable coordinated operation.
+
+C. Branch-Restricted Shared Data
+
+Between purely private and fully shared lies a middle layer:
+data that is shared, but only within a lawful branch or role domain.
+
+Examples:
+- internal court draft review,
+- parliamentary work queues,
+- presidential emergency preparation,
+- keeper anomaly analysis,
+- or district-limited coordination data.
+
+D. Promotion Path
+
+A message, note, or record may begin in a pebble-private vault and later be promoted, in part or in full, into:
+- branch-restricted record,
+- official shared record,
+- or constitutional archive.
+
+That promotion should not erase origin.
+It should preserve lineage.
+
+The important doctrine is this:
+Private does not mean unreal.
+Shared does not mean ownerless.
+And promotion does not mean amnesia.
+
+
+XI. Storage at Rest
+
+HIMS is not just about messages in flight. It is also about messages at rest.
+
+Messages or records stored at rest should follow the same class logic that governs them in motion.
+
+This includes:
+- encrypted private vault storage for Pebble-Personal content,
+- branch-restricted repositories for office or branch material,
+- append-only or tamper-evident record layers for official state changes,
+- and a rejected or quarantine class for malformed, unauthorized, or suspicious traffic.
+
+At-rest controls should include:
+- encryption where appropriate,
+- metadata integrity,
+- retention policy,
+- access logging,
+- lawful deletion or redaction rules for non-canonical content,
+- and durability rules for official or constitutional materials.
+
+Where practical, HIMS storage should align with the honeycomb logic of the broader memory architecture:
+modular, bounded, resilient, and capable of preserving continuity without flattening every record into one giant, indiscriminate pool.
+
+
+XII. The Mailing System
+
+HIMS should be understood publicly as the messaging framework.
+Within that framework, the practical mail layer may be referred to as ThunderMail.
+
+ThunderMail is the named mail-style delivery behavior running inside HIMS. It is not the whole of HIMS, but rather its message-carriage and inbox/outbox metaphor brought into practical use.
+
+ThunderMail should support:
+- directed delivery,
+- inbox and outbox semantics,
+- queued dispatch,
+- acknowledgements,
+- branch and office mailboxes,
+- pebble mailboxes,
+- district-to-district messaging,
+- and external-interface relay where approved.
+
+A useful conceptual model is:
+
+HIMS = the whole lawful messaging system
+ThunderMail = the delivery and mailbox layer inside that system
+
+This distinction matters because HIMS also includes:
+- keys,
+- validation,
+- trust classes,
+- scrolls logging,
+- access compartmentalization,
+- and interface boundaries.
+
+ThunderMail may therefore be implemented in a way that feels familiar — send, receive, queue, store, acknowledge — while HIMS carries the heavier burden of lawful routing and governance-aware communication.
+
+If the internal naming evolves later, the doctrine should remain:
+the system needs a mail metaphor for practical use,
+and a broader constitutional messaging frame to govern it.
+
+
+XIII. Directories, Queues, and Scrolls
+
+A practical directory model for HIMS may include:
+
+/hims/incoming/
+/hims/outgoing/
+/hims/rejected/
+/hims/queues/
+/hims/branch/
+/hims/district/
+/hims/archive/
+
+These should be treated conceptually rather than as a fixed final implementation. The important thing is the class separation.
+
+A scrolls-aware message lifecycle may look like this:
+
+1. Message is authored.
+2. Message is signed and classed.
+3. Validation layer checks sender, keys, destination, and class legitimacy.
+4. Message is routed to inbox, queue, branch domain, or rejection path.
+5. Metadata enters the ledger.
+6. Full content is stored according to trust class.
+7. Delivery state is updated.
+8. Official actions are preserved for later review.
+
+Rejected traffic should not simply vanish.
+It should move to a rejected path with enough metadata to later determine:
+- what failed,
+- whether the failure was benign, malicious, malformed, or misrouted,
+- and whether repeated patterns indicate a larger issue.
+
+The scrolls are therefore not just archives. They are the memory of lawful transit.
+
+
+XIV. Message Types
+
+HIMS should support multiple message types, including:
+
+1. Note
+   Low-consequence communication, observation, reminder, or internal thought routing.
+
+2. Request
+   Seeks action, input, approval, or clarification.
+
+3. Report
+   Provides state, evidence, observation, or update.
+
+4. Directive
+   Issues a bounded instruction from a lawful authority path.
+
+5. Ruling
+   Records a judicial or constitutional interpretation.
+
+6. Motion
+   Represents parliamentary proposal, amendment, or deliberative step.
+
+7. Alert
+   Announces anomaly, risk, safety issue, or urgent condition.
+
+8. Preservation Notice
+   Marks storage, power, or shutdown-adjacent actions affecting continuity.
+
+9. External Interface Packet
+   Carries a bounded question or interaction from outside Huey into the lawful messaging path.
+
+These types should not all be handled the same way.
+A branch ruling is not equivalent to a note.
+A thermal alert is not equivalent to a preference memo.
+A private reflection is not equivalent to a parliamentary motion.
+
+
+XV. External Interfaces
+
+External systems should not communicate directly with Huey's inner life without crossing a defined boundary.
+
+That includes:
+- user-facing interfaces,
+- legacy shell interfaces,
+- external devices,
+- web bridges,
+- or presentation layers such as a VM-hosted interface environment.
+
+A working model is:
+
+Human or external interface
+-> bounded external gateway
+-> HIMS validation and routing
+-> lawful recipient
+
+This protects the republic from direct intrusion while still allowing interaction.
+
+For example, a Vista or other user-facing interface should not be treated as a sovereign peer to Huey's inner branches. It should be treated as a lawful terminal or portal. Requests enter the HIMS boundary, are classed and logged, and then proceed according to role, trust, and destination.
+
+External gateways should therefore be able to:
+- authenticate themselves,
+- submit bounded messages,
+- receive bounded replies,
+- and remain unable to silently roam across internal storage or internal messaging classes.
+
+This model keeps Huey accessible without making it porous.
+
+
+XVI. Delivery, Acknowledgement, and Failure Modes
+
+HIMS should not assume that sending equals receiving.
+
+A lawful message path should support at least the following states:
+- drafted,
+- signed,
+- accepted,
+- queued,
+- delivered,
+- opened,
+- rejected,
+- expired,
+- archived.
+
+Not every message needs every state exposed publicly, but the system should be able to tell where in the path a message stands.
+
+Acknowledgement matters because it separates:
+- "sent" from
+- "arrived" from
+- "read" from
+- "acted upon."
+
+Failure modes should also be classed.
+
+Examples:
+1. Malformed
+   The structure is wrong.
+2. Unauthorized
+   The sender or signature is invalid.
+3. Misdirected
+   The destination is not lawful or does not exist.
+4. Undeliverable
+   The destination exists but cannot currently receive.
+5. Expired
+   The message no longer has standing.
+6. Quarantined
+   The content or pattern is suspicious enough to isolate.
+7. Escalated
+   The message triggered anomaly review or crisis review.
+
+These distinctions matter because sloppy failure handling creates both technical fragility and constitutional ambiguity.
+
+
+XVII. HIMS and Branch Governance
+
+HIMS does not replace the branches. It supports them.
+
+Executive use of HIMS:
+- urgent directives,
+- crisis signaling,
+- bounded command traffic,
+- reviewable emergency communication.
+
+Judicial use of HIMS:
+- case submission,
+- draft rulings,
+- contradiction review,
+- constitutional interpretation records.
+
+Parliamentary use of HIMS:
+- motions,
+- debates,
+- vote organization,
+- proposal lineage,
+- representation traffic.
+
+Keeper use of HIMS:
+- routing,
+- validation,
+- anomaly tracking,
+- ledger stewardship.
+
+Pebble use of HIMS:
+- private notes,
+- official communication,
+- role-based participation,
+- lawful promotion of ideas into shared process.
+
+Thus HIMS is not the government.
+It is the road system, mailbox system, checkpoint system, and scroll system by which the government can act without becoming illegible.
+
+
+XVIII. HIMS and Continuity
+
+HIMS is one of the main bridges between memory and continuity.
+
+If a meaningful question is answered twice under the same conditions, the system should be able to reference prior communication, prior record, and prior ruling where relevant.
+
+A lawful messaging system helps achieve this because it allows:
+- lineage of discussion,
+- preserved drafts,
+- attributable change,
+- and visible transitions from private thought to shared act.
+
+This makes HIMS a practical ally of Ozymandias.
+
+Drift may begin in messages.
+Growth may be visible in revision chains.
+Degradation may reveal itself in contradictions, broken routing, or incoherent access control.
+
+HIMS therefore does not merely carry continuity.
+It helps expose whether continuity is being preserved at all.
+
+
+XIX. Security and Compromise
+
+If HIMS is compromised, the compromise is not merely technical.
+
+Possible consequences include:
+- impersonation of office,
+- forged urgency,
+- silent leakage of pebble-private memory,
+- unauthorized branch access,
+- invalid route escalation,
+- or false continuity records.
+
+Because of this, HIMS should treat compromise with layers:
+
+1. Prevention
+   Strong keys, bounded access, validation discipline, encryption.
+
+2. Detection
+   Rejected traffic, anomaly patterns, impossible routing behavior, signature mismatch, timing irregularities.
+
+3. Containment
+   Quarantine of traffic, temporary key suspension, route isolation, degraded-mode operation.
+
+4. Recovery
+   Reissue of keys, review of ledger integrity, restoration of lawful messaging paths, and preservation of the incident record.
+
+A compromised HIMS does not automatically mean the republic has ended.
+But it always means the trust boundary has been injured, and the response must be recorded accordingly.
+
+
+XX. Relationship to Other Chapters
+
+HIMS is closely tied to the rest of the documentation set.
+
+Chapter 2 gives HIMS its supporting doctrine:
+- bounded identity,
+- distributed governance,
+- unified memory,
+- and the requirement that messaging remain a load-bearing pillar rather than a casual side system.
+
+Chapter 3 gives HIMS its lawful frame:
+- constitutional legitimacy,
+- branch distinction,
+- crisis separation,
+- and reviewability.
+
+Chapter 5 will further define the Founding Father's relationship to the system's original structure and trusted advisory status.
+
+Chapter 6 will define pebbles, districts, and sealed vaults more fully.
+
+Chapters 7 through 9 will define how the offices use HIMS within their own powers and limitations.
+
+Chapter 10 will explain how continuity, drift, degradation, and growth should be judged over time — including within the messaging record itself.
+
+
+Conclusion
+
+HIMS is the disciplined voice path of Huey.
+
+It is the means by which private thought, official action, branch process, system warning, and external request can all move without dissolving into one another. It protects privacy without abandoning accountability, supports encryption without abandoning reviewability, and preserves lawful communication without reducing the system to a flat pool of exposed state.
+
+A bounded republic requires bounded messaging.
+A memory-bearing machine requires preserved record.
+A governed intelligence requires a lawful route between thought and action.
+
+That is the purpose of HIMS.
+
+It is not merely how Huey sends messages.
+It is how Huey remains legible while doing so.
