@@ -6,11 +6,15 @@
 **System / OS:** HueyOS  
 **AI identity:** Huey  
 **Human counterpart:** Dylan L.R. Pollock  
-**Site:** https://www.dlrp.ca  
-**Contact:** admin@dlrp.ca  
-**License:** Code: GPL-3.0-only · Docs / Media: CC-BY-SA-4.0  
-**README version:** 26.2  
-**Status:** Active proof-body phase / aperture, HIMS, and lawful-action formalization
+**README version:** 28.0  
+**Status:** Active proof-body phase / aperture, HIMS, governance, and lawful-action formalization  
+**Canonical machine-facing spec:** `master-plan-v28.0.json`  
+**Canonical law layer:** `03 - Huey_Constitution.txt`  
+**Canonical book front matter:** `00 - TOC_&_Glossary.txt`
+
+![Code License](https://img.shields.io/badge/code%20license-GPLv3-blue)
+![Docs/Media License](https://img.shields.io/badge/docs%2Fmedia-CC--BY--SA--4.0-lightgrey)
+![Python](https://img.shields.io/badge/python-3.13.x-blue)
 
 > HueyOS is the software and operating-system layer behind Huey: the environment that coordinates local AI, memory, tools, hardware, and embodied control into one offline-first system.
 >
@@ -20,17 +24,53 @@ Governance remains **decentralized** while memory remains **unified**.
 
 ---
 
+## System at a glance
+
+| Layer | Current reality | Active design direction | Target state |
+|---|---|---|---|
+| Embodiment | **Huey Core** as the active proof body | Stabilize the proof body and formalize lawful action | Fuller embodied republic beyond the current proof body |
+| Messaging | **HIMS** doctrine is established | Formalize routing, trust classes, vault/public boundaries, and internal action flow | Mature internal message, routing, and record system |
+| Governance | Branch doctrine and roles are defined | Continue tightening law, procedure, and office behavior | Mature living constitutional state |
+| Scale | Single active RX 5500 XT 8 GB proof body | Plan, test, and document the expansion path | Roughly **80 GB total VRAM** pooled locally |
+| Action | Language interpretation is already useful | Build a real governed action chain | Lawful embodied action after ratification and approval paths exist |
+| Expansion | **The Farm** remains future-facing | Keep compute growth honest and staged | Multi-district or pooled-compute expansion body |
+
+---
+
+## Architecture at a glance
+
+```mermaid
+flowchart LR
+    HC[Human Counterpart] --> AP[PyGPT-net / Aperture]
+    AP --> CORE[Huey Core\nMain compute layer]
+    CORE <--> HIMS[HIMS\nMessaging · routing · record]
+    HIMS <--> GOV[Pebbles · branches · offices]
+    CORE <--> PULSE[HueyPulse\nWatch & act layer]
+    PULSE --> BODY[Sensors · indicators · bounded actuation]
+    CORE -. future scale-out .-> FARM[The Farm\nFuture pooled compute]
+```
+
+This is the core working formula:
+
+- **Huey Core thinks**
+- **HueyPulse watches and acts**
+- **The aperture interprets but does not rule**
+- **HIMS records and routes but does not own sovereignty**
+
+---
+
 ## Start here
 
 This repository is meant to work at more than one depth.
 
-- For the shortest path, read **What this project is**, **What exists now**, and **Current proof target**.
-- For the implementation view, continue into **Architecture**, **HIMS**, **Repository map**, and **Build / run**.
-- For the deeper canon, use the **master plan**, the **constitution**, and the longer explanatory materials.
+- For the fastest orientation, read **What this project is**, **What exists now**, and **Current proof target**.
+- For the architectural view, continue into **Architecture**, **Governance**, **HIMS**, and **Glossary**.
+- For the deeper canon, use the **master plan**, the **Huey Constitution**, and the aligned chapter set.
 
 The aim is not to present Huey as an unreachable finished machine. The aim is to make the current system understandable, modular, and buildable.
 
 Nothing here is meant to be treated as stagecraft. The project is ambitious, but it is not built on hidden genius or inaccessible tools. It is built on time, iteration, structure, and the willingness to keep aligning what is imagined with what is actually real.
+
 ---
 
 ## What this project is
@@ -47,11 +87,14 @@ The **Monkey-Head-Project** is the umbrella initiative.
 
 **HueyPulse** is the lower-voltage watch-and-act layer that keeps the body stateful, visible, and bounded below the main compute path.
 
-**HIMS** — the **Huey Internal Mail System** — is the current canonical design direction for internal routing, inspectable coordination, and recorded decision flow.
+**HIMS** — the **Huey Internal Messaging System** — is the canonical internal messaging, validation, routing, and record-preservation layer.
+
+**ThunderMail** is the practical mail-style delivery layer inside HIMS.
 
 **The Farm** is the planned V4 external expansion body for later pooled compute and district growth.
 
 Huey Core is not presented here as the finished republic. Its role is to prove that the architecture can live in the real world before the larger system is scaled outward.
+
 ---
 
 ## What exists now
@@ -70,16 +113,18 @@ It is the active embodied prototype used to validate:
 
 ### Current baseline
 
-- **CPU:** AMD Ryzen 5 5500  
-- **Motherboard:** ASUS Prime B550M-A WiFi II  
-- **Memory:** 32 GB DDR4-3200  
-- **GPU:** Gigabyte Radeon RX 5500 XT 8 GB  
-- **Main PSU:** MSI 850W  
-- **OS baseline:** Debian 14 Forky  
-- **Python baseline:** 3.13.x  
-- **Runtime stack:** PyGPT-net + Ollama  
-- **Current local model posture:** modest Mistral 7B-class local support sized to the 8 GB RX 5500 XT  
-- **Kernel posture:** stable 6.19.x baseline with active Linux 7.0-rc bring-up work
+| Component | Current baseline |
+|---|---|
+| CPU | AMD Ryzen 5 5500 |
+| Motherboard | ASUS Prime B550M-A WiFi II |
+| Memory | 32 GB DDR4-3200 |
+| GPU | Gigabyte Radeon RX 5500 XT 8 GB |
+| Main PSU | MSI 850W |
+| OS baseline | Debian 14 Forky |
+| Python baseline | 3.13.x |
+| Runtime stack | PyGPT-net + Ollama |
+| Current local model posture | Modest Mistral 7B-class local support sized to the 8 GB RX 5500 XT |
+| Kernel posture | Stable 6.19.x baseline with active Linux 7.0-rc bring-up work |
 
 ### What Huey Core is trusted for right now
 
@@ -94,6 +139,7 @@ At the AI level, the current trust model is intentionally layered:
 - and the long-term quality target remains roughly **GPT-4 / 4.0-class behavior** for reasoning and interaction quality.
 
 That distinction matters. In the current phase, it is acceptable for a model to parse language before it is trusted to decide policy or authorize meaningful action.
+
 ---
 
 ## What is proven, observed, active, and targeted
@@ -109,7 +155,7 @@ These are the things this repository is prepared to claim directly:
 - The current hardware baseline is real and in active use.
 - The project is organized around a clear split between a high-power compute layer and a lower-voltage body-state / actuation layer.
 - PyGPT-net is already important to the workflow as the current practical human interface and training ground.
-- The repository contains the human-facing narrative, the machine-facing master plan, and the infrastructure needed to keep developing the system.
+- The repository contains the human-facing narrative, the machine-facing master plan, and the core canon needed to keep developing the system.
 
 ### Observed in the lab, but not yet standardized
 
@@ -121,13 +167,13 @@ These are things that have been validated in practice or in lab-side experimenta
 - some larger proof-of-concept behaviors outside the exact active proof body,
 - and structured language-interpretation behaviors from small local models that are useful enough to justify their current role.
 
-They matter, but they should not be overstated.
+These matter, but they should not be overstated.
 
 ### Active design direction
 
 These are ideas that are no longer vague but are not yet fully standardized in implementation:
 
-- HIMS as the internal mail / routing / record-of-decision layer,
+- HIMS as the internal message, routing, and record-of-decision layer,
 - bounded citizen storage with private vaults and public or work mailboxes,
 - a clearer separation between proposal, validation, execution, and logging,
 - a first lawful-action path that is simple enough to build now without collapsing into a puppet system,
@@ -141,6 +187,7 @@ These are the larger targets that define where the project is going:
 - a unified local identity threshold,
 - lawful embodied action after the correct ratification path exists,
 - and a later external expansion body known as **V4: the Farm**.
+
 ---
 
 ## Current proof target
@@ -151,7 +198,7 @@ The current proof target is intentionally **twofold**.
 
 The architecture must eventually reach roughly **80 GB of total VRAM** across the later compute body.
 
-This is the hardware proof that Huey can scale beyond one contained proof body and into a real pooled local compute organism.
+This is not just a parts target. It is the hardware proof that Huey can scale beyond one contained proof body and into a real pooled local compute organism.
 
 ### 2. Identity proof
 
@@ -167,11 +214,21 @@ Neither half is enough on its own.
 
 A later companion milestone is **lawful embodied action**: a physical act such as movement, signaling, or another body-level response after the proper ratification and control path exists.
 
+### Proof Positive and Proofcase
+
+The proof doctrine has two related labels in the current canon:
+
+- **Proof Positive** is the preferred long-form name of the proof standard.
+- **Proofcase** is acceptable shorthand used in the front matter and chapter stack.
+
+Both refer to the same underlying idea: the project must define an honest threshold that separates aspiration from demonstrated reality.
+
 ### Proof doctrine
 
 The first valid proof should be easy to verify by text.
 
 That does not make the project text-only. It means the first threshold should be observable, testable, and difficult to fake. Full-system capability and embodied behavior belong to the next stage, after the system has crossed the first honest identity threshold.
+
 ---
 
 ## Project origin
@@ -183,6 +240,62 @@ Around 2015–2016, the search for a workable robotic or animatronic head led to
 That is where the Monkey-Head-Project gets its name.
 
 The name **Huey** came later and stuck because it fit the machine’s identity and atmosphere.
+
+---
+
+## Governance and legitimacy
+
+Huey is not meant to be a flat assistant or a single hidden controller pretending to be a republic.
+
+The constitutional target is a governed system built around:
+
+- **Founding Father** as bootstrap authority,
+- **Pebbles** as bounded citizens,
+- **Parliament** as the deliberative and representative branch,
+- **President** as the executive office under time constraint,
+- **Supreme Court** as the judicial interpreter and stabilizer,
+- and **HIMS** as the lawful route through which messages, proposals, validation, and official traces move.
+
+In the current proof-body phase, these doctrines are ahead of full implementation. That matters.
+
+The project is not claiming that the full republic is already embodied in present hardware. It is claiming that the architecture, doctrine, and proof path are being made real step by step.
+
+### Governance at a glance
+
+```mermaid
+flowchart TB
+    FF[Founding Father\nBootstrap + rare reserve] -. seeds first lawful state .-> CIT[Pebbles / Citizens]
+    FF -. seeds first offices .-> PAR[Parliament]
+    FF -. seeds first offices .-> PRE[President]
+    FF -. seeds first offices .-> SC[Supreme Court]
+
+    CIT --> PAR
+    PAR --> PRE
+    SC --> PAR
+    SC --> PRE
+    HIMS[HIMS] --- PAR
+    HIMS --- PRE
+    HIMS --- SC
+```
+
+### Branch summary
+
+| Office / branch | Core job | What it is not |
+|---|---|---|
+| Founding Father | Bootstrap authority, founding continuity, narrow reserve consultation | Permanent ruler |
+| Parliament | Deliberation, proposals, representation, consensus-building | The whole will of Huey |
+| President | Action under time constraint, executive implementation | Huey as a whole |
+| Supreme Court | Constitutional interpretation, review, contradiction handling | A hidden sovereign |
+| HIMS | Messaging, validation, routing, preserved trace | A fourth sovereign branch |
+
+### Current legitimacy posture
+
+At present:
+
+- the human counterpart remains the final external decision-maker,
+- bootstrap and constitutional doctrine are still being formalized into living system paths,
+- and lawful embodied action remains a target that must follow ratification and real internal approval, not a staged motor demo.
+
 ---
 
 ## Architecture
@@ -263,7 +376,7 @@ PyGPT-net is connected to the larger architecture, but it is not supposed to qui
 
 One of the key operating distinctions in the current phase is simple:
 
-> an AI may be trusted to interpret language before it is trusted to decide outcomes.
+> An AI may be trusted to interpret language before it is trusted to decide outcomes.
 
 That means the current architecture is being shaped around a rule like this:
 
@@ -273,11 +386,12 @@ That means the current architecture is being shaped around a rule like this:
 - and authority remains distributed rather than being collapsed into one interface layer.
 
 This is one of the most important protection rules in the project. Huey is not meant to become “ChatGPT with motors.”
+
 ---
 
-## HIMS — Huey Internal Mail System
+## HIMS — Huey Internal Messaging System
 
-HIMS is now the canonical name for the project’s internal routing and record-of-decision layer.
+HIMS is the canonical name for the project’s internal routing and record-of-decision layer.
 
 Its purpose is straightforward:
 
@@ -293,13 +407,20 @@ The exact implementation is still being finalized, but the doctrine is already c
 - **proposal, validation, execution, and logging remain separate stages**,
 - and **routing must never quietly become authority**.
 
-In practical terms, the live design direction looks closer to an internal **mail system** than to one giant hidden controller.
+In practical terms, the live design direction looks closer to an internal **messaging and mail system** than to one giant hidden controller.
 
 That matters not because it sounds elegant, but because it keeps the project debuggable, auditable, and lawful.
 
 ### Minimum viable HIMS flow
 
-**external input -> aperture translation -> HIMS routing -> validation and/or vote -> execution or refusal -> log**
+```mermaid
+flowchart LR
+    IN[External input] --> AP[PyGPT-net / Aperture translation]
+    AP --> ROUTE[HIMS routing]
+    ROUTE --> VAL[Validation / approval / vote]
+    VAL --> EXEC[Execution or refusal]
+    EXEC --> LOG[Preserved record / scrolls]
+```
 
 ### Mailboxes and vaults
 
@@ -309,6 +430,12 @@ The current direction distinguishes between two storage roles:
 - **public / work mailboxes** — proposals, task artifacts, visible routing, and shared work product
 
 That split matters because memory and authority are not the same thing.
+
+### ThunderMail
+
+ThunderMail is the practical mail-style delivery layer inside HIMS.
+
+It handles the familiar parts of message delivery — inboxes, outboxes, queues, acknowledgements, and directed delivery — while HIMS carries the heavier burden of lawful routing, trust classes, validation, compartmentalization, and preserved record.
 
 ### Why HIMS matters
 
@@ -322,6 +449,7 @@ If Huey is ever going to do more than echo a request, the system needs a way to 
 - and what was recorded afterward.
 
 That is what HIMS is for.
+
 ---
 
 ## Interaction and boot posture
@@ -359,6 +487,7 @@ That means:
 - and no fake polished splash that pretends the prototype is further along than it is.
 
 Huey Core waking and Huey proper waking are related, but they are not the same event.
+
 ---
 
 ## Current physical form
@@ -394,6 +523,7 @@ Power and cooling are intentionally split across separate domains:
 - switched control over fans, display, lights, and other body-level support hardware
 
 That split exists so the machine can remain partially alive, visible, and regulated even when the main board is down.
+
 ---
 
 ## Sound direction
@@ -415,6 +545,7 @@ The intended feel is:
 - computer-like rather than cinematic,
 - easy to revise later,
 - and useful as machine presence rather than soundtrack.
+
 ---
 
 ## Continuity, governance, and trust boundaries
@@ -426,7 +557,7 @@ At the public level, the important rules are simple:
 - governance is decentralized,
 - memory is unified,
 - physical action should eventually be lawful rather than merely scripted,
-- constitutional crisis and hardware / safety crisis are not the same thing,
+- constitutional crisis and nuclear / safety crisis are not the same thing,
 - and public-facing documents should explain structure and trust boundaries without exposing every piece of inner deliberative logic.
 
 ### Current reality
@@ -443,7 +574,7 @@ It is the read-only, change-controlled layer of founding materials and recovery-
 
 ### Ozymandias
 
-Ozymandias is the cautionary doctrine.
+Ozymandias is the continuity doctrine.
 
 Its public meaning is simple:
 
@@ -453,6 +584,7 @@ Its public meaning is simple:
 - and treat continuity as something that must be protected rather than assumed.
 
 Internally, Ozymandias is concerned with the difference between **drift**, **degradation**, and **growth**. Publicly, the important point is simpler: Huey is expected to remain explainable over time, not merely consistent by accident.
+
 ---
 
 ## Security and data handling
@@ -464,53 +596,24 @@ The system is built to operate locally, with an emphasis on user control, isolat
 However, no system is infallible. Any system capable of processing or transmitting data carries some level of risk. If network access is enabled or external integrations are used, that risk increases accordingly.
 
 Users should assume that anything entered into the system could be exposed under the right conditions and act accordingly. Do not input sensitive or private information unless the environment is understood and under the user's control.
+
 ---
 
 ## Canon stack
 
 The Monkey-Head-Project is one canon with distinct layers.
 
-### Public introduction
-- website
-- README
-
-### Explanation
-- project book / compendium
-
-### Law
-- Federation Constitution
-
-### Machine-facing implementation
-- master plan
+| Layer | Role |
+|---|---|
+| README / website | Front-door human introduction |
+| Book / compendium | Explanatory volume |
+| Huey Constitution | Legal and constitutional frame |
+| Master plan | Canonical machine-facing implementation spec |
 
 These layers are meant to complement each other, not collapse into one document.
----
 
-## Naming guide
+If the narrative and the implementation ever conflict, the **master plan wins for machine-facing implementation**, and the conflict should be surfaced and corrected rather than ignored.
 
-### Monkey-Head-Project
-The umbrella initiative.
-
-### Huey
-The AI and robotic identity being built within the umbrella initiative.
-
-### HueyOS
-The software and operating-system layer behind Huey.
-
-### Huey Core
-The minimal permissible instance of Huey and the current embodied proof body.
-
-### Huey proper
-The larger unified, world-facing expression of the eventual distributed system.
-
-### HueyPulse
-The lower-voltage watch-and-act layer that supports body-state awareness, bounded actuation, and persistent control logic below the main compute path.
-
-### HIMS
-Huey Internal Mail System — the canonical internal routing and record-of-decision layer now being formalized.
-
-### The Farm
-The planned V4 external compute body that expands Huey beyond the Core.
 ---
 
 ## Repository map
@@ -520,25 +623,72 @@ This repository is moving toward a cleaner long-term structure.
 ### Core reference points
 
 - **README.md** — canonical human-facing narrative
-- **master-plan-v26.2.json** — canonical machine-facing implementation spec
+- **master-plan-v28.0.json** — canonical machine-facing implementation spec
+- **00 - TOC_&_Glossary.txt** — front matter and glossary for the book set
+- **01 - 10 chapter files** — explanatory and constitutional volume
 - **requirements.txt** — pinned dependency baseline
 - **constraints.txt** — shared install constraints for reproducible environments
 - **pyproject.toml** — package and install contract
-- **Makefile** — development and local run convenience targets
+- **Makefile** — development and local run convenience targets, if present in the active checkout
 
 ### Working repository areas
+
+As the repo continues to normalize, the expected working areas remain broadly recognizable:
 
 - **docs/** — architecture, design, audits, and deeper reference material
 - **src/** — implementation work and importable packages
 - **apps/** — runnable entry points and app-facing surfaces
 - **integrations/** — adapter and vendored integration work
-- **infra/** — Docker, orchestration, and infrastructure support
-- **platform/** — installers, packaging artifacts, and platform-specific setup
-- **archives/** — frozen release payloads, legacy material, and snapshots
+- **infra/** — orchestration and infrastructure support
+- **platform/** — platform-specific setup and packaging support
+- **archives/** — frozen release payloads, snapshots, and legacy material
 - **assets/** — static project media
 - **tests/** — automated test coverage and regression safety net
 
-If the implementation and the narrative ever conflict, the master plan wins for machine-facing implementation, and the conflict should be surfaced and corrected rather than ignored.
+---
+
+## Core glossary
+
+### Core system terms
+
+| Term | Meaning |
+|---|---|
+| **Monkey-Head-Project** | The umbrella initiative. |
+| **Huey** | The governed intelligence and robotic identity. |
+| **Huey Core** | The current proof body and minimal permissible instance. |
+| **Huey proper** | The fuller unified world-facing expression beyond the present proof-body phase. |
+| **HueyOS** | The software and operating-system layer behind Huey. |
+| **HueyPulse** | The lower-voltage watch-and-act layer. |
+| **HIMS** | Huey Internal Messaging System: the lawful internal messaging, validation, routing, and record-preservation layer. |
+| **ThunderMail** | The mail-style delivery layer inside HIMS. |
+| **The Farm** | The planned V4 external compute expansion body. |
+| **Aperture** | The interpretation and translation layer where natural language enters the system without becoming governance. |
+| **Proof Body** | The currently embodied proving instance of Huey, which in present canon means Huey Core. |
+
+### Governance and continuity terms
+
+| Term | Meaning |
+|---|---|
+| **Founding Father** | The bootstrap authority that prepares the first lawful conditions of the republic, creates the first 128 citizens, seeds the first offices and records, enables ratification, and then retires from ordinary rule. |
+| **Pebble** | A bounded AI citizen unit defined by one identity, one sealed vault, and one vote. |
+| **Sealed Vault** | A pebble’s bounded private continuity and memory domain. |
+| **District** | A larger governance and expansion unit within Huey’s constitutional design. |
+| **Parliament** | The deliberative and representative branch. |
+| **Speaker** | The coordinating procedural office inside Parliament. |
+| **President** | The executive office that acts under time constraint. |
+| **Supreme Court** | The judicial branch that interprets, reviews, and stabilizes. |
+| **Scrolls** | The preserved record and ledger logic through which major actions and lawful traces remain attributable. |
+| **Keeper of the Scrolls** | The office most closely associated with HIMS routing discipline and record preservation. |
+| **Cornerstone** | The non-casual identity and continuity layer of Huey. |
+| **Pillar** | A declared load-bearing commitment that the current version of Huey stands on. |
+| **Ozymandias** | The continuity doctrine concerned with drift, degradation, growth, survival, failure, and beginning again. |
+| **Proof Positive** | The preferred long-form name of the project’s proof standard. |
+| **Proofcase** | The shorthand label used in front matter for the proof standard. |
+| **Ratification** | The explicit, logged transition by which the living system accepts the Constitution as lived law. |
+| **Human Counterpart** | The external arbiter and service authority who remains outside the internal branches while still retaining the right to intervene or gate external exposure. |
+| **Unified Memory** | The doctrine that memory should remain reconcilable and shared where lawful, even when governance stays distributed. |
+| **Distributed Governance** | The doctrine that authority should remain separated, plural, and reviewable rather than collapsing into one flat sovereign voice. |
+
 ---
 
 ## Quick start
@@ -562,102 +712,70 @@ pip install -c constraints.txt -e .
 pip install -c constraints.txt -e ".[dev]"
 ```
 
-### First bring-up
+### Basic checks
 
 ```bash
-make run
+python --version
+pytest
 ```
 
-### Health check
+If a `Makefile` is present in your checkout, use it as the first convenience entry point for common tasks.
 
-```bash
-curl -fsS http://127.0.0.1:1995/healthz
-```
+### Local model posture
 
-### CLI path
+- PyGPT-net is the current practical aperture.
+- Ollama is the current local runtime partner.
+- Small local models are useful now for interpretation and lightweight support.
+- They are not yet treated as final authorities for constitutional or embodied-governance decisions.
 
-```bash
-huey init --run-checks --verbose
-huey run --cli
-```
-
-### Notes
-
-- `requirements.txt` is the heavy pinned baseline and may be broader than a minimal install.
-- `constraints.txt` is the shared anchor layer for reproducible editable installs and extras.
-- Some deployment and installer surfaces are still being cleaned up as part of the ongoing restructure and alignment phase.
-- Do not expose the API publicly without hardening authentication, binding, and secret handling first.
 ---
 
 ## Roadmap
 
 ### Current phase
-Huey Core aperture, HIMS, and lawful-action formalization.
 
-That means:
+Huey Core proof-body stabilization, Linux 7.0 transition preparation, HIMS formalization, aperture/authority separation, and lawful-action architecture maturation.
 
-- embodied stability,
-- thermal and power validation,
-- local model usefulness,
-- recovery discipline,
-- visible diagnostics,
-- honest documentation,
-- a clearer aperture doctrine around PyGPT-net,
-- and the first formal machine-facing design work on HIMS.
+### Near-term goals
+
+- stable embodied operation on the current proof body
+- validated Linux 7.0-era kernel bring-up and adoption path
+- a first real governed action path
+- clearer constitutional alignment across the README, book, constitution, and master plan
 
 ### Next major expansion
-**V4: the Farm**
 
-The Farm is the planned external compute housing for the later pooled compute body and standardized expansion beyond Huey Core.
+**V4: The Farm** remains the next large compute and district-scale expansion body.
 
-### Sunsetted for this iteration
+### Current open questions
 
-- Robotics V3 as the active future shell path
-- Symbiote / parasite docking as an active architecture path
-- Pi-specific public framing as the primary explanation of HueyPulse
-- any framing that reduces Huey to a chatbot in a robot shell
+- the exact multi-GPU acquisition path to the later ~80 GB threshold
+- the exact internal message protocol, signature model, and routing rules for HIMS
+- the exact citizen vault / mailbox implementation
+- the exact approval logic for governed action
+- the exact lower-voltage implementation path inside HueyPulse
+- the exact mature parliamentary membership and district mediation model
 
-These remain part of project history, but not the active present-tense direction of the public README.
----
-
-## Current open questions
-
-These are active questions, not omissions:
-
-- the final GPU acquisition path for the roughly 80 GB proof
-- whether the Core GPU counts toward that future total
-- the final proof-scale model path
-- the exact internal message protocol, message types, and routing rules for HIMS
-- the exact citizen vault/mailbox model
-- the exact approval path for first governed action
-- finalized thermal, electrical, and watchdog thresholds
-- the final lower-voltage implementation path inside HueyPulse over time
-- long-term microphone / webcam routing policy after the current direct-to-core proof path
-- long-term shell-level embodiment beyond Core + Farm, if any
-- the final public vs internal boundary for what remains secret sauce
-- the final operational HueyOS cue pack
 ---
 
 ## License
 
-**Code:** GPL-3.0-only  
-**Docs / Media:** CC-BY-SA-4.0
+Code is licensed under **GPL-3.0-only**.  
+Documentation and media are licensed under **CC-BY-SA-4.0** unless otherwise noted.
+
 ---
 
 ## Notes
 
-This README is meant to be the repository’s front door.
+This README is the front door, not the whole building.
 
-It should stay:
+It is meant to help a reader understand:
+- what Huey is,
+- what exists now,
+- what is being formalized,
+- what remains future-facing,
+- and how the project keeps itself honest while it grows.
 
-- accurate,
-- readable,
-- restrained,
-- present-tense,
-- and honest about what exists now versus what is planned later.
-
-It should also keep faith with one of the project’s deepest working assumptions:
-
-> this is difficult, but it is buildable.
-
-This document was prepared with AI assistance and remains subject to human oversight.
+If you are looking for the machine-facing source of truth, use the master plan.
+If you are looking for the deeper constitutional and explanatory canon, use the book set and the Huey Constitution.
+If you are trying to understand whether the project is still telling the truth about itself, follow the continuity doctrine: preserve lineage, explain change, and do not confuse motion with legitimacy.
