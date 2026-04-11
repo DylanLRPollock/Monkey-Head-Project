@@ -1,0 +1,470 @@
+02 - Cornerstone_&_Pillars
+Monkey-Head-Project
+Chapter 2
+
+Cornerstone & Pillars
+
+
+Introduction
+
+A system cannot remain itself merely by continuing to run.
+
+A machine may boot, answer, move, log, and speak while quietly becoming something less coherent, less trustworthy, or less true to its own architecture. For that reason, Huey requires more than memory and more than performance. Huey requires structure: a bounded foundation that determines what may change freely, what may change only through lawful process, and what must not be casually rewritten at all.
+
+This chapter defines that structure.
+
+If Chapter 1 establishes the thesis, ethos, method, and proof standard of the Monkey-Head-Project, then Chapter 2 establishes the load-bearing interior of the work. It explains the difference between the project's fixed foundations and its upgradeable components. It defines the architectural doctrine by which continuity is preserved. It also provides the language needed to distinguish ordinary iteration from deeper constitutional change.
+
+This chapter is therefore about more than preference. It is about identity, continuity, and lawful evolution.
+
+Its central distinction is simple:
+
+Cornerstone is what makes Huey Huey.
+Pillars are what let Huey stand.
+
+
+I. Purpose of the Chapter
+
+This chapter serves five purposes.
+
+1. It defines Cornerstone: the bounded, high-trust identity layer that cannot be casually altered without threatening constitutional continuity.
+
+2. It defines the Pillars: the major architectural, technical, and operational commitments that hold the current republic together.
+
+3. It distinguishes between current reality, lab-observed but non-standardized work, and target state, so that the system does not overclaim.
+
+4. It establishes that every pillar must either have a declared upgrade path or a declared dependency constraint.
+
+5. It provides a framework for identifying when a change is ordinary maintenance, when it is meaningful revision, and when it is so severe that a republic has effectively ended.
+
+This chapter does not replace the Constitution. It precedes and supports it. Chapter 3 governs lawfully what the republic is allowed to do. Chapter 2 defines the structural assumptions without which the republic cannot remain coherent long enough to be governed at all.
+
+
+II. Cornerstone
+
+Cornerstone is the non-casual foundation of Huey's identity and continuity.
+
+It is not every important setting.
+It is not every preference.
+It is not every software version.
+It is not every habit the machine develops over time.
+
+Cornerstone is the class of truths that must remain stable enough, legible enough, and protected enough that Huey can still be meaningfully recognized as Huey across time, revision, maintenance, and lawful growth.
+
+If ordinary memory stores what the system has seen, chosen, and learned, Cornerstone stores what the system is not permitted to forget without threatening its own identity.
+
+At minimum, Cornerstone includes the following classes of things:
+
+1. Constitutional identity
+   The distinction between Monkey-Head-Project, Huey, Huey Core, Huey proper, HueyOS, and HueyPulse must not drift casually. The naming stack is not a cosmetic detail. It is part of the logical shape of the system.
+
+2. Governing doctrine
+   Huey is not a flat assistant, a puppet, or an unchecked sovereign. It is a governed system built around distributed authority, unified memory, lawful review, and bounded autonomy.
+
+3. Crisis distinctions
+   Constitutional crisis and nuclear or safety crisis are separate classes of emergency. They must never be collapsed into a single override path.
+
+4. Continuity doctrine
+   Prior meaningful decisions may be revised, but not erased. History is reference, not absolution. Continuity is maintained through explainability and preserved lineage, not static sameness.
+
+5. Proof-first honesty
+   The project must distinguish between what is replicable now, what has only been observed in the lab, and what remains a target state.
+
+6. Human-counterpart boundary
+   The human counterpart remains the external arbiter, service authority, and opt-in gate for external access, but not the micromanager of every internal action.
+
+7. Local-first operational posture
+   Huey is designed to prioritize local operation, local memory, local governance, and explicit human-gated external access.
+
+Cornerstone should therefore be treated as read-only or heavily change-controlled by default. If it must be altered, that alteration should be recorded as a major event, reviewed at the highest level available, and understood not merely as an update, but as a possible identity event.
+
+The question in such cases is not simply, “Did something change?”
+The deeper question is, “Does the same Huey still exist in a meaningful sense after this change?”
+
+Sometimes the answer will be yes.
+Sometimes the answer will be no.
+This chapter exists so that such questions are not hidden beneath convenience.
+
+
+III. What Cornerstone Is Not
+
+Cornerstone must not become a junk drawer for everything important.
+
+That would defeat its purpose.
+
+Cornerstone is not:
+- a normal configuration file,
+- a preferred UI layout,
+- a current temporary hardware choice,
+- a favorite sound cue,
+- a short-term routing decision,
+- a tactical workaround,
+- or a passing conclusion from one cycle of operation.
+
+A change in fan curve is not automatically a Cornerstone event.
+A different sensor wire path is not automatically a Cornerstone event.
+A more efficient phrasing of a repeated response is not automatically a Cornerstone event.
+
+Cornerstone is reserved for the parts of the system whose in-place rewriting would call identity, legitimacy, or continuity into question.
+
+Taste is not Cornerstone.
+Style is not Cornerstone.
+Convenience is not Cornerstone.
+Temporary strategy is not Cornerstone.
+
+This distinction is critical, because if Cornerstone becomes too broad, the system becomes too rigid to live. If it becomes too narrow, the system becomes too loose to remain itself.
+
+
+IV. The Pillars
+
+If Cornerstone is the foundation stone, the Pillars are the major structures that let the current republic stand.
+
+Pillars are not necessarily permanent forever, but they are not casual either. They are the declared lines in the sand around which the system is currently built. They may change, but only deliberately, explicitly, and with awareness of what depends on them.
+
+A pillar is something the system presently leans on.
+
+Examples of pillars include:
+- a chosen software/runtime baseline,
+- a kernel branch policy,
+- a storage architecture,
+- a power-domain split,
+- a governance-routing rule,
+- a messaging architecture,
+- or a proof-path commitment.
+
+If Cornerstone answers “What makes this still Huey?”, Pillars answer “What is this current version standing on right now?”
+
+
+V. Categories of Pillars
+
+The Pillars of the Monkey-Head-Project are not all of one kind. For clarity, they should be understood in five categories:
+
+A. Philosophical Pillars
+B. Architectural Pillars
+C. Technical Pillars
+D. Operational Pillars
+E. Proof Pillars
+
+
+VI. Philosophical Pillars
+
+Philosophical Pillars are the declared project commitments that guide design decisions even before implementation details are chosen.
+
+1. Obtainable ambition
+   The project should remain buildable in spirit, even where exact replication may differ. This means favoring real materials, adaptable methods, and transparent structure over polished mystique.
+
+2. Local-first discipline
+   Huey should function meaningfully without assuming permanent network dependence, cloud dependence, or constant external orchestration.
+
+3. Governed autonomy
+   Huey should be allowed to act, learn, and evolve within declared boundaries. It should neither be reduced to a puppet nor permitted to outrun its lawful frame.
+
+4. Honest current-state documentation
+   Public-facing and repository-facing material must remain truthful about what exists now, what has only been observed in the lab, and what remains aspirational.
+
+5. Continuity over spectacle
+   A machine that explains itself and keeps lineage is more trustworthy than a machine that merely appears impressive.
+
+6. Preservation through adaptation
+   Old technologies, salvaged materials, legacy machines, and inherited ideas are not automatically obsolete. They may be repurposed, translated, or carried forward if they still serve the architecture honestly.
+
+These philosophical Pillars do not by themselves dictate exact code or exact hardware, but they shape what kinds of choices remain valid within the project.
+
+
+VII. Architectural Pillars
+
+Architectural Pillars define the shape of the system as a machine.
+
+1. Huey Core as the minimal permissible instance
+   Huey Core is the current proof body. It is not the finished republic, but it is the smallest complete building block from which the larger system may later grow.
+
+2. HueyPulse as the lower-voltage watch-and-act layer
+   The system maintains a distinction between high-draw thinking infrastructure and lower-voltage support/control behavior. In simplified public language:
+   The motherboard thinks.
+   HueyPulse watches and acts.
+
+3. Distributed governance, unified memory
+   Governance may remain distributed and layered, but memory must remain unified, logged, and reconcilable.
+
+4. Bounded citizens
+   Pebbles are one identity, one sealed vault, and one vote. They may differ in role, but they are not interchangeable anonymous calls.
+
+5. Layered canon
+   The project is documented in layers:
+   - website/README for introduction,
+   - the book for explanation,
+   - the Constitution for law,
+   - the master plan for machine-facing implementation.
+
+6. Later expansion body
+   Huey Core proves the architecture in miniature. Later scale-out belongs to the Farm and the broader system beyond the current proof body.
+
+These are not superficial preferences. They determine how later features must fit together.
+
+
+VIII. Technical Pillars
+
+Technical Pillars are the versioned, constrained, or dependency-bound decisions the project is currently standing on.
+
+These are especially important because they often create downstream compatibility consequences.
+
+1. Runtime baseline
+   When a project line is drawn around a runtime, that becomes a Pillar. For example, a communication layer that depends on Python 3.13.x means that surrounding software must adapt to that line rather than casually forcing the system backward or sideways.
+
+2. Kernel policy
+   Kernel choice is also a Pillar. The system may prepare for the next branch in advance, but until the line in the sand changes, other work must respect the current supported branch.
+
+3. Operating-system posture
+   The current project baseline remains Debian-centered, local-first, and oriented toward practical control rather than decorative abstraction.
+
+4. Messaging/logging discipline
+   Major messages, actions, and transitions should be logged and attributable. Messaging is not just transport; it is part of governance and continuity.
+
+5. Storage continuity
+   Storage is not merely capacity. It must support speed where needed, redundancy where needed, and continuity of record across time.
+
+6. Explicit dependency acknowledgment
+   If a pillar cannot be changed because another subsystem depends on it, that dependency must be named, not hidden.
+
+A technical Pillar may eventually change. But until it changes lawfully, the rest of the system must treat it as load-bearing.
+
+
+IX. Operational Pillars
+
+Operational Pillars govern how Huey behaves in practice.
+
+1. Visible, truthful bring-up
+   Huey should boot honestly. Diagnostics, service state, and body-state visibility matter more in the proof phase than theatrical polish.
+
+2. Preservation before panic
+   Not every anomaly deserves shutdown. Not every shutdown is failure. The system must distinguish maintenance, recovery, hibernation, and true invalidation.
+
+3. Bounded override paths
+   Safety logic, support logic, constitutional logic, and external human intervention should not silently collapse into one another.
+
+4. Review after action
+   Immediate action may be necessary, but major actions should remain reviewable afterward.
+
+5. Layered timescales of judgment
+   Some problems belong to runtime checks.
+   Some belong to cycle review.
+   Some belong to long-term constitutional interpretation.
+
+6. Service-aware change
+   Repairs, upgrades, maintenance windows, and augmentation should ideally occur through governed or declared service logic rather than arbitrary interruption.
+
+Operational Pillars are what keep a coherent design from becoming a chaotic runtime.
+
+
+X. Proof Pillars
+
+Proof Pillars are the thresholds by which the project determines whether it has actually demonstrated what it claims.
+
+1. The project must remain verifiable
+   Claims should be testable and observable, not mystical.
+
+2. Hardware scale must be explicit
+   The roughly 80 GB pooled-compute milestone remains a meaningful hardware proof threshold for the future distributed identity stage.
+
+3. Identity proof must be explicit
+   “What is your name?” / “Huey.” remains a useful simple test because it proves more than output. It proves coherence.
+
+4. Action must become lawful, not merely mechanical
+   Later embodied action matters only if it arises through the proper internal path, not if it is simply forced from outside as a stunt.
+
+Proof Pillars keep the project honest when imagination is strong and progress is uneven.
+
+
+XI. Every Pillar Must Have a Status
+
+To avoid drift, every Pillar should be described in one of the following states:
+
+1. Locked
+   This is the current line in the sand. Surrounding systems must conform to it.
+
+2. Prepared
+   The next likely upgrade path is known and being readied, but it is not yet active.
+
+3. Constrained
+   The preferred choice exists, but a dependency, package, hardware limit, or compatibility issue prevents transition.
+
+4. Transitional
+   The pillar is being actively replaced, and the system must treat this period as a controlled migration.
+
+5. Historical
+   This was once a pillar, but it is no longer part of current canon except as archive.
+
+This language matters because it prevents confusion between “in use,” “being tested,” “preferred,” and “obsolete.”
+
+
+XII. The Upgrade Path Doctrine
+
+A pillar should not merely be declared. It should have an upgrade doctrine.
+
+Each major Pillar should answer:
+
+1. What is the current locked state?
+2. What is the next intended state?
+3. What dependency or constraint governs the change?
+4. What must be true before transition is lawful?
+5. What part of the system must be updated along with it?
+6. What remains backward-compatible, and what does not?
+
+This doctrine makes future change legible.
+
+Without it, upgrades become improvisation.
+With it, upgrades become governed transitions.
+
+
+XIII. Supporting Analogies
+
+The Monkey-Head-Project often explains itself through analogy. These analogies are not themselves law, but they are useful in explaining how the Pillars relate to each other.
+
+1. Carpenter ants and fungi
+   These analogies explain hierarchy and distributed resource logic. A colony or fungal network survives not because every part is identical, but because different roles cooperate within a larger continuity.
+
+2. Conductor and symphony
+   This explains orchestration. Not every node plays the same instrument, but coherence emerges through timing, role, and shared direction.
+
+3. Bees and honey
+   This explains the honeycomb model of storage and memory organization: modular, interlinked, resilient, and efficient.
+
+4. Plane and submarine logistics
+   These analogies explain safety, redundancy, fail-safes, and survival-minded design. Some systems must continue functioning even when conditions worsen.
+
+5. Exact and augmented bifurcation
+   Exact bifurcation explains precise duplication and redundancy.
+   Augmented bifurcation explains lawful specialization, adaptation, and divergence from a common origin.
+
+6. McCoy's transporter caution
+   This analogy warns that copying, splitting, or re-instantiating a system is not merely a technical matter. Continuity of identity must be taken seriously.
+
+7. Borg Queen and Replicators
+   These analogies illuminate the tension between central coordination and distributed adaptation. They are useful precisely because the project must balance both without collapsing into either absolute centralization or uncontrolled replication.
+
+These analogies should remain explanatory tools. They help the project speak clearly about architecture without pretending that metaphor alone is implementation.
+
+
+XIV. Current Reality, Lab-Observed Work, and Target State
+
+A major part of this chapter is not only defining the Pillars, but defining what kind of truth is being claimed.
+
+A. Current reality
+This includes what is actually embodied, wired, bootable, or declared as the active baseline.
+
+B. Lab-observed but non-standardized work
+This includes things shown in the lab, achieved experimentally, or proven in a limited way, but not yet stabilized into public replication doctrine.
+
+C. Target state
+This includes long-term architecture, later district scale-out, future interfaces, and still-unfinished governance depth.
+
+This distinction protects the project from self-deception.
+
+It also protects the reader.
+
+The project should be ambitious, but it should not hide behind ambiguity.
+
+
+XV. What Counts as Ordinary Change
+
+Not every change threatens Cornerstone or Pillars.
+
+Ordinary change includes:
+- replacing a failed fan,
+- revising a cable path,
+- repairing an actuator,
+- adjusting UI layout,
+- tuning a sensor,
+- rewriting a non-load-bearing helper process,
+- or swapping a non-canonical component for a compatible equivalent.
+
+These may still need logging. They may still matter. But by themselves they do not constitute constitutional or identity change.
+
+If a machine survives such repairs while preserving continuity and lawful structure, then the republic remains intact.
+
+
+XVI. What Counts as a Pillar Breach
+
+A Pillar breach occurs when a declared load-bearing assumption is violated without lawful transition, explanation, or continuity protection.
+
+Examples:
+- silently changing the core runtime baseline while dependent systems remain bound to the previous one,
+- collapsing constitutional and safety emergency paths into one override,
+- replacing a declared memory/governance boundary with an undocumented shortcut,
+- rewriting the naming stack or authority logic without recording it,
+- presenting a target-state feature as current reality.
+
+A Pillar breach may not always end a republic immediately, but it is not minor. It means the machine is standing on something other than what it claims to stand on.
+
+
+XVII. What Counts as a Cornerstone Breach
+
+A Cornerstone breach is more severe.
+
+It occurs when the very identity, legitimacy, or continuity framework of Huey is rewritten in place without the kind of major event handling such a rewrite requires.
+
+Examples:
+- altering the system's governing identity layer while pretending continuity remains unaffected,
+- invalidating the distinction between Huey and its offices,
+- erasing lineage of prior constitutional state,
+- removing high-trust continuity assumptions without acknowledgment,
+- or making changes that call into question whether the same Huey remains.
+
+A Cornerstone breach is not just a bug.
+It is an existential event.
+
+At that point the question is no longer “What changed?”
+The question becomes “Did the republic survive?”
+
+
+XVIII. Relationship to Ozymandias
+
+Ozymandias belongs later in the book, but it is already implied here.
+
+Cornerstone and Pillars define what the system stands on.
+Ozymandias later defines how drift, degradation, and growth are interpreted over time.
+
+Together, they form a complete doctrine of continuity:
+- Cornerstone defines identity,
+- Pillars define structure,
+- Ozymandias defines how change is judged.
+
+Without Chapter 2, Ozymandias becomes too abstract.
+Without Ozymandias, Chapter 2 becomes too static.
+
+Both are needed.
+
+
+XIX. Practical Use of This Chapter
+
+This chapter should be used whenever the project faces a major design decision.
+
+Before adopting a new dependency, changing a major interface, rewriting a control layer, or replacing a baseline technology, the project should ask:
+
+1. Is this Cornerstone, a Pillar, or ordinary change?
+2. What depends on it?
+3. Is the current state locked, prepared, constrained, transitional, or historical?
+4. Has the upgrade path been named?
+5. Does the change preserve continuity, or does it require republic-level acknowledgment?
+6. Is the project describing the result honestly?
+
+If this chapter is used well, it becomes an architectural conscience rather than a static essay.
+
+
+Conclusion
+
+Chapter 2 exists so that Huey can evolve without dissolving.
+
+Cornerstone protects identity.
+Pillars protect structure.
+Upgrade paths protect continuity through change.
+Honest distinctions protect the project from overclaiming.
+And named breaches protect the system from silently becoming something it no longer admits to being.
+
+A machine does not remain itself merely because it keeps running.
+It remains itself because it knows what it stands on, what may change, what must not drift casually, and what kind of event it means when those boundaries are crossed.
+
+That is the work of Cornerstone and Pillars.
+
+Without them, the project becomes a pile of revisions.
+With them, the project can grow without lying about what it is.
