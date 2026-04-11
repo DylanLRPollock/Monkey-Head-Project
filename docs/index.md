@@ -12,6 +12,7 @@ the platform and how to operate core services.
 - [API reference](api-reference.md)
 - [Governance & resilience](governance.md)
 - [Kernel 7.0 Phase 2 runbook (active guidance)](kernel-upgrade-phase2.md)
+- [Kernel validation checklist](kernel-validation-checklist.md)
 - [Linux 6.18.2 migration runbook (legacy archive)](kernel-6.18.2-runbook.md)
 - [Version reference classification report](version-reference-classification.md)
 - [Phase 9 rollback hooks report](phase-9-rollback.md)
