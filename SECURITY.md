@@ -58,7 +58,7 @@ HueyOS is designed and tested primarily against:
 * **OS**
 
   * Debian 14 “Forky” (stable) — **primary supported** platform.
-  * Debian 13 “Trixie” — **historical/migration-only** compatibility target for legacy nodes.
+  * Debian “Trixie” — **historical/migration-only** compatibility target for legacy nodes.
 * **Architecture**
 
   * `amd64` (x86_64). Other architectures (ARM, RISC‑V, etc.) may work, but are currently out of scope for security guarantees.

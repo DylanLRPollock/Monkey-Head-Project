@@ -183,16 +183,17 @@ class MainUI:
 
     def setup_paths(self):
         """Determine installer paths based on the current platform."""
-        root = Path(__file__).resolve().parents[1]
+        root = Path(__file__).resolve().parents[4]
         setup_dir = root / "setup"
+        platform_installers = root / "platform" / "installers" / "debian" / "Debian"
         system = platform.system()
         if system == "Linux":
-            self.install_path = setup_dir / "Debian13" / "install.sh"
-            self.update_path = setup_dir / "Debian13" / "update.sh"
+            self.install_path = platform_installers / "install-deb.sh"
+            self.update_path = platform_installers / "update-deb.sh"
             self.run_path = root / "run.sh"
         elif system == "Darwin":
             self.install_path = setup_dir / "macOS" / "install.sh"
-            self.update_path = setup_dir / "Debian13" / "update.sh"
+            self.update_path = platform_installers / "update-deb.sh"
             self.run_path = root / "run.sh"
         elif system == "Windows":
             self.install_path = setup_dir / "Windows11" / "01-FULL.bat"

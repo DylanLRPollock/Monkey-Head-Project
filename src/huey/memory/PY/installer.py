@@ -16,12 +16,14 @@ import os
 import platform
 import subprocess
 import sys
+from pathlib import Path
 
 from hueyos.core.system_checks import ensure_admin
 from hueyos.license_cli import show_license_cli
 from hueyos.license_gui import show_license_gui
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = Path(__file__).resolve().parents[4]
 
 # Hardware selection options for manual installation
 HARDWARE_OPTIONS = [
@@ -139,7 +141,9 @@ def display_license() -> None:
         show_license_cli()
 
 
-LINUX_INSTALL = os.path.join(SCRIPT_DIR, "setup", "Debian13", "install.sh")
+LINUX_INSTALL = str(
+    PROJECT_ROOT / "platform" / "installers" / "debian" / "Debian" / "install-deb.sh"
+)
 MAC_INSTALL = os.path.join(SCRIPT_DIR, "setup", "macOS", "install.sh")
 WINDOWS_INSTALL = os.path.join(SCRIPT_DIR, "setup", "Windows11", "01-FULL.bat")
 

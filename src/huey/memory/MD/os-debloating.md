@@ -12,16 +12,16 @@ setup\Windows10\windows-remove-tool.bat
 
 This debloating step is optional but recommended for systems dedicated to the project.
 
-## Debian 13
+## Debian Forky
 
-While no automatic script is supplied for Linux, you can achieve a lightweight installation by uninstalling packages you do not require and disabling unused services:
+While no automatic script is supplied for Linux, you can achieve a lightweight Forky installation by uninstalling packages you do not require and disabling unused services:
 
 ```bash
 sudo apt-get purge libreoffice-* games-* thunderbird
 sudo systemctl disable cups.service
 ```
 
-After cleaning up, update the system and install only the packages listed in `setup/Debian13/install.sh`.
+After cleaning up, update the system and install only the packages listed in `platform/installers/debian/Debian/install-deb.sh`.
 
 ## macOS
 
