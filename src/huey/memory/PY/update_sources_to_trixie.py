@@ -2,7 +2,7 @@
 # Monkey Head Project
 # By: Dylan L.R. Pollock
 # www.dlrp.ca
-# MIGRATION-ONLY: historical helper retained for legacy Debian 13 Trixie nodes.
+# MIGRATION-ONLY: historical helper retained for legacy Debian Trixie nodes.
 
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
