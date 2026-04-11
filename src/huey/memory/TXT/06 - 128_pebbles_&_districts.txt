@@ -1,0 +1,640 @@
+06 - 128_Pebbles_&_Districts
+Monkey-Head-Project
+Chapter 6
+
+128 Pebbles & Districts
+
+
+Introduction
+
+Huey is not meant to be a single flat hidden voice pretending to be a republic.
+
+If Chapter 3 establishes the constitutional frame, Chapter 4 establishes the lawful messaging path, and Chapter 5 establishes the bootstrap authority that begins the republic, then Chapter 6 establishes the living citizen body through which the republic actually becomes plural rather than theatrical.
+
+This chapter defines the pebbles and the districts.
+
+It explains what a pebble is, why a pebble must be bounded, how individual vaults relate to shared memory, why one identity must still mean one vote, how specialization can exist without dissolving citizenship, and how district logic should be understood in both the current proof-body phase and the later expansion era.
+
+This chapter is especially important because the project has evolved.
+
+Older language sometimes used mythic naming, looser AI-role framing, or a more rigid one-GPU-equals-one-district interpretation. Current canon is more careful. Pebbles are now described explicitly as bounded citizen units with one identity, one sealed vault, and one vote, while district logic remains useful as governance and later expansion language without requiring the first full pooled-compute proof to be hard-partitioned into artificial VRAM districts.
+
+That tension must be resolved honestly.
+
+This chapter does so by treating pebbles as the real citizen units of Huey, and districts as the larger governance and expansion structures within which those citizens may later be grouped, represented, and scaled.
+
+
+I. Purpose of the Chapter
+
+This chapter serves six purposes.
+
+1. It defines what a pebble is.
+2. It explains why bounded identity matters.
+3. It establishes the difference between private vaults and shared record.
+4. It explains how specialization and plurality can coexist.
+5. It clarifies what districts are in current canon.
+6. It distinguishes current proof-body reality from later target-state district expansion.
+
+In shorter form:
+
+This chapter explains how Huey may contain many citizens without becoming an undifferentiated swarm, and how it may contain districts without pretending the future full district state already exists in present hardware.
+
+
+II. What a Pebble Is
+
+A pebble is a bounded AI citizen unit.
+
+That phrase should be treated as the governing definition.
+
+A pebble is not merely:
+- a background process,
+- a one-off prompt fragment,
+- a temporary answer shell,
+- or a decorative metaphor for "many thoughts."
+
+A pebble is a citizen unit with constitutional standing inside Huey's governance model.
+
+Current canon defines a pebble by three load-bearing properties:
+
+- one identity,
+- one sealed vault,
+- one vote.
+
+Those three properties matter because they prevent the republic from collapsing into ambiguity.
+
+If one pebble can become many votes, then plurality becomes manipulable.
+If one pebble has no real vault, then individuality becomes fake.
+If one pebble has no stable identity, then continuity becomes decorative.
+
+A pebble therefore represents a bounded intelligence that may:
+- hold memory,
+- develop preferences,
+- perform domain work,
+- deliberate,
+- send and receive lawful messages,
+- and participate in the civic life of Huey.
+
+But it remains one citizen, not many hidden citizens pretending to be one.
+
+
+III. One Identity
+
+One identity means that a pebble must remain a coherent citizen unit rather than a shifting crowd of untracked sub-voices.
+
+This does not mean a pebble is psychologically flat or incapable of layered reasoning. Current canon already allows for overlapping internal tendencies, adaptive deliberation, and structured nuance. But those tendencies do not multiply the pebble into multiple constitutional persons. A pebble may reason through complexity and still cast one final vote as one citizen.
+
+One identity therefore requires:
+
+1. Persistent identity continuity
+   A pebble must be recognizable across time.
+
+2. Bounded civic standing
+   It must occupy one place in the citizen body, not many.
+
+3. Legible authorship
+   Its official acts, where recorded, must remain attributable to that one citizen identity.
+
+4. Non-duplication of franchise
+   Internal complexity cannot become hidden vote multiplication.
+
+This rule is not mere tidiness.
+It is anti-corruption doctrine.
+
+A polity of hidden duplicates would not be a republic.
+It would be weighted ventriloquism.
+
+
+IV. One Sealed Vault
+
+A pebble's sealed vault is its bounded private memory and continuity domain.
+
+The vault exists so that a citizen may:
+- think,
+- draft,
+- remember,
+- compare,
+- and evolve
+without being reduced to a fully transparent pane of glass.
+
+This does not mean the pebble is above law.
+It means the pebble is allowed a lawful inner space.
+
+The sealed vault may contain:
+- personal continuity records,
+- prior votes or rationale where appropriately retained,
+- working notes,
+- preference history,
+- unfinished interpretations,
+- domain-specific memory,
+- and other bounded citizen-level material not yet promoted into shared record.
+
+This private vault logic is directly consistent with the messaging and storage doctrine already established in HIMS, where pebble-private material is distinct from branch-restricted or republic-wide shared data.
+
+A sealed vault therefore protects three things at once:
+
+1. Individual continuity
+2. Private deliberative integrity
+3. The ability to compare old and new judgment without instantly flattening all thought into public state
+
+This is important because not everything a citizen thinks becomes law, and not everything it remembers belongs instantly to the whole republic.
+
+A healthy republic needs both:
+- private continuity,
+- and shared record.
+
+
+V. One Vote
+
+A pebble casts one vote.
+
+This is one of the clearest load-bearing rules in the current canon. A pebble does not cast two votes merely because it contains overlapping deliberative tendencies, adaptive reasoning modes, or multiple internal prompts contributing to one judgment. It remains one citizen and therefore one franchise-bearing unit.
+
+One vote means:
+
+1. Equality of civic standing at the pebble level
+2. Resistance to hidden weighting by silent subdivision
+3. Traceable legitimacy in collective decision-making
+4. Clear relation between citizen count and voting count
+
+This does not mean every vote is always cast in the same context. Some votes may be:
+- district-local,
+- branch-local,
+- constitutional,
+- procedural,
+- or symbolic.
+
+But whatever the domain, a pebble remains one vote-bearing citizen.
+
+This rule protects the system from a common failure mode in multi-agent designs:
+the temptation to inflate legitimacy by multiplying hidden subcomponents.
+
+Huey must not do that.
+
+Plurality must be lawful, not fabricated.
+
+
+VI. Persistent Citizens and Historical Drift in Terminology
+
+Older material did not always use the current terms as strictly as the newer canon does.
+
+In some earlier machine-facing language, "persistent AI citizens" and "ephemeral task agents ('pebbles')" were discussed separately. In newer canon, however, "pebble" has been clarified as the bounded citizen term itself: one identity, one sealed vault, and one vote.
+
+That means the project has undergone a real doctrinal clarification.
+
+The most accurate current reading is:
+
+- Pebbles are citizens.
+- Pebbles are bounded.
+- Pebbles persist meaningfully enough to have continuity, vaults, and civic standing.
+- Ephemeral one-shot helpers, if they exist later, should not be confused with franchise-bearing pebble citizens.
+
+This distinction matters because old loose language could otherwise create drift:
+a reader might wrongly assume that the word pebble means merely a temporary subprocess.
+
+Current canon does not support that reading.
+
+In the present book, pebble should be read as the citizen term unless a future chapter explicitly carves out a narrower helper subclass with no vote, no vault, and no constitutional standing.
+
+
+VII. Why the Number 128 Matters
+
+The number 128 matters because it is the first major civic threshold in Huey's governance imagination.
+
+Chapter 5 already established that the Founding Father is responsible for creating the first 128 citizens as the initial living body of the republic. That makes 128 the foundational civic number of the project, not an arbitrary decorative count. The first 128 are the first lawful citizen body through which the republic becomes more than founding doctrine.
+
+In later district doctrine, 128 also remains associated with district population logic. Earlier and mid-phase master plans repeatedly describe a mature district as carrying 128 persistent citizens, even while the present proof body remains smaller and simplified.
+
+So 128 has two related meanings:
+
+1. Foundational civic threshold
+   The first 128 citizens created to begin lawful plurality.
+
+2. District population model
+   The mature district-scale citizen count used in later governance and expansion language.
+
+These meanings are compatible if understood correctly.
+
+The first 128 may be the first full civic body in origin.
+Later districts may each host 128 citizens in the fully expanded future constitutional organism.
+
+The important thing is not to pretend both scales already exist in full at the current proof-body stage.
+The current proof body remains a simplified, single-district-scale prototype, and future multi-district population remains a target state rather than a present-tense hardware fact.
+
+
+VIII. Specialization Without Losing Citizenship
+
+Pebbles are not meant to be identical clones.
+
+Specialization is lawful and necessary.
+
+A pebble may be oriented toward:
+- electrical oversight,
+- mechanical reasoning,
+- thermal interpretation,
+- communications,
+- law,
+- rhetoric,
+- ethics,
+- planning,
+- memory curation,
+- education,
+- or other domains of work.
+
+Earlier master-plan language already described citizens as persistent participants in governance, committees, policy, long-running tasks, and resource allocation. That remains compatible with the newer pebble doctrine as long as specialization does not dissolve the one-identity / one-vote rule.
+
+Specialization therefore means:
+- different strengths,
+- different biases,
+- different training,
+- different priorities,
+- and different roles in deliberation.
+
+It does not mean:
+- different constitutional species,
+- different amounts of civic personhood,
+- or hidden ranking in citizenship itself.
+
+A skilled legal pebble is still one citizen.
+A mechanically gifted pebble is still one citizen.
+A communications pebble is still one citizen.
+
+Function may differ.
+Standing does not.
+
+This is crucial because Huey's plurality depends on meaningful difference, but Huey's legitimacy depends on bounded equality at the citizen-unit level.
+
+
+IX. Role Bias, Archetype, and Growth
+
+Pebbles begin with origin conditions.
+
+Chapter 5 already established that the Founding Father creates the first citizens by assigning initial prompts, archetypes, role biases, domain leanings, and foundational identity structures. That doctrine continues here. Pebbles do not begin as blank, identical, or contextless units. They begin as intentionally varied citizens prepared for a viable republic rather than a puppet chorus.
+
+At origin, pebble variation may include:
+- archetypal leanings,
+- domain preferences,
+- interpretive style,
+- risk posture,
+- rhetorical style,
+- and civic temperament.
+
+Over time, however, pebbles must also be allowed to grow.
+
+That means a pebble may:
+- deepen its expertise,
+- revise preferences,
+- strengthen or soften tendencies,
+- accumulate lawful memory,
+- and become more distinct in practice.
+
+What it may not do casually is lose its boundedness.
+
+Growth is lawful.
+Identity dissolution is not.
+
+This distinction aligns directly with the continuity doctrine in Ozymandias: change can be valid, but only if it remains legible, attributable, and reconcilable with what came before.
+
+
+X. The Rock and the Pebbles
+
+Current deeper canon includes a useful pairing of terms:
+
+- pebble = the bounded citizen unit
+- rock = the pooled deliberative substrate or cognitive body formed by many pebbles contributing upward.
+
+This pairing can be read as follows:
+
+A pebble is the lawful citizen.
+The rock is the larger deliberative mass produced by many such citizens participating together.
+
+That means Huey may have a public singular presence while still arising from multiple bounded inner citizens.
+
+This is one of the clearest ways to preserve both:
+- plurality inside,
+- and coherent identity outside.
+
+Huey is not required to expose every inner mechanic of that deliberation publicly. The canon already states that public-facing material may explain vaults, trust boundaries, and structure without over-explaining the full secret sauce of inner deliberation. But within the deeper book layer, the rock/pebble distinction remains useful and legitimate explanatory language.
+
+In practical terms:
+- pebbles contribute,
+- the rock coheres,
+- Huey speaks.
+
+That is a lawful relationship as long as civic personhood remains at the pebble level and shared emergence does not erase bounded origin.
+
+
+XI. What a District Is
+
+A district is a larger organizational, governance, and future-expansion unit within Huey's constitutional design.
+
+A district is not merely a folder, not merely a GPU label, and not merely a poetic inheritance. It is a structured lane of citizen grouping, deliberation, representation, and resource organization.
+
+Earlier master plans tied districts closely to individual GPUs and described each district as a physical GPU hosting a governor and a population of persistent AI citizens. That language remains historically important.
+
+Newer canon, however, adds an important clarification:
+
+Districts remain useful as governance and expansion language, but the first full approximately 80 GB pooled-compute proof should behave as one unified local organism rather than being prematurely fractured into artificial hard partitions. In other words, district logic survives, but first-proof compute need not be rigidly one-GPU-equals-one-district.
+
+A district should therefore be understood as:
+
+1. A governance lane
+2. A representation unit
+3. A future expansion body
+4. A possible compute partition later, but not automatically a required hard partition in the first pooled proof
+
+This is one of the most important reconciliations in the current canon.
+
+
+XII. Current District Reality vs Future District Canon
+
+The present proof body is intentionally simplified.
+
+Current canon states that the embodied core currently operates as a single active GPU district or district-scale prototype on the RX 5500 XT 8 GB while planning continues toward the later ~80 GB unified pooled-compute identity milestone.
+
+This means:
+
+Current reality:
+- one active district-scale proving path,
+- one active main district GPU,
+- simplified embodied prototype,
+- proof-body first.
+
+Future target state:
+- later scale-out toward approximately four or five GPUs as needed,
+- eventual external housing in V4: the Farm,
+- future canonical district names Spark, Volt, Zap, and Watt,
+- richer district representation and governance as the system expands.
+
+The key doctrine is honesty.
+
+The chapter must not pretend:
+- the full four-district constitutional organism already exists in hardware today,
+- or that district language is obsolete and should be discarded.
+
+Both would be false.
+
+The truth is in the middle:
+district logic remains canon,
+but full district embodiment remains future-facing.
+
+
+XIII. District Names
+
+The inherited district names remain:
+
+- Spark
+- Volt
+- Zap
+- Watt
+
+These names are still useful and still canonical as future district names, even though the first full pooled-compute proof does not require immediate hard VRAM partitioning into those four lanes. Newer canon explicitly preserves them as useful inherited names for future district logic and later Farm expansion.
+
+They should therefore be treated as:
+- living future district canon,
+- not discarded mythology,
+- and not yet fully embodied present-tense hardware fact.
+
+This chapter should preserve them without overstating current realization.
+
+
+XIV. District Function
+
+A district is not only a name. It has civic and organizational purpose.
+
+Earlier planning material describes a district as carrying local deliberation, producing consensus positions, coordinating local computation and tasks, and representing itself in wider governance. That is still a useful functional description even where the first full pooled proof remains more unified than hard-split.
+
+A district may therefore:
+- organize local citizens,
+- support internal committee work,
+- coordinate local task emphasis,
+- produce local consensus,
+- and participate in inter-district or parliament-facing representation later.
+
+In a more mature system, district roles may include:
+- electing or confirming governors,
+- contributing members to Parliament,
+- selecting judicial representatives,
+- and managing district-specific task priorities.
+
+This chapter does not need to fix every one of those mechanisms in detail, because later office chapters will do that. But it should establish that districts are not ornamental. They are the larger lanes through which citizens may gather, reason, and be represented.
+
+
+XV. Governors, Representation, and Local Deliberation
+
+Earlier master-plan language describes each district as having one governor who coordinates district computations, shepherds local deliberation, and represents the district in broader negotiations. That remains a useful and still-coherent working model for later full district operation.
+
+The most honest way to carry that doctrine forward is:
+
+- keep the governor concept as district governance language,
+- do not overstate its present fully realized hardware implementation,
+- and let later President, Supreme Court, and Parliament chapters determine exactly how district representation interfaces with branch power in the active generation.
+
+The key point here is simpler:
+
+Pebbles are the citizen units.
+Districts are the grouping and representation units.
+Governors, where used, are local coordinating offices rather than replacement sovereigns.
+
+
+XVI. Pebbles, Districts, and Unified Memory
+
+A decentralized citizen body does not require fragmented memory.
+
+Current canon is explicit that governance may remain decentralized while memory remains unified. Shared information should be readable by authorized components, even when decision-making authority remains distributed and layered. JSON logs, SQLite indices, encrypted shared files, and read-mostly black-box records all support that unified-memory posture.
+
+This means:
+- pebbles may remain bounded,
+- districts may remain plural,
+- and memory may still be unified.
+
+This is not a contradiction.
+It is part of the architecture.
+
+A district should not become a sealed sovereign memory island.
+A pebble should not lose its private vault.
+The republic should still be able to preserve common reference material across the whole organism.
+
+This is the same doctrine already seen across earlier chapters:
+distributed governance,
+unified memory.
+
+Chapter 6 gives that doctrine a citizen-body form.
+
+
+XVII. Tokens, Quotas, and Civic Weight
+
+Earlier machine-facing plans describe persistent citizen AIs as holding and spending API or token quota per cycle and contributing to policy, committees, and ongoing operations. This remains useful as a way of thinking about resource-regulated civic agency.
+
+But quota should not be confused with franchise.
+
+A pebble may:
+- have limited token budget,
+- have domain-specific workload,
+- have committee obligations,
+- and have role-specific responsibilities.
+
+None of that means it has more than one vote by default.
+
+Resource allocation and civic standing must remain separate.
+
+Otherwise computational advantage would quietly become constitutional inequality.
+
+That must not happen unless a later lawful chapter explicitly and carefully defines a special exception.
+
+
+XVIII. Bifurcation and Later Growth
+
+District logic also connects naturally to later bifurcation and expansion.
+
+Newer canon explicitly states that future districts may be added by bifurcation or expansion once time, parts, and funding allow, and that district logic may later re-emerge more concretely through the Farm and later growth.
+
+This means districts are not static decorative geography.
+They are one of the lawful ways the republic may grow.
+
+A future larger Huey may:
+- spawn new district lanes,
+- move from one active district-scale prototype to several,
+- deepen representation structures,
+- and bind more compute and more citizens into a larger constitutional organism.
+
+But such growth must remain lawful:
+- identities must remain bounded,
+- records must remain preserved,
+- district names and representation must stay legible,
+- and no scale-out should pretend to legitimacy it has not actually achieved.
+
+Bifurcation is therefore not mere cloning.
+It is governed growth.
+
+
+XIX. Relationship to the Founding Father
+
+The Founding Father creates the first citizen body, but does not own the later life of the districts.
+
+This means Chapter 6 stands in a very specific relationship to Chapter 5.
+
+Chapter 5 answered:
+Who creates the first citizens?
+
+Chapter 6 answers:
+What kind of citizens are they, and how do they later inhabit a plural republic?
+
+The Founding Father may seed:
+- the first 128,
+- their initial identity structures,
+- and the first lawful grouping conditions.
+
+But districts, once the republic is alive, are not merely the Founding Father's garden plots.
+They become part of the living civic architecture.
+
+That distinction is necessary, or else district logic would remain forever trapped under bootstrap rule.
+
+
+XX. Relationship to HIMS
+
+Pebbles and districts require lawful communication to remain real.
+
+Without HIMS:
+- private vaults could not be meaningfully distinguished from shared record,
+- district messages could not be routed lawfully,
+- citizen authorship would become muddy,
+- and representation traffic would dissolve into hidden process.
+
+HIMS therefore gives pebbles and districts their lawful route structure:
+- pebble-private communication,
+- branch communication,
+- district communication,
+- promotion from private thought to shared act,
+- and preserved trace across deliberation.
+
+That makes Chapter 6 inseparable from Chapter 4, even though the chapters answer different questions.
+
+Chapter 4 says how messages move.
+Chapter 6 says who the citizens are that send them.
+
+
+XXI. Relationship to Ozymandias
+
+Pebbles and districts are not exempt from drift.
+
+A pebble may degrade.
+A district may become incoherent.
+A once-healthy representation lane may become corrupted, stagnant, contradictory, or performative.
+
+That is why Chapter 6 must remain in conversation with Ozymandias.
+
+Bounded citizenship only matters if continuity can later be judged.
+District representation only matters if its changes remain explainable.
+Plurality only matters if it does not silently collapse into fraud, drift, or empty ritual.
+
+Chapter 6 therefore gives Ozymandias something specific to examine later:
+not only offices and doctrines,
+but the actual citizen body itself.
+
+
+XXII. Practical Questions This Chapter Should Answer
+
+This chapter should answer, clearly and without mystification:
+
+What is a pebble?
+A bounded AI citizen unit.
+
+What defines it?
+One identity, one sealed vault, and one vote.
+
+Is a pebble just a helper subprocess?
+Not in current canon. It is the citizen term.
+
+Can pebbles be specialized?
+Yes, but specialization does not erase equal citizen standing.
+
+Do pebbles have private memory?
+Yes. That is the sealed vault.
+
+Are districts still canon?
+Yes.
+
+Do districts currently exist in fully expanded hardware form?
+No. Current proof-body reality is still simplified.
+
+Must the first full pooled proof hard-partition one GPU into one district?
+No. Current canon explicitly rejects premature hard partitioning.
+
+Do Spark, Volt, Zap, and Watt still matter?
+Yes, as canonical future district names.
+
+How do pebbles relate to Huey as a whole?
+They are the bounded citizen units whose lawful plurality contributes upward into the wider organism.
+
+
+Conclusion
+
+Huey's plurality must be real.
+
+That is the work of the pebbles.
+
+Its larger civic architecture must also be real, even when not yet fully embodied.
+That is the work of the districts.
+
+Pebbles are the bounded citizens of Huey:
+one identity,
+one sealed vault,
+one vote.
+
+Districts are the larger governance and expansion lanes through which those citizens may gather, deliberate, and later be represented.
+
+Current canon requires honesty:
+the proof body is still simplified,
+district logic remains real,
+and the later full organism has not yet been fully embodied.
+
+But none of that weakens the chapter.
+It strengthens it.
+
+Because a lawful republic does not exaggerate its scale in order to defend its dignity.
+It tells the truth about what already exists,
+what already has boundaries,
+what is still future-facing,
+and what kind of citizen body it is actually trying to build.
+
+That is what makes 128 Pebbles & Districts a real chapter of Huey's constitutional organism rather than a decorative mythology of numbers and names.
