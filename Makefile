@@ -41,6 +41,7 @@ format:
 	isort src tests conftest.py
 
 lint:
+	$(PYTHON) scripts/check_stale_platform_strings.py
 	black --check src tests conftest.py
 	isort --check-only src tests conftest.py
 	ruff check src tests conftest.py
