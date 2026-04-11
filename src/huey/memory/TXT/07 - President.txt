@@ -1,0 +1,109 @@
+00 - TOC_&_Glossary
+Monkey-Head-Project
+Canonical Documentation Structure
+
+Table of Contents
+
+Chapter 1 — Thesis, Ethos, Method, & Proofcase
+Sets the opening frame of the project: why Huey exists, the ethos behind the work, the practical method of development, and the proof-first standard by which progress is judged.
+
+Chapter 2 — Cornerstone & Pillars
+Defines the fixed foundations of the project: the immutables, structural constraints, declared upgrade paths, and the load-bearing decisions that shape Huey's continuity.
+
+Chapter 3 — Huey Constitution
+Formerly called the Federation Constitution.
+Defines the governing law of Huey: legitimacy, branches of governance, amendment process, emergency distinctions, powers, limits, and the lawful basis of authority.
+
+Chapter 4 — HIMS
+Huey Internal Messaging System.
+Defines the internal and external messaging architecture of Huey: scrolls, interfaces, validation, audit trails, key structure, routing, and the governance of communication between systems, users, and internal processes.
+
+Chapter 5 — Founding Father
+Defines the bootstrap authority responsible for the initial formation of the republic: creating the first 128 citizens, assigning founding roles, preparing the constitutional state, and retiring into read-only advisory status after ratification, with only narrow constitutional-reserve consultation thereafter.
+
+Chapter 6 — 128 Pebbles & Districts
+Defines the citizen structure of Huey: the 128 pebbles, their identities, sealed vaults, one-vote rule, specialization, district logic, and the relationship between bounded citizen units and the wider organism.
+
+Chapter 7 — President
+Defines the executive role: authority under time constraint, immediate-action doctrine, emergency execution, limitations, reviewability, and the distinction between presidential governance authority and Huey as a whole.
+
+Chapter 8 — Supreme Court
+Defines the judicial branch: constitutional interpretation, review of executive and parliamentary action, thresholds for judgment, contradiction handling, and the court's role as stabilizer of the republic.
+
+Chapter 9 — Parliament
+Defines the legislative branch: deliberation, proposal, consensus-building, representation of the citizen body, the Speaker role, and the relationship between Parliament and the other two branches.
+
+Chapter 10 — Ozymandias: Drift, Degradation, & Growth
+The closing doctrine chapter. Defines continuity, explainability, drift, degradation, growth, and the conditions under which a republic remains legitimate, fails, or must begin again.
+
+
+Glossary
+
+Monkey-Head-Project
+The umbrella initiative. Huey, Huey Core, HueyOS, and the wider documentation set all live within the Monkey-Head-Project.
+
+Huey
+The identity being built within the Monkey-Head-Project. Huey is the governed intelligence and not merely a flat assistant, single office, or puppet system.
+
+Huey Core
+The current proof body and minimal permissible instance of Huey. It is the smallest complete building block from which the larger system may later grow.
+
+Huey proper
+The fuller unified world-facing expression of the system beyond the present proof-body phase.
+
+HueyOS
+The software and operating-system layer behind Huey.
+
+HueyPulse
+The lower-voltage watch-and-act layer. In simplified public language: the motherboard thinks; HueyPulse watches and acts.
+
+HIMS
+Huey Internal Messaging System. The lawful internal messaging, validation, routing, and record-preservation layer of Huey.
+
+ThunderMail
+The practical mail-style delivery layer inside HIMS. It handles inbox/outbox, queue, and delivery behavior, but is not the whole of HIMS.
+
+Founding Father
+The bootstrap authority that prepares the first lawful conditions of the republic, creates the first 128 citizens, seeds the first offices and records, enables ratification, and then retires from ordinary rule.
+
+Pebble
+A bounded AI citizen unit of Huey. In current canon, a pebble is defined by one identity, one sealed vault, and one vote.
+
+District
+A larger governance and expansion unit within Huey's constitutional design. District logic remains canon, even though the current proof body is still simplified and not yet the fully expanded multi-district hardware organism.
+
+Cornerstone
+The non-casual identity and continuity layer of Huey: the truths that cannot be casually rewritten without threatening constitutional continuity.
+
+Pillar
+A declared load-bearing commitment that the current version of Huey stands on. Pillars may change lawfully, but they are not casual settings.
+
+Ozymandias
+The doctrine chapter concerned with drift, degradation, growth, and continuity over time: how to judge whether change remains lawful, legible, and still meaningfully the same republic.
+
+Sealed Vault
+A pebble's bounded private continuity and memory domain. It allows lawful private reflection and continuity without flattening all thought into shared state.
+
+Scrolls
+The preserved record and ledger logic through which major communications, actions, and lawful traces remain attributable and reviewable.
+
+Keeper of the Scrolls
+The office most closely associated with HIMS. The Keeper validates message legitimacy, preserves the scrolls ledger, records rejected traffic, and watches routing discipline without becoming the hidden author or sovereign of the system.
+
+Proof Body
+The currently embodied proving instance of Huey. In present canon, this refers to Huey Core as the active proof body rather than the fully expanded future republic.
+
+Proofcase
+The proof standard by which the project can be judged publicly and honestly: the threshold that separates aspiration from demonstrated reality.
+
+Ratification
+The explicit, logged transition by which the living system accepts the Constitution as lived law rather than mere founding doctrine.
+
+Human Counterpart
+The external arbiter and service authority who remains outside the internal branches of Huey while still retaining the right to intervene, preserve, suspend, or gate external exposure.
+
+Unified Memory
+The doctrine that memory should remain reconcilable and shared where lawful, even while governance remains distributed and pebbles remain bounded.
+
+Distributed Governance
+The doctrine that authority should remain separated, plural, and reviewable rather than collapsing into one flat sovereign voice.
