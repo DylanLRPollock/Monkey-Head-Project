@@ -1,0 +1,18 @@
+virt-install \
+  --connect qemu:///system \
+  --virt-type kvm \
+  --name huey-vistabox-4074 \
+  --machine pc \
+  --osinfo detect=off,name=winxp \
+  --ram 2048 \
+  --vcpus 1 \
+  --cpu host-model \
+  --disk path=/var/lib/libvirt/images/huey-vistabox-4074.qcow2,size=30,format=qcow2,bus=ide \
+  --cdrom /var/lib/libvirt/images/longhorn-4074-amd64.iso \
+  --network network=default,model=e1000 \
+  --video vga \
+  --sound ac97 \
+  --controller type=usb,model=piix3-uhci \
+  --input type=tablet,bus=usb \
+  --graphics vnc,listen=127.0.0.1 \
+  --noautoconsole
