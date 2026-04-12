@@ -279,3 +279,9 @@ def test_system_check_collects_expected_results(monkeypatch):
     assert results["kernel_policy"]["lab_supported"] is True
     assert results["git_available"] is True
     assert results["python3_available"] is True
+
+
+def test_required_tools_for_pulse_role_includes_pavucontrol() -> None:
+    tools = system_checks._required_tools_for_role("pulse")
+
+    assert "pavucontrol" in tools

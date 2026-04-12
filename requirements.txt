@@ -160,6 +160,8 @@ uv==0.11.6
 pydub==0.25.1
 sounddevice==0.5.5
 soundfile==0.13.1
+# System package requirement (not pip-installable):
+# - pavucontrol (PulseAudio/PipeWire volume control UI used by HueyOS pulse profile)
 
 pip==26.0.1
 setuptools==82.0.1

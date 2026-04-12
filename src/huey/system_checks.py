@@ -62,6 +62,7 @@ ROLE_REQUIRED_TOOLS: Dict[str, Tuple[str, ...]] = {
         "ethtool",
         "nmcli",
         "iostat",
+        "pavucontrol",
     ),
 }
 
