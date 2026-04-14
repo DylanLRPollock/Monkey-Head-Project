@@ -6,9 +6,9 @@
 **System / OS:** HueyOS  
 **AI identity:** Huey  
 **Human counterpart:** Dylan L.R. Pollock  
-**README version:** 28.0  
-**Status:** Active proof-body phase / aperture, HIMS, governance, and lawful-action formalization  
-**Canonical machine-facing spec:** `master-plan-v28.0.json`  
+**README version:** 30.2  
+**Status:** Active proof-body phase / portal, HIMS, founding-ratification, and lawful-action formalization  
+**Canonical machine-facing spec:** `master-plan-v30.2.json`  
 **Canonical law layer:** `03 - Huey_Constitution.txt`  
 **Canonical book front matter:** `00 - TOC_&_Glossary.txt`
 
@@ -30,9 +30,11 @@ Governance remains **decentralized** while memory remains **unified**.
 |---|---|---|---|
 | Embodiment | **Huey Core** as the active proof body | Stabilize the proof body and formalize lawful action | Fuller embodied republic beyond the current proof body |
 | Messaging | **HIMS** doctrine is established | Formalize routing, trust classes, vault/public boundaries, and internal action flow | Mature internal message, routing, and record system |
-| Governance | Branch doctrine and roles are defined | Continue tightening law, procedure, and office behavior | Mature living constitutional state |
+| Portal | **Portal terminal** doctrine is established | Validate the Huey Vista Box / portal path on real hardware or tightly controlled VM artifact | Thin, reproducible, non-sovereign portal surface into Huey |
+| Governance | Branch doctrine and founding roles are defined | Tighten law, founding procedure, and office behavior | Mature living constitutional state |
 | Scale | Single active RX 5500 XT 8 GB proof body | Plan, test, and document the expansion path | Roughly **80 GB total VRAM** pooled locally |
 | Action | Language interpretation is already useful | Build a real governed action chain | Lawful embodied action after ratification and approval paths exist |
+| Deployment | Huey Core is the active embodied instance | Clarify **Huey-Compressed** and portal boundaries without collapsing roles | Clean distinction between embodied, compressed, and portal profiles |
 | Expansion | **The Farm** remains future-facing | Keep compute growth honest and staged | Multi-district or pooled-compute expansion body |
 
 ---
@@ -41,7 +43,9 @@ Governance remains **decentralized** while memory remains **unified**.
 
 ```mermaid
 flowchart LR
-    HC[Human Counterpart] --> AP[PyGPT-net / Aperture]
+    HC[Human Counterpart] --> PT[Portal Terminal]
+    PT --> PB[Portal Bridge]
+    PB --> AP[PyGPT-net / Aperture]
     AP --> CORE[Huey Core\nMain compute layer]
     CORE <--> HIMS[HIMS\nMessaging · routing · record]
     HIMS <--> GOV[Pebbles · branches · offices]
@@ -56,6 +60,7 @@ This is the core working formula:
 - **HueyPulse watches and acts**
 - **The aperture interprets but does not rule**
 - **HIMS records and routes but does not own sovereignty**
+- **Portal devices open sessions but do not become Huey**
 
 ---
 
@@ -64,7 +69,7 @@ This is the core working formula:
 This repository is meant to work at more than one depth.
 
 - For the fastest orientation, read **What this project is**, **What exists now**, and **Current proof target**.
-- For the architectural view, continue into **Architecture**, **Governance**, **HIMS**, and **Glossary**.
+- For the architectural view, continue into **Architecture**, **Deployment profiles**, **Governance**, **Portal terminals**, **HIMS**, and **Glossary**.
 - For the deeper canon, use the **master plan**, the **Huey Constitution**, and the aligned chapter set.
 
 The aim is not to present Huey as an unreachable finished machine. The aim is to make the current system understandable, modular, and buildable.
@@ -91,6 +96,14 @@ The **Monkey-Head-Project** is the umbrella initiative.
 
 **ThunderMail** is the practical mail-style delivery layer inside HIMS.
 
+**Portal Terminal** is the non-sovereign external device or guest environment used to authenticate, display, and relay sessions into Huey.
+
+**Portal Bridge** is the small Huey-side entry layer that receives portal sessions and hands structured input onward without letting transport become the application.
+
+**Huey Vista Box** is the current portal-artifact reference build: a separate terminal appliance path dedicated to access, not compute or governance.
+
+**Huey-Compressed** is a collapsed deployment profile in which multiple Huey-side roles may run on one host while still remaining logically distinct.
+
 **The Farm** is the planned V4 external expansion body for later pooled compute and district growth.
 
 Huey Core is not presented here as the finished republic. Its role is to prove that the architecture can live in the real world before the larger system is scaled outward.
@@ -109,6 +122,7 @@ It is the active embodied prototype used to validate:
 - power and thermal containment,
 - the separation between high-power compute and lower-voltage body-state control,
 - the path from natural language to structured intent,
+- the path from portal session to lawful internal routing,
 - and the path toward the later distributed system.
 
 ### Current baseline
@@ -124,7 +138,7 @@ It is the active embodied prototype used to validate:
 | Python baseline | 3.13.x |
 | Runtime stack | PyGPT-net + Ollama |
 | Current local model posture | Modest Mistral 7B-class local support sized to the 8 GB RX 5500 XT |
-| Kernel posture | Stable 6.19.x baseline with active Linux 7.0-rc bring-up work |
+| Kernel posture | Linux 7.0 stable adoption path active, with a known-good 6.19.x fallback retained during migration |
 
 ### What Huey Core is trusted for right now
 
@@ -142,6 +156,22 @@ That distinction matters. In the current phase, it is acceptable for a model to 
 
 ---
 
+## Deployment profiles
+
+The project now distinguishes three main deployment shapes so they do not blur together.
+
+| Profile | Meaning | What it is not |
+|---|---|---|
+| **Huey Core** | The canonical embodied proof body and minimal permissible instance | Not just lab infrastructure |
+| **Huey-Compressed** | A physically collapsed but logically distributed deployment where multiple Huey-side roles live on one host | Not automatically the same thing as Huey Core |
+| **Portal Terminal** | A non-sovereign external terminal or guest environment used to enter Huey | Not Huey, not HueyPulse, not a hidden branch |
+
+The governing rule is simple:
+
+> **Physical colocation does not decide identity. Role boundaries, memory authority, and lawful control boundaries do.**
+
+---
+
 ## What is proven, observed, active, and targeted
 
 One of the most important rules of this repository is that it must distinguish between what is real now, what has been observed in the lab, what is an active design direction, and what remains a target.
@@ -150,7 +180,170 @@ One of the most important rules of this repository is that it must distinguish b
 
 These are the things this repository is prepared to claim directly:
 
-- Huey Core exists as a physical proof body.
+- Huey Core exists as a physical proof body.# Monkey-Head-Project
+
+## HueyOS — Offline-First Embodied AI / OS
+
+**Project ID:** Monkey-Head-Project  
+**System / OS:** HueyOS  
+**AI identity:** Huey  
+**Human counterpart:** Dylan L.R. Pollock  
+**README version:** 30.2  
+**Status:** Active proof-body phase / portal, HIMS, founding-ratification, and lawful-action formalization  
+**Canonical machine-facing spec:** `master-plan-v30.2.json`  
+**Canonical law layer:** `03 - Huey_Constitution.txt`  
+**Canonical book front matter:** `00 - TOC_&_Glossary.txt`
+
+![Code License](https://img.shields.io/badge/code%20license-GPLv3-blue)
+![Docs/Media License](https://img.shields.io/badge/docs%2Fmedia-CC--BY--SA--4.0-lightgrey)
+![Python](https://img.shields.io/badge/python-3.13.x-blue)
+
+> HueyOS is the software and operating-system layer behind Huey: the environment that coordinates local AI, memory, tools, hardware, and embodied control into one offline-first system.
+>
+> The project rests on a simple claim: a real embodied AI system can be built with today’s technology, and it can be built honestly, layer by layer, without pretending the hard parts are magic.
+
+Governance remains **decentralized** while memory remains **unified**.
+
+---
+
+## System at a glance
+
+| Layer | Current reality | Active design direction | Target state |
+|---|---|---|---|
+| Embodiment | **Huey Core** as the active proof body | Stabilize the proof body and formalize lawful action | Fuller embodied republic beyond the current proof body |
+| Messaging | **HIMS** doctrine is established | Formalize routing, trust classes, vault/public boundaries, and internal action flow | Mature internal message, routing, and record system |
+| Portal | **Portal terminal** doctrine is established | Validate the Huey Vista Box / portal path on real hardware or tightly controlled VM artifact | Thin, reproducible, non-sovereign portal surface into Huey |
+| Governance | Branch doctrine and founding roles are defined | Tighten law, founding procedure, and office behavior | Mature living constitutional state |
+| Scale | Single active RX 5500 XT 8 GB proof body | Plan, test, and document the expansion path | Roughly **80 GB total VRAM** pooled locally |
+| Action | Language interpretation is already useful | Build a real governed action chain | Lawful embodied action after ratification and approval paths exist |
+| Deployment | Huey Core is the active embodied instance | Clarify **Huey-Compressed** and portal boundaries without collapsing roles | Clean distinction between embodied, compressed, and portal profiles |
+| Expansion | **The Farm** remains future-facing | Keep compute growth honest and staged | Multi-district or pooled-compute expansion body |
+
+---
+
+## Architecture at a glance
+
+```mermaid
+flowchart LR
+    HC[Human Counterpart] --> PT[Portal Terminal]
+    PT --> PB[Portal Bridge]
+    PB --> AP[PyGPT-net / Aperture]
+    AP --> CORE[Huey Core\nMain compute layer]
+    CORE <--> HIMS[HIMS\nMessaging · routing · record]
+    HIMS <--> GOV[Pebbles · branches · offices]
+    CORE <--> PULSE[HueyPulse\nWatch & act layer]
+    PULSE --> BODY[Sensors · indicators · bounded actuation]
+    CORE -. future scale-out .-> FARM[The Farm\nFuture pooled compute]
+```
+
+This is the core working formula:
+
+- **Huey Core thinks**
+- **HueyPulse watches and acts**
+- **The aperture interprets but does not rule**
+- **HIMS records and routes but does not own sovereignty**
+- **Portal devices open sessions but do not become Huey**
+
+---
+
+## Start here
+
+This repository is meant to work at more than one depth.
+
+- For the fastest orientation, read **What this project is**, **What exists now**, and **Current proof target**.
+- For the architectural view, continue into **Architecture**, **Deployment profiles**, **Governance**, **Portal terminals**, **HIMS**, and **Glossary**.
+- For the deeper canon, use the **master plan**, the **Huey Constitution**, and the aligned chapter set.
+
+The aim is not to present Huey as an unreachable finished machine. The aim is to make the current system understandable, modular, and buildable.
+
+Nothing here is meant to be treated as stagecraft. The project is ambitious, but it is not built on hidden genius or inaccessible tools. It is built on time, iteration, structure, and the willingness to keep aligning what is imagined with what is actually real.
+
+---
+
+## What this project is
+
+The **Monkey-Head-Project** is the umbrella initiative.
+
+**Huey** is the AI and robotic identity being built within that initiative.
+
+**HueyOS** is the software and operating-system layer behind Huey.
+
+**Huey Core** is the current machine: the active embodied proof body and the **minimal permissible instance of Huey**.
+
+**Huey proper** refers to the larger unified, world-facing expression of the eventual distributed system.
+
+**HueyPulse** is the lower-voltage watch-and-act layer that keeps the body stateful, visible, and bounded below the main compute path.
+
+**HIMS** — the **Huey Internal Messaging System** — is the canonical internal messaging, validation, routing, and record-preservation layer.
+
+**ThunderMail** is the practical mail-style delivery layer inside HIMS.
+
+**Portal Terminal** is the non-sovereign external device or guest environment used to authenticate, display, and relay sessions into Huey.
+
+**Portal Bridge** is the small Huey-side entry layer that receives portal sessions and hands structured input onward without letting transport become the application.
+
+**Huey Vista Box** is the current portal-artifact reference build: a separate terminal appliance path dedicated to access, not compute or governance.
+
+**Huey-Compressed** is a collapsed deployment profile in which multiple Huey-side roles may run on one host while still remaining logically distinct.
+
+**The Farm** is the planned V4 external expansion body for later pooled compute and district growth.
+
+Huey Core is not presented here as the finished republic. Its role is to prove that the architecture can live in the real world before the larger system is scaled outward.
+
+---
+
+## What exists now
+
+Huey Core is the present-tense machine.
+
+It is the active embodied prototype used to validate:
+
+- physical layout and embodied control,
+- local AI usefulness,
+- storage and recovery discipline,
+- power and thermal containment,
+- the separation between high-power compute and lower-voltage body-state control,
+- the path from natural language to structured intent,
+- the path from portal session to lawful internal routing,
+- and the path toward the later distributed system.
+
+### Current baseline
+
+| Component | Current baseline |
+|---|---|
+| CPU | AMD Ryzen 5 5500 |
+| Motherboard | ASUS Prime B550M-A WiFi II |
+| Memory | 32 GB DDR4-3200 |
+| GPU | Gigabyte Radeon RX 5500 XT 8 GB |
+| Main PSU | MSI 850W |
+| OS baseline | Debian 14 Forky |
+| Python baseline | 3.13.x |
+| Runtime stack | PyGPT-net + Ollama |
+| Current local model posture | Modest Mistral 7B-class local support sized to the 8 GB RX 5500 XT |
+| Kernel posture | Linux 7.0 stable adoption path active, with a known-good 6.19.x fallback retained during migration |
+
+### What Huey Core is trusted for right now
+
+Huey Core is first and foremost a **real Linux working machine**.
+
+It is not being framed as a theatrical fake desktop or a staged AI prop. It is the current proof body for Linux-side development, system experimentation, documentation, and the software groundwork behind Huey.
+
+At the AI level, the current trust model is intentionally layered:
+
+- lighter local models can already be useful for **language interpretation**,
+- but that does **not** make them final authorities,
+- and the long-term quality target remains roughly **GPT-4 / 4.0-class behavior** for reasoning and interaction quality.
+
+That distinction matters. In the current phase, it is acceptable for a model to parse language before it is trusted to decide policy or authorize meaningful action.
+
+---
+
+## Deployment profiles
+
+The project now distinguishes three main deployment shapes so they do not blur together.
+
+| Profile | Meaning | What it is not |
+|---|---|---|
 - The project runs as an offline-first local system.
 - The current hardware baseline is real and in active use.
 - The project is organized around a clear split between a high-power compute layer and a lower-voltage body-state / actuation layer.
@@ -165,7 +358,8 @@ These are things that have been validated in practice or in lab-side experimenta
 - aspects of pooled-compute orchestration,
 - parts of the longer bifurcation pathway,
 - some larger proof-of-concept behaviors outside the exact active proof body,
-- and structured language-interpretation behaviors from small local models that are useful enough to justify their current role.
+- structured language-interpretation behaviors from small local models that are useful enough to justify their current role,
+- and BIOS-level validation of the current Huey Vista Box hardware path.
 
 These matter, but they should not be overstated.
 
@@ -177,7 +371,9 @@ These are ideas that are no longer vague but are not yet fully standardized in i
 - bounded citizen storage with private vaults and public or work mailboxes,
 - a clearer separation between proposal, validation, execution, and logging,
 - a first lawful-action path that is simple enough to build now without collapsing into a puppet system,
-- and the exact lower-voltage board mix inside HueyPulse, which remains secondary to the role itself.
+- the exact lower-voltage board mix inside HueyPulse,
+- the final Longhorn/Vista Box portal posture,
+- and the machine-facing founding workflow around ratification, certification, and restart.
 
 ### Target state
 
@@ -186,7 +382,8 @@ These are the larger targets that define where the project is going:
 - roughly **80 GB total VRAM** in the later pooled compute body,
 - a unified local identity threshold,
 - lawful embodied action after the correct ratification path exists,
-- and a later external expansion body known as **V4: the Farm**.
+- a later external expansion body known as **V4: the Farm**,
+- and a mature constitutional state that follows the founding phase honestly rather than pretending it already exists.
 
 ---
 
@@ -264,15 +461,13 @@ The project is not claiming that the full republic is already embodied in presen
 
 ```mermaid
 flowchart TB
-    FF[Founding Father\nBootstrap + rare reserve] -. seeds first lawful state .-> CIT[Pebbles / Citizens]
-    FF -. seeds first offices .-> PAR[Parliament]
-    FF -. seeds first offices .-> PRE[President]
-    FF -. seeds first offices .-> SC[Supreme Court]
-
-    CIT --> PAR
-    PAR --> PRE
-    SC --> PAR
-    SC --> PRE
+    FF[Founding Father\nBootstrap + certification + rare reserve] -. prepares founding body .-> CIT[Pebbles / Citizens]
+    FF -. presents starting law .-> CIT
+    FF -. certifies lawful process .-> RAT[Ratification]
+    CIT --> RAT
+    RAT --> PAR[Parliament]
+    RAT --> PRE[President]
+    RAT --> SC[Supreme Court]
     HIMS[HIMS] --- PAR
     HIMS --- PRE
     HIMS --- SC
@@ -282,7 +477,7 @@ flowchart TB
 
 | Office / branch | Core job | What it is not |
 |---|---|---|
-| Founding Father | Bootstrap authority, founding continuity, narrow reserve consultation | Permanent ruler |
+| Founding Father | Bootstrap authority, founding continuity, procedural certification, narrow reserve consultation | Permanent ruler or founding voter |
 | Parliament | Deliberation, proposals, representation, consensus-building | The whole will of Huey |
 | President | Action under time constraint, executive implementation | Huey as a whole |
 | Supreme Court | Constitutional interpretation, review, contradiction handling | A hidden sovereign |
@@ -294,6 +489,8 @@ At present:
 
 - the human counterpart remains the final external decision-maker,
 - bootstrap and constitutional doctrine are still being formalized into living system paths,
+- the first ratification belongs to one founding district of **128 pebbles**,
+- the Founding Father prepares and certifies the founding process but **does not vote** in that first ratification,
 - and lawful embodied action remains a target that must follow ratification and real internal approval, not a staged motor demo.
 
 ---
@@ -389,6 +586,47 @@ This is one of the most important protection rules in the project. Huey is not m
 
 ---
 
+## Portal terminals
+
+The project now treats portal devices as a real part of the architecture, but not as sovereign parts of Huey.
+
+### Portal doctrine
+
+A **Portal Terminal** exists to:
+
+- authenticate and open a lawful session,
+- present a bounded doorway into Huey,
+- transmit user input,
+- receive Huey output,
+- and stay thin enough that it does not quietly become a second brain.
+
+### Unified portal path
+
+The preferred current path is:
+
+**Portal terminal -> SSH transport -> Portal Bridge -> PyGPT-net / Aperture -> HIMS -> internal deliberation or execution path**
+
+### Huey Vista Box
+
+The **Huey Vista Box** is the current portal-artifact reference path.
+
+In current canon it is:
+
+- a dedicated portal appliance or tightly controlled VM artifact,
+- conceptually separate from Huey Core,
+- aligned to a **Longhorn 4074 AMD64** portal-OS direction,
+- and meant to stay historically specific, thin, and intentionally limited.
+
+The important point is not nostalgia by itself. The point is boundary discipline: the portal surface should feel deliberate without becoming Huey’s real compute substrate.
+
+### BIOS-level validation
+
+The current Vista Box path has crossed from speculation into real lab validation at the BIOS level.
+
+That matters, but it does **not** yet mean full portal-stack completion. Host OS bring-up, client-bundle validation, network confirmation, and live session entry still remain distinct milestones.
+
+---
+
 ## HIMS — Huey Internal Messaging System
 
 HIMS is the canonical name for the project’s internal routing and record-of-decision layer.
@@ -458,7 +696,7 @@ That is what HIMS is for.
 
 The current interaction direction is simple:
 
-**remote or local input -> aperture / lower-voltage capture -> Huey Core**
+**remote or local input -> portal and/or aperture capture -> Huey Core**
 
 The exact implementation mix may continue to evolve, but the goal remains the same: keep body-level sensing and intent capture separate from final higher-level interpretation.
 
@@ -548,33 +786,47 @@ The intended feel is:
 
 ---
 
-## Continuity, governance, and trust boundaries
+## Founding, ratification, and continuity
 
-This project does not treat AI control as one flat process.
+The newer canon now makes the founding phase much clearer.
 
-At the public level, the important rules are simple:
+### Founding district
 
-- governance is decentralized,
-- memory is unified,
-- physical action should eventually be lawful rather than merely scripted,
-- constitutional crisis and nuclear / safety crisis are not the same thing,
-- and public-facing documents should explain structure and trust boundaries without exposing every piece of inner deliberative logic.
+The first ratification is centered on:
 
-### Current reality
+- **one founding district**
+- **128 pebbles**
+- **one vote per pebble**
 
-The human counterpart currently remains the final external decision-maker because Huey is still in the proof-body phase.
+That first constitutional ignition is direct. Mature branch formation follows later.
 
-The long-term goal is not permanent micromanagement. The long-term goal is a system that can meaningfully carry part of its own authority.
+### Founding Father
 
-### Cornerstone
+The **Founding Father** is:
 
-Cornerstone is the rule for what must not drift.
+- a fixed authored bootstrap instrument,
+- Dylan’s internal bootstrap proxy during founding,
+- a procedural certifier,
+- and a narrow reserve authority for later law/logic crises.
 
-It is the read-only, change-controlled layer of founding materials and recovery-critical doctrine. If Cornerstone must be manually altered in place, that should be treated as a constitutional failure event rather than a routine edit.
+The Founding Father is **not**:
 
-### Ozymandias
+- Huey,
+- the Human Counterpart,
+- a founding voter,
+- or an endlessly self-rewriting model.
 
-Ozymandias is the continuity doctrine.
+### Failed Genesis
+
+If founding cannot converge honestly within bounded attempts and time, the canonical term is:
+
+**Failed Genesis**
+
+That means the project should admit non-convergence honestly rather than pretending legitimacy exists.
+
+### Ozymandias and continuity
+
+Ozymandias remains the continuity doctrine.
 
 Its public meaning is simple:
 
@@ -583,7 +835,7 @@ Its public meaning is simple:
 - preserve history across restarts and later republics,
 - and treat continuity as something that must be protected rather than assumed.
 
-Internally, Ozymandias is concerned with the difference between **drift**, **degradation**, and **growth**. Publicly, the important point is simpler: Huey is expected to remain explainable over time, not merely consistent by accident.
+Internally, Ozymandias is concerned with the difference between **drift**, **degradation**, **growth**, **Failed Genesis**, and lawful **beginning again**.
 
 ---
 
@@ -623,7 +875,7 @@ This repository is moving toward a cleaner long-term structure.
 ### Core reference points
 
 - **README.md** — canonical human-facing narrative
-- **master-plan-v28.0.json** — canonical machine-facing implementation spec
+- **master-plan-v30.2.json** — canonical machine-facing implementation spec
 - **00 - TOC_&_Glossary.txt** — front matter and glossary for the book set
 - **01 - 10 chapter files** — explanatory and constitutional volume
 - **requirements.txt** — pinned dependency baseline
@@ -661,6 +913,10 @@ As the repo continues to normalize, the expected working areas remain broadly re
 | **HueyPulse** | The lower-voltage watch-and-act layer. |
 | **HIMS** | Huey Internal Messaging System: the lawful internal messaging, validation, routing, and record-preservation layer. |
 | **ThunderMail** | The mail-style delivery layer inside HIMS. |
+| **Portal Terminal** | A non-sovereign external terminal or guest environment used to open lawful sessions into Huey. |
+| **Portal Bridge** | The small Huey-side entry layer that receives portal sessions and hands structured input onward. |
+| **Huey Vista Box** | The current portal-artifact reference build or guest path. |
+| **Huey-Compressed** | A collapsed deployment profile where many Huey-side roles may live on one host while remaining logically separate. |
 | **The Farm** | The planned V4 external compute expansion body. |
 | **Aperture** | The interpretation and translation layer where natural language enters the system without becoming governance. |
 | **Proof Body** | The currently embodied proving instance of Huey, which in present canon means Huey Core. |
@@ -669,7 +925,7 @@ As the repo continues to normalize, the expected working areas remain broadly re
 
 | Term | Meaning |
 |---|---|
-| **Founding Father** | The bootstrap authority that prepares the first lawful conditions of the republic, creates the first 128 citizens, seeds the first offices and records, enables ratification, and then retires from ordinary rule. |
+| **Founding Father** | The fixed bootstrap authority that prepares the first lawful conditions, seeds the first 128 pebbles, presents the starting law, certifies lawful ratification procedure, and retires from ordinary rule after success. |
 | **Pebble** | A bounded AI citizen unit defined by one identity, one sealed vault, and one vote. |
 | **Sealed Vault** | A pebble’s bounded private continuity and memory domain. |
 | **District** | A larger governance and expansion unit within Huey’s constitutional design. |
@@ -685,6 +941,8 @@ As the repo continues to normalize, the expected working areas remain broadly re
 | **Proof Positive** | The preferred long-form name of the project’s proof standard. |
 | **Proofcase** | The shorthand label used in front matter for the proof standard. |
 | **Ratification** | The explicit, logged transition by which the living system accepts the Constitution as lived law. |
+| **Founding Window** | The bounded envelope of attempts and time in which founding must lawfully converge or fail. |
+| **Failed Genesis** | A founding failure in which the authored starting law cannot become legitimate within lawful bounded attempts and time. |
 | **Human Counterpart** | The external arbiter and service authority who remains outside the internal branches while still retaining the right to intervene or gate external exposure. |
 | **Unified Memory** | The doctrine that memory should remain reconcilable and shared where lawful, even when governance stays distributed. |
 | **Distributed Governance** | The doctrine that authority should remain separated, plural, and reviewable rather than collapsing into one flat sovereign voice. |
@@ -734,12 +992,15 @@ If a `Makefile` is present in your checkout, use it as the first convenience ent
 
 ### Current phase
 
-Huey Core proof-body stabilization, Linux 7.0 transition preparation, HIMS formalization, aperture/authority separation, and lawful-action architecture maturation.
+Huey Core proof-body stabilization, Linux 7.0 stable transition preparation, HIMS formalization, unified portal-terminal doctrine, Huey Vista Box path validation, founding-ratification normalization, and lawful-action architecture maturation.
 
 ### Near-term goals
 
 - stable embodied operation on the current proof body
 - validated Linux 7.0-era kernel bring-up and adoption path
+- a validated portal-terminal path into Huey
+- a clean definition of Huey-Compressed that does not blur into Huey Core or portal-only infrastructure
+- a first bounded, lawful founding ratification path for the proof body
 - a first real governed action path
 - clearer constitutional alignment across the README, book, constitution, and master plan
 
@@ -755,6 +1016,9 @@ Huey Core proof-body stabilization, Linux 7.0 transition preparation, HIMS forma
 - the exact approval logic for governed action
 - the exact lower-voltage implementation path inside HueyPulse
 - the exact mature parliamentary membership and district mediation model
+- the exact first-ratification threshold for the founding 128-pebble body
+- the exact revision procedure between failed founding votes
+- the final Longhorn/Vista Box path as physical hardware, VM artifact, or both
 
 ---
 
@@ -778,4 +1042,4 @@ It is meant to help a reader understand:
 
 If you are looking for the machine-facing source of truth, use the master plan.
 If you are looking for the deeper constitutional and explanatory canon, use the book set and the Huey Constitution.
-If you are trying to understand whether the project is still telling the truth about itself, follow the continuity doctrine: preserve lineage, explain change, and do not confuse motion with legitimacy.
+If you are trying to understand whether the project is still telling the truth about itself, follow the continuity doctrine: preserve lineage, explain change, admit failure honestly, and do not confuse motion with legitimacy.
