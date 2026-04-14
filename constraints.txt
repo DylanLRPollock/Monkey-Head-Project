@@ -38,7 +38,7 @@ torchaudio==2.10.0
 torchvision==0.25.0
 
 # --- Developer / QA anchors ---
-pytest==9.0.2
+pytest==9.0.3
 pytest-cov==7.0.0
 ruff==0.15.5
 black==26.3.1
