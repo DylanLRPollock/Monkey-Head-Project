@@ -19,30 +19,30 @@ wheel==0.46.3
 uv==0.11.6
 
 # --- Core API / runtime anchors ---
-fastapi==0.135.1
+fastapi==0.135.3
 starlette==1.0.0
-uvicorn[standard]==0.41.0
-pydantic==2.12.5
+uvicorn[standard]==0.44.0
+pydantic==2.13.0
 pydantic-settings==2.13.1
-orjson==3.11.7
+orjson==3.11.8
 aiosqlite==0.22.1
 cryptography==46.0.7
 
 # --- Local model / orchestration anchors ---
 ollama==0.6.1
-pygpt-net==2.0.154
+pygpt-net==2.7.12
 faster-whisper==1.2.1
-transformers==5.4.0
-torch==2.10.0
-torchaudio==2.10.0
-torchvision==0.25.0
+transformers==5.5.4
+torch==2.11.0
+torchaudio==2.11.0
+torchvision==0.26.0
 
 # --- Developer / QA anchors ---
-pytest==9.0.2
-pytest-cov==7.0.0
-ruff==0.15.5
+pytest==9.0.3
+pytest-cov==7.1.0
+ruff==0.15.10
 black==26.3.1
 isort==8.0.1
-mypy==1.19.1
+mypy==1.20.1
 pre-commit==4.5.1
 bandit==1.9.4
