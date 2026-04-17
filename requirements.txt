@@ -172,7 +172,7 @@ altgraph==0.17.5
 annotated-doc==0.0.4
 annotated-types==0.7.0
 asttokens==3.0.1
-authlib==1.6.9
+authlib==1.6.11
 av==17.0.0
 azure-cognitiveservices-speech==1.49.0
 banks==2.4.1
