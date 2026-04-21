@@ -275,7 +275,7 @@ llama-hub==0.0.79.post1
 llama-index-agent-openai==0.4.12
 llama-index-cli==0.5.7
 llama-index-embeddings-openai==0.6.0
-lxml==6.0.3
+lxml==6.1.0
 lxml-html-clean==0.4.4
 macholib==1.16.4 ; sys_platform == 'darwin'
 markdown==3.10.2
