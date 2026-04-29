@@ -2,14 +2,32 @@
 
 from __future__ import annotations
 
+import hashlib
 import os
 import threading
 import tkinter as tk
+from pathlib import Path
 from tkinter import filedialog, messagebox, simpledialog
+
+from hueyos.install_gui import validate_license_acceptance
+from hueyos.license_gui import accept_license
 
 
 def show_license_gui():
-    messagebox.showinfo("License", "License details")
+    body = "License details unavailable."
+    if LICENSE_FILE.exists():
+        body = LICENSE_FILE.read_text(encoding="utf-8", errors="replace")
+    messagebox.showinfo("License Agreement", body)
+
+
+LICENSE_FILE = Path(__file__).resolve().parents[2] / "LICENSE"
+GUI_CONFIG_PATH = Path.home() / ".hueyos" / "gui_config.json"
+
+
+def _license_hash() -> str:
+    if not LICENSE_FILE.exists():
+        return "unknown"
+    return hashlib.sha256(LICENSE_FILE.read_bytes()).hexdigest()
 
 
 def preload_all():
@@ -29,6 +47,17 @@ def run_ai_tools():
 
 
 class MainUI:
+    def __init__(self):
+        self.ensure_license_accepted()
+
+    def ensure_license_accepted(self):
+        accepted = messagebox.askyesno(
+            "License Agreement",
+            "You must accept the license agreement before using the GUI.\n\nOpen license now?",
+        )
+        validate_license_acceptance(accepted)
+        accept_license(GUI_CONFIG_PATH, _license_hash())
+
     def check_license(self):
         show_license_gui()
 
