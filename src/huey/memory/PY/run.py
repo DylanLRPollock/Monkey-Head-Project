@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import importlib
 import os
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -28,11 +29,13 @@ def minimal_run() -> None:
 
 
 def run_sys_code(cmd: str) -> None:
-    """Execute ``cmd`` in a subprocess and stream stdout/stderr."""
+    """Execute ``cmd`` without invoking a shell and stream stdout/stderr."""
 
+    command = shlex.split(cmd, posix=os.name != "nt")
+    if not command:
+        raise ValueError("No command provided.")
     result = subprocess.run(
-        cmd,
-        shell=True,
+        command,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )

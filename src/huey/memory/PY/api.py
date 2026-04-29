@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import asyncio
 import datetime as dt
+import hmac
 import html
+import os
 import platform
 import shutil
 import socket
@@ -22,8 +24,8 @@ try:  # pragma: no cover - psutil is an optional dependency at runtime
 except Exception:  # pragma: no cover - fall back to stdlib metrics
     psutil = None  # type: ignore[assignment]
 
-from fastapi import FastAPI, HTTPException, Query, status
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi import FastAPI, HTTPException, Query, Request, status
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 # ``AIProcessor`` pulls in a large number of optional runtime dependencies from
@@ -239,6 +241,36 @@ app = FastAPI(
         "capabilities through a unified API for integrations and operator tooling."
     ),
 )
+
+_PUBLIC_PATHS = {"/healthz"}
+
+
+def _configured_api_token() -> str:
+    """Return the optional bearer token required for API access."""
+
+    return os.getenv("HUEY_API_TOKEN", "").strip()
+
+
+@app.middleware("http")
+async def require_api_token(request: Request, call_next):
+    """Require a bearer token when HUEY_API_TOKEN is configured."""
+
+    expected_token = _configured_api_token()
+    if not expected_token or request.url.path in _PUBLIC_PATHS:
+        return await call_next(request)
+
+    scheme, _, supplied_token = request.headers.get("authorization", "").partition(" ")
+    if scheme.lower() != "bearer" or not hmac.compare_digest(
+        supplied_token,
+        expected_token,
+    ):
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content={"detail": "Missing or invalid API token"},
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return await call_next(request)
 
 
 class AcceleratorInfoModel(BaseModel):

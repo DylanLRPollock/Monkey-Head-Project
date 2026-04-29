@@ -35,7 +35,16 @@ done
 openbox &
 
 # VNC server
-x11vnc -display :1 -forever -shared -nopw -rfbport 5900 &
+VNC_PASSWORD="${VNC_PASSWORD:-}"
+if [[ -z "${VNC_PASSWORD}" ]]; then
+  echo "VNC_PASSWORD is required for noVNC access." >&2
+  exit 64
+fi
+
+VNC_PASSWD_FILE="$(mktemp)"
+x11vnc -storepasswd "${VNC_PASSWORD}" "${VNC_PASSWD_FILE}" >/dev/null
+chmod 600 "${VNC_PASSWD_FILE}"
+x11vnc -display :1 -forever -shared -localhost -rfbauth "${VNC_PASSWD_FILE}" -rfbport 5900 &
 
 # noVNC web bridge on port 1995
 websockify --web=/usr/share/novnc/ 1995 localhost:5900 &

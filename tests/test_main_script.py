@@ -15,7 +15,7 @@ from hueyos import main as main_mod
 def test_parse_args_defaults():
     args = main_mod.parse_args([])
     assert args.skip_setup is False
-    assert args.host == "0.0.0.0"
+    assert args.host == "127.0.0.1"
     assert args.port == 4488
 
 
@@ -28,7 +28,7 @@ def test_main_respects_skip(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["main.py", "--skip-setup", "--port", "1234"])
     main_mod.main()
     assert "setup" not in called
-    assert called["run"] == ("0.0.0.0", 1234)
+    assert called["run"] == ("127.0.0.1", 1234)
 
 
 def test_main_runs_setup(monkeypatch):
@@ -40,4 +40,4 @@ def test_main_runs_setup(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["main.py"])
     main_mod.main()
     assert called["setup"] is True
-    assert called["run"] == ("0.0.0.0", 4488)
+    assert called["run"] == ("127.0.0.1", 4488)

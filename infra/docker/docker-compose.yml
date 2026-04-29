@@ -33,7 +33,7 @@ services:
       - ./config:/app/config
       - ./memory:/app/memory
     ports:
-      - "${HUEY_PORT:-1995}:1995"
+      - "${HUEY_BIND_ADDR:-127.0.0.1}:${HUEY_PORT:-1995}:1995"
     healthcheck:
       test:
         - CMD

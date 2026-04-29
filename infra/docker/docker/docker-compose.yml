@@ -75,7 +75,7 @@ services:
       # - type: tmpfs
       #   target: /tmp
     ports:
-      - "1995:1995"
+      - "127.0.0.1:${API_PORT:-1995}:1995"
     expose: ["1995"]
     healthcheck: *api_healthcheck
     security_opt:
@@ -106,7 +106,7 @@ services:
     image: subos:local
     profiles: ["subos"]
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     networks: [back]
 
   nanoos:
@@ -117,7 +117,7 @@ services:
     image: nanoos:local
     profiles: ["nanoos"]
     ports:
-      - "8081:8081"
+      - "127.0.0.1:8081:8081"
     networks: [back]
 
   # Optional example dependency (enable with --profile extras)

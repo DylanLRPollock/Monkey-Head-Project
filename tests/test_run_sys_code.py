@@ -17,7 +17,7 @@ def test_run_sys_code(monkeypatch):
             self.stdout = b"output"
             self.stderr = b""
 
-    def fake_run(cmd, shell=True, stdout=None, stderr=None):
+    def fake_run(cmd, stdout=None, stderr=None):
         called["cmd"] = cmd
         return FakeProcess()
 
@@ -30,4 +30,4 @@ def test_run_sys_code(monkeypatch):
     )
     monkeypatch.setattr(sys, "argv", ["run.py", "--sys-code", "echo hi"])
     main()
-    assert called.get("cmd") == "echo hi"
+    assert called.get("cmd") == ["echo", "hi"]

@@ -86,6 +86,24 @@ async def test_healthz_endpoint_returns_service_status():
     assert response.json() == {"status": "ok", "service": "hueyos"}
 
 
+@pytest.mark.asyncio
+async def test_api_token_is_required_when_configured(monkeypatch):
+    monkeypatch.setenv("HUEY_API_TOKEN", "test-token")
+
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        health = await client.get("/healthz")
+        blocked = await client.get("/tasks")
+        allowed = await client.get(
+            "/tasks",
+            headers={"Authorization": "Bearer test-token"},
+        )
+
+    assert health.status_code == 200
+    assert blocked.status_code == 401
+    assert allowed.status_code == 200
+
+
 def _healthy_snapshot() -> ResourceSnapshot:
     return ResourceSnapshot(
         cpu_percent=10.0,

@@ -59,6 +59,16 @@ dist/
 src/huey/memory/LOGS/*
 !src/huey/memory/LOGS/.gitkeep
 
+# Secrets and generated key material
+infra/secrets/*
+!infra/secrets/README.md
+!infra/secrets/*-example
+!infra/secrets/*.pub
+*.pem
+*.key
+id_rsa
+id_ed25519
+
 # Editor backups/swaps
 *~
 *.swp
