@@ -5,7 +5,11 @@
 
 import math
 
-from hueyos.utils.gpu import detect_accelerators, recommend_models_for_vram
+from hueyos.utils.gpu import (
+    detect_accelerators,
+    recommend_models_for_vram,
+    total_vram_bytes,
+)
 
 
 def test_detect_accelerators_sysfs(tmp_path):
@@ -26,6 +30,11 @@ def test_detect_accelerators_sysfs(tmp_path):
     assert info.backend in {"rocm", "unknown"}
     assert info.vram_total == total
     assert math.isclose(info.vram_free or 0, total - used, rel_tol=0, abs_tol=1)
+    assert total_vram_bytes(accelerators) == total
+
+
+def test_detect_accelerators_missing_sysfs_root(tmp_path):
+    assert detect_accelerators(sys_root=tmp_path / "missing") == []
 
 
 def test_recommend_models_for_vram():

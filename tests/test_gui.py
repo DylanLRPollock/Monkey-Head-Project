@@ -36,6 +36,55 @@ def test_show_license_calls_gui():
         gui_call.assert_called_once()
 
 
+def test_show_license_gui_reads_license_file(tmp_path):
+    license_file = tmp_path / "LICENSE"
+    license_file.write_text("test license body", encoding="utf-8")
+
+    with (
+        patch.object(main_ui, "LICENSE_FILE", license_file),
+        patch.object(main_ui.messagebox, "showinfo") as info,
+    ):
+        main_ui.show_license_gui()
+
+    info.assert_called_once_with("License Agreement", "test license body")
+
+
+def test_show_license_gui_falls_back_when_license_missing(tmp_path):
+    with (
+        patch.object(main_ui, "LICENSE_FILE", tmp_path / "missing-LICENSE"),
+        patch.object(main_ui.messagebox, "showinfo") as info,
+    ):
+        main_ui.show_license_gui()
+
+    info.assert_called_once_with("License Agreement", "License details unavailable.")
+
+
+def test_main_ui_accepts_license_on_init():
+    with (
+        patch.object(main_ui.messagebox, "askyesno", return_value=True) as ask,
+        patch.object(main_ui, "validate_license_acceptance") as validate,
+        patch.object(main_ui, "_license_hash", return_value="hash-123"),
+        patch.object(main_ui, "accept_license") as accept,
+    ):
+        ui = MainUI()
+
+    assert isinstance(ui, MainUI)
+    ask.assert_called_once()
+    validate.assert_called_once_with(True)
+    accept.assert_called_once_with(main_ui.GUI_CONFIG_PATH, "hash-123")
+
+
+def test_main_ui_declines_license_before_writing_config():
+    with (
+        patch.object(main_ui.messagebox, "askyesno", return_value=False),
+        patch.object(main_ui, "accept_license") as accept,
+    ):
+        with pytest.raises(PermissionError):
+            MainUI()
+
+    accept.assert_not_called()
+
+
 def test_show_data_summary_displays_info():
     ui = MainUI.__new__(MainUI)
     sample = {"prompts": [1, 2], "memory": {"a": ["x", "y"]}}

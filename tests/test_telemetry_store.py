@@ -77,3 +77,29 @@ def test_telemetry_store_handles_invalid_sensor_timestamp(tmp_path):
     readings = store.fetch_recent_sensor_readings()
     assert readings
     assert isinstance(readings[0].timestamp, float)
+
+
+def test_telemetry_store_filters_sensor_and_event_records(tmp_path):
+    store = TelemetryStore(tmp_path / "telemetry.db")
+
+    class Reading:
+        def __init__(self, name: str, value: float):
+            self.name = name
+            self.value = value
+            self.timestamp = 100.0 + value
+            self.provenance = {"source": name}
+
+    store.log_sensor_reading(Reading("temperature", 21.5))
+    store.log_sensor_reading(Reading("humidity", 52.0))
+    store.log_event("battery_low", {"level": 12})
+    store.log_event("power_connected", {"source": "usb"})
+
+    readings = store.fetch_recent_sensor_readings(name="temperature")
+    assert len(readings) == 1
+    assert readings[0].name == "temperature"
+    assert readings[0].provenance == {"source": "temperature"}
+
+    events = store.fetch_recent_events(event_type="battery_low")
+    assert len(events) == 1
+    assert events[0].event_type == "battery_low"
+    assert events[0].payload == {"level": 12}
