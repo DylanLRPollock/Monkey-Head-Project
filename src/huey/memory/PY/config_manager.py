@@ -13,6 +13,7 @@
 # ==================================================
 import json
 import os
+from pathlib import Path
 
 
 class ConfigManager:
@@ -22,13 +23,17 @@ class ConfigManager:
 
     def load_config(self):
         if os.path.exists(self.config_path):
-            with open(self.config_path, "r") as file:
-                return json.load(file)
+            with open(self.config_path, "r", encoding="utf-8") as file:
+                try:
+                    return json.load(file)
+                except json.JSONDecodeError:
+                    return {}
         else:
             return {}
 
     def save_config(self):
-        with open(self.config_path, "w") as file:
+        Path(self.config_path).parent.mkdir(parents=True, exist_ok=True)
+        with open(self.config_path, "w", encoding="utf-8") as file:
             json.dump(self.config, file, indent=4)
 
     def get_setting(self, key, default=None):

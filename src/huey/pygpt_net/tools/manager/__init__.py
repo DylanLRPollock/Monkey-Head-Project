@@ -14,7 +14,14 @@ from pygpt_net.tools.base import BaseTool
 from pygpt_net.utils import trans
 from PySide6.QtGui import QAction
 
-from ...services import container_management
+from huey.services import container_management
+
+
+def _project_root() -> Path:
+    for parent in Path(__file__).resolve().parents:
+        if (parent / "pyproject.toml").exists():
+            return parent
+    return Path(__file__).resolve().parents[5]
 
 
 class MonkeyManager(BaseTool):
@@ -29,22 +36,25 @@ class MonkeyManager(BaseTool):
         self._setup_paths()
 
     def _setup_paths(self) -> None:
-        root = Path(__file__).resolve().parents[4]
-        setup_dir = root / "setup"
-        platform_installers = root / "platform" / "installers" / "debian" / "Debian"
+        root = _project_root()
+        installers = root / "platform" / "installers"
+        memory_dir = root / "src" / "huey" / "memory"
         system = platform.system()
         if system == "Linux":
-            self.install_path = platform_installers / "install-deb.sh"
-            self.update_path = platform_installers / "update-deb.sh"
-            self.run_path = root / "run.sh"
+            debian_installers = installers / "debian" / "Debian"
+            self.install_path = debian_installers / "install-deb.sh"
+            self.update_path = debian_installers / "update-deb.sh"
+            self.run_path = memory_dir / "SH" / "run.sh"
         elif system == "Darwin":
-            self.install_path = setup_dir / "macOS" / "install.sh"
-            self.update_path = platform_installers / "update-deb.sh"
-            self.run_path = root / "run.sh"
+            mac_installers = installers / "macos" / "macOS"
+            self.install_path = mac_installers / "install-mac.sh"
+            self.update_path = mac_installers / "update-mac.sh"
+            self.run_path = memory_dir / "SH" / "run.sh"
         elif system == "Windows":
-            self.install_path = setup_dir / "Windows11" / "01-FULL.bat"
-            self.update_path = setup_dir / "Windows11" / "01-FULL.bat"
-            self.run_path = root / "run.bat"
+            windows_installers = installers / "windows" / "Windows"
+            self.install_path = windows_installers / "install-win.bat"
+            self.update_path = windows_installers / "update-win.bat"
+            self.run_path = memory_dir / "BAT" / "run.bat"
 
     def _run_script(self, script: Path | None) -> None:
         if script is None or not script.exists():

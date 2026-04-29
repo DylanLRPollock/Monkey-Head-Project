@@ -20,6 +20,7 @@ import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from typing import Callable
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
@@ -35,14 +36,14 @@ except Exception:  # pragma: no cover - can't import GUI libs
     filedialog = None
     ttk = None
 
-from hueyos.ai_tools_gui import run_ai_tools
-from hueyos.config_toggle_gui import run_config_toggle_gui
-from hueyos.dashboard import launch_dashboard
-from hueyos.gui_scaling import apply_scaling
-from hueyos.license_gui import show_license_gui
-from hueyos.media_conversion import convert_media
-from hueyos.scripts.preload_data import preload_all
-from hueyos.services.container_management import (
+from huey.config_toggle_gui import run_config_toggle_gui
+from huey.gui_scaling import apply_scaling
+from huey.license_gui import show_license_gui
+from huey.memory.PY.ai_tools_gui import run_ai_tools
+from huey.memory.PY.dashboard import launch_dashboard
+from huey.memory.PY.media_conversion import convert_media
+from huey.memory.PY.preload_data import preload_all
+from huey.services.container_management import (
     build_docker_image,
     cleanup_images,
     cleanup_kubernetes,
@@ -54,7 +55,7 @@ from hueyos.services.container_management import (
     scale_deployment,
     stop_containers,
 )
-from hueyos.simple_chat_gui import run_simple_chat
+from huey.simple_chat_gui import run_simple_chat
 
 # Dark theme colors
 # Updated to use a black background with green text and
@@ -184,21 +185,24 @@ class MainUI:
     def setup_paths(self):
         """Determine installer paths based on the current platform."""
         root = Path(__file__).resolve().parents[4]
-        setup_dir = root / "setup"
-        platform_installers = root / "platform" / "installers" / "debian" / "Debian"
+        installers = root / "platform" / "installers"
+        memory_dir = root / "src" / "huey" / "memory"
         system = platform.system()
         if system == "Linux":
-            self.install_path = platform_installers / "install-deb.sh"
-            self.update_path = platform_installers / "update-deb.sh"
-            self.run_path = root / "run.sh"
+            debian_installers = installers / "debian" / "Debian"
+            self.install_path = debian_installers / "install-deb.sh"
+            self.update_path = debian_installers / "update-deb.sh"
+            self.run_path = memory_dir / "SH" / "run.sh"
         elif system == "Darwin":
-            self.install_path = setup_dir / "macOS" / "install.sh"
-            self.update_path = platform_installers / "update-deb.sh"
-            self.run_path = root / "run.sh"
+            mac_installers = installers / "macos" / "macOS"
+            self.install_path = mac_installers / "install-mac.sh"
+            self.update_path = mac_installers / "update-mac.sh"
+            self.run_path = memory_dir / "SH" / "run.sh"
         elif system == "Windows":
-            self.install_path = setup_dir / "Windows11" / "01-FULL.bat"
-            self.update_path = setup_dir / "Windows11" / "01-FULL.bat"
-            self.run_path = root / "run.bat"
+            windows_installers = installers / "windows" / "Windows"
+            self.install_path = windows_installers / "install-win.bat"
+            self.update_path = windows_installers / "update-win.bat"
+            self.run_path = memory_dir / "BAT" / "run.bat"
         else:
             self.install_path = None
             self.update_path = None
@@ -249,10 +253,12 @@ class MainUI:
         menu_bar.add_cascade(label="Kubernetes", menu=k8s_menu)
 
     def create_widgets(self):
+        main_frame = tk.Frame(self.root, bg=DARK_BG)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=12)
+
         self.log_text = scrolledtext.ScrolledText(
-            self.root,
-            width=100,
-            height=25,
+            main_frame,
+            wrap=tk.WORD,
             bg=DARK_BG,
             fg=LIGHT_FG,
             insertbackground=LIGHT_FG,
@@ -260,12 +266,15 @@ class MainUI:
             highlightcolor=ACCENT_PURPLE,
             highlightthickness=2,
         )
-        self.log_text.pack(pady=10)
+        self.log_text.pack(fill=tk.BOTH, expand=True)
 
         self.progress = ttk.Progressbar(
-            self.root, orient=tk.HORIZONTAL, length=500, mode="determinate"
+            main_frame, orient=tk.HORIZONTAL, mode="indeterminate"
         )
-        self.progress.pack(pady=10)
+        self.progress.pack(fill=tk.X, pady=(10, 0))
+
+        button_frame = tk.Frame(main_frame, bg=DARK_BG)
+        button_frame.pack(fill=tk.X, pady=(10, 0))
 
         self.status_label = tk.Label(
             self.root,
@@ -282,7 +291,7 @@ class MainUI:
         self.status_label.pack(fill=tk.X, side=tk.BOTTOM, ipady=2)
 
         self.install_button = tk.Button(
-            self.root,
+            button_frame,
             text="Install",
             command=self.install,
             bg=ACCENT_PURPLE,
@@ -293,7 +302,7 @@ class MainUI:
         self.install_button.pack(side=tk.LEFT, padx=10, pady=10)
 
         self.run_button = tk.Button(
-            self.root,
+            button_frame,
             text="Run",
             command=self.run,
             bg=ACCENT_PURPLE,
@@ -304,7 +313,7 @@ class MainUI:
         self.run_button.pack(side=tk.LEFT, padx=10, pady=10)
 
         self.update_button = tk.Button(
-            self.root,
+            button_frame,
             text="Update",
             command=self.update,
             bg=ACCENT_PURPLE,
@@ -315,7 +324,7 @@ class MainUI:
         self.update_button.pack(side=tk.LEFT, padx=10, pady=10)
 
         self.clear_button = tk.Button(
-            self.root,
+            button_frame,
             text="Clear Log",
             command=self.clear_log,
             bg=ACCENT_PURPLE,
@@ -325,9 +334,30 @@ class MainUI:
         )
         self.clear_button.pack(side=tk.LEFT, padx=10, pady=10)
 
+    def _run_on_ui(self, callback: Callable[[], None]) -> None:
+        """Schedule ``callback`` on Tk's UI thread when possible."""
+
+        root = getattr(self, "root", None)
+        if root is not None and hasattr(root, "after"):
+            root.after(0, callback)
+        else:
+            callback()
+
+    def _set_status(self, text: str) -> None:
+        self._run_on_ui(lambda: self.status_label.config(text=text))
+
+    def _start_progress(self) -> None:
+        self._run_on_ui(lambda: self.progress.start())
+
+    def _stop_progress(self) -> None:
+        self._run_on_ui(lambda: self.progress.stop())
+
     def log_message(self, message):
-        self.log_text.insert(tk.END, message + "\n")
-        self.log_text.see(tk.END)
+        def append() -> None:
+            self.log_text.insert(tk.END, str(message).rstrip() + "\n")
+            self.log_text.see(tk.END)
+
+        self._run_on_ui(append)
 
     def clear_log(self) -> None:
         """Remove all text from the log window."""
@@ -335,9 +365,15 @@ class MainUI:
 
     def run_script(self, script_path):
         if script_path is None or not Path(script_path).exists():
-            messagebox.showerror(
-                "Error", "Installer script not found for this platform."
-            )
+            self.log_message(f"Script not found: {script_path}")
+            if messagebox is not None:
+                self._run_on_ui(
+                    lambda: messagebox.showerror(
+                        "Error", "Installer script not found for this platform."
+                    )
+                )
+            self._stop_progress()
+            self._set_status("Status: Ready")
             return
         try:
             if str(script_path).endswith(".bat"):
@@ -345,40 +381,44 @@ class MainUI:
             else:
                 cmd = ["bash", str(script_path)]
             process = subprocess.Popen(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
             )
-            for line in iter(process.stdout.readline, b""):
-                self.log_message(line.decode("utf-8").strip())
-            process.stdout.close()
+            if process.stdout is not None:
+                for line in process.stdout:
+                    self.log_message(line)
+                process.stdout.close()
             process.wait()
             if process.returncode != 0:
-                self.log_message(
-                    f"Error: {process.stderr.read().decode('utf-8').strip()}"
-                )
+                self.log_message(f"Error: command exited with {process.returncode}")
             else:
                 self.log_message("Operation completed successfully.")
         except Exception as e:
             self.log_message(f"Exception: {str(e)}")
         finally:
-            self.progress.stop()
-            self.status_label.config(text="Status: Ready")
+            self._stop_progress()
+            self._set_status("Status: Ready")
 
     def install(self):
         self.log_message("Starting installation...")
-        self.status_label.config(text="Status: Installing")
-        self.progress.start()
+        self._set_status("Status: Installing")
+        self._start_progress()
         self._submit_task(self.run_script, self.install_path)
 
     def run(self):
         self.log_message("Launching application...")
-        self.status_label.config(text="Status: Running")
-        self.progress.start()
+        self._set_status("Status: Running")
+        self._start_progress()
         self._submit_task(self.run_script, self.run_path)
 
     def update(self):
         self.log_message("Starting update...")
-        self.status_label.config(text="Status: Updating")
-        self.progress.start()
+        self._set_status("Status: Updating")
+        self._start_progress()
         self._submit_task(self.run_script, self.update_path)
 
     def check_license(self):
@@ -401,7 +441,7 @@ class MainUI:
     def show_config_toggles(self):
         """Open the configuration toggles window in a thread."""
         self.log_message("Opening config toggles...")
-        self._submit_task(run_config_toggle_gui)
+        self._launch_child_gui(run_config_toggle_gui, "Config Toggles")
 
     def _run_container_func(self, func, *args):
         try:
@@ -410,8 +450,8 @@ class MainUI:
         except Exception as exc:  # pragma: no cover - subprocess failures
             self.log_message(f"Exception: {exc}")
         finally:
-            self.progress.stop()
-            self.status_label.config(text="Status: Ready")
+            self._stop_progress()
+            self._set_status("Status: Ready")
 
     def _submit_task(self, func, *args):
         executor = getattr(self, "executor", None)
@@ -422,50 +462,50 @@ class MainUI:
 
     def build_image(self):
         self.log_message("Building Docker image...")
-        self.status_label.config(text="Status: Building")
-        self.progress.start()
+        self._set_status("Status: Building")
+        self._start_progress()
         self._submit_task(self._run_container_func, build_docker_image)
 
     def start_containers(self):
         self.log_message("Starting containers...")
-        self.status_label.config(text="Status: Starting")
-        self.progress.start()
+        self._set_status("Status: Starting")
+        self._start_progress()
         self._submit_task(self._run_container_func, manage_containers)
 
     def stop_containers(self):
         self.log_message("Stopping containers...")
-        self.status_label.config(text="Status: Stopping")
-        self.progress.start()
+        self._set_status("Status: Stopping")
+        self._start_progress()
         self._submit_task(self._run_container_func, stop_containers)
 
     def cleanup_images(self):
         self.log_message("Pruning images...")
-        self.status_label.config(text="Status: Cleaning")
-        self.progress.start()
+        self._set_status("Status: Cleaning")
+        self._start_progress()
         self._submit_task(self._run_container_func, cleanup_images)
 
     def manage_volumes(self):
         self.log_message("Managing volumes...")
-        self.status_label.config(text="Status: Volumes")
-        self.progress.start()
+        self._set_status("Status: Volumes")
+        self._start_progress()
         self._submit_task(self._run_container_func, manage_volumes)
 
     def manage_networks(self):
         self.log_message("Managing networks...")
-        self.status_label.config(text="Status: Networks")
-        self.progress.start()
+        self._set_status("Status: Networks")
+        self._start_progress()
         self._submit_task(self._run_container_func, manage_networks)
 
     def deploy_kubernetes(self):
         self.log_message("Deploying Kubernetes resources...")
-        self.status_label.config(text="Status: Deploying")
-        self.progress.start()
+        self._set_status("Status: Deploying")
+        self._start_progress()
         self._submit_task(self._run_container_func, deploy_kubernetes)
 
     def cleanup_kubernetes(self):
         self.log_message("Cleaning Kubernetes resources...")
-        self.status_label.config(text="Status: Cleaning")
-        self.progress.start()
+        self._set_status("Status: Cleaning")
+        self._start_progress()
         self._submit_task(self._run_container_func, cleanup_kubernetes)
 
     def scale_deployment_prompt(self):
@@ -476,8 +516,8 @@ class MainUI:
         if replicas is None:
             return
         self.log_message(f"Scaling {name} to {replicas}...")
-        self.status_label.config(text="Status: Scaling")
-        self.progress.start()
+        self._set_status("Status: Scaling")
+        self._start_progress()
         self._submit_task(self._run_container_func, scale_deployment, name, replicas)
 
     def get_pod_logs_prompt(self):
@@ -485,8 +525,8 @@ class MainUI:
         if not pod:
             return
         self.log_message(f"Fetching logs for {pod}...")
-        self.status_label.config(text="Status: Logs")
-        self.progress.start()
+        self._set_status("Status: Logs")
+        self._start_progress()
         self._submit_task(self._get_logs, pod)
 
     def convert_media_prompt(self):
@@ -504,8 +544,8 @@ class MainUI:
         )
         codec = simpledialog.askstring("Video Codec", "Codec", initialvalue="libx264")
         self.log_message(f"Converting {src} -> {dst}...")
-        self.status_label.config(text="Status: Converting")
-        self.progress.start()
+        self._set_status("Status: Converting")
+        self._start_progress()
         self._submit_task(self._convert_media_thread, src, dst, bitrate, codec)
 
     def _convert_media_thread(self, src, dst, bitrate, codec):
@@ -515,8 +555,8 @@ class MainUI:
         except Exception as exc:  # pragma: no cover - ffmpeg errors
             self.log_message(f"Exception: {exc}")
         finally:
-            self.progress.stop()
-            self.status_label.config(text="Status: Ready")
+            self._stop_progress()
+            self._set_status("Status: Ready")
 
     def _get_logs(self, pod):
         try:
@@ -526,18 +566,31 @@ class MainUI:
         except Exception as exc:  # pragma: no cover - subprocess failures
             self.log_message(f"Exception: {exc}")
         finally:
-            self.progress.stop()
-            self.status_label.config(text="Status: Ready")
+            self._stop_progress()
+            self._set_status("Status: Ready")
+
+    def _launch_child_gui(self, func, label: str) -> None:
+        """Open another GUI from Tk's UI thread and report launch errors."""
+
+        def launch() -> None:
+            try:
+                func()
+            except Exception as exc:  # pragma: no cover - GUI dependency failures
+                self.log_message(f"{label} failed: {exc}")
+                if messagebox is not None:
+                    messagebox.showerror(label, str(exc))
+
+        self._run_on_ui(launch)
 
     def launch_simple_chat(self):
-        """Open the simple chat demo in a background thread."""
+        """Open the simple chat demo."""
         self.log_message("Launching simple chat demo...")
-        self._submit_task(run_simple_chat)
+        self._launch_child_gui(run_simple_chat, "Simple Chat")
 
     def launch_ai_tools(self):
-        """Open the AI tools window in a background thread."""
+        """Open the AI tools window."""
         self.log_message("Launching AI tools...")
-        self._submit_task(run_ai_tools)
+        self._launch_child_gui(run_ai_tools, "AI Tools")
 
     def launch_dashboard(self):
         """Open the PySide dashboard."""

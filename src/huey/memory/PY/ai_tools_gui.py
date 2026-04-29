@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import os
+import threading
 
 try:  # pragma: no cover - optional dependency
     import tkinter as tk
@@ -42,8 +43,8 @@ import time
 from pathlib import Path
 from typing import Dict, List
 
-from hueyos.agents.llm import LLMAdapter, LLMProvider
-from hueyos.utils.paths import ensure_subdirectory, get_memory_path
+from huey.memory.PY.llm import LLMAdapter, LLMProvider
+from huey.utils.paths import ensure_subdirectory, get_memory_path
 
 from .config_manager import ConfigManager
 
@@ -436,7 +437,9 @@ def run_ai_tools() -> None:
         input_var.set("")
         append_chat("You", message)
         conversation.append({"role": "user", "content": message})
+        send_button.configure(state=tk.DISABLED)
         provider_value = provider_var.get()
+        model_value = model_var.get() or "gpt-4o-mini"
         try:
             provider = LLMProvider(provider_value)
         except ValueError:
@@ -444,17 +447,27 @@ def run_ai_tools() -> None:
         settings = config.get_setting(f"llm.{provider.value}.settings", {})
         if not isinstance(settings, dict):
             settings = {}
-        try:
-            adapter = LLMAdapter(
-                provider,
-                model=model_var.get() or "gpt-4o-mini",
-                settings=settings,
-            )
-            response = adapter.generate(prompt=message, messages=conversation)
-        except Exception as exc:  # pragma: no cover - depends on optional libs
-            response = f"Failed to reach provider: {exc}"
-        conversation.append({"role": "assistant", "content": response})
-        append_chat(provider.value, response)
+        messages = list(conversation)
+
+        def generate_response() -> None:
+            try:
+                adapter = LLMAdapter(
+                    provider,
+                    model=model_value,
+                    settings=settings,
+                )
+                response = adapter.generate(prompt=message, messages=messages)
+            except Exception as exc:  # pragma: no cover - depends on optional libs
+                response = f"Failed to reach provider: {exc}"
+
+            def finish() -> None:
+                conversation.append({"role": "assistant", "content": response})
+                append_chat(provider.value, response)
+                send_button.configure(state=tk.NORMAL)
+
+            root.after(0, finish)
+
+        threading.Thread(target=generate_response, daemon=True).start()
 
     def on_clear() -> None:
         conversation.clear()
@@ -462,13 +475,14 @@ def run_ai_tools() -> None:
         chat_display.delete("1.0", tk.END)
         chat_display.configure(state=tk.DISABLED)
 
-    tk.Button(
+    send_button = tk.Button(
         llm_frame,
         text="Send",
         command=on_send,
         bg=ACCENT_PURPLE,
         fg=LIGHT_FG,
-    ).grid(row=2, column=3, padx=10, pady=5, sticky=tk.E)
+    )
+    send_button.grid(row=2, column=3, padx=10, pady=5, sticky=tk.E)
     tk.Button(
         llm_frame,
         text="Clear",

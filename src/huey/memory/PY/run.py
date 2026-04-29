@@ -98,7 +98,7 @@ def launch_gui() -> None:
 
     from pygpt_net.app import run as pygpt_run
 
-    from .pygpt_net.tools.manager import MonkeyManager
+    from huey.pygpt_net.tools.manager import MonkeyManager
 
     pygpt_run(tools=[MonkeyManager()])
 
@@ -106,12 +106,12 @@ def launch_gui() -> None:
 def launch_manager_ui() -> None:
     """Start the Tkinter-based program manager shipped with Monkey Head."""
 
-    from gui.main_ui import MainUI
-
     try:
         import tkinter as tk
     except Exception as exc:  # pragma: no cover - missing tkinter
         raise RuntimeError("tkinter is not available") from exc
+
+    from .main_ui import MainUI
 
     root = tk.Tk()
     MainUI(root)
@@ -123,7 +123,7 @@ def launch_manager_ui() -> None:
 def launch_install_gui() -> None:
     """Start the graphical installer flow with required license confirmation."""
 
-    from hueyos.install_gui import launch_install_gui as start_install_gui
+    from huey.install_gui import launch_install_gui as start_install_gui
 
     start_install_gui()
 

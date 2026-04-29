@@ -56,13 +56,17 @@ def run_config_toggle_gui(config_path: str | Path = DEFAULT_CONFIG) -> None:
     root = tk.Tk()
     apply_scaling(root, os.environ.get("SCREEN_MODE", "1080p"))
     root.title("Config Toggles")
+    root.minsize(360, 260)
     root.configure(bg=DARK_BG)
+
+    body = tk.Frame(root, bg=DARK_BG)
+    body.pack(fill=tk.BOTH, expand=True, padx=12, pady=12)
 
     vars: dict[str, tk.BooleanVar] = {}
     for key, label in TOGGLE_FIELDS.items():
         var = tk.BooleanVar(value=bool(manager.get_setting(key, False)))
         chk = tk.Checkbutton(
-            root,
+            body,
             text=label,
             variable=var,
             bg=DARK_BG,
@@ -81,15 +85,28 @@ def run_config_toggle_gui(config_path: str | Path = DEFAULT_CONFIG) -> None:
             messagebox.showinfo("Config", "Settings saved.")
         root.destroy()
 
+    button_row = tk.Frame(body, bg=DARK_BG)
+    button_row.pack(fill=tk.X, pady=(10, 0))
+
     tk.Button(
-        root,
+        button_row,
         text="Save",
         command=on_save,
         bg=ACCENT_PURPLE,
         fg=LIGHT_FG,
         activebackground=ACCENT_PURPLE,
         activeforeground=LIGHT_FG,
-    ).pack(pady=10)
+    ).pack(side=tk.LEFT)
+
+    tk.Button(
+        button_row,
+        text="Cancel",
+        command=root.destroy,
+        bg=ACCENT_PURPLE,
+        fg=LIGHT_FG,
+        activebackground=ACCENT_PURPLE,
+        activeforeground=LIGHT_FG,
+    ).pack(side=tk.LEFT, padx=(8, 0))
 
     root.mainloop()
 

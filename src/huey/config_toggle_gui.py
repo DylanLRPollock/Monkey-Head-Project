@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Mapping
 
+from huey.memory.PY.config_toggle_gui import run_config_toggle_gui
+
 
 def update_toggle_settings(config_path: str | Path, updates: Mapping[str, bool]) -> None:
     path = Path(config_path)
@@ -20,4 +22,4 @@ def update_toggle_settings(config_path: str | Path, updates: Mapping[str, bool])
     path.write_text(json.dumps(current, indent=2))
 
 
-__all__ = ["update_toggle_settings"]
+__all__ = ["run_config_toggle_gui", "update_toggle_settings"]

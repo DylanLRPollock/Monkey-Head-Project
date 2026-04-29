@@ -47,17 +47,33 @@ def run_simple_chat() -> None:
     apply_scaling(root, os.environ.get("SCREEN_MODE", "1080p"))
     root.configure(bg=DARK_BG)
     root.title("Simple Chat Demo")
-
-    entry = tk.Entry(root, width=60, bg=DARK_BG, fg=LIGHT_FG, insertbackground=LIGHT_FG)
-    entry.pack(padx=10, pady=5)
+    root.minsize(520, 420)
 
     chat_box = scrolledtext.ScrolledText(
-        root, width=70, height=15, bg=DARK_BG, fg=LIGHT_FG, state=tk.DISABLED
+        root,
+        width=70,
+        height=15,
+        wrap=tk.WORD,
+        bg=DARK_BG,
+        fg=LIGHT_FG,
+        state=tk.DISABLED,
+        insertbackground=LIGHT_FG,
     )
-    chat_box.pack(padx=10, pady=5)
+    chat_box.pack(fill=tk.BOTH, expand=True, padx=10, pady=(10, 6))
+
+    input_frame = tk.Frame(root, bg=DARK_BG)
+    input_frame.pack(fill=tk.X, padx=10, pady=(0, 10))
+    entry = tk.Entry(
+        input_frame,
+        width=60,
+        bg=DARK_BG,
+        fg=LIGHT_FG,
+        insertbackground=LIGHT_FG,
+    )
+    entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
     def on_ask() -> None:
-        question = entry.get()
+        question = entry.get().strip()
         if not question:
             return
         answer = get_answer(question)
@@ -65,10 +81,21 @@ def run_simple_chat() -> None:
         chat_box.insert(tk.END, f"Q: {question}\n")
         chat_box.insert(tk.END, f"A: {answer}\n\n")
         chat_box.config(state=tk.DISABLED)
+        chat_box.see(tk.END)
         entry.delete(0, tk.END)
 
-    button = tk.Button(root, text="Ask", command=on_ask, bg=ACCENT_PURPLE, fg=LIGHT_FG)
-    button.pack(pady=5)
+    entry.bind("<Return>", lambda _event: on_ask())
+
+    button = tk.Button(
+        input_frame,
+        text="Ask",
+        command=on_ask,
+        bg=ACCENT_PURPLE,
+        fg=LIGHT_FG,
+        activebackground=ACCENT_PURPLE,
+        activeforeground=LIGHT_FG,
+    )
+    button.pack(side=tk.LEFT, padx=(8, 0))
 
     root.mainloop()
 

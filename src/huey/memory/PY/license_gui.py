@@ -55,7 +55,7 @@ def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -
 
     manager = ConfigManager(str(config_path))
 
-    license_path = Path(__file__).resolve().parents[3] / "LICENSE"
+    license_path = Path(__file__).resolve().parents[4] / "LICENSE"
     try:
         license_text = license_path.read_text(encoding="utf-8")
     except Exception:
@@ -92,7 +92,7 @@ def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -
     )
     text.insert(tk.END, license_text)
     text.config(state=tk.DISABLED)
-    text.pack(padx=10, pady=10)
+    text.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
     def on_accept() -> None:
         accept_license(config_path, license_hash)

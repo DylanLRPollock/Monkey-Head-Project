@@ -84,7 +84,7 @@ def launch_install_gui(config_path: str | Path = DEFAULT_CONFIG_PATH) -> None:
 
     tk.Label(
         controls,
-        text="Software packages (Ctrl/⌘ click for multi-select):",
+        text="Software packages (Ctrl/Cmd click for multi-select):",
         bg=DARK_BG,
         fg=LIGHT_FG,
     ).grid(row=1, column=0, columnspan=2, sticky="w", pady=(8, 4))
@@ -93,7 +93,7 @@ def launch_install_gui(config_path: str | Path = DEFAULT_CONFIG_PATH) -> None:
         controls,
         selectmode=tk.MULTIPLE,
         width=45,
-        height=min(len(SOFTWARE_OPTIONS), 8),
+        height=max(1, min(len(SOFTWARE_OPTIONS), 8)),
         bg=DARK_BG,
         fg=LIGHT_FG,
         selectbackground=ACCENT_PURPLE,
@@ -144,51 +144,73 @@ def launch_install_gui(config_path: str | Path = DEFAULT_CONFIG_PATH) -> None:
     progress = ttk.Progressbar(root, mode="indeterminate")
     progress.pack(fill="x", padx=12, pady=(0, 10))
 
-    def _run_install() -> None:
-        selected = software_list.curselection()
-        software = [SOFTWARE_OPTIONS[idx] for idx in selected] if selected else ["auto"]
+    def _ui(callback) -> None:
+        root.after(0, callback)
 
+    def _show_message(kind: str, title: str, text: str) -> None:
+        if messagebox is None:
+            return
+        if kind == "info":
+            messagebox.showinfo(title, text)
+        elif kind == "warning":
+            messagebox.showwarning(title, text)
+        else:
+            messagebox.showerror(title, text)
+
+    def _run_install(hardware: str, software: list[str]) -> None:
         try:
-            return_code = run_installer(hardware=hardware_var.get(), software=software)
+            return_code = run_installer(hardware=hardware, software=software)
             if return_code == 0:
-                status_var.set("Installation completed successfully.")
-                if messagebox is not None:
-                    messagebox.showinfo("Install", "Installation completed successfully.")
+                _ui(lambda: status_var.set("Installation completed successfully."))
+                _ui(
+                    lambda: _show_message(
+                        "info",
+                        "Install",
+                        "Installation completed successfully.",
+                    )
+                )
             else:
-                status_var.set(f"Installation failed (code {return_code}).")
-                if messagebox is not None:
-                    messagebox.showerror("Install", f"Installation failed (code {return_code}).")
+                text = f"Installation failed (code {return_code})."
+                _ui(lambda: status_var.set(text))
+                _ui(lambda: _show_message("error", "Install", text))
         except subprocess.CalledProcessError as exc:
-            status_var.set(f"Installation failed (code {exc.returncode}).")
-            if messagebox is not None:
-                messagebox.showerror("Install", f"Installation failed (code {exc.returncode}).")
+            text = f"Installation failed (code {exc.returncode})."
+            _ui(lambda: status_var.set(text))
+            _ui(lambda: _show_message("error", "Install", text))
         except Exception as exc:  # pragma: no cover - runtime/environment errors
-            status_var.set(f"Installation failed: {exc}")
-            if messagebox is not None:
-                messagebox.showerror("Install", f"Installation failed: {exc}")
+            text = f"Installation failed: {exc}"
+            _ui(lambda: status_var.set(text))
+            _ui(lambda: _show_message("error", "Install", text))
         finally:
-            progress.stop()
-            install_button.configure(state=tk.NORMAL)
+            _ui(progress.stop)
+            _ui(lambda: install_button.configure(state=tk.NORMAL))
 
     def on_install() -> None:
         try:
             validate_license_acceptance(accepted_var.get())
         except PermissionError:
-            if messagebox is not None:
-                messagebox.showwarning(
-                    "License required",
-                    "You must agree to the license before installation.",
-                )
+            _show_message(
+                "warning",
+                "License required",
+                "You must agree to the license before installation.",
+            )
             return
 
         config_path_obj = Path(config_path)
         config_path_obj.parent.mkdir(parents=True, exist_ok=True)
         accept_license(config_path_obj)
 
+        selected = software_list.curselection()
+        software = [SOFTWARE_OPTIONS[idx] for idx in selected] if selected else ["auto"]
+        hardware = hardware_var.get()
         status_var.set("Installing...")
         install_button.configure(state=tk.DISABLED)
         progress.start(10)
-        threading.Thread(target=_run_install, daemon=True).start()
+        threading.Thread(
+            target=_run_install,
+            args=(hardware, software),
+            daemon=True,
+        ).start()
 
     install_button = tk.Button(
         root,
