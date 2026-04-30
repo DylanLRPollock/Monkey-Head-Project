@@ -54,7 +54,7 @@ test:
 	$(PYTHON) -m pytest -q
 
 coverage:
-	pytest $(PKG_COV) --cov-report=term-missing --cov-report=xml
+	$(PYTHON) -m pytest $(PKG_COV) --cov-report=term-missing --cov-report=xml
 
 run:
 	$(PYTHON) -m uvicorn $(APP) --host $(HOST) --port $(PORT)
