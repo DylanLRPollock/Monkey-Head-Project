@@ -2,6 +2,9 @@
 # Target baseline: Python 3.13.x
 
 PYTHON ?= python3.13
+ifeq ($(OS),Windows_NT)
+PYTHON ?= python
+endif
 PIP ?= $(PYTHON) -m pip
 HOST ?= 0.0.0.0
 PORT ?= 1995
@@ -48,7 +51,7 @@ lint:
 	flake8 src tests conftest.py
 
 test:
-	pytest -q
+	$(PYTHON) -m pytest -q
 
 coverage:
 	pytest $(PKG_COV) --cov-report=term-missing --cov-report=xml
