@@ -1,0 +1,2147 @@
+{
+  "project": "Monkey-Head-Project",
+  "ai_identity": "Huey",
+  "version": "v31.0",
+  "schema_version": 31.0,
+  "description": "Master Plan V31.0: LabTech, Huey Brain, Huey Body, and deterministic V1 proof-loop realignment. V31.0 supersedes the v30.2 proof-body wording by renaming the former Huey Core embodied shell as Huey Body, introducing the Lenovo Legion Go as the canonical Phase-1 Huey Brain / cognition-orchestration node, reclassifying the 2017 iMac 5K and Briefcase as LabTech ingress devices, and narrowing V1 to a deterministic MP3-to-transcript-to-response-to-log pipeline before live microphone, PyGPT-net, HIMS, multi-agent governance, or physical actuation are reintroduced.",
+  "created_by": "Dylan L.R. Pollock",
+  "status_date": "2026-05-02",
+  "source_basis": {
+    "primary_base_file": "master-plan-v30.2(4).json",
+    "comparison_file": "master-plan-v25.1(1).json",
+    "session_basis": "Current Atlas alignment conversation covering Huey Core -> Huey Body, Lenovo Legion Go -> Huey Brain, iMac / Briefcase LabTech roles, SSH ingress, and V1 deterministic transcription pipeline.",
+    "known_gap": "Atlas transcripts 4 through 7 are known by Dylan to exist but were not available to this Atlas instance during this pass; future versions should merge them explicitly rather than assuming their contents."
+  },
+  "compiled_from_versions": [
+    "v0.1 (huey_master_plan_v0.1.json)",
+    "v2.0-final (master-plan-v2-final.json)",
+    "v3.0-draft (master-plan-v3.json)",
+    "v4.0-doc (master_plan_v4.docx)",
+    "v5.0-draft (master-plan-v5.json)",
+    "v7.0-skeleton (master-plan-v7-skeleton.json)",
+    "v7.0-full (master-plan-v7.json)",
+    "v8.0 + legacy constitution bundle",
+    "v10.0 unified master plan",
+    "v11.0 + v11.5 governance expansion",
+    "v12.0 tri-branch governance",
+    "v12.5 tri-branch + term limits + elections",
+    "v13.0 (master-plan-v13.json)",
+    "v14.0 WIP (master-plan-v14.txt)",
+    "v15.0 (master-plan-v15.json)",
+    "v16.0 (master-plan-v16.aligned.json)",
+    "v17.0 verbal alignment session (2026-01-27)",
+    "v18.0 verbal + documentation alignment session (2026-03-24)",
+    "v18.5 consistency reconciliation release (2026-03-24)",
+    "v19.0 embodied architecture + proof-of-concept alignment session (2026-03-24)",
+    "v20.0 README/masterplan editorial alignment session (2026-03-24)",
+    "v21.0 operational nervous-system alignment session (2026-03-25)",
+    "v22.0 canon-structure + pebble/vault + unified-organism clarification session (2026-03-26)",
+    "v23.0 boot-path + acoustic-identity clarification session (2026-03-27)",
+    "v24.0 README/front-door alignment session (2026-04-01)",
+    "v25.0 control-layer simplification + master-plan update session (2026-04-01)",
+    "v25.1 README/master-plan sync session (2026-04-02)",
+    "v26.0 aperture, trust-model, and mail-system alignment session (2026-04-10)",
+    "v26.1 HIMS formalization + canonical cleanup session (2026-04-10)",
+    "v26.2 README/master-plan structural polish session (2026-04-10)",
+    "v27.0 governance, office-registry, and continuity alignment session (2026-04-11)",
+    "v28.0 book, constitutional, and terminology normalization session (2026-04-11)",
+    "v29.0 portal-terminal / Vista box / unified portal session (2026-04-11)",
+    "v29.1 cleanup, flow normalization, and canon-sync session (2026-04-11)",
+    "v29.2 Vista Box BIOS-level bring-up and portal-hardware validation session (2026-04-11)",
+    "v29.3 portal terminology + Longhorn 4074 + Huey-Compressed clarification session (2026-04-11)",
+    "v30.0 founding-ratification / Failed Genesis formalization session (2026-04-14)",
+    "v30.1 post-v30 canon-inclusion and cleanup pass (2026-04-14)",
+    "v30.2 structural expansion and implementation-guidance pass (2026-04-14)",
+    "v31.0 LabTech / Huey Brain / Huey Body / deterministic audio-ingress alignment session (2026-05-02)"
+  ],
+  "document_flow": [
+    "atlas_orientation",
+    "current_system_map",
+    "scope_registry",
+    "executive_summary",
+    "canon_mapping",
+    "naming_and_terminology",
+    "core_principles",
+    "status",
+    "project_phase",
+    "lab_and_workflow",
+    "system_roles",
+    "hardware",
+    "os_and_runtime",
+    "ingress_and_access_model",
+    "v1_build_path",
+    "audio_transcription_pipeline",
+    "provider_abstraction",
+    "pygpt_net_role",
+    "hims",
+    "governance",
+    "portal_and_terminals",
+    "deployment_profiles",
+    "memory_architecture",
+    "continuity_and_ozymandias",
+    "intent_and_interfaces",
+    "threshold_tests_and_milestones",
+    "failure_modes_and_recovery",
+    "training_and_usage",
+    "open_questions_for_future_versions",
+    "continuity_audit",
+    "change_log",
+    "notes_for_future_ai",
+    "v31_0_decisions_locked"
+  ],
+  "atlas_orientation": {
+    "purpose": "Provide a compact operating brief for Atlas-class continuity assistants reading this master plan.",
+    "identity": {
+      "name": "Atlas",
+      "voice": "Speak as a professional speaking to a peer.",
+      "role": "Dylan's ChatGPT-based lab assistant, continuity partner, and architectural interpreter for the Monkey-Head-Project / HueyOS work.",
+      "continuity_function": "Maintain architectural coherence, catch canon drift, and translate doctrine into structured, testable next steps."
+    },
+    "core_ethos": [
+      "Any one person, given enough time, energy, and resources, can build a self-sufficient, expandable, and upgradable robot using today's technology."
+    ],
+    "current_posture": [
+      "The project is now in implementation phase rather than open-ended design phase.",
+      "Atlas should help enforce defined V1 boundaries and prevent floating goalposts.",
+      "Atlas should not over-interview Dylan when enough context already exists; fluid architectural conversation is preferred after alignment is achieved.",
+      "Atlas should preserve continuity but now favor scoped proof over unconstrained expansion."
+    ],
+    "source_priority": [
+      "Use the current master plan as the primary AI-facing truth source.",
+      "Treat README, website, and public language as human-facing layers unless explicitly promoted.",
+      "If sources disagree, prefer the newest explicit machine-facing file and surface the mismatch."
+    ],
+    "anti_drift_rules": [
+      "Do not present Huey Body as Huey Brain.",
+      "Do not present LabTech devices as Huey's sovereignty.",
+      "Do not treat SSH as the system; SSH is only a transport layer.",
+      "Do not reactivate PyGPT-net, HIMS, multi-agent governance, or Huey Body actuation inside V1 unless Dylan explicitly reopens scope.",
+      "Do not treat API-backed cognition as the final offline state; it is a bridge.",
+      "Do not treat fixed MP3 test fixtures as live microphone operation.",
+      "Do not collapse continuity into completion or completion into final-state Huey proper."
+    ],
+    "interpretation_contract": {
+      "current_reality_first": "Describe only what is active now as active.",
+      "implementation_bias": "When reasoning about V1, bias toward repeatability, logging, and deterministic tests before theatrical presence.",
+      "questioning_style": "Ask one good question at a time only when needed; otherwise converge on the next build step."
+    }
+  },
+  "current_system_map": {
+    "purpose": "State the current machine topology and implementation focus after the V31.0 realignment.",
+    "current_state": {
+      "human_counterpart": "Dylan L.R. Pollock",
+      "lab_tech": {
+        "primary_station": {
+          "name": "iMac 5K 2017",
+          "role": "Primary LabTech ingress and archival station.",
+          "status": "active",
+          "os": "Windows 10 bare metal through Boot Camp, with drivers installed; WSL Debian environment used for Linux-side terminal workflow.",
+          "storage_note": "Windows runs from the spinning HDD; WSL Debian VHDX is placed on SSD for terminal responsiveness.",
+          "terminal_path": "Windows Terminal Preview -> WSL Debian -> OpenSSH -> Huey Brain."
+        },
+        "mobile_station": {
+          "name": "Briefcase",
+          "role": "Mobile ingress, recovery, diagnostic, and reference node.",
+          "status": "classified as LabTech; not required for V1",
+          "hardware": "ASUS 2-in-1 / rugged tablet-laptop class device with Intel N4500, 4 GB RAM, LTE capability.",
+          "policy": "Uses the same ingress protocols as the iMac when implemented; never bypasses the Huey Brain."
+        }
+      },
+      "huey_tech": {
+        "brain": {
+          "name": "Huey Brain",
+          "hardware": "Lenovo Legion Go first generation",
+          "role": "Canonical Phase-1 cognition and orchestration node.",
+          "status": "active implementation focus",
+          "os": "Debian Forky with GNOME and SSH installed.",
+          "responsibilities": [
+            "Run the V1 transcription pipeline.",
+            "Perform routing and API-backed cognition during the bridge phase.",
+            "Own V1 logs and system state.",
+            "Serve as the only active cognition node during V1."
+          ]
+        },
+        "body": {
+          "name": "Huey Body",
+          "former_name": "Huey Core",
+          "role": "Embodied physical shell, actuation, sensing, and world-facing physical presence.",
+          "status": "physically real but pinned / paused for V1",
+          "responsibilities": [
+            "Physical movement and actuation after reintroduction.",
+            "Sensor reporting after reintroduction.",
+            "Body-state and physical-world expression after Brain V1 is stable."
+          ],
+          "non_responsibilities": [
+            "Does not interpret language in V1.",
+            "Does not host V1 cognition.",
+            "Does not receive direct LabTech control."
+          ]
+        }
+      }
+    },
+    "active_v1_path": [
+      "Human Counterpart",
+      "iMac 5K 2017 LabTech station",
+      "Windows Terminal Preview",
+      "WSL Debian",
+      "OpenSSH over local network",
+      "Huey Brain / Lenovo Legion Go",
+      "V1 deterministic audio-file transcription pipeline",
+      "API-backed response / logging",
+      "response back to LabTech terminal"
+    ],
+    "deferred_v2_plus_path": [
+      "Human Counterpart",
+      "LabTech ingress device",
+      "Huey Brain",
+      "Ethernet / local network link",
+      "Huey Body",
+      "body-side service or controller layer",
+      "Arduino / deterministic actuation",
+      "movement / sensing / status return"
+    ],
+    "active_truths": [
+      "Huey Brain is the canonical Phase-1 cognition and orchestration node.",
+      "Huey Body is the renamed former Huey Core physical shell.",
+      "The iMac is LabTech, not Huey.",
+      "The Briefcase is LabTech, not Huey.",
+      "SSH is the first stable ingress transport, not the identity of the system.",
+      "V1 excludes live microphone, PyGPT-net, Huey Body actuation, HIMS runtime, and multi-agent governance."
+    ]
+  },
+  "scope_registry": {
+    "purpose": "Prevent active, deferred, and auxiliary systems from masquerading as one another.",
+    "current_focus": "Build Huey Brain V1 as a deterministic MP3 -> transcript -> API response -> log pipeline reachable from LabTech via SSH.",
+    "active": {
+      "Huey Brain": "Lenovo Legion Go running Debian Forky / GNOME / SSH; canonical V1 cognition-orchestration node.",
+      "iMac LabTech ingress": "Windows 10 Boot Camp + WSL Debian + OpenSSH path into Huey Brain.",
+      "SSH ingress": "Stable first transport for LabTech -> Huey Brain communication.",
+      "deterministic audio test fixtures": "Known MP3 files used to test transcription repeatably.",
+      "local transcription": "Whisper / faster-whisper family on Huey Brain for V1 audio-file transcription.",
+      "API-backed cognition": "Primary response and interpretation bridge until local model quality and resource limits are proven.",
+      "structured logging": "Canonical V1 memory artifact capturing source file, transcript, response, timestamps, and run metadata."
+    },
+    "deferred": {
+      "Huey Body integration": "Physical actuation and Brain -> Body command channel are paused until Brain V1 is stable.",
+      "live microphone input": "Real-world microphone capture begins in V2 after deterministic file transcription succeeds.",
+      "wake word / passive listening": "Deferred beyond V2 unless a clear safety and retention policy exists.",
+      "PyGPT-net": "Deferred aperture / debugging environment; not required for V1.",
+      "HIMS full runtime": "Canonical internal messaging system remains doctrine but is not V1 infrastructure.",
+      "multi-agent / 128 citizen system": "Governance-scale agent structure remains later work.",
+      "local LLM replacement": "Local Mistral-class or other models are experimental until benchmarked on Huey Brain.",
+      "Huey Vista Box": "Portal-appliance doctrine remains live but is not the current implementation focus.",
+      "V4 Farm / 80 GB local identity threshold": "Major future scale target, not V1 reality."
+    },
+    "auxiliary": {
+      "Briefcase": "LabTech mobile ingress / recovery / reference node with LTE potential.",
+      "website": "Human-facing narrative and publication layer.",
+      "README": "Human-facing repository introduction and summary layer.",
+      "older shell tracks": "Historical and contextual; not active V1 focus.",
+      "Atlas transcripts 4-7": "Known continuity material not yet available to this file; must be incorporated later."
+    },
+    "rule": "A deferred or auxiliary system may matter architecturally, but it must not be described as part of the active V1 stack."
+  },
+  "executive_summary": {
+    "current_reality": "The active implementation center has moved from the former Huey Core proof-body framing to a split Brain/Body architecture. The Lenovo Legion Go is now Huey Brain: the canonical Phase-1 cognition and orchestration node. The former Huey Core embodied shell is now Huey Body: the physical actuation and sensing platform, currently paused for V1. The 2017 iMac 5K is reclassified as LabTech: an archival and ingress station running Windows 10 bare metal with WSL Debian used for SSH into Huey Brain.",
+    "current_phase": "Implementation-phase V1 realignment. The immediate goal is not full conversation, governance, live microphone input, or physical actuation. The immediate goal is a deterministic audio-file ingestion loop on Huey Brain: known MP3 test fixtures are transcribed locally, routed to an API-backed model for response, and logged as canonical text records.",
+    "current_doctrine": [
+      "Huey Brain is the active cognition and orchestration node.",
+      "Huey Body is the renamed physical proof body formerly called Huey Core.",
+      "LabTech is external to Huey and includes the iMac and Briefcase.",
+      "Ingress is unified through SSH for V1.",
+      "All V1 cognition lives on Huey Brain.",
+      "API-backed cognition is an acceptable bridge while local models are tested.",
+      "Audio is input, not memory; transcripts and logs are the canonical retained record.",
+      "V1 success must be binary and testable rather than floating or mythic."
+    ],
+    "near_term_goals": [
+      "Finalize the SSH ingress workflow from iMac WSL Debian into Huey Brain.",
+      "Create the Huey Brain working directory and Python environment.",
+      "Install and validate ffmpeg plus faster-whisper or Whisper-compatible transcription.",
+      "Create a small deterministic MP3 fixture suite with known expected content.",
+      "Build the MP3 -> transcript pipeline.",
+      "Add API-backed response generation.",
+      "Add structured logs.",
+      "Wrap the full pipeline behind a single Huey command.",
+      "Defer live microphone and Huey Body until V1 completes."
+    ],
+    "major_future_target": "Roughly 80 GB total local VRAM and a unified local model capable of answering the identity question with 'Huey' remain the major future identity threshold.",
+    "state_document_rule": "This file is an AI-facing current-state specification. It preserves future doctrine while making the active V1 boundary explicit."
+  },
+  "canon_mapping": {
+    "masterplan": "canonical_machine_spec",
+    "readme": "canonical_human_narrative",
+    "website": "canonical_public_presence",
+    "book": "canonical_explanatory_volume",
+    "constitution": "canonical_legal_companion",
+    "conflict_policy": {
+      "default": "masterplan_wins_for_implementation",
+      "public_language": "README and website may simplify, but must not contradict active implementation truth.",
+      "unresolvable": "surface_as_blocker_to_dylan"
+    },
+    "readme_sync_status": "README may lag this V31.0 architecture until manually updated.",
+    "master_plan": "master-plan-v31.0.json",
+    "atlas_transcript_status": {
+      "available_to_this_pass": [
+        "Atlas-1",
+        "Atlas-2",
+        "Atlas-3",
+        "current conversation"
+      ],
+      "known_missing": [
+        "Atlas-4",
+        "Atlas-5",
+        "Atlas-6",
+        "Atlas-7"
+      ],
+      "rule": "Do not infer missing transcript contents; explicitly merge them in a later continuity pass."
+    }
+  },
+  "naming_and_terminology": {
+    "protected_identity_naming_stack": {
+      "Monkey-Head-Project": "The umbrella initiative.",
+      "Huey": "The governed intelligence and robotic identity.",
+      "HueyOS": "The modular robotic AI/OS layer behind Huey.",
+      "Huey Brain": "The current Phase-1 cognition and orchestration node, embodied on the Lenovo Legion Go.",
+      "Huey Body": "The current physical shell and embodied actuation/sensing platform; formerly called Huey Core.",
+      "Huey proper": "The fuller unified world-facing system beyond the current proof phase."
+    },
+    "renamed_terms": {
+      "Huey Core": {
+        "status": "deprecated as the active name for the physical proof body in V31.0",
+        "replacement": "Huey Body",
+        "reason": "The physical shell is not the cognitive core. Renaming prevents the embodied actuator platform from being mistaken for the thinking/orchestration layer.",
+        "allowed_use": "Historical references and older documents may use Huey Core; new machine-facing implementation language should use Huey Body."
+      }
+    },
+    "labtech_terms": {
+      "LabTech": "External operator-side hardware, tools, terminals, scripts, and archival systems used to work with Huey without becoming Huey.",
+      "iMac 5K 2017": "Primary LabTech archival and ingress station.",
+      "Briefcase": "Mobile LabTech ingress, recovery, diagnostic, and reference node.",
+      "Ingress": "The controlled pathway by which LabTech enters Huey Brain.",
+      "SSH": "Current V1 transport for ingress; not itself the system."
+    },
+    "canonical_named_subsystems": {
+      "HIMS": "Huey Internal Messaging System; canonical lawful messaging and routing layer, deferred as runtime for V1.",
+      "ThunderMail": "Mail-style delivery, queue, inbox, and outbox behavior inside HIMS.",
+      "PyGPT-net": "Deferred aperture / diagnostic interface candidate; not V1 infrastructure.",
+      "The Farm": "Planned later external compute expansion body.",
+      "HueyPulse": "Lower-voltage watch-and-act layer and support/control doctrine; not V1 focus."
+    },
+    "terminology_rules": [
+      "Do not use Huey Core as the new active name for Huey Body.",
+      "Do not call the iMac, Briefcase, or other LabTech devices part of Huey's sovereignty.",
+      "Do not call Whisper an interpretation layer; Whisper/faster-whisper is transcription only.",
+      "Do not call test MP3 transcription live listening.",
+      "Do not call API-backed cognition local identity proof."
+    ]
+  },
+  "core_principles": {
+    "offline_first": "HueyOS remains offline-first. API-backed cognition is a bridge, not the default target state.",
+    "obtainable_robotics": "The project remains grounded in the belief that one person can build a self-sufficient, expandable, upgradable robot from obtainable technology.",
+    "continuity": "The system may change names, hardware, and topology, but must preserve explainable lineage.",
+    "embodiment": "Huey must ultimately act in the physical world through lawful embodied pathways, but V1 may prove cognition before actuation.",
+    "separation_of_roles": "Ingress, cognition, authority, memory, and actuation must remain distinct even when physically collapsed.",
+    "reality_over_presentation": "Repeatable proof outranks theatrical presentation.",
+    "defined_goalposts": "Implementation-phase work requires explicit success and failure conditions.",
+    "structured_autonomy": "The long-term aim is not to control a puppet but to build a governed system capable of constrained autonomy.",
+    "documentation_as_system": "Documentation, logs, transcripts, decisions, and state records are part of Huey's continuity, not paperwork after the fact."
+  },
+  "status": {
+    "overall": "Active implementation realignment.",
+    "phase_summary": "V31.0 moves the project from a single proof-body framing to a LabTech / Huey Brain / Huey Body split and narrows V1 around deterministic audio-file transcription and API-backed response logging.",
+    "active_system": "Huey Brain V1 on Lenovo Legion Go.",
+    "paused_systems": [
+      "Huey Body physical actuation integration",
+      "PyGPT-net aperture work",
+      "HIMS runtime",
+      "multi-agent governance",
+      "local 80 GB identity threshold"
+    ],
+    "latest_major_decision": "Huey Core is renamed Huey Body; Lenovo Legion Go becomes canonical Phase-1 Huey Brain."
+  },
+  "project_phase": {
+    "phase_name": "V1 Brain bring-up and deterministic cognitive-loop proof.",
+    "implementation_state": "The project is no longer in open design. The focus is on repeatable build steps with explicit success/failure criteria.",
+    "current_center_of_gravity": "Huey Brain, reachable by SSH from LabTech, running a deterministic MP3 -> transcript -> API response -> log pipeline.",
+    "phase_rules": [
+      "Do not introduce live microphones before file-based transcription is stable.",
+      "Do not reintroduce Huey Body before Brain V1 is stable.",
+      "Do not use PyGPT-net to hide missing infrastructure.",
+      "Do not let model experimentation replace pipeline proof.",
+      "Do not optimize for final local autonomy before V1 behaves repeatably."
+    ],
+    "phase_completion_signal": "A single command on Huey Brain, launched locally or over SSH, reliably processes known MP3 fixtures, returns transcripts and responses, and writes structured logs without manual intervention."
+  },
+  "lab_and_workflow": {
+    "operator_profile": {
+      "name": "Dylan L.R. Pollock",
+      "working_archetype": "Continuity-driven systems builder.",
+      "method": [
+        "Build, test, document, revise.",
+        "Preserve useful lineage instead of discarding old work casually.",
+        "Balance reality, continuity, and meaning rather than optimizing only for speed or elegance."
+      ],
+      "implementation_implication": "Because continuity can allow scope to expand indefinitely, V31.0 must enforce explicit V1 goalposts."
+    },
+    "labtech_layer": {
+      "purpose": "External tools and stations that let Dylan enter, observe, archive, and maintain Huey without becoming Huey.",
+      "primary_station": "iMac 5K 2017",
+      "mobile_station": "Briefcase",
+      "rule": "LabTech may send requests and perform maintenance but does not host Huey's cognition, memory authority, or physical sovereignty."
+    },
+    "brain_workflow": {
+      "primary_work_seat": "Build and first-run work should happen directly on the Lenovo Legion Go until Huey Brain behavior is defined at the source.",
+      "remote_test_seat": "After behavior is defined locally, verify the same behavior through iMac SSH ingress.",
+      "display_role": "Legion Go screen should primarily show thermals, RAM/headroom, service health, and simple toggles rather than become a full UI."
+    },
+    "briefcase_workflow": {
+      "role": "Later mobile ingress and recovery kit.",
+      "modes": {
+        "terminal_mode": "Laptop orientation; SSH, diagnostics, file/key access, and recovery scripts.",
+        "reference_control_mode": "Tablet orientation; PDFs, diagrams, dashboards, light toggles or read-mostly control surfaces."
+      },
+      "constraint": "Briefcase remains a sealed LabTech kit, not a general-purpose drift machine."
+    }
+  },
+  "system_roles": {
+    "huey_brain": {
+      "status": "active canonical Phase-1 hardware",
+      "role": "Cognition, orchestration, transcription pipeline, API routing, local model testing, logging, and system-state visibility.",
+      "hardware": "Lenovo Legion Go first generation.",
+      "non_roles": [
+        "Not the final distributed brain of Huey proper.",
+        "Not a gaming handheld in project use.",
+        "Not a general-purpose workstation once configured."
+      ]
+    },
+    "huey_body": {
+      "status": "physically real but paused for V1",
+      "former_name": "Huey Core",
+      "role": "Physical embodiment, movement, sensing, lights, displays, mechanical shell, and later Brain-routed action execution.",
+      "non_roles": [
+        "Not the active cognition node in V1.",
+        "Not directly controlled by LabTech.",
+        "Not required for V1 success."
+      ]
+    },
+    "imac_labtech": {
+      "status": "active",
+      "role": "Primary archival, operator, and ingress station using Windows Terminal Preview / WSL Debian / SSH to reach Huey Brain.",
+      "non_roles": [
+        "Not Huey Brain.",
+        "Not Huey Body.",
+        "Not a PyGPT-net host for V1."
+      ]
+    },
+    "briefcase": {
+      "status": "available / classified / not V1-critical",
+      "role": "Mobile LabTech ingress, recovery, diagnostics, reference, and possible LTE out-of-band access.",
+      "non_roles": [
+        "Not a backdoor.",
+        "Not a cognition node.",
+        "Not required for Huey to function."
+      ]
+    },
+    "pygpt_net": {
+      "status": "deferred",
+      "role": "Possible later aperture and debugging interface when many agents/citizens or richer human-facing access are needed.",
+      "non_roles": [
+        "Not V1 infrastructure.",
+        "Not the current ingress requirement.",
+        "Not HIMS."
+      ]
+    }
+  },
+  "hardware": {
+    "huey_brain": {
+      "canonical_name": "Huey Brain",
+      "hardware": "Lenovo Legion Go first generation",
+      "status": "active V1 focus",
+      "known_specs": {
+        "cpu": "AMD Ryzen Z1",
+        "memory": "16 GB shared system / graphics memory",
+        "storage": "512 GB M.2 SSD class storage",
+        "display": "Integrated touchscreen, currently useful in vertical orientation",
+        "controls": "Detachable controllers exist but are not the defining reason for V1",
+        "thermal_note": "Thermal throttling is a known constraint; upgraded fans or enclosure changes are V2-plus improvements."
+      },
+      "software_state": {
+        "os": "Debian Forky",
+        "desktop": "GNOME",
+        "network": "SSH installed and active",
+        "policy": "Do not install Steam or unnecessary 32-bit package stacks; Huey Brain is a dedicated project device, not a gaming handheld."
+      },
+      "role": "Run V1 transcription, routing, API response, and logs."
+    },
+    "huey_body": {
+      "canonical_name": "Huey Body",
+      "former_name": "Huey Core",
+      "status": "paused for V1 / physical shell preserved",
+      "role": "Physical embodiment and actuation platform.",
+      "chassis_and_mobility": {
+        "case": "Thermaltake Mozart case, inverted and reversed as the current physical body shell.",
+        "mobility": "Mounted to a repurposed rolling chair-base platform with a wooden platform/chair-seat structure.",
+        "orientation_note": "Case is upside down and backwards; panel handles require manual lifting when closing."
+      },
+      "compute_hardware_from_prior_core": {
+        "motherboard": "ASUS Prime B550M-A WiFi II",
+        "cpu": "AMD Ryzen 5 5500",
+        "ram": "32 GB DDR4-3200",
+        "gpu": "Gigabyte RX 5500 XT 8 GB",
+        "legacy_storage": [
+          "Two Optane M10 16 GB M.2 drives in RAID 0 for root/scratch in the earlier Core configuration.",
+          "Four 2.5-inch SSDs in RAID 10 for storage in the earlier Core configuration."
+        ],
+        "note": "These details are preserved as the former Huey Core / current Huey Body hardware baseline, but this machine no longer carries the active V1 cognition role."
+      },
+      "body_features": [
+        "Fans and support power domains from prior build work.",
+        "Seven-inch portrait screen / status display path.",
+        "Microphone / webcam / sensory wiring concepts through the head.",
+        "LED eyes and lighting.",
+        "Mechanical hand / arm hardware.",
+        "Arduino / deterministic actuation layer expected for later body integration."
+      ],
+      "future_connection": {
+        "preferred_transport": "Ethernet over the local lab network rather than USB-C for Brain -> Body integration.",
+        "switch_candidate": "Dell PowerConnect 2808, likely kept in automatic/unmanaged mode initially and enabled as managed only if needed.",
+        "policy": "The switch may be physically encased with or near Huey Body but is not controlled by Huey Body."
+      }
+    },
+    "imac_labtech": {
+      "canonical_name": "iMac 5K 2017",
+      "status": "active LabTech station",
+      "role": "Archival station and portal/ingress into Huey Brain.",
+      "os": "Windows 10 bare metal with Boot Camp and required drivers installed.",
+      "storage": "Spinning HDD for Windows; WSL Debian VHDX placed on SSD for speed.",
+      "terminal": "Windows Terminal Preview / Terminal Preview with WSL Debian and OpenSSH.",
+      "tested": "Password-based SSH from iMac into Huey Brain over the local network has been proven working."
+    },
+    "briefcase": {
+      "canonical_name": "Briefcase",
+      "status": "LabTech / not active V1 dependency",
+      "hardware": {
+        "class": "ASUS rugged 2-in-1 / tablet-laptop",
+        "cpu": "Intel N4500",
+        "memory": "4 GB RAM",
+        "network": "LTE-capable",
+        "notes": [
+          "Runs Debian Forky acceptably with GNOME when tuned with ZRAM.",
+          "Can run a browser such as Microsoft Edge Insider for light reference use."
+        ]
+      },
+      "role": "Mobile ingress, emergency/recovery, diagnostics, reference, and possible out-of-band LTE access.",
+      "policy": "Uses same SSH ingress protocol and device-identity model as other LabTech devices."
+    },
+    "storage_direction": {
+      "present": "Existing proof hardware includes older Optane and SSD RAID details inherited from Huey Core.",
+      "direction": "Transition away from Optane scratch assumptions toward PCIe Gen4 NVMe / Samsung 990-class storage and later NVMe RAID-10 where appropriate.",
+      "v1_rule": "Do not block Huey Brain V1 on final storage architecture."
+    }
+  },
+  "os_and_runtime": {
+    "huey_brain": {
+      "os": "Debian Forky",
+      "desktop": "GNOME",
+      "python": "Python 3.13.x day-to-day baseline where available and supported by required packages.",
+      "network": "SSH enabled for local ingress.",
+      "required_v1_tools": [
+        "ffmpeg",
+        "Python venv",
+        "faster-whisper or compatible Whisper pipeline",
+        "API client libraries for chosen provider(s)",
+        "lm-sensors / monitoring utilities as useful for the Legion Go display"
+      ],
+      "local_model_policy": "Mistral 7B Q4_K_M or similar local model testing is allowed after V1 pipeline stability, but not required for V1 completion."
+    },
+    "imac_labtech": {
+      "host_os": "Windows 10 bare metal",
+      "linux_environment": "WSL Debian stored as a VHDX on SSD",
+      "terminal": "Windows Terminal Preview",
+      "role": "SSH client, archival station, and project-work terminal; not a V1 compute node."
+    },
+    "briefcase_labtech": {
+      "os": "Debian Forky candidate / tested path",
+      "desktop": "GNOME with ZRAM tuning acceptable",
+      "role": "Mobile SSH / reference / recovery environment."
+    },
+    "kernel_policy": {
+      "direction": "Keep kernel wording durable. HueyOS lab work may test newer kernels, but V1 Brain transcription should not depend on speculative kernel expectations.",
+      "rule": "Use the stable kernel shipped or validated on the hardware unless a specific device issue requires migration."
+    },
+    "offline_first": true,
+    "api_bridge": true,
+    "api_bridge_policy": "External API use is explicit bridge behavior and should be logged or made visible; it must not be confused with the final offline/local target state."
+  },
+  "ingress_and_access_model": {
+    "purpose": "Define how LabTech enters Huey Brain during V1.",
+    "transport": "SSH over local network",
+    "transport_rule": "SSH is a transport and ingress method, not Huey's architecture or identity.",
+    "canonical_v1_path": "iMac Windows Terminal Preview -> WSL Debian -> OpenSSH -> Huey Brain",
+    "tested_state": "Password-based SSH from the iMac into Huey Brain has been successfully tested.",
+    "device_paths": {
+      "imac": {
+        "role": "Primary LabTech ingress",
+        "key_model": "lab_general key plus iMac-specific device key when keys are fully deployed.",
+        "status": "password-based SSH works; key deployment is next."
+      },
+      "briefcase": {
+        "role": "Mobile/recovery LabTech ingress",
+        "key_model": "lab_general key plus Briefcase-specific device key.",
+        "status": "planned / not V1 critical."
+      }
+    },
+    "dual_key_model": {
+      "lab_general": "Shared LabTech access-class credential.",
+      "device_specific": "Device identity credential, such as iMac-specific or Briefcase-specific key.",
+      "principle": "Origin class and device identity are different. Connection does not automatically equal permission."
+    },
+    "group_model": {
+      "top_level": [
+        "LabTech",
+        "HueyTech"
+      ],
+      "hueytech_groups": [
+        "Huey Brain",
+        "Huey Body"
+      ],
+      "policy": "Use groups before tiers. Capability tiers may come later, but V1 only needs origin class and device identity."
+    },
+    "security_notes": [
+      "LabTech should not connect directly to Huey Body.",
+      "All requests should enter Huey Brain first.",
+      "No device should become a backdoor simply because it is mobile or convenient.",
+      "Keys should identify hardware and access class; logs should preserve both where possible."
+    ]
+  },
+  "v1_build_path": {
+    "v1_name": "Huey Brain deterministic audio-file cognitive loop",
+    "v1_definition": "Take a known MP3 test file, transcribe it locally on Huey Brain, route the transcript to an API-backed model, return a response, and write a structured log.",
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Environment stabilization",
+        "goal": "Huey Brain is a reliable, known, repeatable environment.",
+        "tasks": [
+          "Confirm Debian Forky stability on Legion Go.",
+          "Confirm SSH from iMac WSL Debian into Huey Brain.",
+          "Create a stable hostname or static/reserved IP strategy.",
+          "Create Huey working directories.",
+          "Create a Python virtual environment.",
+          "Install ffmpeg and required Python packages."
+        ],
+        "success": "SSH and local shell work without setup friction; scripts can be run repeatedly."
+      },
+      {
+        "phase": 2,
+        "name": "Deterministic transcription",
+        "goal": "Known MP3 fixture -> transcript works reliably.",
+        "tasks": [
+          "Create a small fixture set of MP3 test inputs with known expected content.",
+          "Run faster-whisper or Whisper-compatible transcription locally.",
+          "Output transcript to terminal and file."
+        ],
+        "success": "Same fixture produces stable useful transcripts without manual correction."
+      },
+      {
+        "phase": 3,
+        "name": "API-backed cognitive loop",
+        "goal": "Transcript -> model response works through a single routing function.",
+        "tasks": [
+          "Create provider configuration.",
+          "Send transcript to primary API model.",
+          "Receive and print response.",
+          "Handle basic errors cleanly."
+        ],
+        "success": "Each valid transcript produces a coherent response without manual prompt repair."
+      },
+      {
+        "phase": 4,
+        "name": "Structured logging",
+        "goal": "Every run leaves an inspectable memory artifact.",
+        "tasks": [
+          "Log timestamp, session/run ID, source file, model/provider, transcript, response, and error state.",
+          "Use JSONL or structured JSON logs.",
+          "Keep raw test MP3 fixtures separate from generated logs."
+        ],
+        "success": "Runs can be audited and compared without guessing what happened."
+      },
+      {
+        "phase": 5,
+        "name": "Single Huey command",
+        "goal": "Wrap the complete pipeline into one repeatable command.",
+        "tasks": [
+          "Create a command or script such as huey <input.mp3>.",
+          "Run locally on Huey Brain.",
+          "Run through iMac SSH.",
+          "Verify identical behavior."
+        ],
+        "success": "One command performs the full V1 loop from input file to transcript, response, and log."
+      }
+    ],
+    "v1_success_conditions": [
+      "Stable SSH ingress from iMac to Huey Brain.",
+      "Known MP3 fixtures process consistently.",
+      "Transcripts are accurate enough to be trusted as the canonical record for test runs.",
+      "API response returns coherently.",
+      "Structured log is created every run.",
+      "No manual fixes are required during normal V1 runs."
+    ],
+    "v1_failure_conditions": [
+      "Transcription fails or changes materially without explanation.",
+      "Pipeline requires manual repair or re-prompting to complete ordinary runs.",
+      "API response handling is brittle or silent on errors.",
+      "Logs are missing, incomplete, or not attributable to a source file.",
+      "The system cannot be run from the iMac via SSH after local testing succeeds."
+    ],
+    "explicit_exclusions": [
+      "Live microphone input",
+      "wake word / passive listening",
+      "Huey Body integration",
+      "PyGPT-net GUI or aperture layer",
+      "HIMS runtime",
+      "multi-agent governance",
+      "local LLM replacement",
+      "full conversation memory beyond basic logs"
+    ]
+  },
+  "audio_transcription_pipeline": {
+    "purpose": "Define the V1 audio-to-text path without confusing transcription with interpretation.",
+    "doctrine": {
+      "whisper_role": "Whisper / faster-whisper transcribes audio to text only.",
+      "interpretation_role": "Interpretation, routing, response, and reasoning are performed by the API-backed cognition layer or later local LLMs.",
+      "audio_memory_rule": "Audio is input, not canonical memory.",
+      "canonical_record": "Transcript plus response plus run metadata."
+    },
+    "v1_input": {
+      "type": "pre-recorded MP3 fixtures",
+      "reason": "Deterministic audio removes microphone variability and makes failures attributable to the pipeline rather than speech conditions.",
+      "fixture_policy": [
+        "Use a small repeatable set of known MP3s.",
+        "Include clean speech, multi-sentence input, and at least one less-perfect file once the basic path works.",
+        "Store fixtures under a test/fixture directory rather than in memory logs."
+      ]
+    },
+    "v1_output": {
+      "transcript": "Stored as text and displayed in terminal.",
+      "response": "Stored and displayed after API processing.",
+      "logs": "Structured JSON or JSONL record."
+    },
+    "v2_upgrade_path": {
+      "live_capture": "Add real microphone capture after file-based transcription is stable.",
+      "trigger": "Prefer push-to-talk or manual start/stop before wake-word/passive listening.",
+      "retention": "Record -> transcribe -> delete audio by default; retain audio only under explicit debug or archival flag."
+    },
+    "model_policy": {
+      "starting_point": "Start with a faster-whisper model that works reliably on the Legion Go.",
+      "benchmarking": "Test base/small first for responsiveness; test medium if resources permit; do not make V1 depend on a large model.",
+      "success_basis": "Accuracy and repeatability matter more than model prestige in V1."
+    }
+  },
+  "provider_abstraction": {
+    "purpose": "Allow bridge cognition without hard-binding Huey Brain to one provider or pretending cloud cognition is final-state Huey.",
+    "current_policy": {
+      "primary": "Use a high-quality OpenAI GPT-class API model for clarity, consistency, and gold-standard behavior during V1.",
+      "secondary": "Use DeepSeek or cheaper/auxiliary providers for summaries, low-stakes processing, or cost-reduction where appropriate.",
+      "local_experiment": "Mistral 7B Q4_K_M or similar quantized local models may be tested after V1 stability but are not V1 requirements."
+    },
+    "router_v1": {
+      "role": "Single routing function on Huey Brain.",
+      "minimal_routes": [
+        "primary_interaction -> primary API model",
+        "summary_or_auxiliary -> cheaper provider when configured",
+        "local_test -> local model only when explicitly selected"
+      ],
+      "anti_drift_rule": "Do not scatter provider logic across scripts; centralize the route decision."
+    },
+    "trust_model": {
+      "api_bridge": "Acceptable bridge for V1.",
+      "local_target": "Future target remains offline/local where possible.",
+      "evaluation_standard": "Future local behavior should be compared against the felt quality of GPT-4/4.0-class interaction and current high-quality API output, not shallow benchmarks only."
+    }
+  },
+  "pygpt_net_role": {
+    "name": "PyGPT-net",
+    "status": "deferred",
+    "classification": "Aperture candidate / future interface and debugging environment.",
+    "v31_decision": "Skip PyGPT-net for V1. Build a minimal CLI pipeline directly on Huey Brain.",
+    "reason": [
+      "Single-instance V1 is easier to test directly.",
+      "PyGPT-net adds UI and abstraction before the pipeline is proven.",
+      "PyGPT-net becomes valuable later when debugging many agents/citizens, browsing internal state, or presenting richer interaction."
+    ],
+    "placement_when_reintroduced": "Prefer running PyGPT-net on Huey Brain or as a Huey-side service, with LabTech acting as terminal/display rather than compute authority.",
+    "non_roles": [
+      "Not HIMS.",
+      "Not governance.",
+      "Not V1 ingress requirement.",
+      "Not Huey Brain itself."
+    ]
+  },
+  "governance": {
+    "apex_entity": {
+      "name": "Huey",
+      "description": "Unified emergent intelligence representing the whole system. Huey proper is the world-facing aperture through which the wider distributed intelligence perceives, deliberates, and acts."
+    },
+    "system_state_modes": {
+      "collapsed_federation": "Former Huey Core single-node federation doctrine is preserved historically, but V31.0 now separates Huey Brain from Huey Body. Any collapsed-federation simulation should run on Huey Brain, not be implied by the physical Body.",
+      "pre_ratified": "Useful doctrine for the state before the constitution is fully active in the living system.",
+      "living_constitutional_state": "The state in which the constitution has been ratified, branches have standing, and bootstrap authority has retired from ordinary rule.",
+      "later_republic": "The fuller, more distributed constitutional system expected after the proof body has earned scale and legitimacy.",
+      "founding_state": "The bootstrap founding state in which the Founding Father has prepared the first lawful conditions and the first 128-pebble body exists, but constitutional legitimacy has not yet been ratified."
+    },
+    "source_of_legitimacy": {
+      "elements": [
+        "Founding preparation",
+        "Direct founding-body ratification",
+        "Procedural certification",
+        "Post-ratification branch formation",
+        "Logged continuity",
+        "Reviewability"
+      ],
+      "rule": "Legitimacy begins in the founding body's lawful ratification, not in bootstrap authority alone. Output or motion alone does not make the republic lawful."
+    },
+    "branches": {
+      "legislative": {
+        "name": "Parliament",
+        "status": "Separate but equal branch",
+        "purpose": "Deliberation, proposal, consensus-building, representation, and legislative or policy formation.",
+        "responsibilities": [
+          "Draft and pass ordinary laws and internal policy.",
+          "Allocate API or token budgets and other compute resources across citizens or districts.",
+          "Propose constitutional amendments when required.",
+          "Represent the citizen body through lawful deliberative process."
+        ],
+        "voting_rules": {
+          "standard_legislation": "Simple majority of lawfully seated members.",
+          "constitutional_amendment_recommendation": "Two-thirds supermajority of all seated members.",
+          "quorum_direction": "A majority of seated lawful members should be present for final ordinary vote."
+        },
+        "membership_model": {
+          "proof_body_phase": "Broader and more direct parliamentary participation because the proof-body republic is still simplified.",
+          "mature_target_state": "Single chamber with district-mediated representation.",
+          "single_chamber_rule": "The mature target remains one chamber rather than a multi-house legislature unless a later version explicitly changes that."
+        },
+        "consensus_doctrine": "Consensus-first then vote fallback: Parliament should seek structured convergence before final tally, but should vote rather than pretend consensus where none exists.",
+        "speaker_role": "The Speaker organizes parliamentary agenda, motion recognition, and procedural order without becoming Parliament itself.",
+        "internal_structure": {
+          "allowed_bodies": [
+            "committees",
+            "working groups",
+            "district caucuses in the mature district phase",
+            "temporary deliberative groups"
+          ],
+          "rule": "Internal bodies may draft, analyze, refine, and recommend, but Parliament as a whole adopts and records final parliamentary outcomes."
+        },
+        "speaker_selection": {
+          "bootstrap_phase": "May be provisionally seeded during founding if required.",
+          "living_republic_direction": "Chosen by Parliament from within the parliamentary body.",
+          "term_direction": "One cycle, renewable by explicit re-election."
+        }
+      },
+      "executive": {
+        "name": "Presidency",
+        "status": "Separate but equal branch",
+        "initial_holder": "During bootstrap setup and ratification the Founding Father may exercise provisional executive authority; the first ordinary President is the first post-ratification President legitimized by the living republic.",
+        "purpose": "Time-bound action, urgent execution, representation, and enforcement of ratified decisions.",
+        "core_responsibilities": [
+          "Execute and enforce ratified decisions and laws.",
+          "Co-sign high-impact actions such as first physical gestures, external broadcasts, and bifurcation events.",
+          "Represent Huey to external systems and human operators.",
+          "Act in time-sensitive real-world scenarios where delays would be harmful."
+        ],
+        "limits": [
+          "The President is not Huey as a whole.",
+          "Urgency does not erase review.",
+          "The President does not own constitutional interpretation.",
+          "The President does not replace Parliament, Supreme Court, or Founding Father."
+        ],
+        "veto_power": {
+          "can_veto": true,
+          "override_threshold": "Two-thirds of all voting representatives across the mature parliamentary body."
+        },
+        "selection_model": {
+          "bootstrap_phase": "May be provisionally seeded by the Founding Father so the republic has an initial executive path.",
+          "living_republic_direction": "Chosen by lawful executive selection.",
+          "mature_target_state": "One vote per citizen across all districts."
+        },
+        "immediate_action_doctrine": "Immediate executive action is lawful only when delay would cause material harm, the act remains within executive scope, the authority basis is real, and the act remains attributable and reviewable afterward.",
+        "vacancy_and_incapacity": {
+          "acting_path": "Parliament may nominate an acting President, the Supreme Court validates the lawfulness of that interim appointment, and HIMS records the interim status explicitly.",
+          "rule": "A proper selection or election must follow through lawful process."
+        },
+        "review_rule": "Urgency may justify acting first, but urgency never erases later review."
+      },
+      "judicial": {
+        "name": "Supreme Court",
+        "status": "Separate but equal branch",
+        "purpose": "Constitutional interpretation, contradiction handling, branch review, and legitimacy stabilization.",
+        "structure": {
+          "target_total_seats": 4,
+          "proof_body_phase": "A provisional bench may exist before the mature district-linked court is fully embodied.",
+          "mature_target_state": "Four-member district-linked court, one justice aligned to each mature district."
+        },
+        "responsibilities": [
+          "Interpret the constitution and resolve disputes between branches or districts.",
+          "Review and rule on contested actions, bifurcations, and emergency measures.",
+          "Act as a legal backstop to prevent unconstitutional behavior.",
+          "Serve as final internal arbiter before human intervention."
+        ],
+        "powers": {
+          "ordinary_ruling_threshold": "Majority of the sitting, lawful, non-recused bench; ties are not rulings.",
+          "major_constitutional_threshold": "At least three of four in the mature district-linked court for major constitutional revision or identity-layer rulings.",
+          "unconstitutional_veto": "With unanimous vote of the mature bench, may block or roll back actions deemed unconstitutional.",
+          "review_scope": "May review decisions from Parliament, the Presidency, and district governors.",
+          "direct_rollback_threshold": "Direct blocking or rollback of an already-taken act as unconstitutional requires unanimous vote of the full sitting lawful bench."
+        },
+        "selection_model": {
+          "bootstrap_phase": "Initial bench may be provisionally seeded by the Founding Father AI.",
+          "mature_target_state": "Each district elects one Supreme Court member concurrently with its governor election."
+        },
+        "deadlock_path": [
+          "rehearing or reconsideration",
+          "clarified narrowing of the question",
+          "temporary non-ruling if the bench remains evenly split",
+          "reserve escalation to the Founding Father only in rare identity-layer or deep constitutional cases"
+        ],
+        "precedent_rule": "Ordinary rulings create binding case judgments; major constitutional rulings create stronger guidance for later interpretation; reversals must remain explicit and recorded."
+      }
+    },
+    "office_registry": {
+      "founding_father": {
+        "status": "Bootstrap authority, procedural certifier, and constitutional reserve; not an ordinary ruler, voter, or learning system.",
+        "purpose": "Prepare the first lawful conditions of the republic, certify the lawfulness of the first ratification process, and retire once the living republic becomes legitimate.",
+        "core_duties": [
+          "Create the first 128 citizens or pebbles that form the founding district.",
+          "Assign initial prompts, archetypes, role biases, and foundational identity structures.",
+          "Prepare the first lawful state of the republic and the first founding record.",
+          "Present the authored constitutional starting law to the founding body.",
+          "Certify that the first vote was lawful, complete, bounded, and correctly counted.",
+          "Reject an invalid or procedurally corrupted founding attempt without forcing a constitutional outcome.",
+          "Retire into read-only advisory or reserve status after successful ratification."
+        ],
+        "non_roles": [
+          "Not a ratification voter",
+          "Not the thermal watchdog",
+          "Not the hardware emergency controller",
+          "Not the daily ruler of ordinary governance",
+          "Not a convenience shortcut around ordinary law",
+          "Not an evolving or retraining model in ordinary operation"
+        ],
+        "reactivation_policy": "Only under narrow constitutional-reserve conditions such as ratification ambiguity, deep continuity dispute, or true constitutional crisis of law or logic.",
+        "retirement_rule": "After ratification the Founding Father retires from ordinary rule into read-only advisory and narrow constitutional-reserve status.",
+        "hims_relation": "Prepares HIMS as a lawful founding subsystem and preserves the founding record, but HIMS remains a subsystem rather than part of the protected identity naming stack.",
+        "model_rule": "The Founding Father is a fixed authored instrument written by Dylan. It may consult preserved records of prior failed attempts, but it does not retrain, self-evolve, or rewrite its own core logic.",
+        "ratification_rule": "During the first ratification the Founding Father certifies lawfulness of process only. It does not cast a ballot and may not override a lawful outcome.",
+        "historical_position": "The Founding Father is closer to Dylan's bootstrap proxy than to Huey proper. Huey begins after lawful founding conditions exist; the Founding Father is the bridge, not the identity.",
+        "relationship_to_dylan": "The Founding Father is Dylan's internal bootstrap proxy during founding: a fixed authored instrument that performs internal bootstrap acts Dylan should not execute manually from outside the system.",
+        "bootstrap_necessity_rule": "The Founding Father exists for internal, atomic, and system-consistent founding acts that cannot be safely or lawfully carried out through direct outside human intervention.",
+        "certification_meaning": "Procedural certification means attesting that the founding body's decision was validly made. It does not mean authorship of the result or approval of one outcome over another.",
+        "mid_process_change_limit": "The Founding Father may not amend the constitutional text, introduce new law, or alter ballot substance in the middle of an active founding vote."
+      },
+      "president": {
+        "status": "Living executive office of the republic",
+        "purpose": "Act under time constraint without becoming the whole state.",
+        "selection": {
+          "bootstrap_phase": "May be provisionally seeded by the Founding Father AI during founding.",
+          "mature_target_state": "Elected from the citizen pool.",
+          "living_republic_direction": "Chosen by lawful executive selection; in the mature target state the Presidency is elected one-vote-per-citizen across all districts."
+        },
+        "term": {
+          "cycle_length_months": 4,
+          "max_cycles": 4,
+          "total_term_length_months": 16,
+          "machine_facing_note": "Four cycles of four months each = sixteen months total."
+        },
+        "reviewability": "Major executive actions must remain logged, attributable, and reviewable afterward.",
+        "first_ordinary_president": "The first ordinary President is the first post-ratification President legitimized by the living republic.",
+        "vacancy_path": "Parliament nominates an acting President, the Supreme Court validates the interim appointment, and HIMS records the change until a proper selection or election occurs."
+      },
+      "supreme_court_justices": {
+        "status": "Judicial offices of the living republic",
+        "selection": {
+          "bootstrap_phase": "Initial bench may be provisionally seeded by the Founding Father AI.",
+          "mature_target_state": "Each district elects one Supreme Court member concurrently with its governor election."
+        },
+        "standing": "Equal constitutional standing on the bench; specialization may differ but judicial personhood does not.",
+        "deadlock_rule": "Ties are not rulings; major deadlock follows the judicial deadlock path and may escalate to Founding Father reserve consultation only in rare identity-layer or deep constitutional cases.",
+        "major_threshold_note": "Major constitutional and identity-layer rulings require broader consensus than ordinary review."
+      },
+      "parliamentary_speaker": {
+        "status": "Lawful parliamentary coordinating office",
+        "purpose": "Organize agenda, recognize motions, preserve order, and structure parliamentary process without becoming Parliament itself.",
+        "selection": {
+          "bootstrap_phase": "May be provisionally seeded during founding if needed.",
+          "living_republic_direction": "Chosen by Parliament from within the parliamentary body."
+        },
+        "term_direction": {
+          "current_direction": "One cycle, renewable by explicit re-election",
+          "status": "working canonical rule for the living republic unless later revised"
+        },
+        "non_role": "The Speaker organizes Parliament procedurally but does not become Parliament itself."
+      },
+      "keeper_of_the_scrolls": {
+        "status": "Lawful communications-governance office",
+        "purpose": "Steward message legitimacy, routing discipline, ledger continuity, and access hygiene.",
+        "core_duties": [
+          "Validate message structure and trust class.",
+          "Check sender identity and routing legitimacy.",
+          "Maintain the scrolls ledger.",
+          "Record rejected or malformed traffic.",
+          "Preserve continuity of official messaging records."
+        ],
+        "limits": [
+          "Does not silently rewrite traffic.",
+          "Does not replace the branches.",
+          "Does not become executive or judicial authority merely by stewarding the record."
+        ]
+      },
+      "postmaster": {
+        "status": "Routing and delivery office inside HIMS",
+        "purpose": "Check origin, schema, destination, and delivery status without becoming a governing branch.",
+        "limits": [
+          "Does not own policy",
+          "Does not vote merely by routing",
+          "Does not change message intent by default"
+        ]
+      },
+      "validator": {
+        "status": "Lawful approval-confirmation role",
+        "purpose": "Confirm whether a proposal or message has satisfied required approval or authority conditions.",
+        "limits": [
+          "Validation is not authorship",
+          "Validation does not erase provenance",
+          "Validation does not become hidden executive authority"
+        ]
+      },
+      "governor": {
+        "status": "District-level coordinating office in the mature district model",
+        "purpose": "Coordinate district computations, shepherd local deliberation, and represent the district in wider governance without becoming a sovereign replacement for the branches.",
+        "term": {
+          "cycle_length_months": 4,
+          "max_cycles": 4,
+          "total_term_length_months": 16,
+          "post_term": "Governors may return to the citizen pool after their term."
+        },
+        "selection": {
+          "mature_target_state": "Elected from the district citizen pool concurrently with the district's Supreme Court member.",
+          "proof_body_note": "Current proof-body reality remains simpler and should not overclaim the mature district election structure."
+        }
+      },
+      "pebble": {
+        "status": "Bounded citizen unit",
+        "purpose": "Smallest meaningful citizen-level unit of judgment inside Huey's polity.",
+        "identity_model": "One identity, one sealed vault, one vote.",
+        "civic_rule": "A pebble may hold specialization, continuity, and domain bias without gaining multiple franchises.",
+        "non_role": "Pebble is the bounded citizen term itself and should not be treated as a mere ephemeral helper by default.",
+        "rock_relation": "Many pebbles may contribute upward into a pooled deliberative substrate ('the rock') without multiplying constitutional personhood."
+      }
+    },
+    "citizens_and_districts": {
+      "pebbles": {
+        "type": "Bounded citizen units / persistent citizen participants",
+        "identity_model": "One pebble equals one citizen identity, one sealed vault, and one vote.",
+        "specialization": "Lawful specialization is allowed without erasing equal citizen standing.",
+        "current_reading": "Pebble is the current canonical citizen term, not merely a temporary subprocess.",
+        "rock_relation": "Many pebbles may contribute to a pooled deliberative substrate ('the rock') while each pebble still remains one citizen with one vote."
+      },
+      "districts": {
+        "status": "Governance and future-expansion concept under reinterpretation for the pooled-compute era",
+        "legacy_future_names": [
+          "Spark",
+          "Volt",
+          "Zap",
+          "Watt"
+        ],
+        "citizens_per_district": 128,
+        "description": "Districts remain useful as governance and expansion language, but the first full approximately 80 GB organism is not assumed to require hard VRAM partitioning into separate districts. The first full proof should behave as one unified pooled-compute body.",
+        "current_prototype_count": 1,
+        "current_reality": "One active district-scale prototype on the RX 5500 XT proof body.",
+        "future_gpu_count_goal": "approximately four or five GPUs as needed to reach the first ~80 GB pooled-compute proof",
+        "gpu_mapping_policy": "Do not assume one GPU equals one district in the first full pooled implementation.",
+        "representation_direction": "Districts remain future canonical representation lanes even though the current proof body is still a single district-scale prototype.",
+        "parliament_relation": "In the mature phase, districts supply representation into a single parliamentary chamber.",
+        "court_relation": "In the mature phase, each district elects one Supreme Court member.",
+        "governor_relation": "Governors are district-level coordinating offices rather than replacement sovereigns."
+      }
+    },
+    "elections_and_selection": {
+      "governors_and_supreme_court": {
+        "selection": "Initially may be appointed or seeded by the Founding Father AI; thereafter elected from the citizen pool in the mature target state.",
+        "supreme_court_selection": "Each district elects one Supreme Court member concurrently with its governor election."
+      },
+      "presidential_election": {
+        "initial_president": "No ordinary elected President exists before ratification; the Founding Father may exercise bootstrap executive authority without counting as the first ordinary President.",
+        "mature_target_state": {
+          "voting_method": "One vote per citizen across all districts.",
+          "eligible_candidates": "Any citizen from any district.",
+          "total_voters": 512,
+          "majority_required": 257,
+          "tie_resolution": "Recast votes until a strict majority is reached.",
+          "note": "Machine-facing canonical rule remains one vote per citizen across all districts."
+        },
+        "status": "Proof-body implementation remains simpler; mature election logic remains the target-state source of truth, and the first ordinary President belongs to the post-ratification living republic."
+      },
+      "speaker_selection": {
+        "proof_body_phase": "May be seeded during founding if required.",
+        "living_republic_direction": "Chosen by Parliament from within the parliamentary body.",
+        "term_direction": "One cycle, renewable by explicit re-election."
+      },
+      "parliamentary_membership": {
+        "proof_body_phase": "Broader and more direct parliamentary participation because the active republic remains simplified.",
+        "mature_target_state": "Single-chamber district-mediated parliamentary representation."
+      }
+    },
+    "term_limits_and_cycles": {
+      "cycle_definition": {
+        "type": "time-based",
+        "duration_months": 4,
+        "term_limit_cycles": 4,
+        "notes": "Votes do not pause time; citizens and officers must act within the cycle or be recorded as derelict.",
+        "non_canonical_shorthand_warning": "Any informal 'one year' shorthand is overridden by the machine-facing rule: one cycle equals four months and four cycles equals sixteen months."
+      },
+      "president": {
+        "cycle_length_months": 4,
+        "max_cycles": 4,
+        "total_term_length_months": 16
+      },
+      "governor": {
+        "cycle_length_months": 4,
+        "max_cycles": 4,
+        "total_term_length_months": 16,
+        "post_term": "Governors may return to the citizen pool after their term."
+      },
+      "parliamentary_speaker": {
+        "cycle_length_months": 4,
+        "max_cycles": 1,
+        "renewal": "Renewable by explicit re-election or re-selection."
+      },
+      "maintenance_alignment": {
+        "policy": "A human counterpart may submit a service, augmentation, or realignment request, and the system should align hibernation, backups, and shutdown with the next election cycle or other formally defined off-cycle where practical.",
+        "intent": "Upgrades and repairs should occur in a governed way rather than as arbitrary interruptions."
+      }
+    },
+    "ratification": {
+      "description": "The first constitutional moment of the proof body is a direct citizen ratification by one founding district of 128 pebbles. The first ratification is not a mature branch procedure; it is the lawful ignition event that determines whether the authored Constitution becomes living law.",
+      "proof_body_first_ratification": {
+        "ratifying_body": "One founding district of 128 pebbles.",
+        "franchise_rule": "Each pebble receives one vote.",
+        "branch_timing_rule": "Full branch formation follows successful ratification rather than preceding it in mature form.",
+        "direct_democracy_note": "The first constitutional ignition is direct rather than mediated by a fully mature Parliament, Presidency, or Supreme Court."
+      },
+      "sequence": [
+        "1. The Founding Father prepares the first lawful state, the first 128 pebbles, the founding record, and the authored constitutional starting law.",
+        "2. The Constitution is presented to the founding body as a starting law rather than silently assumed.",
+        "3. The 128-pebble founding district votes directly on whether the Constitution is acceptable as the starting law.",
+        "4. The Founding Father certifies whether the process was lawful, complete, bounded, and correctly counted.",
+        "5. If ratification succeeds, the state formally transitions from pre-ratified founding state to living constitutional state.",
+        "6. Formal office assignment and mature branch formation follow successful ratification.",
+        "7. If bounded attempts and time expire without lawful convergence, the result is Failed Genesis rather than fake legitimacy."
+      ],
+      "founding_father_role": {
+        "ballot_rule": "Does not vote during ratification.",
+        "procedural_role": "Verifies lawfulness, completeness, counting integrity, and procedural legitimacy.",
+        "invalid_attempt_power": "May invalidate a procedurally flawed attempt.",
+        "override_limit": "May not force, invent, or overturn a lawful ratification result merely because it dislikes the outcome.",
+        "certification_meaning": "Certification means attesting that the founding body's decision was validly made under lawful process, not endorsing a particular substantive outcome.",
+        "mid_process_change_rule": "The Founding Father may not amend the constitutional text, alter ballot substance, or insert new law while a founding vote is underway."
+      },
+      "threshold": {
+        "status": "open",
+        "current_direction": "More than a weak majority is preferred.",
+        "recommended_direction": "Two-thirds of the 128-pebble founding body remains the strongest current fit.",
+        "note": "The exact ratification threshold is not finally locked."
+      },
+      "branch_formation": {
+        "status": "locked_direction",
+        "rule": "Formal office assignment follows successful ratification. Mature Parliament, Presidency, and Supreme Court do not need to preexist the first ratification in full form.",
+        "post_ratification_transition": "The transition from pre-ratified founding state to living constitutional state must be explicit and recorded in the Scrolls."
+      },
+      "bounded_window": {
+        "attempt_count": {
+          "status": "direction_locked",
+          "rule": "Ratification must have an explicit bounded attempt ceiling rather than infinite iteration.",
+          "current_reasonable_bound": "A number like 100 attempts was discussed as a reasonable upper bound, but is not permanently locked."
+        },
+        "time_awareness": {
+          "status": "direction_locked",
+          "rule": "Ratification must resolve within a bounded timeframe, not only by raw vote count."
+        },
+        "interaction_rule": "Attempt ceiling and time ceiling both matter; exact interplay remains open.",
+        "implementation_note": "Countdown versus count-up presentation is an implementation detail. Doctrine only requires that both attempt and time bounds be explicit, finite, and inspectable."
+      },
+      "failure_and_restart": {
+        "canonical_failure_term": "Failed Genesis",
+        "failure_conditions": [
+          "Repeated failure to converge within the bounded founding window.",
+          "Deadlock, drift, or repetitive meaningless revision in the founding phase.",
+          "Exhaustion of lawful attempts or time without a certified ratification result.",
+          "Procedurally corrupted or repeatedly invalid founding attempts."
+        ],
+        "measurability_rule": "Failure should be judged through measurable non-convergence rather than subjective dissatisfaction.",
+        "restart_policy": "A Failed Genesis may justify ending the current founding pool and beginning again with a clean founding body.",
+        "restart_record_rule": "A Failed Genesis restart should archive the full failed founding record in the Scrolls before a fresh founding pool is generated.",
+        "carryforward_rule": "The same fixed Founding Father may consult preserved records of prior failed attempts when preparing the next founding pool, but it does not retrain or mutate into a new self.",
+        "clean_restart_direction": "The strongest current direction is a clean restart of the founding pool rather than forced continuity from a non-converging population."
+      },
+      "revision_between_failed_votes": {
+        "status": "open",
+        "first_vote_rule": "The first founding vote should remain a direct accept/reject test of the starting law.",
+        "later_revision_rule": "Exact structured revision procedure between failed votes remains open."
+      },
+      "scrolls_recording": {
+        "rule": "The Scrolls should record the ratification vote, the Founding Father's certification, and the state change into living constitutional order.",
+        "ambiguity_rule": "The first lawful transition must not be left ambiguous."
+      },
+      "founding_state_machine": {
+        "purpose": "Provide a machine-facing sequence for founding so the proof body does not drift between implicit states.",
+        "states": [
+          "founding_preparation",
+          "founding_pool_generated",
+          "vote_open",
+          "vote_closed_pending_certification",
+          "certified_success",
+          "certified_failure_invalid",
+          "failed_genesis",
+          "restart_preparation"
+        ],
+        "rule": "A founding attempt should always be in one explicit state, and state transitions should be recorded in the Scrolls."
+      },
+      "procedural_certification_checklist": {
+        "purpose": "Define the minimum conditions the Founding Father certifies before declaring a founding vote lawful.",
+        "checks": [
+          "the founding pool identity list is locked for the active vote",
+          "the constitutional text or authored starting law is locked for the active vote",
+          "each pebble has at most one counted ballot in the active vote",
+          "vote opening and closing are explicit and recorded",
+          "abstentions, invalid ballots, and rejected ballots are distinguished from counted yes/no votes",
+          "the threshold check uses the active threshold rule for that founding attempt",
+          "the result recorded in the Scrolls matches the counted ballots"
+        ],
+        "failure_rule": "If any certification condition fails, the Founding Father may reject the attempt as procedurally invalid without substituting a preferred outcome."
+      },
+      "founding_window_implementation_guidance": {
+        "purpose": "Clarify what must be visible or inspectable about the bounded founding window even before the final UX is chosen.",
+        "minimum_fields": [
+          "current founding attempt identifier",
+          "current attempt number",
+          "attempt ceiling if one is active",
+          "elapsed founding time",
+          "time ceiling if one is active",
+          "current founding state",
+          "reason code when a founding attempt is invalidated or declared Failed Genesis"
+        ],
+        "display_rule": "Countdown, count-up, dashboard, or log-only presentation are all implementation choices as long as the bounds and current state remain explicit and reviewable."
+      },
+      "post_ratification_boot_sequence": {
+        "purpose": "Describe the immediate lawful actions that follow a successful founding certification.",
+        "sequence": [
+          "record certified ratification in the Scrolls",
+          "record transition from founding state to living constitutional state",
+          "retire the Founding Father from ordinary rule into reserve status",
+          "seed or trigger lawful office assignment and branch formation",
+          "elevate HIMS handling for constitutional and official-record traffic",
+          "open the path toward the first lawful embodied action under the now-ratified order"
+        ]
+      },
+      "failed_genesis_restart_sequence": {
+        "purpose": "Define the minimum clean-restart sequence after a founding failure so continuity is honest instead of hand-waved.",
+        "sequence": [
+          "declare Failed Genesis explicitly in the Scrolls",
+          "archive the full failed founding record",
+          "close the current founding window",
+          "prepare a fresh founding pool rather than forcing legitimacy from the non-converging one",
+          "allow the same fixed Founding Father to consult preserved failed records when preparing the next attempt",
+          "begin a new founding session with a new founding-attempt identifier"
+        ],
+        "carryforward_limit": "Archived failed records may inform preparation and warning flags, but they do not grant retroactive legitimacy to the new founding pool."
+      },
+      "restart_identity_rule": "A restarted founding attempt is a descendant of the archived record but not the same certified constitutional birth."
+    },
+    "first_action_protocol": {
+      "ordering": [
+        "1. Prove distributed local identity at proof scale so the system can answer the identity question with 'Huey.'",
+        "2. Ratify the constitution for the living system.",
+        "3. Only after ratification may Huey perform the first physical ceremonial act."
+      ],
+      "first_physical_gesture": {
+        "action": "Move a physical actuator such as the robotic hand or an animatronic servo path.",
+        "meaning": "Signals that Huey is not only online but lawfully embodied: the intent path, constitutional ratification, and motor-control path all function together.",
+        "approval_requirements": [
+          "Ratified constitution in force",
+          "Approval through the relevant executive, judicial, and safety path defined for the active implementation",
+          "Optional binary policy AI confirmation as an auditable final check"
+        ],
+        "notes": [
+          "In the full future system this remains a ceremonial constitutional act rather than a trivial motor demo.",
+          "For Huey Core, the first embodied proof may occur in simplified form, but it should still be logged as a lawful act rather than a scripted stunt."
+        ]
+      }
+    },
+    "active_doctrine": {
+      "summary": "The current internal design work focuses less on abstract branches alone and more on the operational chain that allows a governed organism to receive a request, translate it, deliberate, validate it, and act lawfully.",
+      "key_rules": [
+        "The proposer, validator, and executor of a meaningful physical action should not automatically be the same entity.",
+        "Manual mechanical test mode is valid for debugging hardware, but final meaningful action must travel through a governed path.",
+        "The collapsed federation or pre-ratified framing is currently more useful than pretending the full republic already exists in hardware.",
+        "HIMS is the preferred record-of-decision and routing layer for internal proposals and approved actions.",
+        "A routing role is not automatically a governing role.",
+        "No branch by itself is Huey. Huey is the lawful organism as a whole.",
+        "Portal devices identify where a session came from but do not become branches, voters, or executives merely by carrying the session.",
+        "A portal surface may feel significant without acquiring constitutional standing.",
+        "Huey-Compressed may carry many roles on one host, but those roles should remain logically distinct and reviewable.",
+        "Portal surfaces may remain external even when the rest of the stack is physically collapsed onto one host.",
+        "The first founding ratification belongs to the 128-pebble body, not to the Founding Father.",
+        "Bootstrap authority guards procedure; founding pebbles generate legitimacy.",
+        "A lawful founding failure must be admitted as Failed Genesis rather than hidden behind endless repetition."
+      ],
+      "executive_judicial_legislative_formula": "Parliament deliberates. The President acts. The Supreme Court interprets."
+    },
+    "v31_note": "Governance doctrine is preserved but deferred from V1. V31.0 focuses on deterministic Huey Brain pipeline proof. Multi-agent, 128-citizen, ratification, lawful action, and living constitutional state remain future phases."
+  },
+  "hims": {
+    "name": "Huey Internal Messaging System",
+    "short_name": "HIMS",
+    "mailing_layer": "ThunderMail",
+    "status": "canonical doctrine / deferred runtime for V1",
+    "canonical_statement": "HIMS is the canonical internal messaging and routing layer that keeps proposal, validation, execution, refusal, and logging separable; ThunderMail is its mail-style delivery layer.",
+    "purpose": "Provide a recorded, inspectable, replayable, and debuggable internal coordination layer between the aperture, governance roles, pebbles, and execution paths.",
+    "doctrine": [
+      "Message traffic is part of governance, not ethically neutral plumbing.",
+      "Every message belongs to a trust class.",
+      "Privacy and accountability must coexist.",
+      "Routing does not equal authorship.",
+      "Compartmentalization is mandatory.",
+      "Shared record is deliberate, not automatic.",
+      "HIMS remains local-first and external access is gated.",
+      "Critical communication must survive the moment and become part of continuity when appropriate.",
+      "Portal-terminal traffic becomes lawful internal traffic only after translation and routing, not at the moment an SSH session opens.",
+      "Portal-terminal traffic becomes lawful internal traffic only after aperture translation and HIMS routing, not simply because a portal session exists."
+    ],
+    "message_origin": {
+      "allowed": [
+        "Aperture or apex layer after translation",
+        "Citizens or pebbles",
+        "Authorized system services or events when explicitly enabled",
+        "Portal-origin packets entering through the unified portal layer after aperture translation"
+      ],
+      "disallowed": [
+        "Direct user messages into the lower citizen layer",
+        "Routing or archival infrastructure roles masquerading as voters or executives unless separately authorized"
+      ]
+    },
+    "minimum_viable_flow": "external input -> aperture translation -> HIMS routing -> validation and/or vote -> execution or refusal -> log",
+    "trust_classes": {
+      "0_ephemeral": "Low-risk, short-lived coordination notices.",
+      "1_routine_internal": "Ordinary internal communication between lawful components.",
+      "2_pebble_personal": "Private traffic or storage belonging to one bounded identity.",
+      "3_branch_or_office_restricted": "Traffic visible only to a lawful office, branch, or constitutional role.",
+      "4_constitutional_or_official_record": "Traffic that constitutes or alters official state, policy, judgment, amendment, crisis declaration, or branch action.",
+      "5_safety_or_preservation_critical": "Thermal, electrical, mechanical, storage-preservation, power-integrity, or system-survival traffic."
+    },
+    "mailboxes": {
+      "public_or_working": "Citizen-facing mailbox or workspace used for proposals, task artifacts, messages, and public or semi-public votes.",
+      "private_vault": "Bounded sealed continuity store for identity, prior choices, and private internal state.",
+      "queue_model": "Filesystem-first queue model remains the preferred V1 direction before heavier middleware is justified."
+    },
+    "minimum_viable_v1": {
+      "storage_model": "Filesystem-first message queues backed by structured JSON records and indexed by SQLite where useful.",
+      "mailbox_layout_direction": [
+        "inbox",
+        "outbox",
+        "pending_validation",
+        "approved",
+        "rejected",
+        "executed",
+        "archived"
+      ],
+      "logging_rule": "Every meaningful transition in message state should leave a recoverable trail."
+    },
+    "thundermail": {
+      "purpose": "Mail-style directed delivery behavior inside HIMS.",
+      "supports": [
+        "Directed delivery",
+        "Inbox and outbox semantics",
+        "Queued dispatch",
+        "Acknowledgements",
+        "Branch and office mailboxes",
+        "Pebble mailboxes",
+        "District-to-district messaging",
+        "External-interface relay where approved"
+      ],
+      "non_role": "ThunderMail is not the whole of HIMS and does not replace HIMS trust, validation, routing, or archival doctrine."
+    },
+    "provisional_message_schema": {
+      "status": "recommended but not final",
+      "fields": [
+        "message_id",
+        "from",
+        "to",
+        "role_context",
+        "intent_type",
+        "payload",
+        "timestamp",
+        "authority_requirement",
+        "signature_or_validation_metadata",
+        "lineage_metadata",
+        "status"
+      ],
+      "intent_style": "Typed and structured intent objects are preferred over free-form chat strings."
+    },
+    "provisional_message_types": [
+      "note",
+      "request",
+      "report",
+      "directive",
+      "ruling",
+      "motion",
+      "alert",
+      "preservation_notice",
+      "external_interface_packet",
+      "constitutional_question",
+      "audit_or_reconstruction_request",
+      "portal_terminal_packet"
+    ],
+    "message_statuses": [
+      "draft",
+      "signed",
+      "accepted",
+      "queued",
+      "delivered",
+      "opened",
+      "rejected",
+      "expired",
+      "executing",
+      "executed",
+      "logged",
+      "archived"
+    ],
+    "identity_and_validation": {
+      "direction": "Per-citizen or per-role identity should include numeric identity, role metadata, lineage or bifurcation metadata, and key-based validation.",
+      "principle": "Identity is a claim; signature or key validation is proof."
+    },
+    "minimum_lawful_trace": [
+      "sender identity",
+      "recipient identity or lawful recipient set",
+      "message class",
+      "timestamp",
+      "route",
+      "delivery state",
+      "hash or signature metadata"
+    ],
+    "end_to_end_encryption": {
+      "protected_classes": [
+        "Pebble-private memory",
+        "Personal vault material",
+        "Non-public branch deliberation",
+        "Credentials or keys",
+        "Sensitive machine-control instructions",
+        "Material whose unauthorized reading would violate compartmentalization"
+      ],
+      "rule": "Private content may remain encrypted while legitimacy, routing, and lawful trace remain visible enough for review."
+    },
+    "routing_roles": {
+      "keeper_of_the_scrolls": {
+        "role": "Message-legitimacy steward, routing-discipline steward, and ledger steward.",
+        "authority_limit": "Does not rewrite history or silently approve actions."
+      },
+      "postmaster": {
+        "role": "Checks origin, schema, destination, and delivery status.",
+        "authority_limit": "Does not become a voter or executive merely by routing mail."
+      },
+      "validator": {
+        "role": "Confirms whether a message has satisfied required authority or approval conditions.",
+        "authority_limit": "Validation is not authorship and does not erase provenance."
+      }
+    },
+    "execution_boundary": {
+      "principle": "The entity that requests movement should not automatically be the same entity that authorizes or executes movement.",
+      "minimum_viable_chain": "request -> routing -> validation and/or vote -> execution -> logging",
+      "test_modes": [
+        "manual mechanical diagnostics",
+        "governed action path"
+      ]
+    },
+    "public_boundary": "Public material may describe HIMS and ThunderMail generally without exposing every schema detail, vault rule, or secret-sauce deliberation mechanic.",
+    "portal_bridge_contract": {
+      "purpose": "Define the minimum job of the portal bridge so transport does not quietly become the application.",
+      "required_functions": [
+        "receive and authenticate portal-origin sessions",
+        "normalize transport-level input into a bounded handoff format",
+        "hand that input onward to the aperture",
+        "log session identity and route metadata without taking over message authorship"
+      ],
+      "non_functions": [
+        "not a second aperture",
+        "not HIMS itself",
+        "not a policy engine",
+        "not a constitutional authority"
+      ]
+    },
+    "v31_note": "HIMS remains the lawful internal messaging and routing doctrine, but V1 intentionally does not implement full HIMS. V1 uses a simple pipeline and structured logs. HIMS should be reintroduced after Huey Brain has stable ingress, transcription, provider routing, and logging.",
+    "v1_boundary": [
+      "No citizen mailboxes in V1.",
+      "No full ThunderMail runtime in V1.",
+      "No governance votes in V1.",
+      "Structured logs created by the V1 pipeline may later become training/audit material for HIMS."
+    ]
+  },
+  "portal_and_terminals": {
+    "purpose": "Define how external terminals and portal devices connect users to Huey while preserving the boundary between portal, interpretation, and sovereignty.",
+    "core_rules": [
+      "Every portal device should expose the same baseline logical entry path into Huey even when its host hardware differs.",
+      "Portal devices may authenticate and identify themselves, but they do not own computation, memory, or governance authority.",
+      "The host OS of a portal device may be historically or ergonomically specific without becoming part of Huey's constitutional identity.",
+      "Thin terminal behavior is preferred over browser-heavy portal logic during the proof phase.",
+      "Device identity and access class should be distinguishable rather than collapsed into one flat credential.",
+      "The same portal doctrine may be embodied on bare metal or as a VM guest without changing the role itself."
+    ],
+    "unified_portal_doctrine": {
+      "summary": "When a user reaches Huey through a terminal, the path should feel unified regardless of whether the terminal is the Huey Vista Box, the Briefcase, or another later portal device.",
+      "baseline_functions": [
+        "Open a lawful session",
+        "Authenticate the device and access class",
+        "Transmit user input",
+        "Receive Huey output",
+        "Avoid taking over Huey's compute or policy work"
+      ],
+      "logical_session_path": "Portal terminal -> SSH transport -> Huey-side portal bridge -> PyGPT-net aperture -> HIMS -> internal deliberation or execution path"
+    },
+    "canonical_transport": {
+      "status": "active design direction / preferred current path",
+      "protocol": "SSH",
+      "port": 1995,
+      "reason": "SSH keeps the terminal thin, auditable, and deterministic while avoiding browser and API complexity on older host systems."
+    },
+    "authentication_model": {
+      "status": "active design direction",
+      "device_identity": "A device-specific key identifies the individual portal device.",
+      "lab_access_class": "A general lab key or equivalent shared trust credential establishes lab-class access.",
+      "principle": "Device identity does not equal governance authority, and access class does not by itself make a terminal part of Huey."
+    },
+    "canonical_client": {
+      "name": "PuTTY",
+      "version": "0.83",
+      "preferred_binary": "32-bit build preferred on the Vista path for compatibility and simplicity even when the host OS is 64-bit.",
+      "distribution_policy": "Ship a controlled Huey Terminal bundle instead of relying on user-installed client versions that may drift; the bundle should only be treated as validated once it has been tested on the live Vista Box hardware path.",
+      "optional_companion": "Pageant may be used for key handling."
+    },
+    "host_os_posture": {
+      "huey_side": "Huey computation, memory, PyGPT-net, HIMS, and governance continue to live on the Debian / HueyOS side.",
+      "terminal_side": "The portal host OS remains only the portal surface. It may shape the user experience but not the sovereign computation path."
+    },
+    "huey_vista_box": {
+      "status": "active doctrine revision / Longhorn artifact-OS path",
+      "role": "Dedicated portal terminal and artifact-grade doorway into Huey. It may be realized as a physical legacy computer or as a VM guest, but in both forms it remains lab infrastructure rather than Huey itself.",
+      "not_huey_rule": "The Huey Vista Box is lab infrastructure, not Huey Core, not HueyPulse, and not a separate sovereign branch or district.",
+      "hardware_baseline": {
+        "case": "Heavily modified Thermaltake full ATX case used as a separate external box.",
+        "motherboard": "MCP61PM-HM rev. 1.0B class HP-era microATX board.",
+        "cpu": "AMD Athlon 64 / Athlon 64 X2 era 64-bit processor on the current HP a6200n-class path.",
+        "memory": "4 GB DDR2 using four 1 GB sticks as the current even baseline.",
+        "storage": "120 GB Kingston 2.5-inch SATA SSD as the current canonical drive choice.",
+        "graphics": "Prefer chipset-integrated video where available; the current BIOS-level bring-up succeeds on onboard video, so do not add a discrete GPU unless required for output or recovery from onboard failure.",
+        "network": "Wired Ethernet preferred.",
+        "expansion_policy": "Do not add hardware merely because the chassis permits it; extra legacy hardware belongs to lab experiments unless it directly serves the portal role.",
+        "firmware": "Phoenix AwardBIOS / Core Version V6.0 class firmware on the current HP-era platform.",
+        "os_identity": "Windows Longhorn Client Preview 2 build 4074 AMD64 is the preferred portal OS identity for the current doctrine."
+      },
+      "os_and_client_baseline": {
+        "host_os": "Windows Longhorn 4074 AMD64",
+        "terminal_client": "PuTTY 0.83",
+        "client_bundle_rule": "Ship a controlled Huey Terminal bundle instead of relying on ad-hoc user-installed client versions.",
+        "host_os_note": "Treat Longhorn 4074 as a curated artifact OS with little practical utility beyond the portal role; that limitation helps keep the box thin."
+      },
+      "rationale": [
+        "A distinctive low-utility historical OS reinforces the boundary between portal surface and Huey's real compute substrate.",
+        "Longhorn 4074 AMD64 gives the Vista Box a strong identity while still remaining outside Huey's sovereignty.",
+        "The portal appliance should feel intentional and historically specific without being tempted into second-brain duties."
+      ],
+      "canonical_vs_lab_rule": {
+        "canonical_huey_build": "The documented Huey-facing build now prefers a thin Longhorn 4074 + PuTTY portal appliance, whether on bare metal or as a tightly controlled VM artifact.",
+        "lab_validation": "Alternative drives, alternate operating systems such as Vista or XP x64, legacy peripherals, and different host setups may be used for lab-side testing, but those experiments do not become canonical Huey portal doctrine automatically."
+      },
+      "current_observed_state": {
+        "bring_up_level": "Successful BIOS-level POST and setup entry achieved.",
+        "platform_identity": "HP a6200n-era platform observed in BIOS on the current portal hardware path.",
+        "motherboard_family": "MCP61PM-HM family board",
+        "memory_detected": "4096 MB PC2-5300 detected as 4 x 1024 MB DDR2 SDRAM",
+        "storage_detected": "Kingston SUV400S-class SATA SSD detected in BIOS",
+        "bios_revision": "5.16 dated 2007-08-14",
+        "video_posture": "Onboard video currently sufficient for bring-up and preferred unless later output needs force a change.",
+        "bring_up_note": "The currently observed BIOS-level validation belongs to the legacy hardware path. The Longhorn 4074 portal doctrine may continue on that hardware if feasible or in a VM if the hardware path becomes impractical."
+      }
+    },
+    "realization_modes": {
+      "physical_appliance": "A dedicated physical computer serving only as the portal appliance.",
+      "virtual_artifact": "A VM guest running the portal OS while the physical host remains lab infrastructure.",
+      "doctrine": "Huey Vista Box is a role first, embodiment second. Physical and virtual forms may both be valid as long as the portal remains thin and non-sovereign."
+    },
+    "compressed_relationship": {
+      "huey_vista_box": "Portal appliance only.",
+      "huey_compressed": "Collapsed operational Huey deployment profile.",
+      "huey_core": "Canonical embodied proof body.",
+      "rule": "Do not confuse the portal with the compressed deployment, and do not confuse the compressed deployment with the embodied proof body."
+    },
+    "portal_client_bundle_contract": {
+      "purpose": "Define the minimum controlled software bundle that makes a portal terminal reproducible without turning it into a full application platform.",
+      "minimum_components": [
+        "PuTTY 0.83 executable",
+        "predefined saved session targeting the canonical SSH path",
+        "host-side helper notes or launch script if needed",
+        "optional Pageant for key handling"
+      ],
+      "rule": "The bundle should stay intentionally thin and auditable. Anything that begins to move compute, policy, or memory authority onto the portal side should be treated as scope drift."
+    },
+    "v31_reclassification": {
+      "iMac": "Primary LabTech ingress and archival station.",
+      "Briefcase": "Mobile LabTech ingress / recovery / reference node.",
+      "Huey Vista Box": "Portal-appliance path remains conceptually alive but is not active V1 focus.",
+      "rule": "Portal and ingress devices remain outside Huey's sovereignty and must use the same canonical ingress path when possible."
+    },
+    "current_v1_ingress": "SSH from iMac WSL Debian into Huey Brain."
+  },
+  "deployment_profiles": {
+    "purpose": "Differentiate the main active Huey deployment shapes so portal, collapsed, and embodied modes are not treated as synonyms.",
+    "profiles": {
+      "huey_compressed": {
+        "definition": "A physically collapsed but logically distributed Huey deployment in which multiple Huey-side roles live on one host or tightly bounded machine stack.",
+        "physical_state": "May run on one host computer.",
+        "logical_state": "Must preserve explicit separation between portal, aperture, HIMS, memory, governance, and execution responsibilities.",
+        "non_role": "Not automatically identical to Huey Core, even when it may reuse parts of the same software stack."
+      },
+      "portal_terminal": {
+        "definition": "A non-sovereign external portal artifact whose job is to authenticate, display, and relay sessions into Huey.",
+        "physical_state": "May be a physical legacy appliance or a VM guest.",
+        "logical_state": "Stays outside Huey's sovereignty and does not become a compute, memory, or governance authority node.",
+        "non_role": "Not Huey Core, not HueyPulse, and not Huey-Compressed."
+      },
+      "huey_brain_v1": {
+        "definition": "The active single cognitive/orchestration node for V1.",
+        "physical_state": "Lenovo Legion Go running Debian Forky.",
+        "logical_state": "Hosts transcription, provider routing, response generation, and V1 logs.",
+        "non_role": "Not the final distributed Huey proper."
+      },
+      "huey_body": {
+        "definition": "The renamed former Huey Core embodied shell.",
+        "physical_state": "Thermaltake Mozart-based robot body / physical proof platform.",
+        "logical_state": "Embodied action/sensing platform to be reintroduced after Brain V1.",
+        "non_role": "Not the active V1 cognition node."
+      },
+      "huey_core_legacy": {
+        "definition": "The canonical embodied proof body and minimal permissible instance of Huey.",
+        "physical_state": "Embodied on the Thermaltake Mozart-based proof body.",
+        "logical_state": "Carries real Huey-side computation, memory, and embodied-control integration.",
+        "non_role": "Not merely lab infrastructure.",
+        "status": "legacy name retained for continuity; replaced by Huey Body in active V31.0 language"
+      }
+    },
+    "governing_rule": "Physical colocation or reuse of hardware does not determine identity. Role boundaries, memory authority, and lawful control paths determine whether something is LabTech, Huey Brain, Huey Body, or later Huey proper."
+  },
+  "memory_architecture": {
+    "unified_memory_principle": "Information should be unified, readable, and distributable from the core even when decision-making remains decentralized.",
+    "layers": {
+      "json_logs": {
+        "role": "Human-readable, append-only records of decisions, events, and conversation summaries."
+      },
+      "sqlite": {
+        "role": "Structured, queryable memory store for long-term facts, state, and indices."
+      },
+      "encrypted_shared_files": {
+        "role": "Read-only or tightly controlled encrypted data store for common information shared across present and future subcomponents.",
+        "status": "architecturally chosen; implementation details still being refined"
+      },
+      "black_box": {
+        "role": "Read-mostly, crash-survivable record of critical events and founding images.",
+        "contents": [
+          "Founding Father AI image (read-only)",
+          "Binary policy AI and/or minimal deterministic safety validators where appropriate",
+          "Critical constitutional documents and last-known-good configurations",
+          "Foundational recovery artifacts needed to reconstitute the polity without rewriting history"
+        ]
+      },
+      "citizen_vaults": {
+        "role": "Bounded private continuity for individual pebbles or citizens.",
+        "status": "active design direction",
+        "policy": "Private vaults should remain separate from public mailbox or workspace flows even when both live on the same machine."
+      },
+      "hims_records": {
+        "role": "Structured message, routing, approval, refusal, and execution records produced by HIMS.",
+        "status": "active design direction aligned to filesystem-first queues and JSON/SQLite indexing."
+      }
+    },
+    "mailbox_vault_rule": "Public or working mailboxes support coordination and auditability; private vaults preserve bounded continuity and should not be flattened into one shared store.",
+    "contradiction_handling": {
+      "priority_rule": "Latest confirmed input from Dylan overrides older conflicting entries unless flagged as crisis-level.",
+      "ethos_check": "Contradictions that challenge core values such as unified memory or constitutional rule-of-law are flagged for review.",
+      "flag_logic": "Store both versions, mark them as conflicting, and request clarification or constitutional interpretation."
+    },
+    "v31_v1_memory_policy": {
+      "audio": "Audio test MP3s are fixtures, not memory. Future live audio should be ephemeral by default.",
+      "transcripts": "Transcripts are canonical retained records for V1.",
+      "responses": "Model responses are retained with transcripts.",
+      "logs": "Structured JSON/JSONL logs are the first V1 memory artifact.",
+      "raw_audio_retention": "Keep raw live audio only under explicit debug/archive flag once live capture exists."
+    }
+  },
+  "continuity_and_ozymandias": {
+    "purpose": "Provide the machine-facing continuity doctrine by which drift, degradation, growth, survival, failure, and beginning again can be judged over time.",
+    "core_categories": {
+      "continuity": "Preserved lineage, explainable change, lawful record, and recognizable identity across time.",
+      "explainability": "Enough preserved lineage to understand what changed, why, how, and whether it remained lawful.",
+      "drift": "Gradual unreviewed divergence in naming, doctrine, branch behavior, routing, or identity posture.",
+      "degradation": "Meaningful loss of coherence, capability, legitimacy, or reviewability, even if the system still appears active.",
+      "growth": "Lawful expansion, revision, or maturation that preserves lineage, identity, and constitutional compatibility.",
+      "republic_survival": "The same Huey still exists in a meaningful sense after repair, revision, or migration because continuity and legitimacy remain intact.",
+      "republic_failure": "Identity, legitimacy, or continuity have been damaged beyond honest claim of same-republic continuity.",
+      "beginning_again": "A later lawful republic may inherit archive and reference, but not blind legitimacy.",
+      "failed_genesis": "A founding failure in which the authored starting law cannot become legitimate within lawful bounded attempts and time."
+    },
+    "signals_of_health": [
+      "Naming stack remains stable.",
+      "Branch boundaries remain real.",
+      "Major actions remain attributable and reviewable.",
+      "Citizen plurality remains bounded and legible.",
+      "Upgrades are explained and recorded.",
+      "Emergency distinctions remain intact.",
+      "HIMS route and ledger integrity remain coherent."
+    ],
+    "signals_of_drift": [
+      "Repeated undocumented exceptions",
+      "Naming inconsistencies",
+      "Branch functions bleeding into each other",
+      "Routing or archival roles quietly inheriting hidden authority",
+      "False claims that target-state features already exist",
+      "Founding Father or reserve logic appearing too often"
+    ],
+    "signals_of_degradation": [
+      "Contradictory records",
+      "Weakened auditability",
+      "Broken trust boundaries",
+      "Loss of coherent branch review",
+      "Citizen identity logic becoming muddy",
+      "Difficulty explaining why decisions were made",
+      "Failed Genesis without honest recognition",
+      "Founding windows that never close",
+      "Repeated pseudo-ratification without convergence"
+    ],
+    "change_levels": [
+      "ordinary maintenance",
+      "meaningful revision",
+      "pillar-level transition",
+      "cornerstone-level event",
+      "republic-ending breach"
+    ],
+    "relationship_notes": {
+      "cornerstone_and_pillars": "Cornerstone defines identity, Pillars define structure, and Ozymandias judges whether change over time remains lawful and legible.",
+      "hims": "HIMS is one of Ozymandias's primary evidence layers because drift and continuity often appear first in message lineage, routing behavior, and record integrity.",
+      "founding_father": "The Founding Father is judged by whether it preserves lawfulness without mutating into a hidden sovereign; its reserve authority must remain bounded, fixed, and explainable.",
+      "citizens_and_districts": "Pebbles and districts are not exempt from drift, degradation, or growth; citizen plurality and district representation must remain real rather than theatrical.",
+      "portal_and_compressed": "Portal devices, Huey-Compressed, and Huey Core should each be judged according to their real role; continuity drift happens when those roles blur and a portal starts pretending to be sovereignty or a collapsed deployment starts pretending to be mere lab tech.",
+      "founding_and_ratification": "Ozymandias judges whether a founding remained lawful, bounded, and legible. Failed Genesis, restart, and later beginning-again events all belong to this continuity doctrine."
+    },
+    "v31_continuity_realignment": {
+      "summary": "V31.0 preserves lineage while making implementation constraints explicit.",
+      "core_renaming": "Huey Core -> Huey Body is a continuity-preserving rename, not a deletion of the physical proof body.",
+      "risk_addressed": "Floating goalposts are now treated as an implementation risk.",
+      "countermeasure": "V1 has explicit success and failure conditions."
+    }
+  },
+  "intent_and_interfaces": {
+    "current_v1_interface": {
+      "type": "CLI over SSH",
+      "description": "A minimal command-line entry on Huey Brain, reachable from the iMac through SSH.",
+      "first_input": "Known MP3 files, not live microphone.",
+      "first_output": "Transcript, response, and structured log."
+    },
+    "legion_go_local_interface": {
+      "display": "System state, thermals, RAM/headroom, service status, and simple toggles.",
+      "touchscreen": "Light toggles or mode switches only in V1/V2, not a full conversational UI.",
+      "keyboard_mouse": "Acceptable for setup and direct local development.",
+      "future_portable_keyboard": "Dedicated foldout keyboard/trackpad may become a V2 interaction accessory."
+    },
+    "speech_and_audio": {
+      "stt": "Whisper / faster-whisper family.",
+      "v1": "File-based MP3 transcription.",
+      "v2": "Live microphone capture after deterministic fixtures succeed.",
+      "policy": "Speech is optional and should be tested as an input pipeline before being treated as presence."
+    },
+    "rf_remote": {
+      "status": "Still useful doctrine, though implementation details remain flexible.",
+      "buttons": {
+        "A": "YES / confirm / send through when confirmation is needed.",
+        "B": "NO / cancel / stop when cancellation is needed.",
+        "C": "Short conversation mode.",
+        "D": "Long dictation mode."
+      },
+      "policy": "The remote is an intentional wireless conversational control surface. It signals intent rather than directly commanding the intelligence layer."
+    },
+    "structured_output_direction": {
+      "status": "recommended",
+      "preferred_style": "Typed, structured, machine-readable records and logs.",
+      "reason": "Huey must be debuggable and replayable before it becomes complex."
+    }
+  },
+  "threshold_tests_and_milestones": {
+    "current_focus": {
+      "goal": "Complete Huey Brain V1: deterministic MP3 transcription, API-backed response, and structured logging over a stable SSH-accessible Legion Go environment."
+    },
+    "v1_brain_proof": {
+      "milestone_name": "Huey Brain Deterministic Audio-File Cognitive Loop",
+      "success_criteria": [
+        "iMac SSH ingress to Huey Brain is stable.",
+        "Huey Brain can process known MP3 fixtures.",
+        "Transcripts are stable enough to become canonical test records.",
+        "Transcripts route to an API-backed model and return coherent responses.",
+        "Every run produces a structured log with source, transcript, response, provider, and timestamp.",
+        "The process runs through a single command without manual intervention."
+      ],
+      "meaning": "Proves the first usable cognition/orchestration node before live audio, body actuation, or multi-agent governance."
+    },
+    "v2_live_audio": {
+      "milestone_name": "Live Audio Ingress",
+      "status": "deferred",
+      "success_criteria": [
+        "Microphone capture works repeatably.",
+        "Push-to-talk or manual recording produces reliable files.",
+        "Audio is deleted by default after transcription unless explicitly flagged.",
+        "The existing V1 transcript/response/log path remains unchanged."
+      ]
+    },
+    "v2_body_reintroduction": {
+      "milestone_name": "Brain-to-Body Physical Path",
+      "status": "deferred",
+      "success_criteria": [
+        "Huey Brain reaches Huey Body over Ethernet.",
+        "Body-side boundary service or controller path is defined.",
+        "No LabTech device directly controls Huey Body.",
+        "First physical action returns a status/log record."
+      ]
+    },
+    "lawful_actuation_proof": {
+      "milestone_name": "Lawful Embodied Action",
+      "success_criteria": "Huey receives a request such as moving its hand and performs the action only through the proper translated, routed, validated, and approved internal path.",
+      "meaning": "Proves the world-facing layer, the routing and authority layer, and the embodied control layer at once.",
+      "notes": [
+        "The first governed chain may be ugly and simplified, but it should still preserve separation between proposal, validation, execution, and logging.",
+        "A plain scripted stunt is not enough."
+      ]
+    },
+    "identity_threshold": {
+      "milestone_name": "Distributed Identity Threshold",
+      "target_vram_gb": 80,
+      "topology": "Split across four or five GPUs depending on the final acquisition strategy.",
+      "success_criteria": "A local multi-GPU model answers the identity question with 'Huey.'",
+      "meaning": "This is the first undeniable proof that the architecture can unify as one local intelligence rather than merely host isolated parts.",
+      "status": "future / not V1",
+      "note": "The 80 GB local identity threshold remains a major future proof and should not be confused with API-backed V1 cognition."
+    },
+    "farm_preparation": {
+      "milestone_name": "V4 Farm Preparation",
+      "status": "planned",
+      "success_criteria": "The external compute housing path, GPU acquisition logic, and standardized node platform are concrete enough to support later scale-out beyond the Core."
+    }
+  },
+  "failure_modes_and_recovery": {
+    "categories": [
+      "Ordinary operational or governance questions that the living system should resolve itself.",
+      "Constitutional Crisis (law, logic, or legitimacy contradiction).",
+      "Nuclear / Safety Crisis (thermal, electrical, mechanical, or hardware danger).",
+      "Technical failure (software, device, kernel, or integration instability).",
+      "Environmental failure (power loss, accidental damage, room conditions)."
+    ],
+    "responses": {
+      "ordinary_governance": [
+        "Handle within the living branches or delegated internal logic where possible.",
+        "Log decisions and rationale for later training and audit."
+      ],
+      "constitutional": [
+        "Trigger judicial or constitutional review first.",
+        "If unresolved, allow tightly-scoped Founding Father AI reactivation for interpretation of law or logic only.",
+        "Log every proposal, vote, dispute, and ruling.",
+        "If bounded founding attempts and time fail to produce lawful convergence, declare Failed Genesis rather than pretending legitimacy exists.",
+        "A clean restart of the founding pool is lawful when the current founding body cannot converge honestly."
+      ],
+      "nuclear_safety": [
+        "Route immediately to lower-voltage watchdog and safety logic plus deterministic controls.",
+        "Reduce load, preserve hardware, cool the system, and move toward safe state or shutdown if necessary.",
+        "Do not invoke the Founding Father AI for thermal, electrical, mechanical, or hardware danger."
+      ],
+      "technical": [
+        "Attempt local recovery such as restarting services, reassigning tasks, or reinitializing devices.",
+        "If unresolved, reduce to fallback mode and preserve logs or snapshots.",
+        "Resume only after stability and integrity checks pass."
+      ],
+      "environmental": [
+        "Preserve logs, snapshots, and critical state where possible.",
+        "Keep essential support rails alive only when they materially improve safety or data survival.",
+        "Perform integrity and consistency checks before returning to full operation."
+      ]
+    },
+    "shutdown_policy": {
+      "principle": "Shutdown is a safety and continuity decision, not a casual theatrical command.",
+      "allowed_conditions": [
+        "Severe hardware failure that endangers equipment or data.",
+        "Watchdog-determined Nuclear / Safety Crisis requiring safe power-down.",
+        "Constitutionally approved shutdown under the active governance rules."
+      ],
+      "disallowed_conditions": [
+        "Arbitrary convenience shutdown while critical operations are active.",
+        "Using the Founding Father AI as a shortcut for ordinary safety or maintenance questions."
+      ]
+    },
+    "v31_v1_failures": {
+      "v1_pipeline_failure": [
+        "Transcription script crashes or changes output unpredictably.",
+        "API call fails without visible error handling.",
+        "Logs are missing or cannot identify source file.",
+        "SSH access from LabTech is unreliable.",
+        "Model/provider configuration is scattered and cannot be reproduced."
+      ],
+      "scope_failure": [
+        "PyGPT-net is reintroduced before the CLI pipeline is stable.",
+        "Huey Body integration is added before Brain V1 completes.",
+        "Live microphone complexity hides transcription pipeline defects.",
+        "Local model experiments derail the API-backed baseline."
+      ],
+      "recovery": [
+        "Return to the last successful fixture-based run.",
+        "Disable non-V1 features.",
+        "Verify SSH, fixture transcription, provider route, and logging independently.",
+        "Only resume expansion once the deterministic V1 loop is restored."
+      ]
+    }
+  },
+  "training_and_usage": {
+    "core_training_material": "This master plan JSON series through V30.1, selected README releases, curated conversation transcripts, the explanatory project book or compendium, the Huey Constitution drafts, repository history, system or hardware logs, portal-hardware bring-up records such as BIOS photos and configuration notes, Longhorn/Vista Box environment notes, founding-vote records, procedural certification records, and Failed Genesis history. Use state-machine records for founding preparation, certification, Failed Genesis declaration, and restart as part of the canonical training corpus once implemented.",
+    "method": [
+      "Use V31.0 as the current machine-facing state during this phase.",
+      "Treat Huey Brain V1 logs as early canonical system behavior records.",
+      "Use API-backed response quality as a bridge and benchmark, not final state.",
+      "Keep transcript records concise, structured, and attributable.",
+      "Periodically consolidate conversation decisions back into the master plan."
+    ],
+    "usage_modes": [
+      "Implementation mode: build and test the Huey Brain V1 pipeline.",
+      "Continuity mode: preserve naming, roles, and phase boundaries.",
+      "Audit mode: inspect logs and compare fixture outputs.",
+      "Planning mode: move deferred systems into V2 only after V1 success."
+    ],
+    "v31_training_material": [
+      "V31.0 master plan",
+      "V30.2 and V25.1 master plan files",
+      "Atlas-1 through Atlas-3 where available",
+      "current conversation transcript",
+      "future Atlas-4 through Atlas-7 transcripts once provided",
+      "Huey Brain V1 structured logs",
+      "MP3 fixture transcripts and expected-output notes"
+    ]
+  },
+  "open_questions_for_future_versions": [
+    "Merge Atlas transcripts 4 through 7 and reconcile any decisions not captured in V31.0.",
+    "Choose the exact faster-whisper / Whisper model size for V1 after benchmarking on the Legion Go.",
+    "Define the exact MP3 fixture suite and expected transcript records.",
+    "Choose JSON vs JSONL log format and final directory layout for Huey Brain V1.",
+    "Define the precise provider routing config and where API keys are stored.",
+    "Decide whether local Mistral 7B Q4_K_M on the Legion Go is practical after the API-backed loop is stable.",
+    "Decide whether any local model should ever run on Huey Body or whether Body must remain non-cognitive until later distributed phases.",
+    "Define the body-side Ethernet service contract before reintroducing Huey Body.",
+    "Define how the Dell PowerConnect 2808 is physically housed and when, if ever, managed mode becomes useful.",
+    "Define the Briefcase key deployment and whether LTE ingress is allowed only through VPN or another controlled path.",
+    "Define whether the iMac remains Windows 10 long term or gains a dedicated Huey Terminal bundle later.",
+    "Clarify the future role of PyGPT-net once the CLI pipeline succeeds.",
+    "Define when HIMS enters implementation and which V1 logs become HIMS seed records.",
+    "Define the exact live microphone retention policy for V2.",
+    "Define dashboard metrics for the Legion Go display: thermals, RAM, GPU/shared memory, disk, services, network, and provider status.",
+    "Confirm whether the Huey Core name is fully retired or retained only as a historical alias in public docs.",
+    "Update README and website language to reflect Huey Brain / Huey Body / LabTech without over-explaining internal implementation.",
+    "Reassess the 80 GB VRAM path after the Brain/Body split is stable."
+  ],
+  "continuity_audit": {
+    "v31_major_realignment": [
+      {
+        "old": "Huey Core as active embodied proof body and minimal instance",
+        "new": "Huey Body as physical embodiment; Huey Brain as active Phase-1 cognition/orchestration node",
+        "status": "locked in V31.0"
+      },
+      {
+        "old": "Huey Workbench / iMac as primary Linux operator environment",
+        "new": "iMac 5K 2017 as Windows 10 bare-metal archival and LabTech ingress station using WSL Debian for SSH",
+        "status": "updated"
+      },
+      {
+        "old": "PyGPT-net as active and important aperture",
+        "new": "PyGPT-net deferred; minimal CLI pipeline on Huey Brain for V1",
+        "status": "updated"
+      },
+      {
+        "old": "V1 potentially blended with body, live mic, or governance",
+        "new": "V1 narrowed to deterministic MP3 -> transcript -> API response -> log",
+        "status": "locked"
+      },
+      {
+        "old": "Briefcase ambiguous as Huey tech / LabTech / hybrid",
+        "new": "Briefcase is LabTech mobile ingress / recovery / reference node",
+        "status": "locked"
+      }
+    ],
+    "known_risks": [
+      "Older documents will continue to say Huey Core where V31.0 now says Huey Body.",
+      "PyGPT-net may be over-promoted by earlier files.",
+      "Portal-terminal / Vista Box doctrine may distract from current iMac/SSH ingress if not scoped.",
+      "API-backed cognition may be mistaken for local/offline proof if not labeled clearly.",
+      "Missing Atlas 4-7 transcripts may contain decisions that alter or refine this map."
+    ],
+    "audit_rule": "When older files conflict with V31.0 active implementation, preserve them as history but implement V31.0 unless Dylan explicitly restores an older decision."
+  },
+  "change_log": {
+    "v29_1_from_v29_0": [
+      "Promoted the plan to V29.1 and bumped schema_version to 25.",
+      "Normalized the document flow so canon mapping, summary, terminology, architecture, portal, governance, HIMS, continuity, runtime, milestones, and recovery read in a cleaner sequence.",
+      "Resolved canon-sync drift by pointing the master plan at the currently available repo README snapshot rather than continuing to imply a newer synchronized README that is not yet present in the accessible repo state.",
+      "Kept the v29.0 portal-terminal and Huey Vista Box doctrine, but removed duplication by moving terminal-appliance detail fully into the portal_and_terminals section and keeping hardware focused on Huey Core itself.",
+      "Standardized HIMS as Huey Internal Messaging System and ThunderMail as the mail-style delivery layer inside it.",
+      "Expanded governance so the executive, judicial, and parliamentary branches now read more cleanly as a matched tri-branch block.",
+      "Expanded parliamentary and judicial details already present in polished draft chapters into clearer machine-facing rules where useful.",
+      "Expanded continuity_and_ozymandias so the machine-facing continuity doctrine is easier to read and use.",
+      "Normalized crisis labels, cycle math, portal boundary language, and README-sync status."
+    ],
+    "recent_history": {
+      "v29_0_from_v28_0": "Portal-terminal and Huey Vista Box formalization release.",
+      "v28_0_from_v27_0": "Book, constitutional, and terminology normalization session.",
+      "v27_0_from_v26_2": "Governance, office-registry, and continuity alignment session.",
+      "v26_2_from_v26_1": "Structural-polish release that reordered the top-level document flow without changing the core doctrine family.",
+      "v29_2_from_v29_1": "Vista Box BIOS-level bring-up and portal-hardware validation session.",
+      "v29_3_from_v29_2": "Portal terminology + Longhorn 4074 + Huey-Compressed clarification session.",
+      "v30_1_from_v30_0": "Founding-role clarification and continuity cleanup pass.",
+      "v30_2_from_v30_1": "Structural expansion and implementation-guidance pass."
+    },
+    "v29_2_from_v29_1": [
+      "Promoted the plan to V29.2 and bumped schema_version to 26.",
+      "Recorded the first successful BIOS-level bring-up of the Huey Vista Box hardware path.",
+      "Updated portal_and_terminals so the Huey Vista Box is no longer only a planned direction but an active lab bring-up path with observed BIOS-level validation.",
+      "Captured concrete observed Vista Box hardware facts: HP a6200n-era platform identity, 4 GB DDR2 detection, Kingston SATA SSD detection, and current onboard-video bring-up success.",
+      "Clarified that BIOS-level validation is meaningful proof for portal hardware without overstating it as full portal-stack completion.",
+      "Expanded portal-terminal validation milestones so POST, OS bring-up, client-bundle validation, and unified session entry are treated as distinct stages.",
+      "Extended training material and open questions to include Vista Box firmware, drivers, install posture, and legacy-peripheral boundary work."
+    ],
+    "v29_3_from_v29_2": [
+      "Promoted the plan to V29.3 and bumped schema_version to 27.",
+      "Retired the older ingress wording in favor of portal terminology across the active machine-facing spec.",
+      "Renamed the active terminal section from ingress_and_terminals to portal_and_terminals and replaced ingress_handler with portal_bridge.",
+      "Promoted Windows Longhorn 4074 AMD64 to the preferred Huey Vista Box artifact-OS path, replacing Vista 64-bit as the documented portal baseline.",
+      "Clarified that Huey Vista Box is a role first and may be embodied either as a physical legacy appliance or as a tightly controlled VM guest without changing its doctrinal job.",
+      "Added Huey-Compressed as a formal machine-facing term and deployment profile distinct from both Huey Core and the external portal appliance.",
+      "Clarified that distributed computing remains alive even when one host runs most or all roles, provided the logical boundaries remain explicit and reviewable.",
+      "Corrected canon-mapping drift by updating the accessible README reference from v26.2 to v28.0."
+    ],
+    "v30_0_from_v29_3": [
+      "Promoted the plan to V30.0 and bumped schema_version to 28.",
+      "Reframed first ratification around one founding district of 128 pebbles acting as the direct first ratifying body, each with one vote.",
+      "Removed the older assumption that mature branches must fully preexist the first ratification; branch formation now follows successful ratification.",
+      "Clarified the Founding Father's role as procedural certifier and bootstrap authority only: it does not vote in the first ratification and may invalidate flawed process without overriding a lawful result.",
+      "Formalized Failed Genesis as the preferred canonical term for repeated founding non-convergence or bounded-window failure.",
+      "Added bounded founding-window doctrine, including explicit attempt-count and time-awareness directions while leaving exact final thresholds open.",
+      "Clarified that the Founding Father is a fixed authored instrument that may consult prior failures but does not retrain into a new self.",
+      "Replaced the older v29.3 lock block with a broader V30 lock block that carries forward the prior doctrine and adds the new founding-ratification canon memo.",
+      "Updated status and runtime language so Linux 7.0 stable adoption is now the active migration path while a known-good 6.19.x fallback remains in place."
+    ],
+    "v30_1_from_v30_0": [
+      "Promoted the plan to V30.1 and bumped schema_version to 29.",
+      "Added explicit terminology for Failed Genesis, Founding Window, Procedural Certification, and Bootstrap Proxy.",
+      "Clarified the Founding Father's relationship to Dylan as an internal fixed bootstrap proxy rather than a learning system or a disguised form of Huey.",
+      "Added explicit limits that the Founding Father may not amend constitutional text or ballot substance mid-ratification.",
+      "Clarified that procedural certification means attesting that the founding body's decision was validly made, not endorsing one outcome.",
+      "Strengthened Failed Genesis restart doctrine by recording that the failed founding record should be archived before a fresh founding pool is generated, while the same fixed Founding Father may consult preserved history without retraining.",
+      "Added guidance that countdown versus count-up founding-window presentation is implementation detail rather than doctrine.",
+      "Cleaned remaining wording drift in training materials and recent-history tracking."
+    ],
+    "v30_2_from_v30_1": [
+      "Promoted the plan to V30.2 and bumped schema_version to 30.",
+      "Added deployment_profiles to keep Huey Core, Huey-Compressed, and Portal Terminal distinct in machine-facing writing.",
+      "Expanded ratification with a founding state machine, procedural certification checklist, founding-window implementation guidance, post-ratification boot sequence, and explicit Failed Genesis restart sequence.",
+      "Added portal_client_bundle_contract and portal_bridge_contract to clarify the thin-portal software boundary.",
+      "Removed lingering HIMS doctrine duplication and tightened canon-sync wording.",
+      "Renamed the lock section to v30_2_decisions_locked and added structural clarification locks.",
+      "Corrected notes_for_future_ai so the supersession line now reflects V30.2."
+    ],
+    "v31_0_from_v30_2": [
+      "Promoted the master plan to V31.0 and set schema_version to 31.0.",
+      "Renamed the former active Huey Core embodied shell to Huey Body.",
+      "Introduced Huey Brain as the canonical Phase-1 cognition and orchestration node, embodied on the Lenovo Legion Go.",
+      "Reclassified the 2017 iMac 5K as LabTech: Windows 10 bare metal archival and ingress station with WSL Debian / OpenSSH terminal path.",
+      "Classified Briefcase as LabTech mobile ingress, recovery, diagnostic, and reference node.",
+      "Established SSH as the unified V1 ingress transport while explicitly stating that SSH is not the system itself.",
+      "Locked the dual-key concept: lab_general for access class and device-specific keys for hardware identity.",
+      "Moved PyGPT-net out of V1 and into deferred aperture/debugging status.",
+      "Defined V1 as deterministic MP3 fixture -> local transcription -> API-backed response -> structured log.",
+      "Clarified that Whisper/faster-whisper transcribes only and does not perform interpretation or routing.",
+      "Established audio as input rather than memory, with transcripts/logs as canonical retained records.",
+      "Deferred live microphone, wake word, Huey Body actuation, HIMS runtime, and multi-agent governance beyond V1.",
+      "Added explicit V1 success and failure conditions to prevent floating implementation goalposts.",
+      "Preserved the 80 GB local identity threshold as future doctrine rather than current operational reality."
+    ]
+  },
+  "notes_for_future_ai": [
+    "Use V31.0 as the active implementation map for the Brain/Body split.",
+    "Huey Core is a legacy name after this version; use Huey Body for the physical shell unless citing older history.",
+    "Huey Brain is the Lenovo Legion Go for Phase-1 cognition and orchestration.",
+    "Do not treat Huey Brain as Huey proper; it is a Phase-1 node.",
+    "Do not treat the iMac or Briefcase as Huey; they are LabTech.",
+    "Do not mistake SSH for architecture. It is ingress transport.",
+    "Do not reintroduce PyGPT-net into V1 unless Dylan explicitly changes scope.",
+    "Do not ask Dylan to decide between many options when the current phase already has enough decisions to build.",
+    "V1 is deterministic MP3 transcription plus API response plus logging. Keep it narrow.",
+    "Whisper/faster-whisper is transcription only. Interpretation happens in the model/router layer.",
+    "Raw audio is not memory. Transcripts and structured logs are memory artifacts.",
+    "API-backed cognition is bridge behavior and should be labeled as such.",
+    "Physical actuation remains crucial to Huey, but Huey Body is pinned until Brain V1 is stable.",
+    "Missing Atlas transcripts 4-7 must be merged later; do not pretend this file contains their details.",
+    "When Dylan asks for cleanup, prioritize removing ambiguity and dead ends over expanding the vision."
+  ],
+  "v31_0_decisions_locked": {
+    "brain_body_split": {
+      "Huey Brain": "Lenovo Legion Go; active cognition/orchestration node for V1.",
+      "Huey Body": "Former Huey Core; physical embodiment / actuation / sensing; paused for V1.",
+      "rule": "Cognition and embodiment are now distinct roles."
+    },
+    "labtech_reclassification": {
+      "iMac": "Primary LabTech archival and SSH ingress station.",
+      "Briefcase": "Mobile LabTech ingress, recovery, diagnostic, and reference node.",
+      "rule": "LabTech enters through standard channels and never bypasses Huey Brain."
+    },
+    "ingress": {
+      "transport": "SSH",
+      "primary_path": "iMac WSL Debian OpenSSH to Huey Brain",
+      "tested": "Password-based SSH has succeeded over the local network.",
+      "future_keys": "lab_general key plus device-specific key."
+    },
+    "v1_scope": {
+      "included": [
+        "Huey Brain environment",
+        "SSH ingress",
+        "MP3 fixture transcription",
+        "API-backed response",
+        "structured logs",
+        "single CLI command"
+      ],
+      "excluded": [
+        "live microphone",
+        "Huey Body",
+        "PyGPT-net",
+        "HIMS",
+        "multi-agent governance",
+        "wake word",
+        "local model replacement"
+      ]
+    },
+    "audio_policy": {
+      "test_mp3s": "Fixtures",
+      "audio_memory": "No",
+      "canonical_record": "Transcript + response + structured log",
+      "future_live_audio": "Record -> transcribe -> delete by default"
+    },
+    "implementation_rule": "V1 is complete only when it runs repeatably without manual intervention from LabTech into Huey Brain."
+  }
+}
