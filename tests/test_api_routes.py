@@ -189,6 +189,21 @@ async def test_task_submission_respects_resource_constraints(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_task_and_dashboard_surfaces_block_remote_when_token_unset(monkeypatch):
+    monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
+    scheduler = TaskScheduler(health_provider=_healthy_snapshot)
+    monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
+
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://198.51.100.10") as client:
+        submit = await client.post("/tasks", json={"command": "calibrate sensors"})
+        dashboard = await client.get("/dashboard")
+
+    assert submit.status_code == 403
+    assert dashboard.status_code == 403
+
+
+@pytest.mark.asyncio
 async def test_system_status_endpoint_reports_expected_fields(monkeypatch, tmp_path):
     memory_root = tmp_path / "memory"
     memory_root.mkdir()

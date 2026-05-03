@@ -297,6 +297,35 @@ def _validate_api_token_configuration() -> None:
 _validate_api_token_configuration()
 
 
+def _is_local_request(request: Request) -> bool:
+    """Return ``True`` when the caller appears to be local to this host."""
+
+    client = getattr(request, "client", None)
+    host = getattr(client, "host", "") if client is not None else ""
+    return host in {"127.0.0.1", "::1", "localhost", "testclient", "testserver"}
+
+
+def _require_privileged_surface_access(request: Request) -> None:
+    """Protect command/task surfaces when global bearer auth is not configured.
+
+    These endpoints accept free-form task instructions that can eventually map to
+    agent command execution. When ``HUEY_API_TOKEN`` is unset we allow local-only
+    access for developer workflows and block remote access by default.
+    """
+
+    if _configured_api_token():
+        return
+    if _is_local_request(request):
+        return
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail=(
+            "This endpoint requires local access when HUEY_API_TOKEN is unset. "
+            "Configure HUEY_API_TOKEN for remote access."
+        ),
+    )
+
+
 @app.middleware("http")
 async def require_api_token(request: Request, call_next):
     """Require a bearer token when HUEY_API_TOKEN is configured."""
@@ -1258,9 +1287,10 @@ def healthz() -> Dict[str, str]:
     status_code=status.HTTP_202_ACCEPTED,
     tags=["Task Management"],
 )
-def submit_task(request: TaskSubmissionRequest) -> TaskResponse:
+def submit_task(request: TaskSubmissionRequest, http_request: Request) -> TaskResponse:
     """Submit a task for execution by Spark or Zap."""
 
+    _require_privileged_surface_access(http_request)
     profile = (
         request.resource_profile.to_profile()
         if request.resource_profile is not None
@@ -1545,9 +1575,10 @@ def list_recent_ai_interactions(
 
 
 @app.get("/dashboard", response_class=HTMLResponse, tags=["Dashboard"])
-def dashboard() -> HTMLResponse:
+def dashboard(request: Request) -> HTMLResponse:
     """Render a lightweight operational dashboard for HueyOS."""
 
+    _require_privileged_surface_access(request)
     system = _build_system_status()
     battery = BATTERY_MONITOR.get_status()
     sensor_records = TELEMETRY_STORE.fetch_recent_sensor_readings(limit=10)
