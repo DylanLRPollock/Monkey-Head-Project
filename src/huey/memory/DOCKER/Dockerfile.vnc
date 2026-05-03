@@ -4,10 +4,9 @@ USER root
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Headless desktop + VNC/noVNC stack + gosu to drop privileges for PyGPT
+# Headless desktop + VNC/noVNC stack
 RUN apt-get update && apt-get install -y \
     xvfb x11vnc novnc websockify openbox xterm x11-utils \
-    gosu \
     # Optional quality-of-life: reduces warnings and enables media tools if needed
     libpipewire-0.3-0 ffmpeg \
  && rm -rf /var/lib/apt/lists/*
@@ -18,7 +17,7 @@ RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp /tmp/.X11-unix
 # Startup script:
 # - Starts Xvfb/Openbox/x11vnc/websockify
 # - Serves noVNC on port 1995 (or NOVNC_PORT env)
-# - Runs PyGPT as user "pygpt" via gosu
+# - Runs PyGPT as non-root user "pygpt"
 RUN cat > /usr/local/bin/start-vnc-pygpt.sh <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -79,7 +78,7 @@ x11vnc -display :1 -forever -shared -rfbauth "${VNC_PASSWD_FILE}" -rfbport 5900 
 websockify --web=/usr/share/novnc/ --index vnc.html "${NOVNC_PORT}" localhost:5900 &
 
 # Run PyGPT as non-root
-exec gosu pygpt pygpt --workdir=/data
+exec pygpt --workdir=/data
 EOF
 
 # Fix CRLF if edited on Windows; ensure executable
@@ -87,5 +86,6 @@ RUN sed -i 's/\r$//' /usr/local/bin/start-vnc-pygpt.sh \
  && chmod +x /usr/local/bin/start-vnc-pygpt.sh
 
 EXPOSE 1995
+USER pygpt
 ENTRYPOINT ["/usr/local/bin/start-vnc-pygpt.sh"]
 CMD []
