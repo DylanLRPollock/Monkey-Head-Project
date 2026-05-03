@@ -244,11 +244,57 @@ app = FastAPI(
 
 _PUBLIC_PATHS = {"/healthz"}
 
+_DEVELOPMENT_ENVS = {"", "dev", "development", "local", "test", "testing"}
+_TOKEN_PLACEHOLDER_VALUES = {
+    "changeme",
+    "change-me",
+    "replace-me",
+    "replace_this",
+    "replace-this",
+    "placeholder",
+    "token",
+    "your-token-here",
+    "your_token_here",
+    "set-me",
+    "setme",
+}
+
 
 def _configured_api_token() -> str:
     """Return the optional bearer token required for API access."""
 
     return os.getenv("HUEY_API_TOKEN", "").strip()
+
+
+def _configured_environment() -> str:
+    """Return the deployment environment label used for API security policy."""
+
+    return os.getenv("HUEY_ENV", "").strip().lower()
+
+
+def _looks_like_placeholder_token(token: str) -> bool:
+    """Return ``True`` when ``token`` appears to be a placeholder/example value."""
+
+    compact = token.strip().lower().replace(" ", "")
+    return compact in _TOKEN_PLACEHOLDER_VALUES or compact.startswith("your-")
+
+
+def _validate_api_token_configuration() -> None:
+    """Fail fast when non-development environments do not configure API auth."""
+
+    environment = _configured_environment()
+    if environment in _DEVELOPMENT_ENVS:
+        return
+
+    token = _configured_api_token()
+    if not token or _looks_like_placeholder_token(token):
+        raise RuntimeError(
+            "HUEY_API_TOKEN must be set to a non-placeholder value when HUEY_ENV "
+            "is not development/local."
+        )
+
+
+_validate_api_token_configuration()
 
 
 @app.middleware("http")
