@@ -85,3 +85,25 @@ memory/*
 
 # Local env/config (real env; example stays tracked)
 huey.env
+
+# Local/generated secret-bearing files (keep templates/examples committed)
+config/pygpt_net/config.json
+*.env
+*.env.*
+!.env.example
+!*.env.example
+!*.env.template
+!*.env.sample
+*.apikey
+*.api_key
+apikey.txt
+api_key.txt
+secrets/
+local_secrets/
+**/secrets.local/
+*.p12
+*.jks
+*.keystore
+pip-audit-report*
+safety-report*
+bandit-report*
