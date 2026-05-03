@@ -1,4 +1,5 @@
 name: hueyos
+# NOTE: Keep image tag upgrades deliberate and review them in PRs.
 
 x-service-defaults: &service_defaults
   restart: unless-stopped
@@ -20,7 +21,7 @@ services:
       args:
         PYTHON_VERSION: ${HUEY_PYTHON_VERSION:-3.13-bookworm}
         HUEY_EXTRAS: ${HUEY_BUILD_EXTRAS:-ml,data,cloud}
-    image: ${HUEY_IMAGE:-hueyos:latest}
+    image: ${HUEY_IMAGE:-hueyos:0.1.0}
     container_name: ${HUEY_API_CONTAINER:-hueyos-api}
     env_file:
       - ${HUEY_ENV_FILE:-huey.env.example}
@@ -47,7 +48,7 @@ services:
 
   worker:
     <<: *service_defaults
-    image: ${HUEY_IMAGE:-hueyos:latest}
+    image: ${HUEY_IMAGE:-hueyos:0.1.0}
     container_name: ${HUEY_WORKER_CONTAINER:-hueyos-worker}
     command:
       - huey
