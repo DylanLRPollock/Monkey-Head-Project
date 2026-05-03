@@ -150,6 +150,7 @@ def _degraded_snapshot() -> ResourceSnapshot:
 async def test_task_management_endpoints_support_submission_and_cancellation(
     monkeypatch,
 ):
+    monkeypatch.setenv("HUEY_ENABLE_UNSAFE_TASKS", "true")
     scheduler = TaskScheduler(health_provider=_healthy_snapshot)
     monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
 
@@ -177,6 +178,7 @@ async def test_task_management_endpoints_support_submission_and_cancellation(
 
 @pytest.mark.asyncio
 async def test_task_submission_respects_resource_constraints(monkeypatch):
+    monkeypatch.setenv("HUEY_ENABLE_UNSAFE_TASKS", "true")
     scheduler = TaskScheduler(health_provider=_degraded_snapshot)
     monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
 
@@ -191,6 +193,7 @@ async def test_task_submission_respects_resource_constraints(monkeypatch):
 @pytest.mark.asyncio
 async def test_task_and_dashboard_surfaces_block_remote_when_token_unset(monkeypatch):
     monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
+    monkeypatch.delenv("HUEY_ENABLE_UNSAFE_TASKS", raising=False)
     scheduler = TaskScheduler(health_provider=_healthy_snapshot)
     monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
 
@@ -201,6 +204,65 @@ async def test_task_and_dashboard_surfaces_block_remote_when_token_unset(monkeyp
 
     assert submit.status_code == 403
     assert dashboard.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_task_submission_denied_by_default_without_unsafe_flag(monkeypatch):
+    monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
+    monkeypatch.delenv("HUEY_ENABLE_UNSAFE_TASKS", raising=False)
+    scheduler = TaskScheduler(health_provider=_healthy_snapshot)
+    monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
+
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        submit = await client.post("/tasks", json={"command": "echo secret-token"})
+
+    assert submit.status_code == 403
+    assert "disabled" in submit.json()["detail"].lower()
+
+
+@pytest.mark.asyncio
+async def test_task_submission_allowed_for_development_with_unsafe_flag(monkeypatch):
+    monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
+    monkeypatch.setenv("HUEY_ENABLE_UNSAFE_TASKS", "true")
+    monkeypatch.setenv("HUEY_ENV", "development")
+    scheduler = TaskScheduler(health_provider=_healthy_snapshot)
+    monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
+
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        submit = await client.post("/tasks", json={"command": "calibrate sensors"})
+
+    assert submit.status_code == 202
+
+
+@pytest.mark.asyncio
+async def test_task_submission_requires_unsafe_flag_even_when_authenticated(monkeypatch):
+    monkeypatch.setenv("HUEY_API_TOKEN", "test-token")
+    monkeypatch.setenv("HUEY_ENV", "production")
+    monkeypatch.delenv("HUEY_ENABLE_UNSAFE_TASKS", raising=False)
+    scheduler = TaskScheduler(health_provider=_healthy_snapshot)
+    monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
+
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        denied = await client.post(
+            "/tasks",
+            json={"command": "calibrate sensors"},
+            headers={"Authorization": "Bearer test-token"},
+        )
+
+    assert denied.status_code == 403
+    monkeypatch.setenv("HUEY_ENABLE_UNSAFE_TASKS", "true")
+    transport2 = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport2, base_url="http://testserver") as client:
+        enabled = await client.post(
+            "/tasks",
+            json={"command": "calibrate sensors"},
+            headers={"Authorization": "Bearer test-token"},
+        )
+
+    assert enabled.status_code == 202
 
 
 @pytest.mark.asyncio

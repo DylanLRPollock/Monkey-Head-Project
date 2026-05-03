@@ -272,6 +272,13 @@ def _configured_environment() -> str:
     return os.getenv("HUEY_ENV", "").strip().lower()
 
 
+def _unsafe_task_submission_enabled() -> bool:
+    """Return whether unsafe/free-form task submission is explicitly enabled."""
+
+    value = os.getenv("HUEY_ENABLE_UNSAFE_TASKS", "false").strip().lower()
+    return value in {"1", "true", "yes", "on"}
+
+
 def _looks_like_placeholder_token(token: str) -> bool:
     """Return ``True`` when ``token`` appears to be a placeholder/example value."""
 
@@ -322,6 +329,32 @@ def _require_privileged_surface_access(request: Request) -> None:
         detail=(
             "This endpoint requires local access when HUEY_API_TOKEN is unset. "
             "Configure HUEY_API_TOKEN for remote access."
+        ),
+    )
+
+
+def _require_unsafe_task_submission_access(request: Request) -> None:
+    """Enforce defensive gating for free-form task submission surfaces.
+
+    Policy:
+    - Local developer workflows remain available when the API token is unset.
+    - Remote/production usage requires authenticated API access plus explicit
+      enablement through ``HUEY_ENABLE_UNSAFE_TASKS=true``.
+    """
+
+    _require_privileged_surface_access(request)
+
+    if _unsafe_task_submission_enabled():
+        return
+
+    if _configured_api_token() and _configured_environment() in _DEVELOPMENT_ENVS:
+        return
+
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail=(
+            "Unsafe free-form task submission is disabled. Set "
+            "HUEY_ENABLE_UNSAFE_TASKS=true to allow authenticated submission."
         ),
     )
 
@@ -1290,7 +1323,7 @@ def healthz() -> Dict[str, str]:
 def submit_task(request: TaskSubmissionRequest, http_request: Request) -> TaskResponse:
     """Submit a task for execution by Spark or Zap."""
 
-    _require_privileged_surface_access(http_request)
+    _require_unsafe_task_submission_access(http_request)
     profile = (
         request.resource_profile.to_profile()
         if request.resource_profile is not None
