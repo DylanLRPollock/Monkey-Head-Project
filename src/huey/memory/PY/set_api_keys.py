@@ -14,6 +14,12 @@ SERVICES = {
     "deepseek": "api_key_deepseek",
 }
 
+ENV_VARS = {
+    "openai": "OPENAI_API_KEY",
+    "google": "GOOGLE_API_KEY",
+    "deepseek": "DEEPSEEK_API_KEY",
+}
+
 
 def load_config():
     if os.path.exists(CONFIG_PATH):
@@ -23,9 +29,23 @@ def load_config():
 
 
 def save_config(data):
+    """Persist non-empty config values for local fallback use only."""
+    cleaned = {k: v for k, v in data.items() if isinstance(v, str) and v.strip()}
+    if not cleaned:
+        print("No non-empty local keys to save; relying on environment variables.")
+        return False
+
     os.makedirs(os.path.dirname(CONFIG_PATH), exist_ok=True)
     with open(CONFIG_PATH, "w", encoding="utf-8") as fh:
-        json.dump(data, fh, indent=2)
+        json.dump(cleaned, fh, indent=2)
+
+    try:
+        os.chmod(CONFIG_PATH, 0o600)
+    except OSError:
+        print("Warning: Could not set restrictive permissions on local config file.")
+
+    print("Warning: API key file is for local-only fallback and should remain gitignored.")
+    return True
 
 
 def prompt_service_choice():
@@ -46,13 +66,19 @@ def prompt_service_choice():
 def prompt_keys(selected, data):
     for name in selected:
         key_name = SERVICES[name]
-        existing = data.get(key_name, "")
-        prompt = (
-            f"Enter {name.title()} API key"
-            + (f" [current: {existing}]" if existing else "")
-            + ": "
-        )
-        value = input(prompt).strip()
+        env_name = ENV_VARS[name]
+        env_value = os.environ.get(env_name, "").strip()
+
+        if env_value:
+            print(f"{name.title()} key detected in environment variable {env_name}; leaving unchanged.")
+            continue
+
+        if data.get(key_name, "").strip():
+            print(f"{name.title()} key already present in local config fallback.")
+
+        value = input(
+            f"Enter {name.title()} API key (leave blank to keep env-only setup): "
+        ).strip()
         if value:
             data[key_name] = value
 
@@ -64,8 +90,10 @@ def main():
         print("No services selected.")
         return
     prompt_keys(services, config)
-    save_config(config)
-    print("API keys saved to", CONFIG_PATH)
+    wrote_file = save_config(config)
+    if wrote_file:
+        print("Local fallback keys saved to", CONFIG_PATH)
+    print("Preferred setup: set API keys via environment variables or a local .env file.")
 
 
 if __name__ == "__main__":
