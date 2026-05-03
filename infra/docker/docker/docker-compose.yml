@@ -93,7 +93,7 @@ services:
 
   debian-tools:
     <<: *service_defaults
-    image: debian:forky
+    image: debian:bookworm
     profiles: ["tools"]
     command: ["sleep", "infinity"]
     working_dir: /workspace
@@ -131,7 +131,7 @@ services:
   # Optional example dependency (enable with --profile extras)
   redis:
     <<: *service_defaults
-    image: redis:7-alpine
+    image: redis:7.2-alpine
     profiles: ["extras"]
     command: ["redis-server", "--appendonly", "yes"]
     healthcheck:

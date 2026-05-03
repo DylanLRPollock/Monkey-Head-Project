@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=3.13-bookworm
+ARG PYTHON_VERSION=3.13.5-bookworm
 FROM python:${PYTHON_VERSION}
 
 RUN apt-get update && apt-get install -y --no-install-recommends \

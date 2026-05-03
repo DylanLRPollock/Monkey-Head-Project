@@ -1,4 +1,5 @@
-# Use Debian slim base image; release can be overridden at build time
+# Use Debian slim base image; release can be overridden at build time.
+# Default `forky` intentionally tracks Debian testing for development images (not production).
 ARG DEBIAN_RELEASE=forky
 FROM debian:${DEBIAN_RELEASE}-slim
 
