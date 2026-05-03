@@ -863,6 +863,28 @@ log:
 logs/session-YYYYMMDD-HHMMSS.json
 ```
 
+### Local developer security check
+
+Run the local helper script before opening a PR:
+
+```bash
+./scripts/security_check.sh
+```
+
+Optional outdated dependency report:
+
+```bash
+./scripts/security_check.sh --outdated
+```
+
+The script is developer-friendly by design:
+
+- Runs `pip-audit -r requirements.txt` when `pip-audit` is installed.
+- Runs `bandit` against `src/` and `scripts/` and fails on HIGH severity + HIGH confidence findings.
+- Runs a secret scanner only when a local scanner configuration exists (`.gitleaks.toml`, `gitleaks.toml`, or `.secrets.baseline`).
+- Prints clear install guidance when tools are missing.
+- Avoids printing raw secrets by using redacted scanner modes where supported.
+
 ---
 
 ## Canon stack
