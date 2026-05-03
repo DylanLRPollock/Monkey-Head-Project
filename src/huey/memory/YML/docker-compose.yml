@@ -1,4 +1,5 @@
 name: monkey-head-project
+# NOTE: Keep image tag upgrades deliberate and review them in PRs.
 
 x-service-defaults: &service_defaults
   init: true
@@ -28,7 +29,7 @@ volumes:
 services:
   dev-env:
     <<: *service_defaults
-    image: monkey-head-project:latest         # tag produced by build
+    image: monkey-head-project:0.1.0-dev         # tag produced by build
     container_name: monkey-head-project
     build:
       context: .

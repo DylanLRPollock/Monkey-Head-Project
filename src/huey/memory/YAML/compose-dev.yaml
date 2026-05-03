@@ -1,3 +1,4 @@
+# NOTE: Keep image tag upgrades deliberate and review them in PRs.
 services:
   dev-env:
     container_name: monkey-head
@@ -8,7 +9,7 @@ services:
       args:
         SOME_ARG: "some_value"
     # Use an image if built externally (optional)
-    image: monkey-head-project:latest
+    image: monkey-head-project:0.1.0-dev
     # Override the default command if needed
     command: /bin/sh
     # Mount source code and additional volumes if desired
@@ -44,7 +45,7 @@ services:
     retries: 3
 
   db:
-    image: postgres:latest
+    image: postgres:16-alpine
     environment:
       POSTGRES_USER: dlrp
       # Fail closed if POSTGRES_PASSWORD is missing.
