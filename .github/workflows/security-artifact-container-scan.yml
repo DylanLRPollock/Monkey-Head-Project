@@ -1,0 +1,131 @@
+name: Artifact & Container-Adjacent Scan
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+  schedule:
+    - cron: '30 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  artifact-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Detect large files and binary-like artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          THRESHOLDS = [
+              (1 * 1024 * 1024, "1MB"),
+              (5 * 1024 * 1024, "5MB"),
+              (25 * 1024 * 1024, "25MB"),
+              (50 * 1024 * 1024, "50MB"),
+              (100 * 1024 * 1024, "100MB"),
+          ]
+          BINARY_EXTS = {
+              ".iso", ".img", ".bin", ".exe", ".dll", ".so", ".dylib", ".deb", ".rpm",
+              ".jar", ".war", ".ear", ".apk", ".msi", ".zip", ".7z", ".gz", ".tgz", ".xz",
+              ".bz2", ".pdf", ".mp4", ".mov", ".avi", ".mkv", ".mp3", ".flac", ".wav",
+          }
+
+          files = subprocess.check_output(["git", "ls-files", "-z"], text=False).split(b"\x00")
+          files = [f.decode("utf-8", "replace") for f in files if f]
+
+          records = []
+          for rel in files:
+              p = pathlib.Path(rel)
+              if not p.exists() or not p.is_file():
+                  continue
+              size = p.stat().st_size
+              ext = p.suffix.lower()
+              suspected_binary = ext in BINARY_EXTS
+              records.append({
+                  "path": rel,
+                  "bytes": size,
+                  "extension": ext,
+                  "binary_extension": suspected_binary,
+              })
+
+          records.sort(key=lambda r: r["bytes"], reverse=True)
+
+          with open("large-files-top200.json", "w", encoding="utf-8") as f:
+              json.dump(records[:200], f, indent=2)
+
+          lines = ["# Large and Binary-Adjacent Repository Artifact Report", ""]
+          for limit, label in THRESHOLDS:
+              matched = [r for r in records if r["bytes"] >= limit]
+              lines.append(f"## Files >= {label} ({limit} bytes)")
+              lines.append(f"Count: {len(matched)}")
+              lines.append("")
+              if matched:
+                  lines.append("| Size (bytes) | Binary-like ext | Path |")
+                  lines.append("|---:|:---:|---|")
+                  for r in matched[:200]:
+                      lines.append(f"| {r['bytes']} | {'yes' if r['binary_extension'] else 'no'} | `{r['path']}` |")
+              else:
+                  lines.append("No tracked files at this threshold.")
+              lines.append("")
+
+          with open("large-files-report.md", "w", encoding="utf-8") as f:
+              f.write("\n".join(lines))
+          PY
+
+      - name: Run Trivy filesystem scan (non-blocking)
+        id: trivy
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@6e7ca55bfcf5676f309bc511f048ca24fd886c1b # v0.33.1
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-fs.sarif
+          severity: CRITICAL,HIGH
+          vuln-type: os,library
+          scanners: vuln,secret,misconfig
+          exit-code: '0'
+
+      - name: Create Trivy status note
+        if: always()
+        run: |
+          {
+            echo "# Trivy FS Scan Status"
+            echo
+            echo "- Result: ${{ steps.trivy.outcome }}"
+            echo "- Policy: non-blocking baseline (`exit-code: 0`)"
+            echo "- Scope: repository filesystem only"
+          } > trivy-status.md
+
+      - name: Upload artifact scan outputs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: artifact-risk-scan-results
+          path: |
+            large-files-report.md
+            large-files-top200.json
+          if-no-files-found: error
+
+      - name: Upload Trivy outputs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: trivy-fs-scan-results
+          path: |
+            trivy-fs.sarif
+            trivy-status.md
+          if-no-files-found: ignore
