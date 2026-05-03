@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # HostOS toolbox image
+# `forky` is intentional here to track Debian testing for development-oriented helper images.
 FROM debian:forky-slim
 
 ENV DEBIAN_FRONTEND=noninteractive \

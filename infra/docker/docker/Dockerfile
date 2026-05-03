@@ -1,5 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
+# Default `forky` intentionally follows Debian testing for active development images.
+# Override to a stable release (for example `bookworm`) for release-oriented builds.
 ARG DEBIAN_VERSION=forky
 ARG DEBIAN_VARIANT=slim
 ARG PYTHON_VERSION=3.13.5

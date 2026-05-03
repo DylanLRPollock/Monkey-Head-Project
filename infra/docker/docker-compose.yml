@@ -72,7 +72,7 @@ services:
 
   redis:
     <<: *service_defaults
-    image: redis:7-alpine
+    image: redis:7.2-alpine
     container_name: ${HUEY_REDIS_CONTAINER:-hueyos-redis}
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
