@@ -104,6 +104,30 @@ async def test_api_token_is_required_when_configured(monkeypatch):
     assert allowed.status_code == 200
 
 
+def test_api_startup_fails_without_token_in_non_development_env(monkeypatch):
+    monkeypatch.setenv("HUEY_ENV", "production")
+    monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
+
+    with pytest.raises(RuntimeError, match="HUEY_API_TOKEN must be set"):
+        importlib.reload(api_module)
+
+
+def test_api_startup_fails_with_placeholder_token_in_non_development_env(monkeypatch):
+    monkeypatch.setenv("HUEY_ENV", "staging")
+    monkeypatch.setenv("HUEY_API_TOKEN", "change-me")
+
+    with pytest.raises(RuntimeError, match="HUEY_API_TOKEN must be set"):
+        importlib.reload(api_module)
+
+
+def test_api_startup_allows_missing_token_in_development_env(monkeypatch):
+    monkeypatch.setenv("HUEY_ENV", "development")
+    monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
+
+    reloaded = importlib.reload(api_module)
+    assert reloaded.app is not None
+
+
 def _healthy_snapshot() -> ResourceSnapshot:
     return ResourceSnapshot(
         cpu_percent=10.0,
