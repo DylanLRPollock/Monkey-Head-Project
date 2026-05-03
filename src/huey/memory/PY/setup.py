@@ -78,7 +78,7 @@ setup(
         "pygpt-MHP>=0.1.0",
     ],
     extras_require={
-        "dev": ["black==23.7.0", "flake8==6.0.0", "mypy==1.5.1", "pytest==7.4.0"]
+        "dev": ["black==26.3.1", "flake8==6.0.0", "mypy==1.5.1", "pytest==9.0.3"]
     },
     python_requires=">=3.12",
     classifiers=[
