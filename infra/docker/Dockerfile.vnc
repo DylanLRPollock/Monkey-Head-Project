@@ -46,8 +46,12 @@ x11vnc -storepasswd "${VNC_PASSWORD}" "${VNC_PASSWD_FILE}" >/dev/null
 chmod 600 "${VNC_PASSWD_FILE}"
 x11vnc -display :1 -forever -shared -localhost -rfbauth "${VNC_PASSWD_FILE}" -rfbport 5900 &
 
-# noVNC web bridge on port 1995
-websockify --web=/usr/share/novnc/ 1995 localhost:5900 &
+# noVNC web bridge on port 1995 (loopback-bound in-container by default)
+# Publish this port to localhost only on the host. For remote access, prefer:
+#  1) SSH tunnel, or
+#  2) authenticated reverse proxy, or
+#  3) TLS + authentication before exposing beyond localhost.
+websockify --web=/usr/share/novnc/ 127.0.0.1:1995 localhost:5900 &
 
 # Launch PyGPT
 exec pygpt --workdir=/data

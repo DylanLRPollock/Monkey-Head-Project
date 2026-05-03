@@ -70,5 +70,9 @@ RUN chmod +x "$HOME/.vnc/xstartup"
 # Expose the necessary port(s)
 EXPOSE 5901
 
-# Define the command to run when the container starts
+# Define the command to run when the container starts.
+# `-localhost yes` keeps VNC loopback-only in the container by default.
+# When publishing this port on a host, keep it at 127.0.0.1 unless you
+# explicitly add TLS + auth (or place it behind an authenticated proxy).
+# SSH tunneling is the preferred remote-access pattern.
 CMD ["/usr/local/bin/start-vnc.sh", "-geometry", "1280x800", "-depth", "24", "-localhost", "yes", ":1"]

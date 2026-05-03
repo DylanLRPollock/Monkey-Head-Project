@@ -34,6 +34,9 @@ services:
       - ./config:/app/config
       - ./memory:/app/memory
     ports:
+      # Dev-safe default: publish to loopback only.
+      # Remote access patterns (opt-in): SSH tunnel, authenticated reverse
+      # proxy, or TLS + auth before any non-local exposure.
       - "${HUEY_BIND_ADDR:-127.0.0.1}:${HUEY_PORT:-1995}:1995"
     healthcheck:
       test:
