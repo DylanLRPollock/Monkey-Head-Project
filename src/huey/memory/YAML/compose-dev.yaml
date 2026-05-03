@@ -47,7 +47,8 @@ services:
     image: postgres:latest
     environment:
       POSTGRES_USER: dlrp
-      POSTGRES_PASSWORD: dlrp
+      # Fail closed if POSTGRES_PASSWORD is missing.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
