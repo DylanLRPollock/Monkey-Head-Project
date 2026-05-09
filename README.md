@@ -1,7 +1,7 @@
 # Monkey-Head-Project
 
 <p align="center">
-  <img src="assets/img/huey/huey-hero-wide-v85.webp" alt="Huey / Monkey-Head-Project hero image" width="100%">
+  <img src="src/huey/memory/PNG/icon.png" alt="Huey / Monkey-Head-Project hero image" width="100%">
 </p>
 
 <h2 align="center">HueyOS — Offline-First Embodied AI / OS</h2>
