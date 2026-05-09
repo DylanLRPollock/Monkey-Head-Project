@@ -55,7 +55,7 @@ setup(
         "cryptography==46.0.7",
         "pyjwt==2.10.1",
         "bcrypt==4.3.0",
-        "paramiko==3.5.1",
+        "paramiko==4.0.0",
         "docker==7.1.0",
         "kubernetes==33.1.0",
         "fastapi==0.115.12",
