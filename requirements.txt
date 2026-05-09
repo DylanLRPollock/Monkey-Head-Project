@@ -51,7 +51,7 @@ google-ai-generativelanguage==0.11.0
 google-genai==1.73.1
 google-generativeai==0.8.6
 huggingface-hub==1.12.0
-llama-cloud==2.3.0
+llama-cloud==2.4.1
 llama-cloud-services==0.6.94
 llama-index==0.14.21
 llama-index-core==0.14.21
@@ -243,7 +243,7 @@ hyperframe==6.1.0
 identify==2.6.19
 idna==3.13
 importlib-metadata==9.0.0
-importlib-resources==6.5.2
+importlib-resources==7.1.0
 iniconfig==2.3.0
 invoke==3.0.3
 ipython-pygments-lexers==1.1.1
