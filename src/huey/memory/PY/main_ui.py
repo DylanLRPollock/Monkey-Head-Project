@@ -11,6 +11,7 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.11.2025
 # ==================================================
+import logging
 import os
 import threading
 
@@ -29,11 +30,12 @@ if str(ROOT_DIR) not in sys.path:
 try:  # pragma: no cover - optional dependency
     import tkinter as tk
     from tkinter import filedialog, messagebox, scrolledtext, simpledialog, ttk
-except Exception:  # pragma: no cover - can't import GUI libs
+except ImportError:  # pragma: no cover - can't import GUI libs
     tk = None
     messagebox = None
     scrolledtext = None
     filedialog = None
+    simpledialog = None
     ttk = None
 
 from huey.config_toggle_gui import run_config_toggle_gui
@@ -63,6 +65,8 @@ from huey.simple_chat_gui import run_simple_chat
 DARK_BG = "#000000"  # black background
 LIGHT_FG = "#00ff00"  # green foreground text
 ACCENT_PURPLE = "#2d2b57"  # dark purple accent color
+
+logger = logging.getLogger(__name__)
 
 
 class MainUI:
@@ -102,8 +106,8 @@ class MainUI:
             style = ttk.Style(self.root)
             try:
                 style.theme_use("clam")
-            except Exception:
-                pass
+            except (RuntimeError, AttributeError) as e:
+                logger.debug(f"Failed to set theme: {e}")
             style.configure("TLabel", background=DARK_BG, foreground=LIGHT_FG)
             style.configure(
                 "TButton",
@@ -139,7 +143,8 @@ class MainUI:
             return
         try:
             self.background_image = tk.PhotoImage(file=str(image_path))
-        except Exception:
+        except (RuntimeError, AttributeError, OSError) as e:
+            logger.debug(f"Failed to load background image: {e}")
             return
         self.background_label = tk.Label(
             self.root, image=self.background_image, bg=DARK_BG

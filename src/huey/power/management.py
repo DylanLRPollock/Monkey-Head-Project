@@ -21,7 +21,7 @@ from typing import Any, Callable, DefaultDict, Dict, List, Optional
 
 try:  # pragma: no cover - optional dependency
     import psutil  # type: ignore
-except Exception:  # pragma: no cover - degrade gracefully
+except ImportError:  # pragma: no cover - degrade gracefully
     psutil = None  # type: ignore[assignment]
 
 
@@ -169,7 +169,7 @@ class BatteryMonitor:
             return None
         try:
             battery = psutil.sensors_battery()  # type: ignore[attr-defined]
-        except Exception:  # pragma: no cover - psutil can raise on some systems
+        except (OSError, AttributeError):  # pragma: no cover - psutil can raise
             LOGGER.debug("psutil.sensors_battery raised an exception", exc_info=True)
             return None
         if battery is None:
@@ -244,8 +244,8 @@ class BatteryMonitor:
             output = subprocess.check_output(
                 [acpi_cmd, "-b"], text=True, stderr=subprocess.DEVNULL
             )
-        except Exception:  # pragma: no cover - command may not be available
-            LOGGER.debug("acpi command failed", exc_info=True)
+        except (subprocess.CalledProcessError, OSError, FileNotFoundError) as e:
+            LOGGER.debug("acpi command failed: %s", e)
             return None
         if not output:
             return None
@@ -331,7 +331,7 @@ class BatteryMonitor:
             metadata["command"] = command
             try:
                 subprocess.Popen(command)  # pragma: no cover - system side effects
-            except Exception as exc:  # pragma: no cover - best effort logging
+            except (OSError, subprocess.CalledProcessError) as exc:
                 LOGGER.exception("Failed to execute %s command %s", action, command)
                 metadata["error"] = str(exc)
         else:

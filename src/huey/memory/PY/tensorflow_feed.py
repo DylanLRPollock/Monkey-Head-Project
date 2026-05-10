@@ -17,10 +17,12 @@ from __future__ import annotations
 
 import csv
 import json
+import logging
 from pathlib import Path
 from typing import List
-import logging
 from .chat_learning import train_from_chat_and_pdfs
+
+logger = logging.getLogger(__name__)
 
 
 def load_logs(log_dir: str | Path) -> List[str]:
@@ -30,8 +32,8 @@ def load_logs(log_dir: str | Path) -> List[str]:
         if path.is_file() and path.suffix in {".txt", ".log"}:
             try:
                 texts.append(path.read_text(encoding="utf-8"))
-            except Exception:
-                pass
+            except (OSError, UnicodeDecodeError) as e:
+                logger.debug(f"Failed to read file {path}: {e}")
     return texts
 
 
@@ -45,16 +47,16 @@ def load_prompts(prompts_dir: str | Path) -> List[str]:
         if path.suffix == ".txt":
             try:
                 texts.append(path.read_text(encoding="utf-8"))
-            except Exception:
-                pass
+            except (OSError, UnicodeDecodeError) as e:
+                logger.debug(f"Failed to read text file {path}: {e}")
         elif path.suffix == ".csv":
             try:
                 with path.open(encoding="utf-8") as f:
                     reader = csv.reader(f)
                     for row in reader:
                         texts.extend(row)
-            except Exception:
-                pass
+            except (OSError, UnicodeDecodeError, csv.Error) as e:
+                logger.debug(f"Failed to read CSV file {path}: {e}")
     return texts
 
 
@@ -66,7 +68,7 @@ def load_memory_texts(memory_dir: str | Path) -> List[str]:
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
             texts.append(json.dumps(data))
-        except Exception as e:
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError) as e:
             logging.warning(f"Failed to load JSON from '{path}': {e}")
     return texts
 

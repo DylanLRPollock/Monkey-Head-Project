@@ -66,7 +66,7 @@ class MonkeyManager(BaseTool):
             else:
                 cmd = ["bash", str(script)]
             subprocess.run(cmd, check=False)
-        except Exception as exc:  # pragma: no cover - subprocess failures
+        except (OSError, subprocess.CalledProcessError) as exc:
             print(f"Error running {script}: {exc}")
 
     def install(self) -> None:

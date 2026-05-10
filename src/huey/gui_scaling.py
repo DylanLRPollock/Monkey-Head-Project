@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+import logging
 import os
 
 try:  # pragma: no cover - optional in headless environments
     import tkinter.font as tkfont
-except Exception:  # pragma: no cover
+except ImportError:  # pragma: no cover
     tkfont = None  # type: ignore[assignment]
+
+logger = logging.getLogger(__name__)
 
 
 def _scale_for_mode(mode: str) -> tuple[float, int]:
@@ -32,7 +35,8 @@ def apply_scaling(root, mode: str = "1080p") -> None:
 
     try:
         root.tk.call("tk", "scaling", factor)
-    except Exception:
+    except (RuntimeError, AttributeError, TypeError) as e:
+        logger.debug(f"Failed to set scaling: {e}")
         return
     if tkfont is None:
         return
@@ -46,7 +50,8 @@ def apply_scaling(root, mode: str = "1080p") -> None:
             if family:
                 kwargs["family"] = family
             font.configure(**kwargs)
-        except Exception:
+        except (RuntimeError, ValueError, AttributeError, TypeError) as e:
+            logger.debug(f"Failed to configure font {name}: {e}")
             continue
 
 
