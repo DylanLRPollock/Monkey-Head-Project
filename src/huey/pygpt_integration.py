@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: PyGPT integration compatibility wrapper (src)
 
-"""Expose PyGPT integration utilities under :mod:`huey.pygpt_integration`."""
+"""Expose PyHuey/PyGPT integration utilities under :mod:`huey.pygpt_integration`."""
 
 from __future__ import annotations
 

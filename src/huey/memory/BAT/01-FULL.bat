@@ -147,7 +147,7 @@ venv\Scripts\activate
 call :checkError "Activate Python Virtual Environment"
 pip install -r requirements.txt
 call :checkError "Install Python Requirements"
-pip install -e repo\pygpt-MHP
+pip install -e vendor\pygpt\pygpt-mhp
 call :checkError "Install pygpt-MHP"
 python sync_pygpt_structure.py
 call :checkError "Sync submodule"

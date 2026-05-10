@@ -289,9 +289,9 @@ if exist "%INSTALL_DIR%\requirements.txt" (
     call :checkError "Install requirements"
 )
 
-if exist "%INSTALL_DIR%\repo\pygpt-MHP" (
+if exist "%INSTALL_DIR%\vendor\pygpt\pygpt-mhp" (
     echo Installing pygpt-MHP editable...
-    "%VENV_PY%" -m pip install -e "%INSTALL_DIR%\repo\pygpt-MHP"
+    "%VENV_PY%" -m pip install -e "%INSTALL_DIR%\vendor\pygpt\pygpt-mhp"
     call :checkError "Install pygpt-MHP"
 )
 

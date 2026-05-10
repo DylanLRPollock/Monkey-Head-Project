@@ -32,12 +32,14 @@ def get_memory_path(create: bool = True) -> Path:
     env_value = os.environ.get("MEMORY_PATH")
     if env_value:
         memory_path = _expand_path(env_value)
+        if memory_path.exists() and not memory_path.is_dir():
+            raise NotADirectoryError(f"MEMORY_PATH is not a directory: {memory_path}")
         if create:
             memory_path.mkdir(parents=True, exist_ok=True)
         return memory_path
 
     preferred = _PROJECT_ROOT / "memory"
-    if preferred.exists():
+    if preferred.is_dir():
         if create:
             preferred.mkdir(parents=True, exist_ok=True)
         return preferred
@@ -76,7 +78,8 @@ def memory_candidates(extra: Iterable[Path] | None = None) -> list[Path]:
     if env_value:
         candidates.append(_expand_path(env_value))
     preferred = _PROJECT_ROOT / "memory"
-    candidates.append(preferred)
+    if preferred.is_dir():
+        candidates.append(preferred)
     candidates.append(_SRC_ROOT / "huey" / "memory")
     if extra:
         candidates.extend(extra)

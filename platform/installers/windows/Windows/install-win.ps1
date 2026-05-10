@@ -483,12 +483,12 @@ try {
     Write-Log "requirements.txt not found; skipping pip install -r." 'WARN'
   }
 
-  # Install pygpt-MHP submodule package (if present)
-  $pygptPath = Join-Path $InstallDir "repo\pygpt-MHP"
+  # Install vendored pygpt-MHP package (if present)
+  $pygptPath = Join-Path $InstallDir "vendor\pygpt\pygpt-mhp"
   if (Test-Path -LiteralPath $pygptPath) {
     Invoke-Native -Exe $venvPip -Args @("install","-e",$pygptPath) -WorkingDirectory $InstallDir
   } else {
-    Write-Log "Submodule path not found (repo\pygpt-MHP). Skipping editable install." 'WARN'
+    Write-Log "Vendor path not found (vendor\pygpt\pygpt-mhp). Skipping editable install." 'WARN'
   }
 
   # Sync structure + connectivity checks (if present)

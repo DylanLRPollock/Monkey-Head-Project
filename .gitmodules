@@ -2,11 +2,6 @@
 # By: Dylan L.R. Pollock
 # www.dlrp.ca
 # HueyOS: .gitmodules
-[submodule "integrations/pygpt/py-gpt"]
-    path = integrations/pygpt/py-gpt
-    url = https://github.com/szczyglis-dev/py-gpt
-    branch = main
-    shallow = true
 [submodule "integrations/pyhuey"]
 	path = integrations/pyhuey
 	url = https://github.com/DylanLRPollock/PyHuey.git

@@ -388,7 +388,7 @@ if (-not $SkipPython) {
     Write-Log "requirements.txt not found; skipping pip -r." 'WARN'
   }
 
-  $pygptPath = Join-Path $InstallDir "repo\pygpt-MHP"
+  $pygptPath = Join-Path $InstallDir "vendor\pygpt\pygpt-mhp"
   if (Test-Path -LiteralPath $pygptPath) {
     Invoke-Native -Exe $venvPip -Args @("install","-e",$pygptPath) -WorkingDirectory $InstallDir -AllowNonZero
   }

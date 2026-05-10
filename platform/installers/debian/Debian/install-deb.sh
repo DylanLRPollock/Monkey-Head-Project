@@ -382,7 +382,7 @@ function install_python_requirements() {
     echo "Installing PyGPT-net and audio Python dependencies ..."
     "$pip_bin" install --upgrade "pygpt-net>=2.6.67" pydub sounddevice soundfile
 
-    local submodule_path="$PROJECT_ROOT/repo/pygpt-MHP"
+    local submodule_path="$PROJECT_ROOT/vendor/pygpt/pygpt-mhp"
     if [[ -d $submodule_path ]]; then
         echo "Installing local pygpt-MHP integration in editable mode ..."
         "$pip_bin" install -e "$submodule_path"

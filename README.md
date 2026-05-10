@@ -963,6 +963,7 @@ This repository is moving toward a cleaner long-term structure.
 | `src/` | Importable implementation work |
 | `apps/` | Runnable entry points |
 | `integrations/` | Adapter and integration work |
+| `vendor/` | Static third-party mirrors and lightweight compatibility copies |
 | `infra/` | Orchestration and infrastructure support |
 | `platform/` | OS / platform-specific setup |
 | `archives/` | Frozen payloads, snapshots, legacy material |

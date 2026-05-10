@@ -16,7 +16,11 @@
 
 import importlib
 import sys
-from pathlib import Path
+
+try:
+    from .pygpt_integration import prepare_pygpt
+except ImportError:  # pragma: no cover - direct script execution
+    from pygpt_integration import prepare_pygpt  # type: ignore
 
 
 def check_inter_program_connectivity() -> bool:
@@ -26,18 +30,7 @@ def check_inter_program_connectivity() -> bool:
     except Exception:
         return False
 
-    try:
-        importlib.import_module("pygpt_net")
-    except Exception:
-        root = Path(__file__).resolve().parents[1]
-        submodule = root / "repo" / "pygpt-MHP" / "src"
-        if submodule.exists() and str(submodule) not in sys.path:
-            sys.path.append(str(submodule))
-        try:
-            importlib.import_module("pygpt_net")
-        except Exception:
-            return False
-    return True
+    return prepare_pygpt()
 
 
 def main() -> None:

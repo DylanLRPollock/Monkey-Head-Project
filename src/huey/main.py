@@ -13,7 +13,16 @@ import argparse
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, Iterable, Tuple
 
-from monkey_head.pytorch_tools import device_summary
+try:
+    from monkey_head.pytorch_tools import device_summary
+except ModuleNotFoundError:  # pragma: no cover - source checkout namespace
+    try:
+        from huey.pytorch_tools import device_summary
+    except ModuleNotFoundError:  # pragma: no cover - optional torch stack absent
+        def device_summary() -> Dict[str, Any]:
+            return {"available": False, "reason": "torch is not installed"}
+
+from .pyhuey_integration import pyhuey_status as get_pyhuey_status
 
 @dataclass
 class _Route:
@@ -82,6 +91,11 @@ def pytorch_info() -> tuple[Dict[str, Any], int]:
     return device_summary(), 200
 
 
+@app.route("/pyhuey/status", methods=["GET"])
+def pyhuey_status() -> tuple[Dict[str, Any], int]:
+    return get_pyhuey_status(), 200
+
+
 def parse_args(args: list[str] | None = None) -> argparse.Namespace:
     """Parse command-line arguments for the Monkey Head server."""
 
@@ -126,6 +140,7 @@ __all__ = [
     "readiness_check",
     "version_info",
     "pytorch_info",
+    "pyhuey_status",
     "parse_args",
     "run_setup",
     "main",

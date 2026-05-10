@@ -27,7 +27,7 @@ This is the concrete inventory requested for the next restructuring pass.
 - `src/huey/prompts/OLD/` → `archives/prompts/legacy/`
 - `gui/` → `apps/huey_gui/` (if still active) or `archives/gui-prototypes/` (if deprecated)
 - `docker/` + `Dockerfile` + `Dockerfile.vnc` + `docker-compose.yml` → `infra/docker/`
-- `repo/pygpt-MHP/` + `repo/py-gpt/` → `integrations/pygpt/`
+- `repo/pygpt-MHP/` + `repo/py-gpt/` → `vendor/pygpt/`
 
 ### Assets + docs separation
 - `HueyOS-background.png` → `assets/images/HueyOS-background.png`
@@ -37,7 +37,7 @@ This is the concrete inventory requested for the next restructuring pass.
 ## 2) Rename / Consolidate (naming + duplication cleanup)
 
 - `setup/` and `install/` should become one canonical tree: `platform/installers/`.
-- `repo/py-gpt` and `repo/pygpt-MHP` should be consolidated under a single naming scheme (`integrations/pygpt/`).
+- `repo/py-gpt` and `repo/pygpt-MHP` should be consolidated under a single naming scheme (`vendor/pygpt/`).
 - Pick one canonical runtime package namespace between `src/huey/` and `src/hueyos/`; deprecate the other with import shims for one release.
 - `src/huey/pygpt_net` naming should be aligned with integration folder naming (`pygpt_net` vs `pygpt`).
 - Remove or repurpose top-level empty `huey/` directory to avoid confusion with `src/huey/`.

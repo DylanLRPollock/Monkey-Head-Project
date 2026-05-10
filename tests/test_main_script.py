@@ -41,3 +41,16 @@ def test_main_runs_setup(monkeypatch):
     main_mod.main()
     assert called["setup"] is True
     assert called["run"] == ("127.0.0.1", 4488)
+
+
+def test_pyhuey_status_endpoint(monkeypatch):
+    monkeypatch.setattr(
+        main_mod,
+        "get_pyhuey_status",
+        lambda: {"prepared": True, "version": "test"},
+    )
+
+    payload, status = main_mod.pyhuey_status()
+
+    assert status == 200
+    assert payload["prepared"] is True

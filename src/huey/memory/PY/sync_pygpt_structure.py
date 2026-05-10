@@ -11,9 +11,9 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.11.2025
 # ==================================================
-"""Synchronize pygpt-MHP submodule files with the local project.
+"""Synchronize vendored pygpt-MHP files with the local project.
 
-The script copies files from ``repo/pygpt-MHP`` into the main repository so
+The script copies files from ``vendor/pygpt/pygpt-mhp`` into the main repository so
 modules can be imported directly from ``src``. Existing files will only be
 overwritten if they contain a ``Placeholder for`` header. The ``--depth``
 option controls how deep into the submodule the copy process recurses. By
@@ -23,7 +23,7 @@ import argparse
 import os
 import shutil
 
-PYGPT_DIR = os.path.join("repo", "pygpt-MHP")
+PYGPT_DIR = os.path.join("vendor", "pygpt", "pygpt-mhp")
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -72,7 +72,7 @@ def mirror_tree(src_root: str, dst_root: str, depth: int | None = None) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Copy files from the pygpt-MHP submodule into the main project"
+        description="Copy files from the vendored pygpt-MHP mirror into the main project"
     )
     parser.add_argument(
         "--depth",

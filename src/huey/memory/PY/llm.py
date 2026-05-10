@@ -3,13 +3,13 @@
 # www.dlrp.ca
 # HueyOS: Llm module (huey/agents)
 
-"""Abstractions for interacting with LLM providers via the pygpt-MHP stack."""
+"""Abstractions for interacting with LLM providers via the PyHuey/PyGPT-net stack."""
 
 from __future__ import annotations
 
 import json
+from importlib import resources
 from enum import Enum
-from pathlib import Path
 from typing import Any, Dict, Optional, Sequence
 
 from huey.pygpt_integration import prepare_pygpt
@@ -80,20 +80,21 @@ class LLMAdapter:
     def _load_metadata(self) -> Dict[str, Any]:
         """Load preset metadata from the pygpt configuration tree."""
 
+        if not prepare_pygpt():
+            return {}
+
         preset_name = f"agent_{self.provider.value}.json"
         preset_path = (
-            Path(__file__).resolve().parents[2]
-            / "pygpt"
+            resources.files("pygpt_net")
             / "data"
             / "config"
             / "presets"
             / preset_name
         )
-        if preset_path.exists():
-            try:
-                return json.loads(preset_path.read_text(encoding="utf-8"))
-            except json.JSONDecodeError:
-                return {}
+        try:
+            return json.loads(preset_path.read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError, ModuleNotFoundError):
+            return {}
         return {}
 
     def _register_with_pygpt(self) -> None:
@@ -105,11 +106,11 @@ class LLMAdapter:
 
         try:
             if self.provider is LLMProvider.OPENAI:
-                from pygpt.provider.agents.openai import OpenAIAgent as ProviderAgent
+                from pygpt_net.provider.agents.openai import OpenAIAgent as ProviderAgent
             elif self.provider is LLMProvider.ANTHROPIC:
-                from pygpt.provider.agents.react import ReactAgent as ProviderAgent
+                from pygpt_net.provider.agents.react import ReactAgent as ProviderAgent
             else:
-                from pygpt.provider.agents.planner import PlannerAgent as ProviderAgent
+                from pygpt_net.provider.agents.planner import PlannerAgent as ProviderAgent
         except Exception:  # pragma: no cover - optional dependency path
             self._pygpt_agent = None
             return

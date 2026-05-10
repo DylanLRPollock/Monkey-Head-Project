@@ -70,3 +70,26 @@ def test_main_install_gui_invokes_launcher(monkeypatch):
     huey_run.main(["--install-gui"])
 
     assert called["install"] is True
+
+
+def test_main_pyhuey_info_invokes_report(monkeypatch):
+    from huey import run as huey_run
+
+    called: dict[str, str] = {}
+
+    monkeypatch.setattr(
+        huey_run,
+        "print_pyhuey_info",
+        lambda source=None: called.setdefault("source", source),
+    )
+    monkeypatch.setattr(
+        huey_run,
+        "launch_gui",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("unexpected launch_gui")
+        ),
+    )
+
+    huey_run.main(["--pyhuey-info", "--pyhuey-source", "vendor"])
+
+    assert called["source"] == "vendor"

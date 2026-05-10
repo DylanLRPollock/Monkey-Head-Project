@@ -19,7 +19,7 @@ This document proposes a practical reorganization so the repository is easier to
 │   ├── huey-core/           # primary Python runtime (from src/huey + src/monkey_head)
 │   └── hueyos-tools/        # CLI/utilities currently spread across scripts/tools
 ├── integrations/
-│   └── pygpt/               # repo/pygpt-MHP and related adapters
+│   └── pyhuey/              # live PyHuey submodule / adapter work
 ├── platform/
 │   ├── boot/                # boot/grub, EFI, isolinux, live
 │   ├── packaging/           # dists, pool, pool-udeb, firmware metadata
@@ -31,7 +31,7 @@ This document proposes a practical reorganization so the repository is easier to
 ├── tests/                   # automated tests
 ├── assets/                  # static media (images, diagrams, UI assets)
 ├── archives/                # frozen historical snapshots, old release payloads
-└── vendor/                  # vendored third-party dependencies
+└── vendor/                  # vendored third-party dependencies and PyGPT mirrors
 ```
 
 ## What to Move First (Low-Risk Phase)

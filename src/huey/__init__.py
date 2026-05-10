@@ -17,6 +17,7 @@ _CORE_MODULES = (
     "exceptions",
     "function_registry",
     "pdf_utils",
+    "pyhuey_integration",
     "pygpt_integration",
     "run",
     "utils",

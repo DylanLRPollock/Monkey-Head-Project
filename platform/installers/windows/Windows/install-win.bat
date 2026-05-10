@@ -405,11 +405,11 @@ if exist "%INSTALL_DIR%\requirements.txt" (
     echo [WARN] requirements.txt not found; skipping.
 )
 
-if exist "%INSTALL_DIR%\repo\pygpt-MHP" (
-    "%VENV_PY%" -m pip install -e "%INSTALL_DIR%\repo\pygpt-MHP"
+if exist "%INSTALL_DIR%\vendor\pygpt\pygpt-mhp" (
+    "%VENV_PY%" -m pip install -e "%INSTALL_DIR%\vendor\pygpt\pygpt-mhp"
     call :checkError "Install pygpt-MHP"
 ) else (
-    echo [INFO] repo\pygpt-MHP not found; skipping editable install.
+    echo [INFO] vendor\pygpt\pygpt-mhp not found; skipping editable install.
 )
 
 if exist "%INSTALL_DIR%\sync_pygpt_structure.py" (

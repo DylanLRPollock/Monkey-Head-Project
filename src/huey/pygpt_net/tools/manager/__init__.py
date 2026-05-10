@@ -8,13 +8,43 @@ from __future__ import annotations
 import platform
 import subprocess
 from pathlib import Path
-from typing import Dict
+from typing import Any, Callable, Dict
 
-from pygpt_net.tools.base import BaseTool
-from pygpt_net.utils import trans
-from PySide6.QtGui import QAction
+try:  # pragma: no cover - exercised when the full PyGPT UI is installed
+    from pygpt_net.tools.base import BaseTool
+except Exception:  # pragma: no cover - lightweight test/runtime fallback
+    class BaseTool:  # type: ignore[no-redef]
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            self.window = kwargs.get("window")
+
+try:  # pragma: no cover - exercised when the full PyGPT UI is installed
+    from pygpt_net.utils import trans
+except Exception:  # pragma: no cover - lightweight test/runtime fallback
+    def trans(value: str) -> str:  # type: ignore[no-redef]
+        return value
+
+try:  # pragma: no cover - exercised when PySide6 is available
+    from PySide6.QtGui import QAction
+except Exception:  # pragma: no cover - lightweight test/runtime fallback
+    class _Signal:
+        def __init__(self) -> None:
+            self._callback: Callable[[], None] | None = None
+
+        def connect(self, callback: Callable[[], None]) -> None:
+            self._callback = callback
+
+        def emit(self) -> None:
+            if self._callback:
+                self._callback()
+
+    class QAction:  # type: ignore[no-redef]
+        def __init__(self, text: str, parent: object | None = None) -> None:
+            self.text = text
+            self.parent = parent
+            self.triggered = _Signal()
 
 from huey.services import container_management
+from huey.pyhuey_integration import pyhuey_status
 
 
 def _project_root() -> Path:
@@ -69,6 +99,11 @@ class MonkeyManager(BaseTool):
         except (OSError, subprocess.CalledProcessError) as exc:
             print(f"Error running {script}: {exc}")
 
+    def _action(self, label: str, callback: Callable[[], None]) -> QAction:
+        action = QAction(trans(label), self.window)
+        action.triggered.connect(callback)
+        return action
+
     def install(self) -> None:
         self._run_script(self.install_path)
 
@@ -78,66 +113,84 @@ class MonkeyManager(BaseTool):
     def run_app(self) -> None:
         self._run_script(self.run_path)
 
+    def integration_status(self) -> Dict[str, object]:
+        """Return current PyHuey integration discovery details."""
+
+        return pyhuey_status()
+
+    def print_integration_status(self) -> None:
+        """Print a readable PyHuey integration status report."""
+
+        status = self.integration_status()
+        print("PyHuey integration")
+        print(f"prepared: {status['prepared']}")
+        print(f"version: {status['version'] or 'unknown'}")
+        print(f"module: {status['module_file'] or 'unresolved'}")
+
+    def list_pdfs(self) -> list[str]:
+        """Return PDF files visible to the HueyOS runtime."""
+
+        from huey.pdf_utils import list_available_pdfs
+
+        return [str(path) for path in list_available_pdfs()]
+
+    def print_pdfs(self) -> None:
+        """Print available PDFs for quick PyHuey-side diagnostics."""
+
+        pdfs = self.list_pdfs()
+        if not pdfs:
+            print("No PDFs found.")
+            return
+        print("Available PDFs:")
+        for path in pdfs:
+            print(f"- {path}")
+
+    def run_system_check(self) -> None:
+        """Run HueyOS environment checks from the PyHuey menu."""
+
+        from huey.system_checks import system_check
+
+        system_check()
+
     def setup_menu(self) -> Dict[str, QAction]:
         actions: Dict[str, QAction] = {}
-        actions["monkey.install"] = QAction(trans("Monkey Install"), self.window)
-        actions["monkey.install"].triggered.connect(self.install)
-
-        actions["monkey.run"] = QAction(trans("Monkey Run"), self.window)
-        actions["monkey.run"].triggered.connect(self.run_app)
-
-        actions["monkey.update"] = QAction(trans("Monkey Update"), self.window)
-        actions["monkey.update"].triggered.connect(self.update)
-
-        actions["monkey.docker.build"] = QAction(
-            trans("Build Docker Image"), self.window
+        actions["monkey.install"] = self._action("Monkey Install", self.install)
+        actions["monkey.run"] = self._action("Monkey Run", self.run_app)
+        actions["monkey.update"] = self._action("Monkey Update", self.update)
+        actions["monkey.pyhuey.status"] = self._action(
+            "PyHuey Status", self.print_integration_status
         )
-        actions["monkey.docker.build"].triggered.connect(
-            container_management.build_docker_image
+        actions["monkey.pdfs.list"] = self._action("List PDFs", self.print_pdfs)
+        actions["monkey.system.check"] = self._action(
+            "System Check", self.run_system_check
         )
-
-        actions["monkey.docker.start"] = QAction(trans("Start Containers"), self.window)
-        actions["monkey.docker.start"].triggered.connect(
-            container_management.manage_containers
+        actions["monkey.docker.build"] = self._action(
+            "Build Docker Image", container_management.build_docker_image
         )
-
-        actions["monkey.docker.stop"] = QAction(trans("Stop Containers"), self.window)
-        actions["monkey.docker.stop"].triggered.connect(
-            container_management.stop_containers
+        actions["monkey.docker.start"] = self._action(
+            "Start Containers", container_management.manage_containers
         )
-
-        actions["monkey.docker.clean"] = QAction(trans("Cleanup Images"), self.window)
-        actions["monkey.docker.clean"].triggered.connect(
-            container_management.cleanup_images
+        actions["monkey.docker.stop"] = self._action(
+            "Stop Containers", container_management.stop_containers
         )
-
-        actions["monkey.docker.volumes"] = QAction(trans("Manage Volumes"), self.window)
-        actions["monkey.docker.volumes"].triggered.connect(
-            container_management.manage_volumes
+        actions["monkey.docker.clean"] = self._action(
+            "Cleanup Images", container_management.cleanup_images
         )
-
-        actions["monkey.docker.networks"] = QAction(
-            trans("Manage Networks"), self.window
+        actions["monkey.docker.volumes"] = self._action(
+            "Manage Volumes", container_management.manage_volumes
         )
-        actions["monkey.docker.networks"].triggered.connect(
-            container_management.manage_networks
+        actions["monkey.docker.networks"] = self._action(
+            "Manage Networks", container_management.manage_networks
         )
-
-        actions["monkey.k8s.deploy"] = QAction(trans("Deploy Kubernetes"), self.window)
-        actions["monkey.k8s.deploy"].triggered.connect(
-            container_management.deploy_kubernetes
+        actions["monkey.k8s.deploy"] = self._action(
+            "Deploy Kubernetes", container_management.deploy_kubernetes
         )
-
-        actions["monkey.k8s.cleanup"] = QAction(
-            trans("Cleanup Kubernetes"), self.window
+        actions["monkey.k8s.cleanup"] = self._action(
+            "Cleanup Kubernetes", container_management.cleanup_kubernetes
         )
-        actions["monkey.k8s.cleanup"].triggered.connect(
-            container_management.cleanup_kubernetes
-        )
-
-        actions["monkey.k8s.scale"] = QAction(trans("Scale Deployment"), self.window)
-        actions["monkey.k8s.scale"].triggered.connect(
-            lambda: container_management.scale_deployment("deployment", 1)
+        actions["monkey.k8s.scale"] = self._action(
+            "Scale Deployment",
+            lambda: container_management.scale_deployment("deployment", 1),
         )
 
         return actions

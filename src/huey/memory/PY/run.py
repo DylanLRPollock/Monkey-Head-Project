@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 from typing import Callable
 
-from .pygpt_integration import prepare_pygpt
+from .pygpt_integration import prepare_pygpt, pyhuey_status
 
 
 def minimal_run() -> None:
@@ -60,20 +60,20 @@ def run_module(target: str) -> None:
         raise ImportError(f"Function {func_name} not found in {module_name}") from exc
     func()
 
-def _prepare_pygpt() -> bool:
+def _prepare_pygpt(source: str | None = None) -> bool:
     """Ensure :mod:`pygpt_net` is importable either from site-packages or vendors."""
 
-    return prepare_pygpt()
+    return prepare_pygpt(source=source)
 
 
-def _load_cli() -> Callable[..., None]:
+def _load_cli(source: str | None = None) -> Callable[..., None]:
     """Import and return the canonical PyGPT CLI runner.
 
     Falls back to :func:`minimal_run` if the CLI cannot be imported due to
     missing dependencies.
     """
 
-    if not _prepare_pygpt():
+    if not _prepare_pygpt(source):
         return minimal_run
 
     try:
@@ -83,17 +83,17 @@ def _load_cli() -> Callable[..., None]:
     return cli_run
 
 
-def launch_cli(*args, **kwargs) -> None:
+def launch_cli(*args, source: str | None = None, **kwargs) -> None:
     """Launch the PyGPT CLI entry point if available."""
 
-    cli_run = _load_cli()
+    cli_run = _load_cli(source)
     cli_run(*args, **kwargs)
 
 
-def launch_gui() -> None:
+def launch_gui(source: str | None = None) -> None:
     """Start the PyGPT GUI with the Monkey Head manager tool enabled."""
 
-    if not _prepare_pygpt():
+    if not _prepare_pygpt(source):
         raise RuntimeError("pygpt_net package is not available")
 
     from pygpt_net.app import run as pygpt_run
@@ -101,6 +101,28 @@ def launch_gui() -> None:
     from huey.pygpt_net.tools.manager import MonkeyManager
 
     pygpt_run(tools=[MonkeyManager()])
+
+
+def print_pyhuey_info(source: str | None = None) -> None:
+    """Print a concise PyHuey integration report."""
+
+    status = pyhuey_status(source=source)
+    active = status["active_source"]
+
+    print("PyHuey integration")
+    print(f"  prepared: {status['prepared']}")
+    print(f"  version: {status['version'] or 'unknown'}")
+    print(f"  module: {status['module_file'] or 'unresolved'}")
+    if isinstance(active, dict):
+        print(f"  source: {active['name']} ({active['kind']})")
+        print(f"  source path: {active['path']}")
+    else:
+        print(f"  source: {active}")
+
+    print("  candidates:")
+    for candidate in status["candidates"]:
+        marker = "yes" if candidate["exists"] else "no"
+        print(f"    - {candidate['name']}: {marker} :: {candidate['path']}")
 
 
 def launch_manager_ui() -> None:
@@ -150,6 +172,17 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument(
         "--version", action="store_true", help="Print pygpt_net version and exit"
+    )
+    parser.add_argument(
+        "--pyhuey-info",
+        action="store_true",
+        help="Print PyHuey integration discovery status and exit",
+    )
+    parser.add_argument(
+        "--pyhuey-source",
+        choices=("auto", "installed", "package", "pyhuey", "vendor"),
+        default=os.environ.get("PYHUEY_SOURCE", "auto"),
+        help="Select PyHuey/PyGPT-net source discovery preference",
     )
     parser.add_argument(
         "--list-pdfs", action="store_true", help="List PDF files available to the app"
@@ -256,12 +289,12 @@ def main(argv: list[str] | None = None) -> None:
         launch_install_gui()
         return
 
-    from .system_checks import check_os_support, check_python_version
-
-    check_os_support()
-    check_python_version()
+    if args.pyhuey_info:
+        print_pyhuey_info(args.pyhuey_source)
+        return
 
     if args.version:
+        _prepare_pygpt(args.pyhuey_source)
         try:
             from pygpt_net import __version__
         except Exception:  # pragma: no cover - pygpt missing
@@ -269,8 +302,13 @@ def main(argv: list[str] | None = None) -> None:
         print(f"pygpt_net version: {__version__}")
         return
 
+    from .system_checks import check_os_support, check_python_version
+
+    check_os_support()
+    check_python_version()
+
     if args.cli:
-        launch_cli()
+        launch_cli(source=args.pyhuey_source)
         return
 
     if args.simple_chat:
@@ -283,10 +321,10 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     try:
-        launch_gui()
+        launch_gui(args.pyhuey_source)
     except Exception as exc:  # pragma: no cover - fallback to CLI
         print(f"GUI failed to launch: {exc}\nFalling back to CLI mode.")
-        launch_cli()
+        launch_cli(source=args.pyhuey_source)
 
 
 __all__ = [
@@ -295,6 +333,7 @@ __all__ = [
     "launch_gui",
     "launch_manager_ui",
     "launch_install_gui",
+    "print_pyhuey_info",
     "main",
     "minimal_run",
     "run_module",

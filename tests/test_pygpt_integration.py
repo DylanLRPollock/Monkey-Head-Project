@@ -4,8 +4,11 @@ import sys
 from pathlib import Path
 
 from huey.pygpt_integration import (
+    available_sources,
+    candidate_sources,
     candidate_src_paths,
     prepare_pygpt,
+    pyhuey_status,
     reset_pygpt_state,
 )
 
@@ -18,9 +21,18 @@ def test_candidate_src_paths_resolves_defaults_and_env(monkeypatch, tmp_path):
 
     paths = candidate_src_paths()
 
-    assert paths[0] == root / "pygpt"
-    assert paths[1] == root / "pygpt" / "src"
+    assert paths[0] == root / "src" / "huey"
+    assert paths[1] == root / "integrations" / "pyhuey" / "src"
+    assert root / "vendor" / "pygpt" / "pygpt-mhp" / "src" in paths
     assert extra_dir in paths
+
+
+def test_candidate_sources_describe_available_locations():
+    sources = candidate_sources()
+    names = [source.name for source in sources]
+
+    assert names[:3] == ["package", "pyhuey", "vendor"]
+    assert any(source.name == "package" for source in available_sources())
 
 
 def test_prepare_pygpt_uses_extra_paths(monkeypatch, tmp_path):
@@ -34,9 +46,18 @@ def test_prepare_pygpt_uses_extra_paths(monkeypatch, tmp_path):
     monkeypatch.delitem(sys.modules, "pygpt_net", raising=False)
 
     reset_pygpt_state()
-    assert prepare_pygpt()
+    assert prepare_pygpt(source="extra")
 
     import pygpt_net  # type: ignore
 
     assert getattr(pygpt_net, "__version__", None) == "test-vendor"
     reset_pygpt_state()
+
+
+def test_pyhuey_status_reports_candidates():
+    reset_pygpt_state()
+    status = pyhuey_status(source="package")
+
+    assert status["prepared"] is True
+    assert status["module"] == "pygpt_net"
+    assert any(candidate["name"] == "pyhuey" for candidate in status["candidates"])

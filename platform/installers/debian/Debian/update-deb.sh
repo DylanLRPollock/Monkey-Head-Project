@@ -277,7 +277,7 @@ function update_python_deps() {
     echo "Updating PyGPT-net and audio Python dependencies ..."
     "$pip_bin" install --upgrade "pygpt-net>=2.6.67" pydub sounddevice soundfile
 
-    local submodule_path="$project_root/repo/pygpt-MHP"
+    local submodule_path="$project_root/vendor/pygpt/pygpt-mhp"
     if [[ -d "$submodule_path" ]]; then
         echo "Reinstalling local pygpt-MHP integration in editable mode ..."
         "$pip_bin" install -e "$submodule_path"
@@ -357,4 +357,3 @@ function main() {
 }
 
 main "$@"
-

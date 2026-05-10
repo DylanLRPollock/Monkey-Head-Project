@@ -200,14 +200,14 @@ git submodule update --remote --recursive   # update to tracked branch tips
 ```
 
 ### Track development vs. releases
-- Development: `repo/pygpt-MHP` tracks `main`.
+- Development: `integrations/pyhuey` tracks the full PyHuey source; `vendor/pygpt/pygpt-mhp` holds the lightweight mirror.
 - Release: lock submodules to a specific commit and record it.
 
 ```bash
 # lock to a commit for release
-(cd repo/pygpt-MHP && git fetch && git checkout <commit>)
-git add repo/pygpt-MHP
-git commit -m "chore(submodule): lock pygpt-MHP to <shortsha>"
+(cd integrations/pyhuey && git fetch && git checkout <commit>)
+git add integrations/pyhuey
+git commit -m "chore(submodule): lock pyhuey to <shortsha>"
 ```
 
 > Tip: capture the upstream URL and commit in `RELEASE_NOTES.md` for traceability.

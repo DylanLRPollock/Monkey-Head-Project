@@ -364,10 +364,10 @@ install_python_deps() {
     warn "requirements.txt not found at $INSTALL_DIR/requirements.txt (skipping)."
   fi
 
-  if [[ -d "$INSTALL_DIR/repo/pygpt-MHP" ]]; then
-    python -m pip install -e "$INSTALL_DIR/repo/pygpt-MHP"
+  if [[ -d "$INSTALL_DIR/vendor/pygpt/pygpt-mhp" ]]; then
+    python -m pip install -e "$INSTALL_DIR/vendor/pygpt/pygpt-mhp"
   else
-    [[ "$VERBOSE" -eq 1 ]] && warn "Local package repo/pygpt-MHP not found (skipping)."
+    [[ "$VERBOSE" -eq 1 ]] && warn "Local package vendor/pygpt/pygpt-mhp not found (skipping)."
   fi
 }
 
