@@ -171,7 +171,7 @@ llama-index-vector-stores-redis @ file:///C:/Users/admin/Desktop/HueyOS/Build/Py
 llama-index-workflows==2.14.0
 llama-parse==0.6.54
 lxml==6.1.0
-lxml_html_clean==0.4.3
+lxml_html_clean==0.4.4
 Markdown==3.10.1
 markdown-it-py==4.0.0
 markdownify==1.2.2
@@ -305,7 +305,7 @@ rpds-py==0.30.0
 rsa==4.9.1
 s3transfer==0.16.0
 safetensors==0.7.0
-Scrapy==2.14.2
+Scrapy==2.15.1
 selenium==4.39.0
 service-identity==24.2.0
 setuptools==80.10.2
