@@ -1,17 +1,27 @@
 # Monkey-Head-Project / HueyOS
-# Full pinned dependency baseline for reproducible developer, lab, and staging installs.
-# Target Python: 3.12.x and 3.13.x (3.14.x pending pygpt-net support)
-# Package/runtime contract: see pyproject.toml and README v25.
+# v101.0 requirements baseline for reproducible developer, lab, and staging installs.
+# Target Python: >=3.13,<3.15
+# V1 scope: Huey Brain / Legion Go controlled MP3 fixture -> transcription -> cognition bridge -> structured log.
+# Package/runtime contract: keep aligned with pyproject.toml, constraints.txt, README-v101.0.md, and master-plan-v101.0.json.
 #
 # Typical usage:
-#   pip install -r requirements.txt
-#   pip install -c constraints.txt -e .
-#   pip install -c constraints.txt -e ".[dev]"
+#   python -m pip install --upgrade pip setuptools wheel
+#   python -m pip install -r requirements.txt
+#   python -m pip install -c constraints.txt -e .
+#   python -m pip install -c constraints.txt -e ".[dev]"
 #
 # Notes:
 # - This file is the heavy, fully pinned baseline.
-# - constraints.txt now carries the shared anchor pins used by editable installs and extras.
+# - constraints.txt carries shared anchor pins used by editable installs and extras.
 # - Platform-specific markers remain inline where needed.
+# - pavucontrol remains a Debian/system package, not a pip dependency.
+# - The attached known-good environment reported: "No broken requirements found."
+#
+# Source basis for this refresh:
+# - current repository requirements.txt / constraints.txt
+# - pyproject.toml direct dependency contract
+# - requirements-known-good-freeze.txt and pip-check.txt
+# - requirements-latest.txt marker-normalization reference
 
 -c constraints.txt
 
@@ -88,7 +98,7 @@ llama-index-readers-web==0.6.0
 llama-index-utils-huggingface==0.5.0
 llama-index-workflows==2.20.0
 llama-parse==0.6.94
-mistralai==2.3.2
+mistralai==1.12.4
 numpy==2.4.4
 ollama==0.6.1
 onnxruntime==1.25.1
