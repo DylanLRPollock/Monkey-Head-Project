@@ -7,3 +7,6 @@
     url = https://github.com/szczyglis-dev/py-gpt
     branch = main
     shallow = true
+[submodule "integrations/pyhuey"]
+	path = integrations/pyhuey
+	url = https://github.com/DylanLRPollock/PyHuey.git
