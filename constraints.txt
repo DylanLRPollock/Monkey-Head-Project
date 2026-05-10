@@ -13,26 +13,26 @@
 #   >=3.13,<3.15
 
 # --- Packaging / installer toolchain ---
-pip==26.1
+pip==26.1.1
 setuptools==82.0.1
 wheel==0.47.0
-uv==0.11.8
+uv==0.11.12
 
 # --- Core API / runtime anchors ---
 fastapi==0.136.1
 starlette==1.0.0
 uvicorn[standard]==0.46.0
-pydantic==2.13.3
-pydantic-settings==2.14.0
-orjson==3.11.8
+pydantic==2.13.4
+pydantic-settings==2.14.1
+orjson==3.11.9
 aiosqlite==0.22.1
-cryptography==46.0.7
+cryptography==48.0.0
 
 # --- Local model / orchestration anchors ---
-ollama==0.6.1
+ollama==0.6.2
 pygpt-net==2.7.12
 faster-whisper==1.2.1
-transformers==5.7.0
+transformers==5.8.0
 torch==2.11.0
 torchaudio==2.11.0
 torchvision==0.26.0
