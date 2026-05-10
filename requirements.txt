@@ -98,7 +98,7 @@ llama-index-readers-web==0.6.0
 llama-index-utils-huggingface==0.5.0
 llama-index-workflows==2.20.0
 llama-parse==0.6.94
-mistralai==1.12.4
+mistralai==2.4.5
 numpy==2.4.4
 ollama==0.6.1
 onnxruntime==1.25.1
