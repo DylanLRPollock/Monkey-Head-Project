@@ -34,7 +34,7 @@ aiosqlite==0.22.1
 anyio==4.13.0
 attrs==26.1.0
 certifi==2026.4.22
-cryptography==46.0.7
+cryptography==48.0.0
 evdev==1.9.3; sys_platform == 'linux'
 fastapi==0.136.1
 orjson==3.11.9
