@@ -134,7 +134,7 @@ data = [
   "elasticsearch==9.4.0",
   "faiss-cpu==1.13.2; sys_platform != 'win32'",
   "pandas==3.0.2",
-  "pinecone==8.1.2",
+  "pinecone==9.0.0",
   "pinecone-client==6.0.0",
   "pinecone-plugin-assistant==3.0.3",
   "pinecone-plugin-interface==0.0.7",
