@@ -1268,11 +1268,9 @@ def _register_battery_hooks() -> None:
 _register_battery_hooks()
 
 
-@app.get("/healthz", tags=["System"])
-def healthz() -> Dict[str, str]:
-    """Lightweight probe used by orchestrators to ensure the API is responsive."""
+from hueyos.api.routers.system import router as system_router
 
-    return {"status": "ok", "service": "hueyos"}
+app.include_router(system_router)
 
 
 @app.post(
@@ -1349,18 +1347,6 @@ def cancel_task(task_id: str) -> TaskResponse:
             status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
         ) from exc
     return TaskResponse.from_record(record)
-
-
-@app.get(
-    "/status/system",
-    response_model=SystemStatusResponse,
-    tags=["System"],
-)
-@app.get("/system/status", response_model=SystemStatusResponse, tags=["System"])
-def system_status() -> SystemStatusResponse:
-    """Return operating system, hardware, and configuration details for HueyOS."""
-
-    return _build_system_status()
 
 
 @app.get(
