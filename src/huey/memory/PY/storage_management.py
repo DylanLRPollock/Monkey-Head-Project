@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import shutil
 import time
@@ -22,6 +23,8 @@ from pathlib import Path
 from typing import Iterable, List, Optional
 
 __all__ = ["StorageManager"]
+
+logger = logging.getLogger(__name__)
 
 # Default subfolders maintained inside the memory directory
 DEFAULT_FOLDERS: List[str] = [
@@ -113,8 +116,8 @@ class StorageManager:
             if p.is_file():
                 try:
                     total += p.stat().st_size
-                except OSError:
-                    pass
+                except (FileNotFoundError, PermissionError) as exc:
+                    logger.warning("Failed to stat file for size calculation: %s (%s)", p, exc)
         return total
 
     # -----------------------------------------------------
@@ -126,12 +129,27 @@ class StorageManager:
         threshold = time.time() - days * 86400
         removed = 0
         for p in path.rglob("*"):
-            if p.is_file() and p.stat().st_mtime < threshold:
+            try:
+                is_file = p.is_file()
+            except OSError as exc:
+                logger.warning("Failed to inspect path while pruning old files: %s (%s)", p, exc)
+                continue
+
+            if not is_file:
+                continue
+
+            try:
+                modified_time = p.stat().st_mtime
+            except (FileNotFoundError, PermissionError) as exc:
+                logger.warning("Failed to stat file while pruning old files: %s (%s)", p, exc)
+                continue
+
+            if modified_time < threshold:
                 try:
                     p.unlink()
                     removed += 1
-                except OSError:
-                    pass
+                except (FileNotFoundError, PermissionError) as exc:
+                    logger.warning("Failed to delete old file: %s (%s)", p, exc)
         self.cleanup_empty_dirs()
         return removed
 
