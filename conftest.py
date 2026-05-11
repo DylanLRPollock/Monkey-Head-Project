@@ -13,15 +13,13 @@ from pathlib import Path
 import pytest
 
 _PROJECT_ROOT = Path(__file__).resolve().parent
-_BOOTSTRAP_PATHS = [
-    _PROJECT_ROOT / "src",
-    _PROJECT_ROOT / "vendor",
-    _PROJECT_ROOT / "integrations",
-]
+_SRC_PATH = _PROJECT_ROOT / "src"
+if _SRC_PATH.is_dir() and str(_SRC_PATH) not in sys.path:
+    sys.path.insert(0, str(_SRC_PATH))
 
-for _path in _BOOTSTRAP_PATHS:
+for _path in (_PROJECT_ROOT / "integrations", _PROJECT_ROOT / "vendor"):
     if _path.is_dir() and str(_path) not in sys.path:
-        sys.path.insert(0, str(_path))
+        sys.path.append(str(_path))
 
 if sys.platform.startswith("win"):
     try:

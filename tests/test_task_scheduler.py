@@ -7,31 +7,7 @@
 
 from __future__ import annotations
 
-import sys
-import types
-from pathlib import Path
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
-sys.path.append(str(REPO_ROOT))
-sys.path.append(str(REPO_ROOT / "src"))
-
-if "huey" not in sys.modules:
-    huey_pkg = types.ModuleType("huey")
-    huey_pkg.__path__ = [
-        str(REPO_ROOT / "src" / "huey"),
-        str(REPO_ROOT / "huey"),
-    ]
-    sys.modules["huey"] = huey_pkg
-else:
-    pkg = sys.modules["huey"]
-    current_path = list(getattr(pkg, "__path__", []))
-    for candidate in (REPO_ROOT / "src" / "huey", REPO_ROOT / "huey"):
-        candidate_str = str(candidate)
-        if candidate_str not in current_path:
-            current_path.append(candidate_str)
-    pkg.__path__ = current_path
-
-from hueyos.core.task_scheduler import (  # noqa: E402  pylint: disable=wrong-import-position
+from huey.core.task_scheduler import (  # noqa: E402  pylint: disable=wrong-import-position
     Agent,
     ResourceProfile,
     ResourceSnapshot,
