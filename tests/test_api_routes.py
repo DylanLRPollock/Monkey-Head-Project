@@ -8,9 +8,6 @@
 from __future__ import annotations
 
 import asyncio
-import sys
-import types
-from pathlib import Path
 from typing import Any
 
 import importlib
@@ -19,62 +16,29 @@ import pytest
 
 from httpx import ASGITransport, AsyncClient
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-sys.path.append(str(REPO_ROOT))
-sys.path.append(str(REPO_ROOT / "src"))
+import fastapi
 
-if "huey" not in sys.modules:
-    huey_pkg = types.ModuleType("huey")
-    huey_pkg.__path__ = [
-        str(REPO_ROOT / "src" / "huey"),
-        str(REPO_ROOT / "huey"),
-    ]
-    sys.modules["huey"] = huey_pkg
-else:
-    pkg = sys.modules["huey"]
-    current_path = list(getattr(pkg, "__path__", []))
-    for candidate in (REPO_ROOT / "src" / "huey", REPO_ROOT / "huey"):
-        candidate_str = str(candidate)
-        if candidate_str not in current_path:
-            current_path.append(candidate_str)
-    pkg.__path__ = current_path
+# Compatibility shim: the vendored FastAPI stub used in tests omits ``Request``.
+# Populate it so importing ``huey.api`` exercises the real API wrapper path.
+if not hasattr(fastapi, "Request"):
+    class _Request:  # pragma: no cover - import-time compatibility only
+        pass
 
-if "huey.memory" not in sys.modules:
-    memory_pkg = types.ModuleType("huey.memory")
-    memory_pkg.__path__ = [str(REPO_ROOT / "huey" / "memory")]
-    sys.modules["huey.memory"] = memory_pkg
-else:
-    memory_pkg = sys.modules["huey.memory"]
+    fastapi.Request = _Request
 
-py_pkg = types.ModuleType("huey.memory.PY")
-py_pkg.__path__ = [str(REPO_ROOT / "huey" / "memory" / "PY")]
-sys.modules["huey.memory.PY"] = py_pkg
-setattr(memory_pkg, "PY", py_pkg)
+# Migration shim: ``huey.memory.PY.api`` still imports ``hueyos.core.*`` paths
+# while implementations live under ``huey.core.*`` during v101.1 stabilization.
+import sys
+sys.modules.setdefault("hueyos.core.resilience", importlib.import_module("huey.core.resilience"))
+sys.modules.setdefault("hueyos.core.task_scheduler", importlib.import_module("huey.core.task_scheduler"))
 
 api_module = importlib.import_module("huey.api")
 
 # Import the public API symbols used by these tests directly into the module
 # namespace for convenience and to mirror the FastAPI application's exports.
-from hueyos.core.task_scheduler import ResourceSnapshot, TaskScheduler, TaskStatus
-from hueyos.hardware.plugins import SensorReading
+from huey.core.task_scheduler import ResourceSnapshot, TaskScheduler, TaskStatus
+from huey.hardware.plugins import SensorReading
 
-ai_module = types.ModuleType("huey.memory.PY.ai_processor")
-
-
-class _DummyAIProcessor:
-    def process_data(self, text: str) -> str:
-        return text
-
-    def compute_mean(self, numbers: list[float]) -> float:
-        return sum(numbers) / len(numbers) if numbers else 0.0
-
-    def analyze_data(self, text: str) -> dict[str, int]:
-        return {"length": len(text)}
-
-
-ai_module.AIProcessor = _DummyAIProcessor  # type: ignore[attr-defined]
-sys.modules["huey.memory.PY.ai_processor"] = ai_module
-setattr(py_pkg, "ai_processor", ai_module)
 
 @pytest.mark.asyncio
 async def test_healthz_endpoint_returns_service_status():
