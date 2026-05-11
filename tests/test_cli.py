@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 from huey import cli
+from huey.memory.PY import cli as legacy_cli
 
 
 def test_system_check_json(monkeypatch, capsys):
@@ -31,6 +32,22 @@ def test_system_check_json(monkeypatch, capsys):
     captured = capsys.readouterr()
     payload = json.loads(captured.out)
     assert payload == {"os_supported": True, "python_supported": True}
+
+
+def test_direct_legacy_cli_module_invocation_system_check(monkeypatch, capsys):
+    def fake_system_check() -> Dict[str, bool]:
+        return {"os_supported": True, "python_supported": True}
+
+    monkeypatch.setattr(
+        "hueyos.system_checks.system_check", fake_system_check, raising=True
+    )
+
+    exit_code = legacy_cli.main(["system-check", "--json"])
+    assert exit_code == 0
+    assert json.loads(capsys.readouterr().out) == {
+        "os_supported": True,
+        "python_supported": True,
+    }
 
 
 def test_memory_sort_dry_run(tmp_path: Path, capsys):
