@@ -6,8 +6,7 @@
 *                       @DylanLRPollock
 
 # Targeted ownership (more specific paths below)
-/src/huey/api/          @DylanLRPollock
-/src/huey/nano/         @DylanLRPollock
+/src/huey/api.py        @DylanLRPollock
 /docs/                  @DylanLRPollock
 
 # Optional extras you may want (uncomment as needed)
