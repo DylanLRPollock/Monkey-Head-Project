@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import threading
 
@@ -47,6 +48,8 @@ from huey.memory.PY.llm import LLMAdapter, LLMProvider
 from huey.utils.paths import ensure_subdirectory, get_memory_path
 
 from .config_manager import ConfigManager
+
+logger = logging.getLogger(__name__)
 
 
 def _format_bytes(size: float | int | None) -> str:
@@ -156,10 +159,18 @@ def run_ai_tools() -> None:
     root.configure(bg=DARK_BG)
 
     style = ttk.Style(root)
+    style_errors: tuple[type[BaseException], ...] = (
+        RuntimeError,
+        AttributeError,
+        ValueError,
+        TypeError,
+    )
+    if tk is not None and hasattr(tk, "TclError"):
+        style_errors = (*style_errors, tk.TclError)
     try:
         style.theme_use("clam")
-    except Exception:
-        pass
+    except style_errors as exc:
+        logger.debug("Unable to apply ttk theme 'clam': %s", exc)
     style.configure("TNotebook", background=DARK_BG)
     style.configure("TNotebook.Tab", background=ACCENT_PURPLE, foreground=LIGHT_FG)
     style.map(
