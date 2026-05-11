@@ -15,6 +15,7 @@
 # - constraints.txt carries shared anchor pins used by editable installs and extras.
 # - Platform-specific markers remain inline where needed.
 # - pavucontrol remains a Debian/system package, not a pip dependency.
+# - Patched wheel overlays (for example Redis vector-store compatibility) are optional and documented in docs/development/patched-wheels.md.
 # - The attached known-good environment reported: "No broken requirements found."
 #
 # Source basis for this refresh:
