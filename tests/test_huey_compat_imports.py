@@ -32,3 +32,12 @@ def test_console_script_entrypoints_resolve():
 
     assert callable(mapping["huey"].load())
     assert callable(mapping["huey-api"].load())
+
+
+def test_import_api_through_legacy_and_new_paths():
+    legacy = importlib.import_module("huey.api")
+    maintained = importlib.import_module("hueyos.api.app")
+
+    assert legacy.app is maintained.app
+    assert callable(legacy.main)
+    assert callable(maintained.main)
