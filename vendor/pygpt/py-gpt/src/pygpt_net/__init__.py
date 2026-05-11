@@ -20,7 +20,7 @@ import os
 from pathlib import Path
 from typing import Final
 
-__all__ = ["__version__"]
+__all__ = ["__version__", "main"]
 
 __version__ = "2.6.67"
 
@@ -61,3 +61,10 @@ def _ensure_private_nltk_data() -> None:
 
 
 _ensure_private_nltk_data()
+
+
+def main() -> int:
+    """Compatibility CLI entrypoint for pygpt/pyhuey console scripts."""
+
+    print("pygpt-net vendor stub is installed (Monkey-Head-Project / PyHuey compatibility mode).")
+    return 0
