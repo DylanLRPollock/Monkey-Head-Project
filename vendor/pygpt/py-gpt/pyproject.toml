@@ -5,7 +5,17 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pygpt-net"
 version = "0.0.0-local"
-description = "Stub vendor of the py-gpt project for Monkey Head development"
+description = "PyHuey cockpit fork compatibility stub derived from upstream PyGPT (published package name remains pygpt-net)."
 authors = [{name = "Monkey Head Team"}]
 readme = "README.md"
 requires-python = ">=3.11"
+
+[project.urls]
+Homepage = "https://github.com/DylanLRPollock/Monkey-Head-Project"
+Repository = "https://github.com/DylanLRPollock/Monkey-Head-Project"
+"PyHuey Cockpit" = "https://github.com/DylanLRPollock/Monkey-Head-Project/tree/main/integrations/pyhuey"
+"Upstream PyGPT" = "https://github.com/szczyglis-dev/py-gpt"
+
+[project.scripts]
+pygpt = "pygpt_net:main"
+pyhuey = "pygpt_net:main"
