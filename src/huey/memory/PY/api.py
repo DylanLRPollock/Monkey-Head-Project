@@ -806,142 +806,6 @@ async def _sensor_stream(sensor_name: Optional[str]):
         SENSOR_MANAGER.unsubscribe(queue)
 
 
-class ResourceProfileModel(BaseModel):
-    """API schema exposing the scheduler resource hints."""
-
-    cpu: float = Field(0.3, ge=0.0, le=1.0, description="Expected CPU utilisation bias")
-    memory: float = Field(
-        0.2, ge=0.0, le=1.0, description="Expected memory utilisation bias"
-    )
-    battery: float = Field(
-        0.1,
-        ge=0.0,
-        le=1.0,
-        description="Battery drain sensitivity; higher values require higher charge.",
-    )
-    gpu: float = Field(
-        0.0, ge=0.0, le=1.0, description="Relative GPU demand if applicable"
-    )
-
-    def to_profile(self) -> ResourceProfile:
-        return ResourceProfile(
-            cpu=self.cpu,
-            memory=self.memory,
-            battery=self.battery,
-            gpu=self.gpu,
-        )
-
-
-class ResourceSnapshotModel(BaseModel):
-    """Current host health metrics observed during scheduling decisions."""
-
-    timestamp: Optional[float] = None
-    cpu_percent: Optional[float] = None
-    memory_available: Optional[float] = None
-    memory_total: Optional[float] = None
-    battery_percent: Optional[float] = None
-    notes: Optional[str] = None
-
-
-class TaskHistoryEntry(BaseModel):
-    """Chronological log entries captured for each task."""
-
-    timestamp: float
-    status: TaskStatus
-    message: str
-
-
-class TaskResponse(BaseModel):
-    """Serialized representation of a scheduled task."""
-
-    task_id: str
-    command: str
-    priority: int
-    requested_agent: Optional[Agent]
-    assigned_agent: Optional[Agent]
-    status: TaskStatus
-    created_at: float
-    updated_at: float
-    attempts: int
-    result: Optional[Any]
-    error: Optional[str]
-    metadata: Dict[str, Any]
-    resource_profile: ResourceProfileModel
-    snapshot: Optional[ResourceSnapshotModel]
-    history: List[TaskHistoryEntry]
-
-    @classmethod
-    def from_record(cls, record: TaskRecord) -> "TaskResponse":
-        snapshot = None
-        if record.snapshot is not None:
-            snapshot = ResourceSnapshotModel(
-                timestamp=record.snapshot.timestamp,
-                cpu_percent=record.snapshot.cpu_percent,
-                memory_available=record.snapshot.memory_available,
-                memory_total=record.snapshot.memory_total,
-                battery_percent=record.snapshot.battery_percent,
-                notes=record.snapshot.notes,
-            )
-        return cls(
-            task_id=record.task_id,
-            command=record.command,
-            priority=int(record.priority),
-            requested_agent=record.requested_agent,
-            assigned_agent=record.assigned_agent,
-            status=record.status,
-            created_at=record.created_at,
-            updated_at=record.updated_at,
-            attempts=record.attempts,
-            result=record.result,
-            error=record.error,
-            metadata=record.metadata,
-            resource_profile=ResourceProfileModel(
-                cpu=record.resource_profile.cpu,
-                memory=record.resource_profile.memory,
-                battery=record.resource_profile.battery,
-                gpu=record.resource_profile.gpu,
-            ),
-            snapshot=snapshot,
-            history=[
-                TaskHistoryEntry(
-                    timestamp=entry.timestamp,
-                    status=entry.status,
-                    message=entry.message,
-                )
-                for entry in record.history
-            ],
-        )
-
-
-class TaskSubmissionRequest(BaseModel):
-    """Payload for creating a new task via the scheduler."""
-
-    command: str = Field(
-        ..., description="Instruction to execute within the agent context"
-    )
-    priority: TaskPriority = Field(
-        TaskPriority.NORMAL,
-        description="Relative priority for queue ordering; higher values run sooner.",
-    )
-    requested_agent: Optional[Agent] = Field(
-        None, description="Preferred agent when coordination requires affinity"
-    )
-    metadata: Dict[str, Any] = Field(
-        default_factory=dict,
-        description="Arbitrary metadata echoed back in task status queries.",
-    )
-    resource_profile: Optional[ResourceProfileModel] = Field(
-        None,
-        description="Expected resource intensity. Defaults are tuned for general work.",
-    )
-
-
-class TaskListResponse(BaseModel):
-    """Container for multiple tasks."""
-
-    tasks: List[TaskResponse]
-
-
 def _build_system_status() -> SystemStatusResponse:
     """Collect metrics describing the current operating environment."""
 
@@ -1269,84 +1133,24 @@ _register_battery_hooks()
 
 
 from hueyos.api.routers.system import router as system_router
+from hueyos.api.routers.tasks import (
+    cancel_task,
+    get_task,
+    list_tasks_endpoint,
+    router as tasks_router,
+    submit_task,
+)
+from hueyos.services.tasks import (
+    ResourceProfileModel,
+    ResourceSnapshotModel,
+    TaskHistoryEntry,
+    TaskListResponse,
+    TaskResponse,
+    TaskSubmissionRequest,
+)
 
 app.include_router(system_router)
-
-
-@app.post(
-    "/tasks",
-    response_model=TaskResponse,
-    status_code=status.HTTP_202_ACCEPTED,
-    tags=["Task Management"],
-)
-def submit_task(request: TaskSubmissionRequest, http_request: Request) -> TaskResponse:
-    """Submit a task for execution by Spark or Zap."""
-
-    _require_unsafe_task_submission_access(http_request)
-    profile = (
-        request.resource_profile.to_profile()
-        if request.resource_profile is not None
-        else ResourceProfile()
-    )
-    record = SCHEDULER.submit_task(
-        command=request.command,
-        priority=request.priority,
-        requested_agent=request.requested_agent,
-        metadata=dict(request.metadata),
-        resource_profile=profile,
-    )
-    return TaskResponse.from_record(record)
-
-
-@app.get("/tasks", response_model=TaskListResponse, tags=["Task Management"])
-def list_tasks_endpoint(
-    status_filter: Optional[List[TaskStatus]] = Query(
-        None,
-        alias="status",
-        description="Filter results to tasks with the specified status",
-    )
-) -> TaskListResponse:
-    """List known tasks with optional status filters."""
-
-    records = SCHEDULER.list_tasks(status_filter)
-    return TaskListResponse(
-        tasks=[TaskResponse.from_record(record) for record in records]
-    )
-
-
-@app.get(
-    "/tasks/{task_id}",
-    response_model=TaskResponse,
-    tags=["Task Management"],
-)
-def get_task(task_id: str) -> TaskResponse:
-    """Return the scheduler record for a specific task."""
-
-    try:
-        record = SCHEDULER.get_task(task_id)
-    except KeyError as exc:  # pragma: no cover - defensive
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
-        ) from exc
-    return TaskResponse.from_record(record)
-
-
-@app.post(
-    "/tasks/{task_id}/cancel",
-    response_model=TaskResponse,
-    status_code=status.HTTP_202_ACCEPTED,
-    tags=["Task Management"],
-)
-def cancel_task(task_id: str) -> TaskResponse:
-    """Cancel a pending or running task."""
-
-    try:
-        record = SCHEDULER.cancel_task(task_id)
-    except KeyError as exc:  # pragma: no cover - defensive
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
-        ) from exc
-    return TaskResponse.from_record(record)
+app.include_router(tasks_router)
 
 
 @app.get(
