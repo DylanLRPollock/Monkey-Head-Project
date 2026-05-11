@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Pygpt Custom Cli module (huey)
 
-"""Lightweight CLI integration mimicking the legacy PyGPT launcher."""
+"""Lightweight CLI integration mimicking the legacy PyHuey launcher."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from .pygpt_memory import Memory
 
 
 class CustomPyGPT:
-    """A minimal chatbot used when full PyGPT dependencies are unavailable."""
+    """A minimal chatbot used when full PyHuey dependencies are unavailable."""
 
     def __init__(self, prompt_file: str | Path | None = None):
         if prompt_file is None:
@@ -53,7 +53,7 @@ class CustomPyGPT:
     def run_cli(self) -> None:
         """Run an interactive CLI loop suitable for simple testing."""
 
-        print("Custom PyGPT CLI. Type 'exit' to quit.")
+        print("Custom PyHuey CLI. Type 'exit' to quit.")
         user_prompt = input(
             "Enter main prompt or press Enter to use default:\n"
             f"{self.main_prompt}\n> "

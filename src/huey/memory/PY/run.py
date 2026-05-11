@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Run module (huey)
 
-"""Runtime entry points integrating the PyGPT stack with Monkey Head."""
+"""Runtime entry points integrating the PyHuey stack with Monkey Head."""
 
 from __future__ import annotations
 
@@ -67,7 +67,7 @@ def _prepare_pygpt(source: str | None = None) -> bool:
 
 
 def _load_cli(source: str | None = None) -> Callable[..., None]:
-    """Import and return the canonical PyGPT CLI runner.
+    """Import and return the canonical PyHuey CLI runner.
 
     Falls back to :func:`minimal_run` if the CLI cannot be imported due to
     missing dependencies.
@@ -84,14 +84,14 @@ def _load_cli(source: str | None = None) -> Callable[..., None]:
 
 
 def launch_cli(*args, source: str | None = None, **kwargs) -> None:
-    """Launch the PyGPT CLI entry point if available."""
+    """Launch the PyHuey CLI entry point if available."""
 
     cli_run = _load_cli(source)
     cli_run(*args, **kwargs)
 
 
 def launch_gui(source: str | None = None) -> None:
-    """Start the PyGPT GUI with the Monkey Head manager tool enabled."""
+    """Start the PyHuey GUI with the Monkey Head manager tool enabled."""
 
     if not _prepare_pygpt(source):
         raise RuntimeError("pygpt_net package is not available")
@@ -158,7 +158,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "--minimal",
         action="store_true",
-        help="Run lightweight CustomPyGPT CLI",
+        help="Run lightweight CustomPyHuey CLI",
     )
     parser.add_argument(
         "--simple-chat",
