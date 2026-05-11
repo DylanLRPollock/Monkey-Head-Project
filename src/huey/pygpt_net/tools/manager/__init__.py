@@ -7,25 +7,30 @@ from __future__ import annotations
 
 import platform
 import subprocess
+import logging
+import os
 from pathlib import Path
 from typing import Any, Callable, Dict
 
+LOGGER = logging.getLogger(__name__)
+
+
 try:  # pragma: no cover - exercised when the full PyGPT UI is installed
     from pygpt_net.tools.base import BaseTool
-except Exception:  # pragma: no cover - lightweight test/runtime fallback
+except (ImportError, ModuleNotFoundError):  # pragma: no cover - lightweight test/runtime fallback
     class BaseTool:  # type: ignore[no-redef]
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             self.window = kwargs.get("window")
 
 try:  # pragma: no cover - exercised when the full PyGPT UI is installed
     from pygpt_net.utils import trans
-except Exception:  # pragma: no cover - lightweight test/runtime fallback
+except (ImportError, ModuleNotFoundError):  # pragma: no cover - lightweight test/runtime fallback
     def trans(value: str) -> str:  # type: ignore[no-redef]
         return value
 
 try:  # pragma: no cover - exercised when PySide6 is available
     from PySide6.QtGui import QAction
-except Exception:  # pragma: no cover - lightweight test/runtime fallback
+except (ImportError, ModuleNotFoundError):  # pragma: no cover - lightweight test/runtime fallback
     class _Signal:
         def __init__(self) -> None:
             self._callback: Callable[[], None] | None = None
@@ -88,16 +93,31 @@ class MonkeyManager(BaseTool):
 
     def _run_script(self, script: Path | None) -> None:
         if script is None or not script.exists():
-            print(f"Script not found: {script}")
+            LOGGER.error("Script not found: %s", script)
             return
         try:
             if script.suffix == ".bat":
                 cmd = ["cmd", "/c", str(script)]
             else:
                 cmd = ["bash", str(script)]
-            subprocess.run(cmd, check=False)
-        except (OSError, subprocess.CalledProcessError) as exc:
-            print(f"Error running {script}: {exc}")
+            result = subprocess.run(cmd, check=False)
+            if result.returncode != 0:
+                LOGGER.error("Script failed with exit code %s: %s", result.returncode, script)
+        except OSError as exc:
+            LOGGER.exception("Error running script %s: %s", script, exc)
+
+    def _destructive_intent_confirmed(self) -> bool:
+        return os.getenv(self.DESTRUCTIVE_ENV_FLAG, "").strip() == "1"
+
+    def _run_destructive_action(self, action_name: str, callback: Callable[[], None]) -> None:
+        if not self._destructive_intent_confirmed():
+            LOGGER.warning(
+                "Blocked destructive action '%s'; set %s=1 to allow.",
+                action_name,
+                self.DESTRUCTIVE_ENV_FLAG,
+            )
+            return
+        callback()
 
     def _action(self, label: str, callback: Callable[[], None]) -> QAction:
         action = QAction(trans(label), self.window)
@@ -171,10 +191,16 @@ class MonkeyManager(BaseTool):
             "Start Containers", container_management.manage_containers
         )
         actions["monkey.docker.stop"] = self._action(
-            "Stop Containers", container_management.stop_containers
+            "Stop Containers",
+            lambda: self._run_destructive_action(
+                "stop_containers", container_management.stop_containers
+            ),
         )
         actions["monkey.docker.clean"] = self._action(
-            "Cleanup Images", container_management.cleanup_images
+            "Cleanup Images",
+            lambda: self._run_destructive_action(
+                "cleanup_images", container_management.cleanup_images
+            ),
         )
         actions["monkey.docker.volumes"] = self._action(
             "Manage Volumes", container_management.manage_volumes
@@ -186,7 +212,10 @@ class MonkeyManager(BaseTool):
             "Deploy Kubernetes", container_management.deploy_kubernetes
         )
         actions["monkey.k8s.cleanup"] = self._action(
-            "Cleanup Kubernetes", container_management.cleanup_kubernetes
+            "Cleanup Kubernetes",
+            lambda: self._run_destructive_action(
+                "cleanup_kubernetes", container_management.cleanup_kubernetes
+            ),
         )
         actions["monkey.k8s.scale"] = self._action(
             "Scale Deployment",
@@ -194,3 +223,4 @@ class MonkeyManager(BaseTool):
         )
 
         return actions
+    DESTRUCTIVE_ENV_FLAG = "HUEY_TOOL_ALLOW_DESTRUCTIVE"
