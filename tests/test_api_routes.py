@@ -473,6 +473,13 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
         assert exited.json()["state"] == "normal"
 
 
+def test_sensor_network_power_routes_are_registered_via_focused_routers():
+    route_paths = {route.path for route in api_module.app.routes}
+    assert "/sensors" in route_paths
+    assert "/network/status" in route_paths
+    assert "/power/battery" in route_paths
+
+
 class _StubSensorManager:
     def __init__(self) -> None:
         self.registry = object()

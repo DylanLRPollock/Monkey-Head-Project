@@ -1140,6 +1140,9 @@ from hueyos.api.routers.tasks import (
     router as tasks_router,
     submit_task,
 )
+from hueyos.api.routers.network import router as network_router
+from hueyos.api.routers.power import router as power_router
+from hueyos.api.routers.sensors import router as sensors_router
 from hueyos.services.tasks import (
     ResourceProfileModel,
     ResourceSnapshotModel,
@@ -1151,6 +1154,9 @@ from hueyos.services.tasks import (
 
 app.include_router(system_router)
 app.include_router(tasks_router)
+app.include_router(sensors_router)
+app.include_router(network_router)
+app.include_router(power_router)
 
 
 @app.get(
@@ -1164,7 +1170,6 @@ def system_accelerators() -> List[AcceleratorInfoModel]:
     return _collect_accelerator_models(refresh=True)
 
 
-@app.get("/sensors/plugins", response_model=SensorPluginsResponse, tags=["Sensors"])
 def sensor_plugins() -> SensorPluginsResponse:
     """List available sensor plugin identifiers."""
 
@@ -1174,7 +1179,6 @@ def sensor_plugins() -> SensorPluginsResponse:
     return SensorPluginsResponse(plugins=plugins, metadata=metadata)
 
 
-@app.get("/sensors", response_model=SensorListResponse, tags=["Sensors"])
 def list_sensors() -> SensorListResponse:
     """Enumerate configured sensors."""
 
@@ -1191,12 +1195,6 @@ def list_sensors() -> SensorListResponse:
     return SensorListResponse(sensors=metadata)
 
 
-@app.post(
-    "/sensors/register",
-    response_model=SensorRegistrationResponse,
-    status_code=status.HTTP_201_CREATED,
-    tags=["Sensors"],
-)
 def register_sensor(request: SensorRegistrationRequest) -> SensorRegistrationResponse:
     """Register a new sensor plugin instance at runtime."""
 
@@ -1218,7 +1216,6 @@ def register_sensor(request: SensorRegistrationRequest) -> SensorRegistrationRes
     )
 
 
-@app.delete("/sensors/{sensor_name}", tags=["Sensors"])
 def remove_sensor(sensor_name: str) -> Dict[str, str]:
     """Remove a configured sensor instance."""
 
@@ -1230,11 +1227,6 @@ def remove_sensor(sensor_name: str) -> Dict[str, str]:
     return {"status": "removed", "sensor": sensor_name}
 
 
-@app.post(
-    "/sensors/{sensor_name}/poll",
-    response_model=SensorReadingResponse,
-    tags=["Sensors"],
-)
 def poll_sensor(sensor_name: str) -> SensorReadingResponse:
     """Poll a single sensor and store the reading in honeycomb storage."""
 
@@ -1251,7 +1243,6 @@ def poll_sensor(sensor_name: str) -> SensorReadingResponse:
     return _reading_to_response(reading)
 
 
-@app.post("/sensors/poll", response_model=SensorPollAllResponse, tags=["Sensors"])
 def poll_all_sensors() -> SensorPollAllResponse:
     """Poll every configured sensor."""
 
@@ -1259,11 +1250,6 @@ def poll_all_sensors() -> SensorPollAllResponse:
     return SensorPollAllResponse(readings=readings)
 
 
-@app.get(
-    "/sensors/{sensor_name}/history",
-    response_model=SensorHistoryResponse,
-    tags=["Sensors"],
-)
 def sensor_history(
     sensor_name: str,
     limit: int = Query(
@@ -1281,7 +1267,6 @@ def sensor_history(
     return SensorHistoryResponse(sensor=sensor_name, readings=readings)
 
 
-@app.get("/sensors/{sensor_name}/stream", tags=["Sensors"])
 async def stream_sensor(sensor_name: str) -> StreamingResponse:
     """Stream real-time readings for ``sensor_name`` using server-sent events."""
 
@@ -1294,7 +1279,6 @@ async def stream_sensor(sensor_name: str) -> StreamingResponse:
     )
 
 
-@app.get("/sensors/stream", tags=["Sensors"])
 async def stream_all_sensors() -> StreamingResponse:
     """Stream readings for all sensors using server-sent events."""
 
@@ -1378,7 +1362,6 @@ def dashboard(request: Request) -> HTMLResponse:
     return HTMLResponse(content=content)
 
 
-@app.get("/network/status", response_model=NetworkStatusResponse, tags=["Network"])
 def network_status() -> NetworkStatusResponse:
     """Return the most recent network connectivity snapshot."""
 
@@ -1386,7 +1369,6 @@ def network_status() -> NetworkStatusResponse:
     return NetworkStatusResponse(**status_snapshot.__dict__)
 
 
-@app.post("/network/ensure", response_model=NetworkStatusResponse, tags=["Network"])
 def ensure_network_connectivity() -> NetworkStatusResponse:
     """Ensure wired connectivity is preferred with Wi-Fi failover."""
 
@@ -1394,7 +1376,6 @@ def ensure_network_connectivity() -> NetworkStatusResponse:
     return NetworkStatusResponse(**status_snapshot.__dict__)
 
 
-@app.get("/power/battery", response_model=BatteryStatusResponse, tags=["Power"])
 def battery_status() -> BatteryStatusResponse:
     """Expose the current battery status."""
 
@@ -1402,7 +1383,6 @@ def battery_status() -> BatteryStatusResponse:
     return BatteryStatusResponse(**status)
 
 
-@app.get("/power/should-shutdown", tags=["Power"])
 def power_should_shutdown() -> Dict[str, Any]:
     """Return whether the system recommends a safe shutdown."""
 
@@ -1412,7 +1392,6 @@ def power_should_shutdown() -> Dict[str, Any]:
     }
 
 
-@app.post("/power/shutdown", response_model=PowerEventResponse, tags=["Power"])
 def trigger_shutdown() -> PowerEventResponse:
     """Initiate a safe shutdown sequence."""
 
