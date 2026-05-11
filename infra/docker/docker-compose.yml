@@ -50,6 +50,19 @@ services:
       retries: 5
       start_period: 10s
 
+
+  pyhuey-cockpit:
+    <<: *service_defaults
+    build:
+      context: .
+      dockerfile: pyhuey/Dockerfile
+    image: ${PYHUEY_IMAGE:-pyhuey-cockpit:0.1.0}
+    container_name: ${PYHUEY_CONTAINER:-pyhuey-cockpit}
+    command: ["--workdir=/data"]
+    volumes:
+      - ./pyhuey-data:/data
+    profiles: ["cockpit"]
+
   worker:
     <<: *service_defaults
     image: ${HUEY_IMAGE:-hueyos:0.1.0}
