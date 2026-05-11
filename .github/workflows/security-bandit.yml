@@ -13,7 +13,6 @@ on:
 permissions:
   contents: read
 
-
 jobs:
   bandit:
     runs-on: ubuntu-latest
@@ -32,22 +31,24 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install bandit
 
-      - name: Run Bandit (human-readable)
-        run: |
-          bandit -r src tests integrations scripts platform infra apps tools run.py conftest.py \
-            -x "**/.venv/**,**/venv/**,**/env/**,**/__pycache__/**,**/.pytest_cache/**,**/.mypy_cache/**,**/.ruff_cache/**,**/.tox/**,**/build/**,**/dist/**,**/*.egg-info/**,**/vendor/**,**/node_modules/**"
+      - name: Verify baseline exists
+        run: test -f .security/bandit-baseline.json
 
-      - name: Run Bandit (JSON output)
+      - name: Record full Bandit report (debt + new)
         if: always()
         run: |
-          bandit -r src tests integrations scripts platform infra apps tools run.py conftest.py \
-            -x "**/.venv/**,**/venv/**,**/env/**,**/__pycache__/**,**/.pytest_cache/**,**/.mypy_cache/**,**/.ruff_cache/**,**/.tox/**,**/build/**,**/dist/**,**/*.egg-info/**,**/vendor/**,**/node_modules/**" \
-            -f json -o bandit-results.json
+          bandit -r src -f json -o bandit-results-full.json
+
+      - name: Enforce no new medium/high findings
+        run: |
+          bandit -r src -b .security/bandit-baseline.json -ll -ii
 
       - name: Upload Bandit JSON results
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: bandit-results
-          path: bandit-results.json
+          path: |
+            bandit-results-full.json
+            .security/bandit-baseline.json
           if-no-files-found: error
