@@ -7,8 +7,30 @@
 
 from __future__ import annotations
 
-import sys
-
 from .memory.PY import run as _run
 
-sys.modules[__name__] = _run
+# NOTE(v101.1-migration): Compatibility wrapper for the legacy ``huey.run``
+# module while implementation stays in ``src/huey/memory/PY``.
+main = _run.main
+run_module = _run.run_module
+minimal_run = _run.minimal_run
+run_sys_code = _run.run_sys_code
+launch_install_gui = _run.launch_install_gui
+launch_gui = _run.launch_gui
+print_pyhuey_info = _run.print_pyhuey_info
+
+__all__ = [
+    "main",
+    "run_module",
+    "minimal_run",
+    "run_sys_code",
+    "launch_install_gui",
+    "launch_gui",
+    "print_pyhuey_info",
+]
+
+
+def __getattr__(name: str):
+    """Delegate unknown attributes to the legacy runtime module."""
+
+    return getattr(_run, name)
