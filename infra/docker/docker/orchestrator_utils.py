@@ -132,8 +132,13 @@ def ensure_system_requirements(
             if proc.returncode == 0:
                 logger.info("Internet connectivity verified via %s", host)
                 break
-        except Exception as exc:  # pragma: no cover - defensive
-            logger.debug("Ping to %s failed: %s", host, exc)
+        except (
+            OSError,
+            ValueError,
+            subprocess.CalledProcessError,
+            subprocess.TimeoutExpired,
+        ) as exc:  # pragma: no cover - defensive
+            logger.warning("Ping to %s failed: %s", host, exc)
     else:
         raise RuntimeError(
             "Internet connectivity check failed (ping targets exhausted)."
@@ -193,8 +198,13 @@ def enable_services(logger: logging.Logger) -> None:
 
     try:
         run(["sudo", "usermod", "-aG", "docker", os.getlogin()], logger, check=False)
-    except Exception:  # pragma: no cover - best-effort
-        logger.debug("Unable to add current user to docker group.")
+    except (
+        OSError,
+        ValueError,
+        subprocess.CalledProcessError,
+        subprocess.TimeoutExpired,
+    ) as exc:  # pragma: no cover - best-effort
+        logger.warning("Unable to add current user to docker group: %s", exc)
 
 
 def _detect_cpu_flags() -> set[str]:
