@@ -12,6 +12,8 @@ from typing import Iterable, Optional
 
 from .memory.PY import cli as _cli
 
+# NOTE(v101.1-migration): Compatibility wrapper while canonical
+# implementation remains under ``src/huey/memory/PY``.
 main = _cli.main
 
 __all__ = ["main", "parse_arguments", "run_cli", "huey_main"]
