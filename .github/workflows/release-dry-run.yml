@@ -1,0 +1,70 @@
+name: Release Dry Run
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "pyproject.toml"
+      - "setup.py"
+      - "setup.cfg"
+      - "MANIFEST.in"
+      - "requirements*.txt"
+      - "src/**"
+      - ".github/workflows/release-dry-run.yml"
+
+jobs:
+  release-dry-run:
+    name: Build + Install Validation (Py3.13)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install build tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Generate SHA256 checksums
+        run: sha256sum dist/* > dist/SHA256SUMS
+
+      - name: Create fresh virtual environment
+        run: python -m venv .release-dry-run-venv
+
+      - name: Install built wheel in fresh environment
+        shell: bash
+        run: |
+          source .release-dry-run-venv/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install dist/*.whl
+
+      - name: Import smoke checks
+        shell: bash
+        run: |
+          source .release-dry-run-venv/bin/activate
+          python -c "import huey"
+          python -c "import hueyos"
+          python -c "import huey.api"
+
+      - name: Console script smoke checks
+        shell: bash
+        run: |
+          source .release-dry-run-venv/bin/activate
+          huey --help
+          huey-api --help
+
+      - name: Upload release dry run artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-dry-run-dist
+          path: dist/
+          if-no-files-found: error
