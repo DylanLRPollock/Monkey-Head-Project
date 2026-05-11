@@ -1,14 +1,15 @@
-ARG PYTHON_VERSION=3.13.5-bookworm
+ARG PYTHON_VERSION=3.13-bookworm
 FROM python:${PYTHON_VERSION}
 
+ARG HUEY_EXTRAS=""
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    # build tooling for pip packages with C extensions (like PyAudio)
     build-essential pkg-config \
-    # needed for PyAudio build: provides portaudio.h
     portaudio19-dev \
-    # optional but helps with audio backends on Linux
     libasound2-dev libasound2 libasound2-data libasound2-plugins \
-    # Qt / X11 runtime deps (PySide)
     ca-certificates \
     libglib2.0-0 libdbus-1-3 libnss3 \
     libx11-6 libx11-xcb1 libxkbcommon-x11-0 \
@@ -19,13 +20,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1 libegl1 \
  && rm -rf /var/lib/apt/lists/*
 
-RUN python -m pip install --no-cache-dir --upgrade pip \
- && pip install --no-cache-dir pygpt-net==2.0.154
+WORKDIR /app
 
-# (optional) run as non-root at runtime
-RUN useradd -m -u 1000 pygpt && mkdir -p /data && chown -R pygpt:pygpt /data
-USER pygpt
+COPY pyproject.toml README.md /app/
+COPY src /app/src
 
-ENV QT_X11_NO_MITSHM=1
-ENTRYPOINT ["pygpt"]
-CMD ["--workdir=/data"]
+RUN python -m pip install --no-cache-dir --upgrade pip setuptools wheel \
+ && if [ -n "$HUEY_EXTRAS" ]; then \
+      pip install --no-cache-dir ".[${HUEY_EXTRAS}]"; \
+    else \
+      pip install --no-cache-dir .; \
+    fi
+
+RUN useradd -m -u 1000 hueyos \
+ && chown -R hueyos:hueyos /app
+
+USER hueyos
+
+EXPOSE 1995
+
+ENTRYPOINT ["huey-api"]
