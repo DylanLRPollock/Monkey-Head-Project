@@ -974,26 +974,41 @@ This repository is moving toward a cleaner long-term structure.
 
 ## Quick start
 
-### Huey Brain setup direction
+Use the current package/runtime contract from `pyproject.toml` + `Makefile`.
 
-These commands describe the intended shape. Adjust package names to the active Debian environment.
-
+- **Source install path:**
 ```bash
-sudo apt update
-sudo apt install -y git python3 python3-venv python3-pip ffmpeg openssh-server lm-sensors
+cd /workspace/Monkey-Head-Project
+```
+- **Editable install command:**
+```bash
+python3.13 -m pip install -c constraints.txt -e .
+```
+- **Test command:**
+```bash
+python3.13 -m pytest -q
+```
+- **System check command:**
+```bash
+huey system-check --json
+```
+- **API launch command:**
+```bash
+huey-api
+```
+- **Health check command (after API launch):**
+```bash
+curl -fsS http://127.0.0.1:1995/healthz
+```
+- **V1 mock proof-loop command (implemented, CI-safe):**
+```bash
+huey v1-run --mock path/to/fixture.mp3 --log-dir runs
 ```
 
-Create a project workspace:
-
-```bash
-mkdir -p ~/huey/{fixtures,queue,processed,failed,logs,tmp,src}
-cd ~/huey
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-```
-
-Install the selected transcription/API dependencies once the exact implementation package set is chosen.
+Boundary notes:
+- Huey Brain V1 remains the controlled fixture loop only: MP3 fixture → transcription stage → cognition bridge → structured run log.
+- `huey v1-run` currently requires `--mock` unless explicit real providers are wired; this prevents overclaiming live hardware proof.
+- PyHuey stays optional cockpit/tooling (`infra/docker/pyhuey`) and is not the HueyOS/Huey Brain runtime path.
 
 ### iMac ingress check
 
@@ -1004,37 +1019,6 @@ ssh username@192.168.x.x
 ```
 
 Replace `username` and `192.168.x.x` with the Huey Brain user and local network address.
-
-### V1 run shape
-
-Early manual target:
-
-```bash
-huey run fixtures/001_clean.mp3
-```
-
-Steady V1 target:
-
-```text
-drop controlled fixture into queue → Huey Brain processes sequentially → structured log appears
-```
-
-Expected output shape:
-
-```text
-Huey Brain V1
-source: fixtures/001_clean.mp3
-transcription: faster-whisper medium.en-int8
-
-transcript:
-...
-
-response:
-...
-
-log:
-logs/run-YYYYMMDD-HHMMSS.json
-```
 
 ### Build documentation locally
 
