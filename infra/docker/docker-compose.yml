@@ -23,6 +23,7 @@ services:
         HUEY_EXTRAS: ${HUEY_BUILD_EXTRAS:-ml,data,cloud}
     image: ${HUEY_IMAGE:-hueyos:0.1.0}
     container_name: ${HUEY_API_CONTAINER:-hueyos-api}
+    command: ["huey-api"]
     env_file:
       - ${HUEY_ENV_FILE:-huey.env.example}
     environment:
