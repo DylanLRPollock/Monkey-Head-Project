@@ -61,3 +61,20 @@ def register_runtime_commands(subparsers: argparse._SubParsersAction[argparse.Ar
     agent_cmd.add_argument("--json", action="store_true", help="Emit the status payload as JSON.")
     agent_cmd.add_argument("--verbose", action="store_true", help="Include details for each tracked task in the output.")
     agent_cmd.set_defaults(handler=_legacy_handler("_cmd_agent_status"))
+
+    v1_run_cmd = subparsers.add_parser(
+        "v1-run",
+        help="Run the CI-safe V1 proof loop against an audio fixture.",
+    )
+    v1_run_cmd.add_argument("audio_file", help="Path to the audio fixture (for example fixture.mp3).")
+    v1_run_cmd.add_argument(
+        "--mock",
+        action="store_true",
+        help="Use fake transcription/cognition providers (CI-safe default path).",
+    )
+    v1_run_cmd.add_argument(
+        "--log-dir",
+        default=None,
+        help="Directory for run artifacts. Defaults to ./runs.",
+    )
+    v1_run_cmd.set_defaults(handler=_legacy_handler("_cmd_v1_run"))
