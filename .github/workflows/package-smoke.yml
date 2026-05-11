@@ -1,0 +1,63 @@
+name: Package Smoke
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  package-smoke:
+    name: Build + Install Smoke (Py3.13)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install build tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Create fresh virtual environment
+        run: python -m venv .pkg-smoke-venv
+
+      - name: Install built wheel in fresh environment
+        shell: bash
+        run: |
+          source .pkg-smoke-venv/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install dist/*.whl
+
+      - name: Import smoke checks
+        shell: bash
+        run: |
+          source .pkg-smoke-venv/bin/activate
+          python -c "import huey"
+          python -c "import hueyos"
+          python -c "import huey.api"
+
+      - name: Console script smoke checks
+        shell: bash
+        run: |
+          source .pkg-smoke-venv/bin/activate
+          huey --help
+          huey-api --help
+
+      - name: Upload dist artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-dist-artifacts
+          path: dist/
