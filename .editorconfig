@@ -13,7 +13,7 @@ indent_style = space
 indent_size = 4
 
 # Advisory. Not a core EditorConfig key, but respected by many IDEs/linters.
-max_line_length = 100
+max_line_length = 88
 
 ########################################
 # Documentation and prose
