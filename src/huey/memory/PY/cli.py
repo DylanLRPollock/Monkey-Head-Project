@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shutil
 import subprocess
@@ -321,6 +322,49 @@ def _cmd_memory_sort(args: argparse.Namespace) -> int:
             print(f"Skipped {len(summary['skipped'])} file(s):")
             for item in summary["skipped"]:
                 print(f"  - {item}")
+    return 0
+
+
+def _cmd_v1_run(args: argparse.Namespace) -> int:
+    from hueyos.runtime.v1_loop import run_v1_loop
+
+    if not args.mock:
+        raise RuntimeError(
+            "Real transcription/cognition providers are disabled by default. "
+            "Use --mock or explicitly wire configured providers."
+        )
+
+    source_file = Path(args.audio_file).expanduser().resolve()
+    if not source_file.exists():
+        raise RuntimeError(f"Audio fixture not found: {source_file}")
+
+    log_dir = Path(args.log_dir).expanduser().resolve() if args.log_dir else Path("runs").resolve()
+    log_dir.mkdir(parents=True, exist_ok=True)
+    log_path = log_dir / "v1-run.jsonl"
+
+    def _mock_transcribe(_source_file: str) -> dict[str, str]:
+        return {
+            "transcription_engine": "mock-transcriber",
+            "transcription_model": "mock-whisper-v1",
+            "transcript": "mock transcript from fixture",
+        }
+
+    def _mock_cognition(transcript: str) -> dict[str, Any]:
+        return {
+            "cognition_provider": "mock-cognition",
+            "cognition_model": "mock-cognition-v1",
+            "response": {
+                "status": "ok",
+                "summary": f"processed {len(transcript)} chars",
+            },
+        }
+
+    def _append_jsonl(record: dict[str, Any]) -> None:
+        with log_path.open("a", encoding="utf-8") as file_obj:
+            file_obj.write(json.dumps(record, sort_keys=True) + "\n")
+
+    record = run_v1_loop(source_file, _mock_transcribe, _mock_cognition, _append_jsonl)
+    print(json.dumps({"log_file": str(log_path), "run_id": record["run_id"]}, sort_keys=True))
     return 0
 
 

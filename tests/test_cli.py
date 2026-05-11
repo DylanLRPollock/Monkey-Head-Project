@@ -176,3 +176,38 @@ def test_deploy_dry_run_prints_expected_commands(tmp_path: Path, monkeypatch, ca
     captured = capsys.readouterr().out.splitlines()
     assert any(line.startswith("[dry-run] docker compose -f") for line in captured)
     assert any(line.startswith("[dry-run] kubectl apply -f") for line in captured)
+
+
+def test_v1_run_mock_writes_structured_log(tmp_path: Path, capsys):
+    fixture = tmp_path / "fixture.mp3"
+    fixture.write_bytes(b"fake-mp3")
+    log_dir = tmp_path / "logs"
+
+    exit_code = cli.main(["v1-run", str(fixture), "--mock", "--log-dir", str(log_dir)])
+
+    assert exit_code == 0
+    output = json.loads(capsys.readouterr().out)
+    log_file = Path(output["log_file"])
+    assert log_file.exists()
+    lines = log_file.read_text(encoding="utf-8").strip().splitlines()
+    assert len(lines) == 1
+
+    record = json.loads(lines[0])
+    required = {
+        "run_id",
+        "timestamp_start",
+        "timestamp_end",
+        "source_file",
+        "transcription_engine",
+        "transcription_model",
+        "transcript",
+        "cognition_provider",
+        "cognition_model",
+        "response",
+        "runtime_seconds",
+        "exit_status",
+        "error_message_if_any",
+    }
+    assert required.issubset(record.keys())
+    assert record["source_file"] == str(fixture.resolve())
+    assert record["exit_status"] == "success"
