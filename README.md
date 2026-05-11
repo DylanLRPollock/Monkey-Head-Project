@@ -1036,6 +1036,18 @@ log:
 logs/run-YYYYMMDD-HHMMSS.json
 ```
 
+### Build documentation locally
+
+Use the docs-only dependency set (no full PyHuey GUI/runtime stack required):
+
+```bash
+python3.13 -m venv .venv-docs
+source .venv-docs/bin/activate
+python -m pip install --upgrade pip
+pip install -r docs/requirements.txt
+sphinx-build -b html docs docs/_build/html -W --keep-going
+```
+
 ### Local developer security check
 
 Run the local helper script before opening a PR:
