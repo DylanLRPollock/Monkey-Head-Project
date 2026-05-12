@@ -11,7 +11,7 @@ PORT ?= 1995
 APP ?= huey.api:app
 PKG_COV ?= --cov=huey --cov=hueyos
 
-.PHONY: help setup install install-dev precommit-install format lint test coverage run run-reload health
+.PHONY: help setup install install-dev precommit-install format lint check-drift test coverage run run-reload health
 
 help:
 	@echo "Common targets:"
@@ -20,7 +20,8 @@ help:
 	@echo "  make install-dev      - install developer extras with constraints"
 	@echo "  make precommit-install- install git hooks"
 	@echo "  make format           - run black + isort"
-	@echo "  make lint             - run black/isort/ruff/flake8"
+	@echo "  make lint             - run drift checks + black/isort/ruff/flake8"
+	@echo "  make check-drift      - run repository drift checker"
 	@echo "  make test             - run pytest"
 	@echo "  make coverage         - run pytest with coverage for huey + hueyos"
 	@echo "  make run              - run FastAPI app via uvicorn"
@@ -45,10 +46,14 @@ format:
 
 lint:
 	$(PYTHON) scripts/check_stale_platform_strings.py
+	$(PYTHON) scripts/check_repo_drift.py
 	black --check src tests conftest.py
 	isort --check-only src tests conftest.py
 	ruff check src tests conftest.py
 	flake8 src tests conftest.py
+
+check-drift:
+	$(PYTHON) scripts/check_repo_drift.py
 
 test:
 	$(PYTHON) -m pytest -q

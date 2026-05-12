@@ -46,6 +46,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
+      - name: Run drift checker
+        run: make check-drift
+
       - name: Run linters
         run: make lint
 
