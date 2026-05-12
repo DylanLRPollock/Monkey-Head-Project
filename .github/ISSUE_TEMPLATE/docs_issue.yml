@@ -1,0 +1,34 @@
+name: Documentation issue
+description: Report missing, unclear, or incorrect documentation.
+title: "[Docs]: "
+labels:
+  - documentation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve documentation.
+
+        **Security note:** Security vulnerabilities must be reported privately, not as public issues. See [SECURITY.md](../../SECURITY.md).
+  - type: input
+    id: docs_location
+    attributes:
+      label: Documentation location
+      description: Which file/page/section is affected?
+      placeholder: "README.md section 'Installation'"
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is wrong or missing?
+      description: Describe the docs issue clearly.
+    validations:
+      required: true
+  - type: textarea
+    id: suggested_fix
+    attributes:
+      label: Suggested fix
+      description: What should the docs say instead?
+    validations:
+      required: false
