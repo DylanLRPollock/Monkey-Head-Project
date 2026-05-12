@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability report
+    url: https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/SECURITY.md
+    about: Report security vulnerabilities privately via the process described in SECURITY.md.
