@@ -27,7 +27,7 @@ services:
     env_file:
       - ${HUEY_ENV_FILE:-huey.env.example}
     environment:
-      HUEY_HOST: ${HUEY_HOST:-0.0.0.0}
+      HUEY_HOST: ${HUEY_HOST:-127.0.0.1}
       HUEY_PORT: ${HUEY_PORT:-1995}
       HUEY_CONFIG_DIR: /app/config
       HUEY_MEMORY_DIR: /app/memory
@@ -36,6 +36,7 @@ services:
       - ./memory:/app/memory
     ports:
       # Dev-safe default: publish to loopback only.
+      # WARNING: setting HUEY_BIND_ADDR=0.0.0.0 exposes the API to your LAN.
       # Remote access patterns (opt-in): SSH tunnel, authenticated reverse
       # proxy, or TLS + auth before any non-local exposure.
       - "${HUEY_BIND_ADDR:-127.0.0.1}:${HUEY_PORT:-1995}:1995"
