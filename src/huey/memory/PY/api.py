@@ -294,6 +294,29 @@ def _require_privileged_surface_access(request: Request) -> None:
     )
 
 
+def require_strong_api_auth(request: Request) -> None:
+    """Require explicit bearer-token authentication for dangerous endpoints."""
+
+    expected_token = _configured_api_token()
+    if not expected_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="API token authentication is required for this endpoint",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    scheme, _, supplied_token = request.headers.get("authorization", "").partition(" ")
+    if scheme.lower() != "bearer" or not hmac.compare_digest(
+        supplied_token,
+        expected_token,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing or invalid API token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
 def _require_unsafe_task_submission_access(request: Request) -> None:
     """Enforce defensive gating for free-form task submission surfaces.
 
@@ -1523,9 +1546,10 @@ def locate_pdf(
     status_code=status.HTTP_202_ACCEPTED,
     tags=["Memory"],
 )
-def auto_sort(request: AutoSortRequest) -> AutoSortResponse:
+def auto_sort(request: AutoSortRequest, http_request: Request) -> AutoSortResponse:
     """Trigger automated organisation of files in the HueyOS memory directory."""
 
+    require_strong_api_auth(http_request)
     try:
         summary = auto_sort_memory(
             source_dir=request.source_dir,
@@ -1662,9 +1686,12 @@ def emergency_status() -> EmergencyStatusResponse:
     response_model=EmergencyStatusResponse,
     tags=["Governance"],
 )
-def enter_emergency_mode(request: EmergencyModeRequest) -> EmergencyStatusResponse:
+def enter_emergency_mode(
+    request: EmergencyModeRequest, http_request: Request
+) -> EmergencyStatusResponse:
     """Enter emergency mode after validating approvals."""
 
+    require_strong_api_auth(http_request)
     try:
         EMERGENCY_CONTROLLER.enter_emergency_mode(
             triggered_by=request.triggered_by,
@@ -1687,9 +1714,12 @@ def enter_emergency_mode(request: EmergencyModeRequest) -> EmergencyStatusRespon
     response_model=EmergencyStatusResponse,
     tags=["Governance"],
 )
-def exit_emergency_mode(request: EmergencyExitRequest) -> EmergencyStatusResponse:
+def exit_emergency_mode(
+    request: EmergencyExitRequest, http_request: Request
+) -> EmergencyStatusResponse:
     """Exit emergency mode when sufficient approvals are provided."""
 
+    require_strong_api_auth(http_request)
     try:
         EMERGENCY_CONTROLLER.exit_emergency_mode(
             requested_by=request.requested_by,
@@ -1706,9 +1736,12 @@ def exit_emergency_mode(request: EmergencyExitRequest) -> EmergencyStatusRespons
     "/governance/emergency/action",
     tags=["Governance"],
 )
-def emergency_authorised_action(request: EmergencyActionRequest) -> Dict[str, str]:
+def emergency_authorised_action(
+    request: EmergencyActionRequest, http_request: Request
+) -> Dict[str, str]:
     """Validate that an emergency action has dual authorisation."""
 
+    require_strong_api_auth(http_request)
     try:
         EMERGENCY_CONTROLLER.request_authorised_action(
             actor=request.actor,
