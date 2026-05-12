@@ -1010,6 +1010,42 @@ Boundary notes:
 - `huey v1-run` currently requires `--mock` unless explicit real providers are wired; this prevents overclaiming live hardware proof.
 - PyHuey stays optional cockpit/tooling (`infra/docker/pyhuey`) and is not the HueyOS/Huey Brain runtime path.
 
+### API deployment policy (safe defaults)
+
+HueyOS API is designed for **local-first operation**. Public internet exposure is **unsupported** for V1 and should be treated as unsafe unless you add your own authenticated/TLS gateway and host-level controls.
+
+- **Default bind policy:** keep API listen/bind on localhost (`127.0.0.1`).
+- **Trusted LAN exception (opt-in):** only bind beyond localhost when you intentionally expose to a trusted private network segment.
+- **Never expose directly to WAN:** do not publish `1995` directly on a public IP.
+
+Environment guidance for Docker/Compose:
+
+- `HUEY_HOST` controls the in-container API bind host. Recommended default: `127.0.0.1`.
+- `HUEY_PORT` controls the API port (default `1995`).
+- `HUEY_BIND_ADDR` controls host-side publish address in Compose. Keep `127.0.0.1` unless you intentionally need trusted-LAN access.
+
+Example (safe local default):
+
+```env
+HUEY_HOST=127.0.0.1
+HUEY_PORT=1995
+HUEY_BIND_ADDR=127.0.0.1
+```
+
+Example (trusted LAN opt-in, not internet):
+
+```env
+HUEY_HOST=0.0.0.0
+HUEY_PORT=1995
+HUEY_BIND_ADDR=0.0.0.0
+```
+
+Firewall guidance (required when non-local bind is used):
+
+- Allow inbound `tcp/1995` only from explicit trusted CIDRs (for example, `192.168.0.0/16` or a single admin host).
+- Deny all public/WAN sources to `tcp/1995`.
+- Prefer SSH tunneling or an authenticated reverse proxy with TLS over direct exposure.
+
 ### iMac ingress check
 
 From WSL Debian on the iMac:
