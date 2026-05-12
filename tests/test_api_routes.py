@@ -120,6 +120,14 @@ def test_api_startup_fails_with_placeholder_token_in_non_development_env(monkeyp
         importlib.reload(api_module)
 
 
+def test_api_startup_fails_with_example_token_in_non_development_env(monkeypatch):
+    monkeypatch.setenv("HUEY_ENV", "production")
+    monkeypatch.setenv("HUEY_API_TOKEN", "replace-with-a-strong-secret-token")
+
+    with pytest.raises(RuntimeError, match="HUEY_API_TOKEN must be set"):
+        importlib.reload(api_module)
+
+
 def test_api_startup_allows_missing_token_in_development_env(monkeypatch):
     monkeypatch.setenv("HUEY_ENV", "development")
     monkeypatch.delenv("HUEY_API_TOKEN", raising=False)

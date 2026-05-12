@@ -249,6 +249,7 @@ _TOKEN_PLACEHOLDER_VALUES = {
     "changeme",
     "change-me",
     "replace-me",
+    "replace-with-a-strong-secret-token",
     "replace_this",
     "replace-this",
     "placeholder",
