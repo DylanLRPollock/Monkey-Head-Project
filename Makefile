@@ -11,7 +11,7 @@ PORT ?= 1995
 APP ?= huey.api:app
 PKG_COV ?= --cov=huey --cov=hueyos
 
-.PHONY: help setup install install-dev precommit-install format lint check-drift check-deps-sync test coverage run run-reload health
+.PHONY: help setup install install-dev precommit-install format lint check-drift check-canon check-deps-sync test coverage run run-reload health
 
 help:
 	@echo "Common targets:"
@@ -55,6 +55,9 @@ lint:
 
 check-drift:
 	$(PYTHON) scripts/check_repo_drift.py
+
+check-canon:
+	$(PYTHON) scripts/check_canon_terms.py
 
 check-deps-sync:
 	$(PYTHON) scripts/check_dependency_sync.py
