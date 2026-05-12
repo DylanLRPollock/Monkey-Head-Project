@@ -211,3 +211,57 @@ def test_v1_run_mock_writes_structured_log(tmp_path: Path, capsys):
     assert required.issubset(record.keys())
     assert record["source_file"] == str(fixture.resolve())
     assert record["exit_status"] == "success"
+
+
+def test_v1_run_queue_mock_processes_sorted_and_handles_failures(tmp_path: Path, capsys):
+    queue_dir = tmp_path / "queue"
+    queue_dir.mkdir()
+    log_dir = tmp_path / "logs"
+
+    (queue_dir / "b-fixture.mp3").write_bytes(b"b")
+    (queue_dir / "a-fixture.mp3").write_bytes(b"a")
+    (queue_dir / "fail-fixture.mp3").write_bytes(b"f")
+    (queue_dir / "skip.partial").write_bytes(b"x")
+    (queue_dir / "skip.tmp").write_bytes(b"x")
+
+    exit_code = cli.main(
+        [
+            "v1-run-queue",
+            "--mock",
+            "--queue-dir",
+            str(queue_dir),
+            "--log-dir",
+            str(log_dir),
+        ]
+    )
+
+    assert exit_code == 0
+    output = json.loads(capsys.readouterr().out)
+    assert output["total"] == 3
+    assert output["processed"] == 2
+    assert output["failed"] == 1
+
+    processed_dir = queue_dir / "processed"
+    assert (processed_dir / "a-fixture.mp3").exists()
+    assert (processed_dir / "b-fixture.mp3").exists()
+    assert (queue_dir / "fail-fixture.mp3").exists()
+    assert (queue_dir / "skip.partial").exists()
+    assert (queue_dir / "skip.tmp").exists()
+
+    log_files = sorted(log_dir.glob("*.json"))
+    assert [path.name for path in log_files] == [
+        "a-fixture.mp3.json",
+        "b-fixture.mp3.json",
+        "fail-fixture.mp3.json",
+    ]
+
+    run_records = [json.loads(path.read_text(encoding="utf-8")) for path in log_files]
+    assert [Path(record["source_file"]).name for record in run_records] == [
+        "a-fixture.mp3",
+        "b-fixture.mp3",
+        "fail-fixture.mp3",
+    ]
+    assert run_records[0]["exit_status"] == "success"
+    assert run_records[1]["exit_status"] == "success"
+    assert run_records[2]["exit_status"] == "error"
+    assert run_records[2]["error_message_if_any"] == "mock fixture failure"

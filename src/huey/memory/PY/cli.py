@@ -368,6 +368,85 @@ def _cmd_v1_run(args: argparse.Namespace) -> int:
     return 0
 
 
+
+def _cmd_v1_run_queue(args: argparse.Namespace) -> int:
+    from hueyos.runtime.v1_loop import run_v1_loop
+
+    if not args.mock:
+        raise RuntimeError(
+            "Real transcription/cognition providers are disabled by default. "
+            "Use --mock or explicitly wire configured providers."
+        )
+
+    queue_dir = Path(args.queue_dir).expanduser().resolve()
+    if not queue_dir.exists() or not queue_dir.is_dir():
+        raise RuntimeError(f"Queue directory not found: {queue_dir}")
+
+    log_dir = Path(args.log_dir).expanduser().resolve()
+    log_dir.mkdir(parents=True, exist_ok=True)
+    processed_dir = queue_dir / "processed"
+    processed_dir.mkdir(parents=True, exist_ok=True)
+
+    fixtures = sorted(
+        [
+            path
+            for path in queue_dir.iterdir()
+            if path.is_file()
+            and path.suffix.lower() not in {".partial", ".tmp"}
+        ],
+        key=lambda path: path.name,
+    )
+
+    def _mock_transcribe(source_file: str) -> dict[str, str]:
+        if Path(source_file).stem.lower().startswith("fail"):
+            raise RuntimeError("mock fixture failure")
+        return {
+            "transcription_engine": "mock-transcriber",
+            "transcription_model": "mock-whisper-v1",
+            "transcript": f"mock transcript from {Path(source_file).name}",
+        }
+
+    def _mock_cognition(transcript: str) -> dict[str, Any]:
+        return {
+            "cognition_provider": "mock-cognition",
+            "cognition_model": "mock-cognition-v1",
+            "response": {
+                "status": "ok",
+                "summary": f"processed {len(transcript)} chars",
+            },
+        }
+
+    processed_count = 0
+    failed_count = 0
+    for fixture in fixtures:
+        log_path = log_dir / f"{fixture.name}.json"
+
+        def _write_json(record: dict[str, Any], target: Path = log_path) -> None:
+            with target.open("w", encoding="utf-8") as file_obj:
+                json.dump(record, file_obj, sort_keys=True)
+
+        record = run_v1_loop(fixture, _mock_transcribe, _mock_cognition, _write_json)
+        if record["exit_status"] == "success":
+            fixture.rename(processed_dir / fixture.name)
+            processed_count += 1
+        else:
+            failed_count += 1
+
+    print(
+        json.dumps(
+            {
+                "queue_dir": str(queue_dir),
+                "log_dir": str(log_dir),
+                "processed_dir": str(processed_dir),
+                "total": len(fixtures),
+                "processed": processed_count,
+                "failed": failed_count,
+            },
+            sort_keys=True,
+        )
+    )
+    return 0
+
 def main(argv: Iterable[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(list(argv) if argv is not None else None)

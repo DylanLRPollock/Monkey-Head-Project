@@ -78,3 +78,24 @@ def register_runtime_commands(subparsers: argparse._SubParsersAction[argparse.Ar
         help="Directory for run artifacts. Defaults to ./runs.",
     )
     v1_run_cmd.set_defaults(handler=_legacy_handler("_cmd_v1_run"))
+
+    v1_run_queue_cmd = subparsers.add_parser(
+        "v1-run-queue",
+        help="Run the CI-safe V1 proof loop across queued audio fixtures.",
+    )
+    v1_run_queue_cmd.add_argument(
+        "--mock",
+        action="store_true",
+        help="Use fake transcription/cognition providers (CI-safe default path).",
+    )
+    v1_run_queue_cmd.add_argument(
+        "--queue-dir",
+        required=True,
+        help="Directory containing queued fixtures.",
+    )
+    v1_run_queue_cmd.add_argument(
+        "--log-dir",
+        required=True,
+        help="Directory for per-fixture structured logs.",
+    )
+    v1_run_queue_cmd.set_defaults(handler=_legacy_handler("_cmd_v1_run_queue"))
