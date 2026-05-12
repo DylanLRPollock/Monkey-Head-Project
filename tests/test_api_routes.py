@@ -357,6 +357,9 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
     from hueyos.network.manager import NetworkStatus
     from hueyos.power.management import PowerEvent
 
+    monkeypatch.setenv("HUEY_API_TOKEN", "test-token")
+    auth_headers = {"Authorization": "Bearer test-token"}
+
     storage = HoneycombStorage(base_dir=tmp_path)
     registry = SensorRegistry()
     drivers.register_builtin_sensors(registry)
@@ -443,7 +446,7 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
         assert net_status.status_code == 200
         assert net_status.json()["active_interface"] == "eth0"
 
-        net_ensure = await client.post("/network/ensure")
+        net_ensure = await client.post("/network/ensure", headers=auth_headers)
         assert net_ensure.status_code == 200
 
         battery = await client.get("/power/battery")
@@ -454,13 +457,14 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
         assert should_shutdown.status_code == 200
         assert should_shutdown.json()["should_shutdown"] is False
 
-        shutdown = await client.post("/power/shutdown")
+        shutdown = await client.post("/power/shutdown", headers=auth_headers)
         assert shutdown.status_code == 200
         assert shutdown.json()["metadata"]["initiated"] is True
 
         authorised = await client.post(
             "/governance/emergency/action",
             json={"actor": "spark", "approvals": ["zap"], "action": "shed-load"},
+            headers=auth_headers,
         )
         assert authorised.status_code == 200
         assert authorised.json()["status"] == "authorised"
@@ -468,9 +472,41 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
         exited = await client.post(
             "/governance/emergency/exit",
             json={"requested_by": "spark", "approvals": ["zap"]},
+            headers=auth_headers,
         )
         assert exited.status_code == 200
         assert exited.json()["state"] == "normal"
+
+
+@pytest.mark.asyncio
+async def test_dangerous_endpoints_reject_unauthenticated_access(monkeypatch):
+    monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        task_submit = await client.post("/tasks", json={"command": "calibrate"})
+        network_ensure = await client.post("/network/ensure")
+        power_shutdown = await client.post("/power/shutdown")
+        emergency_enter = await client.post(
+            "/governance/emergency/enter",
+            json={"triggered_by": "spark", "reason": "test", "approvals": ["zap"]},
+        )
+        emergency_exit = await client.post(
+            "/governance/emergency/exit",
+            json={"requested_by": "spark", "approvals": ["zap"]},
+        )
+        emergency_action = await client.post(
+            "/governance/emergency/action",
+            json={"actor": "spark", "approvals": ["zap"], "action": "shed-load"},
+        )
+        memory_auto_sort = await client.post("/memory/auto-sort", json={})
+
+    assert task_submit.status_code == 401
+    assert network_ensure.status_code == 401
+    assert power_shutdown.status_code == 401
+    assert emergency_enter.status_code == 401
+    assert emergency_exit.status_code == 401
+    assert emergency_action.status_code == 401
+    assert memory_auto_sort.status_code == 401
 
 
 def test_sensor_network_power_routes_are_registered_via_focused_routers():

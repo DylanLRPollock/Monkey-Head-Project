@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 
 router = APIRouter(tags=["Network"])
 
@@ -15,9 +15,10 @@ def network_status():
 
 
 @router.post("/network/ensure")
-def ensure_network_connectivity():
+def ensure_network_connectivity(request: Request):
     from huey.memory.PY import api as legacy_api
 
+    legacy_api.require_strong_api_auth(request)
     return legacy_api.ensure_network_connectivity()
 
 

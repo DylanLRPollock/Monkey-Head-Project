@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 
 router = APIRouter(tags=["Power"])
 
@@ -22,9 +22,10 @@ def power_should_shutdown():
 
 
 @router.post("/power/shutdown")
-def trigger_shutdown():
+def trigger_shutdown(request: Request):
     from huey.memory.PY import api as legacy_api
 
+    legacy_api.require_strong_api_auth(request)
     return legacy_api.trigger_shutdown()
 
 
