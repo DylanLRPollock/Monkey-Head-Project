@@ -44,9 +44,9 @@ dependencies = [
   "pydantic==2.13.4",
   "pydantic-settings==2.14.1",
   "PyYAML==6.0.3",
-  "python-multipart==0.0.27",
-  "requests==2.33.1",
-  "sse-starlette==3.4.2",
+  "python-multipart==0.0.28",
+  "requests==2.34.0",
+  "sse-starlette==3.4.4",
   "starlette==1.0.0",
   "typing-extensions==4.15.0",
   "uvicorn[standard]==0.46.0; sys_platform != 'emscripten'",
@@ -62,7 +62,7 @@ ml = [
   "accelerate==1.13.0",
   "aiohappyeyeballs==2.6.1",
   "aiosignal==1.4.0",
-  "anthropic[bedrock,vertex]==0.100.0",
+  "anthropic[bedrock,vertex]==0.101.0",
   "audioop-lts==0.2.2; python_version >= '3.13' and python_version < '3.15'",
   "faster-whisper==1.2.1",
   "google-ai-generativelanguage==0.11.0",
@@ -111,7 +111,7 @@ ml = [
   "ollama==0.6.2",
   "onnxruntime==1.26.0",
   "openai==2.36.0",
-  "openai-agents==0.17.0",
+  "openai-agents==0.17.2",
   "pillow==12.2.0",
   "pygpt-net==2.7.12",
   "safetensors==0.7.0",
@@ -133,12 +133,12 @@ data = [
   "elastic-transport==9.4.0",
   "elasticsearch==9.4.0",
   "faiss-cpu==1.13.2; sys_platform != 'win32'",
-  "pandas==3.0.2",
+  "pandas==3.0.3",
   "pinecone==9.0.0",
   "pinecone-client==6.0.0",
   "pinecone-plugin-assistant==3.0.3",
   "pinecone-plugin-interface==0.0.7",
-  "qdrant-client==1.17.1",
+  "qdrant-client==1.18.0",
   "weaviate-client==4.21.0",
 ]
 
@@ -147,7 +147,7 @@ cloud = [
   "azure-identity==1.25.3",
   "boto3==1.43.6",
   "botocore==1.43.6",
-  "google-cloud-aiplatform==1.151.0",
+  "google-cloud-aiplatform==1.152.0",
   "google-cloud-storage==3.10.1",
   "s3transfer==0.17.0",
 ]
@@ -175,7 +175,7 @@ dev = [
   "ruff==0.15.12",
   "types-PyYAML==6.0.12.20250915",
   "types-requests==2.33.0.20260508",
-  "uv==0.11.12",
+  "uv==0.11.14",
 ]
 
 audio = [
