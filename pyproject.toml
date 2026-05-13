@@ -165,7 +165,7 @@ dev = [
   "httpx==0.28.1",
   "ipython==9.13.0",
   "isort==8.0.1",
-  "mypy==1.20.2",
+  "mypy==2.1.0",
   "pip-tools==7.5.3",
   "pre-commit==4.6.0",
   "pytest==9.0.3",
