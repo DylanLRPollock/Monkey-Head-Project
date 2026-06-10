@@ -13,35 +13,35 @@
 #   >=3.13,<3.15
 
 # --- Packaging / installer toolchain ---
-pip==26.1.1
+pip==26.1.2
 setuptools==82.0.1
 wheel==0.47.0
-uv==0.11.12
+uv==0.11.19
 
 # --- Core API / runtime anchors ---
-fastapi==0.136.1
-starlette==1.0.0
-uvicorn[standard]==0.46.0
+fastapi==0.136.3
+starlette==1.2.1
+uvicorn[standard]==0.49.0
 pydantic==2.13.4
 pydantic-settings==2.14.1
 orjson==3.11.9
 aiosqlite==0.22.1
-cryptography==48.0.0
+cryptography==48.0.1
 
 # --- Local model / orchestration anchors ---
 ollama==0.6.2
 pygpt-net==2.7.12
 faster-whisper==1.2.1
-transformers==5.8.0
-torch==2.11.0
+transformers==5.10.2
+torch==2.12.0
 torchaudio==2.11.0
-torchvision==0.26.0
+torchvision==0.27.0
 
 # --- Developer / QA anchors ---
 pytest==9.0.3
 pytest-cov==7.1.0
-ruff==0.15.12
-black==26.3.1
+ruff==0.15.16
+black==26.5.1
 isort==8.0.1
 mypy==1.20.2
 pre-commit==4.6.0
