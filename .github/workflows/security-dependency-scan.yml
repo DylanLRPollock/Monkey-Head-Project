@@ -32,11 +32,15 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install pip-audit
 
+      - name: Prepare requirements for pip-audit
+        run: |
+          grep -vE '^\\s*-c\\s+' requirements.txt > audit-requirements.txt
+
       - name: Run pip-audit (human-readable)
-        run: pip-audit -r requirements.txt
+        run: pip-audit -r audit-requirements.txt
 
       - name: Run pip-audit (JSON output)
-        run: pip-audit -r requirements.txt --format json --output pip-audit-results.json
+        run: pip-audit -r audit-requirements.txt --format json --output pip-audit-results.json
 
       - name: Upload pip-audit results
         if: always()
