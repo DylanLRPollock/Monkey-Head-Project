@@ -10,7 +10,6 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, models, transforms
 
-
 WEIGHTS_REGISTRY = {
     "resnet18": models.ResNet18_Weights.DEFAULT,
     "mobilenet_v3_small": models.MobileNet_V3_Small_Weights.DEFAULT,
@@ -31,7 +30,9 @@ class TrainingConfig:
     image_size: int = 224
     patience: int = 2
     freeze_backbone: bool = False
-    device: str = field(default_factory=lambda: "cuda" if torch.cuda.is_available() else "cpu")
+    device: str = field(
+        default_factory=lambda: "cuda" if torch.cuda.is_available() else "cpu"
+    )
 
 
 @dataclass
@@ -65,7 +66,9 @@ def build_transforms(image_size: int) -> Dict[str, transforms.Compose]:
     }
 
 
-def prepare_dataloaders(config: TrainingConfig) -> Tuple[Dict[str, DataLoader], List[str]]:
+def prepare_dataloaders(
+    config: TrainingConfig,
+) -> Tuple[Dict[str, DataLoader], List[str]]:
     """Create :class:`DataLoader` objects from a train/val folder structure."""
 
     transforms_map = build_transforms(config.image_size)
@@ -73,9 +76,13 @@ def prepare_dataloaders(config: TrainingConfig) -> Tuple[Dict[str, DataLoader], 
     if not train_dir.exists():
         raise FileNotFoundError("Training data not found: expected a 'train' folder")
     val_dir_candidates = [config.data_dir / "val", config.data_dir / "validation"]
-    val_dir = next((candidate for candidate in val_dir_candidates if candidate.exists()), None)
+    val_dir = next(
+        (candidate for candidate in val_dir_candidates if candidate.exists()), None
+    )
     if val_dir is None:
-        raise FileNotFoundError("Validation data not found: expected a 'val' or 'validation' folder")
+        raise FileNotFoundError(
+            "Validation data not found: expected a 'val' or 'validation' folder"
+        )
 
     datasets_map = {
         "train": datasets.ImageFolder(train_dir, transform=transforms_map["train"]),
@@ -97,7 +104,9 @@ def prepare_dataloaders(config: TrainingConfig) -> Tuple[Dict[str, DataLoader], 
     return dataloaders, class_names
 
 
-def _replace_classifier(model: nn.Module, num_classes: int, model_name: str) -> nn.Module:
+def _replace_classifier(
+    model: nn.Module, num_classes: int, model_name: str
+) -> nn.Module:
     if model_name == "resnet18":
         in_features = model.fc.in_features
         model.fc = nn.Linear(in_features, num_classes)
@@ -110,9 +119,13 @@ def _replace_classifier(model: nn.Module, num_classes: int, model_name: str) -> 
     return model
 
 
-def initialise_model(model_name: str, num_classes: int, freeze_backbone: bool) -> nn.Module:
+def initialise_model(
+    model_name: str, num_classes: int, freeze_backbone: bool
+) -> nn.Module:
     if model_name not in WEIGHTS_REGISTRY:
-        raise ValueError(f"Model '{model_name}' is not available. Choose from: {', '.join(WEIGHTS_REGISTRY)}")
+        raise ValueError(
+            f"Model '{model_name}' is not available. Choose from: {', '.join(WEIGHTS_REGISTRY)}"
+        )
 
     weights = WEIGHTS_REGISTRY[model_name]
     model_builder = models.__dict__[model_name]
@@ -157,7 +170,9 @@ def train_one_epoch(
     return {"loss": epoch_loss, "accuracy": epoch_acc}
 
 
-def evaluate(model: nn.Module, dataloader: DataLoader, criterion: nn.Module, device: torch.device) -> Dict[str, float]:
+def evaluate(
+    model: nn.Module, dataloader: DataLoader, criterion: nn.Module, device: torch.device
+) -> Dict[str, float]:
     model.eval()
     running_loss = 0.0
     correct = 0
@@ -201,7 +216,9 @@ def train_model(
     epochs_without_improvement = 0
 
     for epoch in range(1, config.num_epochs + 1):
-        train_metrics = train_one_epoch(model, dataloaders["train"], criterion, optimizer, device)
+        train_metrics = train_one_epoch(
+            model, dataloaders["train"], criterion, optimizer, device
+        )
         val_metrics = evaluate(model, dataloaders["val"], criterion, device)
         scheduler.step()
 
@@ -277,7 +294,9 @@ def export_artifacts(
     artifacts["metadata"] = metadata_path
 
     scripted_path = config.output_dir / "model_scripted.pt"
-    example_input = torch.randn(1, 3, config.image_size, config.image_size, device=device)
+    example_input = torch.randn(
+        1, 3, config.image_size, config.image_size, device=device
+    )
     scripted_model = torch.jit.trace(model, example_input)
     scripted_model.save(scripted_path)
     artifacts["torchscript"] = scripted_path
@@ -331,7 +350,11 @@ def integrate_model(
 
 def run_training(config: TrainingConfig) -> Tuple[Dict[str, Path], TrainingSummary]:
     dataloaders, class_names = prepare_dataloaders(config)
-    model = initialise_model(config.model_name, num_classes=len(class_names), freeze_backbone=config.freeze_backbone)
+    model = initialise_model(
+        config.model_name,
+        num_classes=len(class_names),
+        freeze_backbone=config.freeze_backbone,
+    )
     model, summary = train_model(model, dataloaders, config)
     artifacts = export_artifacts(model, class_names, config, summary)
     integrate_model(artifacts, class_names, summary)

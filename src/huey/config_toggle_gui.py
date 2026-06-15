@@ -9,7 +9,9 @@ from typing import Mapping
 from huey.memory.PY.config_toggle_gui import run_config_toggle_gui
 
 
-def update_toggle_settings(config_path: str | Path, updates: Mapping[str, bool]) -> None:
+def update_toggle_settings(
+    config_path: str | Path, updates: Mapping[str, bool]
+) -> None:
     path = Path(config_path)
     current = {}
     if path.exists():

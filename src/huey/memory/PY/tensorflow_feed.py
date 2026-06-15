@@ -20,6 +20,7 @@ import json
 import logging
 from pathlib import Path
 from typing import List
+
 from .chat_learning import train_from_chat_and_pdfs
 
 logger = logging.getLogger(__name__)

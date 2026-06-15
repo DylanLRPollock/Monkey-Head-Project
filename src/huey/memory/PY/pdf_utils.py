@@ -11,8 +11,9 @@ import os
 from pathlib import Path
 from typing import List, Optional
 
-from .function_registry import register_function
 from huey.utils.paths import memory_candidates
+
+from .function_registry import register_function
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 

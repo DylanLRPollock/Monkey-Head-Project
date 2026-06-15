@@ -11,11 +11,19 @@ from unittest.mock import patch
 import pytest
 
 FRESH_INSTALL_MODULE = (
-    Path(__file__).resolve().parents[1] / "src" / "huey" / "memory" / "PY" / "fresh_install.py"
+    Path(__file__).resolve().parents[1]
+    / "src"
+    / "huey"
+    / "memory"
+    / "PY"
+    / "fresh_install.py"
 )
 
 if not FRESH_INSTALL_MODULE.exists():
-    pytest.skip("fresh_install module not available in this repository layout", allow_module_level=True)
+    pytest.skip(
+        "fresh_install module not available in this repository layout",
+        allow_module_level=True,
+    )
 
 spec = importlib.util.spec_from_file_location("fresh_install", FRESH_INSTALL_MODULE)
 fresh_install = importlib.util.module_from_spec(spec)

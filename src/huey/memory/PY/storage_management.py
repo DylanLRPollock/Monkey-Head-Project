@@ -117,7 +117,9 @@ class StorageManager:
                 try:
                     total += p.stat().st_size
                 except (FileNotFoundError, PermissionError) as exc:
-                    logger.warning("Failed to stat file for size calculation: %s (%s)", p, exc)
+                    logger.warning(
+                        "Failed to stat file for size calculation: %s (%s)", p, exc
+                    )
         return total
 
     # -----------------------------------------------------
@@ -132,7 +134,9 @@ class StorageManager:
             try:
                 is_file = p.is_file()
             except OSError as exc:
-                logger.warning("Failed to inspect path while pruning old files: %s (%s)", p, exc)
+                logger.warning(
+                    "Failed to inspect path while pruning old files: %s (%s)", p, exc
+                )
                 continue
 
             if not is_file:
@@ -141,7 +145,9 @@ class StorageManager:
             try:
                 modified_time = p.stat().st_mtime
             except (FileNotFoundError, PermissionError) as exc:
-                logger.warning("Failed to stat file while pruning old files: %s (%s)", p, exc)
+                logger.warning(
+                    "Failed to stat file while pruning old files: %s (%s)", p, exc
+                )
                 continue
 
             if modified_time < threshold:

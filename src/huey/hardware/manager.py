@@ -63,9 +63,7 @@ class SensorManager:
             self._configs[name] = plugin.config.copy()
         safe_name = name.replace("\r", "").replace("\n", "")
         safe_plugin_name = plugin_name.replace("\r", "").replace("\n", "")
-        LOGGER.info(
-            "Registered sensor %s using plugin %s", safe_name, safe_plugin_name
-        )
+        LOGGER.info("Registered sensor %s using plugin %s", safe_name, safe_plugin_name)
         return plugin
 
     def add_plugins(

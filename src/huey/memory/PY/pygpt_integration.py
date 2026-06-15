@@ -4,6 +4,7 @@ The helpers in this module centralise how we discover and register local copies
 of ``pygpt_net``.  They are intentionally lightweight so they can be imported
 without pulling heavy GUI dependencies during CLI or test runs.
 """
+
 from __future__ import annotations
 
 import importlib
@@ -167,7 +168,9 @@ def candidate_sources(
     return ordered
 
 
-def candidate_src_paths(extra_paths: Iterable[str | os.PathLike[str]] | None = None) -> List[Path]:
+def candidate_src_paths(
+    extra_paths: Iterable[str | os.PathLike[str]] | None = None,
+) -> List[Path]:
     """Return ordered candidate directories that may house ``pygpt_net`` sources."""
 
     return [source.path for source in candidate_sources(extra_paths)]
@@ -256,9 +259,7 @@ def pyhuey_status(
         "active_source": (
             _PYGPT_ACTIVE_SOURCE.as_dict()
             if _PYGPT_ACTIVE_SOURCE
-            else "installed"
-            if prepared
-            else "unresolved"
+            else "installed" if prepared else "unresolved"
         ),
         "candidates": [source.as_dict() for source in candidate_sources()],
     }

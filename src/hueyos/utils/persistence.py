@@ -52,8 +52,7 @@ class TelemetryStore:
 
     def _initialize(self) -> None:
         with self._connect() as connection:
-            connection.executescript(
-                """
+            connection.executescript("""
                 CREATE TABLE IF NOT EXISTS sensor_readings (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL,
@@ -78,8 +77,7 @@ class TelemetryStore:
                     event_type TEXT NOT NULL,
                     payload_json TEXT NOT NULL
                 );
-                """
-            )
+                """)
 
     def log_sensor_reading(self, reading: Any) -> None:
         name = str(getattr(reading, "name"))

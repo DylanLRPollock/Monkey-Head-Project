@@ -52,7 +52,9 @@ def poll_all_sensors():
 @router.get("/sensors/{sensor_name}/history")
 def sensor_history(
     sensor_name: str,
-    limit: int = Query(50, ge=1, le=500, description="Maximum number of readings to return"),
+    limit: int = Query(
+        50, ge=1, le=500, description="Maximum number of readings to return"
+    ),
 ):
     from huey.memory.PY import api as legacy_api
 

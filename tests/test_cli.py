@@ -213,7 +213,9 @@ def test_v1_run_mock_writes_structured_log(tmp_path: Path, capsys):
     assert record["exit_status"] == "success"
 
 
-def test_v1_run_queue_mock_processes_sorted_and_handles_failures(tmp_path: Path, capsys):
+def test_v1_run_queue_mock_processes_sorted_and_handles_failures(
+    tmp_path: Path, capsys
+):
     queue_dir = tmp_path / "queue"
     queue_dir.mkdir()
     log_dir = tmp_path / "logs"

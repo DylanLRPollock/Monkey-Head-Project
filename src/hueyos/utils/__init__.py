@@ -17,9 +17,7 @@ _HUEY_UTILS_DIR = _SRC_DIR / "huey" / "utils"
 _LEGACY_DIR = _SRC_DIR / "huey" / "memory" / "PY"
 
 __path__ = [
-    str(path)
-    for path in (_PACKAGE_DIR, _HUEY_UTILS_DIR, _LEGACY_DIR)
-    if path.is_dir()
+    str(path) for path in (_PACKAGE_DIR, _HUEY_UTILS_DIR, _LEGACY_DIR) if path.is_dir()
 ]
 
 _base = importlib.import_module("huey.utils")
