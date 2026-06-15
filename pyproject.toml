@@ -66,7 +66,7 @@ ml = [
   "audioop-lts==0.2.2; python_version >= '3.13' and python_version < '3.15'",
   "faster-whisper==1.2.1",
   "google-ai-generativelanguage==0.11.0",
-  "google-genai==1.73.1",
+  "google-genai==2.2.0",
   "google-generativeai==0.8.6",
   "huggingface-hub==1.14.0",
   "llama-cloud==2.4.1",
