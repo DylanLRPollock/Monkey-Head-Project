@@ -1,0 +1,46 @@
+**********************
+PowerShell transcript start
+Start time: 20260615002828
+Username: LAB\admin
+RunAs User: LAB\admin
+Configuration Name: 
+Machine: LAB (Microsoft Windows NT 10.0.26300.0)
+Host Application: C:\Program Files\WindowsApps\Microsoft.PowerShellPreview_7.7.2.0_x64__8wekyb3d8bbwe\pwsh.dll
+Process ID: 8784
+PSVersion: 7.7.0-preview.2
+PSEdition: Core
+GitCommitId: 7.7.0-preview.2
+OS: Microsoft Windows 10.0.26300
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is L:\Monkey-Head-Project\lint-after-format.txt
+PS L:\Monkey-Head-Project>
+PS L:\Monkey-Head-Project>
+(.venv313-ci) python scripts/check_stale_platform_strings.py
+
+PS L:\Monkey-Head-Project>
+(.venv313-ci) python scripts/check_repo_drift.py
+
+PS L:\Monkey-Head-Project>
+(.venv313-ci) black --check src tests conftest.py
+
+PS L:\Monkey-Head-Project>
+(.venv313-ci) isort --check-only src tests conftest.py
+
+PS L:\Monkey-Head-Project>
+(.venv313-ci) ruff check src tests conftest.py
+
+PS L:\Monkey-Head-Project>
+(.venv313-ci) flake8 src tests conftest.py
+
+PS L:\Monkey-Head-Project>
+PS L:\Monkey-Head-Project>
+(.venv313-ci) Stop-Transcript
+**********************
+PowerShell transcript end
+End time: 20260615002836
+**********************
