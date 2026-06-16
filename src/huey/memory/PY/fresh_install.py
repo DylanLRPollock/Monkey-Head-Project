@@ -5,6 +5,7 @@
 # HueyOS: Fresh Install module (huey/memory/PY)
 
 """Run a clean reinstall of the Monkey Head Project."""
+
 from __future__ import annotations
 
 import argparse

@@ -3,7 +3,6 @@ from pathlib import Path
 
 from hueyos.runtime.v1_loop import run_v1_loop
 
-
 REQUIRED_FIELDS = {
     "run_id",
     "timestamp_start",

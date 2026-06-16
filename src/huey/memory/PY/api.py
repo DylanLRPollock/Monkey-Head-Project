@@ -28,9 +28,9 @@ from fastapi import FastAPI, HTTPException, Query, Request, status
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
+from .env_validation import DEVELOPMENT_ENVS as _DEVELOPMENT_ENVS
+from .env_validation import configured_environment as _configured_environment
 from .env_validation import (
-    DEVELOPMENT_ENVS as _DEVELOPMENT_ENVS,
-    configured_environment as _configured_environment,
     validate_security_sensitive_environment,
 )
 
@@ -100,6 +100,9 @@ except ModuleNotFoundError:  # pragma: no cover - compatibility shim
             }
 
 
+from huey.honeycomb.index import HoneycombIndex
+from huey.honeycomb.monitor import HoneycombMonitor
+from huey.honeycomb.storage import HoneycombStorage
 from hueyos.core.resilience import (
     CrashRecoveryManager,
     EmergencyGovernanceController,
@@ -118,9 +121,6 @@ from hueyos.hardware.plugins import (
     list_sensor_plugin_metadata,
     list_sensor_plugins,
 )
-from huey.honeycomb.index import HoneycombIndex
-from huey.honeycomb.monitor import HoneycombMonitor
-from huey.honeycomb.storage import HoneycombStorage
 from hueyos.network import NetworkManager
 from hueyos.pdf_utils import find_pdf, list_available_pdfs
 from hueyos.power import BatteryMonitor
@@ -251,6 +251,7 @@ app = FastAPI(
 _PUBLIC_PATHS = {"/healthz"}
 
 validate_security_sensitive_environment()
+
 
 def _configured_api_token() -> str:
     """Return the optional bearer token required for API access."""
@@ -1155,17 +1156,19 @@ def _register_battery_hooks() -> None:
 _register_battery_hooks()
 
 
+from hueyos.api.routers.network import router as network_router
+from hueyos.api.routers.power import router as power_router
+from hueyos.api.routers.sensors import router as sensors_router
 from hueyos.api.routers.system import router as system_router
 from hueyos.api.routers.tasks import (
     cancel_task,
     get_task,
     list_tasks_endpoint,
-    router as tasks_router,
+)
+from hueyos.api.routers.tasks import router as tasks_router
+from hueyos.api.routers.tasks import (
     submit_task,
 )
-from hueyos.api.routers.network import router as network_router
-from hueyos.api.routers.power import router as power_router
-from hueyos.api.routers.sensors import router as sensors_router
 from hueyos.services.tasks import (
     ResourceProfileModel,
     ResourceSnapshotModel,
@@ -1805,8 +1808,10 @@ def admin_health_check() -> Dict[str, str]:
 
     return healthz()
 
+
 def main() -> None:
     import os
+
     import uvicorn
 
     host = os.getenv("HUEY_HOST", "127.0.0.1")

@@ -8,19 +8,17 @@
 from __future__ import annotations
 
 import asyncio
+import importlib
 from typing import Any
 
-import importlib
-
-import pytest
-
-from httpx import ASGITransport, AsyncClient
-
 import fastapi
+import pytest
+from httpx import ASGITransport, AsyncClient
 
 # Compatibility shim: the vendored FastAPI stub used in tests omits ``Request``.
 # Populate it so importing ``huey.api`` exercises the real API wrapper path.
 if not hasattr(fastapi, "Request"):
+
     class _Request:  # pragma: no cover - import-time compatibility only
         pass
 
@@ -29,8 +27,13 @@ if not hasattr(fastapi, "Request"):
 # Migration shim: ``huey.memory.PY.api`` still imports ``hueyos.core.*`` paths
 # while implementations live under ``huey.core.*`` during v101.1 stabilization.
 import sys
-sys.modules.setdefault("hueyos.core.resilience", importlib.import_module("huey.core.resilience"))
-sys.modules.setdefault("hueyos.core.task_scheduler", importlib.import_module("huey.core.task_scheduler"))
+
+sys.modules.setdefault(
+    "hueyos.core.resilience", importlib.import_module("huey.core.resilience")
+)
+sys.modules.setdefault(
+    "hueyos.core.task_scheduler", importlib.import_module("huey.core.task_scheduler")
+)
 
 api_module = importlib.import_module("huey.api")
 
@@ -162,7 +165,9 @@ async def test_task_and_dashboard_surfaces_block_remote_when_token_unset(monkeyp
     monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
 
     transport = ASGITransport(app=api_module.app)
-    async with AsyncClient(transport=transport, base_url="http://198.51.100.10") as client:
+    async with AsyncClient(
+        transport=transport, base_url="http://198.51.100.10"
+    ) as client:
         submit = await client.post("/tasks", json={"command": "calibrate sensors"})
         dashboard = await client.get("/dashboard")
 
@@ -201,7 +206,9 @@ async def test_task_submission_allowed_for_development_with_unsafe_flag(monkeypa
 
 
 @pytest.mark.asyncio
-async def test_task_submission_requires_unsafe_flag_even_when_authenticated(monkeypatch):
+async def test_task_submission_requires_unsafe_flag_even_when_authenticated(
+    monkeypatch,
+):
     monkeypatch.setenv("HUEY_API_TOKEN", "test-token")
     monkeypatch.setenv("HUEY_ENV", "production")
     monkeypatch.delenv("HUEY_ENABLE_UNSAFE_TASKS", raising=False)
@@ -219,7 +226,9 @@ async def test_task_submission_requires_unsafe_flag_even_when_authenticated(monk
     assert denied.status_code == 403
     monkeypatch.setenv("HUEY_ENABLE_UNSAFE_TASKS", "true")
     transport2 = ASGITransport(app=api_module.app)
-    async with AsyncClient(transport=transport2, base_url="http://testserver") as client:
+    async with AsyncClient(
+        transport=transport2, base_url="http://testserver"
+    ) as client:
         enabled = await client.post(
             "/tasks",
             json={"command": "calibrate sensors"},
@@ -718,7 +727,9 @@ async def test_dashboard_redacts_ai_prompts_and_responses(monkeypatch):
         observed["ai_records"] = ai_records
         return "dashboard"
 
-    monkeypatch.setattr(api_module, "_render_dashboard", _capture_dashboard, raising=True)
+    monkeypatch.setattr(
+        api_module, "_render_dashboard", _capture_dashboard, raising=True
+    )
     monkeypatch.setattr(
         api_module.TELEMETRY_STORE,
         "fetch_recent_sensor_readings",

@@ -60,7 +60,9 @@ def test_main_install_gui_invokes_launcher(monkeypatch):
 
     called: dict[str, bool] = {}
 
-    monkeypatch.setattr(huey_run, "launch_install_gui", lambda: called.setdefault("install", True))
+    monkeypatch.setattr(
+        huey_run, "launch_install_gui", lambda: called.setdefault("install", True)
+    )
     monkeypatch.setattr(
         huey_run,
         "launch_gui",

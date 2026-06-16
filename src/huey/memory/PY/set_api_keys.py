@@ -44,7 +44,9 @@ def save_config(data):
     except OSError:
         print("Warning: Could not set restrictive permissions on local config file.")
 
-    print("Warning: API key file is for local-only fallback and should remain gitignored.")
+    print(
+        "Warning: API key file is for local-only fallback and should remain gitignored."
+    )
     return True
 
 
@@ -70,7 +72,9 @@ def prompt_keys(selected, data):
         env_value = os.environ.get(env_name, "").strip()
 
         if env_value:
-            print(f"{name.title()} key detected in environment variable {env_name}; leaving unchanged.")
+            print(
+                f"{name.title()} key detected in environment variable {env_name}; leaving unchanged."
+            )
             continue
 
         if data.get(key_name, "").strip():
@@ -93,7 +97,9 @@ def main():
     wrote_file = save_config(config)
     if wrote_file:
         print("Local fallback keys saved to", CONFIG_PATH)
-    print("Preferred setup: set API keys via environment variables or a local .env file.")
+    print(
+        "Preferred setup: set API keys via environment variables or a local .env file."
+    )
 
 
 if __name__ == "__main__":

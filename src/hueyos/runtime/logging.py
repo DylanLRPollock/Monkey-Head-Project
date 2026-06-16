@@ -45,7 +45,9 @@ def _normalize_json_value(value: Any) -> Any:
     if isinstance(value, (list, tuple)):
         return [_normalize_json_value(item) for item in value]
 
-    raise TypeError(f"record contains non-JSON-safe value of type {type(value).__name__}")
+    raise TypeError(
+        f"record contains non-JSON-safe value of type {type(value).__name__}"
+    )
 
 
 def validate_run_record(record: dict) -> dict:
@@ -70,4 +72,6 @@ def append_jsonl_record(path: str | Path, record: dict) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     with output_path.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(normalized_record, ensure_ascii=False, allow_nan=False) + "\n")
+        fh.write(
+            json.dumps(normalized_record, ensure_ascii=False, allow_nan=False) + "\n"
+        )

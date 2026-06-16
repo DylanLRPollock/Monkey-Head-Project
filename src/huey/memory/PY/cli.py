@@ -338,7 +338,11 @@ def _cmd_v1_run(args: argparse.Namespace) -> int:
     if not source_file.exists():
         raise RuntimeError(f"Audio fixture not found: {source_file}")
 
-    log_dir = Path(args.log_dir).expanduser().resolve() if args.log_dir else Path("runs").resolve()
+    log_dir = (
+        Path(args.log_dir).expanduser().resolve()
+        if args.log_dir
+        else Path("runs").resolve()
+    )
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / "v1-run.jsonl"
 
@@ -364,9 +368,12 @@ def _cmd_v1_run(args: argparse.Namespace) -> int:
             file_obj.write(json.dumps(record, sort_keys=True) + "\n")
 
     record = run_v1_loop(source_file, _mock_transcribe, _mock_cognition, _append_jsonl)
-    print(json.dumps({"log_file": str(log_path), "run_id": record["run_id"]}, sort_keys=True))
+    print(
+        json.dumps(
+            {"log_file": str(log_path), "run_id": record["run_id"]}, sort_keys=True
+        )
+    )
     return 0
-
 
 
 def _cmd_v1_run_queue(args: argparse.Namespace) -> int:
@@ -391,8 +398,7 @@ def _cmd_v1_run_queue(args: argparse.Namespace) -> int:
         [
             path
             for path in queue_dir.iterdir()
-            if path.is_file()
-            and path.suffix.lower() not in {".partial", ".tmp"}
+            if path.is_file() and path.suffix.lower() not in {".partial", ".tmp"}
         ],
         key=lambda path: path.name,
     )
@@ -446,6 +452,7 @@ def _cmd_v1_run_queue(args: argparse.Namespace) -> int:
         )
     )
     return 0
+
 
 def main(argv: Iterable[str] | None = None) -> int:
     parser = _build_parser()

@@ -15,7 +15,9 @@ def _legacy_handler(name: str) -> Callable[[argparse.Namespace], int]:
     return _handler
 
 
-def register_memory_commands(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def register_memory_commands(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
     """Register memory-oriented command groups via legacy handlers."""
 
     sort_cmd = subparsers.add_parser(

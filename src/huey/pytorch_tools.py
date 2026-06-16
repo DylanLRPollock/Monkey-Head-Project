@@ -1,8 +1,9 @@
 """Utility helpers for working with PyTorch in Monkey Head workflows."""
+
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
 import random
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, Sequence, Tuple
 
@@ -89,7 +90,9 @@ def tensor_stats(tensor: torch.Tensor) -> Dict[str, float]:
     }
 
 
-def sample_tensor(shape: Iterable[int], device: torch.device | None = None) -> torch.Tensor:
+def sample_tensor(
+    shape: Iterable[int], device: torch.device | None = None
+) -> torch.Tensor:
     """Create a random tensor for quick checks."""
 
     device = device or get_device()

@@ -16,9 +16,7 @@ def test_run_docker_compose(monkeypatch):
         "hueyos.services.container_management.manage_containers", fake_manage
     )
     monkeypatch.setattr("hueyos.core.system_checks.check_os_support", lambda: None)
-    monkeypatch.setattr(
-        "hueyos.core.system_checks.check_python_version", lambda: None
-    )
+    monkeypatch.setattr("hueyos.core.system_checks.check_python_version", lambda: None)
     monkeypatch.setattr("run.launch_gui", lambda: None)
     monkeypatch.setattr("run._load_cli", lambda: lambda: None)
     monkeypatch.setattr("sys.argv", ["run.py", "--docker-compose"])
@@ -36,9 +34,7 @@ def test_run_kubernetes(monkeypatch):
         "hueyos.services.container_management.deploy_kubernetes", fake_deploy
     )
     monkeypatch.setattr("hueyos.core.system_checks.check_os_support", lambda: None)
-    monkeypatch.setattr(
-        "hueyos.core.system_checks.check_python_version", lambda: None
-    )
+    monkeypatch.setattr("hueyos.core.system_checks.check_python_version", lambda: None)
     monkeypatch.setattr("run.launch_gui", lambda: None)
     monkeypatch.setattr("run._load_cli", lambda: lambda: None)
     monkeypatch.setattr("sys.argv", ["run.py", "--kubernetes"])

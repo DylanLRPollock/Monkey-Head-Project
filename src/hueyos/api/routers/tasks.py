@@ -18,14 +18,20 @@ def _legacy_api_module():
     return legacy_api
 
 
-@router.post("/tasks", response_model=TaskResponse, status_code=status.HTTP_202_ACCEPTED)
+@router.post(
+    "/tasks", response_model=TaskResponse, status_code=status.HTTP_202_ACCEPTED
+)
 def submit_task(request: TaskSubmissionRequest, http_request: Request) -> TaskResponse:
     """Submit a task for execution by Spark or Zap."""
 
     legacy_api = _legacy_api_module()
     legacy_api.require_strong_api_auth(http_request)
     legacy_api._require_unsafe_task_submission_access(http_request)
-    profile = request.resource_profile.to_profile() if request.resource_profile is not None else ResourceProfile()
+    profile = (
+        request.resource_profile.to_profile()
+        if request.resource_profile is not None
+        else ResourceProfile()
+    )
     record = legacy_api.SCHEDULER.submit_task(
         command=request.command,
         priority=request.priority,
@@ -43,14 +49,16 @@ def list_tasks_endpoint(
         None,
         alias="status",
         description="Filter results to tasks with the specified status",
-    )
+    ),
 ) -> TaskListResponse:
     """List known tasks with optional status filters."""
 
     legacy_api = _legacy_api_module()
     legacy_api.require_strong_api_auth(http_request)
     records = legacy_api.SCHEDULER.list_tasks(status_filter)
-    return TaskListResponse(tasks=[TaskResponse.from_record(record) for record in records])
+    return TaskListResponse(
+        tasks=[TaskResponse.from_record(record) for record in records]
+    )
 
 
 @router.get("/tasks/{task_id}", response_model=TaskResponse)
@@ -62,11 +70,17 @@ def get_task(task_id: str, http_request: Request) -> TaskResponse:
     try:
         record = legacy_api.SCHEDULER.get_task(task_id)
     except KeyError as exc:  # pragma: no cover - defensive
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
+        ) from exc
     return TaskResponse.from_record(record)
 
 
-@router.post("/tasks/{task_id}/cancel", response_model=TaskResponse, status_code=status.HTTP_202_ACCEPTED)
+@router.post(
+    "/tasks/{task_id}/cancel",
+    response_model=TaskResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
 def cancel_task(task_id: str, http_request: Request) -> TaskResponse:
     """Cancel a pending or running task."""
 
@@ -75,5 +89,7 @@ def cancel_task(task_id: str, http_request: Request) -> TaskResponse:
     try:
         record = legacy_api.SCHEDULER.cancel_task(task_id)
     except KeyError as exc:  # pragma: no cover - defensive
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
+        ) from exc
     return TaskResponse.from_record(record)

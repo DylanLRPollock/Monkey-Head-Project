@@ -39,7 +39,9 @@ def __getattr__(name: str) -> Any:
         try:
             module = importlib.import_module(f"{_LEGACY_PREFIX}.{name}")
         except ModuleNotFoundError as exc:  # pragma: no cover - error path
-            raise AttributeError(f"module '{__name__}' has no attribute {name!r}") from exc
+            raise AttributeError(
+                f"module '{__name__}' has no attribute {name!r}"
+            ) from exc
     globals()[name] = module
     return module
 

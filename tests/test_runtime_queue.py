@@ -12,7 +12,9 @@ def _write_file(path: Path, content: str = "fixture") -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def test_list_pending_fixtures_ignores_partial_and_tmp_and_sorts(tmp_path: Path) -> None:
+def test_list_pending_fixtures_ignores_partial_and_tmp_and_sorts(
+    tmp_path: Path,
+) -> None:
     queue_dir = tmp_path / "queue"
     queue_dir.mkdir()
 
@@ -64,7 +66,9 @@ def test_mark_failed_preserves_file_and_writes_reason(tmp_path: Path) -> None:
     fixture = runs_dir / "fixture.mp3"
     _write_file(fixture, "bad audio")
 
-    moved_fixture, reason_path = mark_failed(fixture, failed_dir, "transcription failed")
+    moved_fixture, reason_path = mark_failed(
+        fixture, failed_dir, "transcription failed"
+    )
 
     assert moved_fixture == failed_dir / "fixture.mp3"
     assert not fixture.exists()

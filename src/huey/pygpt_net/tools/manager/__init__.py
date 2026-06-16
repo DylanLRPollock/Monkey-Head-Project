@@ -5,10 +5,10 @@
 
 from __future__ import annotations
 
-import platform
-import subprocess
 import logging
 import os
+import platform
+import subprocess
 from pathlib import Path
 from typing import Any, Callable, Dict
 
@@ -17,20 +17,34 @@ LOGGER = logging.getLogger(__name__)
 
 try:  # pragma: no cover - exercised when the full PyGPT UI is installed
     from pygpt_net.tools.base import BaseTool
-except (ImportError, ModuleNotFoundError):  # pragma: no cover - lightweight test/runtime fallback
+except (
+    ImportError,
+    ModuleNotFoundError,
+):  # pragma: no cover - lightweight test/runtime fallback
+
     class BaseTool:  # type: ignore[no-redef]
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             self.window = kwargs.get("window")
 
+
 try:  # pragma: no cover - exercised when the full PyGPT UI is installed
     from pygpt_net.utils import trans
-except (ImportError, ModuleNotFoundError):  # pragma: no cover - lightweight test/runtime fallback
+except (
+    ImportError,
+    ModuleNotFoundError,
+):  # pragma: no cover - lightweight test/runtime fallback
+
     def trans(value: str) -> str:  # type: ignore[no-redef]
         return value
 
+
 try:  # pragma: no cover - exercised when PySide6 is available
     from PySide6.QtGui import QAction
-except (ImportError, ModuleNotFoundError):  # pragma: no cover - lightweight test/runtime fallback
+except (
+    ImportError,
+    ModuleNotFoundError,
+):  # pragma: no cover - lightweight test/runtime fallback
+
     class _Signal:
         def __init__(self) -> None:
             self._callback: Callable[[], None] | None = None
@@ -48,8 +62,9 @@ except (ImportError, ModuleNotFoundError):  # pragma: no cover - lightweight tes
             self.parent = parent
             self.triggered = _Signal()
 
-from huey.services import container_management
+
 from huey.pyhuey_integration import pyhuey_status
+from huey.services import container_management
 
 
 def _project_root() -> Path:
@@ -102,14 +117,18 @@ class MonkeyManager(BaseTool):
                 cmd = ["bash", str(script)]
             result = subprocess.run(cmd, check=False)
             if result.returncode != 0:
-                LOGGER.error("Script failed with exit code %s: %s", result.returncode, script)
+                LOGGER.error(
+                    "Script failed with exit code %s: %s", result.returncode, script
+                )
         except OSError as exc:
             LOGGER.exception("Error running script %s: %s", script, exc)
 
     def _destructive_intent_confirmed(self) -> bool:
         return os.getenv(self.DESTRUCTIVE_ENV_FLAG, "").strip() == "1"
 
-    def _run_destructive_action(self, action_name: str, callback: Callable[[], None]) -> None:
+    def _run_destructive_action(
+        self, action_name: str, callback: Callable[[], None]
+    ) -> None:
         if not self._destructive_intent_confirmed():
             LOGGER.warning(
                 "Blocked destructive action '%s'; set %s=1 to allow.",
@@ -223,4 +242,5 @@ class MonkeyManager(BaseTool):
         )
 
         return actions
+
     DESTRUCTIVE_ENV_FLAG = "HUEY_TOOL_ALLOW_DESTRUCTIVE"

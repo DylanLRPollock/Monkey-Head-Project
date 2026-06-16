@@ -1,8 +1,9 @@
 from pathlib import Path
+
 from faster_whisper import WhisperModel
 
 INPUT_FILE = Path.home() / "alan_watts.wav"
-MODEL_NAME = "medium.en" 
+MODEL_NAME = "medium.en"
 
 model = WhisperModel(
     MODEL_NAME,
@@ -25,9 +26,12 @@ txt_path = Path.home() / f"alan_watts_{MODEL_NAME}.txt"
 srt_path = Path.home() / f"alan_watts_{MODEL_NAME}.srt"
 
 with txt_path.open("w", encoding="utf-8") as txt:
-    txt.write(f"Detected language: {info.language} (probability={info.language_probability:.4f})\n\n")
+    txt.write(
+        f"Detected language: {info.language} (probability={info.language_probability:.4f})\n\n"
+    )
     for seg in segments:
         txt.write(f"[{seg.start:.2f} -> {seg.end:.2f}] {seg.text.strip()}\n")
+
 
 def srt_timestamp(seconds: float) -> str:
     total_ms = int(round(seconds * 1000))
@@ -38,6 +42,7 @@ def srt_timestamp(seconds: float) -> str:
     secs = total_ms // 1000
     ms = total_ms % 1000
     return f"{hours:02d}:{minutes:02d}:{secs:02d},{ms:03d}"
+
 
 with srt_path.open("w", encoding="utf-8") as srt:
     for i, seg in enumerate(segments, start=1):

@@ -6,24 +6,36 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from hueyos.core.task_scheduler import Agent, ResourceProfile, TaskPriority, TaskRecord, TaskStatus
+from hueyos.core.task_scheduler import (
+    Agent,
+    ResourceProfile,
+    TaskPriority,
+    TaskRecord,
+    TaskStatus,
+)
 
 
 class ResourceProfileModel(BaseModel):
     """API schema exposing the scheduler resource hints."""
 
     cpu: float = Field(0.3, ge=0.0, le=1.0, description="Expected CPU utilisation bias")
-    memory: float = Field(0.2, ge=0.0, le=1.0, description="Expected memory utilisation bias")
+    memory: float = Field(
+        0.2, ge=0.0, le=1.0, description="Expected memory utilisation bias"
+    )
     battery: float = Field(
         0.1,
         ge=0.0,
         le=1.0,
         description="Battery drain sensitivity; higher values require higher charge.",
     )
-    gpu: float = Field(0.0, ge=0.0, le=1.0, description="Relative GPU demand if applicable")
+    gpu: float = Field(
+        0.0, ge=0.0, le=1.0, description="Relative GPU demand if applicable"
+    )
 
     def to_profile(self) -> ResourceProfile:
-        return ResourceProfile(cpu=self.cpu, memory=self.memory, battery=self.battery, gpu=self.gpu)
+        return ResourceProfile(
+            cpu=self.cpu, memory=self.memory, battery=self.battery, gpu=self.gpu
+        )
 
 
 class ResourceSnapshotModel(BaseModel):
@@ -97,7 +109,11 @@ class TaskResponse(BaseModel):
             ),
             snapshot=snapshot,
             history=[
-                TaskHistoryEntry(timestamp=entry.timestamp, status=entry.status, message=entry.message)
+                TaskHistoryEntry(
+                    timestamp=entry.timestamp,
+                    status=entry.status,
+                    message=entry.message,
+                )
                 for entry in record.history
             ],
         )
@@ -106,12 +122,16 @@ class TaskResponse(BaseModel):
 class TaskSubmissionRequest(BaseModel):
     """Payload for creating a new task via the scheduler."""
 
-    command: str = Field(..., description="Instruction to execute within the agent context")
+    command: str = Field(
+        ..., description="Instruction to execute within the agent context"
+    )
     priority: TaskPriority = Field(
         TaskPriority.NORMAL,
         description="Relative priority for queue ordering; higher values run sooner.",
     )
-    requested_agent: Optional[Agent] = Field(None, description="Preferred agent when coordination requires affinity")
+    requested_agent: Optional[Agent] = Field(
+        None, description="Preferred agent when coordination requires affinity"
+    )
     metadata: Dict[str, Any] = Field(
         default_factory=dict,
         description="Arbitrary metadata echoed back in task status queries.",

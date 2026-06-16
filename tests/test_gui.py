@@ -10,10 +10,14 @@ from unittest.mock import patch
 
 import pytest
 
-GUI_MAIN_UI_MODULE = Path(__file__).resolve().parents[1] / "apps" / "huey_gui" / "main_ui.py"
+GUI_MAIN_UI_MODULE = (
+    Path(__file__).resolve().parents[1] / "apps" / "huey_gui" / "main_ui.py"
+)
 
 if not GUI_MAIN_UI_MODULE.exists():
-    pytest.skip("GUI module not available in this repository layout", allow_module_level=True)
+    pytest.skip(
+        "GUI module not available in this repository layout", allow_module_level=True
+    )
 
 spec = importlib.util.spec_from_file_location("gui.main_ui", GUI_MAIN_UI_MODULE)
 main_ui = importlib.util.module_from_spec(spec)
@@ -195,11 +199,13 @@ def test_convert_media_prompt_runs_thread():
     with (
         patch.object(main_ui.filedialog, "askopenfilename", return_value="in.wav"),
         patch.object(
-            main_ui.filedialog, "asksaveasfilename",
+            main_ui.filedialog,
+            "asksaveasfilename",
             return_value="out.mp3",
         ),
         patch.object(
-            main_ui.simpledialog, "askstring",
+            main_ui.simpledialog,
+            "askstring",
             side_effect=["128k", "libx264"],
         ),
         patch.object(main_ui, "convert_media") as conv,
