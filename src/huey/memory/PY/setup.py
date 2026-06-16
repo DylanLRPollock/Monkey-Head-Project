@@ -52,7 +52,7 @@ setup(
         "sqlalchemy==2.0.41",
         "pymongo==4.13.1",
         "redis==6.2.0",
-        "cryptography==46.0.7",
+        "cryptography==48.0.1",
         "pyjwt==2.13.0",
         "bcrypt==4.3.0",
         "paramiko==5.0.0",
