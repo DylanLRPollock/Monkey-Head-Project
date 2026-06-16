@@ -26,7 +26,7 @@ pydantic==2.13.4
 pydantic-settings==2.14.1
 orjson==3.11.9
 aiosqlite==0.22.1
-cryptography==48.0.0
+cryptography==48.0.1
 
 # --- Local model / orchestration anchors ---
 ollama==0.6.2
