@@ -5,6 +5,7 @@
 # HueyOS: Uninstaller module (huey/memory/PY)
 
 """Cross-platform uninstaller for the Monkey Head Project."""
+
 import os
 import platform
 import subprocess
@@ -15,12 +16,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
 
 LINUX_UNINSTALL = str(
-    PROJECT_ROOT
-    / "platform"
-    / "installers"
-    / "debian"
-    / "Debian"
-    / "uninstall-deb.sh"
+    PROJECT_ROOT / "platform" / "installers" / "debian" / "Debian" / "uninstall-deb.sh"
 )
 MAC_UNINSTALL = os.path.join(SCRIPT_DIR, "setup", "macOS", "uninstall.sh")
 WINDOWS_UNINSTALL = os.path.join(SCRIPT_DIR, "setup", "Windows11", "03-CLEANUP.bat")

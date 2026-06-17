@@ -19,9 +19,7 @@ _HUEY_DIR = _SRC_DIR / "huey"
 _LEGACY_DIR = _HUEY_DIR / "memory" / "PY"
 
 __path__ = [
-    str(path)
-    for path in (_PACKAGE_DIR, _HUEY_DIR, _LEGACY_DIR)
-    if path.is_dir()
+    str(path) for path in (_PACKAGE_DIR, _HUEY_DIR, _LEGACY_DIR) if path.is_dir()
 ]
 
 

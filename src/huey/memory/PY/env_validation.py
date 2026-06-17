@@ -57,7 +57,11 @@ def validate_security_sensitive_environment() -> None:
     env = configured_environment()
     is_development = env in DEVELOPMENT_ENVS
 
-    checks: list[str] = ["HUEY_ENV", *PRODUCTION_REQUIRED_SECRET_VARIABLES, *DATABASE_PASSWORD_VARIABLES]
+    checks: list[str] = [
+        "HUEY_ENV",
+        *PRODUCTION_REQUIRED_SECRET_VARIABLES,
+        *DATABASE_PASSWORD_VARIABLES,
+    ]
     if _vnc_enabled():
         checks.append("VNC_PASSWORD")
 
@@ -72,8 +76,12 @@ def validate_security_sensitive_environment() -> None:
 
     if is_development:
         for issue in issues:
-            warnings.warn(f"[huey-env-validation] {issue}", RuntimeWarning, stacklevel=2)
+            warnings.warn(
+                f"[huey-env-validation] {issue}", RuntimeWarning, stacklevel=2
+            )
         return
 
     joined = "; ".join(issues)
-    raise RuntimeError(f"Environment validation failed for HUEY_ENV='{env or 'unset'}': {joined}")
+    raise RuntimeError(
+        f"Environment validation failed for HUEY_ENV='{env or 'unset'}': {joined}"
+    )

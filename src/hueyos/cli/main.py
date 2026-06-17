@@ -5,8 +5,11 @@ from __future__ import annotations
 import argparse
 from typing import Callable
 
-from .commands import register_memory_commands, register_runtime_commands, register_system_commands
-
+from .commands import (
+    register_memory_commands,
+    register_runtime_commands,
+    register_system_commands,
+)
 
 ParserHandler = Callable[[argparse.Namespace], int]
 

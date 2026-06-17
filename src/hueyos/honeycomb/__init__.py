@@ -8,7 +8,7 @@ from .backup import BackupError, BackupResult, perform_rsync_snapshot, restore_s
 from .index import HoneycombContentMapping, HoneycombIndex
 from .monitor import HoneycombMonitor, HoneycombUsageTotals
 from .retention import RetentionPolicy, parse_duration
-from .storage import HoneycombRecord, HoneycombStorage, SCHEMA_VERSION
+from .storage import SCHEMA_VERSION, HoneycombRecord, HoneycombStorage
 
 __all__ = [
     "BackupError",

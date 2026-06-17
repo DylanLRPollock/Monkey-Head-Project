@@ -25,9 +25,7 @@ def test_run_sys_code(monkeypatch):
     monkeypatch.setattr("run.launch_gui", lambda: None)
     monkeypatch.setattr("run._load_cli", lambda: lambda: None)
     monkeypatch.setattr("hueyos.core.system_checks.check_os_support", lambda: None)
-    monkeypatch.setattr(
-        "hueyos.core.system_checks.check_python_version", lambda: None
-    )
+    monkeypatch.setattr("hueyos.core.system_checks.check_python_version", lambda: None)
     monkeypatch.setattr(sys, "argv", ["run.py", "--sys-code", "echo hi"])
     main()
     assert called.get("cmd") == ["echo", "hi"]

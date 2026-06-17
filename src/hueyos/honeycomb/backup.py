@@ -42,7 +42,9 @@ class BackupResult:
         }
 
 
-def _copy_tree(source: Path, destination: Path, *, overwrite: bool = False) -> tuple[int, int]:
+def _copy_tree(
+    source: Path, destination: Path, *, overwrite: bool = False
+) -> tuple[int, int]:
     if not source.exists():
         raise BackupError(f"source does not exist: {source}")
 

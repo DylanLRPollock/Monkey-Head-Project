@@ -5,6 +5,7 @@
 # HueyOS: Repair module (huey/memory/PY)
 
 """Repair the Monkey Head Project by reinstalling from a fresh clone."""
+
 from __future__ import annotations
 
 import subprocess

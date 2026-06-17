@@ -8,8 +8,8 @@
 from __future__ import annotations
 
 import json
-from importlib import resources
 from enum import Enum
+from importlib import resources
 from typing import Any, Dict, Optional, Sequence
 
 from huey.pygpt_integration import prepare_pygpt
@@ -85,11 +85,7 @@ class LLMAdapter:
 
         preset_name = f"agent_{self.provider.value}.json"
         preset_path = (
-            resources.files("pygpt_net")
-            / "data"
-            / "config"
-            / "presets"
-            / preset_name
+            resources.files("pygpt_net") / "data" / "config" / "presets" / preset_name
         )
         try:
             return json.loads(preset_path.read_text(encoding="utf-8"))
@@ -106,11 +102,15 @@ class LLMAdapter:
 
         try:
             if self.provider is LLMProvider.OPENAI:
-                from pygpt_net.provider.agents.openai import OpenAIAgent as ProviderAgent
+                from pygpt_net.provider.agents.openai import (
+                    OpenAIAgent as ProviderAgent,
+                )
             elif self.provider is LLMProvider.ANTHROPIC:
                 from pygpt_net.provider.agents.react import ReactAgent as ProviderAgent
             else:
-                from pygpt_net.provider.agents.planner import PlannerAgent as ProviderAgent
+                from pygpt_net.provider.agents.planner import (
+                    PlannerAgent as ProviderAgent,
+                )
         except Exception:  # pragma: no cover - optional dependency path
             self._pygpt_agent = None
             return

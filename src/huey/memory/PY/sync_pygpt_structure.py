@@ -19,6 +19,7 @@ overwritten if they contain a ``Placeholder for`` header. The ``--depth``
 option controls how deep into the submodule the copy process recurses. By
 default the entire tree is mirrored.
 """
+
 import argparse
 import os
 import shutil

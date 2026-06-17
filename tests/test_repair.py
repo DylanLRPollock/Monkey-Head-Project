@@ -16,7 +16,9 @@ REPAIR_MODULE = (
 )
 
 if not REPAIR_MODULE.exists():
-    pytest.skip("repair module not available in this repository layout", allow_module_level=True)
+    pytest.skip(
+        "repair module not available in this repository layout", allow_module_level=True
+    )
 
 spec = importlib.util.spec_from_file_location("repair", REPAIR_MODULE)
 repair = importlib.util.module_from_spec(spec)

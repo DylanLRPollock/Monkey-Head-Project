@@ -199,9 +199,7 @@ class AIProcessor:
             status = "error"
         else:
             backend_label = (
-                f"{self._llm_backend}-fallback"
-                if used_fallback
-                else self._llm_backend
+                f"{self._llm_backend}-fallback" if used_fallback else self._llm_backend
             )
             status = "fallback" if used_fallback else "success"
 

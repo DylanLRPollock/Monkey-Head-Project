@@ -5,9 +5,9 @@
 
 """Utility helpers for the Monkey Head compatibility layer."""
 
+from ..memory.PY import utils as _legacy_utils
 from .auto_sort import auto_sort_memory
 from .paths import ensure_subdirectory, get_logs_dir, get_memory_path
-from ..memory.PY import utils as _legacy_utils
 
 calculate_sum = _legacy_utils.calculate_sum
 convert_image = _legacy_utils.convert_image

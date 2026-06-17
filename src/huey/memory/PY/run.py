@@ -60,6 +60,7 @@ def run_module(target: str) -> None:
         raise ImportError(f"Function {func_name} not found in {module_name}") from exc
     func()
 
+
 def _prepare_pygpt(source: str | None = None) -> bool:
     """Ensure :mod:`pygpt_net` is importable either from site-packages or vendors."""
 
@@ -138,8 +139,6 @@ def launch_manager_ui() -> None:
     root = tk.Tk()
     MainUI(root)
     root.mainloop()
-
-
 
 
 def launch_install_gui() -> None:

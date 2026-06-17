@@ -37,8 +37,6 @@ def _read_license_text() -> str:
         return "License file not found."
 
 
-
-
 def validate_license_acceptance(accepted: bool) -> None:
     """Ensure license terms were accepted before installation continues."""
 

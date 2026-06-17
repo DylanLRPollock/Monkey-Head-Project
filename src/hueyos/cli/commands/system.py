@@ -24,7 +24,9 @@ def _cmd_system_check(args: argparse.Namespace) -> int:
     return 0
 
 
-def register_system_commands(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def register_system_commands(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
     """Register system inspection commands."""
 
     sys_cmd = subparsers.add_parser(

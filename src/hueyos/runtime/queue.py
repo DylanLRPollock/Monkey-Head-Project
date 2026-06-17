@@ -42,7 +42,9 @@ def mark_processed(path: str | Path, processed_dir: str | Path) -> Path:
     return Path(moved_to)
 
 
-def mark_failed(path: str | Path, failed_dir: str | Path, reason: str) -> tuple[Path, Path]:
+def mark_failed(
+    path: str | Path, failed_dir: str | Path, reason: str
+) -> tuple[Path, Path]:
     """Move a failed fixture to failed archive and write a sidecar reason file."""
     source = Path(path)
     destination_dir = Path(failed_dir)

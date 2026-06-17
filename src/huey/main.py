@@ -7,6 +7,7 @@ that module rather than its side effects, so this shim provides a
 self-contained version that reuses the same signatures while remaining
 importable in minimal environments.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -19,10 +20,13 @@ except ModuleNotFoundError:  # pragma: no cover - source checkout namespace
     try:
         from huey.pytorch_tools import device_summary
     except ModuleNotFoundError:  # pragma: no cover - optional torch stack absent
+
         def device_summary() -> Dict[str, Any]:
             return {"available": False, "reason": "torch is not installed"}
 
+
 from .pyhuey_integration import pyhuey_status as get_pyhuey_status
+
 
 @dataclass
 class _Route:
@@ -43,7 +47,9 @@ class _StubApp:
 
     routes: Dict[Tuple[str, Tuple[str, ...]], _Route] = field(default_factory=dict)
 
-    def route(self, path: str, *, methods: Iterable[str] | None = None) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def route(
+        self, path: str, *, methods: Iterable[str] | None = None
+    ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
         allowed = tuple(methods) if methods is not None else tuple()
 
         def decorator(func: Callable[..., Any]) -> Callable[..., Any]:

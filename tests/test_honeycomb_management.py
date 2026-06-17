@@ -3,8 +3,8 @@
 # www.dlrp.ca
 # HueyOS: Test Honeycomb Management module (tests)
 
-import subprocess
 import importlib
+import subprocess
 
 import pytest
 

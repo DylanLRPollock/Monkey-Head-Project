@@ -88,7 +88,7 @@ jobs:
       - name: Run Trivy filesystem scan (non-blocking)
         id: trivy
         continue-on-error: true
-        uses: aquasecurity/trivy-action@6e7ca55bfcf5676f309bc511f048ca24fd886c1b # v0.33.1
+        uses: aquasecurity/trivy-action@v0.33.1
         with:
           scan-type: fs
           scan-ref: .

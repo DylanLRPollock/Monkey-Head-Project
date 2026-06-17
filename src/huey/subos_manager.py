@@ -7,7 +7,9 @@ import subprocess
 
 
 def update_system() -> None:
-    subprocess.run(["apt-get", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    subprocess.run(
+        ["apt-get", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
     subprocess.run(
         ["apt-get", "upgrade", "-y"],
         stdout=subprocess.PIPE,
