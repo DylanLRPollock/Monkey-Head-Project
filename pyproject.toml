@@ -2,7 +2,7 @@
 name = "hueyos"
 version = "0.2.0"
 description = "HueyOS: offline-first embodied AI / OS for Huey and the Monkey-Head-Project."
-requires-python = ">=3.13,<3.15"
+requires-python = ">=3.13,<3.14"
 readme = "README.md"
 authors = [
   { name = "Dylan L. R. Pollock" },
@@ -22,7 +22,6 @@ classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.13",
-  "Programming Language :: Python :: 3.14",
   "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
   "Operating System :: POSIX :: Linux",
 ]
@@ -63,7 +62,7 @@ ml = [
   "aiohappyeyeballs==2.6.1",
   "aiosignal==1.4.0",
   "anthropic[bedrock,vertex]==0.100.0",
-  "audioop-lts==0.2.2; python_version >= '3.13' and python_version < '3.15'",
+  "audioop-lts==0.2.2; python_version >= '3.13' and python_version < '3.14'",
   "faster-whisper==1.2.1",
   "google-ai-generativelanguage==0.11.0",
   "google-genai==2.2.0",
@@ -117,7 +116,7 @@ ml = [
   "safetensors==0.7.0",
   "sentencepiece==0.2.1",
   "sortedcontainers==2.4.0",
-  "standard-aifc==3.13.0; python_version >= '3.13' and python_version < '3.15'",
+  "standard-aifc==3.13.0; python_version >= '3.13' and python_version < '3.14'",
   "tiktoken==0.12.0",
   "torch==2.12.0; sys_platform != 'win32'",
   "torchaudio==2.11.0; sys_platform != 'win32'",
