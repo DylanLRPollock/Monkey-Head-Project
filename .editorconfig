@@ -35,7 +35,7 @@ insert_final_newline = false
 ########################################
 # Data and config formats
 ########################################
-# YAML (GitHub Actions, Ansible, K8s, etc.)
+# YAML (GitHub Actions, Ansible, Compose metadata, etc.)
 [*.{yml,yaml}]
 indent_style = space
 indent_size = 2
