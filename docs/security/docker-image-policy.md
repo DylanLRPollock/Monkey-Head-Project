@@ -1,6 +1,6 @@
 # Docker Image Pinning & Update Policy
 
-This repository uses Docker images in both development and runtime workflows. To reduce supply-chain risk and avoid surprise breakage, follow these rules:
+This repository may use Docker images for optional development, sandboxing, testing, and reproducible service workflows. To reduce supply-chain risk and avoid surprise breakage, follow these rules:
 
 ## 1) No `:latest` in committed Compose files
 
@@ -17,13 +17,13 @@ This repository uses Docker images in both development and runtime workflows. To
 
 ## 3) Digest pinning for production/release images
 
-- Production/release images should be pinned by digest in release manifests, e.g. `image: repo/name:tag@sha256:<digest>`.
+- If Docker images are promoted to production/release use, they should be pinned by digest in release manifests, e.g. `image: repo/name:tag@sha256:<digest>`.
 - Development Compose stacks may use explicit tags without digests to preserve local workflow flexibility.
 
 ## 4) Scheduled rebuild expectations
 
 - Rebuild development images at least monthly to pick up OS/package security updates.
-- Rebuild production/release images on a fixed cadence (at least monthly) and immediately for critical CVEs.
+- If production/release images exist, rebuild them on a fixed cadence (at least monthly) and immediately for critical CVEs.
 - Even with unchanged application code, produce refreshed images to capture upstream security patches.
 
 ## 5) Debian release track defaults in this repo
