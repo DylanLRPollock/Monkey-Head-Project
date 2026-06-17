@@ -367,7 +367,7 @@ pygame==2.6.1
 pygments==2.20.0
 pyinstaller==6.20.0
 pyinstaller-hooks-contrib==2026.5
-pyjwt==2.12.1
+pyjwt==2.13.0
 pyparsing==3.3.2
 pypdf==6.13.0
 pypika==0.51.1
