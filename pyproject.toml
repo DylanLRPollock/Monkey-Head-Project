@@ -29,7 +29,7 @@ classifiers = [
 # Keep the on-robot footprint small; full stack is available via extras.
 dependencies = [
   "aiofiles==25.1.0",
-  "aiohttp==3.14.0",
+  "aiohttp==3.14.1",
   "aiosqlite==0.22.1",
   "anyio==4.13.0",
   "attrs==26.1.0",

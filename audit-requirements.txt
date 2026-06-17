@@ -29,7 +29,7 @@
 
 # --- Core ---
 aiofiles==25.1.0
-aiohttp==3.14.0
+aiohttp==3.14.1
 aiosqlite==0.22.1
 anyio==4.13.0
 attrs==26.1.0
