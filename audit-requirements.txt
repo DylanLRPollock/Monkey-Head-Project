@@ -163,7 +163,7 @@ pytest-cov==7.1.0
 rich==15.0.0
 ruff==0.15.12
 types-PyYAML==6.0.12.20260510
-types-requests==2.33.0.20260508
+types-requests==2.33.0.20260518
 uv==0.11.15
 
 # --- Audio IO ---
