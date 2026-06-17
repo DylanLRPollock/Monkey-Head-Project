@@ -5,6 +5,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Generator
+from typing import cast
+
 import asyncio
 import inspect
 import sys
@@ -29,7 +32,7 @@ if sys.platform.startswith("win"):
 
 
 @pytest.fixture
-def event_loop() -> asyncio.AbstractEventLoop:
+def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
     loop = asyncio.new_event_loop()
     try:
         yield loop
@@ -54,7 +57,7 @@ def pytest_pyfunc_call(pyfuncitem: pytest.Function) -> bool:
         if name in pyfuncitem.funcargs
     }
 
-    loop = pyfuncitem.funcargs.get("event_loop")
+    loop = cast(asyncio.AbstractEventLoop | None, pyfuncitem.funcargs.get("event_loop"))
     manage_loop = False
     if loop is None:
         loop = asyncio.new_event_loop()
@@ -74,3 +77,4 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "asyncio: run the marked coroutine test inside an event loop",
     )
+
