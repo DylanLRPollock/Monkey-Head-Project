@@ -1,5 +1,5 @@
-# Monkey Head Project
-# HueyOS sources.list [OLD]
+# Monkey-Head-Project
+# forky sources.list
 
 ## forky
 deb http://deb.debian.org/debian forky main contrib non-free non-free-firmware
@@ -12,3 +12,7 @@ deb-src http://deb.debian.org/debian forky-updates main contrib non-free non-fre
 ## forky-security
 deb http://security.debian.org/debian-security forky-security main contrib non-free non-free-firmware
 deb-src http://security.debian.org/debian-security forky-security main contrib non-free non-free-firmware
+
+## forky-backports
+# deb http://deb.debian.org/debian forky-backports main contrib non-free non-free-firmware
+# deb-src http://deb.debian.org/debian forky-backports main contrib non-free non-free-firmware
