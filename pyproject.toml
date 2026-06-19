@@ -185,7 +185,7 @@ audio = [
 
 [project.scripts]
 huey = "huey.cli:main"
-# Kept aligned to the current runtime contract pending the source-level entrypoint fix.
+# HueyOS API console entrypoint.
 huey-api = "huey.api:main"
 
 [build-system]

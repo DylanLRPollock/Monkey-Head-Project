@@ -37,7 +37,7 @@ jobs:
       - name: Record full Bandit report (debt + new)
         if: always()
         run: |
-          bandit -r src -f json -o bandit-results-full.json
+          bandit -r src -f json -o bandit-results-full.json || true
 
       - name: Enforce no new medium/high findings
         run: |
