@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <img alt="README version" src="https://img.shields.io/badge/README-v32.0-blue">
+  <img alt="README version" src="https://img.shields.io/badge/README-v32.1-blue">
   <img alt="Master plan" src="https://img.shields.io/badge/master%20plan-v32.0-purple">
   <img alt="Status" src="https://img.shields.io/badge/status-Huey%20Brain%20V1-orange">
   <img alt="V1 boundary" src="https://img.shields.io/badge/V1%20boundary-Legion%20Go-brightgreen">
@@ -47,6 +47,7 @@
 | **Current proof loop** | controlled MP3 fixture → local transcription → cognition bridge → structured log |
 | **V1 hardware policy** | stock/unmodified Legion Go; observe thermals, do not alter enclosure |
 | **V1 audio policy** | predetermined MP3 fixture suite; no live microphone |
+| **Supported Python** | Python 3.13.x only; Python 3.14.x is research-stage only |
 
 > HueyOS is the software and operating-system layer behind Huey: the environment that coordinates local AI, memory, tools, access paths, hardware, and later embodied control into one offline-first system.
 >
