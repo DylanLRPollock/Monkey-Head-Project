@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <img alt="README version" src="https://img.shields.io/badge/README-v32.0-blue">
+  <img alt="README version" src="https://img.shields.io/badge/README-v32.1-blue">
   <img alt="Master plan" src="https://img.shields.io/badge/master%20plan-v32.0-purple">
   <img alt="Status" src="https://img.shields.io/badge/status-Huey%20Brain%20V1-orange">
   <img alt="V1 boundary" src="https://img.shields.io/badge/V1%20boundary-Legion%20Go-brightgreen">
@@ -38,7 +38,7 @@
 | **System / OS layer** | `HueyOS` |
 | **AI identity** | `Huey` |
 | **Human counterpart** | Dylan L.R. Pollock |
-| **README version** | `32.0` |
+| **README version** | `32.1` |
 | **Canonical machine-facing spec** | `master-plan-v32.0.json` |
 | **Canonical law layer** | `03 - Huey_Constitution.txt` |
 | **Canonical book front matter** | `00 - TOC_&_Glossary.txt` |
@@ -47,6 +47,7 @@
 | **Current proof loop** | controlled MP3 fixture → local transcription → cognition bridge → structured log |
 | **V1 hardware policy** | stock/unmodified Legion Go; observe thermals, do not alter enclosure |
 | **V1 audio policy** | predetermined MP3 fixture suite; no live microphone |
+| **Supported Python** | Python 3.13.x only; Python 3.14.x is research-stage only |
 
 > HueyOS is the software and operating-system layer behind Huey: the environment that coordinates local AI, memory, tools, access paths, hardware, and later embodied control into one offline-first system.
 >
@@ -953,6 +954,7 @@ This repository is moving toward a cleaner long-term structure.
 | `requirements.txt` | Dependency baseline |
 | `constraints.txt` | Shared install constraints |
 | `pyproject.toml` | Package and install contract |
+| `docs/development/python-support-policy.md` | Python runtime support policy |
 | `Makefile` | Convenience entry points, if present |
 
 ### Working repository areas
@@ -974,7 +976,26 @@ This repository is moving toward a cleaner long-term structure.
 
 ## Quick start
 
-Use the current package/runtime contract from `pyproject.toml` + `Makefile`.
+Use the current package/runtime contract from `pyproject.toml`, `constraints.txt`, `requirements.txt`, `Makefile`, and `docs/development/python-support-policy.md`.
+
+### Python runtime policy
+
+Monkey-Head-Project / HueyOS currently supports **Python 3.13.x only**.
+
+Supported range:
+
+```text
+>=3.13,<3.14
+```
+
+Python 3.11.x and Python 3.12.x are not part of the current supported runtime contract.
+
+Python 3.14.x is **research-stage only**. It may be explored in isolated branches or throwaway environments, but it should not be treated as supported until the dependency stack, audio compatibility packages, ML packages, PyGPT/PyHuey integration, and HueyOS runtime path have all been validated.
+
+See `
+docs/development/python-support-policy.md
+` for the canonical support policy.
+
 
 - **Source install path:**
 ```bash
