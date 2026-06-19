@@ -13,7 +13,6 @@ on:
 permissions:
   contents: read
 
-
 jobs:
   pip-audit:
     runs-on: ubuntu-latest
@@ -34,13 +33,17 @@ jobs:
 
       - name: Prepare requirements for pip-audit
         run: |
-          grep -vE '^\\s*-c\\s+' requirements.txt > audit-requirements.txt
+          grep -vE '^\s*-c\s+' requirements.txt > audit-requirements.txt
 
-      - name: Run pip-audit (human-readable)
-        run: pip-audit -r audit-requirements.txt
+      - name: Record pip-audit JSON output
+        if: always()
+        run: |
+          pip-audit -r audit-requirements.txt --format json --output pip-audit-results.json || true
+          test -f pip-audit-results.json || printf '{"error":"pip-audit did not produce JSON output"}\n' > pip-audit-results.json
 
-      - name: Run pip-audit (JSON output)
-        run: pip-audit -r audit-requirements.txt --format json --output pip-audit-results.json
+      - name: Enforce dependency security audit
+        run: |
+          pip-audit -r audit-requirements.txt
 
       - name: Upload pip-audit results
         if: always()

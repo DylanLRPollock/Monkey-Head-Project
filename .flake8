@@ -13,7 +13,8 @@ max-line-length = 88
 # - E501: line length (delegated to Black)
 # - W291: trailing whitespace (handled by pre-commit trailing-whitespace hook)
 # - W293: blank line contains whitespace (also handled by pre-commit)
-extend-ignore = E203, E402, E501, W291, W293
+# - W503: line break before binary operator; Black-compatible wrapping
+extend-ignore = E203, E402, E501, W291, W293, W503
 
 # Enable core Flake8 checks plus flake8-bugbear (configured via pre-commit)
 # B950: soft maximum line length that works well with Black's 88-char style

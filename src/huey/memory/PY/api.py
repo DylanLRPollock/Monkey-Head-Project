@@ -108,10 +108,8 @@ from hueyos.core.resilience import (
     EmergencyGovernanceController,
 )
 from hueyos.core.task_scheduler import (
-    Agent,
     ResourceProfile,
     TaskPriority,
-    TaskRecord,
     TaskScheduler,
     TaskStatus,
 )
@@ -1159,7 +1157,9 @@ _register_battery_hooks()
 from hueyos.api.routers.network import router as network_router
 from hueyos.api.routers.power import router as power_router
 from hueyos.api.routers.sensors import router as sensors_router
+from hueyos.api.routers.system import healthz
 from hueyos.api.routers.system import router as system_router
+from hueyos.api.routers.system import system_status
 from hueyos.api.routers.tasks import (
     cancel_task,
     get_task,
@@ -1809,16 +1809,41 @@ def admin_health_check() -> Dict[str, str]:
     return healthz()
 
 
-def main() -> None:
-    import os
+def main(argv: Sequence[str] | None = None) -> None:
+    """Run the HueyOS API server from the console entry point."""
+    import argparse
 
     import uvicorn
 
-    host = os.getenv("HUEY_HOST", "127.0.0.1")
-    port = int(os.getenv("HUEY_PORT", "1995"))
-    reload = os.getenv("HUEY_RELOAD", "").strip().lower() in {"1", "true", "yes", "on"}
+    env_reload = os.getenv("HUEY_RELOAD", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
 
-    uvicorn.run("huey.api:app", host=host, port=port, reload=reload)
+    parser = argparse.ArgumentParser(description="Run the HueyOS API server.")
+    parser.add_argument(
+        "--host",
+        default=os.getenv("HUEY_HOST", "127.0.0.1"),
+        help="Host/interface to bind. Defaults to HUEY_HOST or 127.0.0.1.",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.getenv("HUEY_PORT", "1995")),
+        help="Port to bind. Defaults to HUEY_PORT or 1995.",
+    )
+    parser.add_argument(
+        "--reload",
+        action="store_true",
+        default=env_reload,
+        help="Enable uvicorn reload mode. Also enabled by HUEY_RELOAD=true.",
+    )
+
+    args = parser.parse_args(argv)
+
+    uvicorn.run("huey.api:app", host=args.host, port=args.port, reload=args.reload)
 
 
 if __name__ == "__main__":
