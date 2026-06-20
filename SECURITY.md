@@ -64,7 +64,7 @@ HueyOS is designed and tested primarily against:
   * `amd64` (x86_64). Other architectures (ARM, RISC‑V, etc.) may work, but are currently out of scope for security guarantees.
 * **Kernel**
 
-  * HueyOS tracks explicit, documented kernel baselines with project-specific configuration (current baseline: **6.18.5-huey-os**).
+  * HueyOS tracks explicit, documented kernel baselines with project-specific configuration (current baseline: **stable 7.0.x HueyOS line**).
   * The supported kernel series per release are documented in that release’s notes/changelog.
 
 ### Virtualization and containers
