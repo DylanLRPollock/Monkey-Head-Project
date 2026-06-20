@@ -22,6 +22,14 @@ from typing import Any
 # Reuse the existing, fully featured implementation.
 _impl = import_module("monkey_head.main")
 
+app = getattr(_impl, "app")
+health_check = getattr(_impl, "health_check")
+readiness_check = getattr(_impl, "readiness_check")
+version_info = getattr(_impl, "version_info")
+parse_args = getattr(_impl, "parse_args")
+run_setup = getattr(_impl, "run_setup")
+main = getattr(_impl, "main")
+
 __all__ = [
     "app",
     "health_check",
@@ -31,9 +39,6 @@ __all__ = [
     "run_setup",
     "main",
 ]
-
-for name in __all__:
-    globals()[name] = getattr(_impl, name)
 
 
 def __getattr__(name: str) -> Any:

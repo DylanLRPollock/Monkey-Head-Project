@@ -27,6 +27,7 @@ if not hasattr(fastapi, "Request"):
 # Migration shim: ``huey.memory.PY.api`` still imports ``hueyos.core.*`` paths
 # while implementations live under ``huey.core.*`` during v101.1 stabilization.
 import sys
+import types
 
 sys.modules.setdefault(
     "hueyos.core.resilience", importlib.import_module("huey.core.resilience")
