@@ -41,7 +41,7 @@ dependencies = [
   "packaging==26.2",
   "psutil==7.2.2",
   "pydantic==2.13.4",
-  "pydantic-settings==2.14.1",
+  "pydantic-settings==2.14.2",
   "PyYAML==6.0.3",
   "python-multipart==0.0.31",
   "requests==2.33.1",
@@ -118,16 +118,11 @@ ml = [
   "sortedcontainers==2.4.0",
   "standard-aifc==3.13.0; python_version >= '3.13' and python_version < '3.14'",
   "tiktoken==0.12.0",
-  "torch==2.12.0; sys_platform != 'win32'",
-  "torchaudio==2.11.0; sys_platform != 'win32'",
-  "torchvision==0.26.0; sys_platform != 'win32'",
   "traitlets==5.15.0",
   "transformers==5.8.0",
 ]
 
 data = [
-  "chroma-hnswlib==0.7.6",
-  "chromadb==1.5.9",
   "duckdb==1.5.2",
   "elastic-transport==9.4.0",
   "elasticsearch==9.4.0",
