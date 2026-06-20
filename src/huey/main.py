@@ -26,6 +26,19 @@ except ModuleNotFoundError:  # pragma: no cover - source checkout namespace
 
 
 from .pyhuey_integration import pyhuey_status as get_pyhuey_status
+from .agents.agent_manager import AgentManager
+from .ai.brain import HueyBrain
+from .bridges.api_bridge import ApiBridge
+from .bridges.cognition_bridge import CognitionBridge
+from .bridges.hardware_bridge import HardwareBridge
+from .config import RuntimeConfig, build_runtime_config
+from .gencore.kernel import GenCoreKernel
+from .governance.policy import PolicyEnforcer
+from .logger import configure_logging
+from .settings import RuntimeSettings
+from .storage.honeycomb import HoneycombStore
+from .ui.interface import InterfaceController
+from .version import VERSION, version_payload
 
 
 @dataclass
@@ -64,6 +77,35 @@ class _StubApp:
         return {"host": host, "port": port}
 
 
+@dataclass
+class ApplicationContext:
+    settings: RuntimeSettings
+    config: RuntimeConfig
+    kernel: GenCoreKernel
+    brain_bridge: CognitionBridge
+    agents: AgentManager
+    governance: PolicyEnforcer
+    storage: HoneycombStore
+    interface: InterfaceController
+    hardware: HardwareBridge
+    api_bridge: ApiBridge
+
+    def snapshot(self) -> dict[str, Any]:
+        kernel_snapshot = self.kernel.snapshot()
+        return {
+            "settings": self.settings.to_dict(),
+            "config": self.config.to_dict(),
+            "kernel": kernel_snapshot,
+            "agents": self.agents.list_agents(),
+            "governance": self.governance.authorize(
+                "runtime.snapshot",
+                {"risk": 0.0, "remote_control": False, "allowed": True},
+            ),
+            "hardware": self.hardware.snapshot(),
+            "api_routes": self.api_bridge.describe(),
+        }
+
+
 def jsonify(**payload: Any) -> Dict[str, Any]:
     """Return a JSON-serialisable payload.
 
@@ -88,8 +130,10 @@ def readiness_check() -> tuple[Dict[str, str], int]:
 
 
 @app.route("/version", methods=["GET"])
-def version_info(version: str = "unknown") -> tuple[Dict[str, str], int]:
-    return {"version": version}, 200
+def version_info(version: str = VERSION) -> tuple[Dict[str, str], int]:
+    payload = version_payload()
+    payload["version"] = version
+    return payload, 200
 
 
 @app.route("/pytorch/info", methods=["GET"])
@@ -128,7 +172,54 @@ def parse_args(args: list[str] | None = None) -> argparse.Namespace:
 def run_setup() -> None:
     """Placeholder for the historical setup routine."""
 
+    global RUNTIME_CONTEXT
+    RUNTIME_CONTEXT = build_application_context()
     return None
+
+
+def build_application_context(
+    settings: RuntimeSettings | None = None,
+) -> ApplicationContext:
+    """Bootstrap the speculative subsystem tree inside the existing package."""
+
+    resolved_settings = settings or RuntimeSettings.from_env()
+    configure_logging(resolved_settings)
+    runtime_config = build_runtime_config(settings=resolved_settings)
+    kernel = GenCoreKernel(resolved_settings)
+    kernel.bootstrap()
+    brain = HueyBrain()
+    agents = AgentManager(brain)
+    cognition = CognitionBridge(brain, agents)
+    governance = PolicyEnforcer()
+    storage = HoneycombStore()
+    interface = InterfaceController()
+    hardware = HardwareBridge(kernel)
+    api_bridge = ApiBridge(kernel, agents=agents, governance=governance)
+    storage.put(
+        "runtime/bootstrap",
+        {
+            "settings": resolved_settings.to_dict(),
+            "boot": kernel.health_report(),
+            "agents": agents.list_agents(),
+        },
+        labels=["runtime", "bootstrap"],
+    )
+    kernel.create_process(
+        "huey-main",
+        metadata={"environment": resolved_settings.environment},
+    )
+    return ApplicationContext(
+        settings=resolved_settings,
+        config=runtime_config,
+        kernel=kernel,
+        brain_bridge=cognition,
+        agents=agents,
+        governance=governance,
+        storage=storage,
+        interface=interface,
+        hardware=hardware,
+        api_bridge=api_bridge,
+    )
 
 
 def main() -> None:
@@ -140,8 +231,12 @@ def main() -> None:
     app.run(host=args.host, port=args.port)
 
 
+RUNTIME_CONTEXT: ApplicationContext | None = None
+
 __all__ = [
+    "ApplicationContext",
     "app",
+    "build_application_context",
     "health_check",
     "readiness_check",
     "version_info",
@@ -151,4 +246,5 @@ __all__ = [
     "run_setup",
     "main",
     "jsonify",
+    "RUNTIME_CONTEXT",
 ]
