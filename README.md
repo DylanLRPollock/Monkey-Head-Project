@@ -1040,6 +1040,8 @@ Boundary notes:
 
 The repository now ships a prebuilt Windows launcher and matching Go source at `src/huey/platform/installers/windows/launcher/`.
 
+From the repository root on Windows, invoke `.\src\huey\platform\installers\windows\launcher\HueyOS-Launcher-Setup.exe` for CLI usage.
+
 | Action | Result |
 |---|---|
 | Double-click | Creates HueyOS folders/config if needed, then tries to launch HueyOS Command Center. |
