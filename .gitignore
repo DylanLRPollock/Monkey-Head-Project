@@ -107,3 +107,46 @@ local_secrets/
 pip-audit-report*
 safety-report*
 bandit-report*
+
+# --- Local generated tooling artifacts ---
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Test/type/lint caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Virtual environments
+.venv/
+.venv*/
+venv/
+env/
+ENV/
+.venv313-ci/
+
+# Build/package outputs
+build/
+dist/
+*.egg-info/
+
+# Local reports/artifacts
+bandit-results*.json
+pip-audit*.json
+*.log
+
+# Local archive / inspection bundles
+/folders.zip
+*.zip
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+
+# --- End local generated tooling artifacts ---
