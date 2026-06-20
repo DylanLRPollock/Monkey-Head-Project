@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Query, status
 
+from huey.memory.PY.api import SensorRegistrationRequest
+
 router = APIRouter(tags=["Sensors"])
 
 
@@ -22,7 +24,7 @@ def list_sensors():
 
 
 @router.post("/sensors/register", status_code=status.HTTP_201_CREATED)
-def register_sensor(request):
+def register_sensor(request: SensorRegistrationRequest):
     from huey.memory.PY import api as legacy_api
 
     return legacy_api.register_sensor(request)

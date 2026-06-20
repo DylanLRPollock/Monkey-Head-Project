@@ -81,13 +81,17 @@ class StorageManager:
         return dest
 
     # -----------------------------------------------------
-    def sort_root_files(self) -> None:
+    def sort_root_files(self, *, dry_run: bool = False) -> None:
         """Move files in the base directory into subfolders by extension."""
         for item in self.base_dir.iterdir():
             if not item.is_file():
                 continue
             ext = item.suffix.lower().lstrip(".")
             folder = EXT_MAP.get(ext, ext.upper() if ext else "MISC")
+            if dry_run:
+                target_dir = self.base_dir / folder
+                logger.info("Dry-run move: %s -> %s", item, target_dir / item.name)
+                continue
             self._unique_move(item, self.base_dir / folder)
 
     # -----------------------------------------------------
@@ -123,7 +127,9 @@ class StorageManager:
         return total
 
     # -----------------------------------------------------
-    def remove_older_than(self, days: int, folder: Optional[str] = None) -> int:
+    def remove_older_than(
+        self, days: int, folder: Optional[str] = None, *, dry_run: bool = False
+    ) -> int:
         """Remove files older than ``days`` days and return the count."""
         path = self.base_dir / folder if folder else self.base_dir
         if days <= 0 or not path.exists():
@@ -151,6 +157,10 @@ class StorageManager:
                 continue
 
             if modified_time < threshold:
+                if dry_run:
+                    logger.info("Dry-run prune: %s", p)
+                    removed += 1
+                    continue
                 try:
                     p.unlink()
                     removed += 1
@@ -197,12 +207,22 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
         metavar="DAYS",
         help="Delete files older than DAYS days",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Preview sort/prune actions without changing files.",
+    )
+    parser.add_argument(
+        "--yes",
+        action="store_true",
+        help="Skip the confirmation prompt for prune operations.",
+    )
 
     args = parser.parse_args(argv)
     mgr = StorageManager(args.path)
 
     if args.sort:
-        mgr.sort_root_files()
+        mgr.sort_root_files(dry_run=args.dry_run)
     if args.list is not None:
         for f in mgr.list_files(args.list):
             print(f)
@@ -212,7 +232,14 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
         size = mgr.get_total_size(args.size or None)
         print(size)
     if args.prune is not None:
-        removed = mgr.remove_older_than(args.prune)
+        if not args.dry_run and not args.yes:
+            confirmation = input(
+                f"Delete files older than {args.prune} day(s) under '{mgr.base_dir}'? [y/N]: "
+            ).strip().lower()
+            if confirmation not in {"y", "yes"}:
+                print("Cancelled.")
+                return
+        removed = mgr.remove_older_than(args.prune, dry_run=args.dry_run)
         print(removed)
 
 

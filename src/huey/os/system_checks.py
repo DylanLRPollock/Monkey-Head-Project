@@ -1,3 +1,9 @@
-"""Compatibility shim exposing legacy huey.system_checks via huey.os.system_checks."""
+"""Compatibility shim exposing ``huey.system_checks`` under ``huey.os``."""
 
-from huey.system_checks import *  # noqa: F401,F403
+from __future__ import annotations
+
+import sys
+from importlib import import_module
+
+_impl = import_module("huey.system_checks")
+sys.modules[__name__] = _impl

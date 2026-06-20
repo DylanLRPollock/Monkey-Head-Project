@@ -14,10 +14,20 @@ import logging
 # Updated: 06.11.2025
 # ==================================================
 import os
-import pwd
 
-from .core.system_checks import ensure_admin
-from .utils.commands import run_command
+try:
+    import pwd
+except ImportError:  # pragma: no cover - Windows fallback for tests
+    class _PwdModule:
+        @staticmethod
+        def getpwnam(_user: str):
+            raise KeyError(_user)
+
+    pwd = _PwdModule()  # type: ignore[assignment]
+
+from huey.os.core.system_checks import ensure_admin
+
+from .commands import run_command
 
 logger = logging.getLogger(__name__)
 

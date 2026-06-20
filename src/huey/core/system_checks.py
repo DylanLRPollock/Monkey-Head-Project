@@ -3,67 +3,12 @@
 # www.dlrp.ca
 # HueyOS: System Checks module (huey/core)
 
-"""Compatibility layer for :mod:`huey.os.system_checks`."""
+"""Compatibility layer exposing ``huey.system_checks`` under ``huey.core``."""
 
 from __future__ import annotations
 
+import sys
 from importlib import import_module
-from typing import Any
 
-_module = import_module("huey.os.system_checks")
-
-__all__ = getattr(
-    _module, "__all__", [name for name in dir(_module) if not name.startswith("_")]
-)
-if "check_python_version" not in __all__:
-    __all__.append("check_python_version")
-if "check_error" not in __all__:
-    __all__.append("check_error")
-
-for _name in __all__:
-    if _name != "check_python_version":
-        globals()[_name] = getattr(_module, _name)
-
-logger = getattr(_module, "logger")
-
-
-def __getattr__(name: str) -> Any:  # pragma: no cover - proxy
-    return getattr(_module, name)
-
-
-def __setattr__(name: str, value: Any) -> None:  # pragma: no cover - proxy
-    setattr(_module, name, value)
-    globals()[name] = value
-
-
-def check_python_version() -> None:
-    """Warn when running on experimental Python versions.
-
-    This wrapper mirrors :func:`huey.os.system_checks.check_python_version`
-    but uses the ``logger`` attribute from this proxy module. Tests that patch
-    ``huey.os.core.system_checks.logger`` therefore observe the expected
-    behaviour without needing to modify the legacy implementation directly.
-    """
-
-    info = getattr(_module, "sys").version_info
-    if isinstance(info, tuple):
-        major, minor = info[0], info[1]
-    else:
-        major = getattr(info, "major", 0)
-        minor = getattr(info, "minor", 0)
-
-    if major == 3 and minor >= 14:
-        logger.warning(
-            "Python 3.%s detected. This version is experimental and not fully supported.",
-            minor,
-        )
-
-
-def check_error(command: Any, description: str) -> None:
-    """Raise a runtime error when a subprocess command fails."""
-
-    returncode = getattr(command, "returncode", 0)
-    if returncode != 0:
-        message = f"Error: {description} failed with error code {returncode}."
-        logger.error(message)
-        raise RuntimeError(message)
+_impl = import_module("huey.system_checks")
+sys.modules[__name__] = _impl

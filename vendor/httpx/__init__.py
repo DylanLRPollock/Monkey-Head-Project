@@ -42,9 +42,13 @@ class AsyncClient(AbstractAsyncContextManager["AsyncClient"]):
         return None
 
     async def get(
-        self, url: str, *, params: Optional[Dict[str, Any]] = None
+        self,
+        url: str,
+        *,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
     ) -> _Response:
-        return await self._request("GET", url, params=params)
+        return await self._request("GET", url, params=params, headers=headers)
 
     async def post(
         self,
@@ -52,8 +56,11 @@ class AsyncClient(AbstractAsyncContextManager["AsyncClient"]):
         *,
         json: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
     ) -> _Response:
-        return await self._request("POST", url, params=params, json=json)
+        return await self._request(
+            "POST", url, params=params, json=json, headers=headers
+        )
 
     async def _request(
         self,
@@ -62,12 +69,20 @@ class AsyncClient(AbstractAsyncContextManager["AsyncClient"]):
         *,
         params: Optional[Dict[str, Any]] = None,
         json: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
     ) -> _Response:
         app = self._transport.app
         if hasattr(app, "handle_request"):
             response = app.handle_request(
-                method, url, params=params or {}, json=json or {}
+                method,
+                url,
+                params=params or {},
+                json=json or {},
+                headers=headers or {},
+                base_url=self._base_url,
             )
+            if asyncio.iscoroutine(response):
+                response = await response
             data = getattr(response, "data", None)
             if asyncio.iscoroutine(data):
                 try:

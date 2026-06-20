@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from typing import Optional
 
 from .logging_setup import configure_logging
@@ -32,25 +33,32 @@ class ErrorHandler:
     def __init__(self, log_file: Optional[str] = "memory/LOGS/app.log") -> None:
         """Initialise the handler and attach a file logger if requested."""
 
-        logger = configure_logging()
+        self.logger = configure_logging()
         if log_file:
-            file_handler = logging.FileHandler(log_file)
-            file_handler.setFormatter(
-                logging.Formatter(
-                    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            log_path = Path(log_file).expanduser().resolve()
+            log_path.parent.mkdir(parents=True, exist_ok=True)
+            if not any(
+                isinstance(handler, logging.FileHandler)
+                and Path(getattr(handler, "baseFilename", "")).resolve() == log_path
+                for handler in self.logger.handlers
+            ):
+                file_handler = logging.FileHandler(log_path, encoding="utf-8")
+                file_handler.setFormatter(
+                    logging.Formatter(
+                        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+                    )
                 )
-            )
-            logger.addHandler(file_handler)
+                self.logger.addHandler(file_handler)
 
     def log_error(self, error_message: str) -> None:
         """Log ``error_message`` at ``ERROR`` level."""
 
-        logging.error(error_message)
+        self.logger.error(error_message)
 
     def log_info(self, info_message: str) -> None:
         """Log ``info_message`` at ``INFO`` level."""
 
-        logging.info(info_message)
+        self.logger.info(info_message)
 
     def handle_exception(
         self, exception: Exception, *, raise_error: bool = False
@@ -65,6 +73,6 @@ class ErrorHandler:
             When ``True`` the exception is re-raised after being logged.
         """
 
-        logging.exception("Exception occurred: %s", exception)
+        self.logger.exception("Exception occurred: %s", exception)
         if raise_error:
             raise exception

@@ -29,7 +29,8 @@ def submit_task(request: TaskSubmissionRequest, http_request: Request) -> TaskRe
     """Submit a task for execution by Spark or Zap."""
 
     legacy_api = _legacy_api_module()
-    legacy_api.require_strong_api_auth(http_request)
+    if legacy_api._requires_scheduler_auth():
+        legacy_api.require_strong_api_auth(http_request)
     legacy_api._require_unsafe_task_submission_access(http_request)
     profile = (
         request.resource_profile.to_profile()
@@ -58,7 +59,8 @@ def list_tasks_endpoint(
     """List known tasks with optional status filters."""
 
     legacy_api = _legacy_api_module()
-    legacy_api.require_strong_api_auth(http_request)
+    if legacy_api._requires_scheduler_auth():
+        legacy_api.require_strong_api_auth(http_request)
     records = legacy_api.SCHEDULER.list_tasks(status_filter)
     return TaskListResponse(
         tasks=[TaskResponse.from_record(record) for record in records]
@@ -70,7 +72,8 @@ def get_task(task_id: str, http_request: Request) -> TaskResponse:
     """Return the scheduler record for a specific task."""
 
     legacy_api = _legacy_api_module()
-    legacy_api.require_strong_api_auth(http_request)
+    if legacy_api._requires_scheduler_auth():
+        legacy_api.require_strong_api_auth(http_request)
     try:
         record = legacy_api.SCHEDULER.get_task(task_id)
     except KeyError as exc:  # pragma: no cover - defensive
@@ -89,7 +92,8 @@ def cancel_task(task_id: str, http_request: Request) -> TaskResponse:
     """Cancel a pending or running task."""
 
     legacy_api = _legacy_api_module()
-    legacy_api.require_strong_api_auth(http_request)
+    if legacy_api._requires_scheduler_auth():
+        legacy_api.require_strong_api_auth(http_request)
     try:
         record = legacy_api.SCHEDULER.cancel_task(task_id)
     except KeyError as exc:  # pragma: no cover - defensive

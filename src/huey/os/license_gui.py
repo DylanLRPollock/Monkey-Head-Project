@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from importlib import import_module
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -26,4 +27,11 @@ def accept_license(config_path: str | Path, license_hash: str) -> None:
         json.dump(config, handle, indent=2, sort_keys=True)
 
 
-__all__ = ["accept_license"]
+def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -> None:
+    """Delegate to the maintained legacy GUI implementation when available."""
+
+    legacy_module = import_module("huey.memory.PY.license_gui")
+    legacy_module.show_license_gui(config_path)
+
+
+__all__ = ["accept_license", "show_license_gui"]

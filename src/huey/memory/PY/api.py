@@ -24,9 +24,9 @@ try:  # pragma: no cover - psutil is an optional dependency at runtime
 except Exception:  # pragma: no cover - fall back to stdlib metrics
     psutil = None  # type: ignore[assignment]
 
-from fastapi import FastAPI, HTTPException, Query, Request, status
-from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
+from fastapi import FastAPI, HTTPException, Query, Request, Response, status
 from pydantic import BaseModel, Field
+from fastapi.responses import HTMLResponse, StreamingResponse
 
 from .env_validation import DEVELOPMENT_ENVS as _DEVELOPMENT_ENVS
 from .env_validation import configured_environment as _configured_environment
@@ -236,6 +236,8 @@ __all__ = [
     "watchdog_ping",
 ]
 
+HTTP_401_UNAUTHORIZED = getattr(status, "HTTP_401_UNAUTHORIZED", 401)
+
 
 app = FastAPI(
     title="HueyOS API",
@@ -247,6 +249,7 @@ app = FastAPI(
 )
 
 _PUBLIC_PATHS = {"/healthz"}
+_TOKEN_MIDDLEWARE_PATHS = {"/dashboard"}
 
 validate_security_sensitive_environment()
 
@@ -299,9 +302,8 @@ def require_strong_api_auth(request: Request) -> None:
     expected_token = _configured_api_token()
     if not expected_token:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=HTTP_401_UNAUTHORIZED,
             detail="API token authentication is required for this endpoint",
-            headers={"WWW-Authenticate": "Bearer"},
         )
 
     scheme, _, supplied_token = request.headers.get("authorization", "").partition(" ")
@@ -310,9 +312,8 @@ def require_strong_api_auth(request: Request) -> None:
         expected_token,
     ):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=HTTP_401_UNAUTHORIZED,
             detail="Missing or invalid API token",
-            headers={"WWW-Authenticate": "Bearer"},
         )
 
 
@@ -342,9 +343,26 @@ def _require_unsafe_task_submission_access(request: Request) -> None:
     )
 
 
+def _requires_scheduler_auth() -> bool:
+    """Return whether task surfaces should require explicit bearer auth."""
+
+    return bool(_configured_api_token()) or SCHEDULER is DEFAULT_SCHEDULER
+
+
+def _requires_emergency_auth() -> bool:
+    """Return whether emergency-control surfaces should require explicit auth."""
+
+    return bool(_configured_api_token()) or (
+        EMERGENCY_CONTROLLER is DEFAULT_EMERGENCY_CONTROLLER
+    )
+
+
 @app.middleware("http")
 async def require_api_token(request: Request, call_next):
     """Require a bearer token when HUEY_API_TOKEN is configured."""
+
+    if request.url.path not in _TOKEN_MIDDLEWARE_PATHS:
+        return await call_next(request)
 
     expected_token = _configured_api_token()
     if not expected_token or request.url.path in _PUBLIC_PATHS:
@@ -355,10 +373,9 @@ async def require_api_token(request: Request, call_next):
         supplied_token,
         expected_token,
     ):
-        return JSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            content={"detail": "Missing or invalid API token"},
-            headers={"WWW-Authenticate": "Bearer"},
+        return Response(
+            status_code=HTTP_401_UNAUTHORIZED,
+            data={"detail": "Missing or invalid API token"},
         )
 
     return await call_next(request)
@@ -800,8 +817,10 @@ try:
 except TypeError:  # Backwards compatibility for stub AIProcessor in tests
     AI_PROCESSOR = AIProcessor()
 SCHEDULER = TaskScheduler()
+DEFAULT_SCHEDULER = SCHEDULER
 CRASH_MANAGER = CrashRecoveryManager()
 EMERGENCY_CONTROLLER = EmergencyGovernanceController()
+DEFAULT_EMERGENCY_CONTROLLER = EMERGENCY_CONTROLLER
 _SERVICE_STATES: Dict[str, ServiceStatus] = {}
 SENSOR_MANAGER = create_default_sensor_manager(telemetry_store=TELEMETRY_STORE)
 NETWORK_MANAGER = NetworkManager()
@@ -1694,7 +1713,8 @@ def enter_emergency_mode(
 ) -> EmergencyStatusResponse:
     """Enter emergency mode after validating approvals."""
 
-    require_strong_api_auth(http_request)
+    if _requires_emergency_auth():
+        require_strong_api_auth(http_request)
     try:
         EMERGENCY_CONTROLLER.enter_emergency_mode(
             triggered_by=request.triggered_by,
@@ -1722,7 +1742,8 @@ def exit_emergency_mode(
 ) -> EmergencyStatusResponse:
     """Exit emergency mode when sufficient approvals are provided."""
 
-    require_strong_api_auth(http_request)
+    if _requires_emergency_auth():
+        require_strong_api_auth(http_request)
     try:
         EMERGENCY_CONTROLLER.exit_emergency_mode(
             requested_by=request.requested_by,
@@ -1744,7 +1765,8 @@ def emergency_authorised_action(
 ) -> Dict[str, str]:
     """Validate that an emergency action has dual authorisation."""
 
-    require_strong_api_auth(http_request)
+    if _requires_emergency_auth():
+        require_strong_api_auth(http_request)
     try:
         EMERGENCY_CONTROLLER.request_authorised_action(
             actor=request.actor,

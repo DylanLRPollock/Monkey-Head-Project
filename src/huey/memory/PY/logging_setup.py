@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import logging.handlers
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -68,19 +69,27 @@ def _parse_int(value: object, default: int) -> int:
 
 
 def _load_logging_settings(config_path: Optional[str]) -> dict[str, object]:
-    manager = ConfigManager(config_path)
+    defaults = {
+        "log_level": "INFO",
+        "log_file": "LOGS/huey.os.log",
+        "log_max_bytes": 10_485_760,
+        "log_backup_count": 5,
+    }
+    resolved_path = config_path or os.environ.get("MONKEY_HEAD_CONFIG")
+    manager = ConfigManager(resolved_path)
     cfg_path = manager.path
+
+    if resolved_path:
+        if not cfg_path.exists():
+            raise FileNotFoundError(f"Logging configuration file not found: {cfg_path}")
+        return manager.get_section("logging", defaults)
+
     if not cfg_path.exists():
-        raise FileNotFoundError(f"Logging configuration file not found: {cfg_path}")
+        return defaults
 
     return manager.get_section(
         "logging",
-        {
-            "log_level": "INFO",
-            "log_file": "LOGS/huey.os.log",
-            "log_max_bytes": 10_485_760,
-            "log_backup_count": 5,
-        },
+        defaults,
     )
 
 

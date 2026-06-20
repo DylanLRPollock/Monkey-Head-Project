@@ -154,6 +154,22 @@ def check_os_support() -> bool:
     """Verify the host operating system matches the supported matrix."""
 
     system = platform.system()
+    if system == "Windows":
+        release = platform.release()
+        logger.warning(
+            "Unsupported Windows version detected: %s. HueyOS currently targets Debian Forky.",
+            release or "unknown",
+        )
+        return False
+
+    if system == "Darwin":
+        version = platform.mac_ver()[0] or "unknown"
+        logger.warning(
+            "Unsupported macOS version detected: %s. HueyOS currently targets Debian Forky.",
+            version,
+        )
+        return False
+
     if system != "Linux":
         logger.warning("Unsupported operating system detected: %s", system or "unknown")
         return False
@@ -336,11 +352,10 @@ def check_python_version() -> bool:
 
     info = sys.version_info
     if isinstance(info, tuple):  # pragma: no cover - compatibility for patched tuples
-        major, minor, micro = (info + (0, 0, 0))[:3]
+        major, minor = (info + (0, 0))[:2]
     else:
         major = getattr(info, "major", 0)
         minor = getattr(info, "minor", 0)
-        micro = getattr(info, "micro", 0)
 
     supported = (major, minor) >= MIN_PYTHON_VERSION and (
         major,
@@ -349,13 +364,11 @@ def check_python_version() -> bool:
 
     if not supported:
         logger.warning(
-            "Unsupported Python version detected (%s.%s.%s). Supported range is %s.%s to %s.x.",
+            "Python %s.%s detected. Supported target is Python %s.%s.x.",
             major,
             minor,
-            micro,
             MIN_PYTHON_VERSION[0],
             MIN_PYTHON_VERSION[1],
-            MAX_PYTHON_VERSION[1] - 1,
         )
 
     return supported
