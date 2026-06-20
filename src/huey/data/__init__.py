@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from .parsers import AudioParseResult, AudioParser, VideoParseResult, VideoParser
 from .extractor import extract_key_values, extract_sections
 from .loader import load_data, load_text
 from .parser import parse_data
@@ -11,6 +12,8 @@ from .transformer import transform_records
 from .validator import validate_required_fields, validate_schema
 
 __all__ = [
+    "AudioParseResult",
+    "AudioParser",
     "extract_key_values",
     "extract_sections",
     "load_data",
@@ -22,4 +25,6 @@ __all__ = [
     "transform_records",
     "validate_required_fields",
     "validate_schema",
+    "VideoParseResult",
+    "VideoParser",
 ]

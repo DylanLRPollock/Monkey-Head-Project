@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 
+from huey.media.ffmpeg_validator import validate_media_environment
 from huey.media.media_manager import (
     _coerce_path,
     _ensure_source,
@@ -13,6 +15,106 @@ from huey.media.media_manager import extract_frames as _extract_frames
 from huey.media.media_manager import (
     probe_media,
 )
+
+
+@dataclass(frozen=True, slots=True)
+class VideoPipelineResult:
+    source_path: str
+    duration_seconds: float
+    fps: float
+    metadata: dict[str, object]
+    ffmpeg: dict[str, object]
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "source_path": self.source_path,
+            "duration_seconds": self.duration_seconds,
+            "fps": self.fps,
+            "metadata": dict(self.metadata),
+            "ffmpeg": dict(self.ffmpeg),
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class VideoFramePreview:
+    source_path: str
+    preview_path: str
+    timestamp_seconds: float
+    duration_seconds: float
+    fps: float
+    metadata: dict[str, object]
+    ffmpeg: dict[str, object]
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "source_path": self.source_path,
+            "preview_path": self.preview_path,
+            "timestamp_seconds": self.timestamp_seconds,
+            "duration_seconds": self.duration_seconds,
+            "fps": self.fps,
+            "metadata": dict(self.metadata),
+            "ffmpeg": dict(self.ffmpeg),
+        }
+
+
+class VideoPipeline:
+    """Structured wrapper around the existing functional video helpers."""
+
+    def inspect(self, source: str | Path) -> VideoPipelineResult:
+        source_path = _ensure_source(source)
+        metadata = video_metadata(source_path)
+        return VideoPipelineResult(
+            source_path=str(source_path),
+            duration_seconds=video_duration(source_path),
+            fps=video_fps(source_path),
+            metadata=metadata,
+            ffmpeg=validate_media_environment(),
+        )
+
+    def extract_preview(
+        self,
+        source: str | Path,
+        target: str | Path,
+        *,
+        timestamp_seconds: float = 1.0,
+    ) -> VideoFramePreview:
+        source_path = _ensure_source(source)
+        preview_path = extract_thumbnail(
+            source_path,
+            target,
+            timestamp=timestamp_seconds,
+        )
+        inspection = self.inspect(source_path)
+        return VideoFramePreview(
+            source_path=inspection.source_path,
+            preview_path=str(preview_path),
+            timestamp_seconds=timestamp_seconds,
+            duration_seconds=inspection.duration_seconds,
+            fps=inspection.fps,
+            metadata=inspection.metadata,
+            ffmpeg=inspection.ffmpeg,
+        )
+
+    def segment(
+        self,
+        source: str | Path,
+        output_dir: str | Path,
+        *,
+        chunk_seconds: float = 30.0,
+        prefix: str = "segment",
+    ) -> dict[str, object]:
+        segments = split_video(
+            source,
+            output_dir,
+            chunk_seconds=chunk_seconds,
+            prefix=prefix,
+        )
+        inspection = self.inspect(source)
+        return {
+            "segments": [str(path) for path in segments],
+            "chunk_seconds": chunk_seconds,
+            "inspection": inspection.to_dict(),
+        }
 
 
 def extract_frames(
@@ -124,6 +226,9 @@ def video_fps(source: str | Path) -> float:
 
 
 __all__ = [
+    "VideoFramePreview",
+    "VideoPipeline",
+    "VideoPipelineResult",
     "extract_frames",
     "extract_keyframes",
     "extract_thumbnail",
