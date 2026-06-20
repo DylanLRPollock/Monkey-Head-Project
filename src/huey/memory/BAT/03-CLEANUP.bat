@@ -1,177 +1,178 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: 03 Cleanup batch script (setup/Windows11)
-
-# ==================================================  #
-# This file is a part of the 'Monkey Head Project'                                       #
-# Website:   https://dlrp.ca                                                                            #
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
-# License:   https://opensource.org/license/gpl-3-0                                 #
-# Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.11.2025                                                                                 #
-# ================================================== #
 @echo off
-setlocal enabledelayedexpansion
+setlocal EnableExtensions
 
-:: Installation directory used during setup
-set "INSTALL_DIR=%ProgramFiles%\Monkey-Head-Project"
+set "SCRIPT_DIR=%~dp0"
+set "DRY_RUN=1"
+set "REMOVE_VENV=1"
+set "REMOVE_PYTEST_CACHE=1"
+set "REMOVE_PYTHON_CACHE=1"
+set "REMOVE_RUFF_CACHE=1"
+set "REMOVE_LOGS=0"
+set "PURGE_PIP_CACHE=0"
+set "PURGE_NPM_CACHE=0"
+set "DOCKER_PRUNE=0"
 
-:: Change to the script's own directory
-cd /d "%~dp0"
+:parse_args
+if "%~1"=="" goto :args_done
+if /I "%~1"=="help" goto :usage
+if /I "%~1"=="--help" goto :usage
+if /I "%~1"=="/?" goto :usage
+if /I "%~1"=="--yes" (
+    set "DRY_RUN=0"
+    shift
+    goto :parse_args
+)
+if /I "%~1"=="--dry-run" (
+    set "DRY_RUN=1"
+    shift
+    goto :parse_args
+)
+if /I "%~1"=="--logs" (
+    set "REMOVE_LOGS=1"
+    shift
+    goto :parse_args
+)
+if /I "%~1"=="--pip-cache" (
+    set "PURGE_PIP_CACHE=1"
+    shift
+    goto :parse_args
+)
+if /I "%~1"=="--npm-cache" (
+    set "PURGE_NPM_CACHE=1"
+    shift
+    goto :parse_args
+)
+if /I "%~1"=="--docker-prune" (
+    set "DOCKER_PRUNE=1"
+    shift
+    goto :parse_args
+)
+if /I "%~1"=="--all" (
+    set "REMOVE_LOGS=1"
+    set "PURGE_PIP_CACHE=1"
+    set "PURGE_NPM_CACHE=1"
+    shift
+    goto :parse_args
+)
+echo [ERROR] Unknown argument: %~1
+goto :usage
 
-:: Clear screen and set color
-cls
-color 0A
-echo [****|     03_CLEANUP.bat - Cleanup Development Environment   |****]
+:args_done
+call "%SCRIPT_DIR%_common.bat" :resolve_repo_root ROOT_DIR "%SCRIPT_DIR%"
+if errorlevel 1 (
+    echo [ERROR] Could not locate the repository root from "%SCRIPT_DIR%".
+    exit /b 1
+)
+
+set "VENV_DIR=%ROOT_DIR%\venv"
+set "PYTEST_CACHE=%ROOT_DIR%\.pytest_cache"
+set "RUFF_CACHE=%ROOT_DIR%\.ruff_cache"
+set "LOG_DIR=%ROOT_DIR%\src\huey\memory\LOGS"
+set "EXIT_CODE=0"
+
+if "%DRY_RUN%"=="1" (
+    echo [dry-run] Repository cleanup preview for "%ROOT_DIR%"
+)
+
+if "%REMOVE_VENV%"=="1" if exist "%VENV_DIR%" (
+    if "%DRY_RUN%"=="1" (
+        echo [dry-run] Remove "%VENV_DIR%"
+    ) else (
+        rmdir /S /Q "%VENV_DIR%"
+        if errorlevel 1 set "EXIT_CODE=1"
+    )
+)
+
+if "%REMOVE_PYTEST_CACHE%"=="1" if exist "%PYTEST_CACHE%" (
+    if "%DRY_RUN%"=="1" (
+        echo [dry-run] Remove "%PYTEST_CACHE%"
+    ) else (
+        rmdir /S /Q "%PYTEST_CACHE%"
+        if errorlevel 1 set "EXIT_CODE=1"
+    )
+)
+
+if "%REMOVE_RUFF_CACHE%"=="1" if exist "%RUFF_CACHE%" (
+    if "%DRY_RUN%"=="1" (
+        echo [dry-run] Remove "%RUFF_CACHE%"
+    ) else (
+        rmdir /S /Q "%RUFF_CACHE%"
+        if errorlevel 1 set "EXIT_CODE=1"
+    )
+)
+
+if "%REMOVE_PYTHON_CACHE%"=="1" (
+    if "%DRY_RUN%"=="1" (
+        echo [dry-run] Remove __pycache__ directories and *.pyc files under "%ROOT_DIR%"
+    ) else (
+        for /d /r "%ROOT_DIR%" %%D in (__pycache__) do if exist "%%~fD" rd /S /Q "%%~fD"
+        del /S /F /Q "%ROOT_DIR%\*.pyc" >nul 2>&1
+    )
+)
+
+if "%REMOVE_LOGS%"=="1" if exist "%LOG_DIR%" (
+    if "%DRY_RUN%"=="1" (
+        echo [dry-run] Remove "%LOG_DIR%"
+    ) else (
+        rmdir /S /Q "%LOG_DIR%"
+        if errorlevel 1 set "EXIT_CODE=1"
+    )
+)
+
+if "%PURGE_PIP_CACHE%"=="1" (
+    call "%SCRIPT_DIR%_common.bat" :resolve_python "%ROOT_DIR%" PYTHON_EXE
+    if errorlevel 1 (
+        echo [WARN] Python not found; skipping pip cache purge.
+    ) else if "%DRY_RUN%"=="1" (
+        echo [dry-run] Run "%PYTHON_EXE% -m pip cache purge"
+    ) else (
+        "%PYTHON_EXE%" -m pip cache purge
+        if errorlevel 1 set "EXIT_CODE=1"
+    )
+)
+
+if "%PURGE_NPM_CACHE%"=="1" (
+    where npm >nul 2>&1
+    if errorlevel 1 (
+        echo [WARN] npm not found; skipping npm cache purge.
+    ) else if "%DRY_RUN%"=="1" (
+        echo [dry-run] Run "npm cache clean --force"
+    ) else (
+        npm cache clean --force
+        if errorlevel 1 set "EXIT_CODE=1"
+    )
+)
+
+if "%DOCKER_PRUNE%"=="1" (
+    where docker >nul 2>&1
+    if errorlevel 1 (
+        echo [WARN] docker not found; skipping docker cleanup.
+    ) else if "%DRY_RUN%"=="1" (
+        echo [dry-run] Run "docker system prune -a --volumes"
+    ) else (
+        docker system prune -a -f --volumes
+        if errorlevel 1 set "EXIT_CODE=1"
+    )
+)
+
+if "%DRY_RUN%"=="1" (
+    echo.
+    echo Re-run with --yes to apply these cleanup actions.
+)
+
+exit /b %EXIT_CODE%
+
+:usage
+echo Usage: %~nx0 [options]
 echo.
-
-:: Function to ensure the script is running with administrative privileges
-:ensureAdmin
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Please run this script as an administrator.
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
-
-:: Function to check the last command and exit if it failed
-:checkError
-if %errorlevel% neq 0 (
-    echo Error: %1 failed with error code %errorlevel%.
-    call :logError "%1"
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
-
-:: Function to log errors
-:logError
-echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0error_log.txt"
-goto :eof
-
-:: Function to remove virtual environment
-:removeVirtualEnv
-echo Removing virtual environment...
-if exist "%INSTALL_DIR%\venv" (
-    rmdir /S /Q "%INSTALL_DIR%\venv"
-    call :checkError "Removing Virtual Environment"
-) else (
-    echo No virtual environment found.
-)
-goto :eof
-
-:: Function to remove cloned repository
-:removeRepository
-echo Removing installed files...
-if exist "%INSTALL_DIR%" (
-    rmdir /S /Q "%INSTALL_DIR%"
-    call :checkError "Removing Installed Files"
-) else (
-    echo No installation directory found.
-)
-goto :eof
-
-:: Function to remove common directories (Optional)
-:removeDirectories
-echo Removing common directories...
-if exist "%USERPROFILE%\Projects" (
-    rmdir /S /Q "%USERPROFILE%\Projects"
-    call :checkError "Removing Projects Directory"
-) else (
-    echo No Projects directory found.
-)
-if exist "%USERPROFILE%\Tools" (
-    rmdir /S /Q "%USERPROFILE%\Tools"
-    call :checkError "Removing Tools Directory"
-) else (
-    echo No Tools directory found.
-)
-goto :eof
-
-:: Function to clear environment variables (Optional)
-:clearEnvVariables
-echo Clearing environment variables...
-REM Uncomment and modify the following line to clear specific environment variables
-REM setx PATH ""
-goto :eof
-
-:: Function to uninstall Chocolatey packages (Optional)
-:uninstallChocolateyPackages
-echo Uninstalling Chocolatey packages...
-REM Uncomment and add Chocolatey packages to uninstall
-REM choco uninstall -y git
-REM call :checkError "Uninstalling Git"
-REM choco uninstall -y nodejs
-REM call :checkError "Uninstalling NodeJS"
-REM choco uninstall -y vscode
-REM call :checkError "Uninstalling VSCode"
-REM Add more packages as needed
-goto :eof
-
-:: Function to remove temporary files
-:removeTempFiles
-echo Removing temporary files...
-del /F /Q %TEMP%\*
-call :checkError "Removing Temp Files"
-goto :eof
-
-:: Function to clear npm cache
-:clearNpmCache
-echo Clearing npm cache...
-npm cache clean --force
-call :checkError "Clearing NPM Cache"
-goto :eof
-
-:: Function to clear pip cache
-:clearPipCache
-echo Clearing pip cache...
-pip cache purge
-call :checkError "Clearing Pip Cache"
-goto :eof
-
-:: Function to remove Docker containers, images, and volumes (Optional)
-:cleanupDocker
-echo Cleaning up Docker...
-docker system prune -a -f --volumes
-call :checkError "Cleaning Up Docker"
-goto :eof
-
-:: Main Execution Flow
-echo Ensuring script runs with administrative privileges...
-call :ensureAdmin
-
-echo Removing virtual environment...
-call :removeVirtualEnv
-
-echo Removing cloned repository...
-call :removeRepository
-
-echo Removing common directories (Optional)...
-call :removeDirectories
-
-echo Clearing environment variables (Optional)...
-call :clearEnvVariables
-
-echo Uninstalling Chocolatey packages (Optional)...
-call :uninstallChocolateyPackages
-
-echo Removing temporary files...
-call :removeTempFiles
-
-echo Clearing npm cache...
-call :clearNpmCache
-
-echo Clearing pip cache...
-call :clearPipCache
-
-echo Cleaning up Docker (Optional)...
-call :cleanupDocker
-
-echo [****| Cleanup complete! |****]
-echo Logs can be found in "%~dp0error_log.txt"
-pause
+echo Default behavior: preview cleanup of the local venv and Python caches.
+echo.
+echo Options:
+echo   --yes            Apply the selected cleanup actions.
+echo   --dry-run        Show the actions without applying them. Default.
+echo   --logs           Remove src\huey\memory\LOGS.
+echo   --pip-cache      Purge the active Python pip cache.
+echo   --npm-cache      Purge the global npm cache.
+echo   --docker-prune   Run "docker system prune -a --volumes".
+echo   --all            Include logs plus pip/npm cache purges.
 exit /b 0
-
-endlocal

@@ -1,16 +1,8 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: Pygpt Launch & Update batch script (huey/memory/BAT)
+@echo off
+setlocal EnableExtensions
 
-# ==================================================  #
-# This file is a part of the 'Monkey Head Project'                                       #
-# Website:   https://dlrp.ca                                                                            #
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
-# License:   https://opensource.org/license/gpl-3-0                                 #
-# Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.05.2025                                                                                 #
-# ================================================== #
-python -m pip install --upgrade pygpt-MHP
-pygpt
-pause
+set "SCRIPT_DIR=%~dp0"
+call "%SCRIPT_DIR%pygpt-update.bat"
+if errorlevel 1 exit /b %errorlevel%
+call "%SCRIPT_DIR%pygpt-launch.bat"
+exit /b %errorlevel%

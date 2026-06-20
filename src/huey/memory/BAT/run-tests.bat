@@ -1,35 +1,77 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: Run Tests batch script (huey/memory/BAT)
-
 @echo off
-REM ==================================================
-REM This file is a part of the 'Monkey Head Project'
-REM Website:   https://dlrp.ca
-REM GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-REM License:   https://opensource.org/license/gpl-3-0
-REM Overseen By:   Dylan L.R. Pollock
-REM Updated: 06.11.2025
-REM ==================================================
-REM This script runs the project's tests using the virtual environment
-setlocal
-set "SCRIPT_DIR=%~dp0"
-for %%I in ("%SCRIPT_DIR%..\..\..\..") do set "ROOT_DIR=%%~fI"
-set "ACTIVATE=%ROOT_DIR%\venv\Scripts\activate.bat"
-set "LOG_DIR=%ROOT_DIR%\src\huey\memory\LOGS"
+setlocal EnableExtensions
 
-pushd "%ROOT_DIR%"
-if not exist "%ACTIVATE%" (
-    echo Virtual environment not found. Please run install.bat first.
-    popd
-    endlocal
+set "SCRIPT_DIR=%~dp0"
+set "USE_COVERAGE=1"
+set "PYTEST_ARGS="
+
+:parse_args
+if "%~1"=="" goto :args_done
+if /I "%~1"=="help" goto :usage
+if /I "%~1"=="--help" goto :usage
+if /I "%~1"=="/?" goto :usage
+if /I "%~1"=="--no-cov" (
+    set "USE_COVERAGE=0"
+    shift
+    goto :parse_args
+)
+set "PYTEST_ARGS=%PYTEST_ARGS% %~1"
+shift
+goto :parse_args
+
+:args_done
+call "%SCRIPT_DIR%_common.bat" :resolve_repo_root ROOT_DIR "%SCRIPT_DIR%"
+if errorlevel 1 (
+    echo [ERROR] Could not locate the repository root from "%SCRIPT_DIR%".
     exit /b 1
 )
-call "%ACTIVATE%"
-if not exist "%LOG_DIR%" mkdir "%LOG_DIR%"
-set "LOG_FILE=%LOG_DIR%\test_results.log"
-echo Test run started at %DATE% %TIME% > "%LOG_FILE%"
-pytest -vv --cov=huey --cov-report=term >> "%LOG_FILE%" 2>&1
-popd
-endlocal
+
+call "%SCRIPT_DIR%_common.bat" :resolve_python "%ROOT_DIR%" PYTHON_EXE
+if errorlevel 1 (
+    echo [ERROR] Python was not found. Install Python or create "%ROOT_DIR%\venv" first.
+    exit /b 1
+)
+
+"%PYTHON_EXE%" -c "import pytest" >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] pytest is not installed for "%PYTHON_EXE%".
+    echo         Run install.bat first to bootstrap the local environment.
+    exit /b 1
+)
+
+if "%USE_COVERAGE%"=="1" (
+    "%PYTHON_EXE%" -c "import pytest_cov" >nul 2>&1
+    if errorlevel 1 (
+        echo [INFO] pytest-cov is unavailable; running tests without coverage.
+        set "USE_COVERAGE=0"
+    )
+)
+
+call "%SCRIPT_DIR%_common.bat" :timestamp RUN_STAMP
+set "LOG_DIR=%ROOT_DIR%\src\huey\memory\LOGS"
+set "LOG_FILE=%LOG_DIR%\test_results_%RUN_STAMP%.log"
+if not exist "%LOG_DIR%" mkdir "%LOG_DIR%" >nul 2>&1
+
+pushd "%ROOT_DIR%" >nul
+if "%USE_COVERAGE%"=="1" (
+    "%PYTHON_EXE%" -m pytest --cov=huey --cov-report=term %PYTEST_ARGS% > "%LOG_FILE%" 2>&1
+) else (
+    "%PYTHON_EXE%" -m pytest %PYTEST_ARGS% > "%LOG_FILE%" 2>&1
+)
+set "EXIT_CODE=%errorlevel%"
+popd >nul
+
+type "%LOG_FILE%"
+echo.
+echo Test log: "%LOG_FILE%"
+exit /b %EXIT_CODE%
+
+:usage
+echo Usage: %~nx0 [pytest args]
+echo.
+echo Options:
+echo   --no-cov   Skip coverage even when pytest-cov is installed.
+echo   help       Show this help text.
+echo.
+echo Any other arguments are forwarded to pytest.
+exit /b 0

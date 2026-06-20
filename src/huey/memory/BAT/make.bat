@@ -1,48 +1,39 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: Make batch script (huey/memory/BAT)
+@echo off
+setlocal EnableExtensions
 
-# ==================================================  #
-# This file is a part of the 'Monkey Head Project'                                       #
-# Website:   https://dlrp.ca                                                                            #
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
-# License:   https://opensource.org/license/gpl-3-0                                 #
-# Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.08.2025                                                                                 #
-# ================================================== #
-@ECHO OFF
-
-pushd %~dp0
-
-REM Command file for Sphinx documentation
-
-if "%SPHINXBUILD%" == "" (
-	set SPHINXBUILD=sphinx-build
-)
-set SOURCEDIR=source
-set BUILDDIR=build
-
-%SPHINXBUILD% >NUL 2>NUL
-if errorlevel 9009 (
-	echo.
-	echo.The 'sphinx-build' command was not found. Make sure you have Sphinx
-	echo.installed, then set the SPHINXBUILD environment variable to point
-	echo.to the full path of the 'sphinx-build' executable. Alternatively you
-	echo.may add the Sphinx directory to PATH.
-	echo.
-	echo.If you don't have Sphinx installed, grab it from
-	echo.https://www.sphinx-doc.org/
-	exit /b 1
+set "SCRIPT_DIR=%~dp0"
+call "%SCRIPT_DIR%_common.bat" :resolve_repo_root ROOT_DIR "%SCRIPT_DIR%"
+if errorlevel 1 (
+    echo [ERROR] Could not locate the repository root from "%SCRIPT_DIR%".
+    exit /b 1
 )
 
-if "%1" == "" goto help
+call "%SCRIPT_DIR%_common.bat" :resolve_python "%ROOT_DIR%" PYTHON_EXE
+if errorlevel 1 (
+    echo [ERROR] Python was not found.
+    exit /b 1
+)
 
-%SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
-goto end
+set "DOCS_DIR=%ROOT_DIR%\docs"
+set "BUILD_DIR=%DOCS_DIR%\_build"
+set "TARGET=%~1"
+if not defined TARGET set "TARGET=help"
 
-:help
-%SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+if not exist "%DOCS_DIR%\conf.py" (
+    echo [ERROR] Sphinx configuration not found at "%DOCS_DIR%\conf.py".
+    exit /b 1
+)
 
-:end
-popd
+"%PYTHON_EXE%" -c "import sphinx" >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] Sphinx is not installed in the active Python environment.
+    echo         Install docs\requirements.txt or your full project dependencies first.
+    exit /b 1
+)
+
+pushd "%DOCS_DIR%" >nul
+"%PYTHON_EXE%" -m sphinx -M %TARGET% "%DOCS_DIR%" "%BUILD_DIR%" %SPHINXOPTS% %O%
+set "EXIT_CODE=%errorlevel%"
+popd >nul
+
+exit /b %EXIT_CODE%

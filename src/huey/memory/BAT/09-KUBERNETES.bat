@@ -1,192 +1,97 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: 09 Kubernetes batch script (setup/Windows11)
-
-# ==================================================  #
-# This file is a part of the 'Monkey Head Project'                                       #
-# Website:   https://dlrp.ca                                                                            #
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
-# License:   https://opensource.org/license/gpl-3-0                                 #
-# Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.05.2025                                                                                 #
-# ================================================== #
 @echo off
-setlocal enabledelayedexpansion
+setlocal EnableExtensions
 
-:: Change to the script's own directory
-cd /d "%~dp0"
+set "SCRIPT_DIR=%~dp0"
+set "COMMAND=%~1"
+if not defined COMMAND set "COMMAND=help"
 
-:: Clear screen and set color
-cls
-color 0A
-echo [****|     09_KUBERNETES.bat - Kubernetes Management   |****]
-echo.
+if /I "%COMMAND%"=="help" goto :usage
+if /I "%COMMAND%"=="--help" goto :usage
+if /I "%COMMAND%"=="/?" goto :usage
 
-:: Function to ensure the script is running with administrative privileges
-:ensureAdmin
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Please run this script as an administrator.
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
-
-:: Function to check the last command and exit if it failed
-:checkError
-if %errorlevel% neq 0 (
-    echo Error: %1 failed with error code %errorlevel%.
-    call :logError "%1"
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
-
-:: Function to log errors
-:logError
-echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0kubernetes_error_log.txt"
-goto :eof
-
-:: Function to install Kubernetes tools if not already installed
-:installK8sTools
-echo Checking for kubectl and Minikube installation...
-kubectl version --client >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Installing kubectl...
-    choco install -y kubernetes-cli
-    call :checkError "kubectl Installation"
-) else (
-    echo kubectl is already installed.
-)
-
-minikube version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Installing Minikube...
-    choco install -y minikube
-    call :checkError "Minikube Installation"
-) else (
-    echo Minikube is already installed.
-)
-goto :eof
-
-:: Function to start Minikube
-:startMinikube
-echo Starting Minikube...
-minikube start
-call :checkError "Starting Minikube"
-goto :eof
-
-:: Function to stop Minikube
-:stopMinikube
-echo Stopping Minikube...
-minikube stop
-call :checkError "Stopping Minikube"
-goto :eof
-
-:: Function to check Minikube status
-:checkMinikubeStatus
-echo Checking Minikube status...
-minikube status >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Minikube is not running.
-    call :startMinikube
-) else (
-    echo Minikube is running.
-)
-goto :eof
-
-:: Function to deploy application to Kubernetes
-:deployApp
-echo Deploying application to Kubernetes...
-REM Add the command to apply Kubernetes configurations
-REM For example:
-kubectl apply -f k8s/
-call :checkError "Deploying Application to Kubernetes"
-goto :eof
-
-:: Function to get status of Kubernetes resources
-:getStatus
-echo Getting status of Kubernetes resources...
-kubectl get all --namespace=default
-call :checkError "Getting Kubernetes Resource Status"
-goto :eof
-
-:: Function to delete Kubernetes resources
-:deleteResources
-echo Deleting Kubernetes resources...
-kubectl delete -f k8s/
-call :checkError "Deleting Kubernetes Resources"
-goto :eof
-
-:: Function to describe Kubernetes pod for debugging
-:describePod
-set /p podName="Enter the name of the pod to describe: "
-if "%podName%"=="" (
-    echo Pod name cannot be empty.
-    pause
+where kubectl >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] kubectl is not available.
     exit /b 1
 )
-echo Describing pod %podName%...
-kubectl describe pod %podName%
-call :checkError "Describing Kubernetes Pod"
-goto :eof
 
-:: Function to get logs of a Kubernetes pod for debugging
-:getPodLogs
-set /p podName="Enter the name of the pod to get logs: "
-if "%podName%"=="" (
-    echo Pod name cannot be empty.
-    pause
+call "%SCRIPT_DIR%_common.bat" :resolve_repo_root ROOT_DIR "%SCRIPT_DIR%"
+if errorlevel 1 (
+    echo [ERROR] Could not locate the repository root from "%SCRIPT_DIR%".
     exit /b 1
 )
-echo Getting logs for pod %podName%...
-kubectl logs %podName%
-call :checkError "Getting Kubernetes Pod Logs"
-goto :eof
+set "MANIFEST_DIR=%ROOT_DIR%\k8s"
 
-:: Function to log Kubernetes management steps
-:logK8sStep
-echo Logging Kubernetes management step: %1
-echo %DATE% %TIME% - %1 >> kubernetes_log.txt
-goto :eof
+if /I "%COMMAND%"=="context" (
+    kubectl config current-context
+    exit /b %errorlevel%
+)
 
-:: Ensure the script runs with administrative privileges
-call :ensureAdmin
+if /I "%COMMAND%"=="status" (
+    set "NAMESPACE=%~2"
+    if not defined NAMESPACE set "NAMESPACE=default"
+    kubectl get pods -n "%NAMESPACE%"
+    exit /b %errorlevel%
+)
 
-:: Install Kubernetes tools if not already installed
-call :installK8sTools
+if /I "%COMMAND%"=="pods" (
+    set "NAMESPACE=%~2"
+    if not defined NAMESPACE set "NAMESPACE=default"
+    kubectl get pods -n "%NAMESPACE%"
+    exit /b %errorlevel%
+)
 
-:menu
-cls
-echo [****|     Kubernetes Management   |****]
-echo [1] Start Minikube
-echo [2] Stop Minikube
-echo [3] Check Minikube Status
-echo [4] Deploy Application to Kubernetes
-echo [5] Get Status of Kubernetes Resources
-echo [6] Delete Kubernetes Resources
-echo [7] Describe a Kubernetes Pod
-echo [8] Get Logs of a Kubernetes Pod
-echo [E] Exit
+if /I "%COMMAND%"=="apply" (
+    set "NAMESPACE=%~2"
+    if not defined NAMESPACE set "NAMESPACE=default"
+    if not exist "%MANIFEST_DIR%" (
+        echo [ERROR] Manifest directory not found: "%MANIFEST_DIR%"
+        exit /b 1
+    )
+    kubectl apply -n "%NAMESPACE%" -f "%MANIFEST_DIR%"
+    exit /b %errorlevel%
+)
+
+if /I "%COMMAND%"=="delete" (
+    set "NAMESPACE=%~2"
+    set "ALLOW_DEFAULT=0"
+    set "CONFIRMED=0"
+    if not defined NAMESPACE (
+        echo [ERROR] delete requires a namespace argument.
+        exit /b 2
+    )
+    if /I "%~3"=="--allow-default" set "ALLOW_DEFAULT=1"
+    if /I "%~4"=="--allow-default" set "ALLOW_DEFAULT=1"
+    if /I "%~3"=="--yes" set "CONFIRMED=1"
+    if /I "%~4"=="--yes" set "CONFIRMED=1"
+    if "%CONFIRMED%"=="0" (
+        echo [ERROR] delete requires --yes for confirmation.
+        exit /b 2
+    )
+    if /I "%NAMESPACE%"=="default" if "%ALLOW_DEFAULT%"=="0" (
+        echo [ERROR] Refusing to delete resources from the default namespace without --allow-default.
+        exit /b 2
+    )
+    if not exist "%MANIFEST_DIR%" (
+        echo [ERROR] Manifest directory not found: "%MANIFEST_DIR%"
+        exit /b 1
+    )
+    kubectl delete -n "%NAMESPACE%" -f "%MANIFEST_DIR%"
+    exit /b %errorlevel%
+)
+
+echo [ERROR] Unknown Kubernetes command: %COMMAND%
+goto :usage
+
+:usage
+echo Usage: %~nx0 [context^|status^|pods^|apply^|delete] [namespace] [flags]
 echo.
-set /p action="Please select an option (1-8, E to exit): "
-if "%action%"=="1" goto startMinikube
-if "%action%"=="2" goto stopMinikube
-if "%action%"=="3" goto checkMinikubeStatus
-if "%action%"=="4" goto deployApp
-if "%action%"=="5" goto getStatus
-if "%action%"=="6" goto deleteResources
-if "%action%"=="7" goto describePod
-if "%action%"=="8" goto getPodLogs
-if /i "%action%"=="E" goto end
-echo Invalid selection, please try again.
-pause
-goto menu
-
-:end
-echo [****| Kubernetes management complete! |****]
-pause
+echo Commands:
+echo   context
+echo   status [namespace]
+echo   pods [namespace]
+echo   apply [namespace]
+echo   delete NAMESPACE --yes [--allow-default]
+echo.
+echo The manifest directory is expected at "<repo>\k8s".
 exit /b 0
-
-endlocal

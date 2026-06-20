@@ -1,228 +1,130 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: 08 Volume batch script (setup/Windows11)
-
-# ==================================================  #
-# This file is a part of the 'Monkey Head Project'                                       #
-# Website:   https://dlrp.ca                                                                            #
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
-# License:   https://opensource.org/license/gpl-3-0                                 #
-# Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.05.2025                                                                                 #
-# ================================================== #
 @echo off
-setlocal enabledelayedexpansion
+setlocal EnableExtensions
 
-:: Change to the script's own directory
-cd /d "%~dp0"
+set "SCRIPT_DIR=%~dp0"
+set "COMMAND=%~1"
+set "PROJECT_NAME=hueyos"
+set "PROJECT_PREFIX=hueyos_"
+if not defined COMMAND set "COMMAND=list"
 
-:: Clear screen and set color
-cls
-color 0A
-echo [****|     08_VOLUME.bat - Docker Volume Management   |****]
-echo.
+if /I "%COMMAND%"=="help" goto :usage
+if /I "%COMMAND%"=="--help" goto :usage
+if /I "%COMMAND%"=="/?" goto :usage
 
-:: Function to ensure the script is running with administrative privileges
-:ensureAdmin
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Please run this script as an administrator.
-    pause
+where docker >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] docker is not available.
+    exit /b 1
+)
+
+if /I "%COMMAND%"=="list" (
+    docker volume ls --filter label=com.docker.compose.project=%PROJECT_NAME%
     exit /b %errorlevel%
 )
-goto :eof
 
-:: Function to check the last command and exit if it failed
-:checkError
-if %errorlevel% neq 0 (
-    echo Error: %1 failed with error code %errorlevel%.
-    call :logError "%1"
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
-
-:: Function to log errors
-:logError
-echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0volume_error_log.txt"
-goto :eof
-
-:: Function to install Docker if not already installed
-:installDocker
-echo Checking for Docker installation...
-docker --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Installing Docker...
-    choco install -y docker-desktop
-    call :checkError "Docker Installation"
-) else (
-    echo Docker is already installed.
-)
-goto :eof
-
-:: Function to start Docker service
-:startDocker
-echo Starting Docker service...
-sc start com.docker.service >nul 2>&1
-call :checkError "Starting Docker Service"
-goto :eof
-
-:: Function to check Docker daemon status
-:checkDockerDaemon
-echo Checking Docker daemon status...
-docker info >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Docker daemon is not running. Attempting to start...
-    start /B "Docker Daemon" "C:\Program Files\Docker\Docker\Docker Desktop.exe"
-    timeout /t 10 >nul
-docker info >nul 2>&1
-if %errorlevel% neq 0 (
-        echo Error: Docker daemon failed to start.
-        call :checkError "Starting Docker Daemon"
-    ) else (
-        echo Docker daemon started successfully.
+if /I "%COMMAND%"=="inspect" (
+    if "%~2"=="" (
+        echo [ERROR] inspect requires a volume name.
+        exit /b 2
     )
+    call :normalize_volume_name "%~2" FULL_NAME
+    docker volume inspect "%FULL_NAME%"
+    exit /b %errorlevel%
+)
+
+if /I "%COMMAND%"=="remove" (
+    if "%~2"=="" (
+        echo [ERROR] remove requires a volume name.
+        exit /b 2
+    )
+    if /I not "%~3"=="--yes" (
+        echo [ERROR] remove requires --yes for confirmation.
+        exit /b 2
+    )
+    call :normalize_volume_name "%~2" FULL_NAME
+    docker volume rm "%FULL_NAME%"
+    exit /b %errorlevel%
+)
+
+if /I "%COMMAND%"=="prune" (
+    if /I not "%~2"=="--yes" (
+        echo [ERROR] prune requires --yes for confirmation.
+        exit /b 2
+    )
+    for /f "delims=" %%V in ('docker volume ls --quiet --filter label=com.docker.compose.project=%PROJECT_NAME%') do (
+        docker volume rm "%%V"
+        if errorlevel 1 exit /b 1
+    )
+    exit /b 0
+)
+
+if /I "%COMMAND%"=="backup" (
+    if "%~2"=="" (
+        echo [ERROR] backup requires a volume name.
+        exit /b 2
+    )
+    if "%~3"=="" (
+        echo [ERROR] backup requires a destination directory.
+        exit /b 2
+    )
+    call :normalize_volume_name "%~2" FULL_NAME
+    set "BACKUP_DIR=%~3"
+    if not exist "%BACKUP_DIR%" mkdir "%BACKUP_DIR%" >nul 2>&1
+    call "%SCRIPT_DIR%_common.bat" :timestamp BACKUP_STAMP
+    set "ARCHIVE_NAME=%FULL_NAME%_%BACKUP_STAMP%.tar.gz"
+    docker run --rm -v "%FULL_NAME%:/volume" -v "%BACKUP_DIR%:/backup" alpine sh -c "tar czf /backup/%ARCHIVE_NAME% -C /volume ."
+    exit /b %errorlevel%
+)
+
+if /I "%COMMAND%"=="restore" (
+    if "%~2"=="" (
+        echo [ERROR] restore requires a volume name.
+        exit /b 2
+    )
+    if "%~3"=="" (
+        echo [ERROR] restore requires an archive path.
+        exit /b 2
+    )
+    if /I not "%~4"=="--yes" (
+        echo [ERROR] restore requires --yes for confirmation.
+        exit /b 2
+    )
+    call :normalize_volume_name "%~2" FULL_NAME
+    if not exist "%~3" (
+        echo [ERROR] Archive not found: "%~3"
+        exit /b 1
+    )
+    for %%I in ("%~3") do (
+        set "ARCHIVE_DIR=%%~dpI"
+        set "ARCHIVE_FILE=%%~nxI"
+    )
+    docker run --rm -v "%FULL_NAME%:/volume" -v "%ARCHIVE_DIR%:/backup" alpine sh -c "rm -rf /volume/* && tar xzf /backup/%ARCHIVE_FILE% -C /volume"
+    exit /b %errorlevel%
+)
+
+echo [ERROR] Unknown volume command: %COMMAND%
+goto :usage
+
+:normalize_volume_name
+setlocal EnableExtensions
+set "name=%~1"
+if /I "%name:~0,7%"=="hueyos_" (
+    set "full_name=%name%"
 ) else (
-    echo Docker daemon is running.
+    set "full_name=hueyos_%name%"
 )
-goto :eof
+endlocal & set "%~2=%full_name%" & exit /b 0
 
-:: Function to create a Docker volume
-:createVolume
-set /p volumeName="Enter the name of the volume to create: "
-if "%volumeName%"=="" (
-    echo Volume name cannot be empty.
-    pause
-    exit /b 1
-)
-echo Creating Docker volume %volumeName%...
-docker volume create %volumeName%
-call :checkError "Creating Docker Volume"
-goto :eof
-
-:: Function to list all Docker volumes
-:listVolumes
-echo Listing all Docker volumes...
-docker volume ls
-call :checkError "Listing Docker Volumes"
-goto :eof
-
-:: Function to inspect a Docker volume
-:inspectVolume
-set /p volumeName="Enter the name of the volume to inspect: "
-if "%volumeName%"=="" (
-    echo Volume name cannot be empty.
-    pause
-    exit /b 1
-)
-echo Inspecting Docker volume %volumeName%...
-docker volume inspect %volumeName%
-call :checkError "Inspecting Docker Volume"
-goto :eof
-
-:: Function to remove a Docker volume
-:removeVolume
-set /p volumeName="Enter the name of the volume to remove: "
-if "%volumeName%"=="" (
-    echo Volume name cannot be empty.
-    pause
-    exit /b 1
-)
-echo Removing Docker volume %volumeName%...
-docker volume rm %volumeName%
-call :checkError "Removing Docker Volume"
-goto :eof
-
-:: Function to prune unused Docker volumes
-:pruneVolumes
-echo Pruning unused Docker volumes...
-docker volume prune -f
-call :checkError "Pruning Docker Volumes"
-goto :eof
-
-:: Function to back up a Docker volume (Optional)
-:backupVolume
-set /p volumeName="Enter the name of the volume to back up: "
-if "%volumeName%"=="" (
-    echo Volume name cannot be empty.
-    pause
-    exit /b 1
-)
-set /p backupDir="Enter the backup directory path: "
-if "%backupDir%"=="" (
-    echo Backup directory cannot be empty.
-    pause
-    exit /b 1
-)
-echo Backing up Docker volume %volumeName% to %backupDir%...
-docker run --rm -v %volumeName%:/volume -v %backupDir%:/backup alpine tar czf /backup/%volumeName%.tar.gz -C /volume .
-call :checkError "Backing Up Docker Volume"
-goto :eof
-
-:: Function to restore a Docker volume (Optional)
-:restoreVolume
-set /p volumeName="Enter the name of the volume to restore: "
-if "%volumeName%"=="" (
-    echo Volume name cannot be empty.
-    pause
-    exit /b 1
-)
-set /p backupFile="Enter the backup file path: "
-if "%backupFile%"=="" (
-    echo Backup file cannot be empty.
-    pause
-    exit /b 1
-)
-echo Restoring Docker volume %volumeName% from %backupFile%...
-docker run --rm -v %volumeName%:/volume -v %backupFile%:/backup alpine sh -c "rm -rf /volume/* && tar xzf /backup/%backupFile% -C /volume"
-call :checkError "Restoring Docker Volume"
-goto :eof
-
-:: Function to log volume management steps
-:logVolumeStep
-echo Logging volume management step: %1
-echo %DATE% %TIME% - %1 >> volume_log.txt
-goto :eof
-
-:: Ensure the script runs with administrative privileges
-call :ensureAdmin
-
-:: Install Docker if not already installed
-call :installDocker
-
-:: Start Docker service
-call :startDocker
-
-:: Check Docker daemon status
-call :checkDockerDaemon
-
-:menu
-cls
-echo [****|     Docker Volume Management   |****]
-echo [1] Create a Docker Volume
-echo [2] List Docker Volumes
-echo [3] Inspect a Docker Volume
-echo [4] Remove a Docker Volume
-echo [5] Prune Unused Docker Volumes
-echo [6] Back Up a Docker Volume
-echo [7] Restore a Docker Volume
-echo [E] Exit
+:usage
+echo Usage: %~nx0 [list^|inspect^|remove^|prune^|backup^|restore] [args]
 echo.
-set /p action="Please select an option (1-7, E to exit): "
-if "%action%"=="1" goto createVolume
-if "%action%"=="2" goto listVolumes
-if "%action%"=="3" goto inspectVolume
-if "%action%"=="4" goto removeVolume
-if "%action%"=="5" goto pruneVolumes
-if "%action%"=="6" goto backupVolume
-if "%action%"=="7" goto restoreVolume
-if /i "%action%"=="E" goto end
-echo Invalid selection, please try again.
-pause
-goto menu
-
-:end
-echo [****| Docker volume management complete! |****]
-pause
+echo Commands:
+echo   list
+echo   inspect VOLUME
+echo   remove VOLUME --yes
+echo   prune --yes
+echo   backup VOLUME DEST_DIR
+echo   restore VOLUME ARCHIVE --yes
+echo.
+echo Volume names are automatically scoped to the "%PROJECT_PREFIX%" project prefix.
 exit /b 0

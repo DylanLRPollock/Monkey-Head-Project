@@ -1,206 +1,68 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: 07 Container batch script (setup/Windows11)
-
-# ==================================================  #
-# This file is a part of the 'Monkey Head Project'                                       #
-# Website:   https://dlrp.ca                                                                            #
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
-# License:   https://opensource.org/license/gpl-3-0                                 #
-# Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.05.2025                                                                                 #
-# ================================================== #
 @echo off
-setlocal enabledelayedexpansion
+setlocal EnableExtensions
 
-:: Change to the script's own directory
-cd /d "%~dp0"
+set "SCRIPT_DIR=%~dp0"
+set "COMMAND=%~1"
+if not defined COMMAND set "COMMAND=ps"
 
-:: Clear screen and set color
-cls
-color 0A
-echo [****|     07_CONTAINER.bat - Docker Container Management   |****]
+if /I "%COMMAND%"=="help" goto :usage
+if /I "%COMMAND%"=="--help" goto :usage
+if /I "%COMMAND%"=="/?" goto :usage
+
+call "%SCRIPT_DIR%_common.bat" :resolve_repo_root ROOT_DIR "%SCRIPT_DIR%"
+if errorlevel 1 (
+    echo [ERROR] Could not locate the repository root from "%SCRIPT_DIR%".
+    exit /b 1
+)
+
+set "COMPOSE_FILE=%ROOT_DIR%\infra\docker\docker-compose.yml"
+set "PROJECT_NAME=hueyos"
+
+if /I "%COMMAND%"=="up" (
+    shift
+    call "%SCRIPT_DIR%_common.bat" :compose "%COMPOSE_FILE%" "%PROJECT_NAME%" up -d %*
+    exit /b %errorlevel%
+)
+if /I "%COMMAND%"=="down" (
+    shift
+    call "%SCRIPT_DIR%_common.bat" :compose "%COMPOSE_FILE%" "%PROJECT_NAME%" down %*
+    exit /b %errorlevel%
+)
+if /I "%COMMAND%"=="ps" (
+    shift
+    call "%SCRIPT_DIR%_common.bat" :compose "%COMPOSE_FILE%" "%PROJECT_NAME%" ps %*
+    exit /b %errorlevel%
+)
+if /I "%COMMAND%"=="logs" (
+    shift
+    call "%SCRIPT_DIR%_common.bat" :compose "%COMPOSE_FILE%" "%PROJECT_NAME%" logs --tail 200 %*
+    exit /b %errorlevel%
+)
+if /I "%COMMAND%"=="build" (
+    shift
+    call "%SCRIPT_DIR%_common.bat" :compose "%COMPOSE_FILE%" "%PROJECT_NAME%" build %*
+    exit /b %errorlevel%
+)
+if /I "%COMMAND%"=="pull" (
+    shift
+    call "%SCRIPT_DIR%_common.bat" :compose "%COMPOSE_FILE%" "%PROJECT_NAME%" pull %*
+    exit /b %errorlevel%
+)
+if /I "%COMMAND%"=="config" (
+    shift
+    call "%SCRIPT_DIR%_common.bat" :compose "%COMPOSE_FILE%" "%PROJECT_NAME%" config %*
+    exit /b %errorlevel%
+)
+
+echo [ERROR] Unknown Docker command: %COMMAND%
+goto :usage
+
+:usage
+echo Usage: %~nx0 [up^|down^|ps^|logs^|build^|pull^|config] [docker compose args]
 echo.
-
-:: Function to ensure the script is running with administrative privileges
-:ensureAdmin
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Please run this script as an administrator.
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
-
-:: Function to check the last command and exit if it failed
-:checkError
-if %errorlevel% neq 0 (
-    echo Error: %1 failed with error code %errorlevel%.
-    call :logError "%1"
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
-
-:: Function to log errors
-:logError
-echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0docker_error_log.txt"
-goto :eof
-
-:: Function to install Docker if not already installed
-:installDocker
-echo Checking for Docker installation...
-docker --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Installing Docker...
-    choco install -y docker-desktop
-    call :checkError "Docker Installation"
-) else (
-    echo Docker is already installed.
-)
-goto :eof
-
-:: Function to start Docker service
-:startDocker
-echo Starting Docker service...
-sc start com.docker.service >nul 2>&1
-call :checkError "Starting Docker Service"
-goto :eof
-
-:: Function to check Docker daemon status
-:checkDockerDaemon
-echo Checking Docker daemon status...
-docker info >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Docker daemon is not running. Attempting to start...
-    start /B "Docker Daemon" "C:\Program Files\Docker\Docker\Docker Desktop.exe"
-    timeout /t 10 >nul
-docker info >nul 2>&1
-if %errorlevel% neq 0 (
-        echo Error: Docker daemon failed to start.
-        call :checkError "Starting Docker Daemon"
-    ) else (
-        echo Docker daemon started successfully.
-    )
-) else (
-    echo Docker daemon is running.
-)
-goto :eof
-
-:: Function to build Docker image
-:buildDockerImage
-echo Building Docker image...
-REM Add the command to build the Docker image
-REM For example:
-docker build -t myapp:latest .
-call :checkError "Docker Image Build"
-goto :eof
-
-:: Function to run Docker container
-:runDockerContainer
-echo Running Docker container...
-REM Add the command to run the Docker container
-REM For example:
-docker run -d -p 80:80 --name myapp_container myapp:latest
-call :checkError "Docker Container Run"
-goto :eof
-
-:: Function to stop Docker container
-:stopDockerContainer
-echo Stopping Docker container...
-REM Add the command to stop the Docker container
-REM For example:
-docker stop myapp_container
-call :checkError "Docker Container Stop"
-goto :eof
-
-:: Function to remove Docker container
-:removeDockerContainer
-echo Removing Docker container...
-REM Add the command to remove the Docker container
-REM For example:
-docker rm myapp_container
-call :checkError "Docker Container Remove"
-goto :eof
-
-:: Function to manage Docker volumes (Optional)
-:manageDockerVolumes
-echo Managing Docker volumes...
-REM Add commands to manage Docker volumes
-REM For example, to create a volume:
-REM docker volume create myapp_data
-REM To remove a volume:
-REM docker volume rm myapp_data
-goto :eof
-
-:: Function to manage Docker networks (Optional)
-:manageDockerNetworks
-echo Managing Docker networks...
-REM Add commands to manage Docker networks
-REM For example, to create a network:
-REM docker network create myapp_network
-REM To remove a network:
-REM docker network rm myapp_network
-goto :eof
-
-:: Function to log Docker steps
-:logDockerStep
-echo Logging Docker step: %1
-echo %DATE% %TIME% - %1 >> docker_log.txt
-goto :eof
-
-:: Ensure the script runs with administrative privileges
-call :ensureAdmin
-
-:: Install Docker if not already installed
-call :installDocker
-
-:: Start Docker service
-call :startDocker
-
-:: Check Docker daemon status
-call :checkDockerDaemon
-
-:: Log Docker step
-call :logDockerStep "Build Docker Image"
-
-:: Build Docker image
-call :buildDockerImage
-
-:: Log Docker step
-call :logDockerStep "Run Docker Container"
-
-:: Run Docker container
-call :runDockerContainer
-
-:: Log Docker step
-call :logDockerStep "Manage Docker Volumes"
-
-:: Manage Docker volumes (Optional)
-call :manageDockerVolumes
-
-:: Log Docker step
-call :logDockerStep "Manage Docker Networks"
-
-:: Manage Docker networks (Optional)
-call :manageDockerNetworks
-
-:: Log Docker step
-call :logDockerStep "Stop Docker Container"
-
-:: Stop Docker container (Optional)
-call :stopDockerContainer
-
-:: Log Docker step
-call :logDockerStep "Remove Docker Container"
-
-:: Remove Docker container (Optional)
-call :removeDockerContainer
-
-echo [****| Docker container management complete! |****]
-echo Logs can be found in "%~dp0docker_error_log.txt"
-pause
+echo This helper is scoped to the repo compose file at "infra\docker\docker-compose.yml".
+echo Examples:
+echo   %~nx0 up --profile worker
+echo   %~nx0 logs api
+echo   %~nx0 down --volumes
 exit /b 0
-
-endlocal

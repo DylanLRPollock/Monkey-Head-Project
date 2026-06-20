@@ -22,7 +22,7 @@ LINUX_UNINSTALL = str(
     PROJECT_ROOT / "platform" / "installers" / "debian" / "Debian" / "uninstall-deb.sh"
 )
 MAC_UNINSTALL = os.path.join(SCRIPT_DIR, "setup", "macOS", "uninstall.sh")
-WINDOWS_UNINSTALL = os.path.join(SCRIPT_DIR, "setup", "Windows11", "03-CLEANUP.bat")
+WINDOWS_UNINSTALL = str(PROJECT_ROOT / "src" / "huey" / "memory" / "BAT" / "uninstall.bat")
 
 
 def _uninstall_command(system: str) -> list[str] | None:
@@ -51,7 +51,7 @@ def run_uninstaller(*, dry_run: bool = False, confirmed: bool = True) -> int:
         return 2
 
     try:
-        subprocess.run(command, check=True)
+        subprocess.run(command, check=True, cwd=PROJECT_ROOT)
     except subprocess.CalledProcessError as exc:
         print(f"Uninstaller failed with return code {exc.returncode}")
         return exc.returncode

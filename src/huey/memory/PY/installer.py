@@ -145,19 +145,17 @@ LINUX_INSTALL = str(
     PROJECT_ROOT / "platform" / "installers" / "debian" / "Debian" / "install-deb.sh"
 )
 MAC_INSTALL = os.path.join(SCRIPT_DIR, "setup", "macOS", "install.sh")
-WINDOWS_INSTALL = os.path.join(SCRIPT_DIR, "setup", "Windows11", "01-FULL.bat")
+WINDOWS_INSTALL = str(PROJECT_ROOT / "src" / "huey" / "memory" / "BAT" / "install.bat")
 
 
 def update_submodules() -> None:
     """Ensure git submodules are initialized."""
+    sync_script = PROJECT_ROOT / "src" / "huey" / "memory" / "PY" / "sync_pygpt_structure.py"
     try:
         subprocess.run(
             ["git", "submodule", "update", "--init", "--recursive"], check=True
         )
-        subprocess.run(
-            [sys.executable, "sync_pygpt_structure.py"],
-            check=True,
-        )
+        subprocess.run([sys.executable, str(sync_script)], check=True, cwd=PROJECT_ROOT)
     except subprocess.CalledProcessError as exc:
         print(f"Failed to update submodules: {exc.returncode}")
         raise
@@ -181,11 +179,11 @@ def run_installer(
         update_submodules()
         display_license()
         if system == "Linux":
-            subprocess.run(["bash", LINUX_INSTALL], check=True, env=env)
+            subprocess.run(["bash", LINUX_INSTALL], check=True, env=env, cwd=PROJECT_ROOT)
         elif system == "Darwin":
-            subprocess.run(["bash", MAC_INSTALL], check=True, env=env)
+            subprocess.run(["bash", MAC_INSTALL], check=True, env=env, cwd=PROJECT_ROOT)
         elif system == "Windows":
-            subprocess.run(["cmd", "/c", WINDOWS_INSTALL], check=True, env=env)
+            subprocess.run(["cmd", "/c", WINDOWS_INSTALL], check=True, env=env, cwd=PROJECT_ROOT)
         else:
             print(f"Unsupported operating system: {system}")
             return 1

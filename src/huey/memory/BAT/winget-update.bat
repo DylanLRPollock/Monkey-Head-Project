@@ -1,15 +1,32 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: Winget Update batch script (huey/memory/BAT)
+@echo off
+setlocal EnableExtensions
 
-# ==================================================  #
-# This file is a part of the 'Monkey Head Project'                                       #
-# Website:   https://dlrp.ca                                                                            #
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
-# License:   https://opensource.org/license/gpl-3-0                                 #
-# Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.05.2025                                                                                 #
-# ================================================== #
-winget upgrade --all
-pause
+set "SCRIPT_DIR=%~dp0"
+if /I "%~1"=="help" (
+    echo Usage: %~nx0 [--yes]
+    echo.
+    echo Without arguments this previews available winget upgrades.
+    echo Pass --yes to install all available winget upgrades.
+    exit /b 0
+)
+if /I "%~1"=="--help" (
+    echo Usage: %~nx0 [--yes]
+    echo.
+    echo Without arguments this previews available winget upgrades.
+    echo Pass --yes to install all available winget upgrades.
+    exit /b 0
+)
+if /I "%~1"=="/?" (
+    echo Usage: %~nx0 [--yes]
+    echo.
+    echo Without arguments this previews available winget upgrades.
+    echo Pass --yes to install all available winget upgrades.
+    exit /b 0
+)
+if /I "%~1"=="--yes" (
+    call "%SCRIPT_DIR%05-UPDATE.bat" --winget-all --yes
+    exit /b %errorlevel%
+)
+
+call "%SCRIPT_DIR%05-UPDATE.bat" --preview-winget
+exit /b %errorlevel%

@@ -1,14 +1,17 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: Build batch script (huey/memory/BAT)
-
-# ==================================================  #
-# This file is a part of the 'Monkey Head Project'                                       #
-# Website:   https://dlrp.ca                                                                            #
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
-# License:   https://opensource.org/license/gpl-3-0                                 #
-# Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.05.2025                                                                                 #
-# ================================================== #
-Placeholder for `repo/pygpt-MHP/bin/build.bat` from the pygpt-MHP repo.
+@echo off
+setlocal EnableExtensions
+set "SCRIPT_DIR=%~dp0"
+if /I "%~1"=="help" (
+    call "%SCRIPT_DIR%06-BUILD.bat" help
+    exit /b %errorlevel%
+)
+if /I "%~1"=="--help" (
+    call "%SCRIPT_DIR%06-BUILD.bat" help
+    exit /b %errorlevel%
+)
+if /I "%~1"=="/?" (
+    call "%SCRIPT_DIR%06-BUILD.bat" help
+    exit /b %errorlevel%
+)
+call "%SCRIPT_DIR%06-BUILD.bat" package %*
+exit /b %errorlevel%

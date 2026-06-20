@@ -295,8 +295,8 @@ if exist "%INSTALL_DIR%\vendor\pygpt\pygpt-mhp" (
     call :checkError "Install pygpt-MHP"
 )
 
-if exist "%INSTALL_DIR%\sync_pygpt_structure.py" (
-    "%VENV_PY%" "%INSTALL_DIR%\sync_pygpt_structure.py"
+if exist "%INSTALL_DIR%\src\huey\memory\PY\sync_pygpt_structure.py" (
+    "%VENV_PY%" "%INSTALL_DIR%\src\huey\memory\PY\sync_pygpt_structure.py"
     call :checkError "Sync structure"
 )
 

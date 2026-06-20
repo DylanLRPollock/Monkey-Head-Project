@@ -412,8 +412,8 @@ if exist "%INSTALL_DIR%\vendor\pygpt\pygpt-mhp" (
     echo [INFO] vendor\pygpt\pygpt-mhp not found; skipping editable install.
 )
 
-if exist "%INSTALL_DIR%\sync_pygpt_structure.py" (
-    "%VENV_PY%" "%INSTALL_DIR%\sync_pygpt_structure.py"
+if exist "%INSTALL_DIR%\src\huey\memory\PY\sync_pygpt_structure.py" (
+    "%VENV_PY%" "%INSTALL_DIR%\src\huey\memory\PY\sync_pygpt_structure.py"
     call :checkError "Sync submodule structure"
 )
 
@@ -438,9 +438,10 @@ if "%NON_INTERACTIVE%"=="1" (
     goto :eof
 )
 
-if exist "%INSTALL_DIR%\src\license_gui.py" (
+if exist "%INSTALL_DIR%\src\huey\os\license_gui.py" (
     echo Displaying license agreement...
-    "%VENV_PY%" "%INSTALL_DIR%\src\license_gui.py"
+    set "PYTHONPATH=%INSTALL_DIR%\src;%PYTHONPATH%"
+    "%VENV_PY%" -c "from huey.os.license_gui import show_license_gui; show_license_gui()"
     REM GUI may fail in some environments; do not hard-fail install
 ) else (
     echo [INFO] License GUI script not found; skipping.

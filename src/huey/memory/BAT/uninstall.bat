@@ -1,29 +1,24 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: Uninstall batch script (huey/memory/BAT)
-
 @echo off
-REM ==================================================
-REM This file is a part of the 'Monkey Head Project'
-REM Website:   https://dlrp.ca
-REM GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-REM License:   https://opensource.org/license/gpl-3-0
-REM Overseen By:   Dylan L.R. Pollock
-REM Updated: 06.09.2025
-REM ==================================================
+setlocal EnableExtensions
 
-setlocal
 set "SCRIPT_DIR=%~dp0"
-set "UNINSTALL_SCRIPT=%SCRIPT_DIR%setup\Windows11\03-CLEANUP.bat"
-
-pushd "%SCRIPT_DIR%"
-if not exist "%UNINSTALL_SCRIPT%" (
-    echo Uninstallation script not found: %UNINSTALL_SCRIPT%
-    popd
-    endlocal
-    exit /b 1
+if /I "%~1"=="help" (
+    echo Usage: %~nx0 [cleanup options]
+    echo.
+    call "%SCRIPT_DIR%03-CLEANUP.bat" --help
+    exit /b %errorlevel%
 )
-call "%UNINSTALL_SCRIPT%"
-popd
-endlocal
+if /I "%~1"=="--help" (
+    echo Usage: %~nx0 [cleanup options]
+    echo.
+    call "%SCRIPT_DIR%03-CLEANUP.bat" --help
+    exit /b %errorlevel%
+)
+if /I "%~1"=="/?" (
+    echo Usage: %~nx0 [cleanup options]
+    echo.
+    call "%SCRIPT_DIR%03-CLEANUP.bat" --help
+    exit /b %errorlevel%
+)
+call "%SCRIPT_DIR%03-CLEANUP.bat" %*
+exit /b %errorlevel%

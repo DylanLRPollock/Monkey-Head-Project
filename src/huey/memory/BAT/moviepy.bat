@@ -1,15 +1,18 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: Moviepy batch script (huey/memory/BAT)
+@echo off
+setlocal EnableExtensions
 
-# ==================================================  #
-# This file is a part of the 'Monkey Head Project'                                       #
-# Website:   https://dlrp.ca                                                                            #
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
-# License:   https://opensource.org/license/gpl-3-0                                 #
-# Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.05.2025                                                                                 #
-# ================================================== #
-pip install moviepy
-PAUSE
+set "SCRIPT_DIR=%~dp0"
+call "%SCRIPT_DIR%_common.bat" :resolve_repo_root ROOT_DIR "%SCRIPT_DIR%"
+if errorlevel 1 (
+    echo [ERROR] Could not locate the repository root from "%SCRIPT_DIR%".
+    exit /b 1
+)
+
+set "VENV_PYTHON=%ROOT_DIR%\venv\Scripts\python.exe"
+if not exist "%VENV_PYTHON%" (
+    echo [ERROR] Local virtual environment not found. Run install.bat first.
+    exit /b 1
+)
+
+"%VENV_PYTHON%" -m pip install moviepy
+exit /b %errorlevel%

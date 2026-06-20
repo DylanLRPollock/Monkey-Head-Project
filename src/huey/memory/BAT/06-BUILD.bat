@@ -1,217 +1,73 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: 06 Build batch script (setup/Windows11)
-
-# ==================================================  #
-# This file is a part of the 'Monkey Head Project'                                       #
-# Website:   https://dlrp.ca                                                                            #
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
-# License:   https://opensource.org/license/gpl-3-0                                 #
-# Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.05.2025                                                                                 #
-# ================================================== #
 @echo off
-setlocal enabledelayedexpansion
+setlocal EnableExtensions
 
-:: Change to the script's own directory
-cd /d "%~dp0"
+set "SCRIPT_DIR=%~dp0"
+set "COMMAND=%~1"
+if not defined COMMAND set "COMMAND=tests"
 
-:: Clear screen and set color
-cls
-color 0A
-echo [****|     06_BUILD.bat - Project Build Script   |****]
+if /I "%COMMAND%"=="help" goto :usage
+if /I "%COMMAND%"=="--help" goto :usage
+if /I "%COMMAND%"=="/?" goto :usage
+
+if /I "%COMMAND%"=="tests" (
+    shift
+    call "%SCRIPT_DIR%run-tests.bat" %*
+    exit /b %errorlevel%
+)
+
+if /I "%COMMAND%"=="docs" (
+    shift
+    call "%SCRIPT_DIR%make.bat" html %*
+    exit /b %errorlevel%
+)
+
+if /I "%COMMAND%"=="all" (
+    call "%SCRIPT_DIR%run-tests.bat"
+    if errorlevel 1 exit /b %errorlevel%
+    call "%SCRIPT_DIR%make.bat" html
+    exit /b %errorlevel%
+)
+
+if /I "%COMMAND%"=="package" goto :package
+if /I "%COMMAND%"=="installer" goto :installer
+
+echo [ERROR] Unknown build command: %COMMAND%
+goto :usage
+
+:package
+call "%SCRIPT_DIR%_common.bat" :resolve_repo_root ROOT_DIR "%SCRIPT_DIR%"
+if errorlevel 1 (
+    echo [ERROR] Could not locate the repository root from "%SCRIPT_DIR%".
+    exit /b 1
+)
+call "%SCRIPT_DIR%_common.bat" :resolve_python "%ROOT_DIR%" PYTHON_EXE
+if errorlevel 1 (
+    echo [ERROR] Python was not found.
+    exit /b 1
+)
+"%PYTHON_EXE%" -c "import build" >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] The "build" module is not installed in the active Python environment.
+    echo         Install it first if you want to create source or wheel packages.
+    exit /b 1
+)
+pushd "%ROOT_DIR%" >nul
+"%PYTHON_EXE%" -m build
+set "EXIT_CODE=%errorlevel%"
+popd >nul
+exit /b %EXIT_CODE%
+
+:installer
+echo [ERROR] This repository does not currently define a standalone Windows installer packaging pipeline.
+exit /b 1
+
+:usage
+echo Usage: %~nx0 [tests^|docs^|all^|package^|installer] [extra args]
 echo.
-
-:: Function to ensure the script is running with administrative privileges
-:ensureAdmin
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Please run this script as an administrator.
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
-
-:: Function to check the last command and exit if it failed
-:checkError
-if %errorlevel% neq 0 (
-    echo Error: %1 failed with error code %errorlevel%.
-    call :logError "%1"
-    pause
-    exit /b %errorlevel%
-)
-goto :eof
-
-:: Function to log errors
-:logError
-echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0error_log.txt"
-goto :eof
-
-:: Function to check for required environment variables
-:checkEnvVars
-echo Checking for required environment variables...
-REM Uncomment and modify the following lines to check for specific environment variables
-REM if not defined MY_ENV_VAR (
-REM     echo Error: Environment variable MY_ENV_VAR not set.
-REM     call :logError "Environment variable MY_ENV_VAR not set"
-REM     pause
-REM     exit /b 1
-REM )
-goto :eof
-
-:: Function to install required build tools
-:installBuildTools
-echo Installing required build tools...
-REM Uncomment and modify the following lines to install additional build tools
-REM choco install -y maven
-REM call :checkError "Maven Installation"
-REM choco install -y gradle
-REM call :checkError "Gradle Installation"
-REM choco install -y msbuild
-REM call :checkError "MSBuild Installation"
-goto :eof
-
-:: Function to clean the project
-:cleanProject
-echo Cleaning project...
-REM Add commands to clean the project
-REM For example, for a Node.js project:
-REM npm run clean
-call :checkError "Project Clean"
-goto :eof
-
-:: Function to install project dependencies
-:installDependencies
-echo Installing project dependencies...
-REM Add commands to install project dependencies
-REM For example, for a Node.js project:
-REM npm install
-REM For a Python project:
-REM pip install -r requirements.txt
-call :checkError "Installing Dependencies"
-goto :eof
-
-:: Function to compile the project
-:compileProject
-echo Compiling project...
-REM Add commands to compile the project
-REM For example, for a Java project with Maven:
-REM mvn compile
-call :checkError "Project Compile"
-goto :eof
-
-:: Function to run tests
-:runTests
-echo Running tests...
-REM Add commands to run tests
-REM For example, for a Python project with pytest:
-REM pytest
-call :checkError "Tests Run"
-goto :eof
-
-:: Function to generate documentation
-:generateDocs
-echo Generating documentation...
-REM Add commands to generate documentation
-REM For example, for a Python project with Sphinx:
-REM sphinx-build -b html docs/source docs/build
-call :checkError "Documentation Generation"
-goto :eof
-
-:: Function to package the application
-:packageApp
-echo Packaging application...
-REM Add commands to package the application
-REM For example, for a Node.js project:
-REM npm run build
-call :checkError "Application Packaging"
-goto :eof
-
-:: Function to deploy the application (Optional)
-:deployApp
-echo Deploying application...
-REM Add commands to deploy the application
-REM For example, deploying to a cloud service:
-REM aws s3 cp build/ s3://your-bucket-name/ --recursive
-call :checkError "Application Deployment"
-goto :eof
-
-:: Function to clean up after build (Optional)
-:postBuildCleanup
-echo Cleaning up after build...
-REM Add commands to clean up after the build
-REM For example, removing temporary files:
-REM del /F /Q temp\*
-call :checkError "Post Build Cleanup"
-goto :eof
-
-:: Function to log build steps
-:logBuildStep
-echo Logging build step: %1
-echo %DATE% %TIME% - %1 >> build_log.txt
-goto :eof
-
-:: Ensure the script runs with administrative privileges
-call :ensureAdmin
-
-:: Check for required environment variables
-call :checkEnvVars
-
-:: Install required build tools
-call :installBuildTools
-
-:: Log build step
-call :logBuildStep "Clean Project"
-
-:: Clean the project
-call :cleanProject
-
-:: Log build step
-call :logBuildStep "Install Dependencies"
-
-:: Install project dependencies
-call :installDependencies
-
-:: Log build step
-call :logBuildStep "Compile Project"
-
-:: Compile the project
-call :compileProject
-
-:: Log build step
-call :logBuildStep "Run Tests"
-
-:: Run tests
-call :runTests
-
-:: Log build step
-call :logBuildStep "Generate Documentation"
-
-:: Generate documentation
-call :generateDocs
-
-:: Log build step
-call :logBuildStep "Package Application"
-
-:: Package the application
-call :packageApp
-
-:: Log build step
-call :logBuildStep "Deploy Application"
-
-:: Deploy the application (Optional)
-call :deployApp
-
-:: Log build step
-call :logBuildStep "Post Build Cleanup"
-
-:: Clean up after build (Optional)
-call :postBuildCleanup
-
-echo [****| Build complete! |****]
-echo Logs can be found in "%~dp0error_log.txt"
-pause
+echo Commands:
+echo   tests      Run the local test suite. Default.
+echo   docs       Build the Sphinx HTML documentation.
+echo   all        Run tests, then build docs.
+echo   package    Build Python source and wheel artifacts when python -m build is available.
+echo   installer  Report that no dedicated installer packaging pipeline is defined.
 exit /b 0
-
-endlocal

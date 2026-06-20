@@ -1,169 +1,118 @@
-REM Monkey Head Project
-REM By: Dylan L.R. Pollock
-REM www.dlrp.ca
-REM HueyOS: 04 Terminal batch script (setup/Windows11)
-
-# ==================================================  #
-# This file is a part of the 'Monkey Head Project'                                       #
-# Website:   https://dlrp.ca                                                                            #
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project    #
-# License:   https://opensource.org/license/gpl-3-0                                 #
-# Overseen By:   Dylan L.R. Pollock                                                             #
-# Updated: 06.05.2025                                                                                 #
-# ================================================== #
 @echo off
-setlocal enabledelayedexpansion
+setlocal EnableExtensions
 
-:: Change to the script's own directory
-cd /d "%~dp0"
+set "SCRIPT_DIR=%~dp0"
+set "TEMPLATE=%SCRIPT_DIR%terminal-settings.json"
+set "SETTINGS_DIR=%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
+set "SETTINGS_FILE=%SETTINGS_DIR%\settings.json"
+set "INSTALL_TERMINAL=0"
+set "BACKUP_SETTINGS=0"
+set "APPLY_TEMPLATE=0"
+set "RESTORE_FILE="
 
-:: Clear screen and set color
-cls
-color 0A
-echo [****|     04_TERMINAL.bat - Terminal Setup and Configuration   |****]
-echo.
-
-:: Function to ensure the script is running with administrative privileges
-:ensureAdmin
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Please run this script as an administrator.
-    pause
-    exit /b %errorlevel%
+:parse_args
+if "%~1"=="" goto :args_done
+if /I "%~1"=="help" goto :usage
+if /I "%~1"=="--help" goto :usage
+if /I "%~1"=="/?" goto :usage
+if /I "%~1"=="--install" (
+    set "INSTALL_TERMINAL=1"
+    shift
+    goto :parse_args
 )
-goto :eof
-
-:: Function to check the last command and exit if it failed
-:checkError
-if %errorlevel% neq 0 (
-    echo Error: %1 failed with error code %errorlevel%.
-    call :logError "%1"
-    pause
-    exit /b %errorlevel%
+if /I "%~1"=="--backup" (
+    set "BACKUP_SETTINGS=1"
+    shift
+    goto :parse_args
 )
-goto :eof
-
-:: Function to log errors
-:logError
-echo %date% %time% - Error: %1 failed with error code %errorlevel% >> "%~dp0error_log.txt"
-goto :eof
-
-:: Function to install Windows Terminal if not already installed
-:installTerminal
-echo Checking for Windows Terminal...
-if exist "%LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe" (
-    echo Windows Terminal is already installed.
-) else (
-    echo Installing Windows Terminal...
-    choco install -y microsoft-windows-terminal
-    call :checkError "Windows Terminal Installation"
+if /I "%~1"=="--apply" (
+    set "APPLY_TEMPLATE=1"
+    shift
+    goto :parse_args
 )
-goto :eof
-
-:: Function to create default terminal settings if settings file does not exist
-:createDefaultSettings
-echo Checking for terminal settings file...
-if not exist "terminal-settings.json" (
-    echo Creating default terminal settings...
-    (
-        echo {
-        echo "profiles": {
-        echo "defaults": {},
-        echo "list": []
-        echo },
-        echo "schemes": [],
-        echo "actions": [],
-        echo "globals": {}
-        echo }
-    ) > "terminal-settings.json"
-    call :checkError "Creating Default Terminal Settings"
-) else (
-    echo Custom terminal settings file found.
+if /I "%~1"=="--restore" (
+    if "%~2"=="" (
+        echo [ERROR] --restore requires a file path.
+        exit /b 2
+    )
+    set "RESTORE_FILE=%~2"
+    shift
+    shift
+    goto :parse_args
 )
-goto :eof
+if /I "%~1"=="--template" (
+    if "%~2"=="" (
+        echo [ERROR] --template requires a file path.
+        exit /b 2
+    )
+    set "TEMPLATE=%~2"
+    shift
+    shift
+    goto :parse_args
+)
+echo [ERROR] Unknown argument: %~1
+goto :usage
 
-:: Function to back up existing terminal settings
-:backupExistingSettings
-echo Would you like to back up existing terminal settings? (Y/N)
-set /p backupChoice=
-if /i "%backupChoice%"=="Y" (
-    echo Backing up existing terminal settings...
-    if exist "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" (
-        copy /Y "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings_backup.json"
-        call :checkError "Backing Up Existing Terminal Settings"
+:args_done
+where wt >nul 2>&1
+if errorlevel 1 (
+    if "%INSTALL_TERMINAL%"=="1" (
+        winget install --id Microsoft.WindowsTerminal -e --source winget --accept-source-agreements --accept-package-agreements
+        if errorlevel 1 exit /b 1
     ) else (
-        echo No existing terminal settings found to back up.
+        echo [INFO] Windows Terminal is not currently available on PATH.
     )
 ) else (
-    echo Skipping backup of existing terminal settings.
+    echo [INFO] Windows Terminal is available.
 )
-goto :eof
 
-:: Function to configure Windows Terminal settings
-:configureTerminal
-echo Configuring Windows Terminal settings...
-copy /Y "terminal-settings.json" "%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json"
-call :checkError "Copying Terminal Settings"
-goto :eof
+if not exist "%SETTINGS_DIR%" mkdir "%SETTINGS_DIR%" >nul 2>&1
 
-:: Function to install optional terminal tools and extensions
-:installOptionalTools
-echo Would you like to install optional terminal tools and extensions? (Y/N)
-set /p toolsChoice=
-if /i "%toolsChoice%"=="Y" (
-    echo Installing optional terminal tools and extensions...
-    REM Uncomment and modify the following lines to install additional tools and extensions
-    REM choco install -y posh-git
-    REM call :checkError "Posh-Git Installation"
-    REM choco install -y oh-my-posh
-    REM call :checkError "Oh-My-Posh Installation"
-    REM Install PowerShell modules if needed
-    REM powershell -Command "Install-Module -Name PSReadLine -Force -SkipPublisherCheck"
-    REM call :checkError "PSReadLine Installation"
-    REM powershell -Command "Install-Module -Name Pester -Force -SkipPublisherCheck"
-    REM call :checkError "Pester Installation"
-) else (
-    echo Skipping installation of optional tools and extensions.
+if "%BACKUP_SETTINGS%"=="1" if exist "%SETTINGS_FILE%" (
+    call "%SCRIPT_DIR%_common.bat" :timestamp BACKUP_STAMP
+    copy /Y "%SETTINGS_FILE%" "%SETTINGS_DIR%\settings.backup.%BACKUP_STAMP%.json" >nul
+    if errorlevel 1 exit /b 1
+    echo Backed up current settings to "%SETTINGS_DIR%\settings.backup.%BACKUP_STAMP%.json"
 )
-goto :eof
 
-:: Function to verify installation
-:verifyInstallation
-echo Verifying Windows Terminal installation...
-if exist "%LOCALAPPDATA%\Microsoft\WindowsApps\wt.exe" (
-    echo Windows Terminal installed successfully.
-) else (
-    echo Error: Windows Terminal installation failed.
-    call :logError "Windows Terminal Installation Verification"
-    pause
-    exit /b 1
+if defined RESTORE_FILE (
+    if not exist "%RESTORE_FILE%" (
+        echo [ERROR] Restore file not found: "%RESTORE_FILE%"
+        exit /b 1
+    )
+    copy /Y "%RESTORE_FILE%" "%SETTINGS_FILE%" >nul
+    if errorlevel 1 exit /b 1
+    echo Restored terminal settings from "%RESTORE_FILE%"
 )
-goto :eof
 
-:: Ensure the script runs with administrative privileges
-call :ensureAdmin
+if "%APPLY_TEMPLATE%"=="1" (
+    if not exist "%TEMPLATE%" (
+        echo [ERROR] Terminal settings template not found: "%TEMPLATE%"
+        exit /b 1
+    )
+    copy /Y "%TEMPLATE%" "%SETTINGS_FILE%" >nul
+    if errorlevel 1 exit /b 1
+    echo Applied terminal settings from "%TEMPLATE%"
+)
 
-:: Install Windows Terminal
-call :installTerminal
+if "%INSTALL_TERMINAL%"=="0" if "%BACKUP_SETTINGS%"=="0" if "%APPLY_TEMPLATE%"=="0" if not defined RESTORE_FILE (
+    echo Settings path: "%SETTINGS_FILE%"
+    if exist "%TEMPLATE%" (
+        echo Template path: "%TEMPLATE%"
+    ) else (
+        echo Template path not found. Create "%TEMPLATE%" and re-run with --apply if you want to manage settings from this folder.
+    )
+)
 
-:: Create default terminal settings if necessary
-call :createDefaultSettings
-
-:: Back up existing terminal settings
-call :backupExistingSettings
-
-:: Configure Windows Terminal settings
-call :configureTerminal
-
-:: Install optional terminal tools and extensions
-call :installOptionalTools
-
-:: Verify installation
-call :verifyInstallation
-
-echo [****| Terminal setup complete! |****]
-echo Logs can be found in "%~dp0error_log.txt"
-pause
 exit /b 0
 
-endlocal
+:usage
+echo Usage: %~nx0 [options]
+echo.
+echo Options:
+echo   --install              Install Windows Terminal with winget when it is missing.
+echo   --backup               Back up the current settings.json file.
+echo   --apply                Apply the template file next to this script.
+echo   --restore FILE         Restore a previously backed-up settings file.
+echo   --template FILE        Override the template path used by --apply.
+exit /b 0
