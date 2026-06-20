@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from types import SimpleNamespace
 from unittest.mock import patch
 
+import huey.media.media_manager as media_manager
 from huey.media.ffmpeg_validator import validate_media_environment
-from huey.media.media_manager import probe_media
+from huey.media.media_manager import FFmpegCommandResult, FFmpegMediaManager
 
 
 def test_validate_media_environment_reports_missing_tools():
@@ -18,16 +18,32 @@ def test_validate_media_environment_reports_missing_tools():
     assert payload["ffprobe"] is False
 
 
-def test_probe_media_parses_ffprobe_json(tmp_path):
+def test_probe_media_parses_ffprobe_json(tmp_path, monkeypatch):
     media_file = tmp_path / "fixture.wav"
     media_file.write_bytes(b"data")
+    manager = FFmpegMediaManager(ffprobe_path="ffprobe")
 
-    with patch(
-        "huey.media.media_manager._run_ffprobe",
-        return_value=SimpleNamespace(
-            stdout='{"format": {"duration": "1.23"}, "streams": []}'
-        ),
-    ):
-        payload = probe_media(media_file)
+    def fake_run(args: list[str]) -> FFmpegCommandResult:
+        return FFmpegCommandResult(
+            command=args,
+            returncode=0,
+            stdout=(
+                '{"format": {'
+                '"duration": "1.23", '
+                '"bit_rate": "64000", '
+                '"size": "4", '
+                '"format_name": "wav"}, '
+                '"streams": []}'
+            ),
+            stderr="",
+        )
 
-    assert payload["format"]["duration"] == "1.23"
+    monkeypatch.setattr(manager, "run", fake_run)
+    monkeypatch.setattr(media_manager, "get_default_manager", lambda: manager)
+
+    payload = media_manager.probe_media(media_file)
+
+    assert payload.duration_seconds == 1.23
+    assert payload.bit_rate == 64000
+    assert payload.size_bytes == 4
+    assert payload.format_name == "wav"
