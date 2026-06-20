@@ -1,0 +1,1067 @@
+Interfacing a Raspberry Pi with the Commodore
+64’s VIC-II Chip
+Introduction and Technical Background
+Connecting modern microcomputers to vintage hardware enables new capabilities like enhanced video
+output or real-time debugging on classic systems. This report explores how to wire a Raspberry Pi to a
+Commodore 64, focusing specifically on the C64’s  VIC-II video chip. We begin with a brief technical
+overview of the VIC-II and the Raspberry Pi, then detail methods for passive signal monitoring and active
+interfacing. Key electrical considerations (voltage levels, buffering), wiring diagrams, software techniques,
+timing challenges, and potential use cases are discussed in an academic tone. The goal is to provide a
+comprehensive guide to bridging the 1980s Commodore 64 video subsystem with a 21st-century single-
+board computer.
+The MOS Technology VIC-II Chip (Commodore 64)
+The VIC-II (Video Interface Chip II) is the graphics and video generator used in the Commodore 64 (and
+C128) home computers, released in 1982. Manufactured by MOS Technology (part of Commodore), the VIC-
+II (models 6567/8562 NTSC, 6569/8565 PAL) is responsible for outputting the C64’s video signals and
+managing video memory accesses
+. It produces a 320×200 pixel bitmap or character-based display
+with 16 colors, hardware sprites, smooth scrolling, and raster interrupts
+. Notably, the VIC-II is a bus-
+mastering device that shares the system bus with the 6510 CPU: the chip accesses memory during certain
+half-clock cycles (stealing cycles from the CPU) and also performs DRAM refresh duties
+. This means the
+VIC-II tightly coordinates with the CPU via signals that halt the CPU when the video chip needs the bus
+.
+The VIC-II outputs analog video in the form of luminance and chrominance (NTSC/PAL composite signals)
+and drives synchronization signals for the display. Table 1 summarizes key specs of the VIC-II.
+Table 1: Commodore 64 VIC-II Key Specifications
+| Feature | Description | |-------------------------|-----------------------------------| | Video Modes | 40×25 text; 320×200
+hi-res bitmap (16 colors); multicolor (160×200); sprites (8 per line) | | Colors | 16 (palette built-in) | | Sprite
+Hardware | 8 sprites, 24×21 pixels (or 12×21 in multicolor)
+ | | Memory Addressing | 16 KB video RAM
+window (selectable)
+; sees character ROM in specific ranges | | Bus Mastering | Yes – Alternates memory
+access with CPU (CPU halted on VIC-II access cycles)
+ | | Notable Signals | BA (Bus Available) and AEC
+(Address Enable Control) to coordinate CPU access; Φ2 clock input; RAS/CAS for DRAM; D0–D7 data bus;
+A0–A13 address lines; analog video outputs (Y/C) |
+The  VIC-II’s  design  was  advanced  for  its  time  –  featuring  raster  interrupts  and  sprite  multiplexing
+techniques  that  programmers  leveraged  to  extend  its  capabilities  beyond  original  limits
+.
+Understanding the VIC-II’s operation is crucial when attempting to interface with it: any external device (like
+a Raspberry Pi) must respect the chip’s timing (which involves ~1 MHz bus cycles and sub-microsecond
+events) and voltage levels.
+1
+2
+2
+3
+3
+2
+4
+5
+2
+3
+6
+7
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+The Raspberry Pi and Its GPIO Interface
+The  Raspberry Pi is a modern single-board computer originally introduced in 2012 by the Raspberry Pi
+Foundation. Several revisions exist (e.g. Pi 3B+, Pi 4), but all feature a Broadcom SoC with an ARM CPU, on-
+board interfaces (USB, HDMI, etc.), and critically, a multi-pin  GPIO header for interfacing with external
+electronics. Newer models provide a 40-pin header, of which over two dozen pins can be used as general-
+purpose I/O (input/output) lines. These GPIO pins operate at 3.3 V logic levels and are not 5V-tolerant,
+meaning they cannot be directly connected to the 5 V signals in a C64 without level conversion
+. The Pi’s
+GPIO can be programmed from user space (e.g. via libraries in Python such as RPi.GPIO or gpiozero ) and
+can  toggle  or  read  pins  with  microsecond-scale  timing  under  optimal  conditions.  However,  a  stock
+Raspberry Pi runs a full Linux OS which does not guarantee real-time performance, and the CPU time
+must be shared with the operating system unless bare-metal programming or specialized kernel modules
+are used.
+Despite these challenges, the Raspberry Pi’s raw speed (e.g. a 1.2 GHz quad-core in Pi 3, or up to 1.5 GHz in
+Pi 4) and flexible I/O have made it popular for retro-computing projects. It has been used to emulate
+peripherals and co-processors for vintage machines, provided that hardware interface constraints are
+managed properly
+. In context of the VIC-II, the Pi is potentially powerful enough to  emulate the
+video chip or capture its data in real-time, but only with careful attention to interfacing hardware and
+software timing.
+Passive Monitoring of VIC-II Signals with a Raspberry Pi
+One approach to interfacing the Raspberry Pi with the VIC-II is passive monitoring, where the Pi listens in
+on the VIC-II’s signals without disturbing the C64’s normal operation. In this mode, the Raspberry Pi acts
+like a logic analyzer or diagnostic tool: its GPIOs are configured as inputs connected (via appropriate
+buffers) to various signals of the VIC-II or C64 motherboard. The goal is to record or analyze these signals in
+real time – for example, tracing memory addresses the VIC-II reads for video refresh, detecting raster
+interrupts, or monitoring synchronization signals.
+Key signals that are useful to monitor include: the VIC-II’s address lines (to know which memory locations
+it’s fetching graphics or sprite data from), the BA (Bus Available) signal (which goes low when VIC-II is using
+the bus and the CPU is halted), the Φ2 clock (the 1 MHz system clock phase used for timing), and possibly
+the composite video sync or color burst lines if one wanted to sync to the video output. Monitoring might
+also involve the data bus lines D0–D7 to see actual byte values being read or written by VIC-II (e.g. color
+data or sprite pointers), though the data bus in a C64 is time-shared with the CPU and other devices.
+Critically, passive monitoring requires that the Raspberry Pi’s presence  does not load or disturb the
+signals. This is achieved by using high-impedance buffer circuits or dedicated level shifters that sense the 5
+V signals and output a safe 3.3 V logic signal to the Pi. For instance, a unidirectional level shifter (like an HC/
+HCT series buffer or an Open-Collector arrangement with pull-ups) can be used on each monitored line
+. By tapping the signals through a buffer, the Pi can sample the VIC-II’s activity much like an oscilloscope
+or logic analyzer would, while the VIC-II and C64 continue running normally. Figure 1 shows a conceptual
+wiring of a Raspberry Pi monitoring some VIC-II lines through a level-translating buffer.
+Figure 1: A Raspberry Pi 3B+ connected on a breadboard to a C64’s bus via level shifters and buffers (the white
+wires attach to the C64’s expansion port lines). Such a setup allows passive monitoring of the VIC-II and CPU bus
+8
+9
+10
+8
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+signals. The level shifting interface protects the Pi’s 3.3 V GPIOs from the C64’s 5 V signals
+. This prototype
+illustrates the complexity of wiring needed – many GPIO lines are used, and careful buffering ensures the Pi does
+not interfere with normal bus operation.
+In software, passive monitoring can be implemented using Python or C code on the Raspberry Pi to
+periodically read the GPIO states. For example, one might use Python’s  RPi.GPIO library or the more
+advanced pigpio library to sample a pin at high speed. A simple Python loop using RPi.GPIO  could check
+a GPIO connected to VIC-II’s VSYNC (vertical sync) to count frame intervals, or use edge-detection callbacks
+to time events like raster interrupts. Example: The following pseudo-code illustrates monitoring the VIC-II’s
+BA signal (which indicates when the CPU is denied the bus) using Python’s GPIO library:
+import RPi.GPIO as GPIO, time
+BA_PIN = 17
+# GPIO17 wired to VIC-II BA signal via level shifter
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(BA_PIN, GPIO.IN)
+last_state = GPIO.input(BA_PIN)
+t0 = time.time()
+while time.time() - t0 < 0.1:
+# sample for 0.1 s
+state = GPIO.input(BA_PIN)
+if state != last_state:
+ts = time.time() - t0
+print(f"BA changed to {state} at t={ts*1e6:.1f} us")
+last_state = state
+This code would print transitions of the VIC-II’s BA line (ideally showing it drop low during video DMA
+periods each raster line). However, Python’s timing is not highly precise – under Linux, the above loop
+might only resolve changes to a few microseconds accuracy, and could miss very fast events. For better
+results, one could use pigpio  which samples GPIOs via DMA in the background. The pigpio daemon can
+record  state  changes  with  timestamp  resolution  down  to  1   µs  or  better
+.  Using  pigpio’s  callback
+mechanism, the Pi could log all address lines and data lines whenever the  Φ2 clock rises, effectively
+capturing a trace of memory fetches by VIC-II.
+It’s important to note the speed limitations here: the VIC-II performs memory accesses at up to ~2 MHz
+(each access ~500 ns apart during active video DMA), which is challenging to capture perfectly on a
+Raspberry Pi running Linux. As one forum observation notes, pigpio can sample a GPIO at up to 1 MHz by
+default (1 µs intervals)
+. This may be just enough to catch each cycle, but any jitter or OS latency could
+cause missed samples. Therefore, passive monitoring is usually limited to grabbing  selected signals or
+occasional snapshots, unless one uses highly optimized code or disables the OS interrupts (for instance,
+running on a bare-metal Pi or using the Pi’s secondary memory interface (SMI) hardware to stream data –
+more on SMI later). For many diagnostic purposes, though, capturing signals at microsecond granularity is
+sufficient (e.g. counting raster lines, measuring frame timing, logging when certain addresses are accessed
+by VIC-II).
+In summary, passive monitoring with a Pi can be done with relatively simple wiring and scripts, and is useful
+for non-intrusive observation of the VIC-II’s behavior. It requires careful level shifting and may be limited
+by the Pi’s sampling rate, but it does not require stopping the C64 or replacing any of its functions. This
+8
+11
+11
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+makes it a good starting point for retro-hardware enthusiasts who want to log or analyze the inner
+workings of the VIC-II chip in real time.
+Real-Time Interfacing and Co-Processing with the VIC-II
+Going  beyond  observation,  one  can  attempt  real-time  interfacing,  where  the  Raspberry  Pi  actively
+interacts with or even takes over some functions of the VIC-II. Real-time interfacing could mean the Pi is
+injecting signals or data onto the C64’s bus, emulating hardware in tandem with the VIC-II, or otherwise
+functioning as a co-processor that must obey the VIC-II’s strict timing. This is substantially more challenging
+than passive monitoring, because now the Pi must not only listen, but sometimes drive signals on the bus
+within the same 1 MHz clock cycle windows that the 6510 CPU or VIC-II operate in
+.
+One example of real-time interfacing is using the Pi as a  replacement or assistant for the VIC-II. For
+instance,  projects  like  the  C64  VGA/HDMI  interfaces have  used  a  Raspberry  Pi  connected  to  the  C64’s
+expansion port to emulate the VIC-II’s output and provide modern video. In these setups, the Pi gathers
+information each C64 cycle (such as memory bus values, I/O register writes to VIC, etc.) and renders a video
+frame that mirrors what the real VIC-II is generating, outputting it via HDMI. The “C64–Pi Interface” by Kim
+Jorgensen is one such project: it plugs into the Commodore’s expansion slot and uses a Raspberry Pi
+running an emulator (a modified Frodo) to generate audio/video, synchronized with the real machine
+. Impressively, it manages this by sampling the C64 bus using the Pi’s hardware (the  Secondary
+Memory Interface, SMI) and DMA transfers. The Pi essentially operates as a parasitic real-time computer,
+in lock-step with the C64, reading the bus state every 1 MHz cycle. Figure 2 illustrates this concept in action,
+showing a Raspberry Pi interfaced via a custom board to a C64 and providing HDMI video output.
+Figure 2: A Raspberry Pi 3 connected via a custom interface board to the C64’s expansion bus, demonstrated here
+outputting the Commodore’s display to an HDMI monitor. In this setup, the Pi is performing  real-time VIC-II
+emulation – capturing the C64’s bus signals and generating video (and audio) frames. This project uses a modified
+Frodo emulator on Raspbian Linux to mimic the VIC-II and SID chips in real time
+. The hardware interface
+includes a CPLD and level shifters to latch the bus signals for the Pi, allowing the Pi to sample data every 1 MHz
+cycle via its SMI/DMA, albeit with very tight timing margins
+.
+Real-time interfacing isn’t limited to video output. The Pi can also emulate cartridges, additional memory, or
+even  a  replacement  CPU.  The  RasPIC64 project,  for  example,  is  a  framework  for  bidirectional
+communication on the C64 bus using a Raspberry Pi 3B+
+. With appropriate wiring, the Pi can pretend
+to be a ROM cartridge (providing data when certain addresses are read), a RAM expansion, or a sound
+device. In one use-case, a Pi was used as a drop-in SID audio chip replacement by directly wiring to the
+SID’s socket – but it was found that running under Linux was too slow, so the developer switched to a bare-
+metal approach for timing accuracy
+. Once on bare metal, the Pi could reliably respond to bus signals,
+producing dual SID audio and even an FM synthesizer in sync with the C64
+. This underscores that
+real-time means real-time: even a few microseconds of jitter will break the illusion to the C64. The C64’s
+bus operates with events on the order of a few hundred nanoseconds, so the Pi must handle tasks on that
+scale. As the RasPIC64 documentation emphasizes, communication needs to occur within  approximately
+500 ns windows – within that time, the Pi must detect the C64’s bus state, potentially put its own data on the
+bus, then release the bus again so as not to conflict with the next cycle
+. Achieving this reliably on
+Raspberry Pi hardware often requires disabling all non-critical processes, using the Fast Interrupt (FIQ) on
+a single core for precise cycle timing, or using a bare-metal runtime like Circle (which RasPIC64 does)
+.
+12
+13
+14
+13
+15
+16
+17
+9
+9
+10
+12
+18
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+Another aspect of real-time interfacing is ensuring the Pi only drives the bus when appropriate. Unlike
+passive monitoring, here the Pi will at times output to the C64 (for example, placing a byte on D0–D7 to
+emulate a ROM when the CPU expects it). Thus, the hardware must allow the Pi to tristate its outputs when
+it’s not supposed to drive. Control signals from the C64 such as Φ2 (clock phase), AEC, and R/W can be
+used to determine when the Pi should listen versus drive. Typically, during the CPU’s half-cycle (when
+Φ2=high and AEC=high), the CPU drives the address bus; during the VIC’s half-cycle (Φ2=low, AEC=low) the
+VIC drives the address bus. An interfacing Pi might inject itself, for example, only when certain address
+ranges are accessed and the Pi has data to provide (as in a cartridge). This requires coordinating the
+direction of level shifters on-the-fly (for data lines) and doing so with sub-microsecond precision
+. Often,
+additional hardware like multiplexers or latches are introduced to expand the Pi’s limited GPIO count and
+to hold data stable at high speed
+. In essence, real-time interfacing circuits end up looking very
+much like those in classic freezer cartridges or expansions, but with a Raspberry Pi replacing what would
+have been an FPGA or microcontroller.
+To summarize, real-time interfacing with the VIC-II (and C64 bus) is feasible but demanding. It moves the
+Pi from being an observer to being an active participant in the C64’s bus transactions. This necessitates
+precise  timing  control,  typically  far  beyond  what  normal  Linux  user-space  programming  can  handle.
+Solutions include using bare-metal code on the Pi, leveraging specialized hardware interfaces (SMI, DPI, or
+even the camera interface in novel ways) for faster IO, and designing the interface hardware to manage
+some timing (for instance, using a CPLD or FIFO to buffer data for the Pi). The payoff for this complexity is
+significant:  with  real-time  capability,  the  Pi  can  augment  the  VIC-II –  providing  new  video  outputs,
+additional graphics modes, or capturing the VIC-II’s output for processing – all in sync with the original C64’s
+operation.
+Electrical Considerations: Voltage Levels and Buffers
+Interfacing the Raspberry Pi with the VIC-II (or any Commodore 64 signals) requires careful attention to
+electrical  compatibility.  The  fundamental  issue  is  that  the  C64  uses  TTL  5-volt  logic,  whereas  the
+Raspberry Pi’s GPIO operates at 3.3 V CMOS levels. Directly connecting a 5 V output (like a VIC-II or 6510
+CPU pin) to a Pi’s GPIO will  damage the Pi (the Pi’s inputs are not 5V-tolerant)
+. Conversely, a 3.3 V
+output from the Pi might not be recognized as a valid logic “1” by a 5 V TTL input in some cases (TTL typically
+requires ~2.4 V for a high, so 3.3 V is usually just enough, especially if using 74HCT-family inputs which are
+5V but CMOS-compatible). Nonetheless, proper level shifting in both directions is strongly recommended
+.
+There are multiple ways to achieve level translation and buffering:
+Unidirectional Buffers (Level Shifters): For lines that only need to be monitored (one-way from C64
+to Pi), simple solutions include resistor voltage dividers or ICs like the 74HC4050 hex buffer (which
+can accept 5 V input while powered at 3.3 V, thus outputting safe 3.3 V levels). These introduce
+minimal load and protect the Pi. Another option is using open-collector buffers with pull-ups to 3.3 V.
+In the C64-Pi context, signals like address lines A0–A13, or control lines like BA, φ2, R/W can be
+connected through such buffers since the Pi will never drive them but only listen.
+Bidirectional Level Shifters: The data bus lines D0–D7 and certain control lines (if the Pi will drive
+them at times) must allow two-way communication. Generic bidirectional level translator modules
+(like those based on MOSFETs or chips such as TXB0108) exist, but they often have drawbacks in a
+19
+20
+21
+8
+8
+• 
+• 
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+bus environment – for instance, the TXB0108 auto-direction sensing can be unreliable with the
+capacitive load of a bus and with multiple drivers. A more robust approach is to use bus transceiver
+ICs, such as the  74HCT245 or  74LVC245, which are 8-bit buffers with a direction pin and output
+enable. By controlling the direction pin from the Raspberry Pi (or from the C64’s R/W line), one can
+switch the data lines between input and output mode as needed
+. For example, when the C64
+CPU is reading from the Pi (cartridge emulation), the Pi would set the 74HCT245 to drive data onto
+D0–D7; when the C64 is driving the bus (or during VIC-II writes), the transceiver is reversed or put in
+high-impedance mode so the Pi can read. This guarantees no contention (i.e., no two outputs
+fighting  and  potentially  shorting  each  other)  as  long  as  the  timing  of  enabling/disabling  the
+transceiver is correct.
+Buffers for High-Speed or Multiple Signals: In practice, one Raspberry Pi doesn’t have enough
+GPIO pins to connect to every signal of interest on the VIC-II (which could be 14 address lines, 8 data
+lines,  and  various  control  lines  –  easily  25+  signals).  To  expand  the  Pi’s  effective  I/O,  external
+multiplexers or latches can be employed
+. For instance, RasPIC64 uses multiplexers to time-
+multiplex reading address lines in two sets, since reading all address bits at once wasn’t possible
+with the limited pins
+. Similarly, a latch (like 74LS573) could capture a byte of data and then the Pi
+reads that byte through fewer GPIO pins. While these techniques go beyond simple level shifting,
+they are electrical components that must be considered in the wiring.
+Power and Grounding: When connecting two systems, ensure common ground reference. The
+Raspberry Pi ground and the C64 ground must be connected, or else signals have no reference and
+the level shifters won’t work properly. Additionally, the Pi should ideally be powered from a stable
+source with a common reference to the C64 (in many setups the C64 and Pi interface is powered via
+the C64’s expansion port 5V line, but if the Pi is independently powered, linking grounds is essential).
+Level shifter ICs should be powered appropriately (buffers that translate often have a Vcc on each
+side: e.g., one at 5V, one at 3.3V for dedicated translator chips).
+Another consideration is signal integrity and protection. Long wires between a Pi and a C64 can pick up
+noise or introduce ringing at the fast edge rates of digital signals. It can help to keep the wiring short, use
+ribbon cables or twisted pairs for important lines (with ground as one of the pair to provide a return path),
+and possibly add series resistors (~100 Ω) on fast lines to dampen ringing. Some DIY interfaces include
+optional resistors or small RC filters on lines like the dot clock or interrupt lines if they are particularly noisy.
+Also, if there’s any risk the Pi might drive a line at the wrong time, consider adding a safeguard like a bus
+isolation resistor or fuse – for example, a 220 Ω resistor in series with each data line can limit current in
+case of accidental contention, potentially saving the VIC-II or Pi from damage.
+In summary, never directly wire 5V Commodore signals into the 3.3V Pi GPIO. Always use appropriate
+level shifting and buffering. Designs like the Pololu bidirectional shifter or 74xx245 bus transceivers are
+proven solutions
+. They not only protect the devices but also often provide the necessary drive strength –
+the VIC-II alone cannot source/sink too much current on its pins, so a buffer can help fan-out the signal to
+both the Pi and the rest of the C64 without loading the VIC-II beyond spec. Table 2 gives a few example
+interface components and their roles.
+Table 2: Common Level Shifting and Buffer Solutions for Pi–C64 Interface
+|
+ 
+Component
+ 
+|
+ 
+Type
+ 
+|
+ 
+Use
+ 
+Case
+ 
+|
+ 
+Notes
+ 
+|
+|------------------|---------------|--------------------------------------|-------------------------------------| | 74HC4050 | Hex buffer
+22
+• 
+20
+20
+• 
+8
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+(unidirectional, level shifter) | Shifting 5V down to 3.3V (input to Pi) | Use for address/control lines into Pi
+(Vcc=3.3V, 5V-tolerant inputs). Outputs only 3.3V max. | | 74HCT245 / 74LVC245 | 8-bit bus transceiver
+(direction-controlled) | Bidirectional data bus or address bus interface | Direction pin selects whether Pi
+reads or drives. Needs proper timing control, 3.3V or 5V logic depending on variant (LVC family can do 5V-
+>3.3V translation). | | TXB0108 | 8-bit auto bidirectional level translator | Low-speed control lines or I2C-
+style signals | Not ideal for C64 bus data: drive strength is low and auto-direction can fail on complex bus.
+Better for slower signals. | | Resistor divider | Passive level reduce (two resistors) | One-way 5V to 3.3V
+conversion in a pinch | Simple but may distort fast edges; not for high-frequency lines. Ensure high
+impedance into C64. | | Open-collector + pull-up | Transistor or MOSFET plus resistor network | Level
+shifting open-drain signals or creating wired-AND logic | For signals like interrupts or I2C (not typical for
+VIC-II lines). E.g., a BSS138 MOSFET circuit used in many level shifter modules. Not for bidirectional bus
+without protocol. | | 74LS245 (note: LS TTL) | 8-bit transceiver (fixed Vcc=5V) | Could isolate bus sections,
+but not level shift down to 3.3V | If used, Pi inputs still need protection (3.3V). Better to use CMOS/dual-
+supply variants for level shift. |
+Lastly, consider electrical timing: any buffer introduces some propagation delay. Typically 74HC/HCT series
+have sub-10ns delays, which is negligible at 1 MHz. However, if you cascade buffers or use multiplexers, the
+delays can add up. Ensure that critical signals (like PHI2 clock edges used to latch data) remain aligned. For
+example, if using a latch triggered by PHI2, the latch and buffer delays must not exceed the half-cycle (~500
+ns) or data might not be stable in time for Pi to read it. Fortunately, 500 ns is a large margin for modern
+logic, but as designs get complex, one must keep an eye on setup/hold times relative to the VIC-II’s
+operation.
+Wiring Diagrams and Configurations
+Designing the wiring between a Raspberry Pi and VIC-II (or C64 mainboard) can be approached at two
+levels: a  generic conceptual diagram that shows categories of connections (data lines, address lines,
+control lines, level shifters, power), and  specific pin mappings for particular use cases or boards. In all
+cases,  clarity  in  the  wiring  is  crucial  –  one  mistake  can  risk  hardware  damage.  Here  we  present  a
+generalized wiring setup, followed by notes on specific configurations like using the C64’s expansion port
+versus direct chip connections.
+Generic Wiring Setup
+At  its  heart,  the  interfacing  circuit  will  have  the  Raspberry  Pi’s  GPIO  header  on  one  side  and  the
+Commodore’s signals on the other, with level shifting logic in between. Figure 3 (a conceptual schematic)
+illustrates the generic connections:
+Data Bus (D0–D7): Connect via an 8-bit bidirectional level shifter (e.g., a 74LVC245 transceiver). The
+transceiver’s direction control can tie to the C64’s R/W line (in combination with PHI2) to automate
+when the Pi should drive (when C64 expects to read) or listen. Alternatively, the Pi can control the
+OE/DIR pins through its GPIO if custom logic is needed (for instance, only drive during certain
+address ranges). Each data line goes through the transceiver to corresponding Pi GPIOs (e.g., D0 →
+GPIO4, D1 → GPIO17, etc., as available). Ensure proper alignment (D0 is LSB of a byte, match all bits).
+Address Bus (A0–A15): VIC-II uses 14 bits for its internal addressing, but the C64 address bus is 16-
+bit (A0–A15 from the CPU perspective). The VIC-II doesn’t output all high address lines directly (the
+• 
+• 
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+top 2 bits of its 16KB window are set by other registers), but on the expansion port you effectively
+see A0–A15 for the system address. If monitoring or emulating memory, connect A0–A15 through
+level shifters (could be unidirectional if Pi only needs to monitor addresses output by VIC/CPU). Often
+2× 8-bit buffers (74HC541 or 74HC245 in input mode) can be used to read the address lines into the
+Pi. Because 16 lines is a lot for Pi, some projects only wire A0–A12 and use multiplexing for higher
+lines  or  assume  certain  memory  configurations
+.  For  generic  wiring,  assume  A0–A15  all  go
+through level shifters to Pi (consuming 16 GPIOs).
+Control signals: Key ones are Φ2 (the system clock phase, from which timing can be derived), R/W
+(indicates read or write cycle), BA and/or AEC (which indicate whose turn on bus – VIC or CPU), IRQ
+and NMI (if the Pi wants to monitor or trigger interrupts), and RESET (Pi might monitor or even
+trigger a reset). Each of these should be level-shifted (mostly input to Pi; except RESET could be
+driven low by Pi to reset the C64 if desired, through a transistor). Φ2 is particularly important: the Pi
+might use it as an external timing reference (e.g., trigger an interrupt on Pi for each rising edge of
+Φ2). In some advanced setups, a fractional clock like the DOT clock (~8 MHz) or the VIC-II’s color clock
+might be tapped if trying to synchronize very precisely, but generally Φ2 (≈1 MHz) is sufficient for
+cycle-sync.
+Power pins: If using the expansion port, the C64 provides +5V and GND which can be used to power
+the interface logic (and potentially the Pi via a regulator). The Pi’s own 5V/GND could also supply the
+level shifters. In any case, link grounds and ensure the level-shifter chips have the correct dual
+supplies (e.g., 5V on the C64 side, 3.3V on the Pi side).
+In pseudo-schematic form:
+C64 (VIC-II/CPU bus)                Interface                     Raspberry Pi 
+GPIO
+====================                =========                     
+==================
+D0 ---+                            +--< Level shift (bi-dir) >-- GPIO2
+      |---< 74LVC245 (Dir=R/W) >---+--< Level shift (bi-dir) >-- GPIO3
+D1 ---+                            ...                       ... GPIO4
+...                                +--< Level shift (bi-dir) >-- GPIO... (D7)
+D7 ---+
+A0 --------< 74HC541 (5V->3.3V buffer) >------- GPIO...
+...
+A15 -------< 74HC541 (5V->3.3V buffer) >------- GPIO...
+Φ2 --------< 74HC14 Schmitt trigger >--------- GPIO... (optional, for clean 
+clock)
+R/W -------< 74HC4050 buffer >---------------- GPIO...
+BA --------< 74HC4050 buffer >---------------- GPIO...
+AEC -------< 74HC4050 buffer >---------------- GPIO...
+IRQ -------< 74HC4050 buffer >---------------- GPIO... (if needed)
+RESET <----< MOSFET level shift >------------> GPIO... (Pi can drive Reset low)
+20
+• 
+• 
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+The above is just an example; many variations exist. Notably, if using the expansion port, the signals are
+slightly different labels (e.g.,  /GAME, /EXROM lines for cartridge banking, which a Pi cart might want to
+control; Φ2 and DOT clock are available on the port; IRQ, NMI lines; address lines A0–A12 directly on the
+port, etc.). Using the expansion connector is often the easiest specific configuration, which we address next.
+Specific Configurations
+1. Expansion Port Cartridge Interface: The Commodore 64’s expansion port is a 44-pin edge connector
+exposing a wide array of signals: the address bus A0–A15, data bus D0–D7, Φ2, BA, φ0 (dot clock), IRQ, NMI,
+RESET, ROM select lines (/ROML, /ROMH, /IO1, /IO2), and power. Designing a Pi interface as a cartridge has
+the advantage that you don’t need to desolder chips or attach clips to the VIC-II; instead, the Pi (plus buffer
+circuitry) sits in a cartridge that plugs into the C64 externally. Projects like RasPIC64 and Sidekick64 followed
+this approach
+. In this setup, the wiring essentially follows the generic plan above, but typically with
+fewer address lines connected – often only up to A12 or A13 – because the cartridge primarily needs to
+monitor addresses in certain ranges (like $8000-$FFFF for ROM cartridges or $D000-$DFFF for I/O and
+$D000-$D02E for VIC-II registers). To compensate for not wiring every address line, address decoding logic
+or multiplexers might be used
+. A specific wiring example from RasPIC64 mentions using multiplexers to
+handle A0–A12 and the various ROML/ROMH signals due to limited GPIO count
+. The Pi’s GPIO pins
+would map to the cartridge edge in roughly a one-to-one fashion through level shifters, and additional
+GPIO might control /GAME, /EXROM lines (which control memory configuration in C64). An OLED display or
+LEDs might also be attached to the Pi for user feedback in some designs
+, though that’s optional.
+2. Direct VIC-II Socket Attachment: In some cases, one might connect to the VIC-II by removing it from its
+socket and inserting an interposer that brings signals out to the Pi. This is less common (because it’s
+invasive and risks the VIC-II chip), but conceivable if one wanted to  replace the VIC-II with a Pi-driven
+emulator. The VIC-II socket has pins for all the signals including analog outputs. A Pi could theoretically
+drive the address lines and data lines in place of VIC-II, effectively acting as a video card. However, doing so
+means the Pi must now perform all VIC-II functions (generate video and refresh RAM) – an extremely
+demanding task. More practically, a direct VIC-II tap could be used for video capture: one could connect to
+the analog output pins (with an ADC or a simple amplifier) to digitize the composite video or s-video signals.
+Since the question focus is on the VIC-II chip, it’s worth noting that capturing analog video via Pi GPIO is not
+feasible (there’s no analog input on Pi), but one could use an external ADC or the Pi’s camera interface with
+the right adapter. That said, most projects choose to recreate the video digitally (by reading what VIC-II is
+doing internally via the bus) rather than ADC sampling the composite output.
+3. User Port or Other Ports: The C64’s user port provides TX, RX, some handshake lines and the CPU’s VIA
+port lines – not directly useful for VIC-II video, so it’s typically not used for VIC-II interfacing (aside from
+maybe sending commands to trigger an NMI routine that dumps VIC-II state – beyond our scope). The key
+is either tap the expansion (cartridge) port or the chips’ sockets.
+For illustrative purposes, Listing 1 below shows a pin mapping from the C64 expansion edge to Raspberry
+Pi pins for a hypothetical “Pi cartridge” focusing on VIC-II monitoring and video output:
+Listing 1: Example Pin Mapping for a Pi-Based Cartridge (Expansion Port)
+9
+20
+20
+23
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+C64 Expansion Pin  | Signal      | Connection
+-------------------|-------------|-------------------------------
+B1, A1             | GND         | Raspberry Pi GND (common ground)
+B2                 | /EXROM      | Pi GPIO23 (through 74HC4050) – Pi can pull 
+low/high to control memory config
+B3                 | /GAME       | Pi GPIO24 (through 74HC4050) – same as above 
+for game line
+B4                 | CLK2 (Φ2 out)| Pi GPIO18 (through Schmitt buffer) – Pi 
+input for system clock reference
+B5                 | D0          | Pi GPIO4 <-> TXB0108 or 74LVC245 (bit0)
+B6                 | D2          | Pi GPIO17 <-> level shifter (bit2)
+... (map D0–D7 to available Pi GPIOs through bidirectional level shifting) ...
+A5                 | D1          | Pi GPIO27 <-> level shifter (bit1)
+A6                 | D3          | Pi GPIO22 <-> level shifter (bit3)
+... etc. ...
+B7                 | A0          | Pi GPIO5 <- 74HC541 buffer (address bit0 in)
+B8                 | A2          | Pi GPIO6 <- buffer (address bit2)
+... (similarly, map A0–A12 to Pi inputs through buffers; skip A13–A15 to save 
+pins) ...
+A7                 | A1          | Pi GPIO13 <- buffer (address bit1)
+A8                 | A3          | Pi GPIO19 <- buffer (address bit3)
+... etc. ...
+B9                 | /IRQ        | Pi GPIO25 <- 74HC4050 (monitor IRQ line, Pi 
+input only)
+B10                | /IO1        | Pi GPIO20 <- 74HC4050 (monitor IO1 decode 
+line, indicates access to $DE00-$DEFF)
+B11                | /ROMH       | Pi GPIO21 <- 74HC4050 (monitor ROMH line, 
+$E000-$FFFF area select)
+A10                | R/W         | Pi GPIO16 <- 74HC4050 (monitor CPU R/W 
+status)
+A11                | /RESET      | Pi GPIO12 <-> MOSFET level shifter (Pi can 
+detect or drive reset)
+A12                | /NMI        | Pi GPIO26 <- buffer (monitor NMI)
+... (other lines like BA, AEC not directly on expansion port in C64; BA is 
+internal)
+Note: The above mapping is just an example. The actual wiring would depend on what the project’s goals
+are (for video, one needs to know where VIC-II is reading frame data from – the address lines and control
+lines – and possibly intercept writes to VIC registers at $D000-$D02E via IO1/IO2 decoding). In practice,
+developers might choose different GPIO assignments and possibly use a smaller Raspberry Pi (e.g., Pi Zero)
+for a compact cartridge.
+Because of the complexity, it’s highly recommended to  draw out a schematic of any intended wiring
+before building it. Even better, simulate or systematically test each connection (for example, first connect
+only one data line and write a test to ensure the Pi can read when the C64 writes to that address, etc.).
+Community projects like the ones cited often provide wiring diagrams (the RasPIC64 README references a
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+RasPIC64_Circuit.jpg  wiring image, and others have shared Fritzing diagrams) – studying those can
+be extremely helpful
+.
+In conclusion, the wiring involves connecting dozens of lines through proper converters, and it is easy to
+get overwhelmed. Breaking it down: first handle power/ground and voltage shifting, then connect buses in
+a disciplined way (maybe start with read-only sniffing, then add driving capability). That approach will make
+the bring-up easier and safer.
+Software Implementation and Examples
+With the hardware in place, the software side is what brings the Pi-C64 VIC-II interfacing to life. Software
+for this can range from simple Python scripts (for basic monitoring) to complex bare-metal firmware (for
+cycle-exact emulation). We will discuss a few layers: using Python for GPIO access, achieving necessary
+timing (possibly via C or bare metal), and examples of tasks like signal logging, timing analysis, or video
+generation.
+Accessing GPIOs in Python (Basic Monitoring)
+For passive monitoring or slow control tasks, the Raspberry Pi’s standard libraries are convenient. Python’s
+RPi.GPIO  library allows you to configure pins as inputs or outputs and read/write them. For example, one
+can set up a GPIO pin connected to VIC-II’s raster interrupt output (IRQ line) and have a callback function
+trigger whenever an edge is detected:
+import RPi.GPIO as GPIO
+IRQ_PIN = 25
+# connected to /IRQ via level shifter (active low)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(IRQ_PIN, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
+# use external pull-up 
+of C64
+# Define a callback for falling edge (interrupt asserted)
+def on_raster_interrupt(channel):
+print("Raster Interrupt at:", time.time())
+GPIO.add_event_detect(IRQ_PIN, GPIO.FALLING, callback=on_raster_interrupt)
+This simple script would print a timestamp whenever the C64 triggers a raster IRQ (which could be
+programmed to happen at a specific scanline in VIC-II). However, keep in mind the latency and jitter – the
+printing might happen milliseconds later, but at least you know the sequence of events.
+For reading the bus continuously, one could use a loop as shown earlier or use the pigpio  library, which
+can sample multiple GPIOs in the background at high speed. Pigpio offers a feature to record waveforms
+of GPIO changes over time, which can be useful to capture a burst of activity (say, one frame worth of
+memory accesses). You might, for instance, record all address lines and the R/W line over a 20 ms frame,
+then later analyze that data to see how VIC-II interleaved its memory requests.
+24
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+If one aims to do  video emulation at the software level (without specialized hardware support), Python
+alone will not be sufficient. It would require dealing with pixel-level data at MHz rates, which is beyond
+interpreted Python. Instead, one would embed a C/C++ module or use an existing emulator. In the C64 Pi
+Interface project, they ported a C64 emulator (Frodo) to run on the Pi and tied its video output to the real
+signals
+. Similarly, a Python approach could theoretically use the vice  emulator’s APIs or an emulator
+library, but feeding real-time bus signals into an emulator is complex. For academic interest, one could
+attempt a simpler task: use the Pi to capture VIC-II register writes and simulate a secondary output. For
+example, intercept writes to VIC-II color registers and mirror them to an HDMI display using Pygame – this
+would be slow and not truly real-time, but could demonstrate the principle of co-running software reacting
+to VIC-II state.
+High-Performance Access: C, DMA, and Bare Metal
+For  serious  real-time  work  (as  required  to  truly  emulate  or  interface  live),  one  must  go  beyond
+straightforward Python scripts:
+C and mmap  / Kernel Modules: One intermediate step is writing a C program on Linux that uses /
+dev/mem  to directly poke the GPIO registers (bypassing the overhead of library calls). The BCM283x
+SoC in the Pi has registers to set/read pin states; by mapping those and using a tight loop or even
+ARM assembly, you can toggle or read pins with much lower latency than through Python. Combined
+with raising the program’s scheduling priority (to minimize OS interruptions), this can improve
+response  times  to  maybe  tens  of  nanoseconds  for  simple  operations.  However,  it’s  still  not
+guaranteed real-time under Linux if, say, an interrupt fires for USB or networking.
+DMA via  SMI**: The Secondary Memory Interface (SMI) is a feature on Raspberry Pi’s SoC that can
+perform high-speed parallel data transfers. It’s not well documented officially
+, but it essentially can
+turn certain GPIO pins into an 8- or 16-bit wide bus that the DMA controller can sample or drive at high
+rates. The C64 Pi Interface used SMI to continuously stream the C64’s bus data into memory on the Pi
+.
+A kernel module or a user-space driver (like  rpivid or custom) can be set up to capture data every
+microsecond automatically. The challenge reported was that ensuring no cycles are skipped is tricky
+– even configuring the DMA and SMI had overhead that had to be precisely tuned
+. But using
+SMI, they could offload a lot of the sampling from the CPU and then have the CPU (user program)
+process chunks of data representing the bus state over time.
+Bare Metal (No OS): The ultimate approach for timing is to run the Pi without an operating system,
+effectively turning it into a microcontroller. Projects have used frameworks like Circle (C++ bare-metal
+library for Raspberry Pi)
+ or assembly to handle cycle-by-cycle activities. In this scenario, one core
+of the Pi can be dedicated to responding to the C64. For example, RasPIC64 uses the FIQ (Fast
+Interrupt) on a bare-metal core to immediately react to a GPIO change (like the address lines
+becoming valid) and perform an action (like putting a byte on data bus) all within 500 ns
+.
+Bare metal code can also disable caches or prefetch instructions to ensure consistent timing. This is
+how a Pi can deterministically emulate, say, a ROM cartridge or a video fetch: it’s essentially “bit-
+banging”  the  bus  at  2  MHz  but  with  a  1.2  GHz  processor  –  enough  headroom  if  carefully
+programmed.
+It’s worth noting that writing such low-level code is complex and beyond typical Python scripting – it
+ventures into embedded systems design. However, for completeness, if one truly wanted to use a Raspberry
+13
+• 
+• 
+25
+15
+16
+• 
+18
+12
+18
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+Pi  to  fully  emulate  the  VIC-II  chip in  place  (for  instance,  to  create  a  drop-in  HDMI-output  VIC-II
+replacement), a likely route would be a hybrid: use a small FPGA or CPLD to handle sub-500ns syncing and
+then use the Pi (maybe a Pi Zero 2 W for size) to do the heavy computation each frame, assisted by the FPGA
+for buffering. Some projects already use FPGAs for VIC-II (e.g., the FPGA Arcade or Chameleon cart). The Pi
+alone can come close, but as reports show, even a Pi 3B+ was "barely stable" when doing VIC-II emulation
+via expansion port
+, and any OS interruptions would cause desynchronization or crashes.
+Example: Signal Timing Analysis
+As a simpler software example that uses the Pi’s capabilities, consider measuring the exact refresh rate of
+the C64’s video or the timing of memory fetches. Using the Pi, one could timestamp when the HSYNC pulse
+occurs each line to measure line frequency, or count cycles between BA low phases to see how many cycles
+VIC-II steals for badlines (when it fetches an entire row of character data). A Python approach might not
+catch every line, but if you toggle a GPIO output at each detected event and observe it on an oscilloscope,
+you could indirectly measure. Alternatively, using the Pi’s built-in cycle counter (with CP15 instructions in
+ARM, accessible in kernel mode or with perf ), one could make a tight loop that polls a GPIO and note the
+count when it changes, thereby measuring sub-microsecond intervals.
+Example: Simple Video Capture (Conceptual)
+While direct video capture of analog output is not possible with GPIO, one conceptual software project is:
+reconstructing an image of what the VIC-II is drawing by monitoring memory. The VIC-II reads from
+memory (e.g., bitmap or character data and color data) in a known pattern each frame. A Raspberry Pi could
+snoop those memory reads: for instance, detect which addresses in the $0400-$07FF range (text screen) are
+being read during active video, and which addresses in the character ROM or RAM are fetched. Over one
+frame, the Pi can accumulate which characters and colors were used, thus building a copy of the screen.
+This is effectively how cartridges like the Retro Replay’s “freeze” function works (except those freeze the
+system to read memory). The Pi could do it on the fly without stopping the program – a form of real-time
+video snooping. The software would need to log addresses and perhaps data values on the fly. This could be
+done with a circular buffer in DMA (log address lines every cycle). After a frame, the Pi processes the buffer
+and tries to interpret it as video. Providing code for this is beyond scope, but logically: the Pi knows the C64
+video frame timing (e.g., 312 lines per frame for PAL, each line 63.5 µs, etc.), so by synchronizing to VSYNC
+or line signals, it can chop the address log into per-line chunks and see the pattern of memory access (e.g.,
+which 40 character codes were fetched for that line, etc.). This is an advanced example of software working
+with hardware to emulate the VIC-II’s output.
+In conclusion, the software implementation can be as simple as a few GPIO reads for basic tasks or as
+complex as a full emulator. The appropriate approach depends on the goal:  GPIO libraries in Linux
+(Python/C) suffice for low-bandwidth monitoring or controlling (e.g., toggling the C64’s RESET line via Pi, or
+logging interrupt occurrences). High-speed bitstream processing (like video or immediate data responses)
+pushes one toward  DMA and bare-metal solutions on the Pi. Many projects have published their code
+(often C/C++ for bare metal or kernel modules) which can serve as references for those attempting to
+replicate or build upon those feats
+.
+14
+18
+9
+13
+
+------------------------------------------------------------------------
+Page 14
+------------------------------------------------------------------------
+
+Challenges in Timing, Signal Integrity, and Bus Contention
+Interfacing a Raspberry Pi with the VIC-II and C64 is rife with challenges, primarily due to the speed and
+shared nature of the C64’s bus. Here we enumerate key challenges and methods to address them:
+Signal  Timing  and  CPU/VIC  Coordination: As  mentioned,  the  VIC-II  and  CPU  time-share  the
+memory bus on a 500 ns cycle granularity. For real-time interaction, the Pi must adhere to this
+schedule precisely. Any delay beyond the allotted window can cause failure – e.g., if a Pi acting as a
+ROM cartridge is late putting a byte on the bus, the 6510 CPU will read the wrong value or no value,
+likely crashing the program. The challenge is exacerbated by the Raspberry Pi running an OS not
+designed for deterministic timing. The solution, as demonstrated by others, is to bypass or minimize
+the OS: e.g., use FIQ interrupts for ultra-fast response
+, use bare-metal programming, or offload the
+timing-critical part to hardware (CPLD/FPGA or the Pi’s DMA engine). It was reported that even using
+DMA,  ensuring  continuous  data  without  gaps  was  “tricky”  and  required  careful  tuning
+.  In
+practice, developers found that a Pi 3B+ could just about handle the data stream but with no room to
+spare – any interruption (like an SSH login) could disrupt it
+. Therefore, one mitigation is to
+dedicate a Pi solely to this task (no network, no extra processes). Running a real-time kernel or the Pi
+in  bare-metal mode are heavier-handed solutions that many have taken to achieve the needed
+consistency
+.
+Bus Contention: When two devices drive the same bus lines at the same time, contention occurs,
+potentially damaging chips. In a Pi-C64 interface, contention can happen if the Pi mistakenly drives,
+say, the data bus while the CPU or VIC-II is also driving it (e.g., during a CPU write cycle or VIC-II DMA
+write). The design must ensure that transceivers are enabled at the correct times. Utilizing signals
+like R/W and BA/AEC is crucial. For example, the Pi should only drive the data bus during CPU read
+cycles (when 6510 expects data, not driving it itself) and perhaps only when certain address ranges
+are accessed (that the Pi is responsible for). If the Pi is too slow to release the bus when a cycle ends,
+contention can occur in the next cycle. The remedy is using fast-enable buffers and adding small
+timing margins – some builders insert wait-state or delay circuits if possible, or ensure the Pi’s code
+releases lines slightly before the deadline. Additionally, using the BA signal (which indicates when
+the CPU is being halted for VIC-II) is useful – one project noted synchronizing the Pi’s emulated VIC-II
+with the real one using BA as a trigger
+. If the Pi knows exactly when the VIC-II is going to fire a
+request, it can time its own actions accordingly. Essentially, solving contention means never overlap
+two outputs on one line: hardware design (tri-state buffers) and software protocol (listening vs
+talking phases) must align. Testing for contention is important: monitoring the voltage on lines or
+using an oscilloscope to ensure signals look correct (no abnormal analog levels or distortions that
+indicate fighting drivers).
+Limited GPIO Count and Bandwidth: A Raspberry Pi (40-pin header) has at most 28 GPIO usable
+pins (excluding power pins etc.), and not all of those can be used at high speeds without conflicts
+(some are dedicated or have alternate functions). The C64’s bus we’d like to monitor is over 20 lines.
+This mismatch means one must either prioritize signals or use external multiplexers. RasPIC64, for
+example, faced this and added multiplexers to handle more signals than the Pi had pins
+. The
+challenge then is the Pi has to toggle the multiplexer select lines and read multiple samples to
+reconstruct full bus state, all within the time of one bus cycle
+. This is extremely challenging (500
+ns might only allow a few instructions, so reading twice for two sets of address bits is almost
+impossible without hardware help). To handle this, sometimes compromises are made: maybe not
+• 
+18
+16
+14
+9
+• 
+26
+• 
+20
+12
+14
+
+------------------------------------------------------------------------
+Page 15
+------------------------------------------------------------------------
+
+all address lines are monitored, or the Pi only partially participates (e.g., only cares about data lines
+and a subset of address lines that identify a device). Another strategy is to use an external latch:
+e.g., latch the high address bits on one phase of the clock and low bits on another, then read them
+sequentially – effectively stretching the information across two half-cycles. Such a scheme needs
+careful  timing  but  can  work  with  the  right  logic.  In  summary,  the  limited  GPIO  challenge  is
+addressed  by  hardware  augmentation (latches,  multiplexers)  and  selective  scope (deciding  which
+signals really need full-time monitoring).
+Signal Integrity and Level Shifting Effects: Dealing with old hardware signals (which might have
+slower edges, ringing from the motherboard, etc.) and the added capacitance of interfacing circuits
+is non-trivial. For instance, every wire and buffer we add can slow down an edge. The VIC-II’s outputs
+like BA, AEC are relatively slow (they toggle at most once per microsecond), but the dot clock and
+color signals are ~8 MHz and ~17 MHz analog – those are usually not directly connected. Still, even
+the 1 MHz PHI2 square wave can have ringing. If our level shifter introduces a slight delay or a slow
+edge, the Pi might read an inconsistent logic value. A solution observed is to use Schmitt-trigger
+buffers (e.g., 74HC14 inverting Schmitt triggers) on certain lines like the clock or interrupt lines to
+clean them up. Another is to ensure the layout of any PCB or breadboard is neat: short wires,
+decoupling capacitors near the ICs (each buffer IC should have a 0.1 µF capacitor between Vcc and
+GND  to  stabilize  it).  When  using  a  solderless  breadboard  (as  in  some  prototypes),  the  stray
+capacitance and inductance can cause weird issues at high speed – acknowledging that, one might
+move to a custom PCB or at least a well-planned protoboard for a final build.
+Software Complexity and Debugging: While not a hardware signal challenge, it’s worth noting that
+writing and debugging software that interacts with hardware at this level is difficult. A logic analyzer
+or oscilloscope is often needed to verify that the Pi’s actions align with the C64’s timing. One
+common challenge is verifying that the Pi is reading or writing the correct values on the bus at the
+right times – if things go wrong, the C64 might crash, providing little info about what happened.
+Thus, a method to debug gradually is advisable: e.g., first use the Pi to monitor only, compare logs
+with expected behavior (perhaps run a known C64 demo and see if Pi logs known patterns), then
+move to injecting signals. Another trick is to perform tasks when the C64 is not actively running
+something critical – for instance, try halting the CPU (pull /DMA or /HALT if it were available, or use
+an external freeze cartridge in combination) and then have the Pi drive the bus in a quiescent
+environment. Although the VIC-II doesn’t allow halting easily (except by manipulating BA/AEC which
+could be done by an external device to pause CPU), some cartridges like the 1541 Ultimate can
+freeze the system; one could leverage such freeze to test Pi’s ability to take over safely.
+In  essence,  the  challenges  of  timing,  contention,  and  signal  fidelity  are  addressed  through  a  mix  of
+electrical  engineering (buffers,  proper  wiring),  real-time  programming (FIQ,  bare-metal,  DMA),  and
+incremental testing. Each challenge teaches an important lesson about the differences between a modern
+microcomputer  and  a  1980s  computer:  the  latter  might  be  slow  in  clock  speed,  but  it  demands
+synchronization at the hardware cycle level, which is something modern systems abstract away. Bridging
+that gap is non-trivial, but as demonstrated by projects in the community, it is achievable with careful
+design.
+• 
+• 
+15
+
+------------------------------------------------------------------------
+Page 16
+------------------------------------------------------------------------
+
+Applications and Use Cases
+Why undertake the complex task of wiring a Raspberry Pi to a Commodore 64’s VIC-II? In an academic or
+hobbyist context, there are numerous compelling use cases once the technical hurdles are overcome:
+Bus  Analysis  and  Signal  Decoding: One  immediate  use  is  as  a  powerful  logic  analyzer  and
+debugger for the C64. The Pi can log address and data bus activity to help reverse-engineer how a
+game or demo is using the VIC-II (for example, detecting what raster lines certain registers are
+changed, or how often certain memory is accessed). It could decode VIC-II register writes in real time
+and map them to events (e.g., record that “sprite 3 X-position set to 100 at raster line 50”). This kind
+of analysis can be invaluable for understanding legacy code or for developing new C64 software
+(essentially using the Pi as a development tool that the original C64 programmers never had).
+Because the Pi can timestamp events, one could even build a detailed timeline of an entire frame’s
+activity for academic study of the VIC-II’s behavior under various programs.
+Real-Time Video Capture or Streaming: As shown by projects like the Pi-powered HDMI interfaces
+, the Raspberry Pi can act as a bridge between the C64’s video and the modern world. One
+use case is a “video spy”: the Pi captures VIC-II’s outputs and streams the video frames to a PC or
+saves them. This could be used for recording gameplay or broadcasting a real C64’s screen without
+needing  an  actual  video  capture  device  –  the  Pi  becomes  the  capture  device,  reading  digital
+information and rendering it. While challenging, this essentially means using the C64’s own signals
+to regenerate a clean digital frame (potentially even upscale it, filter it, etc., since the Pi has the
+compute to do that once the data is captured). Another approach to video capture is sampling the
+analog output via a video ADC (there are Raspberry Pi hats for composite video digitizing), but
+focusing on VIC-II digital signals can yield a perfect pixel image rather than going through analog
+conversion.
+Chip Emulation and Replacement: A bold application is using the Raspberry Pi to emulate vintage
+chips – not just VIC-II but also SID (sound chip) or others. For instance, Sidekick64 (the project by
+Frenetic/Frntc) successfully emulates a SID audio chip and an FM synthesizer using the Pi, outputting
+sound through the Pi’s audio/HDMI
+. The VIC-II itself could be a target: imagine a Pi that plugs
+into the VIC-II socket and takes over generating video (perhaps offering enhanced modes or just a
+drop-in replacement if one’s VIC-II is faulty). While an FPGA is more suited for exact cycle replication,
+a Pi solution might offer flexibility – for example, the Pi could provide a programmable video mode
+(80 columns or different color palettes) that the original VIC-II didn’t support, essentially acting as an
+upgrade.
+Development and Testing (In-circuit Emulator): The Pi can serve as an in-circuit emulator or
+development aid. For example, it could implement a freezer cartridge that on command halts the
+C64 and dumps memory or saves state. Or it could provide a software-controlled breakpoint: by
+monitoring the address bus for a certain pattern (say, a specific sequence of VIC-II register writes or
+a specific memory address indicating a routine), the Pi could trigger an NMI interrupt to break into a
+monitor program. This kind of capability makes the Pi a powerful co-processor for developers.
+Essentially, the Pi can run a monitor/debugger that has full visibility into the system bus – a dream
+tool for C64 hackers.
+• 
+• 
+13
+14
+• 
+9
+• 
+16
+
+------------------------------------------------------------------------
+Page 17
+------------------------------------------------------------------------
+
+Peripheral Emulation: Beyond the VIC-II, a Pi wired into the C64 can emulate disk drives (like Pi1541
+does via IEC port), printer devices, modems, etc. But focusing on VIC-II related uses: one interesting
+idea is a video coprocessor that assists the VIC-II. For example, the Pi could inject data into VIC-II’s
+frame buffer automatically – acting like a blitter or DMA engine that the stock C64 lacks. It could
+monitor which video memory addresses the VIC is reading and proactively swap or modify data
+there to produce special effects (akin to how some MSX computers had video co-processors). This is
+speculative, but with careful sync, the Pi could become a graphics accelerator (drawing into C64
+memory between frames or during blanking intervals faster than the 6510 CPU could).
+Educational Demonstrations: In an academic setting, this setup is a great demonstration of two
+different computer architectures interacting. One could use it in a lab to show how buses work, how
+timing is critical. Students could write code on the Pi to tweak the C64 video output in real time – for
+instance, implement a simple grayscale filter by intercepting color writes, or overlay text on the
+screen by briefly taking over the bus during the border. It provides a hands-on way to learn about
+computer architecture (the synchronous bus of the C64 vs asynchronous events on Linux). Moreover,
+it’s an example of retrocomputing preservation: using modern tech to keep an old machine useful
+(outputting to modern displays, capturing state, etc.).
+Various  projects and community discussions have highlighted these use cases. The RasPIC64 README
+envisioned possibilities like GeoRAM memory expansions, cartridge emulations, dual SIDs, and even an
+80-column card with HDMI output entirely in software
+. In practice, Sidekick64 realized some of these
+(SID emulation, RAM expansion) and also mentioned diagnostics like measuring the VIC-II’s dot clock and
+visualizing memory accesses in real time
+. The ability to measure the dot clock could, for example, detect
+if a C64 is NTSC or PAL automatically, or if the clock is drifting – something that might be used for
+calibration or detecting a failing VIC-II. Visualizing memory access patterns, on the other hand, could yield a
+graphical representation of which memory addresses are active at which times – essentially a  dynamic
+memory map timeline.
+In summary, once a Raspberry Pi is successfully wired and interfaced with the VIC-II, it transforms the
+Commodore 64 into a hybrid system with capabilities well beyond the original. From practical (video output,
+replacing failing chips) to experimental (new graphics modes, instrumentation) to educational (live insight
+into a 1980s microcomputer), the applications cover a broad range. Each use case leverages the Pi’s
+strengths (speed, memory, connectivity) to complement the VIC-II’s world, all while respecting the VIC-II’s
+real-time  constraints.  It’s  a  fascinating  fusion  of  old  and  new,  and  it  demonstrates  the  value  of
+understanding both domains deeply in order to make them cooperate.
+Conclusion
+Wiring a Raspberry Pi to a Commodore 64’s VIC-II chip is an ambitious undertaking that bridges four
+decades of computing technology. This report has provided an academic-style overview of the process, from
+the fundamental design of the VIC-II and Raspberry Pi to the practical details of level shifting, wiring, and
+coding for real-time operation. We examined both passive monitoring setups – where the Pi unobtrusively
+listens to the VIC-II’s “heartbeat” – and active interfacing scenarios where the Pi takes on a role in the C64’s
+bus, whether as a video co-processor or an emulator of vintage hardware. Along the way, we identified the
+electrical and timing challenges such a project faces, and referenced proven methods to mitigate those
+issues (for example, using bus transceivers to handle 5 V logic
+, or employing bare-metal fast interrupt
+code to meet sub-microsecond deadlines
+).
+• 
+• 
+17
+10
+8
+12
+17
+
+------------------------------------------------------------------------
+Page 18
+------------------------------------------------------------------------
+
+The  wiring  diagrams  and  configuration  examples  illustrated  how  one  might  connect  dozens  of  lines
+between the two systems in a safe and organized manner. Software examples demonstrated that while
+basic tasks can be done in Python, truly leveraging this interface pushes one to optimize at the low-level,
+sometimes even forgoing an operating system to achieve the required determinism
+. The need for
+careful synchronization with the VIC-II cannot be overstated – the Pi must effectively dance to the VIC-II’s
+tune, a challenging but achievable feat given sufficient preparation and understanding of both systems.
+Finally, we explored the rich set of applications enabled by this hybrid integration: from capturing and
+streaming C64 video to augmenting the machine with new capabilities and aiding in debugging classic
+software. In essence, a Raspberry Pi interfaced with a VIC-II serves as a powerful tool for both preservation
+and innovation in retrocomputing. It allows us to study the Commodore 64 at a level of detail that original
+developers could only dream of, while also breathing new life into the system by connecting it with modern
+technology (displays, storage, networking, etc.)
+.
+In an academic context, this kind of project exemplifies the interplay between computer architecture,
+electrical engineering, and software engineering. It demonstrates how understanding legacy systems can
+inform modern designs and vice versa. The VIC-II chip, a product of early 1980s engineering, can be coaxed
+into cooperating with a 21st-century microcomputer, but only when both are approached with respect for
+their  very  different  operating  paradigms.  The  Raspberry  Pi’s  strength  (high  speed  and  advanced
+peripherals) must be tailored to the Commodore’s rhythm (predictable, lower-speed but rigid timing), which
+is a valuable exercise in system integration.
+To anyone looking to replicate or build on such a project, the key takeaways are: plan meticulously, ensure
+electrical  compatibility,  start  with  simple  interactions,  and  gradually  increase  complexity.  The
+references and examples provided here – from the RasPIC64 and C64-Pi Interface projects to specific
+technical data – should serve as a guide and inspiration
+. With patience and precision, one can
+indeed successfully wire a Raspberry Pi to a Commodore 64’s VIC-II and unlock a blend of retro charm and
+modern power that is more than the sum of its parts.
+References:
+MOS Technology VIC-II overview – features and technical details
+Raspberry Pi hardware description (3.3 V logic, GPIO usage)
+C64–Pi Interface project (using Pi for VIC-II/SID emulation via expansion port)
+RasPIC64 project documentation (Pi communication on C64 bus, timing ~500 ns)
+Frenetic’s Sidekick64 post (bare-metal Pi for SID, cart, diagnostic uses)
+Pololu Raspberry Pi Model B description (GPIO not 5V-tolerant warning)
+RasPIC64 README (use cases: memory expansion, HDMI output, etc.)
+C64–Pi Interface README (challenges of expansion port VIC-II emulation)
+Wikipedia – Commodore 64 VIC-II (background on chip capabilities)
+Pigpio and Raspberry Pi timing capabilities (forum/wiki discussions on sample rates)
+MOS Technology VIC-II - Wikipedia
+https://en.wikipedia.org/wiki/MOS_Technology_VIC-II
+9
+17
+10
+19
+15
+1. 
+2
+3
+2. 
+8
+3. 
+13
+15
+4. 
+12
+19
+5. 
+9
+10
+6. 
+8
+7. 
+17
+8. 
+14
+16
+9. 
+1
+2
+10. 
+11
+1
+2
+3
+4
+5
+6
+7
+18
+
+------------------------------------------------------------------------
+Page 19
+------------------------------------------------------------------------
+
+Pololu - Raspberry Pi Model B, Revision 2.0
+https://www.pololu.com/product/2750
+Sidekick64: Software Defined C64-Cartridge w/ Raspberry Pi 3 - Commodore 64 - Lemon64 -
+Commodore 64
+https://www.lemon64.com/forum/viewtopic.php?t=70589
+Max frequency can created by wave function in pigpio library
+https://raspberrypi.stackexchange.com/questions/56116/max-frequency-can-created-by-wave-function-in-pigpio-library
+GitHub - frntc/RasPIC64: Framework for bidirectional communication between
+a Raspberry Pi 3B/3B+ and a Commodore 64
+https://github.com/frntc/RasPIC64
+GitHub - KimJorgensen/C64_Pi_Interface: C64 Pi Interface
+https://github.com/KimJorgensen/C64_Pi_Interface
+8
+9
+10
+22
+11
+12
+17
+18
+19
+20
+21
+23
+24
+13
+14
+15
+16
+25
+26
+19

@@ -1,0 +1,1207 @@
+Intel Core i9-9980HK in the 2019 MacBook Pro: A
+Comprehensive Analysis
+Introduction and Background
+The Intel Core i9-9980HK is a high-performance mobile processor that served as the flagship of Intel’s 9th
+Generation Core i9 series for laptops in 2019. Part of the Coffee Lake Refresh family, it was the first Intel
+mobile CPU to offer 8 cores and 16 threads in a notebook form factor
+. The Core i9 lineup represents
+Intel’s top-tier processors, originally debuting on desktop and enthusiast platforms, and later extending to
+mobile CPUs to meet the demands of gamers and professionals for desktop-class performance on laptops.
+The i9-9980HK was officially launched in Q2 2019
+ and was notably offered in Apple’s 2019 MacBook Pro,
+marking a significant milestone as one of the most powerful CPUs ever put into a MacBook at that time.
+As the successor to the 8th Gen i9-8950HK (which had 6 cores), the i9-9980HK brought a substantial
+increase in core count and multi-threaded capability. It is built on Intel’s refined 14-nanometer process and
+was introduced at a time when Intel’s 10nm delays forced the company to squeeze more performance out
+of its mature 14nm node
+. The  “HK” designation in its name signifies an unlocked multiplier (for
+overclocking) and high-performance “H-series” mobile positioning. This chip was specifically selected by
+Apple for the high-end configurations of the 2019 MacBook Pro (15-inch refresh and the new 16-inch
+MacBook  Pro)  to  deliver  cutting-edge  performance  for  professionals  in  areas  such  as  software
+development, video production, 3D modeling, and other intensive tasks.
+To understand the significance of the Core i9-9980HK, it is useful to compare it to its immediate predecessor
+and  successor  in  the  mobile  Core  i9  family.  Table  1 summarizes  key  specifications  of  the  i9-9980HK
+alongside the prior-generation i9-8950HK and the next-generation i9-10980HK, illustrating the progression
+of Intel’s mobile i9 offerings over 2018–2020:
+Processor
+(Mobile)
+Launch
+Architecture
+Cores/
+Threads
+Base
+Clock
+Max Turbo Clock
+L3
+Cache
+TDP
+Core
+i9-8950HK
+(8th Gen)
+Q2
+2018
+Coffee Lake
+(14nm++)
+6 / 12
+2.9 GHz
+4.8 GHz (Turbo
+2.0)
+12 MB
+45 W
+Core
+i9-9980HK
+(9th Gen)
+Q2
+2019
+Coffee Lake
+Refresh
+(14nm++)
+8 / 16
+2.4 GHz
+5.0 GHz<sup>*</
+sup> (Thermal
+Velocity Boost)
+16 MB
+45 W
+Core
+i9-10980HK
+(10th Gen)
+Q1
+2020
+Comet Lake-
+H (14nm++)
+8 / 16
+2.4 GHz
+5.3 GHz (Thermal
+Velocity Boost)
+16 MB
+45 W
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+18
+17
+19
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+<small><sup>*</sup>Thermal Velocity Boost allows the i9-9980HK to reach 5.0 GHz on a single core when
+the chip’s temperature is below 50 °C, otherwise its standard single-core turbo is slightly lower (4.9 GHz)
+.</small>
+The Core i9-9980HK clearly expanded Intel’s mobile performance envelope, delivering two extra cores (33%
+more multi-threaded performance potential) over the previous generation
+ while maintaining the
+same 45 W TDP envelope. In the following sections, we delve into the microarchitectural design of this
+processor, its manufacturing process, performance characteristics, thermal and overclocking behaviors, and
+how Apple integrated it into the 2019 MacBook Pro. We also discuss its limitations, known issues, and its
+legacy within the Core i9 series.
+Microarchitectural Design
+The Core i9-9980HK is based on Intel’s Coffee Lake microarchitecture, specifically the 2019 Coffee Lake-
+Refresh (CFL-R) iteration for high-performance mobile chips
+. At its core, Coffee Lake is an evolution of the
+Skylake architecture, and thus the i9-9980HK inherits a well-understood 14‑stage out-of-order speculative
+execution pipeline (with up to 19 stages in some variants) and a wide front-end. The design is superscalar
+(capable  of  executing  multiple  instructions  per  clock)  and  supports  features  like  deep  out-of-order
+execution, branch prediction, and register renaming, all hallmarks of Intel’s Core microarchitectures since
+Skylake. In fact, Intel acknowledged that Coffee Lake’s core is architecturally similar to Kaby Lake/Skylake,
+with the primary differences being increased core count and some process optimizations
+.
+Key  architectural  features of  the  i9-9980HK  include:  -  Eight  CPU  cores on  a  single  monolithic  die
+(fabricated in a Ball Grid Array package for laptops). Each core implements  Intel’s 64-bit x86-64 ISA,
+supports Hyper-Threading (two threads per core), and has a private 256 KB L2 cache
+. - A shared
+16 MB L3 cache (Intel Smart Cache) that is dynamically shared among the 8 cores
+. This L3 cache was
+increased from 12 MB in the previous 6-core generation to 16 MB to accommodate the larger core count
+. - An integrated dual-channel memory controller supporting up to 128 GB of DDR4-2666 memory (or
+LPDDR3-2133)
+. This allows substantial memory bandwidth (∼42 GB/s) to feed the cores
+, crucial for
+professional workloads. - Intel UHD Graphics 630 integrated GPU on-die
+, identical to the GPU in prior-
+gen chips but with a slight clock uplifts (up to 1.25 GHz)
+. The GPU shares the 14nm process and
+offers basic graphics acceleration suitable for power-saving tasks and Quick Sync video encoding support,
+though high-end MacBook Pro configurations primarily rely on discrete AMD GPUs for heavy graphics work.
+- Support for modern instruction set extensions like AVX2 (256-bit vector instructions) and AES-NI. Notably,
+AVX-512 is not supported on this mobile architecture
+—AVX-512 remained limited to server and some
+desktop SKUs at that time. Still, the inclusion of AVX2 means the i9-9980HK can accelerate multimedia,
+scientific, and cryptographic workloads that leverage these vector instructions. -  Platform connectivity:
+The CPU supports PCI Express 3.0 with up to 16 lanes for connecting to discrete GPUs or fast SSDs
+. In
+the  MacBook  Pro,  these  lanes  were  used  to  interface  with  the  Radeon  Pro  5000M  series  GPU  and
+Thunderbolt 3 controllers. The chip also introduced support for  Wi-Fi 6 (802.11ax) when paired with a
+compatible WLAN module, reflecting an updated platform controller hub; this was a new feature of the 9th
+Gen platform noted by Intel
+.
+Architecturally, the  increase from 6 cores to 8 cores in the i9 series (from 8950HK to 9980HK) was a
+significant change facilitated by the Coffee Lake-Refresh design. This was the first time an 8-core CPU
+appeared in Intel’s mainstream notebook CPU lineup
+. To accommodate two extra cores on the same die
+while staying on the aging 14 nm node, Intel had to further optimize power delivery and thermal density.
+14
+11
+20
+11
+21
+22
+23
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+1
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+The ring-bus interconnect that links the cores and shared cache was likely extended to handle two more
+cores, maintaining low-latency communication among all cores. The core vs. cache scaling (8 cores & 16 MB
+L3 vs. 6 cores & 12 MB prior) kept the 2 MB of L3 per core ratio, which helps in core performance scaling for
+multi-threaded tasks.
+It’s important to note that the 9th Gen Coffee Lake Refresh also included hardware mitigations for certain
+security vulnerabilities that had plagued earlier Intel CPUs. Intel disclosed that these chips have in-silicon
+fixes for some variants of the Meltdown and Spectre side-channel vulnerabilities
+. For example, Meltdown
+(Variant 3) and  L1 Terminal Fault (L1TF) were partly addressed at the hardware level in 9th Gen Core
+processors
+, reducing the performance overhead that earlier software patches imposed. However, other
+Spectre variants still relied on software or firmware mitigations, meaning the architecture had to maintain
+measures like enhanced branch prediction barriers. These security-related tweaks, while invisible to the
+end-user, are an important part of the microarchitectural story of any modern processor and ensure that
+the i9-9980HK could be used in enterprise and sensitive environments (such as with Apple’s macOS, which
+includes its own mitigations) with fewer vulnerabilities.
+In summary, the microarchitectural design of the Core i9-9980HK can be seen as the pinnacle of Intel’s
+Skylake-derived designs in a mobile form factor. It balances a high core count and large caches with the
+limitations of the 14 nm process, delivering a CPU that can execute  16 threads in parallel and handle
+intense workloads, provided adequate power and cooling. The next section examines the manufacturing
+process and how Intel’s 14 nm node enabled (and constrained) this design.
+Manufacturing Process and Node
+The Core i9-9980HK is fabricated on Intel’s 14 nm++ process, an enhanced version of the 14 nm node that
+Intel originally introduced with Broadwell (2014) and refined through Skylake and Kaby Lake. By 2019, Intel
+had iterated on 14 nm multiple times (often denoted as 14nm+, 14nm++, etc.), improving its performance
+characteristics such as switching speed and leakage. Intel officially stated that the i9-9980HK uses an
+“improved 14nm (14nm++) process”
+. This mature process technology allowed the chip to achieve very
+high clock speeds (5.0 GHz peak) and reasonably high transistor densities, though at the cost of power
+efficiency and heat – factors that loom large in laptop implementations.
+Some key points regarding the manufacturing and physical characteristics of the i9-9980HK include:
+Transistor Count and Die Size: Intel did not publicly disclose the exact transistor count for the 8-
+core Coffee Lake Refresh die. However, TechPowerUp reports the die size at approximately 149 mm²
+for the 8-core model
+. This is larger than the ~115 mm² die of the 6-core Coffee Lake (e.g.,
+i7-8750H) due to two extra cores and larger cache. The transistor count is estimated to be in the
+billions (likely around ~3.0 billion transistors, extrapolating from contemporary Intel 8-core desktop
+CPUs), though “unknown” officially
+.
+14nm++ Node Characteristics: The 14nm++ process provided higher drive current and slightly
+improved power efficiency over the original 14nm. It enabled Intel to push clock frequencies further.
+For example, achieving a 5 GHz turbo frequency on a laptop CPU would have been impractical on
+earlier processes. The flip side is that running 8 cores at high clocks in a confined power envelope
+causes high power density. By 9th Gen, Intel’s 14nm was reaching its physical limits – evidenced by
+the high thermals and power draw when the chip is under full load (as we’ll explore in the thermal
+section). Intel originally intended to be on 10nm by this time; as AppleInsider noted, “Intel was
+33
+34
+35
+• 
+36
+37
+• 
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+promising delivery of 10nm... nearly three years ago” (in 2016 for the planned 2018 launch)
+. The
+delays forced Intel (and its partners like Apple) to continue relying on 14nm and adapt system
+designs accordingly.
+Packaging: The i9-9980HK comes in an FCBGA1440 package
+ – a ball grid array with 1440 balls –
+which is soldered directly to the laptop’s motherboard. This is typical for mobile processors
+(sacrificing socketed upgradeability in favor of compactness). The package size is about 42 × 28 mm
+. In the MacBook Pro, this BGA chip is soldered and topped with integrated heat-spreader
+material or a bare die contacting the cooling system (Apple typically uses a thermal interface
+material between the die and heat sink; in 2019 models, improved thermal paste or vapor chamber
+designs were considerations to manage heat).
+Thermal Characteristics: The silicon has a maximum junction temperature (T_JUNCTION) of 100 °C
+. This means the chip is designed to tolerate die temperatures up to 100 °C before severe
+throttling or shutdown to prevent damage. Running so close to this limit is not unusual for laptop
+CPUs under load; indeed, we’ll see that the i9-9980HK often operates in the 90–100 °C range during
+intensive use in the MacBook Pro. The high T_JUNCTION is partly a result of the robust 14nm
+transistors that can endure high temps, but it also reflects the challenge of cooling such a chip in a
+slim laptop.
+Voltage and Frequency Scaling: Thanks to the refined manufacturing, the i9-9980HK could bin high
+frequencies. Intel’s specifications indicate a base frequency of 2.4 GHz at the 45 W TDP, but the chip
+can automatically scale its voltage and frequency up to 5.0 GHz on one or two cores via Turbo Boost
+2.0 and Thermal Velocity Boost (TVB) mechanisms. This dynamic range is enabled by the process’s
+ability to operate across a wide spectrum of power/performance points. The silicon operates around
+~1.2–1.4 V at peak turbo (estimated), which generates significant current draw and heat at 5 GHz.
+This underscores how the manufacturing process had to be perfected to allow such high clock
+speeds in a mobile chip.
+It’s also noteworthy that, by the time of the i9-9980HK, Intel’s 14nm production was highly optimized for
+volume and yield. The chip’s launch price was not explicitly public (since it’s an OEM part), but as a high-end
+component, its tray price can be inferred to be in the range of several hundred USD. Intel was effectively
+leveraging a fully amortized node (14nm) to maximize performance, in contrast to if they had transitioned
+to  10nm  earlier  (which  eventually  happened  with  Ice  Lake  for  ultrabooks  in  2019,  but  not  for  high-
+performance H-series until 2021). This situation had “hosed” companies like Apple that had been expecting
+cooler, more efficient 10nm chips for their 2016–2019 laptops
+, forcing them to engineer around the
+hotter 14nm parts.
+In summary, the i9-9980HK’s manufacturing story is one of extracting the last drops of performance from a
+well-worn 14nm process. Intel’s ability to hit 5 GHz on this node, and integrate 8 cores + GPU, is a testament
+to that process’s endurance. However, it also set the stage for significant thermal management challenges,
+as we’ll see when discussing performance and power behavior in the MacBook Pro context.
+38
+• 
+39
+40
+• 
+41
+• 
+42
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+Performance Characteristics
+In terms of performance, the Core i9-9980HK was a mobile powerhouse in 2019. It delivered desktop-class
+speeds in many workloads, often comparable to Intel’s mainstream desktop chips of the same generation,
+albeit within short bursts. Here we outline its performance attributes:
+Clock Speeds and Turbo Behavior: The i9-9980HK has a base clock of 2.4 GHz (with all cores active
+under the 45 W power limit) and an advertised max turbo of 5.0 GHz on a single core
+. However,
+that 5.0 GHz figure is achieved using Thermal Velocity Boost (TVB), which is a feature that
+opportunistically adds +100 MHz above the standard Turbo Boost 2.0 frequency if the chip’s
+temperature is under a certain threshold (50 °C)
+. In practice, right after a period of idle or light
+use (when the chip is cool), one core can briefly hit 5.0 GHz. Otherwise, the maximum single-core
+turbo tends to be 4.8–4.9 GHz once the chip warms up. All-core turbo frequency (the speed with 8
+cores loaded) is much lower due to power/thermal limits – typically around 3.0 GHz sustained in a
+well-cooled system, as we’ll detail shortly for the MacBook Pro.
+Single-Threaded Performance: Thanks to the high turbo frequencies and architectural
+improvements, the single-thread performance of the i9-9980HK is excellent. Its IPC (instructions per
+cycle) is on par with other Coffee Lake cores (roughly the same as an 8th-gen core), but clocking up
+to ~4.8–5.0 GHz gives it a significant edge over previous mobile CPUs. For instance, Geekbench 5
+scores for the 2.4 GHz i9-9980HK MacBook Pro show about 1110 points single-core
+, which is in
+the ballpark of high-end desktop CPUs from just a couple years prior. This strong single-core
+showing benefits tasks that are lightly threaded or rely on high per-core speed (e.g. code
+compilation steps, interactive applications, lightly threaded calculations).
+Multi-Threaded Performance: With 8 cores and 16 threads, the i9-9980HK can tackle heavily
+parallel workloads far better than its 6-core predecessors. Intel noted roughly a +33%
+multithreaded performance increase going from 6 cores to 8 cores at similar clocks
+. Real-
+world benchmarks confirm this uplift: for example, early tests showed the i9-9980HK approaching
+the performance of Intel’s desktop Core i9-9900K (8-core 95 W CPU) when sustained cooling was
+adequate
+. In Cinebench R20 multi-core, a well-cooled i9-9980HK can score around 3000+ points
+(AppleInsider measured ~3096 in a loop test on the MacBook Pro)
+, whereas the older 6-core
+i9-8950HK would score around 2200–2300 in the same test. This makes the 2019 MacBook Pro 8-core
+model dramatically faster for video encoding, 3D rendering, or software that can use all 16 threads.
+Apple’s own marketing claimed up to 2.1× faster performance in heavy tasks versus the 2017 quad-
+core MacBook Pro, and about 40% faster than the 2018 6-core model, reflecting this generational
+jump
+.
+Comparison to Desktop CPUs: It’s informative to compare the i9-9980HK to its desktop cousin, the
+Core i9-9900K. The laptop chip had the same core/thread count and cache, but the desktop i9-9900K
+runs at a higher base (3.6 GHz) and can sustain higher clocks under a 95 W (or higher) envelope. In
+bursty tasks, the mobile i9 could match the desktop chip’s frequency (5 GHz) momentarily, meaning
+short single-thread tasks or games might perform similarly on both. However, in sustained tasks, the
+45 W (plus some turbo headroom) limitation means the i9-9980HK will throttle to lower clocks (e.g.
+~3 GHz all-core as noted) to stay within safe temperatures, whereas a 9900K can maintain ~4.0+ GHz
+on all cores with proper cooling
+. In essence, the i9-9980HK offers desktop-class peak
+performance, but not desktop-class sustained performance, simply due to power and thermal
+constraints of laptops.
+Memory and I/O Performance: With support for DDR4-2666, memory bandwidth is healthy,
+benefiting memory-intensive applications (streaming data, databases, large photo/video edits in
+• 
+43
+14
+• 
+44
+• 
+20
+45
+46
+47
+48
+• 
+49
+50
+• 
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+memory, etc.). The dual-channel memory on the MacBook Pro (soldered 2666 MHz DDR4) can
+provide ~40 GB/s as mentioned
+. This, combined with large caches, helps keep the 8 cores fed.
+For I/O, the processor’s DMI 3.0 link (equivalent to PCIe 3.0 ×4) between the CPU and the PCH chipset
+runs at 8 GT/s
+, ensuring fast transfers to peripherals (like storage and Thunderbolt controllers).
+Graphics Performance: Although most performance discussions for an i9 revolve around CPU
+throughput, the i9-9980HK’s integrated UHD 630 GPU is a component of its performance profile. It
+has 24 execution units and a max dynamic frequency of ~1.25 GHz
+. This GPU is sufficient for
+driving multiple 4K displays (it supports up to 3 displays
+ and 4K@60Hz output) and for GPU-
+accelerated tasks like video decoding/encoding (Quick Sync). However, its 3D performance is modest
+– it can handle older or very lightweight games at low settings, but it’s far behind discrete GPUs. In
+the MacBook Pro, this iGPU is mostly used for power-saving mode (automatic graphics switching)
+and is not utilized for heavy graphics – those are offloaded to the AMD Radeon Pro GPU.
+NotebookCheck noted the iGPU is basically on par with the older UHD 630 but with a minor 50 MHz
+clock bump, yielding only a slight uptick in performance
+. Thus, the GPU’s impact on compute
+workloads is limited, except for those specifically using Quick Sync or OpenCL on the iGPU in some
+pro apps.
+Real-World Use Cases: The advantage of the i9-9980HK’s performance is seen in multi-threaded
+professional applications. Content creators encoding 4K video or 3D artists rendering scenes will
+finish tasks significantly faster than on previous-gen 6-core CPUs. Developers compiling large
+codebases (Xcode, Visual Studio, etc.) benefit from the additional cores and cache, reducing build
+times appreciably. Even in scientific computing, the i9-9980HK in a laptop can crunch through
+parallelizable workloads (mathematical simulations, data analysis tasks) that formerly might have
+required a desktop or server, albeit the laptop will be loud and hot while doing so. Apple cited
+examples such as Logic Pro plug-in counts, MATLAB simulations, and Xcode compile times
+improving by roughly 20–80% vs. older models
+, all enabled by the increased core count and
+faster clocks.
+To summarize the performance characteristics: the Core i9-9980HK is extremely fast for a laptop CPU of its
+era, particularly in short bursts and threaded tasks. It narrowed the gap between mobile and desktop
+performance more than ever before in 2019. However, as we’ll see in the next section, achieving this
+performance in a slim notebook is a double-edged sword – it incurs significant thermal output and power
+draw, which must be managed carefully.
+Thermal Design Power (TDP) and Thermal Behavior
+Thermal Design Power (TDP) is a critical specification for understanding the i9-9980HK’s behavior in the
+MacBook Pro. Intel defines TDP as the  “average power the processor dissipates when operating at base
+frequency with all cores active under a high-complexity workload”
+. For the i9-9980HK, the TDP is 45 W
+.
+This means that Apple (or any laptop manufacturer) must design the cooling system to handle at least 45 W
+of heat continuously to allow the chip to run at its 2.4 GHz base clock on all 8 cores without throttling. In
+practical terms, 45 W is a substantial thermal load for a thin laptop – roughly equivalent to having a small
+incandescent light bulb’s worth of heat concentrated in a tiny area.
+However, the i9-9980HK doesn’t always stay at 45 W. Thanks to Intel’s Turbo Boost technology, the chip will
+exceed  45   W  for  short  durations to  achieve  higher  performance,  until  it  reaches  a  steady-state
+equilibrium. This is by design: the processor can consume significantly more power (and thus generate
+more heat) when it’s executing intense workloads, as long as it stays within safe limits. For example, when
+51
+52
+• 
+28
+53
+29
+• 
+54
+55
+16
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+the i9-9980HK runs at its top turbo frequencies (near 5 GHz on one or two cores, or ~4+ GHz on several
+cores), it can draw considerably more than 45 W – often in the range of 75–90 W or even higher in brief
+spikes. Laptop makers set a turbo power limit (PL2) and a time limit (Tau) for how long that power can be
+sustained. In many high-end laptops, PL2 for a 45 W CPU is often about  80–90 W, sustained for a few
+seconds up to perhaps a minute, before ramping down to the long-term PL1 (45 W) level. 
+In the 2019 MacBook Pro, Apple tuned the thermal management to maximize performance without letting
+the chip spiral out of control. Independent testing provides insight into how the i9-9980HK behaves under
+continuous load in this machine:
+Thermal and power behavior of the Core i9-9980HK under sustained load (Cinebench R20 loop) on a 2019
+MacBook Pro. Initially, the CPU draws far above its 45 W TDP (peaking near ~80 W package power) and reaches
+~100 °C,  then  throttles  to  an  equilibrium  around  55–60   W  at  ~3.0  GHz  all-core,  with  temperatures  in  the
+mid-90s °C
+. The top chart shows CPU package power and temperature; the bottom chart shows core clock
+speeds stabilizing well above the 2.4 GHz base frequency (around 2.9–3.0 GHz sustained).
+As shown above, when a heavy workload begins, the i9-9980HK quickly jumps to its turbo frequencies
+and in doing so, its power consumption and temperature shoot up. In AppleInsider’s test, the chip hit
+5.0 GHz on a core and ~100 °C within seconds, triggering thermal throttling thereafter
+. The term
+“thermal throttling” here refers to the chip reducing its frequency below the peak in order to prevent
+overheating once it hits the safe temperature limit (around 100 °C). Importantly, even after throttling, the
+2019 MacBook Pro’s i9 did not drop below its base 2.4 GHz speed. Instead, it settled around 2.9–3.0 GHz on
+all cores at ~94 °C during sustained rendering runs
+. This means Apple’s cooling system was able to
+dissipate enough heat to keep the CPU above base clock – a notable improvement over the 2018 MacBook
+Pro i9, which initially had issues maintaining base clock without throttling below it due to a VRM firmware
+bug and tight thermal constraints
+.
+The thermal behavior of the i9-9980HK can be summarized as follows: - Upon encountering a heavy load,
+the processor will exceed the 45 W level (if headroom allows) and temperatures will rapidly rise. The
+thermal inertia of the cooling system means the chip can briefly outrun the cooling, hence hitting very
+high temperatures (near T_JUNCTION 100 °C) within seconds. - Intel’s Turbo algorithms then reduce clock
+speeds to balance heat dissipation with generation. In the MacBook Pro, that equilibrium was around 60 W
+package power resulting in ~3.0 GHz across 8 cores with ~94 °C steady-state
+. The fans ramp up to
+maximum (~5500+ RPM in MacBook Pro 16”) to expel heat and hold that equilibrium. - If the cooling system
+were weaker (or ambient conditions poor), the chip could throttle further, even below base clock. For
+instance, in very hot environments or if vents are obstructed, the i9-9980HK might dip below 2.4 GHz to
+protect itself. But in normal conditions, Apple’s design prevented that scenario in 2019, as evidenced by
+reviewers not observing dips below base clock under sustained loads
+.
+It’s worth highlighting Intel’s Thermal Velocity Boost (TVB) here as well. TVB is essentially an opportunistic
+turbo mode contingent on temperature. In the i9-9980HK, TVB adds +100 MHz to the max single-core turbo
+and +100 MHz to the max multi-core turbo when the chip is below 50 °C
+. In practice, on a MacBook Pro,
+the CPU will almost always exceed 50 °C as soon as it starts doing any serious work, so TVB mainly comes
+into play for very short bursts when the chip is cool (for example, a quick application launch or bursty
+single-thread  task  right  after  idle).  Once  the  CPU  is  warm,  it  operates  at  the  standard  Turbo  Boost
+frequencies. Thus, TVB’s benefit is situational – more relevant in systems with extremely robust cooling (or if
+49
+56
+57
+57
+58
+59
+60
+49
+56
+57
+58
+11
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+the laptop is cold-booted). It’s a clever way Intel squeezes a bit more performance out, but it doesn’t change
+the long-term thermal picture much.
+The MacBook Pro’s ability to sustain ~3.0 GHz on this CPU indicates that Apple built a cooling solution
+almost beyond the 45 W requirement. In fact, Apple’s 16-inch MacBook Pro introduced in late 2019 has a
+redesigned cooling system. Apple stated it features 28% increased airflow and a 35% larger heatsink,
+allowing the system to “sustain up to 12 more watts” under intensive workloads compared to the previous 15-
+inch design
+. This suggests the 15-inch 2018 model could sustain roughly ~45 W, whereas the 16-inch
+could sustain closer to ~57 W before throttling. Indeed, in real tests the 16-inch (with i9-9980HK) showed no
+significant throttling beyond dropping to ~3 GHz, and notably the performance remained stable even as
+the fans got loud and chassis got hot
+. A Wired review observed that although the MacBook Pro (16-inch)
+“still gets hot, and can get really loud as the fans churn,” they did not witness the machine’s performance
+suffer or stutter during extended CPU-intensive tasks
+.
+In terms of user experience, the thermal behavior means: - Under full load (e.g. exporting video, running a
+heavy simulation, gaming in Boot Camp), the MacBook Pro’s fans will run at maximum speed and the
+chassis will become quite warm to the touch (especially above the keyboard strip where heat pipes are). The
+CPU will hover in the 90s °C. This is expected and within design limits, but it may be uncomfortable if
+literally on one’s lap. - The laptop may not maintain peak turbo on all cores indefinitely – it stabilizes at a
+lower clock, as described. But that steady-state is still higher than the base clock due to the aggressive
+cooling. - If any thermal headroom is restored (for instance, the workload eases or a single-thread phase
+occurs), the chip will cool slightly and then can jump up in frequency again thanks to Turbo Boost. The
+process of turbo→throttle→steady-state repeats dynamically with workload changes. - Apple’s firmware
+and macOS power management also play a role in moderating behavior: they tend to prioritize not
+exceeding certain acoustic and skin temperature limits. For example, on macOS, the system might not push
+the CPU  quite as hard as on Windows Boot Camp, to keep fan noise slightly lower, trading a bit of
+performance for comfort. Enthusiasts observed that in Boot Camp or Windows laptops, the same i9-9980HK
+could run a few hundred MHz faster (with fans blaring) since those systems might allow more aggressive
+power limits. Apple’s approach is a balance between performance and user comfort.
+In conclusion, the i9-9980HK operates at the very edge of what the MacBook Pro’s thermal design can
+handle. Its 45 W TDP is just a starting point – real-world usage sees power draw roughly doubling in short
+spurts, and temperatures hitting the allowed ceiling. The 2019 MacBook Pro’s improved cooling manages to
+tame this beast enough to prevent severe throttling, but the fundamental physics (lots of watts in a slim
+chassis) mean high temperatures and fan noise are the norm during heavy use. Understanding this thermal
+behavior is crucial, especially when considering overclocking potential, which we address next.
+Overclocking Potential
+One of the distinguishing features of the Core i9-9980HK is that it has an  unlocked clock multiplier,
+denoted by the “K” in its model name. In theory, this allows enthusiasts or OEMs to overclock the CPU – i.e.,
+run it at higher than stock frequencies – by adjusting multipliers (and voltage) in the firmware. Overclocking
+is commonplace on desktop K-series CPUs given adequate cooling, but in a laptop context it is significantly
+constrained by thermal and power limits. Nonetheless, Intel marketed the i9-9980HK as an “overclockable”
+mobile processor for gaming notebook vendors who might include robust cooling solutions and user-
+tweakable settings.
+61
+62
+62
+63
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+In practice, how much overclocking headroom does the i9-9980HK have? The honest answer: not much,
+especially in a MacBook Pro.
+Thermal Headroom: As we’ve seen, this CPU already pushes the thermal envelope, hitting ~100 °C
+under full load at stock settings in the MacBook Pro
+. Overclocking would further increase heat
+generation (due to higher frequency and possibly higher voltage). Without additional cooling
+capacity, any attempt to raise clocks would likely result in immediate thermal throttling, negating the
+benefit. High-end Windows laptops with thick chassis (some gaming laptops even have exotic
+cooling like multiple heat pipes, vapor chambers, or external cooling docks) could sustain slight
+overclocks. For instance, an enthusiast reported achieving 4.9 GHz on all cores of an i9-9980HK, but
+only by enabling a very high power limit (~200 W PL2) with extreme cooling measures
+. This is far
+beyond what normal laptop cooling can handle – essentially turning the chip into a desktop-class
+cooling scenario.
+Power Headroom: The chip’s default voltage-frequency curve is already tuned aggressively by Intel.
+Small overclocks (e.g., +100 MHz all-core) might require a disproportionate increase in power. The
+i9-9980HK at stock can already draw ~80–90 W in turbo; pushing it further could demand well over
+100 W, which neither the MacBook’s 96 W power adapter nor its voltage regulators (or battery when
+unplugged) may comfortably sustain for long. In fact, on the MacBook Pro, the power adapter is
+96 W for the whole system – meaning if the CPU tried to pull 100 W continuously, it would outstrip
+the charger (and begin draining the battery while plugged in, a scenario sometimes observed in
+heavy workloads). This leaves virtually zero room for intentional overclocking in the Mac context.
+Firmware Locks (Apple’s Constraints): Apple does not expose any user-accessible settings to tweak
+CPU frequency or voltage. The MacBook Pro’s EFI/firmware does not have an unlocked interface for
+overclocking. Unlike some Windows gaming laptops that ship with tools or BIOS options for boosting
+multipliers, Apple’s philosophy is fixed performance out-of-the-box. Thus, an end-user on macOS
+cannot practically overclock the i9-9980HK. Even in Windows (Boot Camp), standard Intel or third-
+party overclocking tools are likely disabled or limited by Apple’s firmware. Apple prioritizes system
+stability and longevity over squeezing out a marginal extra speed that could risk system crashes or
+shorten component life due to heat.
+Given these factors, the  “overclocking potential” of the i9-9980HK in the MacBook Pro is essentially
+theoretical. It is unlocked silicon, but the actual laptop implementation runs it at or near the safe limits
+already. Any further increase would either immediately throttle or is simply not possible to set without
+specialized firmware.
+That said, there are a few angles to consider: - OEM Factory Overclocks: Some PC manufacturers did ship
+laptops that effectively run the i9-9980HK at higher sustained clocks by raising power limits and improving
+cooling. For example, there were large desktop-replacement laptops (with thick chassis and even user-
+replaceable cooling pads) where the i9-9980HK could maintain perhaps 4.0 GHz on all cores instead of
+3.0 GHz, by letting it draw 90–100 W continuously. These aren’t so much “overclock” in the traditional sense
+(multipliers beyond Intel’s spec) as they are allowing the chip to stay in turbo for unlimited time. The
+MacBook Pro, due to its size, could not do this – its cooling is tuned to eventually level off as described. No
+MacBook Pro shipped with an “Factory overclock” beyond the standard Turbo behavior. -  User Tuning
+(Undervolting): Interestingly, while overclocking headroom is negligible, some users experimented with
+undervolting the i9-9980HK. By reducing the CPU core voltage via software (Intel XTU in Windows or
+Voltageshift in macOS, before Apple blocked it in later OS for security), users could lower the temperatures
+by a few degrees or sustain higher clocks within the same thermal envelope. An undervolt can reduce
+power draw at a given frequency. Enthusiast forums reported that modest undervolts (e.g., -100 mV) could
+• 
+57
+64
+• 
+• 
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+stabilize the MacBook Pro’s clocks a bit higher or keep the fans from ramping as hard, effectively yielding a
+small performance gain with lower heat. This isn’t overclocking per se, but it is an optimization technique
+that  some  adventurous  users  employed.  Apple  eventually  disabled  voltage  control  on  newer  macOS
+versions (to mitigate a security issue with Intel’s undervolt interface), so this avenue has largely closed,
+reinforcing that the average user cannot tweak these parameters on a Mac. - Overclocking on External
+Cooling: Hypothetically, if one were to remove the i9-9980HK from a MacBook and place it on a test bench
+with a desktop-class cooler (an unrealistic scenario in practice since it’s soldered BGA), the chip itself might
+overclock similarly to a i9-9900K (somewhere in the 5.0–5.2 GHz range on all cores with enough voltage).
+The silicon is quite capable – the limitations are entirely the power/thermal delivery. There have been
+instances of extreme overclockers cooling similar laptop CPUs with liquid nitrogen on special motherboards
+to see their limits, but those are one-off demonstrations, not relevant to normal usage.
+In summary, the Core i9-9980HK’s overclocking potential is mostly academic in a laptop – it exists on
+paper thanks to the unlocked multiplier
+, but practical constraints prevent meaningful exploitation of it,
+especially in Apple’s tight thermal design. The chip is essentially factory-maxed for the MacBook Pro. Any
+extra frequency headroom Intel left is gobbled up by Turbo Boost opportunistically. The safest “tuning” one
+can do is ensure good cooling (keeping vents clear, maybe using a laptop cooling pad) to let the chip reach
+its normal turbo frequencies as often as possible. Apple’s design already runs the i9-9980HK near its limits
+by default, which is both a testament to Apple’s thermal engineering and an implicit acknowledgment that
+traditional overclocking is off the table in this form factor.
+Use Cases and Implementation in the 2019 MacBook Pro
+The 2019 MacBook Pro (both the mid-2019 15-inch refresh and the late-2019 16-inch model) offered the
+Core i9-9980HK as a top-tier configuration, underscoring Apple’s commitment to providing workstation-
+class performance in a portable machine. Let’s examine how Apple implemented this processor and the use
+cases it was intended for:
+Configurations: In Apple’s lineup, the i9-9980HK was available as a build-to-order upgrade. For
+example, the 15-inch MacBook Pro (2019) could be configured with a “2.4 GHz 8‑core
+9th‑generation Intel Core i9 processor (Turbo Boost up to 5.0 GHz) with 16 MB L3 cache”
+ – which
+is exactly the i9-9980HK. The 16-inch MacBook Pro (2019) launched with a base configuration using
+the slightly lower-clocked i9-9880H (2.3 GHz, Turbo 4.8 GHz) and offered the 2.4 GHz i9-9980HK as
+the higher-end option
+. In either case, pairing this 8-core CPU with up to 64 GB of DDR4 RAM and
+fast SSD storage meant these MacBook Pros were as powerful as some desktops for many tasks.
+Target Users: Apple explicitly targeted “developers, photographers, filmmakers, scientists, music
+producers” and others with heavy computational needs
+. The 8-core i9 in a MacBook Pro
+enabled:
+Faster software development workflows (Xcode compiles, parallel code builds).
+Smoother video editing and encoding in Final Cut Pro, Adobe Premiere, etc., where multiple cores
+drastically cut down export times and allow real-time effects on high-resolution footage.
+Handling of large photography catalogs or batch edits in tools like Photoshop and Lightroom,
+benefiting from both CPU and ample RAM.
+Running scientific computing tasks or data analysis (MATLAB, Python scientific libraries) on the go,
+which previously might have required a desktop or server.
+Audio production with many simultaneous plug-ins and virtual instruments (Logic Pro could run
+many more tracks and effects with the extra cores
+).
+37
+• 
+65
+66
+• 
+67
+• 
+• 
+• 
+• 
+• 
+54
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+Virtualization and software development with multiple virtual machines or containers: the i9’s 16
+threads and support for VT-x/VT-d virtualization features
+make it adept at running several VMs for
+testing environments, etc.
+Essentially,  any  professional  workload  that  is  CPU-bound  stands  to  gain  from  the  i9-9980HK.  Apple’s
+marketing pointed out up to 1.8× to 2.1× performance improvements in some pro apps compared to the
+older quad-core models
+, transforming the laptop into a true desktop replacement for many users.
+Thermal Design and Cooling Integration: As detailed earlier, Apple had to design around the heat
+output of this chip. The 15-inch 2016–2019 chassis was slim with a single heat-pipe and dual fan
+cooling solution. By 2019, Apple had refined the internals (thermal paste, fan curves, perhaps slightly
+larger fan impellers) to cope with an 8-core CPU. The 16-inch MacBook Pro took it further: it
+introduced a new cooling system with larger fans and vents and a 35% bigger heatsink, enabling
+higher sustained power
+. In side-by-side comparisons of the 15-inch 2018 vs 16-inch 2019
+internals, you can see Apple enlarged the heat pipe and fans in the latter. (Image above: a comparison
+of the 2018 vs 2019 MacBook Pro internal layout; note the similar design but the 16-inch (right) allocates
+more space to the heat sink and fans, enhancing cooling for the i9-9980HK.) These changes were
+specifically to allow the i9 and the discrete GPU to run without throttling under long loads. Indeed,
+the 16-inch’s ability to sustain ~12 W more dissipation means the i9 can run closer to its potential for
+longer
+. This is critical for professional users who might render or encode for hours at a time.
+Power Delivery: The MacBook Pro 16-inch also shipped with a 96 W power adapter (up from 87 W
+on the 15-inch models)
+. This higher-capacity charger was needed because the combination
+of an 8-core CPU and a powerful GPU (plus other components) could draw more power, especially
+under load with the battery charging. The 100 Wh battery (the largest allowed on flights) also
+provided a safety net for peak loads – in some cases, the MacBook might use “borrowed” power from
+the battery to supplement the adapter when both CPU and GPU spike simultaneously. This ensures
+the i9-9980HK can turbo to its limits without the system browning out.
+System Integration – T2 Chip: Apple’s MacBook Pros include the T2 security chip, which is a
+custom Apple co-processor. While not directly related to the i9’s performance, it offloads some tasks
+(disk encryption, HEVC video encode/decode, audio processing). This means certain workflows (like
+exporting an HEVC video) are accelerated by the T2, reducing the CPU burden and thereby indirectly
+helping thermals/performance of the i9. The T2 also controls fan management and power
+management to some degree, working in concert with the Intel CPU’s power states. Apple’s tight
+integration of hardware and macOS ensures that the i9-9980HK is used efficiently – ramping up
+quickly when needed and down when idle to save power and thermals.
+Real-world Performance in macOS: Users of the 2019 i9 MacBook Pros generally found the
+machines extremely fast, with the caveat of heat and fan noise on heavy loads. For bursty tasks
+typical in a developer or writer’s workflow (opening apps, running short scripts, etc.), the i9’s high
+clock speeds made the system feel very snappy. Under sustained tasks (like prolonged video
+exports), the MacBook Pro would get warm and audible, but still complete the job much faster than
+older models. Creative professionals appreciated that they could, for instance, edit 8K RED video on
+a laptop (something previously only feasible on a desktop) – the i9-9980HK in combination with fast
+storage and a good GPU made that possible, albeit with the fans blowing. Many regarded the 16-
+inch MacBook Pro as a return to form for Apple’s pro laptops, as it prioritized performance (and fixed
+the keyboard issues)
+, even if it meant the machine ran hot. Apple essentially accepted that a
+“Pro” laptop will run at high temperatures under load and engineered the device to handle it safely,
+rather than severely capping the CPU performance to keep temperatures low. This was a shift from
+• 
+68
+48
+• 
+61
+61
+• 
+69
+70
+• 
+• 
+71
+72
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+some earlier philosophies and was welcomed by pro users who prefer performance at the expense
+of fan noise or warmth.
+In summary, Apple’s implementation of the Core i9-9980HK in the 2019 MacBook Pro was about bringing
+desktop-level capability to professionals in a portable package. It was used as a selling point that the
+new 16-inch MacBook Pro had “the latest 8-core processors” capable of Turbo Boost up to 5 GHz
+. The
+collaboration between Intel’s chip and Apple’s design yielded a machine that could genuinely replace many
+desktops for professional workloads. Still, as we will discuss next, this came with some  limitations and
+known issues that users needed to be mindful of.
+Limitations and Known Issues
+While the Core i9-9980HK in the MacBook Pro is an impressive feat of engineering, it’s not without its
+drawbacks and quirks. Here we outline several limitations and known issues associated with this processor
+(particularly in the MacBook Pro context):
+Thermal Constraints and Throttling – The most prominent limitation is the thermal headroom.
+Even with Apple’s improved cooling, the i9-9980HK will run at very high temperatures (90–100 °C)
+under sustained load
+. The system will throttle frequencies to stay within safe temperatures,
+as described earlier. In extreme scenarios (high ambient temperatures or blocked vents), the CPU
+could throttle more aggressively, leading to performance below the base spec. Essentially, the chip’s
+performance is non-deterministic under heavy load – it depends on cooling efficacy. Users
+expecting to run at 5 GHz continuously will be disappointed; the reality is a dynamic dance between
+high speeds and necessary slow-downs. While 2019’s design mostly avoided the severe throttling
+issues of the 2018 model (where a VRM power delivery bug caused dips below base clock until a
+patch fixed it
+), the laws of physics still apply: in a long render or game, the i9 will not maintain its
+peak, and the chassis can become uncomfortably hot. Some users have reported that during
+extended heavy use (like gaming in Boot Camp or connecting multiple 4K monitors), the MacBook
+Pro can eventually reach a point where both CPU and GPU heat soak the system, causing the CPU to
+clock down and fans to stay at maximum
+. In professional environments, managing thermals
+(perhaps by using cooling pads or external fans) can be necessary for marathon sessions to avoid
+any slowdowns.
+Power Consumption and Battery Life – Although the i9-9980HK idles efficiently and has power-
+saving states, when it is used to its potential, it draws a lot of power. This has two practical
+ramifications:
+Battery life on MacBook Pros with the i9 can suffer under heavy CPU use. For light tasks, the
+difference from an i7 model is negligible, but if you, say, compile code on battery, the 8 cores can
+drain the battery much faster. The 100 Wh battery mitigates this to an extent, but one cannot expect
+long unplugged sessions of CPU-intensive work – the battery can be emptied in a couple of hours or
+less when the CPU is continuously near max usage.
+Adapter throttling: In some instances, if both the CPU and GPU are maxed out on the MacBook Pro
+while plugged in, the 96 W adapter might not keep up, leading the system to momentarily use
+battery power to supplement. If the battery then depletes (in an extremely long session), the system
+could throttle performance to stay within adapter limits. This scenario is rare and typically only seen
+in heavy gaming or combined CPU+GPU compute on the MacBook (something most macOS
+software doesn’t do for long durations).
+47
+1. 
+57
+62
+60
+73
+74
+2. 
+3. 
+4. 
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+Fan Noise – The byproduct of the i9’s heat is that the fans often run at high speed under load,
+which can be distracting in quiet environments. The 16-inch MacBook Pro has larger fans that move
+more air (28% more airflow)
+, but they still ramp up to ~5400 RPM and can be clearly heard (a
+steady whoosh). Some users have described the fan noise as a limitation for tasks like audio
+recording or when working in noise-sensitive settings. It’s essentially the trade-off for the
+performance – prior MacBooks with weaker CPUs didn’t need to get as loud because they couldn’t
+generate as much heat.
+Size and Weight (Cooling impacts) – The inclusion of an 8-core i9 and the needed cooling made the
+16-inch MacBook Pro slightly heavier and larger than its 15-inch predecessor. At ~2.0 kg and with a
+thicker chassis (0.7 mm thicker)
+, it’s still very portable for the amount of power, but some noted
+the device is “huge” compared to 13-inch models
+. This is a relatively minor issue, but it shows
+that accommodating the i9 pushed Apple to increase the machine’s size a bit – a reversal of the trend
+toward ever-thinner laptops. In this sense, the limitation is that you can’t have an ultra-thin,
+completely quiet laptop and an 8-core 5 GHz CPU at once in 2019; physics demands a heftier build
+for that chip.
+Thermal Variance and Potential Throttling in Some Units – Not all CPUs are identical (silicon
+lottery). Some i9-9980HK units might run slightly hotter or need higher voltage, causing a bit more
+throttling. Also, assembly factors like the application of thermal paste can vary. A few users reported
+that repasting the CPU with a high-quality thermal compound or adjusting the heatsink pressure in
+their MacBook Pro slightly improved temperatures, implying that out-of-factory variation can cause a
+few degrees difference. These are anecdotal, and Apple does not sanction end-user re-pasting (it’s
+difficult due to the T2-controlled boot process and teardown complexity), but it’s a known point in
+enthusiast circles. In short, one MacBook Pro might sustain 3.1 GHz, another might do 2.9 GHz
+under the same load, just due to tiny differences in cooling/contact or chip efficiency.
+No User Upgradability – As with all recent Mac laptops, the i9-9980HK is soldered (BGA) and not
+replaceable or upgradeable. While this isn’t a “bug” or malfunction, it’s a limitation to be aware of: if
+the chip fails or if a user wanted a better CPU later, the entire logic board must be replaced.
+Competing high-end laptops (e.g., some Clevo or Alienware models) sometimes use socketed
+desktop CPUs or at least allow CPU replacement; Apple does not. This ties into the broader limitation
+of repairability – everything (CPU, GPU, RAM, SSD in 2019 MBP) is soldered, which has cost and
+longevity implications for some users
+.
+Spectre/Meltdown Mitigations Impact – Although hardware fixes were in place for Meltdown, the
+i9-9980HK still had to carry the baggage of mitigations for other vulnerabilities (Spectre variants,
+Microarchitectural Data Sampling, etc.). These mitigations, implemented via microcode and OS
+patches, introduce some performance overhead in certain scenarios (especially in system-call heavy
+workloads or virtualization). For most users, this overhead is small (a few percent) and
+overshadowed by the raw performance gain of the new chip. However, it’s worth noting academically
+that the full potential of the architecture is slightly hampered by the need to disable certain
+optimizations (like some speculative behaviors) to ensure security. In highly security-sensitive
+deployments, administrators might disable Intel Hyper-Threading (as a mitigation for certain side-
+channel leaks) – doing so on an i9-9980HK would cut the thread count in half (from 16 to 8),
+significantly reducing performance in multi-threaded tasks. Thus, using this chip in, say, a secure
+server context might necessitate trade-offs. On macOS, Apple did include options to enable
+additional mitigations, but for typical pro users this was not a concern.
+Thermal Imaging and Case Hotspots – Some reviews pointed out that the MacBook Pro’s
+aluminum body can reach temperatures over 45 °C in spots under load, which can be a user comfort
+issue (especially the top row of the keyboard or the area above it). While not damaging to the device,
+it’s a limitation in ergonomics – one must be careful as the machine can feel very warm to touch
+5. 
+61
+6. 
+75
+76
+7. 
+8. 
+77
+9. 
+10. 
+13
+
+------------------------------------------------------------------------
+Page 14
+------------------------------------------------------------------------
+
+when the i9 is pushed hard. The bottom case can also get hot if resting on one’s lap. Essentially, the
+cooling system uses the chassis as a heat spreader, and the i9-9980HK can saturate that.
+Software Optimization – To fully utilize 8 cores/16 threads, software must be optimized for
+parallelism. Not all Mac applications in 2019 were tuned for that many threads. Some Adobe apps,
+for instance, had portions that still ran single-threaded or on just a few cores. In such cases, the i9’s
+extra cores might sit idle. Users expecting across-the-board speedups needed to understand which
+of their tools could leverage the i9. This is more a software limitation, but it means the benefit of the
+i9 could be limited in certain workflows (the extra cost might not be justified if one’s primary app
+doesn’t use more than 4 cores, for example). Over time, more software did thread better, but it’s a
+caveat.
+Despite this list of limitations, it’s important to stress that the Core i9-9980HK generally delivered on its
+promises in the MacBook Pro. The issues were mostly the known trade-offs of putting a very powerful CPU
+in a compact laptop. Apple mitigated many of the prior problems (e.g., they solved the 2018 VRM bug
+quickly, improved cooling in 2019, and gave users the performance they paid for). For a professional user
+aware of these factors, the 2019 i9 MacBook Pro was a highly capable machine. The limitations above serve
+as a reminder that engineering is about balancing compromises – more performance can always be had,
+but often at the cost of more heat, power, and potential throttling. 
+Next, we’ll consider the future implications and the legacy of the i9-9980HK, both for Intel’s processor
+lineup and for Apple’s MacBook Pro lineage.
+Future Implications and Legacy
+The Core i9-9980HK occupies an interesting place in computing history, coming at the culmination of Intel’s
+14nm  era  for  mobile  chips  and  just  before  major  transitions  in  the  industry.  Its  legacy  and  future
+implications can be viewed from multiple angles:
+Continuation of the Core i9 Mobile Line: The i9-9980HK was succeeded in Intel’s lineup by the 10th
+Gen Core i9-10980HK (Comet Lake-H) in 2020, which still used the 14nm process and kept 8 cores/16
+threads. That chip provided a modest clock bump (up to 5.3 GHz with TVB)
+ but was otherwise
+very similar in architecture (essentially a further refined Coffee Lake). By 2021, Intel finally moved its
+high-performance laptop CPUs to 10nm with the Core i9-11980HK (11th Gen Tiger Lake-H) which still
+had 8 cores but with a new “Willow Cove” microarchitecture and a larger 24 MB L3 cache on 10nm
+SuperFin process
+. This brought improved efficiency and PCIe 4.0 support, among other things.
+The i9 mobile series then evolved into 12th Gen Alder Lake in 2022 (with a hybrid 14-core design
+mixing performance and efficiency cores) and 13th Gen Raptor Lake in 2023, further boosting
+multi-core performance and efficiency. In this continuum, the i9-9980HK can be seen as the chip that
+firmly established 8 cores as the new normal for high-end laptop CPUs. Its strong performance forced
+software and users to adapt to multi-core workflows. It also pushed competitors: AMD, for instance,
+launched their Ryzen 4000 “Renoir” series in 2020 with up to 8-core CPUs on 7nm, challenging Intel’s
+dominance in laptop performance per watt. The presence of i9 in laptops meant that by early 2020s,
+consumers expected desktop-like capabilities in portable workstations.
+Impact on Apple and the Move to Apple Silicon: For Apple, the 2019 i9 MacBook Pro represented
+the pinnacle of what Intel-based Macs could do. It delivered unprecedented performance in a Mac
+laptop but also underscored some inherent limitations of Intel’s chips in terms of power efficiency and
+heat. Apple likely took note that while the i9 was blazingly fast, it was also power-hungry – the kind
+11. 
+• 
+18
+17
+• 
+14
+
+------------------------------------------------------------------------
+Page 15
+------------------------------------------------------------------------
+
+of trade-off they aimed to eliminate with their transition to custom ARM-based Apple Silicon.
+Indeed, in November 2020, Apple introduced the M1 chip and by 2021/2022, high-end MacBook Pros
+were equipped with M1 Pro/Max SoCs (with 10 CPU cores and up to 32 GPU cores) which delivered
+comparable or better performance than the Intel i9, but with far less heat and longer battery life.
+This transition marked the end of Intel CPUs in Apple’s portable lineup. In retrospect, the i9-9980HK
+stands as one of the last high-performance Intel chips in a MacBook Pro. Apple’s decision to switch was
+likely influenced by seeing how far they had to go (bigger chassis, more fans, etc.) to accommodate
+the i9’s thermals. The legacy of the 2019 i9 MacBook is that it gave Apple’s pro users one last hurrah
+with Intel – a machine that didn’t compromise on performance – before the quieter, cooler era of
+Apple’s own silicon took over. Some users who experienced thermal and fan noise issues on the i9
+MacBooks eagerly jumped to Apple M1/M2 devices for relief, while others note that the x86
+performance of those i9s remains quite competitive and in some cases better for certain workloads
+(at least until software optimizes for ARM).
+Architectural Legacy: The i9-9980HK, being a Coffee Lake Refresh part, was essentially the final
+turning of the crank on the Skylake architecture (which first appeared in 2015). Skylake and its
+derivatives (Kaby Lake, Coffee Lake) turned out to be one of Intel’s longest-lived architectures,
+spanning 6+ years. The fact that an architecture that started with 4 cores at ~4 GHz evolved to 8
+cores at 5 GHz on the same node is remarkable. It demonstrates Intel’s ability to incrementally
+improve and scale an architecture when process advancements fell through (10nm delays). The
+downside was increased power and thermal density, as we observed. The legacy here is two-fold: (1)
+It showcased the limits of traditional monolithic scaling – pushing frequency and cores on the same
+tech node yields diminishing returns in efficiency; and (2) it set the stage for new architectural
+approaches. Intel, after the 9th/10th Gen, embraced new designs (like hybrid cores in 12th Gen) to
+keep scaling performance without simply adding more of the same kind of core at higher wattage.
+One could argue that chips like the i9-9980HK illustrated why a new approach was needed; they
+were basically as fast as one could go on that architecture without hitting a wall of heat. The future
+implication for Intel was clear: either get new manufacturing nodes working (which they did with
+10nm, albeit late) and/or change the core strategy.
+Influence on Laptop Design: The presence of 8-core i9s in laptops also pushed OEMs to innovate in
+cooling. After 2019, many high-end laptops started adopting vapor chamber coolers, more heat
+pipes, graphite thermal pads, and even liquid metal TIM (thermal interface material) to handle the
+heat from these CPUs. In a way, the i9-9980HK forced the laptop industry to get more serious about
+thermal solutions. Apple’s 16-inch redesign is a prime example of adjusting chassis design for better
+cooling
+. Competing Windows laptops around that time (like MSI GT76, Asus Zephyrus, etc.) also
+boasted advanced cooling to let the i9s (and i7s) run at full speed longer. This arms race in cooling
+has continued, and today we even see external liquid cooling docks for some gaming laptops, partly
+traceable to the increasing TDP of laptop CPUs initiated by models like the 9980HK.
+Market Position and Longevity: The Core i9-9980HK, being a high-end part, had a premium cost
+and was found only in expensive laptops. However, it “trickled down” in a sense that the performance
+bar it set eventually became accessible at lower tiers as well. Today, even mid-range laptops have 6
+or 8-core CPUs. The i9-9980HK itself, though officially discontinued by Intel now
+, still holds up
+decently in performance. Many 2019 MacBook Pros with this chip are still in service, running the
+latest software (including macOS Ventura/Monterey) and performing admirably for most tasks. Of
+course, the march of progress means that an Apple M2 or a 12th Gen i7 can outperform it in
+efficiency and often raw speed, but the legacy of the 9980HK-era machines is that they prolonged
+the relevance of x86 MacBooks a bit more. Apple supported the 2019 Intel Macs in macOS beyond
+the initial Apple Silicon transition, giving them a healthy support lifespan (expected to be at least
+until 2025 or so for OS updates).
+• 
+• 
+61
+• 
+78
+15
+
+------------------------------------------------------------------------
+Page 16
+------------------------------------------------------------------------
+
+In conclusion, the Intel Core i9-9980HK’s introduction into the 2019 MacBook Pro was a landmark moment
+that demonstrated both the height of Intel’s mobile CPU capabilities and the swan song of an era. It
+enabled a level of portable performance that was previously unheard of in Macs, bridging the gap until
+Apple’s paradigm-shifting silicon took the baton. Its legacy in the i9 series is that of a trailblazer for multi-
+core laptop computing, albeit one that ran into the realities of power and thermal limits that the industry
+has since been addressing through new technologies. As an academic reflection, the i9-9980HK will be
+remembered as the product of an intense phase of competition and innovation – squeezing maximal
+performance out of mature technology, and in doing so, illuminating the path for the next generation of
+computing solutions. 
+Sources:
+Intel Ark: Core i9-9980HK – Official specifications (cores, threads, frequency, cache, TDP, launch date)
+. 
+NotebookCheck – Intel Core i9-9980HK – Technical overview of Coffee Lake-Refresh mobile
+architecture, Thermal Velocity Boost details, and performance estimates
+. 
+TechPowerUp – Intel Core i9-9980HK Specs – Process node (14nm++), die size, unlocked multiplier for
+overclocking
+. 
+Apple Support (specifications) – Confirmation of i9-9980HK (2.4 GHz, 8-core, 16 MB L3, Turbo
+5.0 GHz) as an option in MacBook Pro (16-inch, 2019)
+. 
+AppleInsider – Tested: Thermal throttling and performance in the eight-core 2019 MacBook Pro –
+Cinebench loop test results showing 5 GHz peak then ~3.0 GHz sustained at ~94 °C, with discussion
+of thermal equilibrium
+. 
+Apple Newsroom – Apple introduces 16-inch MacBook Pro – Details of new thermal design (28%
+increased airflow, 35% larger heatsink, sustains +12 W)
+. 
+Wired Review (2019 16-inch MBP) – Notes on redesigned thermal architecture, still gets hot and loud
+but no performance loss observed during heavy usage
+. 
+EveryMac – MacBook Pro 16,1 (2019) – Descriptive info on the i9-9980HK in the Mac (8 cores on one
+chip, 256K L2 per core, 16MB L3, Turbo Boost 5.0 GHz, Hyper-Threading 16 threads)
+. 
+AnandTech – Intel 9th Gen Mobile CPUs – Mention of hardware mitigations for Meltdown/Spectre in
+9th Gen Core and list of mobile i9 variants
+. 
+AppleInsider (2018 vs 2019 context) – Recount of 2018 Core i9 throttling bug and patch, setting stage
+for improved 2019 performance
+. 
+Reddit/Tech forums – User anecdotes on overclocking (reports of ~4.9 GHz all-core with extreme
+PL2=200W on 9980HK)
+ and on throttling in various scenarios (cooling limitations around ~35W
+without throttling in some cases)
+. 
+(Additional citations inline throughout text as needed for specific data points and claims.)
+Intel reveals eight-core laptop CPU with 5GHz boost and overclocking | bit-tech.net
+https://bit-tech.net/news/tech/cpus/intel-reveals-eight-core-laptop-cpu-with-5ghz-boost-and-overclocking/1/
+Intel Core i9-9980HK Specs | TechPowerUp CPU Database
+https://www.techpowerup.com/cpu-specs/core-i9-9980hk.c2288
+Intel® Core™ i9-8950HK Processor 
+https://www.intel.com/content/www/us/en/products/sku/134903/intel-core-i98950hk-processor-12m-cache-up-to-4-80-ghz/
+specifications.html
+1. 
+12
+79
+2. 
+11
+20
+3. 
+2
+36
+4. 
+65
+5. 
+49
+56
+6. 
+61
+7. 
+62
+8. 
+22
+80
+9. 
+33
+81
+10. 
+60
+82
+11. 
+64
+83
+12. 
+1
+3
+32
+2
+30
+31
+36
+37
+39
+68
+4
+5
+6
+7
+8
+9
+16
+
+------------------------------------------------------------------------
+Page 17
+------------------------------------------------------------------------
+
+Intel® Core™ i9-9980HK Processor 
+https://www.intel.com/content/www/us/en/products/sku/192990/intel-core-i99980hk-processor-16m-cache-up-to-5-00-ghz/
+specifications.html
+Intel Core i9-9980HK Processor - Benchmarks and Specs - NotebookCheck.net Tech
+https://www.notebookcheck.net/Intel-Core-i9-9980HK-Processor-Benchmarks-and-Specs.416730.0.html
+Intel Core i9-10980HK Processor - Benchmarks and Specs
+https://www.notebookcheck.net/Intel-Core-i9-10980HK-Processor-Benchmarks-and-Specs.452737.0.html
+Intel Core i9-10980HK Review: Flagship Laptop CPU | TechSpot
+https://www.techspot.com/review/2036-intel-core-i9-10980hk/
+Intel Core i9-10980HK - LaptopMedia
+https://laptopmedia.com/processor/intel-core-i9-10980hk/
+MacBook Pro "Core i9" 2.4 16" 2019 Specs (2019 16", BTO/CTO, MacBookPro16,1, A2141,
+3347): EveryMac.com
+https://everymac.com/systems/apple/macbook_pro/specs/macbook-pro-core-i9-2.4-eight-core-16-2019-scissor-specs.html
+Coffee Lake - Microarchitectures - Intel - WikiChip
+https://en.wikichip.org/wiki/intel/microarchitectures/coffee_lake
+Intel Details New 9th Gen CPUs for Notebooks: i9-9980HK to i5-9300H
+https://www.anandtech.com/show/13969/intel-details-new-9th-gen-cpus-for-notebooks-9980hk-9300h
+Tested: Thermal throttling and performance in the eight-core
+2019 MacBook Pro | AppleInsider
+https://appleinsider.com/articles/19/05/26/tested-thermal-throttling-and-performance-in-the-eight-core-2019-macbook-pro
+Apple introduces 16-inch MacBook Pro, the world’s best pro notebook - Apple
+https://www.apple.com/newsroom/2019/11/apple-introduces-16-inch-macbook-pro-the-worlds-best-pro-notebook/
+Apple MacBook Pro Review (2019, 16-Inch): A Return to Form | WIRED
+https://www.wired.com/review/apple-macbook-pro-16-inch-2019/
+5Ghz on all cores - ON A LAPTOP (i9 9900K) : r/overclocking - Reddit
+https://www.reddit.com/r/overclocking/comments/g02xr3/5ghz_on_all_cores_on_a_laptop_i9_9900k/
+MacBook Pro (16-inch, 2019) - Technical Specifications - Apple Support
+https://support.apple.com/en-us/111932
+2019 MacBook Pro 16 thermal throttling an… - Apple Community
+https://discussions.apple.com/thread/254587163
+CPU or software malfunctioning - Apple Support Community
+https://discussions.apple.com/thread/254810884
+macbook pro i9 9880h questions | TechPowerUp Forums
+https://www.techpowerup.com/forums/threads/macbook-pro-i9-9880h-questions.294875/
+10
+12
+13
+15
+16
+25
+26
+27
+28
+40
+41
+43
+51
+53
+78
+79
+11
+14
+20
+21
+29
+35
+45
+17
+18
+19
+22
+23
+44
+52
+80
+24
+33
+34
+81
+38
+42
+46
+49
+50
+55
+56
+57
+58
+59
+60
+82
+47
+48
+54
+61
+67
+62
+63
+71
+72
+76
+77
+64
+65
+66
+69
+70
+75
+73
+74
+83
+17

@@ -1,0 +1,1031 @@
+Supermicro X9QRi-F+ Motherboard (Non-SAS
+Version) – Deep Dive Report
+Overview and Introduction
+The Supermicro X9QRi-F+ is a quad-processor server motherboard designed for Intel Xeon E5-4600 series
+CPUs. It was a flagship platform around 2012–2014, supporting 4 CPU sockets, extensive memory capacity,
+and high-bandwidth interconnects for HPC and enterprise applications. There are two main variants of this
+board – one with an onboard LSI SAS RAID controller (model X9QR7-TF+) and one  without the SAS
+controller (X9QRi-F+), which is our focus. The non-SAS X9QRi-F+ offers the same quad-socket computing
+capabilities but relies on standard SATA ports (no onboard SAS) and typically uses 1GbE networking instead
+of 10GbE
+. This report provides full specifications, compares the SAS vs. non-SAS versions, and dives into
+known quirks, performance, upgrade tips, optimizations, and user insights for the X9QRi-F+ (non-SAS)
+motherboard.
+Technical Specifications
+Table 1: X9QRi-F+ Key Specifications (non-SAS variant) 
+Feature
+Description
+CPU Support
+Quad LGA2011 sockets supporting Intel Xeon E5-4600 series (v1 & v2) – up to 12 cores
+per CPU, 25 MB cache, QPI up to 8.0 GT/s
+. All four CPUs should be installed to
+fully enable board functionality (see quirks below).
+Chipset
+Intel C602 chipset (PCH)
+. Provides 6 SATA ports and I/O interfaces. (No SAS
+controller on this variant’s PCH.)
+Memory
+32 DIMM slots DDR3 (240-pin ECC Registered or LRDIMM). Supports up to 1 TB DDR3
+RAM (32×32 GB)
+. Memory speeds up to 1600 MT/s (and up to 1866 MT/s with v2
+CPUs in certain configurations)
+. Supports 1.5 V or 1.35 V DIMMs; ECC for single-
+bit error correction
+. (UDIMMs supported in theory, but RDIMM/LRDIMM
+recommended for capacity.)
+Expansion
+Slots
+4× PCI Express 3.0 slots: 2× x16 and 2× x8 (physical x16 length for all)
+. These
+slots are distributed across the CPUs’ PCIe lanes (the board has limited slots due to
+space consumed by CPUs and DIMMs
+). Supports add-in cards like GPUs, HBAs,
+NICs, etc., with the noted lane widths.
+Storage
+(PCH)
+6× SATA ports from Intel C602: 2× SATA 3.0 (6 Gb/s) + 4× SATA 2.0 (3 Gb/s), supporting
+Intel RST RAID 0/1/5/10
+. No onboard SAS HBA on the X9QRi-F+ (see variant
+differences). Standard SATA DOM power header provided for boot DOM use
+.
+1
+2
+3
+2
+4
+3
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+Feature
+Description
+Networking
+Dual Gigabit Ethernet (Intel i350 dual-port controller) on the X9QRi-F+
+. RJ45
+outputs supporting 10/100/1000 Mbps
+. (By contrast, the SAS-equipped X9QR7-TF+
+includes dual 10GBase-T ports – see next section.) Dedicated IPMI LAN port (Realtek
+RTL8201, 10/100) for management
+.
+Onboard
+Devices
+Baseboard Management Controller: Nuvoton WPCM450 BMC with IPMI 2.0 support
+(provides IPMI KVM and basic 2D video via an integrated Matrox G200eW graphics
+core)
+. Onboard audio: None (server-class board). Super I/O: Nuvoton
+NCT5573D or W83527HG for legacy I/O
+.
+Rear I/O
+Ports
+Video: 1× VGA DB-15 port (from BMC)
+. LAN: 2× RJ45 Gigabit LAN + 1× RJ45 IPMI
+management LAN
+. USB: 4× USB 2.0 ports (rear)
+. Serial: 1× COM1 serial port
+(rear DB9)
+.
+Internal I/O
+USB: Up to 4 additional USB 2.0 ports via headers – there are front-panel USB headers
+and one Type-A internal port (total 8 USB 2.0: 4 rear + 3 via front headers + 1 onboard
+Type-A)
+. Serial: 1× COM2 header. DOM: 1× DOM power connector for SATA
+DOM. Fan headers: 10× 4-pin PWM fan headers with monitoring
+. TPM header:
+present (for optional TPM module).
+Form Factor
+Proprietary large extended form factor (~16.79″ x 16.4″ / 426 × 417 mm)
+. This is
+larger than E-ATX; it requires an appropriate Supermicro chassis or equivalent.
+Common compatible chassis include Supermicro 4U/tower models (e.g. 748 series, 418
+series) and some 2U/3U with custom mounting
+. Ensure the chassis has mounting
+for this board size and enough clearance for four CPU coolers.
+Power
+Requires robust PSU with multiple EPS 12V connectors. The board has four 8-pin
+EPS12V power headers (one near each CPU socket) plus the standard 24-pin ATX
+power
+. A high-wattage server power supply (with PMBus support for
+management, if possible) is recommended. Power draw can be significant with 4 CPUs
+and 32 DIMMs – expect >600 W under full load with high-end CPUs.
+BIOS
+16 MB SPI Flash EEPROM, AMI BIOS (UEFI 2.3.1 compliant)
+. Features ACPI 4.0,
+SMBIOS 2.7, PXE boot, etc. BIOS version 3.0 (or later) is required for supporting Ivy
+Bridge-EP v2 processors
+. IPMI firmware is separate (the BMC firmware can be
+updated to Supermicro’s SMT_X9 branch, latest ~v3.20)
+.
+Note: The X9QRi-F+ motherboard is essentially the same design as the X9QR7-TF+ (which includes SAS and
+10GbE),  with  certain  components  not  populated.  It  is  a  quad-socket  board  for  specialized  use;  full
+functionality (PCIe slots, network, etc.) is only available when all four CPU sockets are populated
+.
+With fewer than 4 CPUs, some PCIe slots and onboard devices may be disabled (per CPU connectivity) or
+cause firmware hang-ups (see known issues section). 
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+23
+26
+27
+28
+29
+30
+4
+31
+32
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+X9QRi-F+ vs. X9QR7-TF+: SAS and NIC Differences
+Supermicro produced two main variants of this quad-socket X9 board, often referenced in the same
+manual: X9QRi-F+ and X9QR7-TF+. The functional differences are: 
+Onboard SAS Controller: The X9QR7-TF+ includes an integrated LSI SAS controller (SAS2208 RAID).
+This provides 8 SAS2 (6 Gb/s) ports via two mini-SAS connectors, supporting hardware RAID levels
+0,1,5,6,10,50,60  with  1  GB  cache
+.  In  contrast,  the  X9QRi-F+  does  not  have  any  SAS
+controller or SAS ports on board – it only has the 6 SATA ports from the Intel chipset
+. (The
+Supermicro docs note “SAS ports are not included on the X9QRi-F+”
+.) Physically, the SAS model
+has two SFF-8087 ports and associated jumpers (e.g. JPS1 SAS enable) which are simply unpopulated
+or absent on the non-SAS board
+. 
+Network Interfaces: The X9QR7-TF+ comes with  dual 10GbE NIC ports on board (using an Intel
+X540 controller, dual 10GBase-T)
+. The X9QRi-F+ instead features  dual 1GbE ports (Intel i350
+controller)
+. In other words, the “TF” variant has 10G networking built-in, whereas the “i-F” variant
+has standard gigabit. (Both have the dedicated IPMI LAN for management.) 
+Product Name Suffix: The naming reflects these differences – “7” in X9QR7-TF+ denotes the SAS (LSI
+2208) present, “T” indicates 10GBase-T NIC, and “F” denotes IPMI support. The X9QRi-F+ (“i” likely
+indicating standard Intel NIC) lacks the SAS and 10G features
+. Aside from SAS/NIC, the two
+boards  are  otherwise  similar  in  layout,  dimensions,  CPU/memory  support,  and  expansion  slot
+configuration. They use the same BIOS (with conditional support for the SAS controller on the -7
+variant). 
+Onboard Graphics/BMC: Both variants support IPMI 2.0 via the WPCM450 BMC. Documentation for
+X9QR7-TF+ sometimes lists an “XGI Volari Z7” video, but in practice the BMC provides a Matrox G200e
+graphics core on both (the Volari mention may be a data sheet typo – the BMC’s G200eW is the active
+video in either case)
+. There’s no functional difference in terms of graphics or BMC features
+between the two models; firmware is shared. 
+Practical impact: If you have the X9QRi-F+ (no SAS), you’ll need a discrete HBA/RAID card if you want to
+attach large numbers of SAS/SATA drives beyond the 6 SATA ports. Conversely, the SAS-equipped X9QR7-TF+
+can directly connect up to 8 drives to its onboard RAID (common in Supermicro 4U servers with backplanes).
+Also, the X9QRi-F+ is limited to 1GbE networking unless you add a 10Gb NIC via PCIe, whereas the X9QR7-
+TF+ has dual 10G ports ready on board
+. When planning upgrades or chassis, note that the X9QR7’s extra
+components (SAS connectors, etc.) occupy the board’s lower-left corner, whereas the X9QRi-F+ PCB in that
+area has a cut-out shape – they are mostly cross-compatible in chassis that support one, but the -7 might
+require slightly more space for its SAS ports. In summary, X9QR7-TF+ = X9QRi-F+ + (LSI 2208 SAS RAID +
+dual 10GbE)
+. 
+• 
+33
+34
+35
+36
+35
+• 
+37
+15
+• 
+1
+• 
+18
+19
+1
+1
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+Known Issues, Quirks, and Firmware Considerations
+Despite its high-end capabilities, the X9QRi-F+ has some specific quirks and best practices to ensure stable
+operation: 
+All CPUs Populated: It is  strongly recommended to install four CPUs. Running this board with
+only 1–2 CPUs can lead to missing devices or POST hangs. Supermicro’s FAQ notes that with only two
+E5-4600 v2 CPUs, the system would “regularly hang on POST code 92 or B2” and that all four CPUs are
+needed to enable all onboard devices (LAN, etc.)
+. The architecture ties certain PCIe slots and
+controllers to specific CPUs; if those CPUs are absent, related functions won’t initialize (e.g. PCIe bus
+lockups at code 92). In short, populate CPU1–CPU4 fully to avoid unpredictable behavior. Partial
+operation (e.g. two CPUs) might work for basic testing, but expect limited I/O and potential firmware
+issues in that state. 
+BIOS Version for V2 CPUs: If upgrading to or using Ivy Bridge-EP (Xeon E5-4600 v2) processors,
+you must have BIOS version 3.0 or later installed
+. Earlier BIOS revisions (2.x) won’t recognize v2
+CPUs. Since you can’t boot an unsupported CPU to flash the BIOS, ensure the board is updated (or
+have a v1 CPU handy) before installing v2 chips. The latest BIOS at time of writing is 3.0b (released
+around 2015) which adds v2 support and various fixes. Always reset BIOS settings to default after an
+update,  and  reconfigure  as  needed.  The  BMC  (IPMI)  firmware  can  also  be  updated  (e.g.  to
+SMT_X9_3.20) for improved IPMI web interface and security fixes. 
+Slow Boot and BMC Initialization: During boot, the system may appear to pause on the Supermicro
+splash screen for ~20–30 seconds initializing the BMC/IPMI. This is normal – the board waits for the
+management controller to be ready before proceeding (no BIOS prompt will appear until IPMI is up)
+. If you experience a long hang early in POST with only the logo showing, give it a half minute.
+(This can be mitigated by disabling “Wait for BMC” in BIOS if such an option exists, but on this class
+of server it’s usually fixed.) Once past that, POST memory testing on 32 DIMMs can also take some
+time – enabling “Fast Boot” or reducing memory test rigor in BIOS can speed this up at the expense
+of thorough memory checks. 
+Memory Population Rules: Follow the manual’s guidelines for DIMM installation order. Each CPU
+has 4 memory channels (8 DIMM slots per CPU, colored in banks). For best results, populate at least
+one DIMM per CPU in the first slot of each channel (the blue slots)
+. The system can boot with as
+little as one DIMM total (in CPU1’s A1 slot), but that will leave other CPUs without local memory
+(NUMA imbalance). A recommended minimum is 4 DIMMs (one per CPU) so each CPU has some local
+memory. Ideally, populate 8 or 16 DIMMs to engage multiple channels on each CPU (e.g. 2 DIMMs
+per CPU is a good start, populating two channels on each)
+. If memory is under-populated (e.g.
+one CPU missing RAM), the BIOS may disable that CPU or throw memory errors. Also note the speed
+downgrade rule: with two DIMMs per channel, DDR3-1866 memory will downclock to 1600 MHz
+. You only get 1866 MT/s if each channel has a single DIMM; but the increased parallelism of
+more DIMMs often outweighs the raw MHz loss, so don’t be afraid to fully populate for capacity. ECC
+is always enabled – if you see POST error codes B7/B9 it often indicates a memory issue (reseat
+modules, check compatibility). 
+PCIe Slot Affinity: Remember that each PCIe slot is tied to a particular CPU’s PCIe lanes. For
+example, Slot4 might be on CPU1, Slot2 on CPU4, etc. If a CPU is not installed or a CPU is disabled,
+• 
+32
+• 
+4
+• 
+38
+• 
+39
+40
+8
+• 
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+the slots attached to it won’t work. The manual indicates which CPU controls which slot (e.g. “(CPU4)
+Slot2, (CPU1) Slot4” etc.) – ensure critical add-in cards are placed in slots served by populated CPUs.
+In a four-CPU config this is moot (all slots active), but in a degraded config keep it in mind. 
+Onboard SAS (for -7 variant) Disabled by Default: This note is for those with the X9QR7-TF+: the
+LSI 2208 RAID controller might ship disabled depending on BIOS settings or if fewer CPUs are
+present. There is a jumper (JPS1) to enable/disable the onboard SAS controller in some revisions
+.
+If you have the SAS model and the controller isn’t showing at boot, ensure the jumper is set to
+enable it and all CPUs are present (since it likely hangs off CPU2’s PCIe, for example). The non-SAS
+X9QRi-F+ has no such controller/jumper so this doesn’t apply in that case. 
+LSI MegaRAID Firmware Updates (SAS model): If using the SAS2208 RAID, be aware it’s effectively
+a MegaRAID card on the motherboard. You can update its firmware using LSI tools. Many users
+choose to flash the SAS2208 to “IT mode” (SAS2308 HBA firmware) to use it as an HBA (especially
+for ZFS or Software-Defined Storage)
+. This involves cross-flashing to firmware that turns off RAID
+functionality and makes it a straight SAS controller. Guides for similar X9 boards (e.g. X9DRH-7F)
+apply here as well
+. Only attempt this if you’re experienced; otherwise use the factory IR (RAID)
+firmware or simply add a separate HBA if needed for IT mode. (For X9QRi-F+, you’ll just add a normal
+LSI HBA card since there is no onboard SAS.) 
+UEFI, Boot, and NVMe Considerations: The X9QRi-F+ has an early-generation UEFI BIOS (based on
+AMI Aptio 4). Notably, NVMe boot is not natively supported – when this board was made, NVMe
+drives didn’t yet exist. If you install an NVMe SSD via a PCIe adapter, the BIOS will not see it as a
+bootable device by default. However, you can boot from NVMe with some workarounds: for example,
+using Clover/DUET boot loaders, or by  modifying the BIOS to insert NVMe driver modules.
+Community members have successfully modded similar X9 BIOS to add NVMe support and boot
+from NVMe SSDs
+. Alternatively, you can boot from a SATA drive (or USB/DOM) and use NVMe as a
+data volume. Also, ensure “UEFI Boot” is enabled in BIOS if you plan to boot from GPT disks or newer
+OSes – the X9’s UEFI 2.3.1 firmware should handle Windows Server 2012R2+, Linux, ESXi, etc., but it
+won’t support Secure Boot (predates that feature). 
+“Above 4G Decoding” for GPUs and PCIe Resources: If you plan to use GPUs (especially with large
+VRAM) or many PCIe devices, go into BIOS and  enable “Above 4G Decoding” (sometimes called
+“PCIe 64-bit Resource Allocation”). This setting allows the BIOS to map devices requiring large
+memory address spaces (e.g. a GPU with >4 GB VRAM) into the 64-bit address space. Users have
+reported that a GPU wasn’t working until this option was enabled
+. It’s good practice to turn this
+on in multi-device server builds, as it doesn’t harm and will future-proof address allocation. 
+IPMI & Network Quirks: The IPMI (BMC) shares some features with the host. On this generation,
+the IPMI can either share one of the LAN ports or have its dedicated LAN – on X9QRi-F+ it has a
+dedicated Realtek PHY for management
+, so it’s separate. If you can’t access IPMI: ensure the
+IPMI LAN cable is in the dedicated port (often labeled or colored differently), or if IPMI is set to
+failover to LAN1 in settings, use LAN1. The default IPMI login is “ADMIN/ADMIN”; it’s advisable to
+update the BMC firmware and change those credentials for security. Another note: if using the host
+NICs for heavy traffic, note that on X9 boards the i350 NIC might by default have all offloads on and
+use part of CPU0’s lanes – ensure proper driver config in the OS for performance. 
+• 
+41
+• 
+42
+43
+• 
+44
+• 
+45
+• 
+17
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+Thermals and VRM Throttling: With four CPUs, each up to 130 W TDP (some models), plus possibly
+32 DIMMs, this board will  generate a lot of heat. It relies on server-style cooling: high airflow
+through the chassis. All 10 fan headers are PWM controlled; Supermicro’s BIOS/IPMI will ramp fans
+based on CPU temperature. If you run this board on an open bench or in a workstation chassis, be
+mindful that the voltage regulator modules (VRMs) for the CPUs sit in between sockets and need
+airflow.  There  have  been  cases  on  multi-socket  boards  where  inadequate  airflow  causes  VRM
+overheat and CPU throttling. Use proper 4U server heatsinks (for LGA2011 narrow ILM) with high
+RPM fans or dynatron active coolers if in a tower. In the IPMI web interface, you can set fan mode to
+“Full” or “Heavy IO” when under load to ensure adequate cooling (auto mode might be conservative).
+Also consider the power draw: if using a standard ATX PSU, ensure it can supply sufficient 12V
+amperage on the EPS connectors. 
+Firmware Updates – General: Check Supermicro’s support page for any BIOS or IPMI firmware
+updates relevant to X9QRi-F+. For example, BIOS 3.0a to 3.0b might fix certain errata or add CPU
+microcode updates. Similarly, IPMI firmware updates can patch security issues (though WPCM450
+BMC  is  older  and  not  as  heavily  updated  as  newer  AST2400-based  ones).  Always  follow  the
+Supermicro guidelines for flashing (you can use IPMI flash, DOS/IPMI tool, or EFI shell). After major
+updates, verify that BIOS settings (especially memory speed, NUMA, power management) are as
+desired, since they might reset. 
+Performance and Benchmarking
+When it debuted, a fully-loaded X9QRi-F+ was a powerhouse: up to 48 cores / 96 threads (with 4× 12-core
+Xeon E5-46xx v2) and enormous memory bandwidth from 16 memory channels. It was targeted at HPC and
+heavy multi-threaded workloads. While modern CPUs have surpassed it, it’s still useful to understand its
+performance profile: 
+CPU Compute Performance: Four E5-4600 v2 CPUs can deliver on the order of  hundreds of
+gigaflops of double-precision compute. For instance, a configuration with 4× E5-4620 (8-core 2.2
+GHz, total 32 cores) achieves around 130 GFLOPs in Geekbench’s vectorized floating-point tests
+.
+Integer multi-core scores in Geekbench 2 were in the ~23k range, and floating-point scores ~45k
+(for comparison, that outclassed most dual-socket systems of its time). In LINPACK-like workloads, a
+4×10-core setup (E5-4650 v2s) can approach roughly ~600 GFLOPs peak theoretical (10 cores * 8
+flops per core * 2.9 GHz turbo * 4 CPUs, minus overhead). Real LINPACK results would be lower, but
+still several hundred GFLOPs – significant for its era. In practice, a single modern CPU (like a 32-core
+EPYC) can rival this performance, but the quad Xeon can still crunch through parallel tasks decently.
+Expect excellent scaling on multi-threaded jobs that are NUMA-aware. 
+Memory  Bandwidth: With  4  CPUs,  each  with  four  DDR3  channels,  the  aggregate  memory
+bandwidth is quite high (on paper up to ~170 GB/s if all channels used). Actual measured bandwidth
+per socket is around 40–45 GB/s. Geekbench “Stream” tests show about 4.3 GB/s per thread in copy
+operations
+, which roughly correlates to ~40+ GB/s per CPU. The latency between CPUs (QPI
+interconnect)  is  higher  than  intra-CPU,  so  NUMA  tuning  in  software  is  important  to  maximize
+throughput. For memory-heavy applications (like large in-memory databases or scientific sims), the
+board provides both capacity (1 TB) and throughput, though the older DDR3-1600/1866 and QPI
+links mean it won’t compete with newer DDR4/DDR5 platforms in raw bandwidth. 
+• 
+• 
+• 
+46
+47
+• 
+48
+49
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+I/O and Expansion Performance: One limitation pointed out by early reviewers is the scarcity of
+PCIe slots relative to the available PCIe lanes
+. Only four slots for potentially 160 lanes means
+many lanes go unused – but it’s due to board real estate constraints. Each x16 slot can deliver the full
+16 GT/s * 16 lanes bandwidth (~32 GB/s) to a device, which is plenty for high-end accelerators or
+NICs. The x8 slots (~16 GB/s each) are still fine for, say, a 10GbE NIC or a SAS HBA. The onboard dual
+1GbE (on X9QRi-F+) can collectively handle ~2 Gbps, which is trivial relative to the CPU power; most
+users will add a faster NIC. If using the SAS model’s onboard SAS2208 in RAID mode, note that it’s
+PCIe 3.0 x8 attached – which is ~8 GB/s, far above what spinning disks can do (and enough for a
+handful of SSDs). Storage throughput: The 6 onboard SATA ports (via C602 PCH) share a DMI 2.0
+link (approx 2 GB/s total to the chipset). This is not a huge bottleneck unless all 6 ports are saturated
+by SSDs, in which case ~2 GB/s aggregate is the limit. For better storage performance, an add-in
+PCIe storage controller or NVMe drives on the CPU’s PCIe is ideal. 
+Comparative Notes: In contemporary terms, a quad E5-4650 v2 (40 cores @ 2.4 GHz) roughly
+matches a single mid-range modern CPU in multi-core, but falls far behind in single-thread. For
+example, Technical City’s aggregate benchmarks suggest a single Xeon E5-4650 v2 is only ~6–7% of a
+latest-gen server CPU’s performance
+. So four of them might be ~25% of a top 2023 CPU in
+throughput. That said, for many homelab or server tasks that can use 40 older cores, the X9QRi-F+
+still “feels” very powerful, especially with a balanced config (lots of RAM, maybe some SSDs). It excels
+at things like parallel compilation, running many VMs/containers, or number-crunching tasks that
+scale out. It will, however, draw significantly more power doing the same work than a newer
+platform. 
+Power Consumption: Speaking of power, fully loaded systems (4 CPUs, high core-count, all RAM
+slots filled) can idle in the 200–300 W range and push 600–800 W under load. No official power
+numbers are given by Supermicro, but user measurements in forums for similar 4P E5 systems show
+~0.15–0.2 A per CPU at idle (each CPU ~20–30 W idle) and 120–130 W per CPU at max. Plus fans,
+drives, etc. It’s advisable to cap turbo or use power management in BIOS if power or cooling is a
+concern – or enjoy the winter heating bonus if not . The VRMs are digital and efficient for their time,
+but still, a 4P board is not built for green computing. Ensure your PSU is 80+ rated and sized
+appropriately (with some headroom). 
+Benchmarking Tips: If you run benchmarks, keep an eye on NUMA affinity – e.g., something like
+NUMA-aware linpack or stream can show near-linear scaling across the four sockets, but if a thread
+on CPU1 is accessing memory on CPU4, performance dips due to QPI latency. For virtualization or
+OS, enabling NUMA in the hypervisor/OS is important (most modern OSes do). Also, thermals can
+affect sustained benchmark runs – if you see throttling, check CPU temps and fan speeds. With
+proper cooling, the CPUs should maintain their turbo frequencies until power limits are hit. The
+board supports Intel Turbo Boost and EIST; by default these are on, so lightly threaded tasks can
+boost a single CPU’s cores (though “lightly threaded” is relative on a 40-core machine!). 
+• 
+12
+50
+• 
+51
+• 
+• 
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+Common Upgrade Paths and Compatibility Tips
+One advantage of a board like X9QRi-F+ being a few years old is that  upgrades (CPUs, RAM, etc.) are
+relatively  affordable  on  the  second-hand  market,  allowing  you  to  max  out  its  potential.  Here  are
+common upgrade and configuration paths, along with compatibility notes: 
+CPU Upgrades: The board originally may have been used with v1 Xeon E5-4600 (Sandy Bridge-EP,
+e.g. E5-4650, 8c @ 2.7 GHz). Upgrading to Xeon E5-4600 v2 (Ivy Bridge-EP, e.g. E5-4650 v2, 10c @ 2.4
+GHz or E5-4627 v2, 8c @ 3.3 GHz) can increase core counts and efficiency. Ensure BIOS 3.0+ is
+installed before installing v2 CPUs
+. All CPUs in the system must be identical model and stepping
+for SMP (mixing different models is unsupported). The top-end v2 chips (E5-4667 v2, E5-4657L v2,
+etc.) can be used if you can source them – for example, 4× E5-4657L v2 (12-core @ 2.4 GHz, 115 W)
+would give 48 cores/96 threads. Just watch TDP: 4× 130 W CPUs is heavy but within the board’s
+design (it’s validated for up to 4× 150 W TDP in some Supermicro chassis with proper cooling). Note:
+The E5-2600 series CPUs are not compatible with this board – you must use the E5-4600 series, which
+have the extra QPI links for 4-socket glueless configuration. Also, E7 Xeons are a different socket
+(LGA2011-v3 for v2 generation E7s) and won’t work here. 
+Memory  Scaling: This  platform  supports  massive  memory,  and  an  upgrade  here  can  be
+transformative for certain use cases. It’s capable of 1 TB with 32 GB LRDIMMs (32×32)
+. More
+commonly, you might populate 256 GB (e.g. 16×16 GB) or 512 GB (e.g. 32×16 GB RDIMMs) which is
+relatively  inexpensive  now.  Make  sure  to  use  DDR3  ECC  Registered or  Load-Reduced DIMMs
+(unbuffered consumer DIMMs will not work if more than 2 per channel or in large configs). If
+you have a mix of sizes or ranks, follow the manual’s ordering (typically put highest capacity in
+slot A1/B1 first). The memory is quad-channel per CPU, so populate evenly across CPUs for
+balance. Also, low-voltage (1.35 V) DIMMs** are supported – the board will run them at 1.35 V by
+default if it detects all LV sticks, which reduces power a bit. If mixing LV and regular, it’ll use 1.5 V. For
+upgrade planning: many started with 8 GB sticks (for ~256 GB total); moving to 16 GB sticks doubles
+capacity, or going to 32 GB (LRDIMM) doubles again. 32 GB LRDIMMs have dropped in price on
+resale markets, making 512+ GB builds feasible. Just ensure any LRDIMM you buy is on Supermicro’s
+tested list if possible – not strictly required, but some very high density might need a specific BIOS
+revision. 
+Storage & HBA Upgrades: The six onboard SATA ports might not be enough for builds intending to
+have a lot of drives (e.g. as a storage server). A common upgrade is to add a SAS HBA or RAID card in
+a PCIe slot. For example, an LSI 9211-8i or 9300-8i (IT-mode SAS HBA) can connect to a 24-bay chassis
+backplane. The PCIe 3.0 x8 slot can easily handle the bandwidth of 8 or more drives. If you have the
+SAS-equipped X9QR7 board and want to use its onboard controller in IT mode, consider flashing it as
+mentioned earlier, or simply disable it and use an add-in card if you prefer newer HBA models (the
+onboard SAS2208 is equivalent to an LSI MegaRAID 9271-8i). For NVMe SSDs, since there are no M.2
+slots, you’d use PCIe adapter cards. One popular method is a PCIe carrier that holds an NVMe and
+presents it to the system; these work fine for data drives. Booting from NVMe requires the BIOS mod
+or a UEFI workaround as discussed. Another upgrade path is adding a SATA/SAS RAID card if a
+hardware RAID with cache is desired beyond the onboard (for instance, a PCIe NVMe RAID or a
+higher-gen SAS3108-based card for 12 Gb/s SAS). Ensure any HBA/RAID card has proper airflow (in a
+4U chassis usually fine, in a tower consider a slot fan, as those cards can run hot). 
+• 
+4
+• 
+52
+• 
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+Network Upgrades: Out-of-the-box, X9QRi-F+ gives you 2× 1 GbE ports. For many modern use
+cases, that’s a bottleneck. Fortunately, adding 10 GbE (or higher) is straightforward via PCIe. The
+board’s x8 slots can host, for example, a dual-port 10G NIC (like Intel X520-DA2 for SFP+ or X540-T2
+for 10GBase-T). Those typically use PCIe 2.0/3.0 x8 and will operate at full speed (the board’s PCIe 3.0
+x8 is ample for dual 10G ~20 Gbps). If you need even more, one could install a 40 GbE NIC or
+Infiniband adapter in an x16 slot. Just keep in mind any large IO cards should be in slots tied to CPU1
+or CPU2 ideally (for lowest latency; also CPU1 hosts the IPMI so sometimes dedicating heavy IO on a
+different CPU can help balance). The built-in IPMI can operate on its dedicated NIC regardless of
+what you add, or you can configure it to share a port with one of the add-in NICs if desired (but using
+the dedicated port is simpler). When upgrading NICs, check BIOS for options like “PXE boot” or “iSCSI
+boot” – you can disable those for any NICs you add if not needed, to save boot time. 
+GPU and Accelerator Upgrades: Despite being a server board, the X9QRi-F+ can accept GPUs or
+other accelerators (FPGA cards, etc.) in its PCIe slots. Commonly, people have added GPUs either for
+GPGPU computing or for running virtual machines with GPU passthrough (e.g. a homelab “all-in-
+one” server that also runs some gaming VMs or AI tasks). The board physically can fit two double-
+width GPUs (one in each x16 slot) if the chassis has 4U height and enough slots open. For example,
+in a tower case, you might fit an NVIDIA Tesla or GeForce in the Slot4 (CPU1) and one in Slot2 (CPU4)
+– note those two slots might be adjacent such that their double-width cards sit next to each other,
+check the layout. If using large GPUs, ensure a strong PSU (each GPU can draw 200–300W). Enable
+Above  4G  Decoding in  BIOS  to  support  GPUs  with  large  BARs
+.  Also  enable  VT-d  (Intel
+Virtualization for Directed I/O) in BIOS if you plan on GPU passthrough to VMs. The system does
+support VT-x/VT-d fully; with 4 CPUs you’ll have multiple NUMA nodes for VMs. If you populate GPUs,
+watch thermals – those cards will dump heat inside the chassis; you may need to run fans at higher
+speeds. Another consideration: the BMC’s VGA will be active by default as the primary video. If you
+install a GPU and want it to be used by an OS or for compute, no issue – but if you wanted it to be
+the primary display output (rare on a server), you’d have to set BIOS to prefer the add-in VGA. Most
+leave IPMI/BMC as the console and use GPUs headless or for passthrough. 
+PSU and Power Delivery: As mentioned, you’ll need a solid power supply setup. In a Supermicro
+chassis, you’d typically have redundant server PSUs (e.g. 2× 1200W). In a custom setup, a single high-
+wattage PSU (say 1000–1500W 80+ Platinum) with four EPS12V leads is required. Some workstation
+PSUs have only two EPS; you might use adapters or dual-PSU configs if trying a non-server PSU
+(exercise caution doing so). Each CPU’s 8-pin must be populated. Also, verify the PSU can handle the
+combined 12V amperage. If the board is used in a workstation scenario, a UPS is recommended – 4P
+systems draw a lot at startup (inrush current) and you don’t want abrupt outages which could
+corrupt things. 
+Compatibility Notes: The X9QRi-F+ is from the Sandy/Ivy Bridge era, which means it uses PCIe 3.0
+and DDR3 – generally very compatible with modern OSes (Windows, Linux, VMware ESXi all work
+fine). Windows 10/11 or Server 2016+ will run, though note Windows 11’s installer might complain
+about “unsupported CPU” – that can be bypassed, as E5-4600 v2 is similar to Ivy Bridge consumer
+which is just outside Win11’s support list. For Linux, virtually any modern distro is fine; just use a
+kernel new enough to have drivers for the Intel i350 NIC (which is most of them) and for any add-in
+cards. ESXi 6.x and 7.x support this hardware (the CPUs are VT-x/VT-d capable and on VMware’s HCL
+via OEM systems like Supermicro 8047R). One thing not present is TPM 2.0 (there’s a header for an
+add-on TPM). If you need a TPM for Windows BitLocker or vSphere encryption, you can install a
+• 
+• 
+45
+• 
+• 
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+Supermicro  TPM  module  (e.g.  AOM-TPM-9655V  for  TPM  1.2  or  AOM-TPM-9665V  for  TPM2.0,  if
+supported on X9 – check with Supermicro; X9 might be TPM1.2 only due to BIOS). 
+Advanced Tuning and Optimization
+To get the most out of a quad-socket system, a few tuning steps can be considered: 
+BIOS Settings for Performance: Enter the BIOS setup (Del key on boot) and review the CPU and
+Memory settings. You’ll find options for Intel Turbo Boost, C-States, Power Management, etc. For
+maximum performance, you can set  Power Performance Mode = Performance (disables some
+throttling), enable Turbo Boost, and possibly disable CPU C3/C6 states to keep clocks ramped (at the
+cost of power). Ensure Memory Mode is set to Performance (NUMA) – usually by default it is NUMA,
+which is what you want for 4 CPUs (as opposed to Node Interleaving, which would interleave
+memory across CPUs and generally hurt performance). Hyper-Threading: leave this enabled unless
+you have a specific reason to disable – it generally helps with throughput on these Xeons. The BIOS
+also may have an option for High Bandwidth (enabling above 4G decode, etc.) – as noted, use that
+for GPUs or large PCIe memory devices. If running Linux, you might also disable the Intel VT-d co-
+support for interrupts (APICv etc.) if not needed, but usually it’s fine to leave on. 
+NUMA and OS Tuning: In the OS or hypervisor, treat this as a NUMA system with 4 nodes. For
+example, in VMware ESXi, you’d see 4 NUMA nodes; it’s best to size VMs such that they fit in one
+NUMA node (e.g. a VM with 8 vCPUs and 32 GB RAM will stay within one CPU’s resources) to avoid
+cross-node latency. If you need a big VM, it will span NUMA nodes – ensure the guest OS has NUMA
+optimization  (Windows  Server  and  most  Linux  with  NUMA  enabled  kernels  will  do).  For  HPC
+applications, use NUMA-aware libraries (MPI, OpenMP) so threads stick to their CPU’s memory as
+much as possible. You can experiment with CPU affinity for critical processes to keep them on one
+socket if they share data heavily. The quad-QPI topology is a  ring (each CPU connects to two
+neighbors in a loop), so latency between diagonally opposite CPUs is a bit higher than adjacent ones
+– some MPI libraries allow topology mapping if that’s relevant. 
+Cooling and Fan Optimization: The BMC controls fans by default using preset curves (Standard,
+Full, Optimal, HeavyIO). If your system runs hot, switch to Full or Heavy IO fan mode via IPMI (using
+ipmitool or the web UI) to ramp all fans to 100%. This ensures stability at the expense of noise.
+Conversely, if your system is in a lab where noise is an issue and it’s running below max load, you
+can use Optimal mode to throttle fans – but keep an eye on temperatures. The CPUs have thermal
+trip sensors; ideally keep them under ~80°C at full load for longevity. The memory and IOH (PCH)
+also have sensors – the PCH can get hot if there isn’t airflow, so if you see PCH temps > ~85°C, direct
+a fan at it or improve chassis airflow. The board’s many fan headers allow customizing cooling zones
+(e.g. plug front fans into specific headers to increase airflow near drive bays vs CPU zone). In BIOS,
+you might find  Fan Speed Control options (like 4-pin fan speed vs PWM duty cycle); if tuning
+manually, you can set a static duty cycle. But generally, letting IPMI manage is easiest, just choosing
+a profile. 
+Stability Tips: For rock-solid stability, run the system through a burn-in: e.g. memtest86 for memory,
+a CPU stress test like Prime95 or LINPACK on all 4 CPUs, etc., to ensure cooling and power are
+sufficient. Quad-socket systems put stress on power delivery; if you have any instability under load
+(machine check errors, sudden reboots), suspect PSU or VRM overheating. Make sure all power
+• 
+• 
+• 
+• 
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+connectors are firmly seated and that no power rail is being overloaded. The board has diagnostic
+LEDs for each CPU’s phase power – check if any show issues (consult manual). In case of BIOS
+misconfiguration leading to no boot, use the Clear CMOS jumper (JBT1)
+ to reset settings. For
+any weird POST codes, the hex display on the board can be referenced in the manual’s code list;
+common ones: b7/b9 (memory error), 92 (PCI init issue), 19 (IPMI handoff). Keeping firmware up to
+date also helps stability (newer BIOS microcode can fix errata that cause sporadic issues). The X9QRi-
+F+ was often used in mission-critical systems (e.g. enterprise servers), so when properly set up, it’s
+very stable for continuous 24/7 use. 
+Use Case Optimizations: Depending on what you deploy this board for, consider specific tweaks: 
+Virtualization/Hypervisor: Enable Intel VT-x and VT-d in BIOS (usually default). Use latest VMware tools
+or Linux KVM with tuning for irqbalance across NUMA, etc. If running many VMs, distribute their CPU
+affinity to avoid stacking too many on one socket. Also, if using as a NAS + VM combo, isolate
+storage interrupts to one CPU to improve cache locality. 
+High-Performance Computing: Leverage Intel’s compiler optimizations (ICC/ICX) for Ivy Bridge, and
+use multithreading libraries that recognize 4 NUMA domains. You might also enable “Cluster on Die”
+if it were available – but on Ivy Bridge-EP, CoD is not an option (that came with Haswell-EP). So just
+standard NUMA and maybe disabling logical processors (HT) if the workload doesn’t benefit from HT
+(some HPC codes prefer 1 thread per core). 
+Storage Server: If using as a storage box (e.g. with TrueNAS or similar), and you added an HBA,
+consider flashing the BIOS to disable the Option ROM for devices you don’t boot from to speed up
+boot. TrueNAS/ZFS will like the cores and RAM; set ARC size appropriately to use that plentiful
+memory. Also, if not using the second 1GbE port, you can trunk them or dedicate one for
+management. 
+Workstation: If someone uses this as a workstation (rare, but possible), note that Windows will see it
+as a multi-processor system (grouping cores into processor groups if core count >64, but with 40 or
+48 cores it’s fine). Some games/apps may not utilize all cores. The board lacks audio, so you’d need a
+USB audio or sound card. Also, X9 doesn’t have USB 3.0, only USB 2.0 – you might add a PCIe USB3
+card if needed. 
+Suitable Use Cases
+The Supermicro X9QRi-F+ (and its SAS sibling) are  high-end server boards well-suited to scenarios that
+require significant CPU parallelism and memory. Here are some ideal use cases, both originally intended
+and potential repurposed ones: 
+High-Performance Computing (HPC) & Scientific Simulations: This board shines in HPC clusters –
+e.g. computational fluid dynamics (CFD), finite element analysis, Monte Carlo simulations, and other
+CPU-bound computations. Its quad-CPU design was often used in small cluster nodes or standalone
+HPC servers. With 32+ cores and large RAM, it can tackle big simulation datasets or number-
+crunching tasks (weather modeling, seismic processing, etc.). The large memory (up to 1TB) allows
+in-memory computing for scientific applications
+. HPC users can also benefit from the option
+to add specialized NICs (Infiniband or 10/40GbE) for cluster interconnect. Keep in mind HPC codes
+must be NUMA-aware to fully exploit the 4-socket architecture. 
+53
+• 
+• 
+• 
+• 
+• 
+• 
+5
+52
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+Database and In-Memory Analytics Servers: Quad-socket systems are often deployed for database
+workloads, especially those needing lots of memory. For example, an in-memory database (Oracle,
+SAP HANA, etc.) or a large SQL Server instance could utilize 40 cores and hundreds of GB of RAM. The
+X9QRi-F+ could serve as a hefty database server for an enterprise (though by modern standards,
+newer platforms offer better per-core performance). It could also be used for big-data processing
+(Hadoop/Spark nodes) where multiple threads handle data tasks – the high core count and memory
+help keep such workloads in-memory. The 1TB RAM capacity is particularly useful for in-memory
+analytics where dataset fits entirely in RAM. 
+Virtualization Host / Private Cloud: With many cores and RAM, this board is a good candidate for
+hosting multiple virtual machines or containers. In a virtualization cluster (using VMware ESXi,
+Hyper-V, or Proxmox), a single X9QRi-F+ could run dozens of moderate VMs. For example, lab users
+report hosting VMs for IT labs, game servers, and even as a “central PC for thin clients” for family
+members
+. It’s like having a small cloud in one box. vSphere will treat the 4 CPUs as one
+system (vNUMA to guests as needed). You can allocate say 2–4 cores and 8–16GB RAM to many VMs
+and still have capacity to spare. The limitation might be I/O if all those VMs need heavy disk or
+network – so plan add-on NICs and storage accordingly. Additionally, features like VMware FT or
+large VM support benefit from multiple sockets and memory. Note that licensing (Windows or
+VMware) can be more expensive with a 4-socket server vs a 2-socket, since many licenses count
+sockets – for homelab that’s not an issue, but for enterprise, consider it. 
+Cloud Computing Nodes: Although power-hungry by today’s standards, these boards could be used
+in OpenStack or cloud clusters for compute nodes. They give a high density of cores per node
+(especially  for  earlier  OpenStack  deployments  where  per-node  core  counts  mattered).  Even
+Kubernetes/container servers can run a boatload of containers on 48 threads. If used in this manner,
+one might want to bond the two 1GbE ports or, better, add 10GbE for backend network to avoid
+network bottlenecks for so many workloads. 
+Server Applications / Enterprise Workloads: As a general-purpose server, the X9QRi-F+ can handle
+roles like an application server farm (many app instances on one machine), a heavy web server
+(though typically web front-ends prefer fewer faster cores – here we have many moderately fast
+cores), or a multi-purpose on-prem server (running AD, file server, plus some VMs, etc.). It’s an
+overkill for small tasks but in an enterprise environment it could consolidate many services. Some
+specific roles: large email server (Exchange with many mailboxes), virtualization of legacy systems, or
+running multiple Docker services (CI/CD pipelines, etc.) concurrently. 
+High-memory Tasks (RAM Drive, Caching, Simulation): If you need a huge memory sandbox, this
+board is great. Think of scenarios like: running a 500GB RAM RAM-disk for high-speed caching, or
+loading entire datasets into memory for crunching. Or running multiple VMs each with tens of GB of
+memory for testing big software (SharePoint, etc.). The board’s ability to correct single-bit memory
+errors (ECC)
+ is crucial for stability at high memory densities. 
+Homelab “Monster” Server: In the enthusiast community, boards like these have been repurposed
+as homelab servers. For example, homelabbers have built systems to run Plex, game servers,
+virtualization, and NAS all in one. One Reddit user dubbed it a “monster” and asked what they could
+do with it
+ – popular answers include running a cluster of VMs for learning, or a combination NAS
++ hypervisor. Keep in mind the noise and power – a homelab deployment might require some DIY in
+• 
+• 
+54
+55
+• 
+• 
+• 
+56
+• 
+57
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+terms of quiet cooling and acceptance of higher electric bills. But if cores-per-dollar is the metric
+(purchasing used), these older 4P setups can be very cost-effective for a lab. 
+Not Ideal For: Conversely, there are some use cases where this board is not the best choice: e.g.
+single-thread performance intensive tasks (a modern Ryzen or Xeon would far outperform on
+per-thread), or GPU-centric builds beyond 2 GPUs (limited PCIe slots and no PCIe 4.0/5.0 support).
+It’s also not ideal as an edge server or anything requiring efficiency or low power. And for extremely
+IO-heavy roles (like a high-end storage array with dozens of NVMe drives), the limited slots could be
+a bottleneck – a newer platform with more PCIe lanes/slots would serve that better. 
+In summary, the X9QRi-F+ is suitable for roles that need  lots of CPU threads and memory in a single
+system – HPC, VM consolidation, big-memory apps – and less suited for roles that need extreme per-thread
+speed or massive expansion. Even today in 2025, a well-configured X9QRi-F+ can handle many server
+workloads  admirably,  especially  in  labs  or  smaller  scale  deployments,  thanks  to  its  robust  build  and
+enterprise features.
+Community Insights and User Experiences
+Insights from  community forums, reviews, and Q&A can be invaluable for understanding real-world
+behavior of this board. Here are some noteworthy points gathered from user discussions on platforms like
+Reddit, ServeTheHome, and TrueNAS communities:
+POST and Debugging: Users who experienced POST issues learned the hard way that all CPUs and a
+proper memory configuration are needed. One Reddit homelabber was stuck at a POST code and
+later found out they needed either all four CPUs or had to adjust the memory arrangement.
+Supermicro’s  official  guidance  confirms  populating  all  sockets  to  enable  onboard  devices
+.
+Another user shared that the board “hangs on B7 [memory initialization]” if the DIMM population isn’t
+per guidelines – once corrected, it booted fine. The takeaway: if you get mysterious POST codes (B7,
+B9, 92, etc.), double-check CPUs and memory seating/order first. 
+Memory Configuration Questions: On ServeTheHome forums, a prospective buyer asked how few
+DIMMs they could use to start with a X9QRi-F+. The community recommended at least one DIMM
+per  CPU,  but  ideally  two  per  CPU  in  the  first  banks  for  balance
+.  They  also  clarified  that
+populating all blue slots (i.e. 1A, 1B on each CPU) is a good strategy and that using multiple
+DIMMs per channel will cap speed at 1600 MHz
+. One member noted that DDR3 RDIMMs have
+become very cheap, encouraging loading up the RAM to take advantage of the system
+. This
+reflects a general consensus: maximize the RAM if you can – the platform was designed to handle it,
+and many use-cases (VMs, caches) will gladly use the memory. 
+“Above 4G Decoding” fix: A Reddit user who installed a GPU found the system wouldn’t properly
+initialize the GPU until they enabled Above 4G Decoding in the BIOS
+. This is a common tweak on
+older boards when using modern GPUs with large BAR sizes or when populating large PCIe memory
+spaces (like multiple GPUs or NVMe adapters). Community tip: always flip that setting to “Enabled”
+when building a system like this with any 64-bit PCIe devices – it prevents a lot of headaches. 
+• 
+• 
+32
+• 
+40
+8
+58
+• 
+45
+13
+
+------------------------------------------------------------------------
+Page 14
+------------------------------------------------------------------------
+
+Noise and Thermal Management: Some homelab posts mention that the stock Supermicro cooling
+solutions can be  very loud in a home environment. One user building a VM server with X9QRi-F+
+planned to put it in a rack in a separate room due to noise
+. They sought advice on quieting it
+– suggestions included using aftermarket cooling if possible or running the board in optimal fan
+mode. However, most community members acknowledge that a 4P board will never be “PC quiet”
+under load; a closet or basement rack is the way to go. If attempting a quieter setup, large slow fans
+and possibly custom ducting might be needed to ensure all CPUs get airflow even at lower RPMs.
+The BMC’s fan control can sometimes be tweaked via IPMI tool to custom duty cycles as well. 
+IPMI Usage: Many forum users praise the convenience of IPMI on this board – you can do full
+remote KVM, power control, and even BIOS updates via the IPMI web interface. Some did note that
+the older WPCM450 BMC is not as fast or fancy as newer ASpeed chips (the web interface is quite
+old-school, and KVM redirection can be clunky on modern browsers). But it gets the job done for
+headless management. A TrueNAS forum post reminded that to configure IPMI network settings,
+you do it either via BIOS or the IPMI default (which is DHCP) – the user was initially confused
+trying to set an IP in BIOS where there was no option, forgetting the IPMI has its own config utility or
+defaults
+. So community tip: use the ipmitool utility or the default credentials to connect and set
+a static IP if needed. 
+Firmware and Support: As this board is several generations old, official updates have slowed.
+Community members have stepped in to provide solutions, like BIOS modding for NVMe or sharing
+tips on cross-flashing the LSI RAID. On forums like ServeTheHome, enthusiasts shared modded BIOS
+binaries  (though  caution  is  advised  using  those  –  better  to  DIY  or  trust  sources).  One  user
+successfully modded the BIOS to get a 1TB Samsung 960 Pro NVMe bootable in a X9DR (dual-socket
+cousin)
+ and others followed suit, confirming it works on X9 boards
+. This collective knowledge
+essentially extends the useful life of the platform by adding modern capabilities. 
+Longevity and Reliability: There are reports of these boards running for many years continuously.
+Supermicro’s build quality is generally high – solid capacitors, good VRMs. A few users did mention
+that after ~5-7 years, they needed to replace the CR2032 CMOS battery (typical maintenance). One
+should also check for any bulging capacitors or dust in the heatsinks if buying a decommissioned
+unit – standard refurb practices. The community generally regards X9 series as very reliable. In fact,
+some  prefer  X9  quad-socket  over  newer  X10  quad-socket  (which  were  E7-based  and  far  more
+expensive) because the X9 with E5-4600 v2 hit a sweet spot of performance per dollar on the used
+market. 
+Power Consumption in Labs: Home users who measured power draw often share numbers so
+others know what to expect. For instance, a user with 4× E5-4650 (8-core, 130W each) noted an idle
+power  around  250W  and  full  load  nearly  700W  with  drives  and  fans.  Some  mitigations  from
+community: enable CPU C-states in BIOS to drop power at idle (if you don’t mind latency); undervolt
+or use power-efficient CPU models (like the “L” suffix Xeons) – e.g. E5-4650L v2 (10-core 2.5 GHz
+115W) instead of E5-4650 v2 (10-core 2.4 GHz 130W) to shave some watts. Also, spinning down idle
+drives, and using fan control profiles can help a bit. These boards also allow disabling of some
+controllers (e.g. if you are not using USB 2.0 ports or the onboard video after boot, disabling those
+might save marginal power). 
+• 
+54
+59
+• 
+60
+• 
+61
+44
+• 
+• 
+14
+
+------------------------------------------------------------------------
+Page 15
+------------------------------------------------------------------------
+
+Real-world tasks and satisfaction: Many homelab posts essentially boil down to “I got this board (or
+server) cheap – what cool stuff can I do with it?”. After building out, users report being able to run large
+lab environments. For example, running an entire AD/DNS/DHCP/Exchange stack in VMs, alongside a
+SAN/NAS VM, and maybe a CI/CD pipeline – all on one machine – is feasible and has been done. The
+main complaint is usually heat/noise, not capability. One user humorously said after assembling a
+quad-Xeon system that it “doubles as a space heater and hair dryer,” so they only run it in winter to
+warm the house while folding proteins. So community consensus: the X9QRi-F+ is a beastly board
+that, when used to its strengths, remains quite useful, but it demands proper environment
+(power, cooling) and is impractical for light or quiet workloads. 
+In conclusion, the Supermicro X9QRi-F+ (non-SAS) is a highly capable quad-socket board that can still deliver
+strong  performance  in  multi-threaded  and  memory-intensive  applications.  Official  documentation  and
+reviews highlight its robust specs (quad CPUs, 32 DIMMs, etc.) while community experiences provide
+guidance on how to run it optimally (populate all CPUs/RAM, update the BIOS, tweak BIOS for new
+hardware, and be mindful of power/cooling). Though replaced in the market by newer generations, it
+remains a relevant platform for specific needs – a testament to Supermicro’s engineering and the lasting
+utility of a well-balanced multi-processor system.
+Sources
+Supermicro X9QRi-F+ specifications and motherboard manual
+Supermicro FAQ ID 24800 – recommendation to use all four CPUs to enable onboard features
+ServeTheHome review of X9QR7-TF+/X9QRi-F+ (quad E5-4600 motherboards)
+TrueNAS forum – user noting non-SAS version has only 6 SATA and missing SAS jumpers
+ServeTheHome forums – discussion on memory population and 1866 MHz behavior
+Reddit homelab thread – enabling “Above 4G Decoding” for GPU on X9QRi-F+
+Geekbench result for X9QR7/X9QRi (4× E5-4620) – performance metrics
+Supermicro SuperServer 8047R-7RFT+ manual – note on BIOS 3.0 required for v2 CPUs
+EBiz and Supermicro product listings – detailed spec breakdown (SATA ports, LAN controllers, etc.)
+ServeTheHome forums – success report of BIOS mod to enable NVMe boot on X9 platform
+New Supermicro Quad Intel Xeon E5-4600 LGA2011 MP
+Motherboards
+https://www.servethehome.com/supermicro-quad-intel-xeon-e54600-lga2011-mp-motherboards/
+8047R-TRF+-7RFT+_1.0b.indb
+https://www.supermicro.com/manuals/superserver/4U/MNL-1375.pdf
+Supermicro X9QR7-TF+ Memory - Cloud Ninjas
+https://cloudninjas.com/collections/x9qr7-tfplus?srsltid=AfmBOopBn9iWGupUfKcPZsMcGv--pTAfAGswlX6CTujZvsQGGjKxXlyC
+Memory population for Supermicro X9QRI-F+ | ServeTheHome Forums
+https://forums.servethehome.com/index.php?threads/memory-population-for-supermicro-x9qri-f.37184/
+• 
+• 
+9
+25
+10
+• 
+32
+• 
+5
+1
+• 
+35
+• 
+40
+8
+• 
+45
+• 
+62
+46
+• 
+4
+• 
+15
+37
+• 
+44
+1
+2
+3
+5
+7
+11
+12
+18
+19
+23
+27
+50
+4
+36
+52
+6
+8
+39
+40
+58
+15
+
+------------------------------------------------------------------------
+Page 16
+------------------------------------------------------------------------
+
+Supermicro MBD-X9QRi-F+ Quad Socket R(LGA 2011) 6x SATA Ports Dual
+Port GbE LAN IPMI 2.0 Full Warranty
+https://www.ebizpc.com/Supermicro-MBD-X9QRi-F-Quad-Socket-R-LGA-2011-p/mbd-x9qri-fplus.htm?
+srsltid=AfmBOood1N0s4pVwA9Ui5p678ETPD9JbB6BLUh5ka4Tqu6LhcgRtLH9s
+Supermicro MBD-X9QR7-TF+ Quad Socket R(LGA 2011) 6x SATA 8 SAS Ports Dual Port
+10GBase-T IPMI 2.0 Full Warranty
+https://www.ebizpc.com/Supermicro-MBD-X9QR7-TF-Quad-Socket-R-LGA-2011-p/mbd-x9qr7-tfplus.htm?
+srsltid=AfmBOorG2ZQ2Pr0qMhXh4qal6iIHYn3MMv_bi6tZdJgmvCWwMAo7Nr1d
+server-shop.ua
+https://server-shop.ua/assets/images/resources/8409/products-supermicro-motherboard-x9qri-fspecification.pdf?
+srsltid=AfmBOor3cWexOWeoErBQ6zZaVT9zHbcvMQjlE4Mg_7UeWHPj1aCbRw9j
+SUPERMICRO X9QR7-TF+ USER MANUAL Pdf Download | ManualsLib
+https://www.manualslib.com/manual/680734/Supermicro-X9qr7-TfPlus.html
+BIOS & BMC & Bundled & Microcode Package Download | Intel | Support - Super Micro Computer, Inc.
+https://www.supermicro.com/support/resources/bios_ipmi.php?vendor=1&keywords=x9&lgus=1
+FAQ Entry | Online Support | Support - Super Micro Computer, Inc.
+https://www.supermicro.com/support/faqs/faq.cfm?faq=24800
+X9QRi-F+ & SAS-846A + Seagate Barracuda = Discs not powering up | TrueNAS Community
+https://www.truenas.com/community/threads/x9qri-f-sas-846a-seagate-barracuda-discs-not-powering-up.63460/
+SOLVED - Supermicro BIOS access Issue | TrueNAS Community
+https://www.truenas.com/community/threads/supermicro-bios-access-issue.54318/
+Looking for instructions to flash a LSI 2208 to a 2308IT
+https://forums.servethehome.com/index.php?threads/looking-for-instructions-to-flash-a-lsi-2208-to-a-2308it.40871/
+NVMe boot with SuperMicro X9DA7 & X9DRi-F | ServeTheHome Forums
+https://forums.servethehome.com/index.php?threads/nvme-boot-with-supermicro-x9da7-x9dri-f.13245/page-2
+X9QRI-F+ - have this board, the board boots, I can see through ipmi
+https://www.reddit.com/r/supermicro/comments/1i38ykf/x9qrif_have_this_board_the_board_boots_i_can_see/
+Supermicro X9QR7-TF+/X9QRi-F+ - Geekbench
+https://browser.geekbench.com/geekbench2/1571764
+Xeon E5-4650 v2 [in 1 benchmark] - Technical City
+https://technical.city/en/cpu/Xeon-E5-4650-v2
+Question - What is the best setup of GPU (&etc) for a Supermicro X9QRI-F+ MoBo? | Tom's
+Hardware Forum
+https://forums.tomshardware.com/threads/what-is-the-best-setup-of-gpu-etc-for-a-supermicro-x9qri-f-mobo.3688292/
+I have this monster, what to do: X9QR7-TF+ / 4x E5-4650 - Reddit
+https://www.reddit.com/r/homelab/comments/1e74iyl/i_have_this_monster_what_to_do_x9qr7tf_4x_e54650/
+X9SRI-F Problems setting bios ipmi ip and logging in - TrueNAS
+https://www.truenas.com/community/threads/x9sri-f-problems-setting-bios-ipmi-ip-and-logging-in.96788/
+9
+13
+15
+17
+21
+22
+24
+28
+30
+56
+10
+33
+34
+37
+14
+16
+20
+25
+26
+29
+53
+31
+32
+35
+41
+38
+42
+43
+44
+61
+45
+46
+47
+48
+49
+62
+51
+54
+55
+59
+57
+60
+16

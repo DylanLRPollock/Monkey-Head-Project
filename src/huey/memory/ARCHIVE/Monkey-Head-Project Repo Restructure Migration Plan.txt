@@ -1,0 +1,1112 @@
+Monkey-Head-Project Repo Restructure Migration
+Plan
+Executive summary
+Enabled connectors (used first): github  (repo: DylanLRPollock/Monkey-Head-Project ).
+This report produces a practical, engineer-ready  repository restructuring to-do list that prioritizes: (a)
+making  the  Python  runtime  importable  and  CI-green,  (b)  separating  “runtime  code”  from  “platform/
+packaging artifacts” and “canon content,” and (c) setting the team up for a controlled  staging → pre-
+release (v84.3-pre) → freeze → rewrite cycle already described in the repo’s operating docs. The repo
+currently includes a Python package declared as hueyos  with requires-python = ">=3.13,<3.15"
+and console scripts, including huey-api = "huey.api:main" . 
+ The most urgent structural flaw is
+that a large portion of the intended  hueyos  package appears to live under  invalid Python package
+directory names (notably  src/ai-os/ ), while tests and runtime modules import  hueyos.* , which
+creates avoidable breakage and complicates the upcoming rewrite. 
+This plan is  deployable as a migration sequence: it includes a proposed taxonomy, explicit file/folder
+actions  (keep/move/rename/rewrite/delete),  sample  git  commands,  CI  updates,  rollback  rules,  and
+verification/acceptance criteria.
+Assumptions (explicit, per request; no clarifying questions): - Default branch is  main , and restructuring
+work is performed via feature branches merged back to main . CI currently runs on main  and develop .
+ - Where a file/folder is not discoverable in the sampled listings, it’s labeled UNSPECIFIED (not assumed
+absent forever). - Any “exact port”, “credential”, “serial protocol”, “GPIO map”, etc. not present in repo text is
+treated as  UNSPECIFIED. - This report lists  high-value, discovered paths and provides a deterministic
+script  workflow  to  produce  a  complete  inventory  ( git  ls-files )  before  executing  bulk  git  mv
+operations.
+Current repository map as discovered
+The repository self-identifies as “Monkey-Head-Project / HueyOS” with a Python package name  hueyos
+and  a  master  plan  spec  file  master-plan-v23.json .  
+ Key  runtime  environment  settings  are
+documented  in
+ huey.env.example  
+(e.g.,
+ HUEY_HOST ,
+ HUEY_PORT=1995 ,
+ HUEY_ROOT , 
+HUEY_MEMORY_ROOT , local model backend settings like  OLLAMA_PORT=11434 ).  
+ Docker Compose
+also defaults to HUEY_PORT=1995  and uses Compose profiles ( worker , extras ) for optional services
+like Redis. 
+1
+2
+3
+4
+5
+6
+7
+8
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+Current top-level map and key contents
+Current path
+Type
+Key discovered files/
+subpaths
+Purpose & notes
+Action (summary)
+.github/
+dir
+.github/workflows/
+ci.yml , .github/
+workflows/
+codeql.yml , .github/
+dependabot.yml
+CI uses Python 3.13
+and runs make 
+lint  + make 
+coverage . 
+Keep, update
+paths/rules after
+moves
+.disk/
+dir
+.disk/mkisofs
+ISO/build artifact
+surface (likely
+platform/ISO root
+metadata).
+Move under 
+platform/iso/
+(recommended)
+README.md
+file
+(root) 
+Authoritative
+narrative + doctrine
++ repo map +
+deployment flow.
+Keep, update after
+restructure
+pyproject.toml
+file
+(root) 
+Declares package 
+hueyos , scripts,
+requires-python,
+dependencies/
+extras.
+Keep, rewrite
+sections to match
+new module reality
+Makefile
+file
+(root) 
+Runs uvicorn 
+huey.api:app ,
+coverage includes 
+--cov=huey --
+cov=hueyos .
+Keep, update run
+target and
+coverage if needed
+requirements.txt  /
+constraints.txt
+files
+(root) 
+Large pinned set; 
+constraints.txt
+is currently
+“intentionally
+empty.” 
+Keep, clarify roles
+vs 
+pyproject.toml
+SECURITY.md
+file
+(root) 
+Repo security policy,
+OS baseline claims,
+disclosure process.
+Keep, update any
+drift
+LICENSE
+file
+(root) GPLv3 text 
+Code is GPL-3.0-
+only; README claims
+docs/media are CC-
+BY-SA-4.0. 
+Keep
+4
+9
+10
+4
+11
+5
+1
+12
+13
+14
+14
+15
+16
+5
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+Current path
+Type
+Key discovered files/
+subpaths
+Purpose & notes
+Action (summary)
+docs/
+dir
+docs/index.md , docs/
+api-reference.md , 
+docs/governance.md , 
+docs/orchestrator-
+deployment.md , docs/
+security-maintenance-
+audit.md , docs/
+repository-
+restructure-*.md
+The docs already
+include a restructure
+recommendation
+and inventory
+checklist. 
+Keep, update path
+references after
+moves
+infra/
+dir
+infra/docker/docker-
+compose.yml , infra/
+docker/Dockerfile , 
+infra/docker/docker/
+orchestrator_utils.py ,
+infra/docker/docker/
+hostos/hostos.py
+Compose uses
+profiles + env-file;
+Dockerfile currently
+installs pygpt-
+net , creating
+mismatch with
+HueyOS runtime
+expectations. 
+Rewrite Docker
+build surfaces;
+keep orchestrators
+platform/
+dir
+platform/boot/... , 
+platform/packaging/
+dists/... , platform/
+installers/...
+OS/ISO/debian
+artifacts and
+installers are already
+consolidated here.
+Keep, enforce
+“platform-only”
+boundaries
+archives/
+dir
+archives/releases/...
++ checksums 
+Release blobs and
+checksums
+preserved.
+Keep, standardize
+naming and
+manifest
+src/
+dir
+src/huey/... , src/ai-
+os/... , plus large
+“canon”/memory content
+under src/huey/
+memory/...
+Core technical debt
+zone: invalid python
+directory names and
+duplicated/compat
+layers.
+Major restructure
+(P0)
+tests/
+dir
+tests/
+test_api_routes.py , 
+tests/test_cli.py , 
+tests/
+test_hostos_module.py
+etc. 
+Tests assume 
+hueyos.*  imports
+exist. 
+Keep, update
+imports and
+fixtures after
+moves
+17
+18
+19
+20
+21
+22
+23
+22
+7
+24
+25
+26
+24
+7
+27
+28
+29
+30
+31
+2
+32
+3
+33
+34
+3
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+Current path
+Type
+Key discovered files/
+subpaths
+Purpose & notes
+Action (summary)
+apps/
+dir
+apps/huey-gui/
+__init__.py , apps/
+huey-gui/main_ui.py
+“Apps” includes
+another invalid
+python package dir
+name ( huey-gui
+with 
+__init__.py ). 
+Rename to valid
+package dir
+integrations/
+dir
+integrations/pygpt/py-
+gpt/... , 
+integrations/pygpt/
+pygpt-mhp/...
+Large integrated
+upstream(s). Should
+be isolated from
+HueyOS packaging
+and CI scope.
+Keep, sandbox via
+CI excludes
+UNSPECIFIED top-level paths (mentioned in ignore rules or README but not discovered in the sampled
+listings): assets/ , media/ , vendor/ , wiki/ . Treat as “may exist or may be planned” until verified.
+Proposed canonical taxonomy and naming rules
+The repo already includes a strong “recommended top-level layout” in docs/repository-restructure-
+recommendation.md . 
+ This migration plan adopts that structure, with one critical addition: a hard rule
+that  every importable Python package directory must be a valid Python identifier (no hyphens),
+consistent with src -layout packaging expectations. 
+Canonical folder taxonomy
+New canonical
+path
+What belongs here
+Boundaries/
+ownership
+Notes
+src/hueyos/
+Canonical HueyOS
+runtime (importable)
+Runtime
+engineering
+Replace invalid src/ai-os/  with 
+src/hueyos/  (rename) while
+keeping compatibility shims as
+needed. 
+src/huey/
+Compatibility
+namespace ( huey  CLI
+imports, transitional
+bridges)
+Runtime
+engineering
+Keep huey  as a shim layer as long
+as pyproject.toml  scripts expose
+huey = "huey.cli:main" . 
+apps/
+Human-invoked apps
+(GUI, dashboards)
+Product/UI
+If python-importable, directories
+must be valid (e.g., apps/
+huey_gui/ ). 
+35
+36
+37
+38
+39
+22
+40
+2
+1
+37
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+New canonical
+path
+What belongs here
+Boundaries/
+ownership
+Notes
+infra/
+Docker/compose,
+orchestrators, CI helper
+scripts
+Ops/infra
+Compose profiles should remain for
+optional services. 
+platform/
+OS/boot/installers/
+debian artifacts
+Platform/OS
+Debian packaging docs distinguish
+source-vs-binary structure; keep
+platform artifacts out of src/ . 
+docs/
+Specs, governance,
+runbooks, audit reports
+Docs/
+governance
+Update hardcoded paths/ports (e.g.,
+orchestrator doc paths) after moving.
+archives/
+Frozen releases,
+checksums, snapshots
+Release
+engineering
+Enforce “no active development”
+here; only archives and integrity
+manifests. 
+integrations/
+Vendored/upstream
+integrations
+Integrations
+Exclude from HueyOS packaging by
+default; optionally make them Git
+submodules later (UNSPECIFIED). 
+tests/
+Unit/integration tests
+QA
+CI runs pytest + coverage. 
+Naming rules to enforce in the rewrite branch
+Importable python packages: must be valid identifiers (e.g., hueyos , huey_gui ), not
+hyphenated directories. This aligns with standard src -layout expectations and prevents accidental
+import failures. 
+Compose: keep “profiles” for optional components; do not silently enable a service when its profile
+isn’t selected (Compose can error or ignore). 
+Docker images: use Dockerfile best practices (multi-stage builds, least privilege) for production
+images. 
+pyproject entry points: console scripts must point to real callables ( [project.scripts]
+semantics). 
+Ordered migration plan with file-level actions, priorities, and
+commands
+This section is the deployable “do this in order” plan. It aligns with: staging → pre-release (v84.3-pre) →
+freeze → rewrite (already described in repo narrative) while focusing specifically on repository structure
+and import integrity. 
+7
+41
+42
+20
+30
+39
+4
+• 
+40
+• 
+41
+• 
+43
+• 
+44
+5
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+Module connectivity diagram
+flowchart TB
+  subgraph Runtime["Runtime (Python)"]
+    HUEY["src/huey (compat layer)"] --> HUEYOS["src/hueyos (canonical)"]
+    HUEY --> API["huey.api (FastAPI import surface)"]
+    HUEY --> CLI["huey.cli (console script target)"]
+    API --> CORE["hueyos.core (scheduler/resilience/system checks)"]
+    API --> HW["hueyos.hardware (plugins/manager)"]
+    API --> HC["hueyos.honeycomb (storage/monitor/retention)"]
+    API --> NET["hueyos.network (manager)"]
+    API --> PWR["hueyos.power (battery/management)"]
+    API --> UTIL["hueyos.utils (paths/auto_sort)"]
+  end
+  subgraph Ops["Ops surfaces"]
+    CI[".github/workflows/ci.yml"] --> Runtime
+    COMPOSE["infra/docker/docker-compose.yml"] --> API
+    ORCH["infra/docker/docker/{hostos,subos,nanoos}"] --> K8S["kubectl apply 
+manifests"]
+  end
+  subgraph Platform["Platform/OS"]
+    PLAT["platform/{boot,packaging,installers}"] --> Runtime
+    ARCH["archives/releases"] --- PLAT
+  end
+This diagram reflects existing interfaces: CI runs make lint / make coverage  on Python 3.13. 
+ The
+FastAPI surface is documented under  docs/api-reference.md , but its examples assume  uvicorn  
+huey.api:app  and show port 8000 while operational defaults elsewhere are 1995—treat any inconsistent
+port mention as “must reconcile.” 
+Migration steps table
+Step
+Scope
+Action
+type
+Priority
+Effort
+Sample commands (illustrative)
+Ro
+Preflight
+snapshot
+Whole repo
+Archive +
+inventory
+P0
+S
+git checkout main && git 
+pull <br> git tag v84.3-pre-
+freeze-candidate  (name
+UNSPECIFIED)<br> git ls-files 
+> .migration/current-file-
+list.txt
+If a
+res
+re
+<t
+.m
+art
+bra
+4
+18
+6
+12
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+Step
+Scope
+Action
+type
+Priority
+Effort
+Sample commands (illustrative)
+Ro
+Fix invalid
+Python package
+root
+src/ai-os/  → 
+src/hueyos/
+Rename
+P0
+M
+git mv "src/ai-os" src/hueyos
+If i
+rev
+( g
+and
+com
+(be
+Fix invalid app
+package dir
+apps/huey-gui/
+Rename
+P1
+S
+git mv "apps/huey-gui" apps/
+huey_gui
+Rev
+dow
+de
+kee
+REA
+on
+Repair console-
+script entrypoint
+mismatch
+huey-api  entry
+point
+Rewrite
+P0
+M
+In pyproject.toml : change to huey-
+api = "hueyos.api:main" or
+implement def main()  in huey/
+api.py
+If r
+sta
+the
+firs
+pa
+late
+Normalize
+package
+discovery &
+metadata
+pyproject.toml
+Rewrite
+P0
+S
+Ensure 
+[tool.setuptools.packages.find]
+only finds valid packages under src/
+Rev
+com
+if b
+Align Makefile
+coverage/run
+Makefile
+Rewrite
+P0
+S
+Update coverage  to match actual
+packages after rename; run target
+should remain uvicorn ... --host 
+--port  (Uvicorn settings) 
+Rev
+com
+Split Docker
+build targets
+infra/docker/
+Dockerfile
+Split +
+rewrite
+P0
+M
+Create infra/docker/
+Dockerfile.hueyos  (HueyOS) and 
+infra/docker/Dockerfile.pygpt
+(optional); update compose 
+dockerfile:  accordingly 
+Kee
+Do
+in 
+pin
+“leg
+Update
+orchestrator
+docs paths
+docs/
+orchestrator-
+deployment.md
+Rewrite
+P1
+S
+Paths currently show 
+python3 docker/hostos/...  but
+code lives in infra/docker/
+docker/... ; update docs accordingly 
+If d
+con
+pat
+add
+loc
+1
+12
+45
+24
+7
+20
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+Step
+Scope
+Action
+type
+Priority
+Effort
+Sample commands (illustrative)
+Ro
+Move “canon/
+memory TXT”
+out of import
+packages
+src/huey/
+memory/TXT/…
+Move
+P1
+L
+git mv src/huey/memory/TXT docs/
+canon/TXT  (exact destination taxonomy
+UNSPECIFIED) 
+Arc
+str
+ar
+sn
+<d
+mo
+Reduce
+duplicate
+implementations
+src/huey/*  vs 
+src/hueyos/*
+Merge +
+delete
+P1
+L
+Choose canonical modules (prefer 
+hueyos.* ), keep huey.*  thin proxies
+for one cycle (per repo restructure
+inventory) 
+Ro
+me
+pro
+de
+CI path
+tightening
+.github/
+workflows/*
+Rewrite
+P1
+S
+Add CI job: “structure check” (no
+hyphenated importable packages; no 
+src/*  folders with invalid names) 
+Rev
+com
+hot
+late
+Freeze gate
+Whole repo
+Policy
+P0
+S
+Tag + branch protection: “freeze = bugfix/
+security only” (names UNSPECIFIED)
+If f
+bro
+cha
+rol
+Major move scripts and “bulk rename” safety
+Before any bulk  git mv , run  git ls-files  inventory and store it in a versioned directory (e.g.,
+.migration/ ). This is how you satisfy “complete file list” deterministically without relying on manual
+enumeration.
+# One-time inventory snapshot (run from repo root)
+mkdir -p .migration/inventory
+git ls-files > .migration/inventory/git-ls-files.main.txt
+# Optional: categorize for review
+grep '^src/' .migration/inventory/git-ls-files.main.txt > .migration/inventory/
+src-files.txt
+grep '^platform/' .migration/inventory/git-ls-files.main.txt > .migration/
+inventory/platform-files.txt
+This approach is consistent with the repo’s own stated guardrail: “perform moves in small batches with a
+path-mapping changelog.” 
+32
+23
+4
+22
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+CI, packaging, and deployment implications
+Python packaging and entry points
+The project declares console scripts under  [project.scripts] .  
+ Under PEP 621, these map to
+console_scripts  entry points and must reference a valid importable callable. 
+ The repo’s security/
+maintenance audit explicitly flags that huey-api = "huey.api:main"  is currently mismatched because
+src/huey/api.py  is a compatibility wrapper and does not define main . 
+ Therefore, the restructure
+must include one of: - implement a real main()  callable in the target module, or - repoint the script to an
+existing callable that exists after restructure ( hueyos.api:main , path UNSPECIFIED until created).
+Additionally, the repository uses a src  layout (packages under src/ ), which is a recognized packaging
+pattern for avoiding accidental imports from the working directory. 
+ This strengthens the argument that
+src/ai-os/  must be renamed to a valid package directory ( src/hueyos/ ).
+Docker and Compose
+infra/docker/docker-compose.yml  uses Compose profiles ( worker , extras ) and sets defaults via
+an anchor  x-service-defaults .  
+ Compose profiles behave such that services without a matching
+active profile are ignored unless explicitly targeted. 
+ This structure should be preserved, but the build
+target must be corrected because the current infra/docker/Dockerfile  installs and runs pygpt-
+net , not HueyOS. 
+For the rewrite, follow Docker’s published best practices: multi-stage builds, minimizing dependencies in
+final image, and using USER  (non-root) where possible. 
+Debian/platform packaging
+The  platform/  directory already includes boot and packaging artifacts (e.g.,  platform/packaging/
+dists/... ).  
+ Debian’s  policy  docs  distinguish  the  structure  of  Debian  source  packages  (with  a
+debian/  directory controlling builds) from raw binary/package artifacts. 
+ In restructure terms: - keep
+“distribution artifacts” inside platform/  or archives/ , - prevent those artifacts from being treated as
+importable runtime code, CI lint scope, or Python packaging inputs.
+Uvicorn/FastAPI runtime settings
+The  Makefile  runs  uvicorn  huey.api:app  --host  0.0.0.0  --port  1995 .  
+ Uvicorn’s  own
+documentation confirms these CLI settings ( --host , --port , --reload , --workers , env controls)
+are first-class configuration mechanisms. 
+ Any restructure must maintain a stable import path for the
+ASGI app target ( module:app ) and avoid breaking the runtime invocation pattern.
+1
+44
+21
+40
+7
+41
+24
+43
+28
+42
+12
+45
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+Rollback, archival policy, and final verification
+Rollback and archival policy per change class
+Renames/moves ( git mv ): treat each “batch move” as a single commit with an explicit mapping in
+commit message. If a move breaks CI, rollback should be git revert <move-commit>  to restore
+exact file paths, not partial manual edits.
+Structural rewrites (pyproject/entry points, Docker builds): require a paired rollback artifact:
+a tag (e.g., v84.3-pre-freeze-candidate , exact name UNSPECIFIED),
+and a preserved copy of old configs in archives/config-snapshots/<date>/...  (path naming
+UNSPECIFIED).
+Canon and long text archives: never delete outright. Move to archives/  or docs/canon/  and
+keep a manifest file (e.g., archives/canon-snapshots/<date>/MANIFEST.txt , UNSPECIFIED
+exact path). This matches the repo’s doctrine that resets are “audited forks,” not silent amnesia. 
+Final verification checklist
+Category
+Check
+Command / method
+Pass criteria
+Repo
+structure
+No invalid
+importable
+package dirs
+under src/
+python -c "import hueyos; import huey"
+Imports
+succeed
+Entry
+points
+Console
+scripts resolve
+python -c "import importlib; 
+importlib.import_module('huey.cli')"
+No ImportError
+API boot
+Uvicorn can
+boot app
+make run
+Server starts
+Health
+endpoint
+/healthz
+responds
+curl -fsS http://127.0.0.1:1995/healthz
+200 + expected
+JSON (shape
+per docs/tests) 
+CI
+GitHub
+Actions green
+Check CI workflow
+lint  + 
+tests  jobs
+pass 
+Coverage
+Coverage
+doesn’t fail
+due to
+missing pkg
+make coverage
+Coverage
+report
+produced
+Docker
+Compose
+builds correct
+image
+cd infra/docker && docker compose build
+HueyOS image
+builds (not
+pygpt-only)
+• 
+• 
+• 
+• 
+• 
+5
+12
+18
+4
+4
+7
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+Category
+Check
+Command / method
+Pass criteria
+Docs
+Paths/ports
+reflect reality
+manual review of docs/index.md , docs/
+orchestrator-deployment.md , docs/api-
+reference.md
+No
+contradicted
+“how to run”
+instructions
+Security
+gate
+Audit action
+items
+addressed or
+explicitly
+deferred
+docs/security-maintenance-audit.md
+checklist 
+P0 security
+notes tracked
+Acceptance criteria
+The restructure is successful (for the v84.3-pre / freeze bridge) when all of the following are true:
+pyproject.toml  entry points correspond to actual callable targets (PEP 621 requirement for
+scripts) and CI can install pip install -e .[dev]  and run lint/tests. 
+The canonical HueyOS namespace is importable as hueyos  (matching the declared distribution
+name), and the old huey  namespace is either compatible or explicitly documented as transitional. 
+Docker Compose builds and runs the HueyOS runtime image (not an unrelated pygpt-net -only
+image), while preserving Compose profiles behavior. 
+“Platform artifacts” remain clearly partitioned under platform/ / archives/ , consistent with
+Debian packaging concepts of keeping packaging/build system structure separate from application
+runtime code. 
+The migration is reversible via tags + revert commits, and the repo retains continuity-of-record
+(archive snapshots rather than deletions), consistent with the repo’s own reset/continuity doctrine. 
+pyproject.toml
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/pyproject.toml
+__init__.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/src/ai-os/__init__.py
+test_api_routes.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/tests/test_api_routes.py
+ci.yml
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/.github/workflows/ci.yml
+README.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/README.md
+huey.env.example
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/huey.env.example
+17
+20
+18
+21
+• 
+4
+44
+• 
+1
+• 
+7
+41
+• 
+28
+42
+• 
+5
+1
+2
+3
+4
+5
+6
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+docker-compose.yml
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/infra/docker/docker-compose.yml
+https://docs.docker.com/reference/compose-file/profiles/
+https://docs.docker.com/reference/compose-file/profiles/
+codeql.yml
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/.github/workflows/codeql.yml
+dependabot.yml
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/.github/dependabot.yml
+.disk/mkisofs
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/430ebb3daf6bd5b129ffae6e2a6c8a08e08b2331/.disk/mkisofs
+Makefile
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/Makefile
+requirements.txt
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/requirements.txt
+constraints.txt
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/constraints.txt
+SECURITY.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/SECURITY.md
+LICENSE
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/LICENSE
+index.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/docs/index.md
+api-reference.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/docs/api-reference.md
+governance.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/docs/governance.md
+orchestrator-deployment.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/docs/orchestrator-deployment.md
+security-maintenance-audit.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/docs/security-maintenance-audit.md
+repository-restructure-recommendation.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/docs/repository-restructure-recommendation.md
+repository-restructure-inventory.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/docs/repository-restructure-inventory.md
+Dockerfile
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/infra/docker/Dockerfile
+api.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/src/huey/api.py
+7
+8
+41
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+__init__.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/src/huey/__init__.py
+platform/boot/grub/grub/live-theme/theme.txt
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/430ebb3daf6bd5b129ffae6e2a6c8a08e08b2331/platform/boot/
+grub/grub/live-theme/theme.txt
+platform/packaging/dists/forky/Release
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/430ebb3daf6bd5b129ffae6e2a6c8a08e08b2331/platform/
+packaging/dists/forky/Release
+platform/installers/debian/sources.list
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/430ebb3daf6bd5b129ffae6e2a6c8a08e08b2331/platform/
+installers/debian/sources.list
+archives/releases/checksums/sha256sum.txt
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/430ebb3daf6bd5b129ffae6e2a6c8a08e08b2331/archives/
+releases/checksums/sha256sum.txt
+archives/releases/hueyos-6.18.5/6.18.5-hueyos.iso.sha256
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/430ebb3daf6bd5b129ffae6e2a6c8a08e08b2331/archives/
+releases/hueyos-6.18.5/6.18.5-hueyos.iso.sha256
+src/huey/memory/TXT/1) Monkey Head Project [Thesis].txt
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/430ebb3daf6bd5b129ffae6e2a6c8a08e08b2331/src/huey/
+memory/TXT/1)%20Monkey%20Head%20Project%20[Thesis].txt
+test_cli.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/tests/test_cli.py
+test_hostos_module.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/tests/test_hostos_module.py
+apps/huey-gui/__init__.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/430ebb3daf6bd5b129ffae6e2a6c8a08e08b2331/apps/huey-gui/
+__init__.py
+apps/huey-gui/main_ui.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/430ebb3daf6bd5b129ffae6e2a6c8a08e08b2331/apps/huey-gui/
+main_ui.py
+__init__.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/apps/huey-gui/__init__.py
+integrations/pygpt/py-gpt/README.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/430ebb3daf6bd5b129ffae6e2a6c8a08e08b2331/integrations/
+pygpt/py-gpt/README.md
+integrations/pygpt/pygpt-mhp/src/pygpt_net/app.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/430ebb3daf6bd5b129ffae6e2a6c8a08e08b2331/integrations/
+pygpt/pygpt-mhp/src/pygpt_net/app.py
+https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/
+https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/
+https://www.debian.org/doc/debian-policy/ch-source
+https://www.debian.org/doc/debian-policy/ch-source
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+42
+13
+
+------------------------------------------------------------------------
+Page 14
+------------------------------------------------------------------------
+
+https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+https://peps.python.org/pep-0621/
+https://peps.python.org/pep-0621/
+https://www.uvicorn.org/settings/
+https://www.uvicorn.org/settings/
+43
+44
+45
+14

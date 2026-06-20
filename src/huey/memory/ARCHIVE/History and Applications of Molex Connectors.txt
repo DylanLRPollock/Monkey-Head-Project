@@ -1,0 +1,928 @@
+History and Applications of Molex Connectors
+Abstract
+Molex connectors have played a pivotal role in the electronics industry for over half a century. This paper
+presents  a  comprehensive  overview  of  Molex  –  from  the  company’s  origins  in  1938  through  the
+development of its connector technologies – and examines the technical specifications and evolution of
+these connectors over time. We discuss the widespread applications of Molex connectors across domains
+such as robotics, consumer electronics, and the automotive industry, highlighting how their reliability and
+standardization contributed to ubiquity in these fields. We also analyze why certain Molex connector types
+(notably the four-pin power plug in PCs) have attained  legacy status, having been superseded by newer
+standards in some contexts. Diagrams and figures are included to illustrate common Molex connector types
+and their internal structures. Through an expert lens, this paper underscores the historical significance of
+Molex’s innovations in connectivity, and how its connectors continue to impact modern engineering despite
+the emergence of new technologies. All information is cited from reputable sources, and references are
+provided in IEEE format to ensure accuracy and traceability.
+Introduction
+Molex Incorporated is one of the world’s leading manufacturers of electronic connectors, with a product
+portfolio  of  over  100,000  interconnect  products  serving  industries  from  data  communications  and
+consumer electronics to automotive and medical devices
+. Founded in 1938 in Illinois, USA, the
+company has grown over 80+ years into a global supplier and is consistently ranked among the top
+connector  companies  by  annual  revenue
+.  Molex  is  especially  renowned  for  pioneering  the  Molex
+connector – a two-piece pin-and-socket plug introduced in the mid-20th century – which achieved universal
+adoption in personal computers and other electronics
+. Notably, the term “Molex connector” in common
+usage often refers specifically to a 4-pin 5.25″ drive power connector used in PCs, though Molex as a
+company produces a vast range of connector types
+. This paper will clarify this terminology and
+explore the breadth of Molex’s connector innovations.
+We begin with a historical background of the Molex company and the development of its connector
+technology. Next, a technical overview is provided, explaining the specifications of major Molex connector
+families and how they evolved over time. We then delve into key application domains – including robotics,
+consumer electronics, and automotive – to illustrate how Molex connectors are utilized in each, and how
+they became standard solutions in those arenas. In a subsequent section on  Legacy Status, we discuss
+certain Molex connectors that have become legacy interfaces in modern designs, examining the reasons
+behind their decline or replacement in specific contexts. Finally, we conclude with a summary of Molex’s
+enduring impact on connector technology. Throughout, an expert tone is maintained and claims are
+supported with citations from datasheets, industry publications, and historical records.
+1
+2
+1
+3
+4
+5
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+Historical Background
+Molex was established in 1938 by Frederick August Krehbiel as the Molex Products Company, originally
+not as an electronics firm but as a manufacturer of plastic molding compounds and consumer items
+. The company’s very name “Molex” comes from a proprietary plastic material developed by Krehbiel in
+the 1930s – a composite of coal tar pitch, limestone, and asbestos fibers – which was found to be an
+excellent electrical insulator
+. In its early years, Molex used this material to produce household products
+like flower pots, salt shakers, and clock cases
+. By the 1940s, as World War II drove demand for plastics,
+Molex’s insulating material gained attention because it was not subject to wartime rationing (unlike many
+standard plastics)
+. This positioned the company advantageously to explore new product lines in the
+electrical domain.
+Post-war, shifting to connectors: After WWII, under the leadership of Frederick’s son John H. Krehbiel,
+Molex identified a growing market for electrical connectors. The company shifted focus from just molding
+materials to designing interconnection devices, marking a pivotal transition from a materials company to a
+connector company
+. In 1953, Molex launched its first plug-and-receptacle connector line, targeting
+the burgeoning consumer appliance industry
+. These early connectors were low-cost terminal blocks and
+simple pin-and-socket connectors that found success in home appliances such as refrigerators and washing
+machines
+. By 1960, Molex had introduced its first connectors made of nylon (rather than the original
+Molex  plastic),  signifying  its  full  evolution  into  an  electronics  connector  manufacturer
+.  This
+development of nylon plug and receptacle lines in 1960 was critical – nylon’s durability and heat resistance
+made it ideal for the increasingly complex electrical applications of the era.
+Rise of the Molex connector in electronics: Molex’s breakthrough came in the late 1950s and 1960s by
+supplying connectors to the fast-growing consumer electronics market. Notably, Molex developed pin-and-
+socket connector designs for use in color televisions, which were then an emerging technology
+. These
+connectors, designed by John Krehbiel, linked electronic components inside TV sets and were adopted by
+major TV manufacturers like Zenith, RCA, and Magnavox
+.  Figure 1 provides an example of a Molex
+standard  pin-and-socket  connector  assembly  from  that  period,  showing  the  male  and  female  plastic
+housings alongside the removable crimp contact pins.
+Figure 1: Components of a classic Molex pin-and-socket connector (Disk Drive Power Connection System). Shown
+here are a 4-pin Molex connector  male housing (plug) and  female housing (receptacle), corresponding crimp
+terminals (male pin and female socket), and the specialized hand crimp tool used for assembly
+. The pin-and-
+socket design, first patented by Molex in the late 1950s, features cylindrical metal pins that insert into spring-
+metal sockets, all housed in a nylon shell
+. This basic design became a de facto standard for power connectors
+in many electronics.
+By 1962, the demand for Molex’s connectors had grown the business substantially – the company’s annual
+sales exceeded $1 million, driven largely by the widespread use of its connector products in consumer
+electronics
+.  Molex  earned  a  reputation  for  solving  challenging  design  problems  through  unique
+interconnect solutions
+. For example, the company developed  simple PCB connectors and stamped
+circuitry, as well as the aforementioned nylon plugs and receptacles for color TVs
+. In the 1960s and
+70s,  Molex  also  introduced  progressively  smaller  connector  form  factors,  essentially  the  “micro”
+connectors of their day, to keep pace with miniaturization trends in electronics
+. This early emphasis on
+innovation laid the groundwork for Molex to become a leader in connector miniaturization – a trend that
+continues in its product development to this day.
+6
+7
+8
+6
+9
+10
+11
+12
+12
+13
+11
+14
+15
+16
+17
+14
+18
+18
+18
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+Global expansion and growth: As its connector business expanded, Molex grew from a small Illinois
+enterprise into a global company. It opened its first overseas factory in  Yamato City, Japan in 1970,
+allowing it to better serve the rapidly growing Japanese electronics industry
+. In 1972 Molex went public,
+using the infusion of capital to accelerate growth in international markets
+. Through the 1970s and
+1980s,  Molex  further  broadened  its  product  lines  (entering  markets  like  automotive  and  computer
+peripherals) and aggressively expanded manufacturing globally – by the early 1990s Molex operated more
+than 40 plants in 19 countries
+. This global footprint enabled close collaboration with diverse customers
+and contributed to Molex’s emergence as (by 1993) the second-largest connector company worldwide
+(trailing only AMP Incorporated)
+. Key acquisitions also enhanced its capabilities; for instance, in 1980
+Molex acquired Cardell Corporation, a maker of automotive connectors, strengthening Molex’s position in
+the automotive connector market
+.
+21st century developments: In the 2000s, Molex continued to thrive by focusing on high-performance
+connector solutions and niche innovations. The company invested heavily in R&D (routinely over 5% of
+annual  revenue)  to  develop  new  connector  families  for  emerging  needs  such  as  high-speed  data
+communication and mobile devices
+. By 2013, Molex had over 45,000 employees and $3.6 billion in
+annual  revenue
+.  That  year,  the  Koch  Industries  conglomerate  acquired  Molex,  though  Molex
+retained its name and focus on connectors. Today, after more than 80 years, Molex stands as a cornerstone
+in the connector industry. It has built “a legacy of innovation” from its humble start with molded plastics to
+modern high-density, high-speed connectors
+. The historical trajectory of Molex is marked by continuous
+adaptation to new technologies and markets, which is reflected in the wide array of connector types
+bearing the Molex name.
+Technical Overview of Molex Connectors
+Molex connectors encompass a vast range of interconnect types, but many share common design principles
+and have evolved along a few fundamental families. At their core, most Molex connectors are two-piece,
+pin-and-socket systems: one half contains one or more metal pin contacts (often on the male or plug side)
+and the mating half contains corresponding socket contacts (on the female or receptacle side). These
+contacts are typically housed in molded plastic (originally cellulose-based plastic or nylon) shells that
+provide insulation, alignment, and locking features
+. This section outlines the technical characteristics
+and evolution of Molex connectors, from the classic power plugs to modern miniaturized connectors.
+Pin-and-socket  design: The  archetypal  Molex  connector,  as  developed  in  the  late  1950s,  features
+cylindrical spring-metal pins that fit into matching spring-metal sockets
+. Both pins and sockets are
+held in a rectangular insulating housing, and the connectors are usually  polarized/keyed to prevent
+incorrect orientation
+. Early examples like the Molex  0.093-inch series used relatively large diameter
+pins (~2.36 mm) capable of carrying about 8.5 A each
+. These became popular for delivering power in
+electronics due to their robust current capacity and simple crimp termination. Over time, smaller pin sizes
+(such as 0.062″ or 0.084″ diameter) were introduced for lower-current or higher-density needs, with the
+smallest in this family handling around 5 A per pin
+.  Mechanical latching mechanisms were also
+implemented: while some early connectors relied purely on friction fit to hold the halves together, later
+designs added latch tabs or locking ramps to ensure a secure connection that would not accidentally
+unplug
+. For instance, many Molex housings have integrally molded snap latches or require an audible
+“click” on mating, confirming proper engagement.
+19
+20
+21
+21
+22
+23
+24
+25
+26
+27
+17
+17
+28
+29
+29
+30
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+Despite widespread adoption, the classic friction-fit Molex connectors did have known issues. They could be
+difficult to disconnect due to tight fit and lack of a release lever, often requiring significant force to unplug
+.  Additionally,  if  the  female  socket  contacts  lost  tension  or  the  male  pins  were  misaligned,  the
+connection could loosen over time, leading to contact resistance and electrical arcing (visible as browning
+or melting of the nylon housing in severe cases)
+. These issues spurred continuing refinement of
+connector designs by Molex and others, focusing on better locking features and contact stability in later
+generations.
+Common Molex connector families: As electronics diversified, Molex developed numerous connector
+series tailored to different pitches (pin spacings), current ratings, and environments. Some of the most
+significant families include:
+KK™ series (Modular Connectors): The KK series is a family of  low-power board-to-board and
+wire-to-board connectors with a typical pitch of 2.54 mm (0.100″)
+. Introduced in the 1970s,
+Molex KK connectors are often seen as simple plastic housings that accept crimped tin-plated
+terminals; they became a “building block” system that could be configured in various pin counts.
+These are widely used for signal connections on PCBs, in everything from home appliances to
+hobbyist electronics. The popularity of KK connectors led to many compatible clones – for example,
+the ubiquitous 2.54 mm pitch plug and socket pairs found in PC motherboard front-panel headers
+and Arduino-style kits are often Molex KK or compatible designs
+. The KK family has variants
+with friction ramps or latching features to secure the connection
+. Its enduring presence (despite
+newer alternatives) is due to the simplicity and standard 0.1″ spacing that matches PCB grid layouts.
+Mini-Fit  Jr.®  series: This  is  a  family  of  medium-power  connectors with  a  pitch  of  4.20  mm,
+featuring fully isolated rectangular pins and positive locking via latch tabs. Molex’s Mini-Fit Jr.,
+introduced in the 1990s, is notable for being the connector system used in ATX PC power supply
+cables (for example, the 20/24-pin main motherboard power connector is a 24-pin Mini-Fit Jr. plug)
+. Each Mini-Fit Jr. contact can carry up to about 9 A with 16 AWG wire
+, making it suitable
+for delivering substantial power in a relatively compact form factor. The housings are polarized and
+have locking clips to prevent accidental disconnection. In addition to PC power connectors, Mini-Fit Jr.
+and its higher-power cousin Mini-Fit Sr. find use in industrial and automotive systems that require
+rugged power connectors. The widespread adoption of Mini-Fit Jr. in computer hardware (both by
+Molex and equivalent connectors from competitors) underscores how a Molex design became an
+industry standard for modular power delivery
+.
+Disk Drive Power connectors (Molex 8981 series): Among Molex’s most famous products is the 4-
+pin power plug used historically for computer disk drives and peripherals (often just called “the
+Molex connector” by PC enthusiasts). This connector, originating in the late 1970s, has a 5.08 mm
+pitch with 0.093″ diameter contacts providing 5 V and 12 V DC power and ground
+. Interestingly,
+the first versions of this connector used in PCs were based on the  AMP/Tyco Mate-N-Lok series
+introduced in 1963
+. Molex later produced a compatible version (Series 8981, trademarked as
+the  Disk  Drive  Power  Connection  System)  in  1983
+.  The  standard  configuration  is  a  4-pin
+arrangement in a row, with a friction fit (no latch) – a design that proved very reliable for decades of
+computer hardware
+.  Figure 2 shows a close-up of this connector type in use, along with the
+crimp terminals that are inserted into the housing. While robust, this connector lacks modern
+features like hot-swap capability and has largely been phased out of new PC designs (see Legacy
+Status section), yet it remains a hallmark of Molex’s influence on PC architecture.
+31
+32
+• 
+33
+33
+34
+35
+• 
+36
+37
+38
+5
+39
+• 
+40
+41
+42
+43
+44
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+Figure 2: Example of a classic  4-pin Molex peripheral power connector (two-piece pin and socket). The image
+shows a mated connector providing power inside a device, with loose female crimp pins (on the right) that would
+be inserted into the plug housing and male pins in the receptacle on the device side. This connector delivers +5 V
+(red wire) and +12 V (yellow wire) with two ground wires (black)
+. Developed in the 1960s, the 4-pin Molex
+power connector became a standard for disk drives and other peripherals through the 1980s and 1990s
+.
+Micro-Fit 3.0™ series: As the need arose for connectors smaller than Mini-Fit but still capable of
+moderate power (up to ~5 A per circuit), Molex introduced the Micro-Fit family with a 3.00 mm pitch.
+Micro-Fit connectors are high-density, dual-row connectors commonly used in compact PCs, robotics,
+and industrial control for both power and signal. They include features like positive locks and keyed
+housings to avoid mis-mating. For instance, in robotics applications, teams have used Micro-Fit 3.0
+connectors for sensor and actuator wiring because of their balance of size and current capacity
+.
+However,  as  noted  by  practitioners,  proper  crimping  and  seating  of  the  tiny  terminals  can  be
+challenging, prompting exploration of alternatives for reliability
+.
+Microminiature  and  Specialty  connectors: Molex  has  continually  pushed  toward  smaller
+connectors  to  serve  modern  electronics.  Families  like  PicoBlade™ (1.25   mm  pitch)
+ and
+NanoBlade™/MicroBlade are  used  for  low-current  signal  connections  in  consumer  gadgets,
+laptops, and wearables, where space is at a premium. These often employ a friction latch mechanism
+and a two-point contact design to ensure reliability even at miniature scale
+. In high-vibration or
+harsh  environments,  Molex  also  offers  sealed  connectors (e.g.,  ML-XT™,  MX150™)  with  rubber
+grommets and robust housings, and  RF/coaxial connectors for high-frequency signals. The  MX150
+family cited earlier is a sealed automotive connector system with a 1.50 mm blade-type interface,
+supporting up to 22 A and temperatures of 125–150 °C for under-hood applications
+. Another
+modern example is Molex’s SlimStack® board-to-board connectors, which have fine pitches down to
+0.35 mm for connecting printed circuit boards in devices like smartphones; despite their tiny size,
+they include alignment features and even audible click feedback for mating
+.
+Throughout its connector lines, Molex has emphasized compatibility and incremental improvement. Many
+of its newer connectors maintain backward-compatible footprints or mating interfaces with older ones
+(when possible) to ease adoption. The company also provides extensive application tooling – from hand
+crimpers (as in Figure 1) to automated press-fit machines – reflecting the importance of proper termination
+in connector performance. By offering both the connectors and the tools to apply them, Molex helped
+ensure that its connectors could be reliably integrated by manufacturers at scale
+.
+In summary, the technical evolution of Molex connectors has been characterized by: (1) a reduction in size
+(pitch and form factor) without sacrificing mechanical and electrical integrity, (2) improvements in current
+density (more current per pin or per unit area through better materials and designs), (3) enhanced
+mechanical  latching  and  keying features  to  prevent  errors  and  accidental  disconnections,  and  (4)
+specialized variants for  harsh environments (sealed, high-temperature connectors for automotive and
+industrial use). These innovations have enabled Molex to supply interconnect solutions from the largest
+power connectors down to the tiniest microminiature links, cementing the company’s role as a one-stop
+interconnect provider.
+45
+43
+• 
+46
+46
+• 
+47
+47
+48
+49
+50
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+Application Domains of Molex Connectors
+Molex connectors are employed across an exceptionally broad range of industries. Here we detail their
+usage and significance in three key domains –  robotics,  consumer electronics (including computing),
+and  automotive – while noting that they are also prevalent in telecommunications, medical devices,
+aerospace,  and  more.  Each  domain  often  utilizes  specific  Molex  connector  series  optimized  for  that
+environment’s requirements.
+Robotics
+In robotics (encompassing industrial automation robots, mobile robots, and even competitive robotics
+teams), reliability and robustness of electrical connections are critical. Robots typically have numerous
+actuators (motors, servos), sensors, and control boards interconnected by cables – all of which must
+withstand motion, vibration, and sometimes harsh conditions. Molex connectors are a popular choice in
+robotics for both power and signal wiring due to their proven performance.
+For  power  distribution  in  robots,  teams  frequently  use  Molex’s  high-current  connector  families.  For
+example, the  Mini-Fit Sr.™ series (the larger cousin of Mini-Fit Jr.) is often chosen for battery and motor
+controller connections because it can handle heavy gauge wires (12 AWG or larger) and currents well above
+20 A with secure locking
+. One FIRST Robotics Competition team noted using Mini-Fit Sr. for all 12 AWG
+power runs on their robot
+. In the same context, smaller Molex connectors like Micro-Fit 3.0 have been
+used for lower-current sensors and devices
+. These connectors enable modular wiring harnesses –
+sections of the robot can be quickly connected or replaced via plug-in cables rather than soldered joints,
+which is advantageous for maintenance and design flexibility.
+Molex  also  provides  connector  solutions  specifically  targeting  robotics  and  automation.  The  Molex
+Industrial Automation product line includes heavy-duty circular connectors, M12 sensor connectors, and
+the Compact Robotic Connectors (CRC) series for slim actuators
+. In educational robotics (like FIRST),
+Molex has introduced an SL™ series kit – containing standardized SL connectors for PWM signal cables,
+CAN bus connections, etc., along with pre-crimped leads for teams without professional crimp tools
+.
+The SL series is a simple wire-to-wire and wire-to-board connector family with locking housings, well-suited
+for signal wires (often 22–30 AWG) on robot control systems. By providing such kits, Molex has essentially
+helped  standardize  wiring  practices  in  the  educational  robotics  community,  improving  reliability  (e.g.,
+reducing loose or intermittent connections from improper wiring)
+.
+In industrial robotics, connectors must endure continuous motion (robot arms flexing cables) and often
+exposure to oil or dust. Molex addresses these with flexible cable connectors and sealed interfaces. For
+instance,  the  Brad®  line (originating  from  Molex’s  acquisition  of  Woodhead)  offers  rugged  circular
+connectors  and  quick-disconnect  systems  for  industrial  sensors  and  actuators.  Additionally,  Molex’s
+expertise in miniaturization is now aiding  consumer robotics: small home robots or drones benefit from
+micro connectors like PicoBlade that save space and weight while delivering reliable connections
+. As
+robots become more sophisticated, high-speed data connectors (for machine vision cameras, LiDAR, etc.)
+are also needed; Molex supplies solutions here too (e.g., automotive-grade ethernet connectors used in
+autonomous robots). In sum, Molex connectors in robotics range from tiny board-level connectors on
+controllers  to  high-power  battery  plugs  –  all  designed  to  maintain  connectivity  under  the  dynamic
+conditions unique to robotics.
+46
+51
+46
+52
+53
+54
+55
+55
+56
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+Consumer Electronics and Computing
+Molex connectors have long been ubiquitous in consumer electronics – a domain that includes personal
+computing  devices,  home  entertainment  equipment,  appliances,  mobile  devices,  and  more.  Their
+widespread use in this area is due to a combination of standardization, cost-effectiveness, and the vast
+array of form factors Molex offers for different needs.
+In the realm of personal computers, Molex connectors essentially set the standard for internal power and
+board connections for decades. Early microcomputers and PCs in the 1970s–90s employed Molex pin-and-
+socket connectors for power supply interfaces: for example, IBM PCs used two 6-pin Molex connectors (the
+P8/P9 connectors) to link the PSU to the motherboard in the 1980s
+. By the mid-1990s, the ATX standard
+introduced the 20-pin (later 24-pin) main power connector, which – as mentioned – is a Molex Mini-Fit Jr.
+series plug
+. Molex’s connectors were also used for peripheral devices: the 4-pin Molex peripheral
+power connector (Figure 2) became a  de facto standard for hard drives, optical drives, and other
+peripherals across all PC manufacturers
+. Additionally, smaller Berg connectors (another brand, but
+often supplied by Molex) were used for floppy drives’ power. Inside a typical desktop PC from around 2000,
+one would find a dozen Molex-made or Molex-compatible connectors: motherboard headers for USB, front
+panel LEDs (often KK family), fan power connectors, drive power connectors, and so on.
+Molex  connectors  gained  this  universal  adoption  in  PCs  in  part  because  Molex  actively  worked  with
+standards committees (like the Intel ATX specification) to define connector interfaces. For instance, Intel’s
+ATX specification explicitly references Molex part numbers for the main power connector and peripheral
+power connectors as approved reference designs
+. The consistency and reliability of these connectors
+helped ensure interoperability – any ATX power supply could plug into any ATX motherboard because they
+all used the same Molex Mini-Fit Jr. 20/24-pin interface. This standardization was crucial for the growth of
+the PC industry, enabling mix-and-match of components from different vendors.
+Beyond  computers,  in  consumer  electronics  and  appliances,  Molex  connectors  appear  virtually
+everywhere behind the scenes. Televisions and audio equipment often use wire-to-board KK or MicroBlade
+connectors to link power boards, speakers, and control boards. Household appliances (washing machines,
+HVAC systems, kitchen appliances) use a variety of Molex quick-connect harnesses – e.g.,  Molex .093″
+series or MLX series connectors for internal wiring harnesses that carry power to motors and sensors.
+These connectors offer secure latching and the ability to carry higher currents for things like compressor
+motors. The Molex Mini-Fit Jr. series, while famous in PCs, is also found in appliances that need compact
+connectors for moderate power – for example, some refrigerators and air conditioners use 2- to 4-circuit
+Mini-Fit connectors to hook up control boards and fans, taking advantage of their 6–9 A per pin capability
+and reliable locking
+. In high-volume consumer products, cost is a major factor; Molex often provides
+value-engineered connector versions (using cheaper materials or simpler designs) to meet price targets
+while maintaining adequate performance.
+An area of increasing importance is  mobile and handheld devices. As gadgets like smartphones and
+tablets became thinner, traditional wire harness connectors were too bulky, which spurred development of
+micro coaxial connectors, board-to-board mezzanine connectors, and flex cable connectors. Molex has been
+at the forefront here, creating families like SlimStack board-to-board connectors used to connect display
+panels  or  modules  inside  phones
+,  and  Micro  USB/USB-C  connectors (Molex  is  a  supplier  of
+standardized  USB  connectors  for  charging  and  data).  For  wearables  and  IoT  devices,  Molex  micro
+connectors (like micro coax RF connectors and tiny wire-to-board connectors) enable sensors and batteries to
+57
+36
+58
+43
+59
+5
+60
+49
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+be connected in extremely tight spaces
+. The company’s focus on miniaturization (noted in the historical
+section) shows in these products, some of which are nearly invisible yet deliver high-speed signals or
+significant power.
+In  summary,  Molex  connectors  in  consumer  electronics  are  prevalent  because  they  offer  standard
+solutions that manufacturers trust. Whether it is the backplane connector in a plasma TV, the battery
+connector in a smartphone, or the pin header in a home alarm system, using a Molex connector often
+means leveraging decades of refinement. This translates to fewer connection failures in the field and readily
+available mating pairs and crimp tools worldwide. The phrase “when the word Molex is used by the
+computer enthusiast it refers to the standard power connectors found in modern computers”
+ succinctly
+captures how ingrained Molex’s connectors became in consumer tech vernacular.
+Automotive
+The automotive industry presents one of the most demanding environments for connectors: extreme
+temperatures, moisture, vibration, and safety-critical reliability requirements. Automobiles contain dozens
+of electronic control units (ECUs) and hundreds of sensors/actuators, all linked by wiring harnesses. Molex
+has been deeply involved in automotive connectors for many decades, both through its own developments
+and strategic acquisitions (such as Cardell in 1980, and more recently partnerships in autonomous vehicle
+connectors).
+Traditionally, automotive wiring harnesses used a variety of specialized connector systems (often following
+standards like USCAR). Molex’s early involvement in automotive included supplying connectors for basic
+electrical systems and later for the first generations of electronic engine control and infotainment. A
+hallmark of Molex’s automotive connectors is the focus on sealed connectors to prevent ingress of water,
+dirt, and chemicals. For example, Molex MX150™ is a family of sealed and unsealed connectors widely used
+in car engine compartments and lighting systems
+. The MX150 series conforms to USCAR specifications
+and uses a mat-seal design (integral seals) to achieve environmental sealing. It can operate up to 150 °C
+and carry up to 22 A per circuit, making it suitable for applications like fuel injectors or exterior lighting
+.
+Despite being a mature product, MX150 remains a go-to solution in automotive due to its proven field
+performance and standardized interface (it provides roughly 37% space savings over older 1.50 mm pitch
+connectors without sacrificing current handling)
+.
+As vehicles demanded more electronic features, the number of connections skyrocketed, leading to a push
+for  smaller  automotive  connectors to  save  space  and  weight.  Molex  answered  this  with  the  Mini50™
+connector system – the industry’s first automotive-grade connector with a 0.50 mm terminal interface
+(roughly 50% smaller footprint than the traditional 0.64 mm connectors used in many car harnesses)
+.
+Mini50  connectors  are  designed  for  low-current  signals  in  space-constrained  locations,  such  as  in
+infotainment  systems,  advanced  driver-assistance  systems  (ADAS)  sensors,  and  body  electronics.  They  are
+available in both sealed and unsealed versions and meet USCAR requirements, illustrating how Molex
+brought miniaturization to the automotive world without compromising on ruggedness
+. By reducing
+size, car manufacturers can route harnesses through tighter spaces and potentially reduce the weight of
+bundles by including more circuits in a smaller connector housing.
+Additionally, Molex has developed high-speed data connectors for automotive applications. Modern cars
+use Ethernet-based networks, high-speed camera links, etc. Molex’s connectors like  HSAutoLink™ and
+coaxial RF connectors help implement USB, LVDS camera links, and Ethernet in cars with automotive-grade
+61
+62
+48
+48
+63
+64
+64
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+robustness.  For  example,  the  HSAutoLink  family  supports  data  connectivity  (for  infotainment  and
+telematics) and leverages Molex’s background in telecommunications connectors, ruggedized for vehicles.
+As vehicles move towards electrification, high-voltage connectors are also needed (for battery packs, power
+electronics). Molex (along with other major connector companies) produces high-voltage cable connectors
+and busbar connectors that adhere to automotive safety standards for hybrid and electric vehicles.
+One cannot overlook the importance of  legacy support in automotive: Car models typically remain in
+service for decades, and spare parts must be available. As such, the industry tends to stick with proven
+connector designs for long periods. Molex’s legacy connectors (like the older MLX series or CGrid and KK
+series for interior electronics) still appear in new vehicles for this reason. Manufacturers appreciate that a
+mature connector series will have stable supply and known failure rates
+. Moreover, reusing an
+existing connector design means technicians are already trained to assemble and repair them, and OEMs
+have already invested in the crimp tooling and assembly equipment
+. Molex, recognizing this, continues
+to produce and support many of its legacy automotive connectors even as it introduces new ones –
+balancing innovation with backward compatibility.
+In summary, Molex’s role in automotive connectors is characterized by a dual focus: continuous innovation
+(smaller, smarter connectors for next-gen vehicles) and sustaining reliable legacy systems (ensuring that
+existing connector styles remain available and improved incrementally). This strategy helps automakers
+integrate new features without reinventing the wheel for every connector interface, contributing to vehicle
+reliability and manufacturability.
+Legacy Status of Molex Connectors
+Certain Molex connectors, despite their historical prevalence, have become regarded as “legacy” in modern
+contexts – meaning they are largely phased out or used only for backwards compatibility with older
+equipment. This section explores why this occurs, using the example of the 4-pin Molex peripheral power
+connector in PCs as a primary case study, and touches on other scenarios where older Molex connector
+styles are superseded by newer technology.
+The 4-pin Molex power plug in PCs: For decades, the white 4-pin Molex plug (Figure 2) was the standard
+way to supply disk drives and fans with 5 V and 12 V from a PC power supply. However, with the advent of
+the Serial ATA (SATA) interface in the mid-2000s, a new power connector was introduced for hard drives and
+optical drives. The SATA power connector is a 15-pin wafer-style connector that provides additional voltages
+(including 3.3 V) and supports hot-swapping drives
+. This new design, which Molex and other companies
+helped develop, offers a more streamlined form factor and features like staggered pins for hot-plugging. As
+SATA drives became ubiquitous, the older 4-pin Molex plug saw diminishing use. New drives stopped
+including Molex power sockets, favoring the SATA power port exclusively. Consequently, in a modern PC, the
+4-pin Molex connectors from the power supply might only be used for peripherals like case fans, water
+cooling pumps, or LED lighting strips – and even many of those have transitioned to newer connectors or
+direct motherboard connections.
+Today, the 4-pin Molex is widely considered a  legacy connector in the PC world
+. Enthusiast forums
+commonly describe it as “really old” and note that “barely anything still uses Molex” in a contemporary
+computer build
+. Its design limitations (no latch, stiff to unplug, bulky shape) and the lack of a 3.3 V
+supply made it less suitable for newer devices. The SATA power connector’s slim, keyed design is easier to
+insert and cannot be accidentally reversed, improving user experience and safety
+. Moreover, the SATA
+65
+66
+66
+59
+67
+67
+68
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+connector’s additional pins allowed for future features (e.g., device power management signals) that the
+simplistic 4-pin Molex could not support. 
+However, PC power supply manufacturers have continued to include a few Molex outputs on most units,
+primarily for compatibility with older accessories. For instance, even a modern mid-range PSU might come
+with two or three 4-pin Molex plugs and perhaps an adapter for a floppy drive (legacy upon legacy!)
+.
+This is because some users may still need to power an older DVD drive, a fan controller, or other hardware
+that hasn’t updated to SATA power or newer connectors. Adapters are also readily available (e.g., Molex-to-
+SATA power adapters) to bridge old and new: a Molex plug can be repurposed to supply a SATA drive via a
+simple adapter cable
+. This backwards compatibility ensures that the transition away from Molex is
+gradual and does not render existing equipment unusable. But effectively, by the late 2010s, the Molex 4-
+pin power connector joined the ranks of ISA slots and parallel ports as relics of PC history – important to
+remember, but rarely seen in cutting-edge systems.
+Other legacy contexts: Beyond the PC power plug, there are other Molex connectors that have been
+supplanted by new solutions in various fields:
+In electronics hobbyist and small devices, the older 2.54 mm KK-series connectors or larger pitch
+headers are sometimes viewed as legacy as the industry shifts to smaller JST-brand connectors (e.g.,
+JST-PH  2.0   mm  or  JST-SM  series)  for  compactness.  While  Molex  KK  connectors  are  still  used
+(especially  in  prototyping  and  larger  devices),  many  modern  consumer  gadgets  have  no  0.1″
+connectors internally, using micro-coax, flat flex cables, or low-profile micro connectors instead
+.
+Thus KK connectors could be considered legacy in the context of modern mobile device design,
+though they thrive in legacy-compatible realms like PC hobby projects or industrial control panels.
+In  telecommunications  and  networking  equipment,  older  backplane  connector  systems
+(including  some  made  by  Molex)  have  been  replaced  by  high-speed  modular  connectors.  For
+example, legacy telecom systems might have used Molex VMEbus or CompactPCI connectors; today
+these are often replaced by advanced high-speed backplane connectors (some made by Molex, some
+by others like TE Connectivity). The legacy connectors persist only in existing infrastructure, whereas
+new designs adopt connectors that can handle multi-gigabit signals.
+In automotive, as discussed, the presence of legacy connectors is actually intentional for longevity.
+But even there, some formerly standard connectors become legacy when a new standard is agreed
+upon. A case in point is the OBD-II diagnostic connector – not made by Molex specifically, but as a
+standard,  it  succeeded  various  proprietary  diagnostic  connectors  (some  of  which  Molex  did
+manufacture for certain car makers). Once OBD-II became mandated, the older ones became legacy
+and disappeared from new vehicles. Similarly, as vehicles move to  higher-voltage EV systems,
+certain 12V connector styles might be considered legacy for high-power connections, being replaced
+by newly designed high-voltage interlock connectors.
+Why connectors become legacy: In general, a connector becomes “legacy” when  either its technical
+limitations impede new requirements or a superior standardized alternative emerges. In the case of
+the Molex 4-pin: it could not meet the evolving requirements for SATA drives (hot-swap, additional voltage
+rail)
+, and a new standard (SATA) took over with broad industry support. Once widely adopted, the new
+connector rapidly displaced the old in its primary application. Another reason is ergonomics and safety –
+newer connectors often aim to reduce user errors and improve serviceability. The 4-pin Molex’s tendency to
+69
+70
+• 
+71
+• 
+• 
+59
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+stick and the possibility of connecting it incorrectly (there is a chamfer key, but many users forced them in
+misaligned, damaging pins) made it a target for replacement by something more foolproof.
+Yet, it’s worth noting that “legacy” doesn’t mean “vanished.” Molex and other manufacturers continue to
+produce legacy connectors for the aftermarket and replacement parts. Many enthusiasts still use Molex
+connectors in custom projects (for example, to power multiple fans via a single plug, or when refurbishing
+vintage  computers).  In  some  niche  applications,  a  legacy  connector  might  even  be  preferred  simply
+because it’s  familiar, readily available, and time-tested. As an Arrow Electronics article pointed out,
+mature connector products offer advantages like assured long-term availability and widespread distributor
+support
+. Engineers sometimes deliberately choose an older connector for a new design if the cutting-
+edge performance of a new connector isn’t needed; this can reduce cost and leverage existing assembly
+tooling
+. Thus, legacy Molex connectors continue to serve in secondary roles and legacy support
+scenarios, even as design-in for primary roles has moved on.
+In conclusion of this section, Molex’s legacy connectors, particularly the once-omnipresent 4-pin power
+plug, illustrate how technology evolution and standardization cycles work in the connector world. The
+“Molex connector” in the colloquial PC sense has, in a way, become a victim of its own success – so prevalent
+that it needed to be replaced by something more advanced when the time came. Molex as a company,
+however, has often been part of developing those next-generation connectors (like SATA and others),
+ensuring that even as specific products become legacy, the company’s innovations continue to shape the
+state of the art.
+Conclusion
+From its origin as a maker of plastic molding compounds in the 1930s to its status today as a global leader
+in electronic interconnects, Molex’s journey is a remarkable case of technological adaptation and influence.
+The development of Molex’s connector technologies closely parallels the evolution of electronics over the
+past seventy years. In the post-war era, Molex’s introduction of affordable pin-and-socket connectors
+helped enable the expansion of consumer appliances and the nascent electronics industry
+. By the
+late 20th century, Molex connectors had become virtually universal in personal computing, powering the
+world’s PCs and peripherals
+. The technical overview in this paper highlighted how Molex’s connector
+designs evolved – becoming smaller, more capable, and more diverse – to meet the changing needs of
+applications ranging from tiny wearables to heavy-duty automotive systems. Molex’s portfolio today ranges
+from legacy 0.093″ power plugs to cutting-edge 0.35 mm pitch board-to-board connectors, reflecting an
+ongoing commitment to innovation in connectivity.
+The applications surveyed – robotics, consumer electronics, and automotive – demonstrate the breadth of
+scenarios where Molex connectors are employed. In each domain, certain Molex products became standard
+solutions (e.g., Mini-Fit Jr. in PC power supplies, sealed MX150 connectors in cars, modular KK connectors in
+appliances), underscoring how the company’s focus on reliability and ease-of-use resonated with engineers.
+These connectors often form the unseen backbone of electronic systems, quietly ensuring power and
+signals flow correctly. When they perform flawlessly, end-users rarely notice them – which is arguably the
+highest compliment for a connector. At the same time, we have seen that even successful connectors
+eventually face obsolescence as new requirements arise. The 4-pin Molex PC connector’s transition to
+legacy status in the SATA era is a prime example: it highlights how advancements (hot-swap, higher pin
+counts) drive new interface standards, and older ones gracefully retire from the spotlight
+. Molex’s
+strategy of balancing new product development with support for established connectors has allowed for
+65
+72
+50
+14
+12
+3
+59
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+continuity in industries like automotive, where legacy connectors remain in use for many years by necessity
+.
+In  conclusion,  the  history  and  applications  of  Molex  connectors  underscore  a  broader  theme  in
+engineering:  the  importance  of  standardization  coupled  with  innovation.  Molex’s  connectors  became
+ubiquitous by solving practical connectivity problems in a standardized way – be it linking a power supply to
+a motherboard or an airbag sensor to a car’s ECU. By establishing reliable standards, Molex enabled
+different manufacturers’ components to connect seamlessly, which was crucial for the growth of complex
+electronic ecosystems. At the same time, the company did not stagnate; it continually developed new
+connector technologies (often in collaboration with industry consortia) to address emerging needs such as
+higher data rates, smaller form factors, and greater durability. This dual legacy of Molex – as both an
+innovator and a custodian of connector standards – has made its mark on virtually every area of electronics.
+The  legacy  of  Molex  connectors  is  therefore  twofold:  technological (embodied  in  the  connectors
+themselves, many of which became industry benchmarks) and cultural (the very word “Molex” entered the
+lexicon as a synonym for a certain type of connector). Even as specific Molex connectors become legacy, the
+company’s influence persists in the connectors that replace them. Future trends like electric vehicles, 5G
+networks,  and  IoT  devices  will  undoubtedly  demand  new  connector  solutions  –  and  building  on  a
+foundation 80+ years strong, Molex is poised to continue playing a key role in “creating connections” for the
+next generation of innovation
+.
+References
+Connector Supplier (2013): Molex Celebrates 75 Years of Innovation. Connector Supplier Magazine,
+July 15, 2013
+.
+Wikipedia (2024): Molex. In  Wikipedia, The Free Encyclopedia. (Describes the company history and
+products)
+.
+Beal, V. (2021): Molex – Webopedia Definition. Webopedia, May 24, 2021. (Provides historical timeline:
+first connectors in 1953, first nylon connectors in 1960)
+.
+Encyclopedia.com (2006): Molex Inc. In Encyclopedia of Company Histories. (Detailed company history
+by Cengage; notes early connector development for TVs and rapid growth in 1960s)
+.
+Wikipedia (2024): Molex connector. In Wikipedia, The Free Encyclopedia. (Details the design and history
+of the 4-pin Molex KK-type connectors used in PCs)
+.
+Superuser Q&A (2021): Bob (user). Answer to  “PATA connectors looks like MOLEX in my PSU” on
+Superuser.com, Sep. 26, 2021. (Clarifies terminology: “Molex connector” vs AMP/Tyco Mate-N-Lok;
+notes ATX spec part numbers)
+.
+Chief Delphi Robotics Forum (2022): gcschmit (user). Post in “Electrical Connectors for FRC”, Nov. 19,
+2022. (Mentions usage of Molex Mini-Fit Sr., Micro-Fit 3.0, and transition to SL series in robotics
+applications)
+.
+65
+73
+1. 
+1
+18
+2. 
+6
+3
+3. 
+12
+62
+4. 
+14
+15
+5. 
+17
+42
+6. 
+74
+5
+7. 
+46
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+Arrow Electronics (2020): 3 Reasons to Consider Legacy Connectors for Your Design. Arrow.com article,
+Jul. 20, 2020. (Discusses advantages of mature connector solutions like availability, tooling, and
+familiarity, with Molex as an example)
+.
+Arrow/Molex (2020): Legacy Connector Highlights – MX150, Mini50, SlimStack. (As embedded in Arrow
+article above, describing these Molex product families and their specs for automotive and other
+uses)
+.
+Tom’s Hardware Forum (2017): Eggz (user). Answer to “What components do Molex cables plug into?”,
+Nov. 22, 2017. (Describes 4-pin Molex as a legacy plug largely superseded by SATA power in modern
+PC builds)
+.
+Molex Celebrates 75 Years of Innovation | Connector Supplier
+https://connectorsupplier.com/molex-celebrates-75-years-of-innovation-071613/
+Molex Inc | Encyclopedia.com
+https://www.encyclopedia.com/social-sciences-and-law/economics-business-and-labor/businesses-and-occupations/molex-inc
+Molex - Wikipedia
+https://en.wikipedia.org/wiki/Molex
+sata - PATA connectors looks like MOLEX in my power-supply-unit - Super User
+https://superuser.com/questions/1678319/pata-connectors-looks-like-molex-in-my-power-supply-unit
+What is Molex? | Webopedia
+https://www.webopedia.com/definitions/molex/
+File:Molexddpcsfamily.jpg - Wikimedia Commons
+https://commons.wikimedia.org/wiki/File:Molexddpcsfamily.jpg
+Molex connector - Wikipedia
+https://en.wikipedia.org/wiki/Molex_connector
+identification - What type of molex connector is this? - Electrical Engineering Stack Exchange
+https://electronics.stackexchange.com/questions/166879/what-type-of-molex-connector-is-this
+Molex Mini Fit Jr Connectors - Waytek
+https://www.waytekwire.com/catalog/connectors/molex-mini-fit-jr-connectors?
+srsltid=AfmBOoq5OY4YEmQw3sYNtYQQ52LVwlYYp2Bug6VJ3T40stFGvkm2YKL1
+Mini-Fit Jr. Connectors - Molex - DigiKey
+https://www.digikey.com/en/product-highlight/m/molex/mini-fit-jr-connectors
+Electrical Connectors for FRC - FIRST - Chief Delphi
+https://www.chiefdelphi.com/t/electrical-connectors-for-frc/418215
+PicoBlade Connectors - Molex
+https://www.molex.com/en-us/products/connectors/wire-to-board-connectors/picoblade-connectors
+Molex 3 Reasons to Consider Legacy Connectors for Your Design | Arrow.com
+https://www.arrow.com/en/research-and-events/articles/molex-3-reasons-to-consider-legacy-connectors-for-your-design
+8. 
+65
+66
+9. 
+48
+64
+10. 
+75
+67
+1
+18
+20
+24
+27
+71
+2
+7
+8
+9
+10
+11
+14
+15
+19
+21
+22
+23
+3
+6
+25
+26
+4
+5
+36
+40
+74
+12
+13
+62
+16
+17
+28
+29
+30
+31
+32
+39
+41
+42
+43
+44
+45
+57
+58
+59
+60
+70
+33
+34
+35
+37
+38
+46
+51
+52
+47
+48
+49
+50
+63
+64
+65
+66
+72
+13
+
+------------------------------------------------------------------------
+Page 14
+------------------------------------------------------------------------
+
+CRC (Compact Robotic Connectors) I/O Connectors - Molex | Mouser
+https://eu.mouser.com/new/molex/molex-compact-robotic-connectors/
+FIRST Robotics | Molex
+https://www.molex.com/en-us/experience/first-robotics
+Smaller, tougher devices for evolving demands - The Robot Report
+https://www.therobotreport.com/smaller-tougher-devices-for-evolving-demands/
+Learn More About Molex | Molex
+https://www.molex.com/en-us/about
+What components do molex cables plug into? | Tom's Hardware Forum
+https://forums.tomshardware.com/threads/what-components-do-molex-cables-plug-into.3175643/
+Why did the IT industry abandon the Molex in favour of the SATA ...
+https://www.quora.com/Why-did-the-IT-industry-abandon-the-Molex-in-favour-of-the-SATA-power-connector
+53
+54
+55
+56
+61
+73
+67
+69
+75
+68
+14

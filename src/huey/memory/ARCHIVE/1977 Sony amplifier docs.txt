@@ -1,0 +1,331 @@
+Sony TA‑F3A integrated stereo amplifier (1977) –
+documentation report
+Introduction
+Sony’s  TA‑F3A  is  an  integrated  stereo  amplifier  introduced  in  the  late  1970s.  Sony’s  support  site
+acknowledges the model but provides no manuals
+, so our documentation must come from service
+manuals and independent sources. The amplifier was a minor update to the TA‑F3 and combined power
+amplification, pre‑amplification and phono equalisation in one unit. It shared many design features with the
+TA‑F3 while increasing input bandwidth and changing the power supply and dimensions. The table below
+summarises the key specifications and features gathered from the service manual and contemporary
+literature.
+Key specifications
+Parameter
+TA‑F3A specification
+Evidence
+Power output
+(continuous RMS)
+50 W + 50 W (8 Ω both channels driven)
+at 1 kHz and across 20 Hz–20 kHz with
+≤0.5 % total harmonic distortion (THD)
+. DIN 45500 rating (AEP/UK/E)
+52 W + 52 W
+.
+Service manual’s specifications
+page
+.
+Power bandwidth
+(IHF)
+10 Hz–25 kHz
+.
+Manual
+; the Marktplaats listing
+notes a wider frequency response
+of 10 Hz–40 kHz
+, which may be
+marketing rather than IHF
+bandwidth.
+Frequency
+response
+For the TA‑F3A the frequency response
+is 10 Hz–60 kHz (±1 dB) according to
+Hi‑Fi Engine
+. Sellers often state
+10 Hz–40 kHz
+.
+Hi‑Fi Engine spec sheet
+ and
+Marktplaats listing
+.
+Total harmonic
+distortion (THD)
+≤0.5 % at rated output; ≤0.1 % at 1 W
+. Later sources claim THD as low as
+0.08 % for the TA‑F3
+ but the TA‑F3A
+manual emphasises ≤0.5 %
+.
+Manual
+; Audio‑database article
+for TA‑F3
+.
+Damping factor
+30
+ (TA‑F3: 40
+).
+Manual
+.
+1
+2
+3
+2
+2
+2
+2
+4
+5
+4
+5
+4
+2
+6
+2
+2
+6
+2
+6
+2
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+Parameter
+TA‑F3A specification
+Evidence
+Input sensitivity /
+impedance
+MM phono: ~2.5 mV / 47 kΩ; Line (tape,
+tuner, auxiliary): 150 mV (AEP/E models)
+or 200 mV (F3A as noted by Hi‑Fi Engine)
+. Impedance 47 kΩ for phono and
+50 kΩ for line inputs
+.
+Hi‑Fi Engine specification table
+.
+Signal‑to‑noise
+ratio (SNR)
+75 dB for MM phono; 90 dB for line
+inputs
+.
+Marktplaats and Atherstone lists
+.
+Speaker load
+impedance
+8 Ω or 16 Ω
+.
+Marktplaats/Atherstone
+specifications
+.
+Power
+requirements /
+consumption
+US/Canadian model: 120 V AC, 60 Hz,
+85 W; AEP model: 220 V AC, 50/60 Hz,
+210 W; UK model: 240 V AC, 50/60 Hz,
+240 W; E model: 120/220 V AC
+switchable, 50/60 Hz, 210 W
+.
+Manual’s general specifications
+.
+Dimensions
+US/Canadian model: 435 mm × 145 mm
+× 370 mm; AEP/UK/E models: 410 mm
+× 145 mm × 370 mm
+.
+Manual
+.
+Weight
+~10.5 kg (US/Canada) or 9.5 kg (AEP/UK/
+E) net; shipping weight ~12.5 kg or
+11.5 kg
+. Marketplace listings cite
+11.1 kg
+.
+Manual
+; Marktplaats and
+Atherstone adverts
+.
+Semiconductors
+34 transistors and 16 diodes
+.
+Hi‑Fi Engine specification table
+.
+Notes: other sources list the TA‑F3A’s frequency response as 10 Hz–40 kHz or 10 Hz–60 kHz, and THD at
+0.08 %. These discrepancies arise because sellers sometimes combine F3A data with the earlier TA‑F3’s more
+ambitious specifications
+.
+Design and circuit features
+Power amplifier architecture
+Like  the  earlier  TA‑F3,  the  TA‑F3A  employed  a  “pure‑complementary,  all‑stage  direct‑coupled”  power
+amplifier. A dual‑transistor differential amplifier feeds a complementary push–pull output stage using
+bipolar transistors. To reduce inter‑channel crosstalk, the pre‑amp has a  FET buffer power supply—a
+field‑effect transistor follower that isolates the voltage amplifier from the power supply noise
+. The
+amplifier also uses direct coupling (no coupling capacitors) throughout the audio path for improved phase
+response
+.
+5
+5
+5
+4
+7
+4
+7
+4
+4
+2
+2
+2
+2
+2
+4
+7
+2
+4
+7
+5
+5
+6
+6
+6
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+Control circuitry
+Sony emphasised tone neutrality and included a self‑defeat tone control that disengages the tone circuit
+when controls are set to the 0 position, leaving a flat frequency response
+. A muting circuit delays the
+speaker outputs when switching on or off, preventing “pops,” and the service manual describes a protection
+circuit that detects output DC and shuts down the relay for safety
+. A power meter (0.01 W–100 W) on
+the front panel displays output levels; it can be calibrated to show dynamic peaks and assists in matching
+amplifier power to speakers
+. Filter and loudness controls provide low‑frequency boost at low volume
+and high‑frequency attenuation to reduce hiss
+.
+Inputs and connectors
+The TA‑F3A provides inputs for phono (moving‑magnet), tuner, auxiliary and two tape decks (tape 1/2). Input
+sensitivity is around 2.5 mV for phono and 150–200 mV for line, with input impedance of 50 kΩ
+. Both
+RCA and  DIN connectors were supplied, catering to European and Japanese audio standards
+. Users
+could connect two pairs of speakers, but the amplifier’s speaker selector allowed only A or B, not A+B
+simultaneously, to maintain proper impedance.
+Dimensions and construction
+The TA‑F3A’s physical design emphasised sturdy construction. US/Canadian models are wider (435 mm) than
+AEP/UK/E models (410 mm)
+. Advertisements describe a heavy steel case and a large power transformer,
+weighing roughly 10.5 kg
+. Market listings mention that the phono stage uses a large discrete RIAA
+equaliser board that gives a warm, full sound
+. The front panel includes aluminium knobs for volume,
+balance, bass, treble, loudness and muting, along with a headphone jack and two sets of speaker terminals.
+User experiences and reliability
+Positive impressions
+Vintage hi‑fi enthusiasts value the TA‑F3A for its  warm phono stage, dynamic power and robust build
+quality. Sellers on Reverb describe restored units as sounding “warm” with an “effective loudness control”
+and note that after cleaning, replacing worn components and running for eight hours, the amplifier
+exhibited no issues
+. The self‑defeat tone control and muting circuits are praised for delivering a neutral
+sound and preventing pops.
+ The combination of FET input stage and discrete output stage yields a
+smooth sound with sufficient headroom for 8 Ω or 16 Ω speakers
+.
+Caveats and service notes
+An Audiokarma forum discussion notes that one unit was manufactured on 24 July 1978 and warns owners
+not to plug a line‑level source into the phono input, because the phono equaliser can be damaged
+.
+The service manual includes a safety warning: shaded components in the schematic are safety‑critical and
+must be replaced with Sony parts
+. Many units require recap and cleaning due to age; sellers often
+replace electrolytic capacitors and adjust bias to factory specifications
+. The amplifier is not designed for
+4 Ω loads, so running it with low‑impedance speakers may cause overheating.
+6
+2
+6
+6
+5
+4
+2
+2
+8
+8
+8
+9
+4
+10
+2
+8
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+Differences from the TA‑F3 (non‑A)
+The TA‑F3A is often confused with the earlier TA‑F3. The TA‑F3 had a slightly wider frequency response
+(3 Hz–50 kHz), lower rated THD (0.08 %), higher damping factor (40), and weighed 8.7 kg
+. The TA‑F3A
+replaced the F3’s 3 Hz–50 kHz response with a 10 Hz–60 kHz bandwidth and reduced the damping factor to
+30
+. It also increased physical dimensions and weight. Because Sony’s support site lists no manual for
+the TA‑F3A
+, many later sources merge F3 and F3A data, so it is important to differentiate them.
+Conclusion
+Although Sony’s official site no longer provides a user manual for the TA‑F3A
+, service manuals and
+enthusiast resources reveal a well‑engineered integrated amplifier. The TA‑F3A delivers 50 W per channel
+into 8 Ω with a 10 Hz–60 kHz bandwidth and damping factor of 30
+. Its design features—FET buffer
+power supply, complementary direct‑coupled circuitry, self‑defeat tone control and muting circuit—reflect
+Sony’s attempt to combine high fidelity with user convenience
+. Vintage hi‑fi enthusiasts appreciate its
+warm phono stage and robust construction
+, though they caution against overdriving the phono input
+. Overall, the TA‑F3A stands as a notable late‑1970s integrated amplifier that bridges the gap between
+classic discrete transistor designs and the more advanced integrated circuits of the 1980s.
+Manuals for TA-F3A | Sony USA 
+https://www.sony.com/electronics/support/product/ta-f3a/manuals
+sony_ta-f3a.pdf_2.png (703×360)
+https://elektrotanya.com/PREVIEWS/63463243/23432455/sony/sony_ta-f3a.pdf_2.png
+≥ Sony TA-F3A versterker (1977-1979) — Versterkers en Receivers — Marktplaats
+https://www.marktplaats.nl/v/audio-tv-en-foto/versterkers-en-receivers/m2291368565-sony-ta-f3a-versterker-1977-1979
+Sony TA-F3 Integrated Stereo Amplifier Manual | HiFi Engine
+https://www.hifiengine.com/manual_library/sony/ta-f3.shtml
+SONY TA-F3 Specifications SONY
+https://audio-database.com/SONY-ESPRIT/amp/ta-f3.html
+Sony TA-F3A + ST-A3L (Sold) | My Site
+https://www.atherstone-audio.co.uk/product-page/sony-ta-f3a-st-a3l-amplifier-tuner
+Sony TA-F3A Stereo Amplifier/ Total 100 Watts/ Fully Serviced & Tested / Excellent Condition / Free
+Shipping | Reverb
+https://reverb.com/item/69399571-sony-ta-f3a-stereo-amplifier-total-100-watts-fully-serviced-tested-excellent-condition-free-
+shipping
+Sony TA-F3A: "Restoring" Something I Shouldn't Have Bought | Audiokarma Home Audio Stereo
+Discussion Forums
+https://audiokarma.org/forums/index.php
+6
+5
+1
+1
+2
+5
+6
+8
+10
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+4

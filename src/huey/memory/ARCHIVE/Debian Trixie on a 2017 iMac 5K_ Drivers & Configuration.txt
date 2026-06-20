@@ -1,0 +1,507 @@
+Debian Trixie on a 2017 iMac 5K: Drivers &
+Configuration
+Display & Graphics: Retina 5K and AMD Radeon Pro
+Retina 5K Resolution & Scaling: The iMac’s 27″ 5K panel (5120×2880) can be tricky on Linux. By default,
+you may only see lower resolutions (like 2560×1440 or 3840×2160) because the internal display is actually
+treated as a dual-tiled monitor in hardware. Even Windows in Boot Camp doesn’t easily achieve full 5K
+without Apple’s drivers
+. Linux support for the tiled 5K is limited – the AMD GPU driver sometimes
+fails to drive the native 5K mode reliably (screen corruption or blank output can occur)
+. A common
+workaround is to run at 2560×1440 with 2× HiDPI scaling, which effectively gives a “Retina” experience with
+sharp text. In the MATE desktop, enable HiDPI mode (e.g. via MATE Tweak or Appearance settings) to scale
+the UI by 2×
+. This makes the desktop comfortable to use on the high-DPI screen. Fractional scaling (e.g.
+1.5×) isn’t directly available in MATE’s settings (only 100% or 200%), so 200% is recommended for a true
+Retina look.  If  you  attempt  to force 5120×2880  and  encounter problems, you  can  explicitly limit the
+resolution to 2560×1440@60Hz in GRUB’s kernel parameters (e.g.  video=2560x1440@60 ) to avoid the
+GPU driving the unstable 5K mode
+.
+AMD Radeon GPU (Radeon Pro 570/575/580): These Polaris-family GPUs are well-supported by the open-
+source AMDGPU driver included in the kernel
+. To get full 2D/3D acceleration and proper high-resolution
+output, you must install the proprietary firmware blobs for AMD cards. On Debian, enable the “non-free-
+firmware” component in apt sources and install the package firmware-amd-graphics
+. Without this
+firmware, the GPU may boot in VESA mode or suffer poor performance
+. Also ensure Mesa drivers and
+X11 drivers are installed (Debian’s xserver-xorg-video-amdgpu , libgl1-mesa-dri , etc., but these
+are usually present by default)
+. The open driver is sufficient for gaming, compositing, and general
+use. Debian Trixie’s kernel and Mesa will support the Radeon Pro 5xx series out of the box – no need for
+AMD’s legacy fglrx or even AMDGPU-Pro unless you have a specific use-case. If you ever require AMD’s
+proprietary stack (AMDGPU-Pro OpenGL/Vulkan), it can be installed manually, but for most users the open
+stack is recommended. 
+External Displays: If you connect external monitors via Thunderbolt/DisplayPort, the AMDGPU driver
+should handle them. Keep in mind the 2017 iMac’s GPU can drive additional displays, but driving another 5K
+monitor might be limited by bandwidth. Standard 4K monitors should work fine with appropriate scaling.
+1
+2
+3
+4
+3
+5
+6
+7
+8
+9
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+Wi-Fi (Broadcom) & Bluetooth
+Broadcom Wi-Fi: The 2017 iMac uses a Broadcom wireless chipset (Apple’s “AirPort” card, likely a BCM4360-
+series or BCM43602 802.11ac device). Out of the box, Debian won’t have a driver for this because Broadcom
+chips often require proprietary driver or firmware. There are two driver options:
+Broadcom-STA (wl) Driver: This is Broadcom’s proprietary Linux driver, which supports many Apple
+Broadcom chipsets (including BCM4360)
+. On Debian, it’s provided by the package 
+broadcom-sta-dkms  (in the non-free section). After enabling non-free, install it with apt; this
+DKMS module builds the wl.ko  driver and blacklists conflicting open-source drivers
+. For
+example: 
+sudo apt update
+sudo apt install broadcom-sta-dkms linux-headers-$(uname -r)
+This will compile and insert the Broadcom wl  module (you may need to reboot or manually modprobe 
+wl  after  installation)
+.  The  STA  driver  should  make  the  iMac’s  Wi-Fi  interface  (e.g.  wlan0 )
+functional. Be aware of known issues – for instance, the Broadcom STA driver can have trouble with WPA3
+networks
+ (fallback to WPA2 if needed).
+Open-Source brcmfmac Driver: Newer Broadcom chips (like BCM43602) are supported by the
+kernel’s brcmfmac  module if the correct firmware is provided. Debian’s firmware-brcm80211
+package supplies these firmware blobs
+. In many cases, installing firmware-brcm80211  and
+rebooting will allow the brcmfmac driver to handle the Wi-Fi. The open driver is preferred by some
+distributions (for example, the T2 Mac/Linux community explicitly recommends against using wl  on
+newer Macs in favor of brcmfmac with firmware
+). If you go this route, ensure any Broadcom STA/
+wl driver is removed or blacklisted to avoid conflicts. 
+In summary,  enable Debian’s non-free-firmware and install the Broadcom Wi-Fi firmware package at
+minimum. If the Wi-Fi still isn’t working, use the STA driver. Once the correct driver+firmware is in place, the
+wireless should work normally (you can then configure SSIDs as usual). Tip: If you have no network after
+install, connect via Ethernet temporarily – Debian’s update-manager  or Additional Drivers  tool (on
+Ubuntu/Mint) can detect the Broadcom and offer to install the driver automatically over Ethernet
+.
+Bluetooth: The iMac’s Bluetooth is part of the same Broadcom module (combo Wi-Fi/Bluetooth card). It is
+supported via the kernel’s  btusb  driver. Like the Wi-Fi, it likely needs a Broadcom firmware file to be
+loaded  for  full  functionality  (these  .hcd  firmware  files  are  also  included  in  Debian’s  firmware-
+brcm80211 ). After installing the firmware package, the Bluetooth adapter should be recognized by BlueZ.
+In  practice,  Bluetooth  on  iMac  is  usually  plug-and-play  once  firmware  is  present –  you  can  check
+dmesg | grep -i bluetooth  to see if it loaded firmware. No proprietary BT driver is needed. 
+Special notes: On first boot, you’ll need a USB keyboard/mouse to set things up if your Apple Magic
+Keyboard/Mouse aren’t paired yet. Once the Bluetooth is up, you can pair your Apple peripherals. Also,
+Bluetooth audio (A2DP headsets, etc.) will work via BlueZ/PulseAudio (or PipeWire) as on any Linux PC.
+• 
+10
+11
+12
+13
+14
+15
+16
+• 
+17
+18
+19
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+Audio: Internal Speakers, Headphone Jack & Mic (Cirrus Logic
+CS8409)
+Audio support on this iMac requires special attention. The Cirrus Logic CS8409 audio codec (with Apple’s
+custom amplifiers) is not fully supported by the stock kernel’s HDA driver. Out of the box, you’ll likely see
+“Dummy Output” with no sound from speakers or headphone jack. This is a known issue on 2016–2019 era
+Macs. The Linux kernel did introduce a basic codec driver ( snd_hda_codec_cs8409 ), but it doesn’t
+initialize the iMac’s audio properly (hence no output)
+. To get audio working, you’ll need to install a
+community-developed driver/patch for the Cirrus 8409 codec:
+One popular solution is the open-source project snd_hda_macbookpro  by developer Davidjo (and
+variants by egorenar). This is an out-of-tree kernel module specifically for Macs with the CS8409 +
+Apple amp setup
+. It programs the codec and amps correctly for sound output. Users have
+reported success compiling and using this on iMacs
+. There is even a Debian/Ubuntu DKMS
+package in circulation (e.g. on Linux Mint forums) to make installation easier. 
+How to install the audio driver: The general steps are: download the source (for example, clone the
+GitHub repo egorenar/snd-hda-codec-cs8409 or davidjo/snd_hda_macbookpro), compile it against your
+current kernel, and install the module. For instance, one can do:
+git clone https://github.com/egorenar/snd-hda-codec-cs8409.git
+cd snd-hda-codec-cs8409
+make
+sudo make install
+reboot
+After reboot, the new codec driver should take over. Indeed, users confirm that after installing this driver,
+analog sound output works on the iMac27 (sound comes from internal speakers and headphone jack)
+. Debian Trixie’s kernel might include an incomplete CS8409 driver, so adding this ensures full support. 
+Internal Microphone: Unfortunately, microphone support remains problematic. The CS8409 driver from
+the community is still output-focused – capturing from the internal mic is either very quiet or not wired up
+fully
+. In practice, many users find the iMac’s built-in mic does not work reliably on Linux
+. You may
+need to use an external microphone or a Bluetooth headset if you require input. (Some have had minor
+success by boosting the capture volume, but the quality is low.) 
+Volume Keys and Outputs: Once sound is working, you’ll use the standard ALSA/PulseAudio controls. The
+iMac has a 4-speaker system (left/right tweeters and woofers); the custom driver presents this as a normal
+stereo output but actually drives all speakers
+. Use the “Analog Stereo” output profile in PulseAudio
+. The headphone jack should automute speakers when plugged in. If you have the Apple USB-C to
+3.5mm adapter or other devices, those use standard USB audio drivers. The volume/media keys on an
+Apple keyboard should adjust audio via GNOME/MATE as usual (if not, you can map them). 
+20
+• 
+21
+22
+23
+24
+23
+24
+25
+22
+26
+27
+28
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+Note: Keep the custom audio module source handy – if you update your kernel, you may need to recompile
+or reinstall the module (DKMS can automate this). There is hope that upstream Linux will merge full CS8409
+support, but until then this is the way to get sound.
+Webcam (FaceTime HD Camera)
+The 2017 iMac’s built-in webcam (often labeled “FaceTime HD”) is not plug-and-play with Linux – it uses a
+proprietary Broadcom controller (internal PCIe) that doesn’t have a native kernel driver
+. Out of the box,
+your iMac’s camera will not be detected (e.g. ls /dev/video*  won’t show it). But don’t worry: the open-
+source  community  has  provided  a  solution  in  the  form  of  the  facetimehd driver.  This  is  a  reverse-
+engineered driver for the Broadcom 1570 chipset found in Macs
+. 
+Installation of Webcam Driver: Debian might have a DKMS package ( facetimehd-dkms ) in non-free,
+but if not, you can build it manually. The process involves two parts:
+Firmware: First, obtain the firmware for the camera. There’s a utility on GitHub (patjak’s facetimehd-
+firmware repo) that extracts the firmware blob from Apple’s BootCamp driver. Running make && 
+sudo make install  in that repo will install a file (e.g. /lib/firmware/facetimehd.bin ). This
+firmware is required for the device to operate.
+Kernel Module: Next, compile the driver module. Clone the  bcwc_pcie project by Patjak (or Xorx),
+then run make && sudo make install . This builds the facetimehd.ko  module and installs it
+to your kernel modules. Load it with sudo modprobe facetimehd . 
+After these steps, the FaceTime HD camera should be recognized by the system
+. You can verify with
+dmesg | grep facetimehd  (it should indicate firmware loaded and camera ready)
+. Testing is easy:
+for example, install mpv  or use ffplay  to open /dev/video0 , or use Cheese/Kamoso – you should
+see the webcam feed
+.
+Keep in mind this driver is out-of-tree (not in the official kernel), so future kernel updates might require re-
+building it. It’s a good idea to script the installation or use DKMS if available. Once set up, however, the
+iMac’s webcam works well for video calls, etc., just like on macOS. 
+(Side note: “iSight” vs FaceTime HD – older pre-2010 Macs had a USB iSight camera that was supported in kernel;
+the iMac 2017’s camera is the newer Broadcom which needs this special driver. So, this is a known hurdle on
+modern Intel Macs
+.)
+Power Management (Sleep, Fans, Brightness, etc.)
+Sleep/Suspend: Basic ACPI suspend does work on the iMac, but there are some caveats. Since this model
+lacks the Apple T2 chip, it uses standard ACPI S3 sleep (suspend-to-RAM). You can suspend the system via
+the desktop or systemctl suspend , and it should enter a low-power state and blink the power LED as
+usual. However, a known issue on some iMacs is the so-called “sleep of death” or spontaneous reboot on
+resume. For example, users have observed that after one successful sleep, the next attempt causes a reboot
+instead of a proper wake
+. This appears to be a bug triggered by certain drivers (possibly Bluetooth or
+GPU re-init). If you encounter this, one workaround is to disable problematic devices before suspend (for
+29
+30
+31
+1. 
+2. 
+32
+33
+30
+34
+29
+35
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+instance, some have had to unload the Broadcom wifi or USB controllers). In general, test suspend/resume
+thoroughly: if it’s unstable, you might opt to disable automatic sleep and just shut down when not in use, or
+try  kernel  parameters  (e.g.  mem_sleep_default=deep  which  ensures  S3  is  used).  Check  community
+forums for “iMac suspend reboot” for any emerging fixes – it’s a known quirk
+.
+Hibernate: The iMac has plenty of RAM and a fast SSD; hibernation (suspend-to-disk) is less commonly used
+and would require swap space setup. It’s typically not configured by default on Debian. If suspend is
+unreliable, you could configure hibernate, but on desktops it’s usually unnecessary.
+Fan & Thermal Management: The iMac’s cooling is controlled by Apple’s SMC (System Management
+Controller). By default, the firmware sets fan speeds automatically based on temperature sensors, even
+under Linux. The kernel’s  applesmc  module will load to expose those sensors (you can see temps/fan
+RPM via sensors  command once you install lm-sensors ). Usually, you don’t need manual fan control
+– the system will ramp up fans to protect itself. Some users, however, prefer to fine-tune fan behavior (to
+run cooler or quieter). Utilities like macfanctld  or mbpfan  can be used for this. These daemons read
+Apple’s sensors and adjust fan RPM via the applesmc interface
+. They’re not strictly necessary, but are
+available if you want custom fan curves. In most cases, the default SMC control keeps the iMac adequately
+cooled (just note that Linux might not aggressively boost fans, potentially running warmer but still within
+safe range; a fan daemon can make it more “aggressive” if desired
+).
+Power Consumption: On a desktop, this is less of a concern than on a laptop. The iMac will not significantly
+downclock or save power beyond what the CPU and GPU drivers naturally do. Still, you have full support for
+CPU  frequency  scaling  (Intel  P-state  driver),  and  the  Radeon  GPU  will  use  DPM  (Dynamic  Power
+Management) to clock down when idle. Tools like tlp  are mainly for laptops and aren’t needed here. 
+Backlight Brightness: Adjusting the screen brightness on an all-in-one desktop isn’t as straightforward as
+on laptops. The iMac’s LCD backlight may be controlled via DDC or a custom Apple mechanism. The usual
+laptop brightness keys (F1/F2 on an Apple keyboard) might not work by default. You can adjust brightness
+in a few ways: - Via software: using  xrandr --brightness  (which is just gamma scaling – not true
+backlight control, but an option). - Via DDC: some have had success using a tool like ddcutil  to send DDC
+commands to adjust the backlight on external monitors; it  might work on the iMac’s internal display if
+exposed. - There is an unofficial utility displaybrightness  that interfaces with Macs’ brightness. Also,
+certain desktop environments (KDE, etc.) might have support through the light  utility or ACPI. 
+Make  sure  the  kernel  module  apple_bl  is  loaded  –  it  sometimes  provides  an  interface  for  Apple
+backlight. Check if  /sys/class/backlight/apple_backlight/  exists; if so, you can echo values to
+brightness . If not, you may simply rely on the panel’s auto brightness (though iMacs don’t have ambient
+light sensors like MacBooks do). In short, brightness control may require a bit of tinkering, but since iMac
+screens are usually set at a comfortable level or adjustable via GUI sliders, it’s manageable.
+Other Devices: The iMac’s USB ports, Thunderbolt 3 ports, SD card reader, and ethernet should all work
+with standard drivers. Ethernet is Broadcom as well, but that one is usually supported by the open tg3  or
+bnx2x  driver (just ensure you installed firmware-misc-nonfree  if needed for Ethernet firmware). The
+SD card reader in iMacs is typically USB-based (Realtek), which works with the rtsx  driver. 
+35
+36
+37
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+EFI and Booting: Since you’re doing a dedicated Linux install, note that the iMac uses UEFI. Debian Trixie
+should install in UEFI mode without issues. The GRUB bootloader will reside in the EFI partition. One tip:
+keep the Apple EFI firmware up-to-date (if you had macOS, it would update through OS upgrades – if not,
+consider  temporarily  reinstalling  macOS  to  get  firmware  updates  or  use  Apple’s  Firmware  Update
+packages). Modern Apple firmware is generally fine with Linux, but updated firmware can improve things
+like Thunderbolt compatibility or fix boot quirks.
+Proprietary Drivers vs Open Source – Summary
+To summarize the driver situation for this iMac:
+AMD GPU: Use open-source amdgpu driver + non-free firmware package
+. (No need for a
+proprietary driver; AMD’s open driver is excellent and fully accelerated on this hardware.)
+Wi-Fi: Likely needs a proprietary Broadcom driver or at least proprietary firmware. Install either 
+broadcom-sta-dkms  (wl driver)
+or the firmware-brcm80211  package to use the open
+brcmfmac driver
+. This is the one area where you almost certainly need non-free software for full
+functionality.
+Bluetooth: Uses the kernel’s open driver (btusb) but requires firmware (provided by the same
+Broadcom firmware package). No separate proprietary driver needed.
+Audio: Community “out-of-tree” driver required (since the open driver in kernel is incomplete).
+This is open-source but not included by default. You’ll compile and install it manually (or via DKMS
+from a community repository)
+. No official proprietary driver exists for the Cirrus codec; the
+solution comes from reverse-engineered open code.
+Camera: Open-source driver (facetimehd) required, plus proprietary firmware extracted from
+Apple’s files
+. All user-space, as Apple doesn’t provide a Linux driver. After installation, it’s fully
+functional.
+Others (USB, etc.): All use open-source kernel drivers (no action needed).
+Finally, check community resources specific to Linux on Mac. The Arch Linux Wiki’s Apple section and the
+t2linux project (though focused on T2 Macs) have useful tips for iMac19,1 which are applicable to iMac18,3
+(2017 model) as well. Additionally, threads on forums (Ubuntu, Mint, Arch) about iMac 5K installs contain
+troubleshooting gems for this hardware. For example, users have shared patched kernel modules and
+config tweaks (like the audio driver and suspend quirks)
+. Leveraging these community solutions will
+save you time.
+Known Quirks Recap:
+Expect to spend some time getting audio working (compiling the driver). Internal mic might remain
+an issue
+.
+The first boot post-install might have no Wi-Fi – prepare by having Ethernet or the driver packages
+ready (as noted, Debian can load Broadcom drivers if it detects them and you allow non-free during
+install).
+The Retina display will work, but likely at a scaled resolution. Full 5K tiled mode is an edge-case not
+fully solved in Linux – but 2560×1440 HiDPI is gorgeous and practical.
+Suspend may not be 100% reliable; test it, and consider disabling auto-suspend if it misbehaves to
+avoid data loss on resume issues
+.
+• 
+6
+• 
+14
+17
+• 
+• 
+38
+39
+• 
+31
+40
+• 
+23
+35
+• 
+26
+• 
+• 
+• 
+35
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+Bluetooth should be fine for peripherals; if you have issues pairing the Apple Magic Mouse/
+Keyboard, consider using a USB connection or re-pair in macOS first (they can remember pairing for
+use in Linux in some cases).
+With the above drivers, firmware, and tweaks in place, Debian Trixie should run  smoothly on the 2017
+iMac 5K, delivering full functionality. Many users have successfully turned these iMacs into powerful Linux
+workstations
+,  so  you’ll  be  in  good  company.  Good  luck,  and  enjoy  your  high-resolution  Linux
+desktop on Apple hardware!
+Sources & References:
+Debian Wiki – AMD Graphics Driver Setup
+ (firmware requirement for amdgpu) 
+ArchWiki – Notes on iMac 5K resolution issues
+ (suggesting 1440p as workaround) 
+Ubuntu MATE Community – HiDPI Scaling in MATE
+Debian Wiki – Broadcom Wi-Fi (wl driver)
+; brcmfmac firmware
+Reddit r/pop_os – User tips for Linux on Mac (mentions Wi-Fi, BT, mic issues)
+LinuxQuestions forum – Solving iMac (Cirrus CS8409) audio with custom driver
+Arch Linux Forum – iMac17,1 audio fix using egorenar’s CS8409 driver
+GitHub (davidjo’s repo) – Notes on Cirrus driver capabilities
+Andrea Fortuna’s Blog – FaceTimeHD webcam on Debian (explains driver & firmware)
+AskUbuntu – iMac suspend issue description
+ (suspend causing reboot) 
+The Linux Shop Blog – Linux on iMac 2017 (hardware overview and challenges)
+running ubuntu on the 5k imac - Apple Community
+https://discussions.apple.com/thread/6626315
+Laptop/Apple - ArchWiki
+https://wiki.archlinux.org/title/Laptop/Apple
+Screen scaling on high resolution display : r/UbuntuMATE - Reddit
+https://www.reddit.com/r/UbuntuMATE/comments/chacsk/screen_scaling_on_high_resolution_display/
+Linux Operating System for Your iMac Mid 2017 | Linux DVD Shop - UK Linux Shop supplying
+Linux on CD, DVD and USB delivering to the UK and worldwide with 24hr dispatch.
+https://thelinuxshop.co.uk/linux-operating-system-for-your-imac-mid-2017-p-825.html
+AtiHowTo - Debian Wiki
+https://wiki.debian.org/AtiHowTo
+wl - Debian Wiki
+https://wiki.debian.org/wl
+brcm80211 - Debian Wiki
+https://wiki.debian.org/brcm80211
+Wi-Fi and Bluetooth - t2linux wiki
+https://wiki.t2linux.org/guides/wifi-bluetooth/
+Completely Replacing MacOS with Pop! OS on an 2017 iMac? : r/pop_os
+https://www.reddit.com/r/pop_os/comments/17ncox0/completely_replacing_macos_with_pop_os_on_an_2017/
+• 
+41
+5
+• 
+6
+7
+• 
+3
+• 
+4
+• 
+14
+13
+17
+• 
+26
+• 
+38
+39
+• 
+23
+24
+• 
+42
+22
+• 
+31
+40
+• 
+35
+• 
+5
+43
+1
+2
+3
+4
+5
+41
+43
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+26
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+Audio Card Cirrus Logic CS8409 on Ubuntu 21.10 iMac19,2 not ...
+https://askubuntu.com/questions/1369422/audio-card-cirrus-logic-cs8409-on-ubuntu-21-10-imac19-2-not-recognized
+GitHub - davidjo/snd_hda_macbookpro: Kernel audio driver for Macs with 8409 HDA
+chip + MAX98706/SSM3515 amps
+https://github.com/davidjo/snd_hda_macbookpro
+No sound 27"iMac Radeon RX 470/480 / 570/580/590] DigitalStereo (HDMI) / Newbie Corner / Arch
+Linux Forums
+https://bbs.archlinux.org/viewtopic.php?id=273816
+From Faceless to FaceTime: installing webcam drivers on a Debian-powered MacBook
+Air | Andrea Fortuna
+https://andreafortuna.org/2024/08/24/from-faceless-to-facetime-installing-webcam-drivers-on-a-debian-powered-macbook-air
+[Debian/Ubuntu] FacetimeHD Webcam Driver | GBAtemp.net
+https://gbatemp.net/threads/debian-ubuntu-facetimehd-webcam-driver.584652/
+mac - Ubuntu on iMac (2019 - 18,3) Crashes on Suspend - Ask Ubuntu
+https://askubuntu.com/questions/1224166/ubuntu-on-imac-2019-18-3-crashes-on-suspend
+linux-on-mac/mbpfan: A simple daemon to control fan ... - GitHub
+https://github.com/linux-on-mac/mbpfan
+Is macfanctld or mbpfan still needed for Mac fan support? - Reddit
+https://www.reddit.com/r/linux_on_mac/comments/16tottk/is_macfanctld_or_mbpfan_still_needed_for_mac_fan/
+Audio in 2019 iMac, Cirrus Logic CS8409 sound card [SOLVED]
+https://www.linuxquestions.org/questions/slackware-14/audio-in-2019-imac-cirrus-logic-cs8409-sound-card-
+%5Bsolved%5D-4175740788/
+20
+21
+22
+25
+27
+28
+42
+23
+24
+29
+31
+32
+33
+34
+40
+30
+35
+36
+37
+38
+39
+8

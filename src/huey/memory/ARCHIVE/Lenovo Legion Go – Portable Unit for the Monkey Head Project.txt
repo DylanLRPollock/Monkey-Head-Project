@@ -1,0 +1,471 @@
+Lenovo Legion Go – Portable Unit for the Monkey
+Head Project
+The Lenovo Legion Go is a handheld gaming PC that Lenovo introduced as a direct competitor to devices
+like the Steam Deck and Asus ROG Ally. It’s essentially a full Windows 11 computer in a portable console
+form factor, and in the context of the Monkey Head Project, it will serve as a flexible, modular "Huey" unit
+– i.e. a portable assistant on the go. What makes the Legion Go particularly notable (besides its powerful
+internals) is its unique detachable controller design, which adds versatility in how it can be used within
+the project. Below, we break down the Legion Go’s key specifications, features, and how it can be integrated
+and optimized for performance in the project’s use-case.
+Key Hardware Specifications and Features
+Processor & Graphics: AMD Ryzen Z1 Extreme 8-core/16-thread APU (up to ~5.1 GHz boost) with 12
+RDNA 3 graphics compute units (integrated GPU up to 2.7 GHz)
+. This is the same high-end chip
+used in the ROG Ally, offering comparable performance to a mid-range gaming PC in handheld form
+. (The integrated GPU shares system memory and is roughly equivalent to a dedicated graphics
+card in the ~3GB VRAM class, suitable for 720p to 1080p gaming). 
+Memory: 16 GB of LPDDR5X-7500 RAM (soldered)
+, providing ample memory bandwidth for both
+the CPU and integrated GPU. 
+Storage: 1 TB PCIe Gen4 NVMe SSD (M.2 2242 form factor)
+ for fast storage. This is a generous
+amount of onboard storage for the operating system, project files, and even games. Additionally, the
+Legion Go has a microSD card slot for expansion – it supports cards up to 2 TB, which can more
+than double the total storage capacity for data or media
+. 
+Display: 8.8-inch WQXGA touchscreen (2560×1600 resolution, 16:10 aspect ratio) at up to 144 Hz
+refresh rate
+. This IPS panel is bright (500 nits) and protected by Gorilla Glass 5
+. The high
+resolution and refresh rate are standout features, though running at lower resolutions (like 1200p or
+800p) is often preferable for better performance and battery life. 
+Detachable Controllers: Two gamepad controllers attach to the sides of the screen (similar to
+Nintendo Switch Joy-Cons). These controllers can be released via hidden latches and used
+wirelessly when detached
+. They include dual analog sticks (hall-effect sensors to prevent drift), D-
+pad, ABXY buttons, analog triggers, bumpers, a small trackpad on the right controller, a scroll
+wheel, and six assignable grip buttons on the back
+. (More on the controllers in the next
+section.)
+Battery: 49.2 Wh rechargeable battery
+. This capacity is slightly larger than Steam Deck/ROG
+Ally’s ~40 Wh batteries, but the powerful hardware means battery life is still limited – in heavy use
+(gaming at high settings) it can drop under 1 hour, while more moderate use or power-saving
+settings can yield around 2–3 hours on a charge
+. (In best-case scenarios with tweaks, testers
+have managed roughly 3 hours, which is better than the Ally but shorter than the Steam Deck
+under similar conditions
+.) 
+Ports & Connectivity: Uncommonly for a handheld, the Legion Go offers two USB-C 4.0 ports (one
+on top, one on the bottom)
+. Both support USB4/Thunderbolt-like speeds and DisplayPort 1.4
+• 
+1
+2
+• 
+3
+• 
+4
+5
+• 
+1
+1
+• 
+6
+7
+8
+• 
+9
+10
+10
+• 
+11
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+output, as well as Power Delivery charging (65W). This dual-port design means you can charge the
+device and connect peripherals or an external display simultaneously without a dock
+. There’s
+also a 3.5mm audio jack for headphones
+ and Wi-Fi 6E + Bluetooth 5.2 wireless connectivity
+. 
+Operating System: Ships with Windows 11 (and in this case is running the Windows 11 Insider
+Preview). This provides full PC functionality and software compatibility – important for integrating
+the Monkey Head Project’s software stack, which is designed to be cross-platform
+.
+Overall, the Legion Go’s hardware is top-tier for a handheld device. It essentially packs ultrabook-level
+internals into a portable form. Next, we’ll look at the Legion Go’s signature feature – its  detachable
+controllers – and why that matters for modular use.
+Unique Detachable Controllers and Modular Design
+One defining feature of the Lenovo Legion Go is its modular controller system. The two controllers can
+slide on and off the sides of the main unit, very much like a Nintendo Switch’s Joy-Cons, but Lenovo’s
+mechanism is more robust and well-engineered with minimal wobble when attached
+. You simply
+press a release switch and slide them off, and they’ll automatically connect via Bluetooth to the main unit
+when detached
+. The device also has a wide, sturdy kickstand on the back, spanning almost the entire
+width of the unit, so you can prop the screen up on a table when using the controllers off-device
+. 
+Each controller is feature-packed: the  right-hand controller includes a tiny circular trackpad (useful for
+mouse cursor movement in Windows or strategy games) and even a scroll wheel, which is uncommon on
+game controllers
+. Notably, the bottom of the right controller has an optical sensor and a switch for
+“FPS mode”
+. In FPS mode, you can attach a small included cover to the controller that lets you use it like
+a vertical mouse – the optical sensor tracks movement when you slide the controller on a surface, and the
+triggers act as mouse buttons
+. This effectively turns the Legion Go into a mini tabletop PC: one
+controller becomes a mouse and the other can be used like a joystick or gamepad in the other hand. This
+mode is ideal for precision aiming in shooters or navigating Windows interface when docked on a table. 
+Furthermore, both controllers have haptic feedback and six-axis gyros for motion controls
+, and Lenovo
+used hall-effect joysticks to avoid drift issues over time
+. There are also extra grip buttons (M1, M2,
+M3, Y1, Y2, Y3) on the backs of the controllers that can be custom-mapped for additional functions
+,
+which could be useful for custom commands in the project’s applications. 
+From a modularity perspective, this detachable design means the Legion Go can serve multiple roles: it’s a
+handheld console when you need all-in-one portability, but it can also act like a small desktop or tablet
+when you set it down and remove the controllers. For the Monkey Head Project, this flexibility is a big plus –
+you could, for example, mount the main tablet portion onto a robotic frame or a stand (as a display or
+control unit) while an operator uses the wireless controllers to interact from a short distance. The kickstand
+supporting  various  angles  makes  it  practical  to  deploy  the  device  on  a  desk  or  lab  bench  and  still
+comfortably use it. In short, the Legion Go’s hardware isn’t just powerful; it’s reconfigurable, which aligns
+well with the project’s need for a adaptable, modular assistant unit.
+Integration as a Portable "Huey" Unit in the Project
+Within the Monkey Head Project, Huey refers to the robotic shell or physical embodiment of the GenCore
+AI Operating System
+. In the full lab setup, Huey is a large, stationary unit with high-end hardware (like
+11
+12
+12
+• 
+13
+14
+15
+16
+16
+8
+17
+17
+18
+18
+19
+7
+20
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+server-grade motherboards, etc.) to run the AI and interface with the world. The Lenovo Legion Go offers
+the opportunity to have a  portable mini-Huey – essentially a scaled-down version of the AI’s hardware
+platform that can be carried around by a person or placed on a mobile robotic base. 
+Despite its much smaller size, the Legion Go’s specs (discussed above) are quite formidable. The 8-core Z1
+Extreme CPU and 16GB RAM mean it can run the GenCore AIOS and related Monkey Head Project software
+without needing a full desktop tower. In fact, the project documentation emphasizes  broad compatibility
+with multiple operating systems and hardware configurations, aiming to be “universally accessible”
+.
+Having Windows 11 on the Legion Go is not an issue, as the GenCore AI and its subsystems are designed to
+integrate with Windows environments alongside Linux or macOS
+. This means the AI services, sensor
+interfaces, and user interaction modules can all run on the Legion Go when it’s deployed as a field unit.
+The Legion Go is listed as one of the development platforms for the project (alongside a MacBook Pro,
+etc.)
+, which confirms that the team is actively using it to test and run the AI system. As a portable Huey,
+the Legion Go could be used by a lab assistant or engineer on the move – for instance, carrying it to
+different lab stations or even off-site. It can function as a standalone AI assistant: the user can speak to it
+(through a connected headset or external microphone, since the device itself doesn’t have built-in mics/
+cameras like a phone), view data on its screen, and even connect AR/VR goggles or other peripherals if
+needed. In fact, Lenovo has an accessory called Legion Glasses (AR glasses) that can pair with the Legion Go
+for heads-up display, pointing to future AR integration possibilities
+.
+Thanks to the dual USB4 ports, integration into larger setups is straightforward. For example, in a lab one
+could plug the Legion Go into a power source and connect it to external devices: monitors, keyboards/
+mice, or even an external GPU if extreme graphics performance were needed. The USB-C ports support
+DisplayPort-out and power delivery simultaneously, so the Legion Go can be docked and act almost like a
+small desktop when the situation calls for it
+. This could be useful if the AI needs to display a lot of
+information on a big screen during a demonstration, or if it needs to interface with specialized hardware
+(via USB adapters) while still being easily removable and portable.
+In summary, using the Lenovo Legion Go as a portable Huey unit provides the Monkey Head Project with a
+highly versatile, mobile platform for their AI. It bridges the gap between the fixed, powerful lab hardware
+and a truly mobile assistant. While it doesn’t match the raw power of the full-sized Huey rig (with server-
+grade components), it offers sufficient performance to run the AI in the field, and its modular form allows it
+to adapt to different scenarios (handheld use, table-top use with detached controllers, or docked use in a
+larger setup).
+Performance Profile and Battery Life
+Given its powerful AMD APU, the Legion Go’s performance is impressive for a handheld. In practical terms,
+it can run modern 3D games and heavy applications – an important consideration if the Monkey Head
+Project’s AI involves real-time processing or even some on-device machine learning inference. The Ryzen Z1
+Extreme is essentially on par with an AMD Ryzen 7 7840U (8-core Zen4 architecture), and the integrated
+RDNA3  GPU  (similar  to  Radeon  780M  graphics)  can  handle  many  games  at  respectable  settings.
+Benchmarks in reviews have shown that at 20W TDP (Performance mode) – which is the default max on
+battery – the Legion Go achieves, for example, around  64 FPS in Doom Eternal (Medium settings, at
+~1200p) and around  80 FPS in Star Wars: Squadrons (Low settings)
+. This indicates the device can
+comfortably handle 3D environments or GUI-intensive tasks the project might throw at it, especially if the
+13
+13
+21
+22
+23
+11
+24
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+resolution or fidelity is tuned for performance. In everyday terms, any productivity, data processing, or
+moderate AI tasks (like running large language model prompts, computer vision inference with optimized
+models, etc.) should run smoothly on this device.
+One thing to note is that the Legion Go’s high native screen resolution (2560×1600) can be very demanding.
+For optimal performance (and to conserve energy), the  project team will likely run applications at a
+lower resolution or use resolution scaling when ultra-high detail isn’t needed. The 144 Hz refresh capability
+is mainly beneficial for gaming; for AI assistant use, capping the refresh rate to 60 Hz can also help with
+battery life without much downside.
+On the topic of battery life, as mentioned, the Legion Go can be quite power-hungry. The 49 Wh battery is
+physically larger than many competitors’, yet under heavy load (gaming, stress tests) users have reported
+draining the battery in under an hour
+. For less intense usage (web browsing, coding, running simpler
+AI tasks), you might get a few hours. In direct comparisons, the Legion Go tends to last a bit longer than
+the Asus ROG Ally (which has a smaller battery) but still significantly less than a Steam Deck running
+Linux, which is heavily optimized for efficiency
+. One review noted that after Valve’s optimizations, a
+Steam Deck could reach 5 hours of light use, whereas the Legion Go “gets 3 at best with the same
+tweaks”
+. 
+However, for the Monkey Head Project’s use as a portable assistant, there are ways to manage this: running
+in “Balanced” or “Quiet” power modes for routine tasks can cap the APU to a lower wattage (e.g., 8-15W),
+dramatically extending runtime (at the cost of some performance)
+. The device has a physical mode
+switch (with an LED indicator: blue for Quiet, white for Balanced, red for Performance) to quickly toggle
+these modes
+. This means a user can dynamically choose to conserve battery when doing light tasks (like
+note-taking or idle listening) and then kick into Performance mode (20W TDP) when heavy computation is
+needed. Additionally, because the Legion Go is a full Windows PC, traditional power management (Windows
+battery saver, dimming screen, etc.) applies as well. And of course, whenever possible, using the device
+while plugged in (or carrying a USB-C power bank) can alleviate runtime concerns.
+Thermal performance of the Legion Go is quite good for its class. Thanks to a robust cooling solution (with
+ample ventilation and a large fan), it tends to  stay relatively cool to the touch under load
+ – an
+important consideration if someone will hold it or have it close to them while it’s working. Reviewers
+observed internal temperatures in the 60°C range on Performance mode, and surface temperatures that
+were warm but not uncomfortable
+. The fan can get audible (running up to ~34 dB(A) in Performance
+mode)
+, but in many cases, especially if running lighter workloads or when the fan is in Quiet mode,
+noise should not be a major distraction. For an AI assistant usage, this means the device likely won’t
+overheat even during sustained computations, and any fan noise is a reasonable trade-off for keeping the
+device cool.
+In summary, out-of-the-box performance of the Legion Go should be more than sufficient for a portable
+Monkey Head Project unit. The key is balancing that performance with battery life and heat – using the right
+performance profile for the task at hand. In the next section, we’ll discuss potential  modifications and
+tweaks to further improve performance, efficiency, and overall suitability of the Legion Go for the project.
+25
+10
+10
+26
+27
+28
+29
+30
+31
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+Potential Modifications and Performance Improvements
+To get the most out of the Lenovo Legion Go as a project platform, there are several modifications and
+optimizations  that  can  be  considered.  These  range  from  simple  software  settings  to  more  involved
+hardware tweaks:
+TDP and Power Settings: The Legion Go comes with built-in power profiles (accessed via Lenovo’s
+Legion Space software or a quick sidebar) that let you adjust the APU’s TDP on the fly. For instance,
+Quiet mode limits wattage (for cooler, quieter operation), while Performance mode targets ~20W on
+battery
+. There’s also a Manual mode where users can attempt higher TDP (25W or 30W) when
+plugged in. However, testing shows going beyond ~20W on battery yields diminishing returns – in
+fact, one review noted that switching from 20W to 30W while on battery sometimes  worsened
+performance due to power or thermal constraints
+. The takeaway: using the built-in modes is
+usually effective, and  tuning TDP to the task (lower for efficiency, higher for heavy computation
+when plugged in) can optimize performance per watt. The quick-toggle button makes this easy to
+manage on the go. 
+Undervolting the APU: If squeezing out more efficiency is desired, undervolting is an advanced
+tweak. By slightly lowering the voltage to the CPU/GPU while maintaining clock speeds, you reduce
+heat and power draw, which can either prolong battery life or allow higher clocks within the same
+power budget. Officially, Lenovo doesn’t advertise undervolting, but some users have reported that
+the Legion Go’s BIOS has options for it, and tools like the Universal X86 Tuning Utility can be used
+in Windows to undervolt the Z1 Extreme
+. This isn’t a necessity for most users – as one Legion Go
+owner noted, you might not  need to undervolt since you can just use the TDP slider to manage
+performance/power
+. But for enthusiasts in the project, a stable undervolt could be beneficial
+(e.g., it might shave off a few degrees of heat and extend battery life during intensive computations).
+Caution is advised: every chip is different, so any undervolt should be tested thoroughly for stability.
+Thermal Paste Upgrade: Improving the cooling interface is another tweak that’s been tried. The
+stock thermal paste on the APU can be replaced with a higher-performance compound. Community
+reports indicate that using a quality paste like  Arctic MX-4 can noticeably lower temperatures,
+whereas even more exotic solutions like Honeywell’s PTM7950 phase-change pad gave only modest
+gains in this particular device
+. Re-pasting the device requires opening it up (which is a delicate
+process), so it’s an optional mod for those comfortable with hardware. If done properly, better
+cooling can help the Legion Go sustain high performance longer (less throttling) and possibly make
+the fan quieter under load. Given that the Legion Go already stays fairly cool externally, this mod is
+more about maximizing internal performance and longevity.
+Screen and Refresh Rate Tuning: As mentioned earlier, running the display at full 2560×1600 and
+144 Hz is overkill for many use cases and drains power. For practical use, especially in the project
+context, one can reduce the resolution or use Windows scaling to effectively render at a lower
+resolution (like 1920×1200 or 1280×800) when the ultra-fine detail isn’t needed. This can boost frame
+rates significantly (important if the AI interface has any 3D visualization or if the device is used for
+demos/gaming)
+. Similarly, setting the refresh rate to 60 Hz except when 144 Hz is specifically
+needed will help both battery and thermals. These are simple software settings that can be switched
+as needed.
+• 
+32
+33
+• 
+34
+35
+• 
+36
+• 
+37
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+Storage and Memory Upgrades: The 1TB NVMe SSD is quite fast (Gen4 speeds) and more than
+sufficient for most uses. But since it’s a standard M.2 2242 drive, it is technically replaceable if a
+larger capacity or a faster model is desired in the future
+. For example, one could install a 2TB
+2242 SSD to have more onboard storage for AI datasets or media. The microSD slot, as mentioned,
+offers up to an additional 2TB of removable storage
+ – perfect for keeping large, less frequently
+used files or backups. The RAM, however, is soldered and not upgradable; 16GB is the fixed amount.
+If  the  project  workflows  ever  require  more  than  16GB  RAM  (for  running  multiple  AI  models
+simultaneously, etc.), swapping to a device with more memory might be the only solution – but 16GB
+is a generous amount for a mobile unit and aligns with the project’s current design (the MacBook
+Pro 2019 dev machine likely has a similar RAM size, for reference).
+External  GPU  (eGPU)  and  Docking: Thanks  to  the  dual  USB4  ports,  the  Legion  Go  has  the
+uncommon ability (for a handheld) to connect to external PCIe devices. This means in a stationary
+setting, one could attach an eGPU enclosure via USB4/Thunderbolt, allowing a desktop-class GPU to
+drive graphics or GPU-accelerated computations. This is more of a hypothetical enhancement – it
+hasn’t been widely reported in reviews – but USB4 theoretically supports Thunderbolt 3/4 devices, so
+an eGPU might work (bandwidth would be limited compared to internal GPU slots, but still a huge
+boost for tasks like 3D rendering or machine learning that can use a powerful GPU). Even without an
+eGPU,  the  ports  allow  connecting  to  multiple  external  displays  and  peripherals  easily.  Lenovo
+specifically positioned one USB-C on the top and one on the bottom so that docking and charging
+scenarios are very flexible
+. For example, you can prop the Legion Go on its kickstand, plug in
+power to the bottom USB-C, and plug the top USB-C into a monitor or hub – turning it into a
+makeshift desktop. For the project, this means during development or presentations, the Legion Go
+can act as a computer powering large screens or specialized equipment, and then be quickly
+undocked and taken on the go.
+Software Updates and OS Optimization: Since the unit is running Windows 11 Insider Preview,
+it’s likely receiving the latest fixes and features for handheld devices. Microsoft has been improving
+Windows support for devices like these (e.g. better on-screen keyboard, UI scaling, game mode
+improvements for handhelds). Keeping the OS updated will ensure any  early bugs (and Lenovo’s
+own software bugs) get patched – early reviews noted that the Legion Go’s software (the Legion
+Space app, etc.) still had some issues at launch
+. It’s wise to update Lenovo’s drivers/firmware as
+well, as they have already pushed a few updates to refine fan curves and controller behavior.
+Additionally, for project-specific optimization, one can  trim unnecessary background apps on
+Windows, use power profiles, and ensure that the AI software services start on boot and are
+configured for a touchscreen interface, etc., to make the device as user-friendly and responsive as
+possible in the field.
+In summary, the Legion Go is quite capable out of the box, but the above tweaks can tailor its performance
+and functionality to better suit the Monkey Head Project’s needs. Adjusting power settings gives control
+over  performance  vs.  battery  life,  undervolting  and  improved  cooling  can  eke  out  more  sustained
+performance, and the hardware’s inherent expandability (ports/storage) provides avenues to integrate with
+larger setups or handle more data. All these modifications and improvements ensure that the Legion Go
+can reliably function as a portable AI hub – delivering high performance when required and conserving
+energy when portability is paramount.
+• 
+4
+5
+• 
+11
+• 
+38
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+References: The  information  above  was  gathered  from  Lenovo  Legion  Go  hardware  reviews  and
+specifications, as well as the Monkey Head Project documentation for context. Key sources include the
+Lenovo Legion Go spec sheet and hands-on reports
+, an in-depth review by UltrabookReview
+, Tom’s Hardware’s first-look article
+, and community discussions by early Legion Go users
+.  These  sources  corroborate  the  Legion  Go’s  capabilities  (e.g.  its  detachable  controller  design,
+performance metrics, and battery life) and provide insight into potential enhancements for using it as a
+mobile project unit. The Monkey Head Project’s README was also referenced to ensure alignment of this
+device’s use with the project’s goals and compatibility
+. 
+Lenovo Legion
+Go review (AMD Z1 Extreme)
+https://www.ultrabookreview.com/66707-lenovo-legion-go-review/
+Lenovo Legion Go Brings Ryzen Z1 Extreme Power to a Switch Design | Tom's
+Hardware
+https://www.tomshardware.com/news/lenovo-legion-go-hands-on-price-specs
+README.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/19807780854c129334f74dfd66be6e39e9b07f55/README.md
+Undervolting on LEGION GO : r/LegionGo
+https://www.reddit.com/r/LegionGo/comments/1fqdbkm/undervolting_on_legion_go/
+PTM7950 on the Go : r/LegionGo - Reddit
+https://www.reddit.com/r/LegionGo/comments/1801i8u/ptm7950_on_the_go/
+1
+11
+6
+24
+10
+16
+18
+35
+36
+20
+13
+21
+1
+2
+3
+4
+6
+7
+9
+10
+12
+14
+15
+17
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+37
+38
+5
+8
+11
+16
+18
+19
+13
+20
+21
+34
+35
+36
+7

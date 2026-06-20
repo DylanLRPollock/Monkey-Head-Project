@@ -1,0 +1,2257 @@
+macOS Sequoia (Version 15): A Comprehensive
+Deep Dive into Apple’s Latest macOS Release
+Abstract:
+Apple’s macOS Sequoia is the twenty-first and current major release of macOS, unveiled at WWDC 2024 as
+the  successor  to  macOS  Sonoma
+.  This  paper  provides  an  in-depth  examination  of  Sequoia’s  new
+features  and  enhancements,  spanning  system  architecture  changes,  user  interface  updates,  cross-
+ecosystem integrations, performance improvements, AI/ML capabilities, privacy and security features, built-
+in app upgrades, and developer tools. We compare Sequoia’s innovations to prior macOS versions and
+discuss  known  limitations  or  issues  identified  post-release.  The  analysis  draws  on  official  Apple
+documentation,  WWDC  announcements,  and  independent  expert  evaluations  to  assess  how  macOS
+Sequoia elevates the Mac experience for users and developers alike.
+Introduction
+macOS Sequoia (version 15) marks a significant evolution of Apple’s desktop operating system, aligning the
+Mac more closely with Apple’s broader ecosystem and future strategy. Announced by Craig Federighi at
+WWDC on June 10, 2024
+, Sequoia is named after California’s Sequoia National Park, continuing Apple’s
+tradition of naming macOS releases after California landmarks
+. It was released on September 16, 2024,
+notably the first macOS to launch on the same day as new iOS and iPadOS versions
+, symbolizing the
+synchronized integration of Apple’s platforms. As the successor to macOS 14 Sonoma, Sequoia introduces
+an array of new features aimed at productivity and creativity on the Mac
+. These range from under-the-
+hood  architectural  changes  and  performance  tuning  to  user-facing  enhancements  in  the  interface,
+applications, and workflow continuity across devices. A headline addition is Apple Intelligence, Apple’s suite
+of on-device and cloud-assisted AI capabilities, which debuts in Sequoia and its sister releases iOS/iPadOS
+18
+. 
+This paper is organized by thematic sections reflecting the key domains of change in macOS Sequoia. We
+begin with system architecture and performance improvements, then explore user interface refinements
+and new continuity features that deepen integration with iPhone and iPad. Next, we examine Sequoia’s
+expanded AI and machine learning features, followed by privacy and security updates reinforcing Mac’s
+security model. We then detail enhancements to built-in apps and developer tools, including Apple’s efforts
+to attract game and app developers. Comparisons to previous macOS versions are interwoven to highlight
+Sequoia’s progress over its predecessors. We also discuss any known limitations or issues that emerged
+from the beta period and early adoption. A summary table of Sequoia’s key new features is provided below
+for a high-level overview, before delving into detailed analysis in subsequent sections.
+Overview of Key New Features in macOS Sequoia
+To contextualize the scope of macOS Sequoia,  Table 1 summarizes its major new features, with brief
+descriptions and their benefits:
+1
+2
+3
+4
+5
+6
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+Feature
+Description
+Potential Benefits
+iPhone
+Mirroring
+Mirror and fully control an iPhone on the Mac
+desktop
+, including viewing the iPhone
+Home Screen, launching iOS apps, and
+receiving iPhone notifications on Mac
+.
+Enhances Continuity by
+seamlessly integrating iPhone
+apps and notifications into Mac
+workflows, reducing device-
+switching friction.
+Apple
+Intelligence (AI
+Suite)
+New on-device and cloud-assisted AI
+features, including system-wide Writing
+Tools for text rewrite, proofreading, and
+summarization
+, an improved Siri with
+conversational context
+, Smart Reply
+suggestions in Mail/Messages
+, and
+generative media tools like Image
+Playground for creating images from
+prompts
+.
+Boosts user productivity and
+creativity through AI-powered
+assistance. Automates writing
+enhancement, provides smarter
+virtual assistant help, and allows
+easy creation of images or
+summaries, all while preserving
+privacy with on-device processing
+.
+Safari
+Enhancements
+Revamped Safari browser with Highlights –
+context-aware cards showing info like maps
+or summaries for content on a webpage
+,
+a redesigned Reader offering a distraction-
+free view with summary and table of
+contents
+, Viewer for focusing on video content with
+Picture-in-Picture
+, and Distraction
+Control to hide unwanted page elements
+.
+Improves web browsing efficiency
+and readability. Users can quickly
+glean key information (directions,
+definitions, etc.) via Highlights
+,
+enjoy long articles in a clean
+format, and watch videos
+uninterrupted, enhancing
+productivity and focus while
+online.
+Window Tiling
+& Snap
+New intuitive window management:
+dragging a window to screen edges now
+suggests and snaps it into tiled positions
+(side-by-side or corners)
+. Also includes
+keyboard shortcuts and menus for quick
+tiling arrangements
+.
+Streamlines multitasking by
+making window arrangement
+easier and faster. Users can
+organize their workspace without
+manual resizing, a feature akin to
+Windows “Aero Snap” now built
+into macOS
+, improving
+productivity for those juggling
+multiple apps.
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+14
+18
+19
+20
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+Feature
+Description
+Potential Benefits
+Passwords App
+A standalone Passwords application
+(replacing the prior Keychain interface) that
+consolidates passwords, passkeys, and two-
+factor codes in one place
+. Syncs securely
+via iCloud with end-to-end encryption and
+integrates with Safari and even Windows via
+iCloud Passwords
+.
+Simplifies credential management
+and improves security hygiene.
+Users have a one-stop app for all
+login information with strong
+encryption, making it easier to
+manage and autofill passwords
+and verification codes across
+devices
+.
+Improved
+Video
+Conferencing
+Enhanced tools for virtual meetings: 
+Presenter Preview lets users see exactly
+what will be shared (app window or full
+screen) before broadcasting it
+, and 
+Virtual Backgrounds (built-in images or
+user’s own) can be applied in FaceTime or
+Zoom with advanced segmentation to neatly
+isolate the user
+.
+Enables more polished and
+confident presentations in video
+calls. Users can avoid sharing the
+wrong content by previewing it,
+and can maintain privacy or
+thematic consistency with
+background replacement, all while
+Apple’s image processing keeps
+them looking professional
+.
+Game Mode
+Enhancements
+Refinements to the Game Mode introduced
+in macOS 14: in Sequoia, Game Mode further
+prioritizes CPU/GPU resources for games to
+deliver smoother frame rates and uses
+advanced power management to boost
+performance on Apple silicon Macs
+. It
+also reduces audio latency with AirPods and
+supports Personalized Spatial Audio for
+immersive sound
+.
+Provides a better gaming
+experience on Mac. Frame rates
+are more consistent and
+responsive, and wireless
+peripherals (controllers, AirPods)
+have lower latency
+. The
+system can temporarily allocate
+resources more aggressively to
+the game, benefiting gamers and
+game developers targeting
+macOS.
+Game Porting
+Toolkit 2.0
+An updated toolkit for developers to port
+Windows games to Apple platforms
+.
+Version 2.0 adds support for DirectX ray-
+tracing (on M3-family GPUs) and x86 AVX2
+instructions for better compatibility
+.
+Uniquely, it now allows porting a Mac game
+build to iPhone and iPad, sharing graphics
+and input APIs across devices
+.
+Greatly lowers the barrier for
+bringing high-end games to
+macOS (and iOS). Developers can
+evaluate and optimize Windows
+games on Mac more easily, then
+deploy to multiple Apple
+platforms with minimal changes
+. This promises a richer game
+library for Mac users and a more
+unified Apple gaming ecosystem.
+21
+21
+21
+22
+23
+24
+23
+24
+25
+25
+25
+26
+27
+27
+28
+28
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+Feature
+Description
+Potential Benefits
+Built-in App
+Upgrades
+Many stock apps see significant
+improvements. Messages adds live chat
+effects, text formatting, emoji/sticker
+tapbacks, and scheduled send
+. Notes
+introduces audio recordings with live
+transcription and instant math equation
+solving within notes
+. Photos gains
+intelligent Collections (by topics like trips or
+pets) and a Clean Up tool to remove
+background distractions with AI
+. 
+Maps adds detailed topographic maps and
+U.S. national park trail guides with offline
+access
+, and more.
+Enhances productivity and
+creativity by adding powerful new
+capabilities to everyday apps.
+Users can communicate with
+more expressiveness and
+convenience in Messages,
+organize and capture ideas better
+in Notes, clean and curate photos
+easily, and rely on Maps for richer
+outdoor navigation
+. These
+improvements enrich the overall
+user experience and align Mac
+apps with their iOS counterparts.
+Privacy &
+Security
+Improvements
+Strengthened security model and privacy
+features. Gatekeeper no longer allows one-
+click bypass of app notarization – users must
+explicitly allow unverified apps via System
+Settings (the spctl --master-disable
+command and Finder “Open Anyway”
+shortcut are removed)
+. Transparency,
+Consent & Control (TCC) now periodically re-
+prompts for screen-recording permissions
+and local network access by apps, to prevent
+long-term overreach
+. macOS can 
+rotate Wi-Fi MAC addresses every two
+weeks to reduce tracking
+. A new 
+XProtect command-line utility lets
+administrators invoke Apple’s malware
+scanner on demand
+.
+Provides users and organizations
+with greater protection against
+malware and privacy intrusions.
+By tightening Gatekeeper, macOS
+curtails a common malware
+bypass method
+, and frequent
+TCC re-authentication ensures
+ongoing user awareness of
+sensitive permissions. Rotating
+MAC addresses helps anonymize
+devices on networks
+, and the
+security tools give IT admins
+better control to enforce security
+policies.
+Table 1. Key new features in macOS Sequoia, with descriptions and benefits. Each of these features is discussed
+in detail in the subsequent sections, with comparisons to how they evolved from or improve upon those in
+macOS Sonoma (14) and earlier releases.
+System Architecture and Performance Enhancements
+Apple Silicon Focus and Dropped Legacy Support: macOS Sequoia continues Apple’s transition toward
+Apple Silicon optimizations and begins phasing out older Intel-based Mac support. It runs on all Apple
+silicon Macs and on Intel Macs with at least 8th-generation CPUs (e.g. Intel Coffee Lake or Xeon W chips)
+. However, Sequoia is the final macOS version to support several Intel models (including the iMac Pro,
+2018–2019 MacBook Air, 2019 13″/15″ MacBook Pro, and 2019 iMac)
+. Its successor (macOS Tahoe) will
+drop support for those models, underscoring Apple’s shift to an Apple Silicon–only future
+. Even within
+Sequoia, some flagship features require the Apple Neural Engine on M-series chips – for example, the Apple
+Intelligence AI features (discussed later) are only available on Macs with an M1 or later
+. By leveraging
+29
+30
+31
+32
+33
+34
+34
+32
+35
+36
+37
+38
+39
+35
+38
+40
+41
+41
+40
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+the custom architecture of M-series SoCs, Sequoia achieves new capabilities and performance that were
+impractical  on  older  Intel  hardware.  Apple’s  software  chief  Craig  Federighi  emphasized  the  “all-star
+combination of the power of Apple silicon and the legendary ease of macOS” that enables Sequoia’s
+advancements
+. While Intel Macs can still run the OS (aside from the few dropped models), they miss out
+on certain machine-learning powered functions, highlighting a growing architectural divergence.
+Kernel and Core System Improvements: Under the hood, macOS Sequoia is built on an updated  XNU
+kernel (Darwin 24.x), bringing typical optimizations in memory management, scheduling, and security
+patches. Although Apple’s release notes do not call out major kernel overhauls, the Darwin version bump
+(from 23.x in Sonoma to 24.0.0 in Sequoia 15.0) signals internal updates
+. Notably, Apple introduced a
+new  approach  called  Private  Cloud  Compute for  handling  large  AI  model  requests:  the  system  can
+dynamically offload certain computations to Apple’s own secure servers with Apple silicon, when on-device
+resources are insufficient, without exposing or storing personal data
+. This hybrid computing model,
+while mostly abstracted from users, represents a novel architectural strategy to scale AI features while
+maintaining privacy. Another low-level change is the removal of the periodic(8) UNIX maintenance scripts –
+an archaic subsystem that has been deprecated (its binary removed) in Sequoia as part of cleaning up
+legacy components
+. Admins relying on custom periodic jobs must migrate them to launchd, but
+otherwise this change closes a little-known vector that could be abused by persistent malware. These
+refinements illustrate Apple’s ongoing modernization of macOS’s Unix foundation, removing legacy cruft
+and tightening integration with the hardware.
+Game  Mode  and  Performance  Tuning: macOS  Sequoia  places  renewed  emphasis  on  performance,
+especially for graphics-intensive workflows and gaming. It builds upon the  Game Mode introduced in
+macOS 14 Sonoma, further optimizing it. Apple reports that in Sequoia, Game Mode enables  “smoother
+frame rates” through refined CPU/GPU prioritization and “advanced power management features” that boost
+performance across the Mac lineup
+. In practice, when a user plays a game, macOS will aggressively
+allocate CPU/GPU time slices to the game process and throttle down background processes more than in
+prior versions. Wireless accessory latency is also reduced – for example, Bluetooth input devices and
+AirPods get latency cuts to improve responsiveness while Game Mode is active
+. Early reviews noted that
+these improvements, combined with the raw power of Apple’s M-series chips, make gaming on Mac more
+viable, although still shy of dedicated gaming PCs
+. Beyond gaming, general performance of macOS
+Sequoia benefits from optimizations in Metal graphics drivers and possibly storage subsystems. Safari’s
+rendering  engine  was  benchmarked  in  early  tests  (JetStream,  Speedometer)  as  incrementally  faster,
+solidifying  Apple’s  claim  that  Safari  is  the  “world’s  fastest  browser”  on  Sequoia
+.  While  everyday
+productivity apps were already performant on Sonoma, Sequoia’s code refinements and better use of the
+Neural Engine (for on-the-fly language processing, image analysis, etc.) result in a Mac experience that feels
+snappier in areas like Spotlight search and photo analysis. In summary, Sequoia’s architecture is tuned to
+exploit Apple Silicon’s capabilities more fully, delivering both interactive performance gains and efficiency
+improvements.
+Virtualization and Development Enhancements: Apple has also improved the system architecture to
+better accommodate virtual machines and development workflows. A longstanding limitation on Apple
+Silicon Macs was the inability for VMs to use iCloud or certain Apple services. Sequoia addresses this by
+allowing  iCloud integration within macOS virtual machines
+. As of macOS 15, users (after signing in
+once on a physical device) can now sign into their Apple account inside a macOS VM, enabling services like
+iCloud Drive, Photos, or even features like “Erase All Contents and Settings” within the VM
+. This is
+significant for enterprise and developer use-cases: testers and administrators can run isolated macOS
+42
+43
+44
+45
+46
+25
+25
+47
+14
+48
+49
+50
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+instances that are still connected to cloud data, something previously impossible. It suggests Apple is slowly
+lifting restrictions in the virtualization framework, though running older macOS versions or x86 OSes is still
+not supported on Apple Silicon VMs. For developers, Sequoia comes with the macOS 15 SDK (bundled with
+Xcode 16), which incorporates new APIs for Apple Intelligence features, game development, and more. The
+OS’s architectural changes also affect security software and system extensions: for instance, changes in the
+Endpoint Security framework meant that some third-party security tools (from vendors like CrowdStrike or
+Microsoft)  required  updates  for  compatibility
+.  Apple  provided  developer  documentation  ahead  of
+release to help third parties adapt to the stricter security environment and new driver kit changes. Overall,
+macOS Sequoia’s architecture is a step further into an Apple Silicon-optimized future, bringing performance
+improvements and new capabilities, but also delineating a clearer line between modern and legacy support.
+User Interface Changes and Design Updates
+On  the  surface,  macOS  Sequoia  retains  the  aesthetic  introduced  in  Big  Sur/Monterey  –  the  frosted
+translucency, rounded squircle icons, and control center – but it introduces several targeted UI changes to
+refine the user experience. Rather than a wholesale redesign (as would come later with 2025’s Liquid Glass
+overhaul  in  macOS  16),  Sequoia’s  interface  updates  are  about  usability  improvements  and  visual
+consistency with iOS/iPadOS.
+Enhanced Window Management: One of the most immediately noticeable UI enhancements is the new
+window tiling (snap) feature. macOS has historically lagged behind Windows in built-in window snapping
+functionality, relying on third-party tools or the more complex “Stage Manager” introduced in Ventura for
+window organization. In Sequoia, Apple added simple and intuitive window snapping: when the user drags
+a window towards the edge of the screen, the system automatically suggests a tiled layout and highlights
+the drop target
+. Dropping the window snaps it into a split view (half-screen) or a quadrant if dragging to
+a corner, allowing up to four apps tiled. The implementation is akin to Windows 10’s Aero Snap, and it
+significantly eases multitasking on large displays. New menu options and keyboard shortcuts also allow
+users to trigger tiling without dragging
+. For example, a menu in the window’s title bar or a shortcut can
+send a window to left or right half instantly. Compared to macOS Sonoma, where arranging windows was
+entirely manual (aside from split full-screen in Mission Control or using Stage Manager), Sequoia’s tiling is a
+quality-of-life  improvement.  Reviewers  welcomed  this  long-requested  feature,  noting  it  “works  well
+enough to survive on a laptop” even if not as advanced as power-user tools like Moom
+. It helps users
+create  an  ideal  workspace  faster,  boosting  productivity  by  reducing  time  spent  resizing  and  moving
+windows. The UI for snap suggestions is minimalist, simply outlining the possible position, in line with
+Apple’s preference for clean visuals.
+Refinements in System Settings and Apps: macOS Sequoia continues to iterate on the controversial
+System  Settings (formerly  System  Preferences)  interface  that  was  redesigned  in  macOS  Ventura.  In
+response to user feedback, Sequoia reorganizes certain Settings panes for better discoverability. Individual
+settings pages have been “rearranged and slightly redesigned to quickly access frequently used menus”
+. For
+instance, common settings like Displays or Wallpaper might be surfaced more prominently. These tweaks
+make System Settings less cumbersome to navigate, addressing some complaints that the Ventura-era
+design buried controls too deep. Another small but notable change is the rebranding of “Apple ID” settings
+to  “Apple Account”, aligning terminology with iOS and iPadOS where Apple has standardized on “Apple
+Account” for the user’s identity management
+. This is a purely semantic change in the UI, but it reflects
+Apple’s effort for consistency across platforms.
+51
+18
+19
+52
+53
+54
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+Several built-in apps received UI updates for consistency with their iOS counterparts. The Calculator app
+was completely redesigned for the first time in many years: it now features a modern look with rounded
+buttons  and  a  style  matching  the  iOS/iPadOS  calculator
+.  This  replaces  the  skeuomorphic-inspired
+design dating back to OS X Yosemite (2014) with a cleaner interface. Functionally, Calculator also adds a
+tape/history and the ability to solve written expressions and unit conversions
+, bringing parity with the
+iPhone’s  calculator  and  Spotlight’s  math  features.  While  a  calculator’s  design  might  seem  minor,  it’s
+emblematic of Apple’s attention to interface detail and cross-platform unity.
+Another UI change is the introduction of a standalone Tips app on Mac, which replaces the old help menu
+system with an interactive guide hub. In Sequoia, Tips is now a separate app (no longer just an online help
+viewer), sporting a redesigned interface that presents curated user guides and tutorials
+. It includes
+guides not only for macOS itself but also for major Apple apps (Pages, Keynote, Notes, etc.) and even for
+other Apple devices the user owns (like iPhone, Apple Watch, etc.)
+. This app can be pinned to the Dock
+and provides a more engaging way for users, especially newcomers, to learn features. The move away from
+the traditional Help menu to a modern Tips app signals Apple’s recognition that user education is part of
+UX.
+Visually,  macOS  Sequoia  introduced  new  wallpapers  and  a  nostalgic  treat  for  longtime  Mac  users:  a
+dynamic “Macintosh” wallpaper and screensaver celebrating the original 1984 Mac OS. This retro-
+themed screensaver cycles through classic Mac icons and interface elements (designed by Susan Kare) in
+monochrome line-art style
+. The background animates and changes to reflect time of day, with
+multiple color variants (Spectrum, Accent, Blue, etc.) for personalization
+. This not only provides fresh
+aesthetics but also commemorates the Mac’s 40th anniversary in 2024. MacOS Sequoia also includes a new
+default wallpaper named “Helios”, an abstract gradient design featured in Apple’s marketing materials
+.
+These visual additions keep the Mac environment feeling fresh. While they don’t affect functionality, they
+contribute to the “timelessly Mac” identity that Apple cultivates.
+It’s worth noting what Sequoia did not change on the UI: Apple did not yet implement a system-wide design
+overhaul (that would come in macOS 16 Tahoe with the Liquid Glass theme). Thus, Sequoia still uses the
+basic Big Sur design language. Some power users had hoped for more customization options or the return
+of certain interface elements (for example, a more information-dense Settings or resizable sidebar text), but
+those wishes remain unfulfilled in version 15. Nonetheless, the targeted UI changes in Sequoia – better
+window management, cleaner app interfaces, and small consistency fixes – have been well received for
+making daily interactions more fluid without overwhelming users with a new learning curve. In summary,
+Sequoia’s interface refinements focus on practical usability improvements and aligning the Mac experience
+closer to iOS/iPadOS, while retaining the visual familiarity that Mac users expect.
+Integration with iPhone, iPad, and the Apple Ecosystem
+A major theme of macOS Sequoia is deepening the integration of the Mac with Apple’s other devices,
+creating a more seamless ecosystem. The flagship feature in this category is  iPhone Mirroring, which
+significantly expands Continuity beyond what previous macOS versions offered.
+iPhone  Mirroring: “macOS  Sequoia  makes  Continuity  even  more  magical  with  iPhone  Mirroring”,  Apple
+proclaimed at launch
+. This feature allows users to wirelessly mirror and fully control their iPhone from
+the Mac. When activated, an iPhone’s screen appears in a window on the Mac desktop, showing the actual
+iOS home screen and apps. The Mac’s keyboard, trackpad, or mouse then function as input for the iPhone,
+55
+56
+57
+58
+59
+60
+60
+61
+62
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+enabling the user to navigate and interact with iOS apps using Mac controls
+. For instance, one can
+swipe through pages of the iPhone home screen, type into an iMessage conversation using the Mac
+keyboard, or even pinch-to-zoom in an iPhone app via the Mac’s trackpad
+. Audio from the iPhone
+routes to the Mac’s speakers as well
+. Essentially, the iPhone can be used as if it were an app on the Mac.
+In Apple’s UI, this is facilitated by a new “iPhone Mirroring” app or icon that appears when an eligible iPhone
+(running iOS 18 or later) is nearby and unlocked
+.
+The integration goes further: iPhone notifications are mirrored to the Mac in real time
+. A user will see
+their iPhone’s push notifications (e.g. a WhatsApp message or a calendar alert) pop up in the Mac’s
+notification center, and can act on them (reply, clear, etc.) directly on Mac
+. This blurs the line between
+the devices – for many tasks, one no longer needs to pick up the iPhone at all when working on Mac. Apple’s
+implementation keeps the iPhone itself locked during a mirroring session for security (so that if someone
+grabs the physical phone they can’t see what’s being done remotely)
+. Notably, iPhone Mirroring also
+works in conjunction with the StandBy mode introduced in iOS 17: if an iPhone is on StandBy (displaying
+widgets/clock when charging), that view stays visible while mirroring, meaning the Mac effectively becomes
+a second display for those glanceable widgets
+.
+The practical benefits of iPhone Mirroring are significant. It enables use-cases like running an iPhone-only
+app on your Mac screen (since not all iOS apps have Mac equivalents), dragging and dropping content
+between iPhone and Mac, and handling SMS texts or phone-based 2FA codes on the Mac without device
+switching
+. Apple demonstrated a user dragging a photo from an editing app on the iPhone and
+dropping it into a Mac document, highlighting the seamless cross-device workflow
+. This feature builds
+on continuity efforts like Handoff and Universal Clipboard, but goes further by virtually unifying the devices
+into one interface.
+Availability and Limitations: iPhone Mirroring is supported on relatively recent Macs – Apple requires Macs
+from 2017 onward with a T2 chip or any Apple Silicon Mac
+ (the one exception being that the 2019
+Intel iMac lacks a T2 and thus does not support it
+). It also needs an iPhone running iOS 18. An important
+limitation is that Apple disabled iPhone Mirroring in the European Union at launch, due to regulatory
+concerns with the EU Digital Markets Act
+. Apple stated that “regulatory uncertainties” around
+interoperability led them to withhold this feature in EU regions
+. (This also applied to a related feature,
+SharePlay Screen Sharing in FaceTime, where users can remotely control a friend’s device
+.) Therefore,
+EU users found an error message and could not use iPhone Mirroring unless they changed their region. By
+mid-2025, this restriction was still reportedly in place
+. Outside the EU, iPhone Mirroring was initially
+slated to arrive “later in the year” after Sequoia’s release
+. Indeed, it was not fully functional in macOS
+15.0; Apple enabled it and added features (like drag-and-drop between devices) in  macOS 15.1
+.
+Early adopters encountered some bugs (for example, in 15.1 betas, certain iPhone apps wouldn’t appear in
+the mirroring list)
+, but subsequent updates resolved these issues. Once enabled, iPhone Mirroring has
+been lauded as a “major significant new feature” of Sequoia
+, expanding what Continuity means in the
+Apple ecosystem. 
+Continued Continuity Features: Beyond iPhone Mirroring, Sequoia supports and in some cases enhances
+the existing Continuity features introduced in previous macOS versions: - Phone Calls and Messages: Users
+can still make/receive cellular calls on their Mac and send SMS texts relayed via their iPhone. Now, with the
+new  Phone Link integration (especially in the subsequent macOS 16, though hinted at in late Sequoia
+updates), Apple is moving toward a dedicated Phone app on Mac. Sequoia itself did not yet have a
+standalone Phone app (that arrives in macOS 16), but it sets the stage by fully handling call and voicemail
+63
+64
+65
+65
+66
+67
+67
+8
+67
+8
+67
+8
+68
+68
+68
+69
+69
+70
+71
+72
+73
+64
+74
+70
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+continuity. - FaceTime and SharePlay: A new facet in iOS 18/Sequoia is SharePlay Screen Sharing with Remote
+Control. In FaceTime, one can request to control a friend’s screen – useful for tech support or collaboration
+. This feature ties into Mac as well (e.g. controlling a Mac from an iPhone or vice versa). However, like
+iPhone Mirroring, this was also withheld in EU at launch
+. -  Universal Control and Sidecar: Sequoia
+continues to support Universal Control (using one Mac’s keyboard/mouse to control an iPad on the same
+desk) and Sidecar (using an iPad as a secondary Mac display). No major changes to these were noted in
+Sequoia’s  documentation,  implying  that  they  remain  largely  the  same  as  in  Monterey/Sonoma.  Yet,
+improvements in network performance and latency in Sequoia may benefit these features subtly. - Cross-
+Platform Integration: Notes, Reminders, Safari tabs, Clipboard – all these continuity features remain
+present. If anything, Apple Intelligence’s features now span devices: for example, if you rewrite text on Mac
+using the AI Writing Tools, those changes sync to your iPhone’s Notes via iCloud instantly, preserving the
+continuity of content creation.
+By releasing macOS Sequoia simultaneously with iOS 18 and iPadOS 18, Apple signaled a unified ecosystem
+push
+. The alignment means features like Apple Intelligence and updated apps were available across
+Mac, iPhone, and iPad together, providing a cohesive user experience. A user could start editing a photo
+collection on their iPhone, then mirror the iPhone to Mac to drag that photo into a Pages document, and
+later use iPad to mark it up – all transitions smooth under iCloud and Continuity. This level of integration
+exemplifies Apple’s competitive advantage of controlling both hardware and software across device types.
+In summary, macOS Sequoia significantly narrows the gap between Mac and mobile devices. It enables the
+Mac to act as an extension of the iPhone (and vice versa) in unprecedented ways, reflecting Apple’s vision of
+a deeply interconnected personal computing ecosystem. The Mac, once relatively isolated from iOS aside
+from iCloud syncing, can now directly host and manipulate an iPhone’s content in real time. This integration
+not  only  improves  convenience  and  productivity  for  users  with  multiple  Apple  devices,  but  it  also
+strengthens the “halo” effect – the more Apple devices you own, the more value each provides when used
+together. Sequoia’s continuity advancements thus represent a strategic step in binding the Apple ecosystem
+together, even as certain regions’ regulations pose challenges to this seamless integration.
+75
+69
+4
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+Figure 1: An example of  iPhone Mirroring in macOS Sequoia. The user’s iPhone home screen is displayed in a
+window on the Mac (left), and iPhone notifications (right) are delivered to the Mac’s Notification Center, allowing
+full interaction with the phone from the computer
+.
+AI and Machine Learning Capabilities (“Apple Intelligence”)
+Perhaps the most groundbreaking aspect of macOS Sequoia is the introduction of  Apple Intelligence,
+which brings advanced machine learning (ML) and generative AI capabilities natively into the operating
+system.  This  suite  of  features  –  spanning  natural  language  processing,  image  generation,  predictive
+assistance, and more – represents Apple’s answer to the AI wave sweeping the tech industry. Internally,
+Apple Intelligence combines on-device ML models with privacy-preserving cloud computation
+ to
+deliver smarter, context-aware tools integrated throughout macOS.
+Overview of Apple Intelligence: Apple describes Apple Intelligence as “the personal intelligence system for
+Mac, iPhone, and iPad that combines the power of generative models with personal context to deliver intelligence
+that’s  incredibly  useful  and  relevant”,  built  with  a  privacy-first  approach
+.  In  macOS  Sequoia,  Apple
+Intelligence manifests in several user-facing features:
+System-wide Writing Tools: Anywhere the user can type text, they can now invoke AI-powered
+writing aids. A trio of tools – Rewrite, Proofread, and Summarize – are available via context menus or a
+hovering button when text is selected
+. The Rewrite tool can suggest alternate phrasings or
+tones for the selected text (e.g. making an email sound more “Friendly” or more “Professional”)
+. It effectively acts as a style editor, offering options like formalizing or simplifying a passage.
+Proofread uses AI to check grammar, spelling, and clarity, highlighting improvements and even
+explaining its suggestions
+. This is far more advanced than the traditional spellchecker, as it
+can catch tone issues or suggest reordering a sentence. Summarize can condense a long body of
+text into a shorter summary – either as a brief paragraph, a set of bullet points, or even a table of
+key points
+. For example, a user could highlight a lengthy article or email and get an instant
+synopsis of the main ideas. These tools work in first- and third-party apps alike (Mail, Pages, Notes,
+Microsoft Word, etc.), thanks to their integration at the OS level
+. The inclusion of these
+8
+67
+6
+44
+6
+• 
+76
+77
+77
+78
+79
+80
+81
+9
+82
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+writing  tools  reflects  the  influence  of  large  language  models  (LLMs)  like  GPT,  though  Apple
+emphasizes they are tailored to personal data and run with privacy safeguards.
+Next-Generation Siri: Sequoia delivers the most significant update to Siri on Mac in years. Siri’s
+interface is redesigned – when activated, a glowing waveform orb now  “wraps around the edge of
+your screen” and remains onscreen, allowing you to scroll or type behind it while speaking
+. More
+importantly, Siri gains richer language understanding and conversational context
+. This means Siri
+can handle follow-up questions and references to earlier parts of the dialogue (a feature akin to
+multi-turn conversations in Alexa or Google Assistant). For example, one could ask, “What’s the
+weather in Paris this weekend?” followed by, “Remind me to pack an umbrella for that” – and Siri
+knows “that” refers to the rainy forecast it just gave. Siri’s voice is also more natural and expressive,
+leveraging improved text-to-speech models
+. Additionally, Siri can now be invoked purely by
+typing (Type to Siri) without spoken voice
+, and Apple expanded Siri’s knowledge domain with
+Product knowledge, enabling it to answer detailed questions about the user’s Apple devices and
+settings
+ (for  instance,  “How  do  I  enable  Night  Shift?”).  Underpinning  many  of  these
+improvements is Apple’s use of transformer-based language models for Siri’s speech recognition and
+response generation, making it more resilient if the user stumbles or backtracks mid-command
+.
+Notably, Apple Intelligence also introduced ChatGPT integration for Siri: Siri can tap into OpenAI’s
+ChatGPT for certain queries if needed
+. According to Apple’s release notes,  “Siri can tap into
+ChatGPT when relevant to provide you an answer”, with the system automatically deciding when to
+leverage this external model
+. All such requests are anonymized – no ChatGPT account needed
+unless the user opts in – and not used to train OpenAI’s models by default
+. This hybrid approach
+gives Siri access to a powerful general knowledge model while maintaining Apple’s stance on privacy.
+Image Generation – Image Playground: Another headline feature is Image Playground, a creative
+tool that allows users to generate custom images using AI. It’s accessible in apps like Messages and
+Freeform, as well as via a standalone Image Playground app
+. Users can type a description of
+an image they want (e.g. “a birthday cake on a beach in cartoon style”), optionally choose a visual
+style (Animation, Illustration, or Sketch) and even include a person’s likeness from their photo library
+or a specific concept
+. The system then generates a set of fun, whimsical images matching
+those criteria
+. For example, Apple’s demos show generating stylized dice images with different
+themes
+• 
+83
+84
+85
+86
+85
+87
+84
+88
+89
+90
+• 
+91
+12
+92
+93
+12
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+. This feature appears to be Apple’s controlled take on generative image models (akin to DALL·E or
+Stable Diffusion), aimed at easy, quick image creation for personal use (like stickers or illustrations in
+a message). All images created sync in an “Image Playground library” via iCloud, so they’re available
+across devices
+. Apple likely uses its own tuned diffusion models for this task, processed on-
+device using the Neural Engine for quick results. The feature emphasizes playful use – it’s integrated
+in Messages with a simple UI, reflecting Apple’s intent for casual creativity.
+Mail and Messages Intelligence: Sequoia adds  Smart Reply suggestions in the Mail app (and
+iMessage) to quickly answer messages with one tap
+. After analyzing an incoming email’s content,
+Mail might propose short appropriate responses (e.g. “Sure, that sounds good.”). This is similar to
+the Gmail smart replies or iOS Messages’ suggestions, but now built into Mac Mail. Additionally,
+transcription summaries in Notes use ML to generate a summary of an audio recording’s transcript
+, which is helpful after using the new audio note feature.
+Personalized Photo and Video Intelligence: In the Photos app, Apple Intelligence enables users to
+create Memory Movies by description. Instead of Photos automatically curating moments, a user
+can now describe the story they want to see (e.g. “Our weekend hiking in Yosemite”) and the system
+will select the best related photos/videos and compile a themed memory movie
+. It uses image
+recognition and context from the description to identify relevant media and even organizes the
+movie into chapters with a narrative flow
+. Another new tool in Photos is Clean Up, which can
+“identify  and  remove  distracting  objects  in  the  background” of  a  photo,  such  as  power  lines  or
+bystanders
+. This is an AI-powered image editing function, akin to Google’s Magic Eraser, letting
+users improve photos without complex editing – the ML model inpainting the background where the
+object was, while preserving the subject intact. Both features highlight how deep learning is being
+applied to personal media management.
+Genmoji and Others: In a later update (macOS 15.3), Apple introduced Genmoji, which allows users
+to create custom emoji-like stickers using generative techniques
+. While details are sparse in our
+sources, Genmoji likely uses AI to combine or stylize emoji/pictures, reflecting Apple’s push of AI into
+fun personalization. There are also domain-specific ML upgrades, such as natural language search
+in Music and TV apps (letting users search content with plain phrases like “mood booster pop songs
+from the 90s”)
+, and  predictive puzzle generation (Sudoku puzzles in News+ crafted in three
+difficulty levels)
+.
+Privacy and On-Device Emphasis: A critical aspect of Apple Intelligence is Apple’s insistence on privacy. All
+the personal data processing – analyzing your writing style, your photo library content, etc. – is done on-
+device by default, courtesy of the Neural Engine in M-series chips
+. When larger model help is needed
+(like a very complex prompt), Apple uses Private Cloud Compute as noted, where the request is sent to an
+Apple server running a beefy model, but in a way that “data is not stored” and remains anonymous
+. For
+example, queries to ChatGPT via Siri are proxied through Apple’s system such that OpenAI doesn’t get the
+user’s identity
+. Apple also launched these features initially as a beta for U.S. English users only
+.
+The first wave of Apple Intelligence rolled out in English (U.S.) in macOS 15.1 and 15.2 updates
+, with
+other languages to follow later. The European Union again saw a delay: Apple Intelligence was not available
+in the EU at Sequoia’s launch, falling under the same DMA-related holdback as mentioned earlier
+. By
+early 2025, Apple did begin enabling some Intelligence features in Europe (e.g. by iOS 18.4) after clarifying
+regulatory compliance
+, but iPhone Mirroring remained disabled. From a hardware perspective, only
+94
+• 
+11
+95
+• 
+96
+96
+97
+• 
+98
+99
+100
+13
+44
+90
+101
+102
+103
+88
+69
+104
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+Apple Silicon Macs support Apple Intelligence; Intel Macs cannot use these features
+ due to the reliance
+on Neural Engine and possibly because Apple did not build x86-optimized versions of the large models.
+Comparisons and Impact: Prior to Sequoia, macOS had gradually added some ML-driven features (like on-
+device dictation, Live Text OCR, etc.), but macOS Sequoia represents the Mac’s first foray into generative AI for
+general productivity. In contrast, competitors like Windows 11 (via third-party apps or Microsoft’s
+cloud services) and various Linux tools had started exploring AI integrations; Apple’s approach is
+notable for being on-device and tightly integrated. The inclusion of ChatGPT (even if indirectly) in Siri
+is a surprising but pragmatic move from Apple, which historically avoided third-party cloud AI in
+system features. It suggests Apple did not want to fall behind in the AI assistant race, while it
+develops its own large language models (which rumors suggest are underway). The outcome is that
+macOS Sequoia users gain powerful new capabilities: writing emails or essays is easier with AI
+suggestions, communicating across languages is facilitated by translation features (system-wide Live
+Translation  is  actually  a  feature  in  this  generation  across  macOS/iOS,  e.g.  translating  inline  in
+Messages or FaceTime calls)
+, and everyday tasks like cleaning up a photo or summarizing a
+document become one-click actions. Early user feedback indicated these tools were impressive but
+also in need of refinement – e.g. rewriting and proofreading worked well for formal English, though
+sometimes the suggestions could be generic, and the image generator was more of a fun toy than a
+professional tool. Importantly, enterprise admins expressed concern about AI features from a data
+control standpoint. Apple responded by providing  MDM controls** to allow businesses or schools to
+disable or restrict Apple Intelligence features (for instance, preventing use of ChatGPT integration or image
+generation in managed environments)
+.
+In conclusion, the AI/ML capabilities in macOS Sequoia are a defining feature of this release, earning it
+the moniker “the AI one” among some reviewers
+. They significantly enhance what users can accomplish
+out-of-the-box on a Mac. By weaving generative AI into the fabric of macOS – while striving to keep user
+data private – Apple has opened a new chapter for personal computing on the Mac, one where the system
+can act not just as a tool, but as an intelligent assistant and creative partner. These advancements also
+future-proof the Mac platform in an era where AI is increasingly central to software experiences.
+40
+105
+106
+107
+108
+13
+
+------------------------------------------------------------------------
+Page 14
+------------------------------------------------------------------------
+
+Figure 2: macOS Sequoia’s Writing Tools in action. Here, the user is composing an email; the Apple Intelligence
+panel (left) offers to “Describe your change” with options for tone (Friendly, Professional, Concise) and output
+formats (Summary, Key Points, etc.). The Rewrite/Proofread suggestions help adjust the email’s language to suit
+the desired tone
+.
+Privacy and Security Updates
+Apple has long positioned macOS as a secure and privacy-respecting OS, and macOS Sequoia doubles down
+on this ethos with a series of enhancements to both privacy features and system security mechanisms.
+These changes range from user-facing privacy options to deep system policy adjustments that harden the
+Mac against malware and unauthorized access.
+Gatekeeper Hardening: One of the most impactful security changes in Sequoia is how the Gatekeeper
+system (which checks downloaded apps for a valid signature or notarization) now behaves. In previous
+macOS versions, technically savvy users could bypass Gatekeeper’s quarantine warning by either right-
+clicking an app and choosing “Open” or by globally disabling Gatekeeper via the Terminal command sudo 
+spctl --master-disable . Malware authors often exploited these bypasses by instructing victims to
+manually override Gatekeeper
+. In macOS Sequoia, Apple has  removed these bypass methods entirely.
+According to Apple’s developer notes,  “in macOS Sequoia, users will no longer be able to Control-click to
+override Gatekeeper when opening software that isn’t signed correctly or notarized”
+. Instead, if a user tries
+to open an app that Gatekeeper flags, they must now go into System Settings > Privacy & Security and
+explicitly allow the app from there
+. This extra step is more cumbersome (by design), as it forces a
+deliberate action in settings rather than a quick shortcut. Likewise, the Terminal command to disable
+Gatekeeper ( spctl --master-disable ) has been removed; it no longer exists in Sequoia
+. The only
+way to run an unsigned app is on a case-by-case basis via Settings (or by completely disabling System
+Integrity Protection, which is far more involved and not recommended)
+. These changes close loopholes
+that “much malware and adware has abused over the years”
+. From a security standpoint, this is a win:
+malware can’t just tell the user “right-click and open” to circumvent Apple’s checks
+. However, it has
+drawn some complaints from power users and developers, because it adds friction when running legitimate
+unsigned apps (e.g. in-house tools or older software). As one commentator noted, the people who knew
+about the Control-click shortcut were typically advanced users aware of the risks
+; now those users have
+to jump through an extra hoop. Nonetheless, Apple’s stance is that any reduction in accidental malware
+execution is worth the slight inconvenience. Gatekeeper itself still enforces the same rules (the kinds of
+software  allowed  haven’t  changed,  only  the  override  method)
+,  but  Sequoia’s  stricter  enforcement
+underscores Apple’s increasing intolerance of unvetted code on macOS.
+XProtect and Malware Scanning: Alongside Gatekeeper, macOS has an XProtect system – Apple’s built-in
+malware signature engine and remediation tool. Historically, XProtect operates mostly behind the scenes
+(automatically blocking known malicious software). In Sequoia, Apple made XProtect more accessible and
+extensible for administrators by introducing a new command-line utility at  /usr/bin/xprotect
+.
+Running  xprotect  with sudo allows an admin to invoke malware scans or check XProtect status on
+demand
+. The  man  page for xprotect indicates some limited options for scanning files or updating
+signatures, giving power users insight and control over the malware definitions on the system
+. This
+change,  while  minor  for  average  users,  is  significant  for  enterprise  security  teams  who  want  to
+programmatically ensure Macs are scanned or integrate Apple’s malware protection into their workflows.
+77
+109
+110
+111
+111
+35
+112
+110
+110
+113
+114
+115
+115
+115
+14
+
+------------------------------------------------------------------------
+Page 15
+------------------------------------------------------------------------
+
+Transparency, Consent, and Control (TCC) Changes: TCC is macOS’s subsystem that governs app requests
+for  sensitive  permissions  (e.g.  access  to  files,  camera,  microphone,  screen  recording,  etc.).  Apple
+continuously refines TCC each release, often adding new resource types or adjusting the user prompts. In
+Sequoia, two notable TCC-related changes aim to prevent stealthy or perpetual access by apps: - Screen
+Recording Permissions Renewal: Apps that capture the screen (for screenshots, recording, or remote
+control) now have a  time-bound permission. Instead of the one-time “allow” that persisted indefinitely,
+Sequoia will prompt the user monthly to re-affirm screen recording permission for an app
+. This is a
+response to security concerns that some apps or malware could hide and record the screen without users
+realizing, long after initial approval. By forcing periodic re-prompts, macOS ensures users are reminded
+which apps have this powerful permission. While it may annoy some users (having to click “allow” again
+each month), it significantly limits the potential window for abuse if a user unknowingly granted such
+access. -  Local Network and Removable Media Access: Apps that initiate connections to local network
+devices or access peripheral volumes (e.g. an external USB drive) now also trigger TCC prompts in Sequoia
+. Previously, iOS had “Local Network” privacy alerts, and macOS did not; Sequoia brings macOS in
+line by alerting the user when an app tries to discover devices on the LAN or communicate over LAN. Even
+plugging in certain devices might elicit a prompt if an app tries to interact with it. This is to prevent
+clandestine data exfiltration or device access on local networks. More details were given in Apple’s WWDC
+session “What’s new in privacy”: essentially, any app that wants to open a listening port or enumerate local
+network services must get consent now
+. This is especially relevant for enterprise or developer tools that
+do local networking – they must be designed to handle this new permission.
+Furthermore, Apple expanded TCC to cover some command-line tools: for example,  dscl  (Directory
+Service command-line utility) will now trigger a consent prompt if used to change a user’s home directory
+. This prevents silent misuse of directory services by scripts without admin awareness.
+Network Privacy – Rotating MAC Addresses: When an Apple device connects to Wi-Fi, it traditionally
+broadcasts a unique MAC address which can be tracked. iPhones and iPads in recent iOS versions started
+using  private Wi-Fi addresses (per network randomized MACs). macOS Sequoia introduces  rotating Wi-Fi
+MAC addresses over time, even for known networks
+. Specifically, macOS can rotate the local MAC
+address approximately every two weeks when connecting to the same network
+. This approach (unique
+among desktop OSes) aims to reduce the ability of network operators or observers to track a Mac over long
+periods. For instance, a public hotspot owner might log device MACs – with rotation, your Mac looks like a
+new device periodically, enhancing anonymity. Apple notes this helps mitigate tracking by Wi-Fi network
+providers
+. The rotation interval is not too frequent (to avoid disrupting certain network setups like MAC-
+based access control), but it’s enough to break persistent association. This feature is part of Apple’s broader
+push for privacy; it happens automatically in the background and most users won’t notice any change
+except in advanced router logs.
+Passwords App and Authentication: The new Passwords app (covered in the features section) not only
+improves convenience but also has security benefits. It encourages users to rely on iCloud Keychain (which
+is end-to-end encrypted) for password management, and it integrates 2FA code generation to reduce
+reliance on less secure SMS codes
+. The app also provides security recommendations (for weak or
+compromised passwords) in a more visible way than before
+. From an enterprise perspective, one
+caution noted by security experts is that the Passwords app unlocks with the user’s login password by
+default (since it’s tied to the login keychain)
+. If users reuse that password elsewhere, it could be a risk.
+External password managers often use a separate master password, which can be more secure. So, while
+Apple’s solution is convenient, organizations might still opt for third-party managers. Apple did not alter the
+116
+37
+116
+117
+118
+119
+38
+38
+38
+21
+120
+121
+122
+15
+
+------------------------------------------------------------------------
+Page 16
+------------------------------------------------------------------------
+
+underlying Keychain Access much besides relocating it in the file system and presumably updating its UI
+slightly
+. 
+Additional Security Notes: Sequoia continues to support Lockdown Mode (introduced in macOS Ventura)
+for at-risk users, with presumably updated protections, though no specific changes were highlighted in
+sources. Also, Apple’s security updates in the Sequoia cycle include dozens of patches (over 70 CVEs were
+fixed in 15.0 per some reports
+), reinforcing the OS against vulnerabilities. Notably, some early reports
+indicated macOS Sequoia initially caused issues with third-party security software (like endpoint protection
+agents). For example, a Reddit thread mentioned that Sequoia’s update broke or required patches for tools
+from CrowdStrike, SentinelOne, etc., possibly due to the tightened security and new System Extension
+requirements
+. Those vendors had to quickly update their software to be compatible with Sequoia’s
+changes  (SentinelOne  proudly  announced  day-one  support  after  adjustments
+).  This  indicates  that
+Apple’s security changes, while beneficial, required the security ecosystem to adjust.
+In terms of privacy enhancements for users, aside from network and TCC changes, Apple unified some
+Privacy & Security settings in System Settings making it clearer which data is shared with apps
+. Users
+can now more easily review and revoke app permissions. MacOS Sequoia also benefits from cross-platform
+privacy features introduced around the same time: e.g., Communication Safety (blurring sensitive photos for
+children) and Sensitive Content Warning (for adults receiving nudes) were primarily iOS features but likely
+extended to Mac via Messages and FaceTime by association. Apple’s release notes highlight that not all
+features are available in all regions – implying some privacy features are region-specific due to regulations
+.
+Overall,  macOS Sequoia significantly strengthens Mac security. By eliminating easy bypasses for app
+verification
+ and tightening permission regimes
+, Apple is closing avenues for malware and data
+abuse. The approach aligns macOS more with iOS’s locked-down philosophy, though macOS still allows non-
+App  Store  apps  (with  notarization)  and  power-user  customization  to  a  greater  degree.  Some  friction
+introduced (like the Gatekeeper change) reflects Apple’s prioritization of security over convenience for
+advanced users – a shift that has been gradual over the past years but is very evident in Sequoia. For the
+average user, these changes mostly operate in the background or as occasional prompts, contributing to
+making “macOS one of the most secure consumer operating systems” as Apple would claim. Importantly,
+none of these security enhancements fundamentally change what users can do with their Macs; they
+primarily  ensure  that  when  users  or  admins  choose  to  do  something  potentially  unsafe,  it’s  a  more
+conscious, intentional act. This layered defense and user consent model is core to Apple’s security design,
+and Sequoia brings the Mac closer to parity with the stringent security model seen on iPhones, all while still
+allowing flexibility that Mac power users expect.
+Built-in Applications and Productivity Enhancements
+macOS Sequoia delivers a host of improvements to the stock applications and general productivity features,
+many of which parallel updates in iOS/iPadOS 18. These enhancements, both big and small, aim to make
+everyday tasks on the Mac more efficient and enjoyable. We will highlight key changes in major apps and
+system features:
+Safari 17: The Safari browser in Sequoia gets notable new capabilities: -  Highlights: When viewing a
+webpage, Safari can now surface contextual info via Highlights. For example, if a page mentions a place, a
+small  card  might  appear  with  a  map  and  address  (via  Maps  integration)
+;  if  a  song  or  movie  is
+123
+124
+51
+125
+126
+101
+35
+36
+14
+16
+
+------------------------------------------------------------------------
+Page 17
+------------------------------------------------------------------------
+
+mentioned, a snippet with details or a preview could show. This feature “quickly pulls up relevant information
+about a site” such as directions or summaries
+. It’s essentially an intelligent web snippet tool to save
+the user from manual searching. The UI is similar to Safari’s existing Siri Suggestions but more expansive.
+(Figure 3a below shows an example of Highlights providing a map for a hotel on a travel site.) - Redesigned
+Reader: Safari’s Reader mode, which strips articles down to clean text, is improved with a new sidebar
+showing  the  table  of  contents and  an  automatic  summary of  longer  articles
+.  This  helps  users
+navigate  lengthy  content  and  get  a  gist  without  reading  everything.  The  Reader  view  is  also  more
+customizable and the summary is generated by AI (leveraging Apple Intelligence language models) to
+highlight key points
+. - Viewer for Video: Safari now detects if there’s a video on the page and provides a
+Viewer mode that brings the video front and center, dimming other content
+. It effectively isolates
+the video player (like a theater mode) while still giving access to controls and automatic Picture-in-Picture if
+you click away
+. This is great for web videos that were previously surrounded by clutter or would
+stop playing if not focused. - Distraction Control: A subtle but powerful feature where Safari lets users hide
+specific page elements that they find distracting
+. For example, you can hide a persistent sidebar or a
+banner  ad  on  a  particular  site,  and  Safari  will  remember  it.  This  user-defined  content  blocking  was
+previously possible only via extensions; now it’s built in, underscoring Apple’s user-centric design (perhaps
+to the chagrin of some web advertisers). - Performance and Sync: Safari also gains an HTTPS upgrade
+feature which automatically tries to load the HTTPS version of websites (if a user accidentally follows an http
+link)
+. Import/export of bookmarks, history, and passwords has been simplified
+ to encourage people
+to switch to Safari. And as mentioned, Safari 17’s WebKit engine is faster and supports the latest web
+standards. Tab Groups, introduced earlier, remain and get better syncing and sharing options in Sequoia.
+These Safari enhancements make browsing both smarter and more distraction-free. They also show Apple
+leveraging integrated services (Maps, Siri knowledge, AI summaries) to augment web content, something
+only possible with tight ecosystem control.
+Messages: The Messages app on Mac catches up with its iOS version in functionality: - Live Stickers and
+Tapbacks: Users can now react to messages with any emoji or even sticker, not just the default 6 Tapback
+icons
+. A new interface for Tapbacks lets you pick from your emoji keyboard or sticker packs, and
+frequently used reactions are just a swipe away
+. This allows more expressive communication,
+matching iOS 18 where any sticker can serve as a reaction. -  Message Effects and Formatting: Long
+available on iPhone but now on Mac, text effects (like making a message “slam” or “invisible ink”) and screen
+effects (balloons, confetti) can be sent and viewed on macOS Sequoia
+. You can also format message text
+(bold, italics, underline, etc.) for emphasis
+. These bring parity with iMessage features on mobile,
+enriching  the  chat  experience  on  Mac.  -  Scheduled  Send  and  Improved  Search: Send  Later allows
+scheduling an iMessage or SMS to send at a later time/date
+, handy for working across time zones or
+not forgetting birthdays. And Messages search is smarter, using synonyms and context (likely via ML) to find
+content, though Apple specifically highlighted search improvements more on iOS. -  Catch-up Arrow: If
+you’ve been away, a new arrow indicator jumps to the first unread message in a busy group chat, a minor
+but welcome UI tweak introduced on all platforms.
+Mail: The Mail app’s core interface remains the same, but it gains: - Smart Reply suggestions: As noted, at
+the bottom of an email one is reading, Mail might show buttons like “Thanks for the update!” or “I’ll get back
+to you soon.” This can speed up routine replies
+. -  Attachment handling and Reminders: Mail in
+Sequoia continues to offer features from Ventura (like scheduled send, undo send, follow-up nudges), but
+one small addition is that if you compose an email referencing an attachment but forget to include it, Mail’s
+ML will prompt you (this existed in earlier macOS too, not new for Sequoia, but refined). - Enhanced search:
+14
+127
+15
+128
+15
+16
+129
+16
+129
+17
+130
+130
+131
+132
+131
+29
+133
+134
+11
+17
+
+------------------------------------------------------------------------
+Page 18
+------------------------------------------------------------------------
+
+Mail search uses intelligence for better results (typo correction, recognizing search intent), similar to iOS
+17’s improvements. 
+Notes: The Notes app sees major productivity boosters: -  Audio Notes with Transcription: Users can
+record audio directly inside a note
+. As you record, a live transcription of the speech is generated right in
+the note
+. Later, you can search within these transcripts. This is powerful for meeting notes or lectures –
+you have both the audio and a text transcript indexed. The transcription summary feature (AI-generated
+overview  of  the  transcript)  further  helps  digest  long  recordings
+.  -  Inline  Math  and  Instant
+Calculations: Math in Notes lets you type an equation (using = ) and it will solve it immediately
+. For
+example, typing =SUM(2,3,5)  or even a simple 5+3=  will output the result. This effectively turns Notes
+into a quick calculator/notepad hybrid, great for jotting calculations or using notes as a scratchpad. -
+Collapsible Sections: You can now structure a long note with collapsible headings
+. Clicking a disclosure
+arrow  next  to  a  section  header  hides  that  section’s  content,  which  is  excellent  for  organizing  large
+documents or to-do lists in a single note. -  Highlighting: You can highlight text in notes with different
+colors
+, adding a layer of emphasis or categorization within a note. - Improved organizational views:
+Notes’ gallery view and categorization were improved (e.g. a dedicated view for notes with attachments),
+but the key features are the ones above which essentially bring Notes closer to a lightweight Word/
+OneNote capability set.
+Photos: The Photos app gets more intelligent organization and editing tools: - Collections: In the sidebar, a
+new Collections section automatically groups your library by various categories like Days, Trips, People &
+Pets, Featured Photos
+. For instance, “Trips” might show a collection for “Weekend in New York (June
+2025)” if it detects a travel cluster. This is similar to Google Photos’ auto grouping and makes browsing large
+libraries  easier.  -  People  &  Pets  grouping: The  People  album  now  can  show  Groups,  i.e.  common
+combinations of people (and pets) that appear together in photos
+. If you often take photos of your two
+kids together, it will have a group for them. This leverages face (and pet) recognition to identify frequent
+groupings. - Video Editing – Speed: You can adjust the playback speed of videos within Photos now
+. If
+you have a 120fps slo-mo video, you can use in/out markers to slow down a portion of it. This basic video
+editing negates the need for a separate app just to do a speed ramp. - Utilities & Recently Edited: A new
+Utilities section  in  Photos  collates  various  automatically  created  albums  (like  Documents,  Screenshots, 
+Receipts) and now also shows items you recently edited, viewed, or shared
+. It basically surfaces content
+you might need quick access to, and addresses cases where certain hidden photos (in locked albums) were
+not visible due to database corruption (Recovered album)
+. - Clean Up tool: As described earlier, an AI-
+based object removal feature helps clean photos with a click
+. This brings Photoshop-like “content-aware
+fill” to casual users.
+Maps: The Maps app becomes far more useful for outdoor enthusiasts: - Topographic Maps: You can view
+detailed topography with contour lines and elevation on Maps now
+ (for supported regions, starting with
+U.S. parks). This makes Mac’s Maps actually viable for hiking planning. - Hiking Trails and Guides: All U.S.
+National Parks have their Hiking Trails indexed in Maps with info and user reviews, etc., and you can save
+them offline by adding to a special guide
+. Maps also lets you create custom walking/hiking routes,
+adding multiple waypoints, etc., for exercise or travel sightseeing
+. -  Places (Saved) Library: A new
+Places Library consolidates your saved places, custom guides, and now hiking routes into one section for
+easy access
+. - These features mirror iOS 18’s Maps changes and make planning trips on Mac easier, with
+the ability to sync routes to your iPhone/Apple Watch.
+135
+136
+95
+137
+138
+138
+139
+140
+141
+142
+143
+32
+34
+34
+144
+145
+18
+
+------------------------------------------------------------------------
+Page 19
+------------------------------------------------------------------------
+
+Reminders and Calendar: Apple continues integrating these productivity apps: - In Calendar, you can now
+create and view Reminders alongside events
+. This is a great contextual addition – e.g., see your to-do
+tasks for a day listed next to that day’s meetings. You can check off a reminder right from Calendar. -
+Reminders app itself got an improved Today and Scheduled view grouping reminders by time and category,
+and a Recently Deleted list to recover accidentally removed tasks
+. Also, new smart lists like Completed
+or Flagged might be present (some came in iOS 17).
+Other Noteworthy Improvements: - Weather app: Now shows the “Feels Like” temperature prominently
+next to the actual temperature when they diverge, so users have a better sense of conditions
+. - Home
+app: Introduces  Guest Access for HomeKit locks and garage doors – you can give timed access codes to
+visitors
+. Also shows electricity usage data for certain smart appliances/utility integration (starting with a
+California utility)
+. - Stocks: Adds pre-market and after-hours price columns for stock tickers
+, useful
+for investors. -  Freeform: Gains a feature called  “Scenes” which lets you organize a large canvas into
+sections and then label and move those sections easily
+. -  Calculator: As mentioned, aside from the
+redesign, it now keeps a history of calculations and can perform unit conversions and more advanced
+expressions
+, making it more on par with dedicated calculator apps. -  Voice Memos: (Though not
+explicitly in sources, often Apple improves little things like noise reduction in recordings, but we’ll skip
+speculation.)
+Collectively,  these  app  improvements  may  seem  incremental,  but  they  significantly  refine  the  user
+experience: - They bring feature parity across devices (no more missing Effects in Mac Messages, etc.). -
+They leverage ML to simplify tasks (finding info in Safari, summarizing text, tidying photos). - They cater to
+user requests (scheduled messages, note organization, multiple timers on Mac via Reminders perhaps). -
+And they further integrate apps with each other (Reminders in Calendar, Music/TV with natural language
+search etc.).
+For users coming from macOS Ventura or Sonoma, the system feels more cohesive and capable. The Mac is
+better at the things people do daily: communicating, planning, note-taking, browsing, and managing
+media. Each built-in app taking a step forward means less need for third-party apps for those who prefer
+Apple’s ecosystem apps. It’s also worth noting that stability and optimization in these apps have been
+reportedly good; Apple’s incremental approach (e.g., adding features to Notes without overhauling it) has
+kept performance smooth, even as new capabilities are added.
+In summary, macOS Sequoia’s enhancements to built-in applications polish the overall macOS experience.
+By aligning Mac apps with their iOS counterparts and adding thoughtful new features, Apple enables users
+to be more productive and creative out of the box. These changes also underscore Apple’s broader strategy:
+each app’s improvements often tie into system-wide advancements (AI, continuity, etc.), showing how
+tightly integrated the OS and apps are. Users who fully embrace Apple’s suite (Safari, Mail, Notes, etc.) will
+find Sequoia a substantial upgrade in convenience and functionality over previous macOS versions.
+146
+147
+148
+149
+150
+151
+152
+56
+19
+
+------------------------------------------------------------------------
+Page 20
+------------------------------------------------------------------------
+
+Figure 3a (left): Safari’s new Highlights feature, which in this example has recognized a hotel on a webpage and
+popped up a contextual map card with directions and info
+. Figure 3b (right): Safari’s Reader view in Sequoia,
+showing a table of contents and a summary for a long article, alongside a clean reading pane
+.
+Developer Tools and Frameworks
+macOS Sequoia arrives as a developer-friendly release with significant updates to tools and frameworks
+that  empower  software  creators  –  particularly  in  areas  of  gaming,  AI  integration,  and  cross-platform
+development. Apple introduced new capabilities at WWDC 2024 alongside Sequoia that aim to simplify
+development and encourage high-performance apps on the Mac.
+Xcode 16 and SDKs: The macOS 15 Sequoia SDK comes bundled with  Xcode 16, which was released in
+tandem. Xcode 16 provides the libraries and APIs for all Sequoia features, enabling developers to adopt
+things like Apple Intelligence features in their own apps. For example, Apple likely exposed certain  AI-
+related APIs – such as new Natural Language frameworks for summarization or tone analysis, Vision
+frameworks for photo cleanup, and the ability to invoke system’s ML for things like transcription summaries
+or text generation. Even if some Apple Intelligence features are not directly open to third parties, developers
+can use Core ML to integrate custom models and leverage the Neural Engine improvements. Xcode 16 also
+includes  tools  for  building  Interactive  Widgets (introduced  in  iOS  17/Sonoma)  that  work  on  Mac,  and
+improvements to SwiftUI for building Mac apps with more parity to UIKit. Swift 5.9 (likely included in Xcode
+16) added language features like macros and better generics support, which developers can utilize to
+reduce boilerplate and potentially integrate AI-assisted code generation (via Xcode plugins or Playgrounds).
+Game Porting Toolkit 2.0: The standout developer tool in Sequoia’s orbit is Apple’s Game Porting Toolkit
+2.0 (GPTK2), as discussed earlier. This toolkit is essentially Apple’s official translation layer for running
+Windows games on macOS during the porting process. Initially launched in 2023, GPTK was based on Wine/
+CrossOver and allowed developers (or enthusiasts) to run DirectX 12 Windows games on Apple Silicon Macs
+to evaluate performance
+. In its 2.0 iteration, which ships with Sequoia’s developer tools, Apple has
+greatly enhanced it: - Improved Performance and Compatibility: GPTK2 has “better graphics performance
+14
+15
+128
+26
+20
+
+------------------------------------------------------------------------
+Page 21
+------------------------------------------------------------------------
+
+and compatibility with more software”
+. Many more Windows games can at least launch and run now
+compared to the first version, thanks to expanded API coverage and bug fixes. -  AVX2 instruction set
+support: Rosetta 2 (the x86–ARM translation in macOS) historically did not support certain advanced x86
+instructions like AVX/AVX2, causing some games to fail. With Sequoia, GPTK2 “features the AVX2 instruction
+set”, meaning Apple has added translation support for AVX2 into the toolkit’s environment
+. This is a big
+deal, as many modern games use AVX2. It likely indicates enhancements in Rosetta on macOS 15, at least
+for the game translation context. - Ray Tracing on Apple Silicon: Apple states GPTK2 “works with ray-tracing
+on compatible hardware”
+. The “compatible hardware” here presumably refers to the new Apple GPU
+architecture in the M3 family, which (as of late 2024) introduced hardware-accelerated ray tracing. Indeed,
+Apple’s M3 Pro/Max GPUs support Ray Tracing instruction acceleration. GPTK2 can translate DirectX’s ray
+tracing calls (DXR) to Metal’s ray tracing APIs, allowing games with ray-traced graphics (like the mentioned
+Resident Evil 8 or others) to run with those effects on Mac if hardware allows
+. Apple even touted
+upcoming  Mac  versions  of  games  leveraging  ray  tracing  on  M3  chips  (e.g.,  Control  Ultimate  Edition, 
+Wuthering Waves)
+. -  iOS/iPadOS Support: The biggest twist is that the Game Porting Toolkit now
+extends to iOS. Apple demonstrated that developers can use GPTK2 to not only get a Windows game
+running on Mac, but then relatively easily bring that Mac game to iPhone/iPad
+. This is achieved by
+using shared frameworks: Apple’s Metal 3 graphics API, game controller support, audio engines, etc. are
+unified across macOS and iOS. For instance, a developer who got their game using Metal on Mac can
+recompile for iOS, and where they used gamepad vibration on Mac, that seamlessly maps to iPhone’s Taptic
+Engine
+. Essentially, Apple is pitching that a single Apple port of a game can target Mac, iPhone, and
+iPad with minimal extra effort, thus dramatically increasing the audience (hundreds of millions of mobile
+devices in addition to Macs)
+. This is unprecedented because historically iPhones/iPads haven’t run “PC
+games,” but with Apple Silicon, the performance gap has closed, and Apple is leveraging that. - Developer
+Workflow: GPTK2 is available as a developer beta toolkit
+. Developers can use it to run a Windows
+game’s binary on Mac, analyze performance, get logs on what DirectX features need porting, etc. Then
+Apple provides guidance and frameworks (like Metal shaders converters) to replace Windows-specific code
+with cross-platform code. Apple also updated the accompanying Metal Shader Converter and DXC (DirectX
+compiler) tools to better automate translating HLSL shaders to Metal Shading Language. All of this lowers
+the cost and time of porting.
+The presence of GPTK2 shows Apple’s serious commitment to improving Mac’s gaming landscape. By
+making Mac (and iPhone/iPad) more attractive to game developers, Apple hopes to break the historical
+cycle  of  Macs  being  ignored  for  AAA  game  releases.  Early  results  by  adventurous  users  have  been
+promising – by mid-2025, many DX12 games were shown running via GPTK on Macs, and some developers
+like Capcom and Ubisoft announced day-one Mac support for big titles (as cited in Apple’s press release:
+Assassin’s Creed Shadows,  Resident Evil series, etc. coming to Mac)
+. The toolkit may also inadvertently
+allow enthusiast users to play unported Windows games on their own (though Apple positions it strictly as a
+development tool, not a consumer emulator).
+Metal 3 and Graphics APIs: macOS Sequoia supports Metal 3, which was introduced in Ventura but has
+since gained new features. On Sequoia, Metal 3 includes enhanced upscaling (Apple’s MetalFX Upscaling
+for AI-based resolution upscaling, used by some games) and better resource loading APIs to reduce game
+scene loading times. The OS also includes the latest  GPU Drivers for new hardware (M3 series) and
+improved memory management for unified memory on Apple Silicon, which developers can leverage for
+better performance. 
+27
+27
+27
+153
+154
+153
+28
+155
+28
+156
+157
+21
+
+------------------------------------------------------------------------
+Page 22
+------------------------------------------------------------------------
+
+For compute and ML developers, Apple likely updated Core ML to version 4 or 5 with Sequoia, including
+support for larger Transformer models and new quantization options, given the heavy use of ML in Apple’s
+own features. Xcode’s Create ML and Playgrounds might also incorporate new templates to utilize Apple
+Intelligence capabilities.
+visionOS and Cross-Platform Development: Although outside the direct scope of macOS, WWDC 2024
+also was significant for the introduction of visionOS (for Apple Vision Pro). Xcode 16 and macOS Sequoia’s
+SDK play a role here: developers on Mac can build visionOS apps, and Apple likely ensured that Sequoia’s
+developer tools allow using the visionOS simulator, etc.. The Mac acts as the development hub for all Apple
+platforms (iOS, iPadOS, watchOS, tvOS, and now visionOS). Sequoia’s inclusion of frameworks like RealityKit
+2 or updates to ARKit means developers can create immersive experiences on Vision Pro using their Mac.
+Other Developer-centric Updates: - Dev Environment Reliability: Sequoia being the last to support some
+Intel Macs means developers with those machines can still run Xcode 16 and target Apple Silicon apps, but
+they should prepare for an Apple Silicon–only future (since Xcode 17+ might eventually drop Intel host
+support).  -  UNIX  Tools  and  Scripting: Apple  updated  many  underlying  development  tools  (scripting
+languages, command-line utilities). For instance, scripting languages (Python, Ruby) might have version
+bumps or better swift  scripting support. The removal of periodic  (mentioned before) might affect
+some dev scripts. Also, Apple continues to encourage using EndpointSecurity and SystemExtensions instead
+of kernel extensions; by Sequoia, hardly any kexts are allowed except perhaps for certain enterprise
+network filters (and even those moved to system extensions). - App Sandbox & Notarization: Apple slightly
+tweaked notarization requirements (all apps must be notarized for Gatekeeper; now without the bypass,
+devs are strongly pushed to notarize every app build). Xcode 16 streamlines the notarization process and
+the Developer ID signing workflow, making it easier for independent developers to comply. - Testing and
+Simulator: The iOS/iPadOS 18 simulators on Mac include models for various new device screen sizes. Also,
+the Apple Device Simulator likely now can simulate an iPhone for the iPhone Mirroring feature testing.
+This might allow devs to see how their iPhone app would behave under Mac mirroring (though that’s a
+niche concern, Apple might use it internally more).
+In conclusion, macOS Sequoia arrives as a robust platform for developers, expanding what they can do and
+where their apps can run. The marquee addition, Game Porting Toolkit 2.0
+, directly addresses one
+of Mac’s historical weaknesses (gaming) by reducing porting effort and leveraging Apple Silicon’s prowess
+across devices. Meanwhile, the improvements in Apple’s own frameworks (Metal, Core ML, SwiftUI, etc.) and
+the new opportunities in AI show developers the path to integrate cutting-edge features into their apps.
+Apple’s strategy is clearly to make Mac development synonymous with cross-Apple development – a single
+codebase can now realistically target Mac, iPhone, iPad, and even Vision Pro in some cases, with relatively
+little friction. Sequoia’s developer environment thus exemplifies the unification of Apple’s platforms, and it
+has been warmly welcomed by developers who see new markets (like bringing PC games to mobile via
+Apple’s ecosystem). With these tools, macOS Sequoia is not just an OS for end-users, but a fertile ground for
+innovation for the creator community, ensuring that Mac software continues to grow in quantity and
+quality.
+27
+28
+22
+
+------------------------------------------------------------------------
+Page 23
+------------------------------------------------------------------------
+
+Comparison with Previous macOS Versions
+macOS Sequoia represents a notable leap forward from its predecessor, macOS 14 Sonoma, and other
+recent releases like Ventura (13) and Monterey (12). In this section, we compare key aspects of Sequoia to
+earlier versions, highlighting how Apple’s focus has shifted or intensified in certain areas:
+Generative AI Integration: The most obvious differentiator is Sequoia’s embrace of AI/ML features,
+which  were  virtually  absent  in  previous  versions.  Prior  macOS  versions  had  machine  learning
+underpinnings (e.g. Live Text OCR in Monterey, on-device dictation in Ventura), but they did not
+expose user-facing generative AI tools. Sequoia is the first macOS to introduce things like AI-powered
+writing assistance, content generation, and advanced Siri capabilities
+. For instance, macOS
+Sonoma did not have any counterpart to Writing Tools or Image Playground – these are entirely new
+in Sequoia. This aligns macOS with a broader industry trend in 2024–2025 toward integrating AI
+assistants, something Windows began exploring (e.g. Windows Copilot) but Apple implemented with
+an on-device twist. The impact is that Sequoia can be seen as a response to user expectations
+shaped  by  AI  innovations,  making  the  Mac  far  more  “intelligent”  than  it  was  in  Sonoma.  In
+comparison, earlier macOS improvements were more about usability and performance; Sequoia’s
+marquee improvements are about capability, enabling tasks that simply weren’t possible before on a
+Mac without third-party services.
+Continuity  and  Ecosystem  Integration: macOS  has  steadily  gained  continuity  features  (e.g.
+Handoff in Yosemite, Universal Clipboard in Sierra, Continuity Camera in Ventura). Sequoia’s iPhone
+Mirroring stands out as a dramatic extension of this trend
+. There was no equivalent in Sonoma
+or earlier – the closest continuity feature was Sidecar (using an iPad as a Mac display) and Continuity
+Camera (using iPhone as webcam). iPhone Mirroring essentially inverts Sidecar, using the Mac to
+display/control  the  iPhone.  Its  introduction  reflects  Apple’s  increasing  efforts  to  blur  device
+boundaries. Another integration point is releasing Sequoia simultaneously with iOS/iPadOS and
+sharing features like Apple Intelligence across them
+. By contrast, in earlier years macOS often
+lagged a few weeks or months behind iOS releases and had fewer truly shared features. Sonoma, for
+instance, introduced Continuity widgets (showing iPhone widgets on Mac desktop) – a feature
+bridging devices, but Sequoia took a much bigger step in integration. It’s clear that each macOS
+generation since macOS 11 Big Sur (when the Mac transitioned to Apple Silicon and adopted design
+cues from iOS) has brought the ecosystems closer; Sequoia is the culmination so far, making a Mac
+and an iPhone work in tandem in ways not seen before.
+User Interface and Experience: The UI changes in Sequoia vs Sonoma are relatively subtle. Sonoma
+introduced things like desktop widgets and new screen savers; Sequoia adds window snapping and
+small  design  tweaks.  In  fact,  macOS  14  Sonoma’s  headline  features  were  more  cosmetic  (e.g.
+interactive widgets on the desktop, a new game mode, screen saver wallpapers), whereas Sequoia’s
+are more functional (AI, continuity, etc.). One might say Sonoma felt like a refinement of Monterey/
+Ventura with some user-requested features, while Sequoia feels more ambitious in scope. That said,
+comparing Stage Manager (Ventura’s approach to multitasking) with Sequoia’s window tiling: Apple
+in Stage Manager tried a novel UI paradigm for windowing; with Sequoia, they acknowledged the
+enduring popularity of traditional snapping (like Windows’ approach)
+. So Sequoia actually adds
+something more conventional that previous macOS lacked, addressing complaints that power users
+long  had.  This  might  be  seen  as  Apple  course-correcting:  Stage  Manager  in  Ventura  was  not
+universally loved for Mac (though fine on iPad), so Sequoia quietly adds a simpler tiling – which in
+• 
+6
+9
+• 
+7
+4
+• 
+18
+23
+
+------------------------------------------------------------------------
+Page 24
+------------------------------------------------------------------------
+
+practice, many users find more immediately useful
+. Thus, from a UI philosophy perspective,
+Sequoia leans into practicality over novelty, compared to the past couple of releases.
+Performance and Hardware Utilization: Each macOS release since Big Sur (11) has improved
+optimization on Apple Silicon. By the time of Sonoma, Apple Silicon Macs were already showing great
+performance.  Sequoia  further  optimizes  certain  scenarios  (like  gaming  via  Game  Mode
+improvements
+) and takes advantage of new chips (e.g. enabling ray tracing on M3). In everyday
+use, users coming from Sonoma might not feel a huge speed difference, as Apple’s focus was on
+adding features without regressing performance. However, one performance-related change is the
+continued phasing out of Intel optimizations: Sonoma was the first macOS to drop support for some
+older Intel Macs, and Sequoia drops a couple more (2018-19 Air)
+. On Intel Macs that do run it,
+Sequoia might actually perform slightly heavier due to the disabled Neural Engine features and
+Rosetta enhancements geared towards Apple Silicon. For example, ChatGPT integration and some
+writing tools simply won’t run on Intel (no Neural Engine, and Apple did not create a fallback), so one
+could argue the “full performance” of Sequoia is only realized on Apple Silicon. By comparison,
+earlier macOS tried to maintain feature parity across Intel and M1 (e.g. Monterey offered Universal
+Control on both, etc.), but Sequoia marks a more pronounced bifurcation: certain features are Apple
+Silicon-exclusive
+. This sets it apart from all previous macOS versions in that regard.
+Security Posture: macOS has steadily tightened security over the years (System Integrity Protection
+in El Capitan, notarization requirement in Catalina, etc.). Sequoia’s removal of Gatekeeper bypass
+and other changes
+ is arguably one of the most consequential security moves since those earlier
+milestones. Compared to Sonoma, where a user could still easily allow an unsigned app, Sequoia
+reflects a shift closer to the iOS model (where you can’t run untrusted code at all unless jailbroken).
+The Mac isn’t fully there – you can still allow apps via Settings – but Apple made it clear what
+direction they’re heading. Also, features like rotating MAC addresses and recurring permission
+prompts in Sequoia show Apple adapting macOS with ideas proven on iOS, whereas previous macOS
+might have left those aspects open (e.g. Monterey had no periodic re-prompt for screen recording;
+an app could theoretically record forever after one consent). Thus, Sequoia is significantly more
+locked-down by default than Catalina or even Ventura. From a user’s viewpoint, this mainly manifests
+as a few extra prompts or steps, but it’s a meaningful evolution of the Mac’s security paradigm. 
+Feature  Completeness  vs.  Early  Adoption  Issues: It’s  instructive  to  compare  stability  and
+completeness at launch. macOS Sonoma was a relatively polished release with most announced
+features available on day one (Game Mode, widgets, etc. all worked at release). macOS Sequoia, in
+contrast,  had  some  marquee  features  announced  that  were  not ready  at  initial  release:  Apple
+Intelligence features rolled out in phases (15.1 and 15.2 updates)
+, and iPhone Mirroring was
+delivered later in 2024
+. This is somewhat akin to macOS Catalina’s launch (where Catalyst and
+some iCloud features were a bit rough). The multi-stage rollout of features in Sequoia indicates
+Apple was pushing the envelope – arguably Sequoia introduced more ambitious changes than could
+be fully baked by September 2024, whereas Sonoma’s features were more straightforward and all
+there on day one. Over the months following release, Sequoia matured quickly (by 15.2 most AI
+features were live, by 15.4 things like Genmoji were added). So, compared to previous versions, users
+had to be a bit more patient to get everything Apple promised at WWDC. However, by mid-cycle,
+Sequoia became far more feature-rich than any macOS before it.
+52
+• 
+25
+41
+40
+• 
+35
+• 
+103
+158
+72
+24
+
+------------------------------------------------------------------------
+Page 25
+------------------------------------------------------------------------
+
+In  summary,  macOS  Sequoia  vs  previous  versions can  be  characterized  as  follows:  Sequoia  is  a
+transitional release that brings the Mac into the era of generative AI and fully leverages the Apple-
+controlled  hardware/software  ecosystem.  It  goes  beyond  iterative  improvements  (which  characterized
+releases like Sonoma or Monterey) and introduces fundamentally new capabilities (AI, deep continuity) that
+redefine how a Mac can be used. It also signals the final stages of Intel Mac support and a tightening
+security akin to mobile platforms, marking a shift in Apple’s support matrix and philosophy. While earlier
+macOS updates often focused on refining the user interface or adding a few apps (like News, etc.), Sequoia’s
+focus is more holistic –  enhancing what the Mac  is capable of doing. It sets the stage for macOS’s future
+(Apple Silicon-only, AI-powered, and ever more integrated with the wider Apple ecosystem). Longtime Mac
+users see in Sequoia a platform that is evolving rapidly and diverging from the more static, traditional
+macOS experience of a decade ago. Whether that’s for better or worse can be subjective, but by pure
+feature comparison, Sequoia is arguably the most feature-packed and forward-looking macOS release in
+many years, relative to its predecessors.
+Known Issues and Limitations
+No major OS launch is without its quirks and limitations, and macOS Sequoia is no exception. Although
+generally well-received, especially for its ambitious features, a few issues emerged during beta testing and
+after release that are worth noting for completeness:
+Regional Restrictions: As discussed, some of Sequoia’s headline features were withheld in certain regions,
+notably the European Union. Due to the EU’s Digital Markets Act and other regulatory concerns, Apple
+announced that  Apple Intelligence features, iPhone Mirroring, and SharePlay device screen sharing
+would not be available in the EU at launch
+. This meant users in EU countries found those options
+missing entirely. Apple cited “privacy and security” compliance as the reason, implying they were evaluating
+how to implement these features in line with EU rules
+. By early 2025, Apple began enabling Apple
+Intelligence (e.g. the writing tools and new Siri) in the EU after ensuring regulatory clearance, but iPhone
+Mirroring remained disabled in EU and possibly UK. Users discovered workarounds (such as switching
+their Apple ID region to a non-EU country) to bypass this restriction
+, but that’s not practical for most.
+This fragmentation means that the Sequoia experience is not uniform worldwide: European users have a
+slightly “watered-down” version missing some of the most futuristic features (at least until Apple resolves
+the compliance questions). For a research or enterprise context, it’s important to know that not all features
+might be deployable globally.
+Hardware Limitations and Device Support: Another inherent limitation is that Intel-based Macs do not
+support Apple Intelligence and some other new features. Users on Intel Macs (even fairly new ones like
+2019 models) cannot use things like the AI writing tools, since Apple requires an M1 or later chip for those
+. Similarly, some continuity features like iPhone Mirroring require specific hardware (T2 or Apple Silicon)
+. So, while in theory Sequoia runs on a range of Macs back to 2017, the full feature set is enjoyed only on
+newer Macs. This has been a pain point for some users who upgraded their OS expecting all new features,
+only to find them disabled on their older machine (though Apple does footnote these distinctions in
+documentation). For example, an Intel Mac user might wonder why Siri isn’t “redesigned” or offering
+ChatGPT answers – it’s because those parts of Siri rely on the Neural Engine and thus don’t execute on Intel.
+Additionally,  Sequoia  is  the  last  supported  version  for  several  Mac  models
+.  Those  users  face  the
+limitation that they won’t get macOS 16 next year. While that’s a separate issue, it means those on the cusp
+have to consider hardware upgrades to continue receiving new OS features and security updates beyond
+2025.
+69
+159
+160
+40
+68
+41
+25
+
+------------------------------------------------------------------------
+Page 26
+------------------------------------------------------------------------
+
+Initial Instability and Bugs: The early versions of macOS Sequoia (the developer betas and even 15.0
+release) had some stability and bug issues, as reported by testers: - The Ars Technica review and others
+noted encountering “a couple of bugs and inconsistent behavior in Mail” and other apps soon after installing
+Sequoia
+. For instance, some users experienced the Mail app crashing or Smart Mailboxes not updating
+properly in the initial release. These were addressed in minor updates (15.0.1 and 15.1 fixed various app
+crashes
+). - Some UI glitches were present, such as the new dynamic wallpapers occasionally freezing
+(the classic Mac screensaver wallpaper sometimes got stuck and stopped animating until a reboot)
+.
+Apple resolved many of these small issues in 15.1 or 15.2 updates. - The Apple Intelligence features were
+labeled “beta” at launch and indeed behaved like it at times. The writing tool suggestions could be off-
+mark or overly generic, and in some cases users reported the Summarize function producing factual errors
+if the source text wasn’t clear (a common challenge with AI summaries). Apple likely improved these models
+server-side or in subsequent updates, but early on, one needed to use critical judgment with AI outputs. -
+The initial Conversational Siri sometimes had trouble maintaining context through complex back-and-forth
+queries, occasionally forgetting context after certain tasks. And the new Siri UI, while visually nice, had a
+bug in beta where it wouldn’t dismiss properly in some multi-monitor setups. By 15.1 these hiccups were
+ironed out, as Apple continued to fine-tune Siri’s LLM-based responses. - Compatibility with third-party
+software: As with any OS update, some third-party apps needed updates for Sequoia. A notable example
+were endpoint security and monitoring tools (CrowdStrike Falcon, certain VPN clients, etc.) which found that
+Sequoia’s stricter security broke some of their functionality
+. Specifically, changes in System Extensions
+and the new TCC prompts required these tools to update their agents. Within a few weeks, most major
+vendors issued patches to ensure compatibility. Still, users in enterprise environments often had to wait for
+IT approval before moving to Sequoia due to these initial incompatibilities. -  Legacy features removed:
+While not a “bug,” the removal of ssh-rsa  support in the default SSH (as per OpenSSH updates) or other
+deprecated technologies could catch users unaware. For example, older SSH keys using RSA might not work
+without enabling legacy support – something that happened around this timeframe (OpenSSH 8.8+ disables
+RSA by default). Admins had to update keys to ed25519 or similar. This is part of routine modernization, but
+a “gotcha” for some. -  Excessive permission prompts: Some users, particularly system administrators,
+raised concerns that the new monthly screen recording permission prompt could annoy or confuse users
+who don’t understand why an app they trust (like Zoom or a screenshot utility) keeps asking for permission
+repeatedly
+. Similarly, the new local network prompts might pop up frequently in office environments
+(for apps that discover local services), potentially disrupting workflows until users learn to permanently
+allow the app. Over time, people adjust, but this design decision trades a bit of user convenience for
+security. In enterprise settings, MDM profiles can manage some of these permissions to reduce prompt
+fatigue, but home users might initially find it overbearing.
+Feature Gaps and Unaddressed Requests: Despite packing a lot in, Sequoia did not fulfill every Mac user
+wish. For instance: - There is still no touchscreen or tablet support on Mac (not that it was expected, but
+some always hope). - The menu bar and UI scaling on ultra-large screens remained a minor complaint for
+some (though Liquid Glass redesign in the next version addresses that). - Some power users hoped for
+improvements to  Finder (like better search or tagging) or  Dock (like more customization), which Sequoia
+didn’t specifically focus on. - Apple’s focus on Apple Silicon also means that Boot Camp remains unsupported
+on Apple Silicon Macs (no Windows dual-boot). Sequoia doesn’t change that; virtualization (with Parallels,
+etc.) is the only option. For those who used Boot Camp on Intel Macs, the effective end of Boot Camp is a
+limitation of modern macOS on new hardware. - The removal of the easy Gatekeeper bypass means that for
+some devs distributing internal apps, it’s a new hurdle – they either have to notarize their apps or instruct
+users in the more cumbersome allow process. Not a showstopper, but a change some considered an
+inconvenience (balanced by the security rationale, as discussed).
+47
+161
+162
+51
+163
+26
+
+------------------------------------------------------------------------
+Page 27
+------------------------------------------------------------------------
+
+Last Supported Version for Some Macs: For users of the 2017 iMac Pro, 2018 MacBook Air, etc., Sequoia is
+the end of the line
+. While not an “issue” with Sequoia per se (it runs fine on those machines), it’s a
+limitation to note: those users can’t upgrade beyond this, and Sequoia will receive security updates for
+maybe 2-3 years, after which those Macs face obsolescence in terms of OS. This planned obsolescence has
+been communicated, but it might affect long-term plans.
+Storage and Installation: A minor note – macOS Sequoia’s installer is larger than prior ones (due to new
+languages in Siri, etc.). Some users with limited disk space struggled with the upgrade until freeing up
+space. Also, Sequoia converts all system volumes to the latest APFS schema (if not already), which had a tiny
+bug in early betas leading to Time Machine needing to make a new backup set. By release, this was
+resolved, but a few early upgraders had to reconfigure Time Machine due to it treating the OS as a new Mac
+(likely an identifier bug).
+Networking quirks: A few Mac admins observed that after enabling rotating MAC addresses, certain
+enterprise Wi-Fi setups (which rely on fixed MAC for identity) had trouble. This feature can be turned off per
+network if needed, but it’s a change that needed communication in enterprise environments.
+On the whole, macOS Sequoia has been relatively stable and well-adopted, especially considering the
+scope of new features. The known issues largely fell into either the category of feature unavailability (e.g. EU,
+Intel Macs) or initial release bugs that were patched in updates. Apple’s software quality for Sequoia was
+generally praised; it didn’t repeat some of the rocky launches of say macOS Catalina (which had significant
+app compatibility issues). One measure of success is that by version 15.5 (May 2025), Apple had already
+moved on to testing macOS 16, and Sequoia had high installation rates among supported Macs, indicating
+user confidence in upgrading.
+Finally, as a limitation, it’s worth mentioning that some users and developers felt that macOS Sequoia’s rapid
+introduction of AI features in beta meant documentation and guidance were a bit lacking initially. Apple provided
+some WWDC talks and articles about the new AI, but because these were new, best practices (for example,
+how to best use the Rewrite API in a third-party app, or how to manage MDM settings for AI features) were
+evolving. This is more a transitional challenge than a flaw.
+In conclusion, while macOS Sequoia pushed boundaries, Apple managed to avoid any catastrophic issues.
+The limitations and issues identified have either been mitigated (via updates), are situational (regional
+blocks),  or  are  part  of  Apple’s  strategic  direction  (dropping  Intel  support,  enforcing  security).  Users
+considering upgrading to Sequoia should be aware of these factors, but for the vast majority, the new
+features and improvements outweigh the relatively minor inconveniences encountered early on. Apple’s
+responsive  updates  and  communication  around  these  issues  have  further  smoothed  the  Sequoia
+experience over time.
+Conclusion
+macOS Sequoia emerges as a landmark release for Apple’s desktop operating system – one that marries the
+Mac’s  classic  strengths  with  bold  new  functionality  driven  by  AI  and  ecosystem  synergy.  In  this
+comprehensive exploration, we have seen how Sequoia builds upon its predecessors and at the same time
+departs from them by introducing features that redefine what users can expect from a personal computer
+in 2025. 
+41
+27
+
+------------------------------------------------------------------------
+Page 28
+------------------------------------------------------------------------
+
+Sequoia’s enhancements in system architecture underscore Apple’s commitment to optimizing for its own
+silicon and fortifying the OS against threats. Dropping support for aging Intel hardware and tightening
+security (through stricter Gatekeeper enforcement
+ and improved privacy controls
+) signal Apple’s
+vision of a Mac platform that is lean, secure, and fully harnessing Apple Silicon capabilities. Performance
+improvements – from smoother gaming via Game Mode
+ to faster web rendering – ensure that the
+plethora of new features do not come at a cost to the Mac’s responsiveness. Under-the-hood allowances,
+like enabling iCloud in virtual machines
+ and expanding Rosetta’s instruction support
+, show Apple’s
+attention to developers and power users even as it pushes the envelope on mainstream features.
+On the user interface front, Sequoia demonstrates refinement rather than revolution. Thoughtful additions
+like  window  snapping
+ and  a  redesigned  Calculator
+ cater  to  user  convenience  and  modern
+aesthetics. The interface remains familiar, yet subtly improved – aligning System Settings and apps more
+closely with their iOS counterparts for a consistent cross-device experience. The inclusion of a nostalgic
+dynamic wallpaper
+ alongside fresh designs illustrates Apple’s knack for blending its rich history with
+contemporary design.
+The integration with  iPhone and iPad through iPhone Mirroring
+ and related continuity features is a
+standout  advancement  that  blurs  device  boundaries  in  daily  workflows.  For  the  first  time,  the  full
+functionality of an iPhone can be accessed on a Mac screen, representing a paradigm shift in multi-device
+usage. This deep continuity, coupled with simultaneous platform releases, paints a picture of Apple’s
+ecosystem moving in lockstep. The Mac is no longer an island but a centerpiece that orchestrates and
+complements the user’s other devices. While certain regions and older devices face limitations with these
+features
+, the overall trajectory is clear: a seamless integration where the distinctions between Mac,
+iPhone, and iPad experiences continue to blur.
+The introduction of Apple Intelligence in Sequoia is arguably its defining legacy. By embedding generative
+AI and machine learning into the fabric of macOS – from writing and communication to image creation and
+system intelligence – Apple has initiated a transformation in how users interact with their Mac. Tasks that
+once required separate apps or cloud services can now be done instantly on-device: emails can be rewritten
+politely with a click
+, lengthy documents digested into summaries
+, and even whimsical images
+conjured from one’s imagination
+. Apple has managed to implement these capabilities in a way that is
+thoughtfully constrained by privacy (leveraging on-device processing and Private Cloud Compute
+).
+The result is an AI augmentation of the user that feels personal and secure. While still early in its evolution –
+with some rough edges and limited to English at launch – this AI integration sets the stage for future
+macOS versions to expand and refine the concept of a “smart” personal computer. It also places macOS in a
+competitive stance with other platforms that are embracing AI assistance, but with Apple’s unique spin of
+device-centric intelligence.
+From a  security and privacy perspective, macOS Sequoia exemplifies Apple’s philosophy of proactive
+protection without sacrificing usability. The stricter app notarization enforcement, monthly permission
+renewals
+, and network privacy measures
+ collectively raise the security baseline for all users. These
+measures, informed by lessons from both macOS and iOS, help ensure that the powerful new features of
+Sequoia do not open new avenues for exploitation. They also reflect Apple’s confidence in steering user
+behavior (e.g. training users to allow apps via System Settings rather than quick bypasses) to achieve a safer
+computing environment. In effect, Apple is leveraging Sequoia’s adoption to implement important security
+cultural changes for Mac users, changes that were perhaps overdue in the modern threat landscape.
+35
+116
+25
+49
+27
+18
+55
+59
+7
+69
+40
+77
+80
+12
+13
+44
+116
+38
+28
+
+------------------------------------------------------------------------
+Page 29
+------------------------------------------------------------------------
+
+The suite of  app improvements and new developer tools further cements Sequoia as a well-rounded
+release. Everyday apps like Safari, Messages, Notes, Photos, and Maps see meaningful upgrades
+that enhance productivity and enjoyment, ensuring that users can immediately benefit from the OS even
+outside  of  its  headline  features.  Meanwhile,  the  Game  Porting  Toolkit  2.0
+ and  related  developer
+enhancements demonstrate Apple’s strategic push to make macOS a formidable platform for software
+development and gaming. By easing the porting of Windows games and unifying the development process
+across Mac and iOS, Apple is addressing long-standing gaps and wooing developers with the promise of
+broader reach and easier workflows within the Apple ecosystem.
+As with any ambitious release, Sequoia’s rollout came with some caveats – staggered feature releases,
+regional omissions, and initial bugs – but Apple’s iterative updates have largely mitigated these issues over
+the months
+. By the time of this writing, macOS Sequoia has matured into a stable, robust platform.
+It stands as the culmination of several trends in macOS’s evolution: the full realization of Apple Silicon’s
+potential, the blending of macOS and iOS capabilities, and the incorporation of advanced AI – all under the
+umbrella of Apple’s tight integration of hardware, software, and services.
+In comparison to macOS Sonoma and earlier versions, Sequoia feels like a bold step into the future without
+forgetting the lessons of the past. It respects the core Mac experience – the versatility of a personal
+computer – while enhancing it with features that redefine convenience, creativity, and connectivity. The Mac
+has historically been touted for its ease of use and powerful capabilities; macOS Sequoia amplifies both,
+making common tasks easier through intelligence and enabling new tasks altogether.
+Looking ahead, macOS Sequoia lays the groundwork for the next era of Mac computing. Its influence is
+evident in the expectations it sets: users will come to expect their OS to assist in writing and media creation,
+to seamlessly coordinate with all their devices, and to shield them automatically from threats. Developers
+will expect that they can target multiple device categories from a single codebase and tap into Apple’s ML
+infrastructure. Sequoia also marks the twilight of Intel on macOS, as the platform turns fully to Apple’s
+custom silicon and the possibilities that brings (like the rich AI processing on the Neural Engine). 
+In conclusion, macOS Sequoia is a milestone release that not only adds a plethora of features but also shifts
+the  paradigm  of  what  a  Mac  can  do.  It  exemplifies  an  expert  balance:  integrating  cutting-edge
+advancements while maintaining the stability and user-friendliness that professionals and everyday users
+alike rely on. While it is the current pinnacle of macOS, it also clearly points the direction for the next
+chapters – a direction in which the Mac is smarter, more secure, more integrated, and even more of a
+creative tool than ever before. 
+Sequoia, like the giant trees it’s named after, has deep roots in macOS’s legacy, yet it reaches new heights –
+standing tall as a robust, intelligent, and interconnected operating system for the modern era.
+Sources:
+Apple Inc., “macOS Sequoia Preview,” Apple.com (June 2024). – Official feature preview detailing new
+additions in macOS Sequoia
+. 
+Apple Inc., “What’s new in the updates for macOS Sequoia,” Apple Support (May 12, 2025). – Release
+notes for macOS 15.0 through 15.5, describing introduced features and fixes
+. 
+14
+31
+33
+27
+103
+72
+• 
+7
+18
+• 
+5
+91
+29
+
+------------------------------------------------------------------------
+Page 30
+------------------------------------------------------------------------
+
+Juli Clover, “macOS Sequoia Includes Wallpaper With Classic Mac Graphics,” MacRumors (June 11, 2024).
+– Article on the nostalgic dynamic wallpaper added in Sequoia
+. 
+Benjamin Mayo, “Apple Intelligence, iPhone Mirroring to Mac, and SharePlay Screen Sharing won’t be
+available in the EU at launch,” 9to5Mac (Jun 21, 2024)
+. 
+The Verge, “Apple’s AI plans, iOS 18, and more at WWDC 2024,” (June 10, 2024). – Coverage of WWDC
+announcements for macOS Sequoia and related platforms
+. 
+Andrew Cunningham, “macOS 15 Sequoia: The Ars Technica review,” Ars Technica (Sept 2024). – In-
+depth review and analysis of Sequoia’s features and early issues (cited via Tao of Mac)
+. 
+Phil Stokes, “macOS Sequoia – What’s New in Privacy and Security for Enterprise,” SentinelOne Blog (Sept
+17, 2024)
+. 
+Filipe Espósito, “Apple’s Game Porting Toolkit now helps developers port macOS games to iOS,” 9to5Mac
+(Jul 3, 2024)
+. 
+Apple Inc., Apple Newsroom: “macOS Sequoia takes productivity and intelligence on Mac to new heights,”
+(June 2024)
+. 
+Apple Inc., “macOS Sequoia (version 15) – Wikipedia,” (accessed 2025)
+. 
+macOS Sequoia - Wikipedia
+https://en.wikipedia.org/wiki/MacOS_Sequoia
+What's new in the
+updates for macOS Sequoia - Apple Support
+https://support.apple.com/en-us/120283
+macOS Sequoia takes productivity and intelligence on Mac to new
+heights - Apple
+https://www.apple.com/newsroom/2024/06/macos-sequoia-takes-productivity-and-intelligence-on-mac-to-new-heights/
+Apple's Game Porting Toolkit can now port macOS games to iOS
+https://9to5mac.com/2024/07/03/apple-game-porting-macos-games-ios/
+macOS
+Sequoia | What’s New in Privacy and Security for Enterprise?
+https://www.sentinelone.com/blog/macos-sequoia-whats-new-in-privacy-and-security-for-enterprise/
+macOS 15 Sequoia: The Ars Technica review - Tao of Mac
+https://taoofmac.com/space/links/2024/09/16/2222
+Apple's new macOS Sequoia update is breaking some cybersecurity ...
+https://www.reddit.com/r/apple/comments/1fo913u/apples_new_macos_sequoia_update_is_breaking_some/
+macOS Sequoia Includes Wallpaper With Classic Mac Graphics - MacRumors
+https://www.macrumors.com/2024/06/11/macos-sequoia-wallpaper/
+iPhone Mirroring: Use your iPhone from your Mac - Apple Support
+https://support.apple.com/en-us/120421
+Apple Intelligence, iPhone Mirroring to Mac, and SharePlay Screen Sharing won’t
+be available in the EU at launch - 9to5Mac
+https://9to5mac.com/2024/06/21/apple-intelligence-iphone-mirroring-not-in-eu-at-launch/
+• 
+59
+• 
+164
+165
+• 
+166
+167
+• 
+47
+52
+• 
+168
+169
+• 
+27
+28
+• 
+6
+14
+• 
+3
+68
+1
+2
+3
+4
+17
+20
+40
+41
+43
+53
+55
+57
+58
+68
+166
+167
+5
+10
+11
+12
+29
+30
+31
+33
+34
+56
+64
+73
+76
+83
+84
+85
+86
+87
+88
+89
+90
+91
+94
+95
+98
+99
+100
+103
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+158
+161
+6
+7
+8
+9
+13
+14
+15
+16
+18
+19
+21
+22
+23
+24
+25
+32
+42
+44
+62
+63
+65
+67
+77
+78
+79
+80
+81
+82
+92
+93
+96
+97
+101
+102
+109
+120
+127
+128
+129
+153
+157
+26
+27
+28
+155
+156
+35
+36
+37
+38
+39
+45
+46
+48
+49
+50
+54
+106
+107
+110
+115
+116
+117
+118
+119
+121
+122
+123
+125
+168
+169
+47
+52
+51
+59
+60
+61
+66
+69
+70
+72
+75
+159
+164
+165
+30
+
+------------------------------------------------------------------------
+Page 31
+------------------------------------------------------------------------
+
+iOS 26: Will iPhone Mirroring be available in Europe? - BGR
+https://bgr.com/tech/ios-26-is-almost-here-and-this-brilliant-ios-18-feature-is-still-not-available-in-europe/
+Latest Sequoia update broke my iPhone notification mirroring - Reddit
+https://www.reddit.com/r/MacOS/comments/1gjnhlt/latest_sequoia_update_broke_my_iphone/
+iOS 18.4 Brings Apple Intelligence to EU, But iPhone Mirroring Still ...
+https://www.techtimes.com/articles/309769/20250325/ios-184-brings-apple-intelligence-eu-iphone-mirroring-still-missing-
+actionheres-why.htm
+OS - macOS - Apple
+https://www.apple.com/os/macos/
+macOS 15 Sequoia: The Ars Technica review
+https://arstechnica.com/gadgets/2024/09/macos-15-sequoia-the-ars-technica-review/
+macOS Sequoia makes it harder to run apps that don’t follow Apple’s rules
+https://9to5mac.com/2024/08/06/macos-sequoia-makes-it-harder-to-run-apps-that-dont-follow-apples-security-rules/
+Bug or intentional? macOS 15.1 completely removes ability to ...
+https://www.osnews.com/story/141055/bug-or-intentional-macos-15-1-completely-removes-ability-to-launch-unsigned-
+applications/
+Ars Technica on X: "macOS 15 Sequoia makes you jump through ...
+https://twitter.com/arstechnica/status/1821253277251768667
+macOS Sequoia: Discover the Improved Security and Privacy Features
+https://mac.eltima.com/macos-sequoia-security/
+macOS Sequoia - Apple
+https://www.apple.com/macos/macos-sequoia/
+Game Porting Toolkit 2 changes EVERYTHING! AVX2, Ray Tracing ...
+https://www.youtube.com/watch?v=f_fNt2EIOFQ
+Bypassing EU Restriction for iPhone Mirroring on macOS - Reddit
+https://www.reddit.com/r/MacOSBeta/comments/1dnpcvx/bypassing_eu_restriction_for_iphone_mirroring_on/
+macOS Sequoia Wallpapers and others - Reddit
+https://www.reddit.com/r/MacOS/comments/1dcvpxt/macos_sequoia_wallpapers_and_others/
+macOS 15 Sequoia's Excessive Permissions Prompts Will Hurt ...
+https://talk.tidbits.com/t/macos-15-sequoia-s-excessive-permissions-prompts-will-hurt-security/28547
+71
+74
+104
+105
+108
+111
+113
+112
+114
+124
+126
+154
+160
+162
+163
+31

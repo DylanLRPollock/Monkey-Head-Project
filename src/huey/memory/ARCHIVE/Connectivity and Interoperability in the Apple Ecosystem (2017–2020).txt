@@ -1,0 +1,1174 @@
+Connectivity and Interoperability in the Apple
+Ecosystem (2017–2020)
+Introduction
+From 2017 through 2020, Apple’s hardware ecosystem underwent significant transitions in connectivity and
+interoperability. This period saw the standardization of Thunderbolt 3 across Macs, the maturation of
+wireless protocols like 802.11ac Wi-Fi and Bluetooth 5.0, and the expansion of Apple’s Continuity features
+linking  Macs  with  iPhones,  iPads,  and  peripherals.  This  paper  provides  a  technical  analysis  of  these
+developments, focusing on how two example machines – a 2017 iMac 5K (27-inch) and a 2019 16‑inch
+MacBook Pro – leverage Apple’s connectivity advancements. We compare wired interfaces (Thunderbolt
+versions and USB), wireless capabilities (Wi-Fi and Bluetooth standards), peer-to-peer sharing mechanisms
+(notably AirDrop over Apple Wireless Direct Link), and ecosystem integration features (Continuity, Sidecar,
+etc.). We also examine how these Macs fit into multi-device workflows, their roles in OS deployment and
+security (e.g. the T2 security chip), peripheral compatibility (external displays, eGPUs, etc.), and upgrade
+paths. Through detailed specifications and comparative tables, we highlight both the commonalities and
+key differences that define the connectivity performance of the 2017 iMac and 2019 MacBook Pro within
+Apple’s broader ecosystem.
+Wired Connectivity: Thunderbolt and USB
+Thunderbolt Evolution (TB1 to TB3): Apple has consistently pushed high-bandwidth interfaces, beginning
+with Thunderbolt 1 in 2011 (10 Gb/s per channel) and Thunderbolt 2 in 2013 (20 Gb/s). Thunderbolt 3,
+introduced in late 2015, doubled the bandwidth to 40 Gb/s and crucially adopted the USB-C connector,
+merging data, video, and power into one port
+. A single Thunderbolt 3 (TB3) port carries a PCI
+Express (PCIe) data bus and dual DisplayPort 1.2 streams, enabling simultaneous high-speed peripheral and
+display connections
+. For example, one TB3 link supports two 4K monitors or one 5K monitor at 60 Hz
+from a single port
+. The 40 Gb/s bandwidth is also enough to handle massive data transfers while driving
+displays, making TB3 a “computer port nirvana” that fulfills the promise of USB-C for one-cable docking,
+external GPUs, and more
+. TB3 introduced support for USB 3.1 Gen2 (10 Gb/s) natively over the USB-
+C plug, meaning the same port can connect billions of USB devices at up to 10 Gb/s
+. Furthermore, TB3
+integrates 100 W power delivery for charging and can supply up to 15 W to bus-powered accessories
+.
+Notably,  Thunderbolt  remains  backward-compatible:  older  Thunderbolt   1/2  devices  (Mini  DisplayPort
+connector) work via a USB-C adapter without performance loss
+. By 2017, Apple had fully embraced
+Thunderbolt 3 on Macs – including the iMac and MacBook Pro in this study – standardizing on the USB-C
+port for all high-speed wired connectivity.
+2017 iMac 5K Wired Interfaces: The Mid-2017 iMac 27″ was Apple’s first 5K iMac to feature Thunderbolt 3/
+USB-C ports (replacing the Thunderbolt 2 ports of the 2015 model). It provides two TB3 (USB-C) ports on the
+rear, each supporting the full 40 Gb/s throughput, DisplayPort alt-mode, USB 3.1 Gen2 (10 Gb/s), and daisy-
+chaining of up to 6 devices
+. In addition, the iMac caters to legacy peripherals with four USB-A 3.0
+ports (5 Gb/s each), an SDXC card slot, and a Gigabit Ethernet RJ-45 port
+. The TB3 ports on iMac can
+1
+2
+3
+4
+5
+6
+2
+7
+8
+9
+6
+10
+11
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+natively drive one external 5K display or dual 4K displays at 60 Hz alongside the built-in 5K screen
+. For
+example, an iMac 5K (with a discrete Radeon Pro 5xx GPU) can run its internal 5120×2880 display plus one
+additional 5K monitor via TB3, or two 4K UHD monitors, all at 60 Hz
+. These versatile ports also support
+adapters for HDMI, DVI, VGA, or Thunderbolt 2 devices
+. The inclusion of dedicated USB-A and SD
+slots reflects the iMac’s role as a workstation hub, ensuring compatibility with common peripherals (USB
+drives, SD cards, etc.) without dongles.
+2019 MacBook Pro 16″ Wired Interfaces: The 16-inch MacBook Pro (2019) takes a more minimalist,
+forward-looking approach: it includes four Thunderbolt 3 (USB-C) ports (two on each side), and a 3.5 mm
+audio jack – and nothing else in terms of physical ports
+. All four USB-C ports are fully TB3-enabled
+with charging capability, allowing the MacBook to be charged from any port via USB-C power delivery
+.
+Each port supports the same multi-protocol functions (40 Gb/s Thunderbolt, 10 Gb/s USB 3.1, DisplayPort
+video) and can drive external displays or high-speed storage. Thanks to a high-end AMD Radeon Pro GPU
+(and two TB3 controllers to distribute bandwidth), the 2019 MBP 16″ can drive up to  two 6K displays
+(6016×3384, such as Apple’s Pro Display XDR) or as many as four 4K monitors at 60 Hz simultaneously
+ –
+a notable increase over the 2017 iMac’s external display limit. However, this expandability comes at the cost
+of legacy ports: the MBP offers no built-in USB-A, SD card, or Ethernet. Professional users must use
+adapters or docks (e.g. USB-C to USB-A or SD readers) for those needs
+. This design reflects Apple’s
+aggressive adoption of USB-C and reliance on wireless alternatives, but it drew some criticism since “the port
+selection has not changed – you’re still living the dongle life” for things like USB sticks or SD cards
+. In
+summary, the MacBook Pro’s wired connectivity is entirely Thunderbolt/USB-C centric, whereas the iMac
+provides a broader mix of new and legacy ports – an important distinction in connectivity use-cases.
+Use  of  Thunderbolt  for  Peripherals  and  Networking: Both  the  iMac  and  MacBook  Pro  exploit
+Thunderbolt 3 for high-performance peripherals. External Thunderbolt RAID drives or NVMe SSD enclosures
+can achieve transfer speeds in the 2–3 GB/s range, leveraging the 40 Gb/s (~5 GB/s) raw bandwidth – far
+beyond the 5 Gb/s of the iMac’s internal Fusion Drive HDD portion. Professionals frequently use TB3 docks
+or hubs to connect multiple devices: a single TB3 port can daisy-chain a 5K display, external GPU (eGPU),
+audio interface, and 10 Gb Ethernet adapter together. In fact, Apple officially supported eGPUs starting in
+macOS High Sierra 10.13.4 (2018) for TB3 Macs. Both the 2017 iMac and 2019 MBP can connect to an
+external  AMD  Radeon  eGPU  chassis  to  accelerate  graphics  for  tasks  like  3D  rendering  or  driving  VR
+headsets. Apple’s Metal API and apps like Final Cut Pro utilize eGPU horsepower when available. Another
+capability of Thunderbolt 3 is peer-to-peer networking: two Macs can be connected directly via a TB3 cable
+for a 10 Gigabit Ethernet (10 GbE) network link
+. This is useful for fast data migration or clustering
+machines – effectively treating the TB cable as a virtual 10 Gb network interface. Both example Macs
+support this “Thunderbolt Networking” feature (the MacBook Pro even has TB3 on both sides, offering
+flexibility in cabling). Finally, Thunderbolt 3’s ability to carry DisplayPort makes it the default way to connect
+external monitors on these Macs. The 2017 iMac’s TB3 ports double as outputs for second displays, and the
+MacBook Pro uses its TB3/USB-C ports for all video output (with USB-C–to–DisplayPort/HDMI dongles as
+needed). In sum, Thunderbolt 3 in the 2017–2020 Apple lineup represents a unification of connectivity –
+combining PCIe, USB, display, and power – that enabled new classes of peripherals (eGPUs, one-cable
+docks) and simplified multi-monitor setups
+.
+Wireless Networking: Wi-Fi and Beyond
+802.11ac Wi-Fi (Wi‑Fi 5): Both the 2017 iMac and 2019 MacBook Pro are equipped with 802.11ac Wi-Fi,
+known as “Wi‑Fi 5.” Apple adopted 802.11ac early (initially on MacBook Air/Pro in 2013), and by 2017 all
+12
+12
+13
+14
+15
+16
+17
+18
+16
+16
+19
+5
+6
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+Macs featured it. The iMac (2017) supports 802.11ac in a dual-band 2.4/5 GHz implementation with MIMO
+(multiple antennas)
+. The MacBook Pro (2019) likewise has 802.11ac with backward compatibility to
+802.11a/b/g/n networks
+. In practice, 802.11ac on these Macs can achieve theoretical link speeds up to
+about 1.3 Gb/s (if a 3×3 MIMO configuration at 80 MHz channel width is supported). Real-world throughput
+tends to be hundreds of megabits per second, which was a huge jump over the previous 802.11n standard.
+This “Gigabit-class” Wi-Fi was critical for Apple’s ecosystem features like AirDrop and iCloud syncing to feel
+fast. The iMac, being a desktop, also includes a Gigabit Ethernet port – often yielding lower latency and
+consistent speeds for local transfers or network storage. The MacBook Pro has no built-in Ethernet, but
+users can utilize a Thunderbolt or USB-C Gigabit Ethernet adapter if needed. Still, Apple clearly expects most
+MacBook Pro users to rely on Wi-Fi (or Thunderbolt dock connections) for networking. Both example
+machines support personal hotspot tethering to an iPhone via Wi-Fi or Thunderbolt, providing flexibility for
+internet access on the go.
+During 2017–2020, the newer  802.11ax Wi-Fi (Wi‑Fi 6) standard emerged, promising up to 40% higher
+throughput, lower latency, and better performance in dense environments. Notably, Apple introduced
+Wi‑Fi 6 in the iPhone 11 (2019) and iPad Pro (2020), but no Intel-based Mac through 2020 included Wi‑Fi 6
+support
+. The first Macs to get 802.11ax were the Apple Silicon M1 models released in late 2020
+.
+Thus, our iMac and MBP (being Intel-based) are limited to Wi‑Fi 5. In practical terms, this means their
+wireless speed and range are very similar to one another. The iMac’s larger chassis may confer some RF
+advantage (potentially housing higher-gain antennas), whereas the MacBook Pro’s all-metal body and
+portability mean it might have slightly less Wi-Fi range. Nonetheless, both can comfortably exceed 500 Mb/s
+under ideal conditions on 5 GHz 802.11ac networks – more than sufficient for tasks like high-bitrate video
+streaming or fast Time Machine backups to a network drive. It’s worth noting that Apple’s implementation
+of 802.11ac also leverages beamforming and other features of the standard to improve reliability. 
+Apple Wireless Direct Link (AWDL): In addition to infrastructure Wi-Fi, Apple devices in this era make
+heavy use of a proprietary peer-to-peer Wi-Fi protocol called AWDL. AWDL is a mesh-capable ad-hoc protocol
+built on top of Wi-Fi that allows devices to discover and communicate with each other directly (without an
+access point)
+. It underpins features like AirDrop, AirPlay peer-to-peer, and GameKit networking.
+AWDL works by channel hopping: even while a Mac or iPhone is connected to a normal Wi-Fi network, the
+wireless chipset can rapidly switch to a special “social” channel to send discovery broadcasts and then jump
+to a designated channel for direct data transfer between peers
+. This happens in the background, fast
+enough that the user’s main Wi-Fi connectivity is not disrupted beyond a minor performance impact
+.
+Both the 2017 iMac and 2019 MBP support AWDL through their Broadcom (or similar) Wi-Fi chipsets. For
+instance, if one wants to AirDrop a large file from the MacBook Pro to the iMac, the two will use Bluetooth
+Low Energy to locate each other, then seamlessly create an AWDL link over Wi-Fi for the file transfer (more
+on AirDrop below). The advantage of AWDL is that it doesn’t require the devices to be on the same Wi-Fi
+network – they can form a private, high-speed link anywhere, even in a field with no router
+. Apple’s
+use of AWDL in this period was pioneering, although it is a proprietary protocol. (It was later revealed that
+regulatory pressure in some regions might push Apple to adopt the open Wi-Fi Aware standard instead of
+AWDL in the future, to ensure interoperability
+.)
+Bluetooth Classic and 5.0: Alongside Wi-Fi, Apple continued to update Bluetooth capabilities in Macs for
+short-range connectivity. The 2017 iMac comes with  Bluetooth 4.2, an update over BT 4.0 that offers
+improved speed (Bluetooth 4.2 supports up to ~1 Mb/s for Low Energy data) and privacy features
+.
+Bluetooth is crucial for connecting input devices (the iMac’s included Magic Keyboard and Magic Mouse 2
+use BT), as well as Continuity features like Handoff and Universal Clipboard (which use BLE advertisements).
+20
+21
+22
+22
+23
+24
+24
+25
+23
+26
+27
+28
+29
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+The 2019 MacBook Pro features  Bluetooth 5.0, which doubled the Low Energy PHY rate to 2 Mb/s and
+optionally increases range up to 4× over BLE 4.x (at the cost of speed)
+. In practical terms, BT 5.0 on
+the MBP gives more robust connections for devices like AirPods or Bluetooth speakers and can maintain
+continuity connections at greater distances from an iPhone. Apple’s macOS and iOS use BLE (Bluetooth Low
+Energy) extensively for device discovery – e.g., the MacBook Pro can detect an Apple Watch nearby to allow
+auto-unlock, or discover that an iPhone is ringing to relay a call. Both BT 4.2 and 5.0 are backward-
+compatible, so all common BT peripherals (keyboards, mice, headphones) work with both Macs. However,
+the MBP’s BT 5.0 potentially offers better performance for BLE data transfers involved in AirDrop and
+Handoff. For example, when using AirDrop, initial negotiation occurs over BLE – BT 5.0’s higher data rate
+could slightly speed up the handshake and make discovery more responsive (though the bulk file transfer
+uses Wi-Fi). It’s also notable that by having Bluetooth, both Macs support Continuity features like Universal
+Clipboard or Handoff as long as they are within BLE range (on the order of 10 m). 
+In summary, the wireless connectivity on the 2017 iMac and 2019 MBP is quite similar in generation (Wi‑Fi 5,
+BLE-based  BT),  ensuring  both  can  fully  participate  in  Apple’s  wireless  ecosystem.  The  MacBook  Pro’s
+Bluetooth 5.0 is a step up from the iMac’s 4.2, aligning with Apple’s gradual rollout (Apple added BT 5.0
+starting in some 2018 Macs and all 2019 portable Macs
+). On Wi-Fi, any performance differences
+would stem more from antenna design than protocol, since both are using the same 802.11ac standard. For
+critical tasks, both machines could fall back to wired Gigabit Ethernet (the iMac directly, the MBP via an
+adapter). By 2020, users anticipating Wi‑Fi 6 had to wait for the Apple Silicon Macs – an important note for
+“future-proofing,” as Apple did not refresh Intel Macs with Wi‑Fi 6 at all
+. Thus, in an enterprise or home
+setup with a new Wi‑Fi 6 router, these 2017–2019 Macs would operate at 802.11ac speeds (albeit still very
+fast). 
+Peer-to-Peer Sharing: AirDrop and AirPlay
+One of the hallmark interoperability features in Apple’s ecosystem is AirDrop, introduced on Mac in 2011
+and on iOS in 2013. AirDrop allows quick, ad-hoc file transfer between nearby Apple devices (Mac, iPhone,
+iPad) using a combination of Bluetooth and Wi-Fi. By the time of macOS High Sierra / iOS 11 (circa 2017),
+AirDrop had evolved into a seamless cross-platform protocol leveraging Apple’s AWDL technology. Here is
+how it works technically:
+Discovery: When  AirDrop  is  enabled,  a  device  advertises  itself  via  Bluetooth  Low  Energy.  For
+example, the 2019 MacBook Pro will periodically send BLE advertisement packets that include
+information (encrypted) about the device. Nearby Apple devices pick up these adverts. Bluetooth
+provides a power-efficient way to discover devices in proximity (within ~30 ft). On iOS, starting
+iOS 13, an ultra-wideband chip (U1) can augment this discovery with directional awareness (though
+Macs in 2019 didn’t have U1, only iPhones did). The 2017 iMac can similarly see nearby AirDrop-
+enabled devices via BLE, despite being a desktop – this allows an iMac to appear in the AirDrop share
+sheet on an iPhone, for instance.
+Connection setup: Once two devices mutually discover each other via Bluetooth and determine
+(through  exchanged  info)  that  they  both  support  AirDrop  and  that  the  user  permits  receiving
+(contacts or everyone), they initiate a direct Wi-Fi link. This is where AWDL comes in. The devices
+coordinate to create a peer-to-peer Wi-Fi session on a channel that both set aside for AirDrop
+.
+They switch their Wi-Fi radios to that channel, establish a link-local IPv6 network between them, and
+then switch back and forth as needed (if they also remain on an infrastructure network)
+. They
+30
+31
+32
+33
+22
+• 
+• 
+24
+34
+24
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+negotiate encryption keys using a built-in TLS handshake – AirDrop communication is secured by TLS
+over this direct Wi-Fi link
+. Notably, the link-local IPv6 addresses used are randomly generated (to
+avoid using the device’s real MAC address, which could be tracked)
+. The AirDrop protocol, as
+implemented in 2017–2020, is fully encrypted end-to-end between the two devices
+.
+Data transfer: The sending device (say, the MacBook Pro) then streams the file data directly over the
+Wi-Fi link to the receiver (the iMac). Because this uses Wi-Fi (802.11ac) with no internet bottleneck,
+the transfer speeds can be very high – often on the order of tens of megabytes per second. In ideal
+cases, AirDrop can send a multi-gigabyte video file in under a minute or two. There is effectively no
+fixed file size limit (Apple doesn’t specify a limit, though extremely large transfers may falter due to
+timing out or memory usage)
+. Both of our example Macs, with 802.11ac 3×3 radios, can achieve
+top AirDrop throughput when talking to each other. Users have reported AirDrop sending, say, a
+1 GB file in ~30 seconds under good conditions – vastly outpacing legacy methods like Bluetooth file
+transfer or copying via USB 2.0 stick.
+Security and privacy: AirDrop has a few security layers. First, as noted, all transfers are encrypted
+(TLS). Second, if the receiving device is set to “Contacts Only” mode, an authentication occurs where
+the devices exchange hashed identifiers derived from the users’ contact info to verify they know each
+other. Importantly, researchers in 2019 identified that during this handshake, devices send out a
+SHA-256 hash of their owner’s phone number and email to each other to check for a match in
+contacts
+. While the hashes are not plaintext, a determined attacker could potentially brute-force
+phone numbers or small email dictionaries to find a match, raising privacy concerns. Apple has since
+provided warnings about this and in iOS 16.2 introduced a time limit for “Everyone” mode (to
+mitigate unwanted sharing). But in our 2017–2020 timeframe, users needed to be aware that
+AirDrop  being  set  to  Everyone  could  allow  unknown  devices  to  send  prompts,  and  the
+aforementioned hash exposure was a theoretical risk if an attacker was sniffing BLE traffic. On the
+whole, however, AirDrop’s security model – requiring acceptance for each file and using encrypted
+transfer – kept casual usage safe
+.
+Protocol  evolution: Initially,  AirDrop  on  Mac  (OS   X  Lion  through  Mavericks)  was  a  separate
+implementation incompatible with iOS AirDrop. In 2014, Apple unified the protocol: since OS X
+Yosemite, Macs use the same AirDrop protocol as iPhones
+. Thus our iMac and MBP can AirDrop
+with iPhones (running iOS 8+). There was a “legacy mode” on older Macs to still transfer to pre-2012
+Macs over an ad-hoc Wi-Fi (without BLE), but by macOS Mojave in 2018 that legacy mode was
+removed
+. Both the 2017 iMac and 2019 MBP, being new machines, simply use the modern
+BLE+AWDL AirDrop method.
+In practical ecosystem workflows, AirDrop became a go-to method for quick sharing: e.g. a user editing
+photos on the MacBook Pro could AirDrop selected images to the iMac for further editing on a larger screen
+(or vice-versa). The peer-to-peer link is typically faster than uploading to iCloud Drive and redownloading,
+and doesn’t require any cables or intermediate devices. This emphasizes Apple’s strategy of making local
+connectivity effortless and fast, encouraging users with multiple Apple devices to use them synergistically. 
+Another peer-to-peer feature is  AirPlay (Mirroring and direct streaming). In our timeframe, a Mac could
+AirPlay its screen or media to an Apple TV or AirPlay-enabled speaker. This usually runs over a Wi-Fi network
+(using Bonjour for discovery and then RTSP streaming). However, Apple TVs from 2015 onward support
+peer-to-peer AirPlay, which again uses BLE for discovery and AWDL for streaming if no common Wi-Fi is
+35
+34
+35
+• 
+36
+• 
+37
+35
+• 
+38
+38
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+present. For instance, a MacBook Pro brought into a conference room could find a nearby Apple TV (not on
+any network) via Bluetooth and then stream its display directly to it over an AWDL link. The underlying
+technology is similar to AirDrop’s – creating an ad-hoc secure wireless channel. These peer-to-peer AirPlay
+sessions benefit from 802.11ac speeds for high-resolution mirroring with minimal lag. The 2019 MacBook
+Pro, with its powerful CPU/GPU, can smoothly AirPlay mirror its Retina display (scaled to 1080p or 4K on an
+Apple TV 4K) in real-time. The 2017 iMac can likewise mirror but being less portable, it’s more often on
+Ethernet or Wi-Fi and would use infrastructure AirPlay. Still, the capability is there – reflecting Apple’s
+emphasis that any two devices should communicate directly when needed.
+In  summary,  AirDrop  exemplifies  the  tight  integration  of  connectivity  layers:  Bluetooth  for  discovery/
+authentication and Wi-Fi (via AWDL) for high-throughput data. Both the iMac and MacBook Pro fully support
+these features, enabling workflows like dropping files, clipboard content, or web URLs to each other
+instantly. The combination of Thunderbolt for peripherals and AirDrop/AirPlay for devices and data means
+our example Macs are extremely well-connected in both wired and wireless domains.
+Apple Continuity and Inter-Device Integration
+Beyond raw network connections, Apple’s ecosystem is distinguished by Continuity – a suite of features
+that allow multiple Apple devices to act as an integrated workflow. Between 2017 and 2020, Apple expanded
+Continuity with new capabilities like Universal Clipboard (2016), Auto Unlock with Apple Watch (2016), and
+Sidecar (2019). These features typically require a mix of Bluetooth, Wi-Fi, and iCloud connectivity to function.
+They are designed to be seamless for the user, leveraging whatever connection is available (often BLE and
+AWDL behind the scenes) to link devices. Our 2017 iMac and 2019 MacBook Pro, running modern macOS
+(e.g. Ventura in 2023, which they both support), benefit from the full Continuity feature set available in that
+era.
+Some key Continuity features and how they work:
+Handoff: Arguably the cornerstone of Continuity, Handoff lets you start a task on one device and
+continue on another. For instance, you could start writing an email on the MacBook Pro, then pick up
+your iPhone and swipe up to instantly continue composing that email in iOS Mail. Technically, when
+you have a Handoff-capable app open (Mail, Safari, Pages, etc.), the device advertises a Handoff BLE
+signal containing an encrypted “activity” token. Another device logged into the same iCloud account
+picks up the signal and queries iCloud to authenticate and obtain the handoff data (like the URL or
+document state)
+. The transfer of context might occur via an iCloud handshake or directly over
+Wi-Fi if both are on the same network. Both example Macs support Handoff (all Macs 2012 and
+newer do)
+. So the iMac 5K and MBP can handoff documents or web browsing sessions to each
+other or to an iPhone/iPad. They use Bluetooth to know they’re near each other and internet (or peer
+Wi-Fi) to send the actual data. Handoff was extended in 2020 to include FaceTime calls (continuity of
+calls) and even media playing (Handoff music from iPhone to HomePod, etc.), but during 2017–2019
+it mostly covered app activities. The presence of Bluetooth 4.2 vs 5.0 isn’t really noticeable for
+Handoff – both work as long as devices are in range. 
+Universal Clipboard: Introduced with macOS Sierra and iOS 10, this feature allows you to copy on
+one device and paste on another. For example, on the iMac you copy a snippet of text or an image,
+and then on the MacBook Pro you can simply hit paste and the content appears. Universal Clipboard
+transfers the clipboard data securely over Bluetooth/Wi-Fi between devices logged into the same
+• 
+39
+40
+• 
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+iCloud (using an end-to-end encrypted channel). It requires devices be near each other and have
+Handoff enabled
+. Both the 2017 iMac and 2019 MBP support this (requirement is Sierra or later
+on a 2012+ Mac) and it greatly facilitates multi-device workflows – e.g. copy a screenshot or a code
+snippet from the MBP and paste into a document on the iMac
+. The latency is usually under a
+second or two, thanks to BLE triggers and fast Wi-Fi exchange. This showcases Apple’s ability to
+abstract the networking – the user just experiences a unified clipboard across devices.
+Auto Unlock with Apple Watch: If the user has an Apple Watch, their Mac (iMac or MacBook) can
+automatically unlock when the Watch is nearby and authenticated. This feature, added in 2016, uses
+Bluetooth proximity to detect the watch and then a Wi-Fi direct connection to quickly exchange
+unlock tokens. The 2019 MacBook Pro, with its T2 chip and Touch ID, also supports Watch unlock (the
+presence of Touch ID doesn’t preclude it). The 2017 iMac (no Touch ID) relies on Auto Unlock or
+typing a password. Both models support Auto Unlock as long as they have Bluetooth LE (which they
+do) and are running macOS 10.13+ with an Apple Watch running watchOS 3+
+. This is an example
+of  inter-device  integration  boosting  convenience,  and  it’s  secured  by  using  the  watch’s
+authentication (the watch must be on the user’s wrist, unlocked, and recently authenticated by
+passcode or unlock of iPhone). The Mac senses the watch’s presence at wake via BLE and then uses a
+Wi-Fi session (or internet) to validate credentials with Apple’s servers, finally unlocking the Mac
+almost instantly.
+Phone and Messaging Continuity: With an iPhone on the same network, the iMac and MacBook
+Pro can make and receive cellular calls (routing through the iPhone) and send/receive SMS texts (via
+the Text Message Forwarding feature). This works via Wi-Fi or wired network: the Mac and iPhone
+must be on the same LAN (or use AWDL if no router). When a call comes to the iPhone, it uses
+Bonjour over Wi-Fi to alert the Mac, which then uses the iPhone as a VOIP relay. Both example Macs
+fully support this (requirement: iPhone on iOS 8.1+ and Mac on Yosemite+ on same network)
+. It
+effectively turns the Mac into a speakerphone for the iPhone. Similarly, an SMS sent to your phone
+can appear in the Mac’s Messages app and you can reply from the Mac – the iPhone will forward the
+SMS. These features cement the multi-device workflow: one can stay on the Mac for communication
+instead of constantly picking up the phone.
+Sidecar: A major addition in macOS Catalina (2019) was Sidecar, which allows a modern iPad to act
+as a secondary display (and drawing tablet) for a Mac. The 2019 MacBook Pro and 2017 iMac both
+meet the supported hardware list for Sidecar (which requires relatively recent models and OS
+Catalina+)
+. Sidecar can work wired (via USB cable) or wirelessly. Wirelessly, it again leverages a
+direct point-to-point Wi-Fi connection (likely AWDL or a form of Wi-Fi Direct) between Mac and iPad,
+with Bluetooth used to initiate/handshake
+. This is essentially Apple’s answer to products like
+Duet Display but built-in and optimized. The MacBook Pro 16″, being quite powerful, can drive the
+iPad at 60 fps as an external display with minimal lag, and supports the Apple Pencil input from the
+iPad as an input to Mac apps. The iMac 2017, while slightly older, also supports Sidecar (Apple’s
+criteria included iMac late-2015 5K or newer)
+. Using Sidecar, an artist could use the iPad Pro as a
+drawing tablet for the iMac, or a user could have an iPad as a portable second monitor for the
+MacBook  Pro  when  traveling.  It’s  a  prime  example  of  Apple-specific  inter-device  integration
+leveraging wireless connectivity – effectively streaming an interactive display over Wi-Fi.
+Other Continuity Features: Instant Hotspot allows the Mac to remotely activate an iPhone’s
+hotspot and connect to it without entering a password
+. This uses iCloud authentication and
+39
+39
+• 
+39
+• 
+41
+• 
+42
+43
+42
+• 
+44
+45
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+BLE to signal the iPhone. Both Macs support this, so if no Wi-Fi around, the iMac could automatically
+tether via a nearby iPhone’s LTE, for example. Continuity Camera (introduced in 2018) lets you use
+an iPhone to capture a photo or scan a document and have it appear instantly in a document on the
+Mac. Under the hood, the Mac sends a request (via BLE or network) to the iPhone’s camera app and
+transfers the image over Wi-Fi. The iMac and MBP on macOS Mojave+ can utilize this to, say, scan a
+paper using iPhone’s camera and insert it into a Pages document on the Mac – another cross-device
+workflow booster. Apple Pay Handoff: The MacBook Pro 16″ has Touch ID, which can be used for
+Apple Pay transactions on the web. The 2017 iMac lacks any biometric sensor, but Apple allows those
+users to confirm Apple Pay purchases by using an iPhone or Apple Watch as the authenticator (it
+pops up a prompt on phone/watch). That is yet another integration point: the Mac and iPhone
+securely  communicate  (via  Bluetooth  and  internet)  to  authorize  a  payment,  with  the  phone’s
+Touch ID or watch’s skin contact serving as proof of identity. 
+Overall, these Continuity features are enabled by a combination of technologies: iCloud (to tie devices to
+one user and sync some data), Bluetooth LE (for proximity and triggers), Wi-Fi (for bulk data or direct
+connections), and increasingly the T2/secure enclave for authentication. Both the 2017 iMac and 2019
+MacBook Pro are peers in this ecosystem – meaning neither is left out. They can interchange roles freely
+(e.g., either one can be the source or target of a Handoff or AirDrop). The main difference is the MacBook
+Pro, with a T2 chip, supports “Hey Siri” hands-free (the T2’s always-on audio processor listens for the Siri
+trigger). The iMac 2017, lacking T2, did not initially support always-listening Siri until macOS Catalina
+allowed using “Hey Siri” if an iPhone/HomePod was nearby. Also, the MacBook’s Touch Bar (if relevant) could
+be  considered  an  integration  with  Touch   ID  –  but  that’s  internal  to  the  device.  From  an  ecosystem
+perspective, what stands out is how these Macs can act as extensions of the user’s other Apple devices. For
+instance, one could start editing a document on the MacBook Pro on the go, then come home and use
+Handoff or iCloud Drive to seamlessly continue on the iMac’s big screen and keyboard. They could copy text
+from a website on the iMac and paste it into a note on the MacBook. If the user gets a phone call, all their
+devices ring and they can pick it up on the MacBook’s microphone. Such continuity makes the sum of
+owning multiple Apple products greater than the parts – a strategic advantage Apple has cultivated.
+Technically, the tight synchronization relies on those connectivity advances (fast Wi-Fi, BLE broadcasts, etc.)
+and  sophisticated  software  coordination  (e.g.,  the  Continuity  frameworks  introduced  in  iOS   8/OS   X
+Yosemite).
+System Architecture, Security, and Deployment Considerations
+During 2017–2020, Apple made significant changes under-the-hood that affected how Macs interface with
+operating systems and peripherals. A major development was the introduction of the Apple T2 Security
+Chip (Apple’s custom ARM co-processor) in Mac models. The 2019 16″ MacBook Pro features a T2 chip (as
+do all 2018–2019 MacBook Pros), whereas the 2017 iMac does not have a T2 (the T2 debuted in the iMac Pro
+later in 2017, but the standard iMac retained the traditional architecture). This difference has implications
+for security, I/O processing, and deployment workflows:
+T2 Chip and I/O: The T2 in the MacBook Pro acts as a controller for several hardware functions: it’s
+essentially an embedded computer running a variant of iOS (“bridgeOS”) that handles the SSD controller,
+Touch ID sensor, FaceTime HD camera processing, audio codec, and the Secure Enclave for cryptographic
+operations. From a connectivity standpoint, one notable aspect is that the T2 presents the internal SSD as
+an encrypted APFS volume to the main Intel CPU – providing on-the-fly encryption/decryption with almost
+no performance loss. It also means that removing the SSD (which on T2 laptops is actually soldered, not
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+removable) would not let you read the data without the T2. The T2 also can block certain ports or boot
+options for security. For example, by default the T2’s  Startup Security Utility disallows booting from
+external media
+. This is a stark change from earlier Macs: on the 2017 iMac, one can plug in an external
+USB or Thunderbolt drive and boot from it freely (or netboot from a network server) as long as you have the
+right boot selection. On the MBP 2019, unless the user goes into Recovery and lowers the security settings,
+the  T2  will  refuse  to  boot  from  an  external  disk  or  network
+.  This  affects  workflows  like  macOS
+installation and troubleshooting – for instance, deploying a lab of 2019 MacBook Pros via NetBoot/Imaging
+is not possible by default, whereas the 2017 iMac can still use older NetInstall/DeployStudio workflows
+.
+Apple’s intention with T2 was to enforce Secure Boot: by default the T2 in Full Security mode will only boot a
+legit, signed copy of macOS and only from the internal disk (which it cryptographically seals)
+. This
+improves security (no Evil Maid attacks via USB stick) but did “kill off” the traditional monolithic imaging
+deployment  method  in  IT  departments
+.  Instead,  institutions  had  to  transition  to  Apple’s  Device
+Enrollment Program (DEP) or use Internet Recovery installation. The 2017 iMac, lacking T2, can still be
+imaged or booted from external media without such hurdles.
+Deployment & Target Disk Mode: Another related feature is  Target Disk Mode, historically used to
+connect a Mac as an external drive to another Mac (via FireWire or Thunderbolt). The iMac 2017 supports
+Thunderbolt Target Disk Mode – you could connect it to, say, the MacBook Pro with a TB3 cable, restart the
+iMac in Target Disk Mode, and it would appear as an external volume on the MBP for data transfer or even
+booting. On T2 Macs, Target Disk Mode behavior changed into “Share Disk” in the macOS Recovery, where
+the T2 Mac can expose its internal drive over USB or Thunderbolt but only after authenticating in Recovery.
+The MBP 16 can do a form of target disk mode, but because of Secure Enclave tied to the disk, you might
+need to input the password before it will share. Apple also introduced a special DFU mode on T2: if the T2
+firmware is corrupted, the MacBook Pro can be plugged into another Mac running Apple Configurator to
+revive the T2. The iMac 2017 doesn’t have this complexity – it has a standard EFI firmware that can be
+revived  through  a  normal  USB  restore  if  needed,  and  no  second  computer/Configurator  workflow  is
+necessary. From an IT support viewpoint, the iMac was simpler to recover (Internet Recovery or netboot
+imaging),  whereas  the  T2-equipped  MacBook  required  new  procedures  (internet  recovery  with  T2
+verification, etc.). Indeed, by 2019 Apple was steering customers toward using  Internet Recovery and
+MDM to deploy Macs. Imaging an OS onto the MBP 2019 would require first booting to Recovery and
+disabling secure boot or allowing external boot, which is an extra manual step
+. In contrast, one could
+network-boot 20 iMacs and blast an image to them (though Apple didn’t “support” it officially anymore, it
+was still technically possible).
+Security Benefits: The T2 chip brings strong security benefits to the MacBook Pro. It has a Secure Enclave
+that  stores  Touch  ID  data  and  encryption  keys.  FileVault  disk  encryption  is  automatic  and  hardware-
+accelerated. The T2 also enforces that the OS hasn’t been tampered with (it will only boot a macOS signed
+by Apple – in fact, in Full Security, the T2 will personalize the macOS installer to that specific Mac using the
+unique chip ID
+). This means the MBP’s system integrity at boot time is extremely high. By contrast,
+the iMac 2017 relies on the older firmware password and EFI Secure Boot which was much less rigorous
+(Apple did not implement UEFI Secure Boot on most Intel Macs except via the T2). The iMac can boot
+unsigned OSes (Linux, Windows via BootCamp, etc.) freely. The MBP 2019 can boot Windows via Boot Camp,
+but even Windows had to be signed by Microsoft in a way Apple’s T2 would accept (and Boot Camp Assistant
+configures the T2 to allow it)
+. Booting Linux or other OS on a T2 Mac required setting the T2 to Reduced
+Security or No Security mode in the utility
+. So Apple drew a line in the sand: post-2018 Macs would be
+much  more  appliance-like  and  secure  by  default,  whereas  2017  and  prior  were  more  open  but  less
+protected. This is something enterprises had to adapt to – e.g., Firmware updates: on the iMac, firmware
+46
+46
+46
+47
+48
+46
+46
+49
+50
+47
+51
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+updates came as part of macOS updates and could be applied via imaging if needed. On the T2 MBP, the
+firmware is on the T2 and gets updated with OS installs; also, if the T2 is wiped, one might need to use
+Apple  Configurator  to  revive.  These  details  underscore  how  the  connectivity  of  internal  components
+changed (the SSD is on the T2’s PCIe lanes, etc.).
+Performance and OS Support: In terms of raw performance, the connectivity differences (TB3 speeds, Wi-
+Fi bandwidth) mean both Macs are well-equipped for the demands of macOS in that era. The iMac’s 1 TB
+Fusion Drive, while offering ample storage, is slower than the MBP’s 1 TB NVMe SSD. Users dealing with
+large media might connect an external USB-C SSD to the iMac to improve disk I/O, whereas the MBP’s
+internal SSD is already extremely fast (measured around 2.5–2.8 GB/s read/write
+). For multi-device
+OS workflows, both can run the latest macOS (Ventura in 2023) but notably  macOS 14 Sonoma (2024)
+dropped support for the 2017 iMac while retaining the 2019 MBP, partly because Sonoma requires either a
+T2 or Apple Silicon for certain features. This highlights an “upgrade path” difference: the 2017 iMac is at the
+end of its OS line (Ventura is the last supported OS for non-Pro 2017 iMacs
+), whereas the 2019 MBP
+likely has a couple more years of OS support thanks to the T2 and its newer architecture. This is relevant for
+deployment: running the latest OS is important for security; the MBP will be able to run macOS 14, the iMac
+not without unofficial patching. Thus, in the broader ecosystem, the T2 became a sort of dividing line for
+longevity  and  capability  –  Apple  clearly  optimized  features  for  T2/Apple  Silicon  moving  forward  (e.g.,
+Virtualization: the T2 MacBook can use Apple’s Hypervisor frameworks with hardware assist for VMs, etc.,
+whereas the iMac lacks some of those enhancements).
+Legacy Device Integration: The iMac, with more ports, can interface with older devices directly – for
+example, target disk mode with a FireWire drive (via a Thunderbolt 3 to Thunderbolt 2 adapter then Apple
+TB2-to-FireWire  adapter)  is  possible.  The  MBP  requires  dongles  for  any  non-USB-C  device,  which  can
+complicate certain connections (e.g., connecting to an older projector via VGA means two adapters daisy-
+chained from USB-C). For deploying labs, the iMac has that built-in Ethernet which can utilize NetInstall or
+be imaged en masse by plugging into a switch. The MBP, if an institution wanted to netboot it (for, say,
+diagnostics), simply cannot netboot at all in a traditional sense due to the T2’s restrictions
+. They would
+instead have to use Internet Recovery or bring up macOS and then use management tools. This was a
+paradigm shift in Mac deployment between 2017 and 2019: imaging was effectively deprecated by Apple
+by the time of the MBP 16″
+. Organizations had to adapt with workflows like creating a bootstrap
+package and using DEP/MDM for zero-touch setup, rather than clone images.
+In everyday use for a consumer, these differences are subtle – the MBP may prompt for Touch ID or Watch
+to unlock, the iMac always requires a password or Watch. The MBP might be slightly more locked down if
+trying to boot alternative OS. But both are extremely capable macOS machines and part of the same
+ecosystem. The iMac’s lack of T2 doesn’t impede any consumer features (Continuity, etc., all work); it’s mainly
+security and future OS implications. 
+To summarize, in the 2017–2020 window the iMac 5K (2017) represents the last generation of Mac that
+used  only  standard  PC  architectures (Intel  CPU  +  legacy  EFI  +  software-based  security),  while  the
+MacBook  Pro  (2019)  showcases  Apple’s  transition  to  integrated  security  and  control  chips  (T2).
+Connectivity-wise,  the  T2  doesn’t  change  external  I/O  speeds  (both  have  TB3  40   Gb/s),  but  it  does
+intermediate some of those connections (the SSD, camera, etc. go through T2). For IT deployment and
+multi-device management, the MBP needed new strategies (no netboot, require MDM) whereas the iMac
+could be managed with older techniques. Apple’s ecosystem benefited from T2 in terms of user experience
+too (e.g., Hey Siri voice activation is enabled on the T2 MacBook Pro but not on the iMac 2017). In multi-
+52
+53
+54
+55
+56
+46
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+device workflows, both computers can serve in roles like local servers, shared devices, or development
+stations, but the iMac’s upgradability (it has SO-DIMM slots for RAM – our example has 48 GB upgraded –
+and a drive that can be replaced with an SSD if one opens the chassis) gives it a different “lifespan” profile
+than the MBP (soldered RAM/SSD, non-upgradeable). The iMac can be refreshed by upgrading RAM or using
+faster external storage; the MBP mostly relies on external expansions for upgrades (eGPU for graphics, TB3
+drives for more storage, etc.). This reflects two philosophies in Apple’s lineup coexisting in 2017–2019: a
+semi-upgradable desktop vs. a sealed, but highly optimized, laptop.
+Peripheral Compatibility and Expansion
+Both the 2017 iMac and 2019 MacBook Pro support a wide array of external peripherals, though the types
+of peripherals and how they connect differ due to port configurations:
+Displays: The iMac 5K has an internal high-resolution display and can additionally drive external monitors
+via Thunderbolt 3/DisplayPort. As noted, it supports one 5K external or two 4K externals
+. These would
+typically be connected using a USB-C to DisplayPort cable or an Apple Thunderbolt 3 to Thunderbolt 2
+adapter (for older Thunderbolt displays). Many users took advantage of the iMac’s TB3 ports to hook up an
+LG UltraFine 5K display (co-developed by Apple) which connects via a single TB3 cable. The 2019 MacBook
+Pro, lacking an internal 5K panel but with a very capable GPU, is often seen driving multi-monitor setups. It
+can output to dual 6K displays – for instance, two Pro Display XDRs at full 6016×3384 resolution
+ – a
+capability only the highest-end Intel Macs of that era had. This makes the MBP 16″ suitable for advanced
+workflows like video editing on multiple reference monitors. Both machines support use of  Docks: a
+Thunderbolt  3  dock  can  be  attached  to  provide  additional  HDMI  ports,  USB-A  ports,  etc.,  which  can
+particularly  benefit  the  MacBook  Pro  (e.g.  a  CalDigit  TS3  dock  can  turn  one  TB3  port  into  multiple
+connections). The iMac, already having many ports, might use a dock mainly to add extra display outputs or
+faster UHS-II SD card readers, etc.
+One thing the iMac cannot do is act as an external display for another Mac (“Target Display Mode” was only
+supported on iMacs up to 2014 and not with Retina 5K iMacs). So you cannot plug the MacBook Pro into the
+2017 iMac and use the iMac as a monitor – a feature some earlier iMacs had via Thunderbolt Target Display.
+Apple removed that once displays went 5K (citing technical limitations). In 2020+, Apple introduced Sidecar
+and later Universal Control to let an iMac and MacBook share inputs or screens in a way, but that’s not a
+direct monitor connection. So in our scenario, the iMac and MBP are more likely to use Sidecar with an iPad
+or external monitors than to directly combine with each other’s display.
+External GPUs: Both Macs, thanks to Thunderbolt 3, support external GPU enclosures (eGPU) using PCIe
+bandwidth over TB3. Apple’s macOS High Sierra and Mojave provided official support for AMD GPU eGPUs.
+A 2017 iMac user might use an eGPU to supplement the internal Radeon Pro 575/580, for example, adding
+a Vega 64 in an enclosure to accelerate VR or improve gaming performance. The 2019 MBP with an already
+powerful Radeon Pro 5500M could still benefit from a desktop-class GPU (like a Radeon 5700XT in eGPU) for
+tasks like driving multiple 4K game engines or speeding up certain OpenCL/Metal computations. Both
+machines connect to eGPUs via a TB3 cable; the performance is slightly limited by the 40 Gb/s (~< 4 GB/s
+after  overhead)  of  Thunderbolt,  but  still  very  useful.  Apple  even  sold  a  Blackmagic  eGPU  which  was
+commonly paired with MacBook Pros. The iMac being static might be less in need of an eGPU (since it has
+discrete graphics and one can opt for higher-tier GPU in BTO), but it’s still a viable upgrade path, especially
+as new GPUs came out after 2017. The MacBook Pro, being non-upgradable internally, relies on eGPU if the
+user needs more graphics horsepower down the line. This demonstrates how Thunderbolt 3 expands the
+12
+18
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+upgrade paths for otherwise closed systems like the MBP – you can attach not only GPUs but also high-end
+audio  interfaces,  RAID  storage,  or  even  specialized  devices  like  PCIe  breakout  boxes  for  scientific
+instrumentation.
+Storage and I/O: For external storage, both the iMac and MBP can use USB-C or USB-A drives. The iMac’s
+USB-A ports are USB 3.0 (5 Gb/s), which is fine for hard drives and SATA SSDs (~500 MB/s max). The
+MacBook’s USB-C ports in USB mode support USB 3.1 Gen2 (10 Gb/s)
+, so a USB 3.1 Gen2 SSD (NVMe
+over USB enclosure) can run at up to ~1 GB/s on the MBP. If the iMac user wants similar speed, they could
+plug the same USB-C SSD into one of the Thunderbolt 3 ports (via USB-C cable) since those support 10 Gb/s
+USB 3.1 as well
+. Thus, both effectively support the latest USB speeds; the difference is the MBP has only
+USB-C connectors, the iMac has both USB-C and older USB-A 5 Gb/s ports. Compatibility with USB 2.0
+devices (like Arduinos, older printers, etc.) is there on both: the iMac’s USB-A are backwards compatible
+,
+and the MBP can handle them via USB-C adapter or hub. 
+One area of note is Ethernet: the iMac’s built-in Gigabit Ethernet port can be upgraded (on the 2017 iMac,
+10 Gigabit Ethernet was not offered – that was on the iMac Pro and 2019 iMac 27 as an option). So the 2017
+iMac is limited to 1 Gb/s wired unless using a TB3-to-10GbE adapter. The MacBook Pro has no Ethernet, so
+users commonly use a Thunderbolt 3 or USB-C Ethernet adapter when needed. The lack of Ethernet on the
+MBP  is  a  limitation  for  certain  pro  workflows  (like  low-latency  audio  network  streaming  or  simply
+environments that require wired connections for security). However, it underscores Apple’s trend to remove
+built-in LAN on portables since 2012. Many creative pros carry a small USB-C dongle that provides an RJ-45
+jack when needed.
+Audio and Video peripherals: Both Macs have a 3.5 mm audio output (and the iMac’s doubles as line-in).
+They can connect to pro audio interfaces via USB or Thunderbolt easily. For example, a musician might use
+a Thunderbolt audio interface (like an Apollo) – this can plug into either the iMac or MBP TB3 port. MIDI
+keyboards or controllers that use USB-A would plug directly into the iMac, but need a USB-C hub/dongle on
+the MBP. On the video front, for connecting cameras or SD cards: the iMac’s SDXC slot (UHS-II capable) is
+convenient for photographers. The MBP 16″ notably lacks an SD slot (Apple brought it back in the 2021
+models after feedback)
+. So an SD card from a camera would require a USB-C SD reader on the MBP,
+whereas the iMac accepts it directly. This difference is frequently cited by photographers – the 2019 MBP
+not having SD slot was a pain point.
+Backward Compatibility: Through the right adapters, both Macs can interface with older standards: e.g.,
+the iMac’s TB3 can adapt to Thunderbolt 2 (for an old Thunderbolt Display or a FireWire RAID via TB2->FW
+adapter). The MBP can do the same with the official Apple TB3<->TB2 adapter (it supports display and
+storage target devices). Neither machine has optical drives, but one can use a USB external DVD drive on
+both (works via the iMac’s USB-A or the MBP’s USB-C-with-dongle). Bluetooth 4.2 vs 5.0 doesn’t affect
+accessory compatibility – a Bluetooth 5.0 device like newer BLE sensors or a BLE stylus will still work with the
+iMac’s  BT4.2  (just  at  BT4  speeds),  since  BT5  is  backward  compatible
+.  So  practically,  all  Bluetooth
+accessories (mice, keyboards, headsets, etc.) that one would use on the MBP work on the iMac too.
+To illustrate the  connectivity and expansion differences between the two models, the following table
+compares their key I/O and expansion features:
+57
+58
+59
+16
+60
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+Feature
+iMac 5K (2017)
+MacBook Pro 16″ (2019)
+Thunderbolt 3
+Ports
+2 × TB3 (USB-C), 40 Gb/s each
+4 × TB3 (USB-C), 40 Gb/s each
+USB Ports
+4 × USB-A 3.0 (5 Gb/s)
+ (plus USB
+2.0 compatible)
+0 × USB-A (use adapters); USB 3.1 Gen2
+(10 Gb/s) support on USB-C
+Display Support
+Internal 27″ 5K + 1× 5K external
+(60 Hz) or 2× 4K (60 Hz)
+Up to 2× 6K externals (60 Hz) or 4× 4K
+(60 Hz)
+GPU & eGPU
+Radeon Pro 570/575/580 (4–8 GB);
+supports external GPU via TB3
+Radeon Pro 5300M/5500M (4–8 GB);
+supports eGPU via TB3 (for higher
+performance)
+Network
+Gigabit Ethernet (RJ-45) + 802.11ac
+Wi-Fi
+802.11ac Wi-Fi only (Gigabit via USB-C
+adapter)
+Bluetooth
+Version
+4.2
+5.0
+SD Card Slot
+Yes – SDXC UHS-II
+No (external USB-C reader required)
+Audio I/O
+3.5 mm headphone (line out/in)
+;
+built-in mic & stereo speakers
+3.5 mm headphone out
+; 6-speaker
+system, 3-mic array
+Security Chip
+None (legacy SMC only)
+Apple T2 Security Chip (Secure Enclave,
+Touch ID)
+Unlock Options
+Password, Apple Watch Auto Unlock
+Password, Touch ID, Apple Watch Auto
+Unlock
+OS Boot
+Options
+Supports external boot, NetBoot/
+Target Disk Mode (no restrictions)
+External boot disallowed by default
+(configurable)
+; no NetBoot; Target
+Disk Mode with constraints
+User-
+Upgradable
+RAM upgradable (4 slots, up to
+64 GB); 2.5″ SATA drive replaceable
+(Fusion Drive’s HDD)
+No internal upgrades (soldered RAM +
+SSD); only external expansions via
+Thunderbolt/USB
+Continuity
+Features
+Handoff, Universal Clipboard,
+AirDrop, etc. (full support)
+Handoff, Univ. Clipboard, AirDrop, + Hey
+Siri (T2)
+Sidecar Support
+Yes (macOS Catalina+, iMac 2017+
+supported)
+Yes (Catalina+, all MBP 2016+ supported)
+Max macOS
+Version
+macOS 13 Ventura (macOS 14 not
+supported)
+macOS 14 Sonoma (supported, and likely
+beyond)
+Table: Comparison of Connectivity and Expansion Features of the 2017 iMac 5K vs. 2019 MacBook Pro.
+As the table highlights, the iMac offers a wider variety of built-in ports (catering to older peripherals) and
+some internal upgradeability, whereas the MacBook Pro focuses on an all-USB-C Thunderbolt approach,
+9
+15
+59
+57
+12
+18
+11
+20
+21
+29
+61
+62
+63
+64
+65
+39
+46
+66
+39
+39
+42
+42
+54
+67
+68
+69
+13
+
+------------------------------------------------------------------------
+Page 14
+------------------------------------------------------------------------
+
+relying  on  external  solutions  for  any  additional  needs.  In  multi-device  workflows,  both  can  equally
+participate in Apple’s ecosystem features (AirDrop, Continuity), but the MBP’s newer Bluetooth and T2
+enable a couple of extra conveniences like voice-triggered Siri and Touch ID for fast user switching or Apple
+Pay. 
+Conclusion
+The 2017–2020 period was pivotal for Apple’s hardware connectivity – blending the old and new. The 2017
+iMac 5K embodies a bridge between generations: it introduced the high-bandwidth Thunderbolt 3/USB-C
+standard to the iMac line while retaining familiar ports like USB-A and SD card, thus servicing both cutting-
+edge and legacy peripherals in a desktop built for power users. In contrast, the 2019 16-inch MacBook Pro
+represents  Apple’s  uncompromising  vision  of  the  future:  a  streamlined  port  selection  (four  versatile
+Thunderbolt 3 ports) and a reliance on wireless and adaptors for everything else, underpinned by the T2
+security/control  chip.  Despite  these  differences,  both  machines  leverage  common  connectivity
+technologies – Thunderbolt 3, 802.11ac Wi-Fi, and Bluetooth LE – to interoperate seamlessly within the
+Apple ecosystem.
+From  a  Thunderbolt  and  bandwidth perspective,  both  the  iMac  and  MacBook  Pro  deliver  40   Gb/s
+connectivity that in 2017–2019 was state-of-the-art in the PC industry, enabling workflows with 5K/6K
+displays, ultra-fast external SSDs, and network speeds rivaling wired servers
+. The analysis showed
+that  Thunderbolt   3’s  adoption  (and  USB-C  connector)  was  a  unifying  step  –  one  cable  could  handle
+monitors, data, and charging – especially beneficial for the laptop. The iMac’s use of TB3 mainly adds
+expansion  (more  displays,  faster  externals)  to  a  stationary  setup,  whereas  the  MBP’s  use  of  TB3  is
+fundamental (it only has TB3 for I/O, aside from audio). This highlights how Apple tailored connectivity to
+device roles: the desktop got a complementary mix, the pro laptop went all-in on a single modern standard.
+In  wireless connectivity, both devices exemplify Apple’s commitment to robust Wi-Fi and personal area
+networking. Sticking with 802.11ac through 2020 ensured solid Gigabit wireless performance for tasks like
+Time Machine backups to AirPort base stations or streaming to Apple TV. Bluetooth 4.2 vs 5.0 differences
+aside, both Macs fully support Apple’s BLE-driven Continuity framework, which is crucial for multi-device
+experiences
+. We discussed how AirDrop, as a peer-to-peer service riding on AWDL, enables rapid file
+sharing – essentially treating ad-hoc Wi-Fi as a quick, on-demand personal network
+. In an office
+scenario, one could AirDrop files from the MacBook Pro to the iMac far faster than using a USB stick, thanks
+to the direct 5 GHz link. Similarly, Sidecar and Handoff leverage the tight wireless integration between
+macOS and iOS: our MacBook Pro could extend its display to an iPad Pro for on-the-go dual-screen work,
+then back at the desk, the iMac could pick up the same project via Handoff and allow the user to continue
+with a full keyboard and mouse. This fluidity is a product of meticulous integration: the devices share
+context through iCloud and connect through BLE/Wi-Fi without user friction
+. 
+One can observe how Apple’s ecosystem ethos – “It just works” – is underpinned by these technical
+capabilities. For example, Auto Unlock uses the Watch’s presence to unlock the Mac, saving time daily;
+Universal Clipboard and phone call relay blur the lines between devices, making two Macs (or a Mac and
+iPhone)  feel  like  one  cohesive  environment
+.  The  2017  iMac  and  2019  MBP,  despite  hardware
+differences, both serve as first-class citizens in this ecosystem. Indeed, a user in 2020 with both machines
+could use them interchangeably: iCloud Drive syncs files, AirDrop shuttles one-off data, and Continuity
+features sync clipboard, messages, and more in real-time. The notable differences (like the MBP’s Touch ID)
+2
+19
+39
+70
+35
+39
+41
+44
+14
+
+------------------------------------------------------------------------
+Page 15
+------------------------------------------------------------------------
+
+augment certain workflows – e.g. approving an Apple Pay purchase with a fingerprint on the laptop vs.
+double-clicking an Apple Watch on the iMac – but do not break the continuity chain.
+Finally, in terms of forward-looking upgrade paths, these years set the stage for Apple’s silicon transition.
+Thunderbolt 3 was later subsumed into  USB4/Thunderbolt 4, which the Apple Silicon Macs (late 2020
+onward) embraced, bringing minor improvements (guaranteed 40 Gb/s for PCIe, support for more displays
+on docks, etc.). Both the iMac and MBP can interoperate with newer USB4/TB4 devices since TB3 is cross-
+compatible, ensuring their connectivity isn’t obsolete. However, the iMac’s lack of Wi-Fi 6 and the MBP’s just-
+in-time inclusion of Wi-Fi 6 in 2020 (with Apple Silicon) meant that by 2021, new Macs had taken another
+leap. Still, a user with a 2019 MBP and 2017 iMac in 2020 had a robust setup: multi-gigabit wired and
+wireless options, a plethora of peripheral choices (legacy and cutting-edge), and an ecosystem that allowed
+the desktop and laptop to complement each other’s roles. The iMac could be the heavy-duty workstation
+(with more ports, easier cooling for long renders, etc.), and the MacBook Pro the portable powerhouse (with
+identical  compute  capability  on  the  go).  Through  iCloud  and  Continuity,  tasks  move  with  the  user  –
+illustrating that connectivity is not just about ports and radios, but also about software interoperability.
+In  conclusion,  the  Apple  hardware  ecosystem  from  2017  to  2020  was  defined  by  convergence  in
+connectivity: convergence of data and display (Thunderbolt 3), convergence of devices (Continuity tying
+macOS, iOS, watchOS together), and convergence of security and functionality (the T2 chip blending roles of
+many controllers). The 2017 iMac and 2019 MacBook Pro show these trends in action, each with distinct
+strengths yet working in tandem. Apple achieved an enviable balance where a user could focus on creative
+workflow rather than file transfer or compatibility issues – a direct result of the high-bandwidth, low-friction
+technologies described in this analysis. As Apple moved past 2020 into Apple Silicon Macs, many of these
+connectivity foundations remained (Thunderbolt 3 evolved to TB4, Wi-Fi 6 became standard, Bluetooth 5.x
+continued,  Continuity  expanded  further  with  Universal  Control,  etc.),  proving  that  the  2017–2020  era
+successfully set the stage for the next generation of Apple’s interconnected ecosystem.
+Sources:
+Apple Inc., iMac (Retina 5K, 27-inch, 2017) – Technical Specifications, Apple Support
+. 
+Apple Inc., MacBook Pro (16-inch, 2019) – Technical Specifications, Apple Support
+. 
+S. Stutes et al., One Billion Apples’ Secret Sauce: Recipe for the Apple Wireless Direct Link Ad Hoc Protocol,
+MobiCom 2018
+. 
+Wikipedia, AirDrop – Security and Privacy, citing that AirDrop uses TLS encryption over a direct peer-to-
+peer Wi-Fi link (AWDL)
+ and noting exchange of SHA-256 hashes of contacts during handshake
+. 
+Tom’s Guide, Apple iMac 27-inch 5K (2017) Review, noting the iMac’s port array (audio jack, SDXC slot,
+4× USB 3.0, 2× TB3, Ethernet)
+ and wireless spec (802.11ac + Bluetooth 4.2)
+. 
+Tom’s Guide, 16-inch MacBook Pro (2019) Review, noting it has four Thunderbolt 3 (USB-C) ports and
+lacks SD/USB-A (requiring dongles for legacy devices)
+. 
+J. Ziller (Intel), Thunderbolt 3 – The USB-C That Does It All, Intel Blog, announcing 40 Gb/s TB3 with
+USB 3.1 integration, dual 4K display support, 100W power delivery, and 10 GbE networking over
+Thunderbolt
+. 
+Joel Senders, Imaging High Sierra or Mojave – DeployStudio, noting “Macs with the T2 chip can’t NetBoot,
+and to boot from external drive you must change Secure Boot settings”
+, highlighting deployment
+changes with T2. 
+• 
+10
+20
+• 
+15
+21
+18
+• 
+24
+• 
+35
+37
+• 
+66
+71
+• 
+16
+• 
+2
+19
+7
+• 
+46
+15
+
+------------------------------------------------------------------------
+Page 16
+------------------------------------------------------------------------
+
+Apple Support, Continuity and Handoff Requirements, confirming that Continuity features (Handoff,
+Universal Clipboard, Auto Unlock, etc.) run on Macs 2012+ with BLE, and listing Sidecar supported on
+iMac 2017 or later and MacBook Pro 2016 or later
+. 
+MacRumors, M1 Macs Support Wi-Fi 6, noting that prior to the M1 (late 2020), no Mac supported
+802.11ax Wi-Fi 6
+. 
+Apple Platform Security Guide, Startup Security Utility on T2, explaining Full Security mode and
+personalized OS signing per Mac (preventing booting unsigned OS or older macOS not signed by
+Apple)
+. 
+Tom’s Guide, 16-inch MacBook Pro review – Ports, expressing desire for an SD card and USB-A on the
+2019 MBP and noting only TB3 ports are provided
+. 
+Further references: Ars Technica coverage of Thunderbolt 3
+, Apple Support guides on using
+Continuity features
+, and Sam Teplov’s research on Apple’s BLE Continuity protocol
+.
+Thunderbolt 3 Announced – And It's Amazing | TechteamGB
+https://techteamgb.co.uk/2015/06/02/thunderbolt-3-announced-and-its-amazing/
+Thunderbolt™ 3 – The USB-C That Does It All | Thunderbolt Technology
+Community
+https://www.thunderbolttechnology.net/blog/thunderbolt-3-usb-c-does-it-all
+PowerPoint Presentation
+https://www.thunderbolttechnology.net/sites/default/files/IDF16_TBT3_SF16_CONBZ03_102f.pdf
+iMac (Retina 5K, 27-inch, 2017) - Technical Specifications - Apple
+Support
+https://support.apple.com/en-us/111969
+MacBook Pro (16-inch, 2019) - Technical Specifications - Apple Support
+https://support.apple.com/en-us/111932
+Apple MacBook Pro (16-inch, 2019) review | Tom's Guide
+https://www.tomsguide.com/reviews/macbook-pro-16-inch-2019
+M1 Macs Support WiFi 6, MacBook Air Has Updated Function Keys - MacRumors
+https://www.macrumors.com/2020/11/10/m1-macs-wifi-6-support/
+Meshing using Apple Wireless Direct Link (AWDL) | Yggdrasil Network
+https://yggdrasil-network.github.io/2019/08/19/awdl.html
+Cross-Platform P2P Wi-Fi: How the EU Killed AWDL - Ditto
+https://www.ditto.com/blog/cross-platform-p2p-wi-fi-how-the-eu-killed-awdl
+Apple Wireless Direct Link - The Apple Wiki
+https://theapplewiki.com/wiki/Apple_Wireless_Direct_Link
+Compare Mac models - Apple
+https://www.apple.com/mac/compare/?modelList=MacBook-Pro-16-M2,MacBookPro-16-2019
+iMac 2019 has Bluetooth 5.0!? - MacRumors Forums
+https://forums.macrumors.com/threads/imac-2019-has-bluetooth-5-0.2185037/
+• 
+42
+39
+• 
+22
+• 
+47
+49
+• 
+16
+• 
+72
+41
+44
+39
+10
+57
+66
+16
+1
+2
+3
+5
+6
+7
+8
+19
+4
+9
+10
+11
+12
+13
+14
+20
+29
+58
+59
+62
+63
+15
+17
+18
+21
+57
+61
+64
+65
+16
+52
+53
+22
+23
+24
+25
+26
+27
+28
+30
+31
+32
+16
+
+------------------------------------------------------------------------
+Page 17
+------------------------------------------------------------------------
+
+Bluetooth Capabilities of Macs - EveryMac.com
+https://everymac.com/systems/by_capability/macs-with-bluetooth-different-bluetooth-capabilities.html
+AirDrop - Wikipedia
+https://en.wikipedia.org/wiki/AirDrop
+Reverse Engineering Apple’s BLE Continuity Protocol - Sam Teplov
+https://samteplov.com/projects/apple-ble-rev/
+Continuity features and requirements for Apple devices - Apple Support
+https://support.apple.com/en-us/108046
+Imaging High Sierra or Mojave Using DeployStudio | The Terminal Blogger
+https://joelsenders.wordpress.com/2019/03/25/imaging-high-sierra-or-mojave-using-deploystudio/
+Apple T2 Security Chip: Security Overview
+https://www.apple.com/mideast/mac/docs/Apple_T2_Security_Chip_Overview.pdf
+Upgrade to Sonoma for upgraded 2017 iMac … - Apple Community
+https://discussions.apple.com/thread/255180197
+MacOS 14 won't support my 2017 iMac - should I be worried?
+https://forums.macrumors.com/threads/macos-14-wont-support-my-2017-imac-should-i-be-worried.2392050/
+Upgrade to Bluetooth 5.0? - MacBook Pro 13" Unibody Early 2011
+https://www.ifixit.com/Answers/View/543055/Upgrade+to+Bluetooth+5.0
+Apple iMac 27-Inch with 5K Display Review (2017): Serious Power | Tom's Guide
+https://www.tomsguide.com/us/apple-imac-27-with-5k-display,review-4438.html
+macOS Sonoma is compatible with these computers - Apple Support
+https://support.apple.com/en-us/105113
+Ars Technica on X: "Thunderbolt 3 embraces USB Type-C connector ...
+https://twitter.com/arstechnica/status/605683820264861696
+33
+34
+35
+36
+37
+38
+70
+39
+40
+41
+42
+43
+44
+45
+46
+56
+47
+48
+49
+50
+51
+54
+55
+67
+60
+66
+71
+68
+69
+72
+17

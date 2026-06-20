@@ -1,0 +1,1482 @@
+Technical Evaluation: Windows Server 2025 on
+Supermicro X9QRi-F+
+Overview of Windows Server 2025 Features
+Windows  Server  2025  is  the  latest  Long-Term  Servicing  Channel  (LTSC)  release  (generally  available
+November 2024) and builds upon Windows Server 2022 with significant enhancements in virtualization,
+storage, security, and hybrid management
+. Microsoft highlights “major advancements across the board
+for Hyper-V, GPU integration, Storage Spaces Direct (software-defined storage), software-defined networking, and
+clustering,” making  Windows  Server  2025  a  strong  platform  for  modern  workloads  requiring  high
+performance and scalability
+. Below is an overview of core features and improvements, especially in the
+areas of virtualization, storage, security, and remote management, that are relevant to deploying Windows
+Server 2025 on a Supermicro X9QRi-F+ based system. 
+Virtualization and Hyper-V Enhancements
+Hyper-V Scalability: Windows Server 2025 dramatically increases virtualization scale. A single host
+now supports up to 2,048 logical processors and 4 PB of physical memory (up from 512 LP / 48 TB in
+Server 2022)
+. Individual Generation 2 VMs can be configured with up to 240 TB of RAM and 2,048
+virtual CPUs
+. This far exceeds the hardware limits of the X9QRi-F+ (which maxes out at 4 CPUs
+and ~1 TB RAM) and ensures the OS can fully utilize all resources the board provides. 
+Enhanced Hyper-V Features: Several new Hyper-V capabilities improve performance and flexibility.
+Dynamic Processor Compatibility mode has been improved for clusters – it now dynamically uses
+the maximal CPU feature set common to all hosts, yielding better VM performance when live-
+migrating across different CPU generations
+. Accelerated Networking (AccelNet) simplifies
+SR-IOV networking for VMs, automatically configuring host networking to use the high-performance
+SR-IOV datapath and thereby reducing VM network latency, jitter, and host CPU overhead
+(note: SR-IOV requires a capable NIC; see hardware notes below). By default, new VMs created via
+Hyper-V Manager are now Generation 2 for better security and performance
+. 
+GPU Partitioning and AI Workloads: Windows Server 2025 introduces improved GPU virtualization.
+Through GPU Partitioning (GPU-P), a physical GPU can be partitioned and shared across multiple
+VMs, each VM getting a dedicated fraction of the GPU’s resources
+. New high-availability support
+allows a VM using GPU-P to fail over to another node, and  live migration is supported for GPU-
+partitioned VMs, enabling movement of GPU-accelerated workloads without downtime
+. These
+features  are  aimed  at  AI/ML  and  graphics  workloads.  (On  the  X9QRi-F+,  GPU-P  would  require
+installing a modern GPU since the board’s onboard video is a basic 2D controller.) 
+Hyper-V Security: Hypervisor-Enforced Paging Translation (HVPT) is a new security feature that
+protects critical kernel page tables from modification by malicious code, helping prevent certain
+buffer  overflow  attacks
+.  It  is  enabled  by  default  on  supported  hardware.  Additionally,
+1
+1
+• 
+2
+3
+• 
+4
+5
+6
+7
+8
+• 
+9
+10
+• 
+11
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+Virtualization-Based Security (VBS) enclaves are introduced, allowing applications to run sensitive
+code in isolated enclaves protected by the hypervisor
+. These features strengthen isolation but
+may require modern CPU support (see compatibility section for how this relates to older Xeon E5
+processors). 
+Clustering and Availability: Windows Server 2025 improves clustering for Hyper-V. Notably, it
+supports  Hyper-V  Workgroup  Clusters –  failover  clusters  where  hosts  are  not  domain-joined,
+simplifying deployments in edge or small environments
+. Integration with Azure Stack HCI and
+Azure Arc also facilitates hybrid clustering. Failover Cluster networking is streamlined via Network
+ATC (Autonomic Transfer Control), an intent-based networking feature that auto-configures host
+NICs for cluster roles (management, storage, etc.) to ensure consistent, optimized network settings
+across nodes
+. 
+Storage and Data Management Improvements
+Faster Storage I/O (NVMe Optimizations): Windows Server 2025 is tuned for high-speed NVMe
+SSDs. In fact, Microsoft reports that on identical hardware, Server 2025 delivers up to 60% higher
+storage IOPS throughput compared to Windows Server 2022
+. This is achieved through kernel
+optimizations that reduce NVMe latency and CPU overhead
+. On a Supermicro X9QRi-F+, which
+natively offers 6 SATA ports (2 × SATA3 6Gb/s + 4 × SATA2)
+, using NVMe would require a PCIe
+adapter. While the board itself doesn’t have M.2 slots, it does support NVMe drives via PCIe – and
+Windows Server 2025 will leverage those drives more efficiently than previous OS versions. 
+Resilient File System (ReFS) Enhancements: Server 2025 brings major updates to ReFS aimed at
+performance and space efficiency.  Block Cloning is now supported on ReFS (notably used by the
+new Dev Drive feature), which dramatically speeds up file copy operations by copying data block
+references in metadata instead of reading/writing the actual blocks
+. This yields faster large
+file  copies  and  reduced  I/O  –  beneficial  for  virtual  disk  cloning,  backups,  or  VM  provisioning.
+Additionally, ReFS gains native data deduplication and compression support, allowing storage of
+redundant data more efficiently on ReFS volumes
+. This brings ReFS closer to feature-parity with
+NTFS for general file server use. 
+Storage Spaces Direct and Replica: In clustered storage, Storage Spaces Direct (S2D) is improved
+with  thin-provisioned volumes. Administrators can now create S2D volumes that only consume
+physical capacity as needed, and even convert existing fixed-provisioned volumes to thin, reclaiming
+unused space back to the pool
+. This helps avoid over-allocation of storage in cluster scenarios.
+Storage Replica (for disaster recovery) gets performance boosts: it now supports compression of
+replication traffic to reduce bandwidth use
+, and an  Enhanced Log mechanism that bypasses
+some file system overhead, improving block replication throughput and latency
+. 
+Server Message Block (SMB) Updates: The SMB file-sharing protocol in Windows Server 2025
+includes support for the efficient  LZ4 compression algorithm, in addition to existing algorithms
+(LZ77, Huffman, etc.)
+. Compressed SMB can improve file transfer speeds on slower networks by
+sending less data. More notably, Server 2025 includes SMB over QUIC (an SMB transport over UDP/
+443 with encryption) for secure, VPN-less access to file shares over the Internet
+. When enabled,
+SMB over QUIC allows mobile or remote clients to securely connect to an on-prem file server using
+TLS 1.3 encryption, with firewall-friendly UDP ports – essentially bringing Azure Files-like connectivity
+12
+• 
+13
+14
+15
+• 
+16
+17
+18
+19
+• 
+20
+21
+22
+• 
+23
+24
+25
+• 
+26
+27
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+to Windows Server. This can be useful if the X9QRi-F+ server is used as a file server that needs to be
+accessed remotely in a secure manner. 
+Security Features and Hardening
+Windows  Server 2025  is  a  “security-first” release  with  multiple  layers  of hardening,  building on the
+Secured-core initiative (combining TPM, Secure Boot, VBS, etc.) and introducing new protections: 
+Credential Guard by Default: Microsoft’s Credential Guard (which uses virtualization-based isolation
+to protect LSASS secrets) is now enabled by default on capable systems
+. This means on
+hardware  that  meets  requirements  (typically  UEFI,  TPM  2.0,  and  supporting  CPU  virtualization
+features), Windows Server 2025 will automatically isolate credentials to mitigate theft of hashes/
+tickets by malware. On the X9QRi-F+, however, this may not activate since the board does not
+support TPM 2.0 (discussed later) and the older CPUs might lack certain virtualization extensions for
+virtualization-based security. 
+Boot and Firmware Protection: Windows Server continues to support Secure Boot to ensure the
+OS boots only trusted, signed bootloaders. The X9QRi-F+ features a UEFI 2.3.1 firmware with Secure
+Boot capability
+, so when running Server 2025 it is recommended to enable Secure Boot in the
+BIOS to guard against bootkits and unauthorized Option ROMs. Additionally, the server supports
+UEFI  firmware (ACPI  4.0,  SMBIOS  2.7),  which  aligns  with  modern  Windows  requirements
+.
+(Legacy BIOS boot is also supported on this board, but using UEFI is preferable for Windows Server
+2025 to leverage modern security features.) 
+Virtualization-Based  Security  (VBS)  Enclaves: A  new  feature  called  VBS  enclaves  allows
+applications to run sensitive code in secure enclaves isolated by the hypervisor
+. In essence, even
+if an admin or kernel is compromised, the enclave’s data remains protected. This is similar in spirit to
+technologies like Intel SGX or AMD SEV, but implemented via Windows hypervisor. Use of VBS
+enclaves may require specific CPU support (e.g. Mode Based Execution Control (MBEC) or other
+second-level translation features). The Intel Xeon E5-4600 v2 CPUs (Ivy Bridge architecture) do
+support  VT-x  and  EPT,  but  lack  newer  features  like  MBEC  and  have  no  SGX;  thus,  while  core
+virtualization will work, certain VBS functionalities might not be available or might run with reduced
+security on this platform. 
+Active  Directory  Security  Improvements: If  the  X9QRi-F+  server  will  function  as  a  domain
+controller, note that Active Directory in Windows Server 2025 gets some notable updates. There is an
+optional 32K directory database page size (vs. 8K legacy) which greatly raises various AD object
+limits (for example, allowing ~3,200 values in multivalued attributes vs ~1,200 before)
+. This
+can improve AD scalability in large enterprises. There are also improvements to AD object recovery
+and  confidential  attribute handling,  and  the  introduction  of  Delegated  Managed  Service
+Accounts (dMSA) which eliminate manual password management for service accounts by having AD
+manage  them  automatically
+.  These  are  advanced  AD  features  that  enhance  security  and
+manageability in enterprise scenarios. 
+Other Security Features: Windows Server 2025 integrates Windows Defender Advanced Threat
+Protection and other ATP capabilities for malware detection and endpoint security (cloud-delivered)
+. It also includes LAPS (Local Administrator Password Solution) built-in, which automatically
+• 
+28
+29
+• 
+30
+30
+• 
+12
+• 
+31
+32
+33
+• 
+34
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+rotates and backs up the local admin account password to Active Directory for each server
+. SMB
+security is beefed up with new defaults that prevent NTLM relay attacks and brute-force password
+attempts on SMB shares
+. Many of these features work out-of-the-box to harden the server
+against common attack vectors. 
+Remote Management and Hybrid Integration
+Managing Windows Server 2025 is made easier both locally and especially in hybrid cloud scenarios, which
+is valuable for a system like the X9QRi-F+ that might be deployed on-premises but managed remotely: 
+Windows Admin Center & Azure Arc: Windows Server 2025 has deep integration with Azure Arc for
+hybrid management. A new “Azure Arc Setup” wizard comes pre-installed (as a Feature on Demand) to
+onboard the server to Azure Arc easily
+. Once connected, you can use Windows Admin Center
+(WAC) in the Azure portal to manage the server’s roles, features, and settings through a web GUI
+. This essentially brings the familiar WAC interface into Azure, providing a single pane for
+managing on-prem and cloud servers together
+. For an X9QRi-F+ host, this means you can
+perform remote management (e.g., view performance, configure features, manage VMs, etc.) from
+anywhere via Azure’s secure portal, even if the server itself is behind a firewall, as long as it’s Arc-
+connected. 
+Azure Hybrid Services: With Arc integration, Server 2025 also offers pay-as-you-go licensing and
+other  cloud-based  benefits
+.  While  licensing  is  beyond  our  scope,  the  key  point  is  that
+connectivity to Azure enables features like Azure Site Recovery (for VM replication to cloud)
+,
+cloud-based  monitoring and best-practice assessments (Arc can scan the server and suggest
+configuration improvements)
+, and even just-in-time remote support where Microsoft support
+personnel can, with permission, get time-limited access to assist with issues
+. These capabilities
+can extend the lifecycle and support of older hardware like the X9QRi-F+ by integrating it with
+modern cloud management frameworks. 
+PowerShell  and  Automation: Windows  Server  2025  includes  PowerShell  7 (the  latest  cross-
+platform, modern PowerShell) for improved scripting and automation
+. This allows admins to use
+advanced  modules  and  scripts  to  manage  the  server  both  locally  and  remotely.  Remote
+administration via PowerShell Remoting (over WinRM/SSH) is fully supported, and the inclusion of
+OpenSSH server by default (a feature carried over from Server 2019/2022) means you can securely
+SSH into the server for management tasks
+. 
+Built-in Remote Management Tools: The OS still supports traditional tools like Remote Desktop,
+Server Manager, and the new Windows Admin Center (which can also be installed locally if not using
+Azure Arc). In Windows Server 2025’s desktop experience (GUI mode), the environment is similar to
+Windows 11’s interface
+, and tools like the modern  Windows Terminal and  WinGet package
+manager  are  available  by  default  for  administrator  convenience
+.  This  makes  local  and
+remote management more streamlined. 
+Out-of-band Management (Hardware): Separately from the OS, it is worth noting the Supermicro
+X9QRi-F+ includes a dedicated Baseboard Management Controller (BMC) with IPMI 2.0 + KVM-over-
+LAN support
+.  This  allows  hardware-level  remote  management  –  you  can  power  cycle  the
+machine, access BIOS, and use a remote console independent of the OS. When planning remote
+35
+27
+• 
+36
+37
+37
+• 
+38
+39
+40
+41
+• 
+42
+43
+• 
+44
+45
+46
+• 
+47
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+management, leveraging the BMC (via Supermicro’s IPMIView or web interface) in conjunction with
+the OS tools provides comprehensive control. For example, if Windows becomes unresponsive, the
+IPMI can be used to reboot or troubleshoot at the firmware level. 
+Performance Characteristics of Windows Server 2025
+Windows Server 2025 is designed to deliver robust performance on modern hardware, and it introduces
+several under-the-hood improvements in memory management, CPU scheduling, I/O throughput, and
+networking. When running on the Supermicro X9QRi-F+ platform (which is an older but high-end 4-socket
+server board), these OS enhancements will generally improve efficiency, though the extent will be bounded
+by the hardware’s capabilities (DDR3 memory, older Xeon cores, limited SATA bandwidth, etc.). Below is an
+analysis of the OS performance characteristics in key areas: 
+Memory Management and Scalability
+The  memory  subsystem  in  Windows  Server  2025  can  scale  to  extremely  large  RAM  sizes  (up  to  4
+petabytes), ensuring that even memory-intensive workloads are handled with ease
+. The OS includes
+refined algorithms for memory allocation, NUMA awareness, and caching. In a multi-socket system like the
+X9QRi-F+ (which has a NUMA node per CPU socket), Windows will automatically distribute and balance
+memory allocations per NUMA node to optimize local memory access. The OS’s support for disaggregated
+memory and huge memory pages has been improved, which can help in HPC or virtualization scenarios
+by  reducing  overhead.  For  example,  Hyper-V  on  Server  2025  can  employ  large  memory  pages  more
+aggressively, and features like Dynamic Memory (if using Hyper-V) are expected to work more efficiently
+for guest VMs, adjusting allocations with less fragmentation. 
+On  the  Supermicro  X9QRi-F+,  the  maximum  memory  is  1   TB  (with  32  DDR3  RDIMMs)
+.  While
+DDR3-1600/1866 memory has lower bandwidth than newer DDR4/DDR5, Windows Server 2025’s memory
+manager  will  utilize  all  available  memory  for  caching  disk  operations  and  handling  large  in-memory
+workloads as needed. The OS’s ability to handle memory pressure is enhanced by tools like DTrace, which is
+now built-in and can help profile memory and CPU usage in real time
+. Administrators can use such tools
+to  fine-tune  performance  (for  example,  observing  if  the  system  is  swapping  or  experiencing  NUMA
+imbalances). In summary, Windows Server 2025 will fully utilize the X9QRi-F+’s memory capacity, and its
+improvements in scalability mean the OS itself won’t be a bottleneck even as the hardware approaches its
+limits. 
+CPU Utilization and Scheduling
+Windows Server 2025 introduces an optimized CPU scheduler and smarter resource allocation, which is
+particularly beneficial for systems with many cores or multiple CPUs. The OS can handle up to 2048 logical
+processors, as noted, and while the X9QRi-F+ (with 4 × Xeon E5-4600 v2 CPUs) will present at most 48
+physical cores / 96 logical threads, the scheduler improvements still help in this context. For example, the
+OS uses CPU groups to manage large core counts; in our case it won’t need to split into groups, but it will
+leverage all cores for parallel tasks. 
+The scheduler also includes security-aware features (e.g., retpoline and hardware mitigations for Spectre/
+Meltdown are built-in), which do incur some overhead on older CPUs. The Xeon E5-v2 series does support
+speculative execution mitigations via microcode/OS, and Server 2025 will enable those by default to ensure
+2
+48
+49
+50
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+security. This can slightly reduce raw CPU throughput compared to an unpatched older OS, but it is a
+necessary trade-off. 
+That said, Windows Server 2025 has enhanced CPU scheduling and resource allocation algorithms that
+improve overall throughput for applications and services, making better use of each core
+. One
+specific feature, as mentioned earlier, is the  dynamic compatibility mode for processors in Hyper-V
+clusters, which ensures VMs can use newer CPU features when available, without manual intervention
+. On a single standalone server, this isn’t directly applicable, but it indicates the OS is “aware” of CPU
+feature sets and can optimize usage accordingly. 
+In practice on the X9 platform, you can expect Windows Server 2025 to utilize all 96 logical processors
+efficiently under load. Workloads that spawn many threads (SQL Server, web servers, etc.) will be distributed
+across CPUs. The OS will handle the 4 NUMA nodes by trying to keep threads on their local memory node
+when possible (processor group assignments align with NUMA nodes when <= 64 cores each). If Hyper-
+Threading is enabled (it is on E5 by default), the scheduler is SMT-aware to avoid overloading sibling threads
+unnecessarily. Overall, the OS’s modern scheduler should yield slight performance improvements over older
+Windows versions in terms of CPU throughput and responsiveness under heavy multitasking, even on this
+older hardware. 
+Storage I/O and Disk Performance
+As noted, Windows Server 2025 brings significant storage performance gains, especially for fast disks. The
+NVMe optimization is a key improvement – the OS can achieve up to 60% more IOPS on the same NVMe
+SSD hardware compared to Server 2022
+. This is partly due to a more efficient Storport driver and
+mitigations for interrupt handling overhead. On the X9QRi-F+, if you use SATA SSDs or HDDs on the onboard
+Intel C602 SATA controller, the performance will mostly be limited by the 6Gb/s SATA3 interface. However,
+the OS will still take advantage of NCQ (native command queuing) and other storage stack improvements. 
+If high performance storage is needed, one could install a PCIe NVMe drive or an HBA/RAID card. Windows
+Server 2025 has in-box drivers for many common storage adapters and will benefit from the NVMe and
+RAID enhancements automatically. For example, a PCIe 3.0 NVMe on this board (though running at PCIe 3.0
+x4 speeds) could see better I/O due to lower latency in the OS stack. Features like  multi-queue I/O
+scheduling, which were introduced in Server 2016 and refined since, are at their best in Server 2025 –
+meaning the OS can efficiently handle many simultaneous disk operations by leveraging multiple processor
+cores for I/O. 
+The ReFS block cloning feature mentioned earlier also has performance implications: copying or cloning
+large files (such as VHD/VHDX virtual disks for VMs) is far faster and uses much less disk bandwidth now
+.  This  can  drastically  shorten  maintenance  tasks  like  backing  up  VMs  or  duplicating  datasets.
+Additionally, if deduplication is enabled (now possible on ReFS in 2025), read I/O for duplicate data is
+reduced and more of the working set might be served from cache, effectively boosting read performance
+for redundant data scenarios. 
+One thing to consider is that the X9QRi-F+ chipset (C602/X79 platform) is an older generation chipset – it
+supports SATA2/3 and some legacy PCIe 3.0 lanes. The Windows 2025 storage stack is fully backward-
+compatible with such hardware, but some new storage features (like Storage Spaces Direct with NVMe
+caching, or SMB Direct RDMA over RoCE) would require hardware this board doesn’t have (NVMe drives,
+51
+42
+52
+53
+16
+20
+21
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+RDMA NIC). In essence, basic disk I/O (local or SAN) will be as good as the hardware allows, and the OS
+improvements will ensure minimal overhead. Any existing performance bottlenecks will likely be at the
+hardware layer (e.g., the limits of DDR3 memory throughput feeding the I/O or the SATA 6G bus) rather than
+in the OS. 
+Network Throughput and Stack Efficiency
+Windows Server 2025 includes a range of  network performance enhancements, which can especially
+shine with modern high-speed network adapters. The OS has improved the TCP/IP stack – for instance, it
+has better default TCP congestion control and recovery (building on innovations like TCP HyStart++ and
+RACK loss recovery that were introduced in Windows 11/Server 2022). It also adds support for ultra-high-
+speed networks such as 25 GbE and 50 GbE, with tuned defaults to reduce CPU overhead at those speeds
+. Networking features like  Receive Segment Coalescing (RSC) and  Virtual Receive Side Scaling
+(vRSS) for VM workloads are all present and optimized. 
+On the Supermicro X9QRi-F+, the onboard NICs are dual Intel i350 Gigabit Ethernet ports
+. These are
+capable and reliable NICs, but limited to 1 Gbps throughput per port. They do support some offloads
+(checksum offload, LSO, VMDq for virtualization), but they do not support SR-IOV or RDMA. This means
+advanced features like AccelNet (which automates SR-IOV for VMs) won’t apply on the stock NICs – you
+would need to add, say, a 10GbE or 25GbE NIC that supports SR-IOV if you wanted to utilize that feature on
+this server. If a modern NIC is added via PCIe (the board has several PCIe 3.0 x8/x16 slots), Windows Server
+2025 will take advantage of it fully: for example, a 10GbE Intel X540 or X550 NIC could be used, and though
+the CPU is older, the OS would handle the higher interrupt rate by possibly utilizing features like Receive
+Side Scaling (RSS) across multiple cores to distribute network load. 
+Even with the 1GbE interfaces, the OS improvements are beneficial. The networking stack in Server 2025
+has been hardened and made more efficient. For instance, default network security policies (if managed via
+WAC) block unwanted inbound traffic by default
+, which can slightly reduce exposure and load. The
+inclusion of SMB compression (LZ4) means that copying large files over the network (if both ends are 2025)
+could be faster on bandwidth-constrained links – although on a 1 Gbps LAN, the benefit may be limited by
+CPU compression speed (the Xeon E5 v2 does have AES-NI and is reasonably powerful per core, so LZ4 at 1
+Gbps should be fine). 
+Another improvement is Network ATC for cluster networks (making it easier to configure QoS and VLANs
+for different traffic types)
+. In a single-server scenario this is less relevant, but if the X9QRi-F+ is part of a
+failover cluster, Network ATC can ensure that say storage replication traffic vs VM traffic are separated and
+optimized with minimal admin effort. 
+Overall, Windows Server 2025’s network stack is highly optimized: lower latency, better multi-core scalability
+for packet processing, and enhanced security. On an older platform, you might not be able to exploit the
+highest-end capabilities (like 50GbE NIC offloads or RDMA), but you will still get a rock-solid networking
+foundation that is more efficient than previous Windows Server versions. Expect that the dual Intel i350
+NICs will be able to run at near line-rate 1 Gbps with low CPU usage (~5-10% of one core typically, thanks to
+offloads), and if you team/bond them or use both, the OS can utilize both ports (e.g., with SMB Multichannel
+for 2 Gbps aggregate SMB throughput). If needed, upgrading to a faster NIC is straightforward and
+supported by the OS with improved performance at those higher throughputs
+. 
+51
+54
+47
+55
+56
+14
+51
+54
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+Compatibility and Installation on Supermicro X9QRi-F+
+The Supermicro X9QRi-F+ is a quad-socket server motherboard (approx. circa 2013) that supports Intel Xeon
+E5-4600 and E5-4600 v2 series processors (up to 12 cores per CPU) and uses the Intel C602 chipset
+.
+Installing Windows Server 2025 on this board is technically feasible and generally runs well, but there are a
+few compatibility and setup considerations to ensure a smooth experience. This section covers chipset/CPU
+support, BIOS requirements, driver availability, and other installation notes specific to this platform. 
+Chipset and CPU Support
+CPU Architecture: The X9QRi-F+ supports the Intel Xeon E5-4600 v2 family (“Ivy Bridge-EP”, 22nm)
+and v1 (“Sandy Bridge-EP”) in LGA2011 sockets
+. These CPUs are 64-bit, support the required
+instruction extensions (Intel 64, NX bit, VT-x, VT-d, etc.), and in principle can run Windows Server
+2025. However, it’s important to note that these older Xeon E5 processors are not on Microsoft’s
+official supported CPU list for Windows Server 2025. Microsoft’s certified processor list for Server
+2025 starts at much newer generations (e.g. Intel Scalable Xeons Gen2+ and AMD EPYC 7xx2+);
+pre-2015 CPUs like the Xeon E5-v2 are not included
+. This does not mean it won’t work – it
+simply  means  Microsoft  won’t  test  or  guarantee  Windows  2025  on  such  old  silicon  for  new
+deployments. In practice, many admins have reported success running Server 2022 and even 2025
+on Xeon E5-v2 systems. The Reddit community, for example, found that a dual Xeon E5-2690 v2
+system could run Windows Server 2025 (used as a desktop OS to bypass Windows 11’s restrictions)
+without major issues
+. So compatibility is generally fine, but be aware you are in “unsupported”
+territory. 
+Performance and Features: Because the Xeon E5-4600 v2 lacks some modern CPU features, a few
+Windows 2025 capabilities will be limited. For instance, as discussed,  Credential Guard and VBS
+might not enable due to missing second-level address translation features like MBEC. The processors
+do have first-generation Intel VT-x with EPT and VT-d for virtualization, which  are sufficient for
+running Hyper-V and basic VBS isolation. They also have AES-NI for encryption, so features like
+BitLocker and SMB encryption will use hardware acceleration. Overall, the OS will utilize the CPUs
+fully, but just note that the raw performance is that of 2013-era 2.0–2.9GHz cores with no turbo
+beyond 3.x GHz and no AVX2 instructions. Modern workloads (especially ones using heavy AVX2/
+AVX-512 on newer CPUs) will run, but slower. That said, standard server tasks (AD DS, DNS, file
+services, moderate virtualization) should run comfortably within the CPU capacity. 
+Chipset (Intel C602): The C602 server chipset on the X9 provides the SATA ports, USB, PCIe lanes,
+etc. Windows Server 2025 includes in-box support for the Intel C600 series chipset. Basic devices like
+the PCIe root ports, USB 2.0 controllers, and SATA AHCI controller will be recognized with Microsoft’s
+standard drivers. If the SATA controller is set to AHCI mode, the install should see any connected
+drives natively. If it’s in Intel RSTe RAID mode and you have a RAID volume defined, you might need
+to load the Intel RSTe driver at install (Windows 2025 may not include the out-of-the-box driver for
+this older RAID controller). Intel last provided drivers for RSTe (Rapid Storage Tech Enterprise) for
+Windows Server 2016/2019, but those drivers often still work on 2022/2025. Alternatively, using AHCI
+mode is simplest unless you require a firmware RAID. 
+Memory and NUMA: No compatibility issues here – the OS will see the memory installed. With four
+CPUs, the system presents a NUMA topology that Windows will recognize and optimize for. One
+57
+58
+• 
+57
+59
+60
+61
+• 
+• 
+• 
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+consideration is to ensure memory is populated per the board’s guidelines (all four CPUs should
+have memory, ideally balanced across channels) to avoid any CPU running without local memory.
+The board can support up to 1 TB of RAM (with 32 GB RDIMMs)
+, which is far below the OS’s max,
+but still plenty. Windows Server 2025 requires a minimum of 2 GB (4 GB recommended for Desktop
+Experience)
+, so obviously that’s not a problem here. 
+BIOS/UEFI and Firmware Considerations
+BIOS Version: It is  highly recommended to update the X9QRi-F+ to the latest BIOS firmware
+before installing Windows Server 2025. Supermicro released BIOS updates for this board up through
+mid-2015 (to support the v2 processors and fix bugs). The latest revision (often version 3.x or similar)
+should include the latest CPU microcodes and stability fixes. Updated microcode is important for
+security (Spectre/Meltdown mitigations) and stability under heavy loads. Administrators have noted
+that BIOS updates are a first step to resolve any weird issues on Supermicro platforms
+. For
+example, if you encounter instability or crashes, ensure the BIOS is current and loaded with optimal
+defaults. 
+UEFI vs Legacy Boot: The X9QRi-F+ features a UEFI BIOS (conforming to UEFI 2.3.1 and supporting
+ACPI 4.0)
+. Windows Server 2025 can install in either UEFI or Legacy (CSM) mode. UEFI mode is
+strongly recommended for a few reasons: it allows use of GPT partitioned boot drives (needed if
+your boot volume is over 2 TB), and it enables Secure Boot. If you install in legacy BIOS mode, you
+won’t be able to enable Secure Boot and might run into the MBR 2 TB boot disk limit. In the BIOS
+setup, ensure the boot mode is set to UEFI. You can also enable Secure Boot (load the default keys
+provided by Supermicro) to take advantage of OS boot chain verification
+. Secure Boot on this
+board should work since it’s listed as supported, guarding against boot-time malware by verifying
+signatures of the boot loader
+. 
+TPM (Trusted Platform Module): A notable compatibility point is the lack of TPM 2.0 support on this
+motherboard. The X9 generation boards pre-date TPM 2.0; Supermicro did offer optional TPM
+modules (via header) for some X9 boards, but they were TPM 1.2 modules. In fact, users have
+reported that “TPM 2.0 module for this motherboard doesn’t exist… [you] would need a Supermicro X10 or
+higher” to have TPM 2.0
+. This means if you require TPM 2.0 for features like BitLocker with TPM
+unlocking, VBS with Credential Guard, or generally to satisfy modern OS recommendations, you’re
+out of luck. Windows Server 2025 does not actually require a TPM to install or run (unlike Windows
+11 which mandates TPM 2.0 for official support), so the OS will still function on the X9QRi-F+ without
+one. But certain security features will fall back or be disabled. For example, without TPM 2.0,
+Credential Guard cannot store its secrets in hardware, and the system cannot be a “secured-core
+server” by Microsoft’s definition. If security is a priority, you might consider using an older TPM 1.2
+module if available (it could at least be used for BitLocker encryption, albeit without the enhanced
+algorithms of TPM 2.0). 
+NVMe Boot: As this board was released before NVMe drives were common, its BIOS does not
+natively support booting from NVMe SSDs (no NVMe DXE driver present). If you plan to use an NVMe
+drive via a PCIe adapter as your OS disk, you have a couple of options: 1) Use the Clover or DUET
+UEFI NVMe driver hack, or a modded BIOS that adds NVMe support (enthusiast forums like Win-Raid
+have mods for X9 boards)
+, or 2) Simpler, use a small SATA SSD for the OS, and use NVMe for
+secondary storage. The second approach is often easier – install Windows on a SATA drive connected
+48
+62
+• 
+63
+• 
+30
+64
+64
+• 
+65
+• 
+66
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+to one of the onboard ports (or a RAID volume that the BIOS can boot from), then once Windows is
+running it will see the NVMe drive and you can use it for data, VMs, etc. Windows Server 2025 will
+definitely detect and use NVMe drives (the OS has an in-box NVMe driver). It’s purely a BIOS boot
+limitation to be mindful of. 
+BMC/IPMI Firmware: It’s also wise to update the IPMI firmware (BMC firmware) to the latest version
+from Supermicro’s site. The X9QRi-F+ uses a Nuvoton WPCM450 BMC, which has had some security
+updates over the years. Updating it can improve remote management reliability and patch known
+vulnerabilities. The IPMI operates independently of Windows, but a stable BMC ensures that things
+like sensor readings and fan control work properly alongside the OS. There have been cases where
+outdated BMC firmware caused sensor interrupts or IPMI driver conflicts in OSes, so keeping it
+updated is part of ensuring overall system stability. 
+Driver Availability for Onboard Devices
+One advantage of running a new OS like Windows Server 2025 on older, well-supported hardware is that
+most devices have mature drivers that often come bundled with the OS. Here’s what to expect for the
+X9QRi-F+ onboard components: 
+Network Controllers: The board features dual Intel Gigabit LAN controllers (Intel® i350-AM2 dual-
+port NIC)
+. Windows Server 2025 should have native drivers for the i350 – Intel NIC support is
+built into Windows, especially for such ubiquitous chips. Upon installation, the two NIC ports will
+likely be recognized as “Intel(R) Ethernet Server Adapter I350” or similar and be usable immediately.
+For optimal performance, you can install the latest Intel PROSet driver package (if one exists for
+Windows 2022 it will likely work on 2025 as well). However, basic functionality (IPv4/IPv6, VLANs,
+teaming via LBFO or SET, etc.) will work out-of-box. The IPMI dedicated LAN port uses a Realtek PHY,
+but that is only for the BMC – it does not expose a NIC to the OS, so no driver needed for that. 
+Storage Controllers: The six onboard SATA ports (2 × 6Gb/s + 4 × 3Gb/s) are provided by the Intel
+C602 chipset’s AHCI controller
+. Windows will use the standard AHCI driver unless you’ve
+configured a RAID. If using chipset RAID (Intel RSTe), you might need the Intel RSTe driver as
+mentioned. If you have additional storage like an LSI/Avago MegaRAID or HBA card in a slot
+(common in 24-bay server setups with this board), you’d need the driver for that card – but again,
+most LSI SAS2008/2308 or SAS3xxx controllers have in-box support or easily obtainable drivers for
+modern Windows. For example, LSI 9211-8i cards are supported by the Microsoft “StorPort” driver
+out-of-box. It’s always good to check device manager after install for any “unknown device” – but
+typically on X9 boards, the only unknown device might be the IPMI interface (see next point) or
+SMBus, which is usually handled by installing the Intel Chipset INF package (which simply labels the
+chipset devices but doesn’t actually add functionality). 
+IPMI Interface Driver: The Supermicro BMC exposes a KCS interface for IPMI-over-PCI. If you want
+to use in-band IPMI management or monitoring from the OS (for example, using IPMIutil or ipmitool
+to read sensors, or if using something like the Supermicro Power Manager software), you may need
+to install the Microsoft IPMI driver (which is an optional feature in Windows – in Server 2025, you
+can likely add it via Server Manager -> Features -> “IPMI Interface”). This isn’t strictly necessary for
+most users, since the BMC can be managed via network independently. But it’s worth noting in case
+a monitoring application expects it. 
+• 
+• 
+47
+• 
+18
+19
+• 
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+Onboard Video: The motherboard’s video output is driven by the BMC’s integrated graphics (Matrox
+G200 core). Windows will usually use a basic display driver (Microsoft Basic Display Adapter) for this,
+which is fine for server purposes. You won’t get high resolution or 3D acceleration, but it’s enough
+for installation and troubleshooting. If you plan to use the server with a GUI and higher resolution,
+you can install a basic Matrox driver or install an external GPU. However, given this is a server, most
+likely the onboard video will suffice (especially since IPMI allows headless use via remote console). 
+USB Ports: The X9QRi-F+ has USB 2.0 ports (eight in total: 4 rear, 3 front header, 1 Type-A internal)
+. These are UHCI/EHCI controllers from the chipset, and Windows will automatically use them
+(the installer will run from a USB drive just fine). There are no USB 3.0 ports, so no need for USB 3
+drivers. 
+Misc Devices: Supermicro boards often have extra serial ports, fan controllers, etc., but none of
+those  typically  require  special  drivers.  The  hardware  monitoring  (voltage/temp/fan  sensors)  is
+handled by the BMC. If you install Supermicro’s SuperDoctor utility, it can communicate with the
+BMC to report sensors – again that might use the IPMI driver or direct network queries. 
+In summary, driver support in Windows Server 2025 for the X9QRi-F+ is very good. The core hardware (CPU,
+chipset, NIC, storage, USB) will work out-of-box or with minor INF installs. This platform was common in the
+Windows Server 2012 era, so by now its support in modern OSes is mature. The primary caution is simply
+that since the hardware is older, you may not find Windows Server 2025-specific drivers from Supermicro or
+Intel if you run into an issue – you’d rely on the last available drivers (e.g. Windows 10/Server2016 era
+drivers) which generally do work. 
+Hyper-V and Virtualization on the X9QRi-F+
+Deploying Hyper-V or other virtualization solutions on the Supermicro X9QRi-F+ (Xeon E5-v2 platform)
+under Windows Server 2025 is quite feasible and can be effective for many workloads, but it comes with
+some caveats due to the age of the hardware. Here are key points and “notes from the field” regarding
+virtualization on this setup: 
+Hyper-V Role Compatibility: Windows Server 2025 Hyper-V requires a 64-bit processor with Second
+Level Address Translation (SLAT). The Xeon E5-4600 v2 does support SLAT (Intel EPT), and Intel VT-x
+virtualization extensions, so it meets the technical requirements to run Hyper-V and host VMs. You’ll
+need to enable “Intel Virtualization Technology” (VT-x) and “VT-d” in the BIOS if they aren’t already on
+(on Supermicro boards they are usually enabled by default, but double-check BIOS settings for
+“Virtualization” and “VT-d”). With those on, the Hyper-V role should install without issue and you can
+create VMs that utilize the full CPU and memory of the machine. 
+Performance for VMs: Each Xeon E5-46xx v2 CPU has up to 12 cores (24 threads). In a fully loaded
+configuration (4 CPUs, 12C each, HT on) you have 48 physical cores / 96 logical processors available
+to Hyper-V. Windows Server 2025 Hyper-V can handle this easily (far below its 2048 LP limit
+). The
+scheduler will distribute VMs across the NUMA nodes. By default, Hyper-V will treat each socket as a
+NUMA node with its local memory, and it will try to keep a VM’s memory allocation within one node
+for performance (as long as the VM’s vCPU count doesn’t exceed the cores of a single socket, it will
+stay “NUMA local”). You can manually configure NUMA spanning settings if needed, but the defaults
+are fine. 
+• 
+• 
+67
+68
+• 
+• 
+• 
+2
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+Older CPU Feature Set: One thing to note is that if you plan to run modern guest OSes (like
+Windows 11/Server 2025 or certain Linux distros) in VMs, you might need to enable  Processor
+Compatibility Mode if you ever move those VMs to a host with a newer CPU, but on a single host
+this isn’t an issue. The VMs will see a virtual CPU based on the host’s capabilities. The E5-v2 lacks
+features like AVX2, so any software inside VMs that attempts to use AVX2 will just not have it
+available. This typically isn’t an issue unless running heavy scientific workloads inside VMs. 
+Hyper-V Enhanced Security Features: As mentioned under security, new Hyper-V related security
+features like HVPT and VBS enclaves may not be fully supported on this hardware. For example,
+HVCI (Hypervisor-protected Code Integrity) for VMs or the host might not be enabled because it
+requires Intel mode-based execution control (MBEC) or an equivalent, which older CPUs don’t have.
+If you enable features like Shielded VMs or Virtual TPM for VMs, they require a physical TPM in the
+host (or a host guardian service) – and since X9QRi-F+ has no TPM 2.0, using Shielded VMs with
+virtual TPM would not be straightforward (you’d have to use an external Key Protection Service
+rather than TPM binding). In short, core Hyper-V works fine, but “Secured-core” Hyper-V features will
+be limited. 
+Device Passthrough (VT-d): The platform supports VT-d, and Windows Server Hyper-V can use it for
+Discrete Device Assignment (DDA), i.e., PCI passthrough of devices to VMs. You could, for instance,
+pass a PCIe storage controller or GPU directly into a VM. The Intel C602 chipset and BIOS support VT-
+d (make sure “VT-d” is enabled in BIOS). However, do note that DDA (passthrough) in Hyper-V has
+specific requirements and not all devices/drivers are compatible. But generally, an Intel i350 NIC
+could be passed to a VM if desired (though with only two NICs, doing so might leave the host with no
+connectivity except IPMI, so be cautious). Likewise, a GPU (if you install one) could potentially be
+assigned to a VM for CUDA or rendering tasks – although NVIDIA consumer GPUs often have
+artificial blocks against virtualization on server OS, whereas NVIDIA Grid/Quadro or AMD GPUs
+might work. 
+SR-IOV and Networking for VMs: The Intel i350 NICs on this board do not support SR-IOV, so you
+cannot use the “Single Root I/O Virtualization” feature of Hyper-V on the built-in NICs. Hyper-V will
+simply use traditional virtual switching (Hyper-V Virtual Switch) and VMs will share the 1Gb links via
+the vSwitch. This works fine, albeit with the overhead of virtualization. The Accelerated Networking
+(AccelNet) feature in Windows Server 2025, which streamlines SR-IOV configuration
+, is moot on
+this hardware unless a SR-IOV capable NIC is added. If high network throughput or low latency for
+VMs is a goal, installing a PCIe 10GbE or 40GbE NIC that supports SR-IOV (e.g., Intel X710 or
+Mellanox ConnectX-4) would allow you to take advantage of those Hyper-V capabilities on this OS.
+Otherwise, expect roughly up to ~3-4 Gbps total throughput through a Hyper-V virtual switch on a 1
+Gbps NIC (since multiple VMs have to share 1 G link, the limit is 1 Gbps per NIC). 
+Storage for VMs: If using this server as a Hyper-V host, consider that the storage system (especially
+if just using SATA drives) might be the performance bottleneck for VM I/O. With Windows Server
+2025, using  VHDX format is recommended (for features like block-level provisioning and online
+resizing). The ReFS improvements (block cloning) particularly help with creating or checkpointing
+VHDX files
+ – for example, merging a checkpoint or copying a VHDX could be much faster than on
+older OS versions. If you have multiple drives, you can use Storage Spaces to create a simple or
+mirror pool for the VMs; Windows 2025 will support that just as 2019/2022 did. The X9 board itself
+has no built-in SAS expander or HBA, so in a large drive configuration an add-in card is used – ensure
+• 
+• 
+• 
+• 
+6
+• 
+20
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+any such card is compatible (most LSI RAID/HBAs are). The OS can also do Storage Replica in case
+you want to replicate VM storage to another server for disaster recovery; just remember the 1 Gbps
+NICs would limit replication speed unless upgraded. 
+Scaling and Overcommitment: With up to 96 logical processors, you can run a fair number of VMs
+on this host. Windows Server 2025 Hyper-V supports huge VM sizes (as noted), but on this hardware
+you might run, say, 20–30 moderate VMs (depending on CPU/RAM needs) before hitting resource
+limits. Features like Memory overcommit (Dynamic Memory) can be used to maximize utilization,
+and  Windows  2025’s  enhancements  in  memory  management  will  help  avoid  issues  when
+overcommitting. The  workgroup cluster feature could even let you set up a two-node Hyper-V
+cluster using another similar server without needing a domain
+, which is an interesting option for
+high availability in a lab or small biz setting – though the X9 boards might be too large and power-
+hungry for a small cluster unless you already have them on hand. 
+In summary, Hyper-V on Windows Server 2025 will run on the X9QRi-F+ and can utilize its 4 CPU / large RAM
+architecture  effectively  for  virtualization.  The  main  limitations  are  those  of  the  hardware  generation:
+relatively lower per-core performance, no advanced NIC offloads, and missing modern security features.
+For many uses (running a farm of VMs for dev/test, hosting legacy enterprise applications, etc.) this setup
+will be more than sufficient. Just ensure you tweak the BIOS (enable VT-x/VT-d, ensure Hyper-Threading on
+or off as you prefer, power set to performance) and consider the networking/storage upgrades if needed to
+balance the system for virtual workloads. 
+Expected Performance on the X9QRi-F+ Platform
+When evaluating overall performance, it’s useful to compare the capabilities of the Windows Server 2025 +
+X9QRi-F+ combination against both modern systems and the baseline of this hardware. While we don’t have
+a specific official benchmark of Windows Server 2025 on the X9QRi-F+, we can infer expected performance
+based on hardware specs and the improvements in the OS: 
+Compute Performance: A fully loaded X9QRi-F+ with four Xeon E5-4667 v2 (for example) would have
+48 cores @ 3.2 GHz. In terms of raw CPU, this was top-of-the-line in 2013. A single modern 2025-era
+CPU (like an Intel Xeon Platinum 8480+ or AMD EPYC) would significantly outperform it, especially in
+single-threaded tasks. However, for multi-threaded throughput, 48 Ivy Bridge cores still provide a lot
+of processing power. Windows Server 2025’s efficient scheduling means that it will keep these cores
+busy. Real-world benchmarks: a similar 4×E5-4620 system running Windows Server 2012 scored ~45k
+in Geekbench multi-core
+ (older Geekbench version), whereas a single new Xeon might score
+several times that. So one should set expectations: heavy workloads like modern encryption (where
+new  CPUs  have  AES  improvements  and  AVX-512)  will  run  slower  on  this  machine.  But  typical
+enterprise workloads (AD, file/print, moderate SQL databases, etc.) will still run at acceptable speeds
+as they are often I/O-bound or network-bound rather than pure CPU-bound. 
+Storage Throughput: If sticking to SATA SSDs or HDDs, the max throughput per drive is ~500 MB/s
+for SATA SSD (or ~150 MB/s for a 7.2k HDD). The C602 has 2 SATA 6G ports that can each do ~550
+MB/s with a fast SSD, and 4 SATA 3G ports that do ~280 MB/s max. In RAID or aggregate, you might
+see a few hundred MB/s. Windows Server 2025 doesn’t change these physics, but it will make sure it
+can drive the devices at full speed. The NVMe improvement is noteworthy if an NVMe is used: e.g., a
+PCIe 3.0 x4 NVMe that typically does 3000 MB/s on older OS might do up to ~4800 MB/s on 2025
+• 
+13
+• 
+69
+70
+• 
+13
+
+------------------------------------------------------------------------
+Page 14
+------------------------------------------------------------------------
+
+(60% gain)
+, limited by PCIe 3.0 x4 bandwidth (~3.94 GB/s). That 60% figure was likely measured
+with a very fast device and earlier OS inefficiencies; real-world improvements might be smaller for
+typical workloads, but it shows the OS can reduce overhead. For the X9, a realistic scenario: copying
+files between two SSDs or a network share could saturate the links – and if ReFS block clone kicks in
+(like copying a large VHDX on the same volume), it could complete almost instantly regardless of file
+size, which is a big win for admin operations. 
+Network Performance: A single 1 Gbps link can transfer at ~115 MB/s. Windows Server 2025 will
+have no trouble hitting that ceiling. Where improvements might be seen is in latency and efficiency.
+For instance, under high packet-per-second loads, the networking stack in 2025 might use less CPU
+than 2012R2/2016 did. If your use case is a web server or similar, the lower jitter and improved TCP
+algorithms in 2025 could handle bursty traffic better. If iSCSI or SMB is used heavily, features like
+SMB Multichannel and SMB Direct (if a faster NIC with RDMA was added) would help. On this board
+as-is, a fair expectation is ~900-950 Mbps throughput on each NIC for large transfers, and the OS can
+handle multiple connections well. In a lab test, enabling SMB compression with LZ4 might raise CPU
+usage  but  could  compress  certain  data  enough  to  effectively  exceed  1  Gbps  (but  that’s  data
+dependent). 
+Hyper-V VM Density: If using the server for virtualization, an expected performance metric is how
+many VMs or what total load it can handle. Roughly, 48 cores can perhaps host on the order of 40-60
+relatively light VMs (1 vCPU each) or a smaller number of heavier ones. The OS overhead for Hyper-V
+is minimal – Microsoft runs their Azure Stack HCI on similar multi-socket systems, and Windows is
+optimized to minimize hypervisor overhead. Windows Server 2025’s support for huge VM sizes
+doesn’t mean you can or should push that on this hardware, but it means any configuration you
+choose (like giving a VM 32 vCPUs and 256 GB RAM if needed) is supported by the OS, within the
+physical limits of 96 threads/1 TB. 
+Cooling and Power: While not a performance metric, note that a fully loaded 4-CPU X9 system will
+consume a lot of power (potentially 600W+ under load) and generate significant heat. Windows
+Server  2025  has  modern  power  management,  but  by  default  on  a  server,  it  tends  to  favor
+performance over power savings (especially if you select the “High Performance” power plan or the
+BIOS is set to OS Controlled but with performance bias). You can adjust the Windows power plan if
+you want to throttle the CPUs when idle (balanced plan etc.). However, for consistency, many server
+admins use “High Performance” mode to disable core parking and frequency scaling, ensuring
+steady performance. This will maximize throughput but also power usage. On older Xeons, the
+difference can be tens of watts, so it’s a consideration: you can trade a bit of performance for
+efficiency if desired by using a balanced power plan. 
+Known Performance Issues: As of release, Microsoft did acknowledge a few issues with Windows
+Server 2025 that could affect performance in edge cases. One relevant known issue: systems with
+>256 logical processors may experience BSODs or instability until patched
+. The X9QRi-F+ has at
+most 96 logical processors, so it stays well under that threshold – thus you shouldn’t encounter that
+specific bug. Another issue was with iSCSI boot causing boot failures (a “boot device inaccessible”
+error in certain SAN boot scenarios)
+. This would only matter if you attempted to boot the OS
+from an iSCSI LUN. Most likely, you will install on local storage, so this is not a concern. These
+examples illustrate that while the OS is new, typical deployments on this hardware are not hitting the
+16
+• 
+• 
+• 
+• 
+71
+72
+14
+
+------------------------------------------------------------------------
+Page 15
+------------------------------------------------------------------------
+
+problematic boundaries. Still, it’s wise to keep Windows Update enabled and apply updates, as early
+patches will resolve such known bugs
+. 
+In summary, expected performance of Windows Server 2025 on the Supermicro X9QRi-F+ is solid for a
+system of this class. The OS will not be the limiting factor – the hardware will be. Think of it as giving a 2013
+supercomputer a modern, efficient operating system: you get the benefits of new software optimizations,
+but you’re still constrained by older CPU/memory speeds. The combination is appropriate for many tasks,
+especially  if  you’re  repurposing  this  board  to  extend  its  life  running  updated  software.  Just  temper
+expectations for extremely demanding workloads (like high-end realtime analytics, heavy AI training, etc.,
+which  really  need  newer  processors).  For  moderate  enterprise  workloads,  lab  environments,  or
+virtualization of legacy apps, this setup should deliver reliable performance. 
+Known Issues and Limitations
+When running Windows Server 2025 on the X9QRi-F+ platform, a few known issues or limitations should
+be noted: 
+Lack of Official Support: As mentioned, Intel Xeon E5-v2 series CPUs are not officially supported in
+Server 2025. This means if you run into an OS bug, Microsoft support might not assist you unless
+you reproduce it on supported hardware. While the community and our testing indicate it works,
+you’re essentially in an unsupported configuration. This is more of a theoretical limitation – day-to-
+day it likely won’t matter, but it’s worth acknowledging. 
+No TPM 2.0: The X9QRi-F+ cannot accomodate a TPM 2.0 module
+. This limits certain security
+scenarios.  For  instance,  if  you  wanted  to  implement  BitLocker  Drive  Encryption with  a  TPM
+protector, you can’t – you’d have to use a password or USB key for BitLocker instead. Also, features
+like Device Health Attestation or Credential Guard’s highest mode require TPM 2.0. The practical
+impact is that the server might not meet some compliance standards that require TPM-based
+attestation. If this is a lab or non-critical deployment, it may not matter. If it’s going into production
+in an environment with strict security requirements, this could be a show-stopper for using this older
+board. 
+Older BIOS and UEFI Limitations: The motherboard’s UEFI, while functional, is not as advanced as
+modern ones. Beyond the NVMe boot issue discussed, it may also lack some quality-of-life features.
+For example, many X9 boards do not have a graphical UEFI interface (just text), and they might not
+fully support newer peripheral boot options. There have been instances where certain newer GPUs
+in X9 systems won’t display output until OS loads (due to GOP driver issues in old UEFI). If you plan
+to install a modern GPU for compute, be mindful that you might need to update the GPU’s firmware
+to one that supports legacy mode or simply operate headless. Additionally, the board might not
+support “UEFI HTTP Boot” or other modern network boot standards that Windows Server 2025 can
+do  –  only  legacy  PXE.  These  are  minor  limitations,  but  if  you  intended  to,  say,  use  Windows
+Deployment Services with UEFI HTTP boot, that won’t work on this hardware. 
+Power  Consumption  and  Heat: While  not  an  OS  issue,  running  this  board  fully  loaded  with
+Windows Server 2025 means you’ll be drawing significant power even at idle compared to newer
+hardware. The OS itself might try to idle cores, but the power gating on older Xeons is not as
+effective as on newer ones. This means the system could run hotter and noisier. Ensure the server’s
+73
+• 
+• 
+65
+• 
+• 
+15
+
+------------------------------------------------------------------------
+Page 16
+------------------------------------------------------------------------
+
+cooling (fans, heatsinks) and power supply are in good shape. Thermal management is partly
+handled by the BMC/BIOS (fan speed ramp-up based on sensor thresholds). Windows can signal
+certain ACPI states but generally Supermicro’s cooling is firmware-driven. Just watch that under
+heavy multi-core loads the CPUs don’t throttle – if they do, consider increasing cooling or checking
+that thermal paste etc., is appropriate. 
+Driver Support Ceases: While all necessary drivers are available now, keep in mind that future
+updates (beyond 2025) won’t be targeting this hardware. Intel and others have long since stopped
+updating drivers for the X9’s components. If a future Windows 2025 cumulative update were to,
+hypothetically, introduce an incompatibility with the old Intel AHCI driver or similar, there’s a slim
+chance you could hit an issue. This is unlikely, but it’s part of running an OS on decade-old gear. The
+good news is the drivers in Windows are stable – e.g., the in-box e1000e driver for the i350 NIC is
+mature, and the AHCI driver is Microsoft’s own which is well-tested. 
+Blue Screen on >256 Threads: Not applicable to this board, but worth noting as an OS bug: if you
+had a server with more than 256 logical processors, Server 2025 could crash (this is a known issue to
+be fixed)
+. With 96 LP, the X9QRi-F+ is safe from this, so it’s actually an example where this older
+hardware avoids a new software bug that only huge core count systems face! 
+iSCSI Boot Bug: Again, only relevant if you try something exotic like network booting the OS from an
+iSCSI  target.  Windows  Server  2025  has  a  known  issue  where  that  might  fail  with  a  BSOD  or
+inaccessible boot device error
+. This board could theoretically PXE boot WinPE and then iSCSI
+mount a LUN to boot Windows – but that’s not a common scenario. Most will install on local disk. So
+this is a known OS issue rather than a board issue, but we include it for completeness. 
+Maximizing Upgrades: The X9QRi-F+ is already at its CPU and RAM limits with v2 CPUs and DDR3.
+Unlike some slightly newer boards, you can’t upgrade beyond that (no v3 CPU support, etc.). So the
+limitation is that you’re at the ceiling of this board’s performance. If Windows Server 2025 sparks you
+to do more (containers, more VMs, etc.) you might quickly find the system saturated where a
+modern platform would not be. This is just a consideration for planning: if this is for testing or
+interim use, fine – but for long-term production use, the lack of future hardware upgrade path (short
+of replacing the whole server) is a limitation to be aware of. 
+Notwithstanding these limitations, there aren’t any show-stopping  incompatibilities reported for Windows
+Server 2025 on this board. Users have successfully run even Windows 11-based OS on similar X9 systems
+. The experience is generally stable. Any issues that do arise (random freezes, etc.) are likely to be
+hardware-related (aging components, need for BIOS update, etc.) rather than OS bugs given the relatively
+standard hardware in the X9 (Intel reference platform for the most part). 
+Recommendations for Optimal Stability and Performance
+To ensure the best experience running Windows Server 2025 on the Supermicro X9QRi-F+, consider the
+following best practices, BIOS tweaks, and firmware updates: 
+Update System Firmware: As stated, update to the latest BIOS release for the X9QRi-F+ (check
+Supermicro’s website). Also update the BMC/IPMI firmware to the newest version. Newer BIOS
+• 
+• 
+74
+• 
+72
+• 
+61
+• 
+16
+
+------------------------------------------------------------------------
+Page 17
+------------------------------------------------------------------------
+
+revisions often improve CPU microcode, memory compatibility, and fix errata that could cause
+system hangs under stress. Administrators have pointed out that unexplained stability issues on
+Supermicro boards can often be resolved by bringing firmware up-to-date
+. Since this board is
+old, the “latest” BIOS is from 2015, but make sure you have that rather than an initial 2013 version. 
+Enable Relevant BIOS Settings: Enter the BIOS setup and verify: 
+Virtualization Settings: VT-x (Intel Virtualization Tech) = Enabled; VT-d (Directed I/O) = Enabled. This
+ensures Hyper-V and device passthrough function properly. 
+Memory Settings: If there’s an option for “Node Interleaving,” Disable it (this keeps NUMA nodes
+separate, which is better for performance). If Node Interleaving is enabled, it would interleave
+memory across NUMA nodes, potentially hurting performance for local memory access. By default
+it’s usually disabled on multi-socket Supermicros, but good to confirm. 
+Power/Performance: Set the BIOS power management to “Performance” or OS Controlled (and
+then in Windows set High Performance plan). On some X9 boards, there is a “Power Efficient” vs
+“Performance” setting. The latter will minimize CPU C-state stepping and give more consistent
+performance (at the cost of power). If you prefer the CPUs throttle when idle, you can choose
+Balanced, but for a server workload performance mode is often recommended. 
+Hyper-Threading: Ensure Hyper-Threading is Enabled (unless you have a specific reason to disable
+it, such as certain licensing or security considerations). Hyper-Threading will give you up to ~20-30%
+throughput boost for many workloads. There were past concerns about side-channel attacks on HT
+(like L1TF vulnerability), but those can be mitigated via patches rather than disabling HT in most
+cases. 
+Boot Mode & Secure Boot: Set Boot Mode = UEFI. Enable Secure Boot and load the default keys (as
+long as you intend to run Windows or other signed OS). This will help protect the boot process
+. If
+you run into any boot issues after enabling Secure Boot (for example, if using some unsigned kernel
+drivers or utilities in pre-boot), you might need to add keys or disable it, but generally Windows
+Server works with Secure Boot on. 
+Above 4G Decoding: If you plan to install devices that use large BAR memory ranges (like a GPU or
+certain NVMe RAID cards), check if the BIOS has an option for “Above 4G Decoding” or “64-bit PCI
+decoding” and enable it. This allows the BIOS/OS to map MMIO space above 4GB address range,
+which is needed if you have devices that collectively require more than 4GB of address space
+(common if a large GPU with 16GB VRAM is installed). This setting is often found in later-gen boards;
+some X9 BIOS have it hidden or not available. If it’s present, enabling it preemptively can avoid
+issues with devices not showing up in Windows due to address space collisions. 
+Install Latest Drivers (if available): After OS install, check Device Manager. If any devices are
+unnamed (e.g., “Base System Device”), install the Supermicro or Intel chipset INF to properly tag
+them. For NICs, consider installing the Intel PROSet drivers for Windows Server (even if 2025 isn’t
+listed, the latest available for 2019/2022 should work). This can sometimes provide adapter teaming
+software or advanced diagnostics. For storage, if using RAID, install the appropriate Intel/LSI drivers
+and management utility (like Intel RST CLI or MegaRAID Storage Manager) to monitor array health.
+While Microsoft’s in-box drivers are stable, vendor drivers can offer performance tuning or full
+feature support. 
+63
+• 
+• 
+• 
+• 
+• 
+• 
+64
+• 
+• 
+17
+
+------------------------------------------------------------------------
+Page 18
+------------------------------------------------------------------------
+
+Verify  Event  Logs  and  Device  Manager: Keep  an  eye  on  the  Windows  Event  Viewer  for  any
+warnings or errors that might indicate a driver or hardware issue (for example, storport timeouts,
+corrected ECC errors, etc.). Also verify that all 4 CPUs and full memory are recognized by the OS (you
+can check System Information or Task Manager > Performance). If something looks off (like only 3
+CPUs showing), that could indicate a CPU or socket not initialized – re-seat CPUs or adjust BIOS
+settings accordingly. 
+Stress Test the System: After installation and setup, it’s wise to run some stress tests to ensure
+stability under load. For example, run Hyper-V with some test VMs doing CPU+memory stress, or use
+tools  like  Prime95,  memtest,  or  disk  benchmarking  (CrystalDiskMark  on  your  drives,  iperf  for
+network). This can reveal any cooling insufficiencies or configuration issues (like a mis-seated RAM
+module causing correctable ECC errors under load, etc.). It’s better to identify and address such
+issues early. 
+Plan for Redundancy: This is more operational advice – if this server will host important workloads,
+remember that the hardware is old and components (PSUs, drives, fans) can fail. Ensure you have
+proper cooling (all fans operational – this board has 10 fan headers and expects a robust chassis
+cooling
+). Consider keeping a cold spare or at least have a backup strategy for the VMs/data.
+Windows Server 2025 can use Storage Replica to copy data to another server or Azure for backups.
+Utilize those OS features to mitigate the risk of hardware failure. 
+Leverage New OS Features Wisely: Make use of the OS enhancements to get the most out of the
+hardware. For example, if running VMs, use VM Start Order Priority and Automatic Start Delays
+to stagger VM boot if you have many (to avoid power spike and disk thrash on boot). Use Storage
+QoS if multiple VMs share a disk system, to prevent one VM from saturating the I/O. If this server is
+an all-in-one, use Nested Virtualization if you want to run Hyper-V inside a VM (yes, Server 2025
+supports nesting even on older Intel CPUs that have VT-x/EPT – useful for lab scenarios). Also, enable
+Windows Admin Center for a modern management experience – you can install it on Windows
+Server 2025 (it’s a separate download or use via Azure Arc as mentioned). WAC gives a nice GUI to
+monitor performance, manage updates, etc., which is helpful if you don’t want to RDP into the server
+regularly. 
+Security Updates: Continue to apply Windows Updates. Even though the hardware is old, the OS
+updates  (especially  security  patches)  are  crucial.  Windows  Server  2025  will  be  supported  with
+updates into 2029 (mainstream) and 2034 (extended)
+. Staying patched will keep the server
+secure and stable. If any update ever seems to cause an issue (rare, but e.g. some early 2025 update
+reportedly caused DC connectivity issues
+), you can always roll it back, but generally, trust the
+update process. 
+By following the above recommendations, you can achieve a stable and well-performing system. Many IT
+professionals have successfully modernized older servers like the X9QRi-F+ by running the latest software
+on them – the key is to mind the details (firmware, configuration, realistic expectations). In conclusion,
+Windows Server 2025 can breathe new life into the Supermicro X9QRi-F+ platform, providing access to
+current-generation features and security on this veteran hardware, as long as one carefully addresses the
+compatibility and optimization points discussed. 
+Table: Windows Server 2025 vs. Supermicro X9QRi-F+ – Key Compatibility Highlights
+• 
+• 
+• 
+75
+76
+• 
+• 
+77
+78
+18
+
+------------------------------------------------------------------------
+Page 19
+------------------------------------------------------------------------
+
+Aspect
+Windows Server 2025
+Capability
+Supermicro X9QRi-F+
+Hardware
+Compatibility Notes
+CPU Support
+Up to 2048 logical
+processors per host
+ (64+ sockets) <br>
+Supports latest Intel
+Xeon Scalable & AMD
+EPYC families
+4× Intel Xeon E5-4600
+v2 (12 cores each, 48
+cores / 96 threads
+max)
+ <br> (Ivy
+Bridge, 22nm,
+launched 2013)
+Not officially on support list, but
+meets 64-bit, VT-x/SLAT
+requirements. <br> No modern
+AVX2/AVX-512, which limits
+some performance. OS can use
+all 96 threads.
+Memory
+Supports up to 4 PB
+RAM per host
+ <br>
+Enhanced memory
+management for large
+and NUMA systems
+32 DIMM slots, up to 1
+TB DDR3 ECC
+(1600/1866 MT/s)
+<br> Quad-channel
+per CPU (NUMA nodes
+x4)
+OS can address full 1 TB with
+ease. <br> NUMA optimizations
+in OS will maximize local
+memory use. <br> Older DDR3
+bandwidth is a limitation for
+memory-intensive apps.
+Storage & I/O
+NVMe-optimized (up to
++60% IOPS vs 2022)
+<br> ReFS with block
+cloning, dedup,
+compression
+<br> Storage Spaces
+Direct (S2D) with thin
+provisioning
+6 onboard SATA ports
+(2 @6Gb/s + 4 @3Gb/
+s)
+ <br> PCIe 3.0
+slots for add-on NVMe
+or SAS controllers
+<br> No native M.2/U.
+2 support (NVMe via
+adapter only)
+SATA SSD/HDD performance is
+supported (AHCI/RAID). <br> OS
+benefits like ReFS fast clone
+help with VHDX on any storage.
+<br> NVMe improvements
+require NVMe drives on PCIe
+(BIOS can’t boot NVMe without
+workaround). <br> S2D features
+work if using add-on HBAs and
+multiple disks, but 1GbE
+networking is a bottleneck for
+cluster use.
+Networking
+Improved TCP/IP stack,
+low-latency
+optimizations
+ <br>
+Supports 1GbE to
+100GbE NICs, SR-IOV,
+RDMA <br> SMB over
+QUIC and SMB
+compression for
+efficient file transfers
+2× 1 GbE LAN (Intel
+i350-AM2)
+ <br> 1×
+IPMI 2.0 LAN (Realtek
+PHY for BMC) <br>
+PCIe slots for higher-
+speed NICs (10G/25G
+etc.)
+Onboard 1GbE works with in-
+box drivers (full features except
+SR-IOV). <br> Throughput max
+~1 Gbps per port; OS easily
+handles that. <br> SR-IOV and
+RDMA not available on i350 –
+require add-in NIC. <br> SMB
+over QUIC can be used on
+1GbE, but primarily benefits
+remote access scenarios.
+2
+60
+57
+2
+48
+16
+20
+22
+23
+18
+51
+27
+47
+19
+
+------------------------------------------------------------------------
+Page 20
+------------------------------------------------------------------------
+
+Aspect
+Windows Server 2025
+Capability
+Supermicro X9QRi-F+
+Hardware
+Compatibility Notes
+Security
+Requires UEFI &
+TPM2.0 for “secured-
+core” features <br>
+Credential Guard on by
+default (if supported)
+ <br> VBS enclaves,
+Hypervisor-protected
+code integrity
+ <br>
+Secure Boot support,
+SMB security
+hardening
+UEFI 2.3.1 BIOS with
+Secure Boot, ACPI 4.0
+ <br> Optional
+TPM 1.2 module (no
+TPM 2.0 available)
+<br> BMC provides
+out-of-band
+management (no
+direct OS security
+impact)
+Secure Boot can be enabled on
+this board (protect boot
+process)
+. <br> Lacks TPM
+2.0 – cannot utilize TPM-
+dependent features (BitLocker
+with TPM, Device Health
+Attestation, etc.). <br>
+Credential Guard/VBS may not
+activate due to no TPM & older
+CPU lacking MBEC – OS will fall
+back gracefully or disable those
+features. <br> Core OS security
+(firewall, Windows Defender,
+etc.) fully functional.
+Virtualization
+Hyper-V with 2048
+vCPUs per VM, 240 TB/
+vm
+ <br> GPU
+Partitioning and live
+migration of GPU-
+backed VMs
+ <br>
+Hyper-V Failover
+Clustering (incl.
+Workgroup mode)
+<br> Accelerated
+Networking (SR-IOV)
+for VMs
+Supports Hyper-V role
+(VT-x/EPT present)
+<br> Up to 96 logical
+processors for host,
+exposed to VMs <br>
+No onboard GPU for
+GPU-P (requires add-
+in GPU) <br> NICs do
+not support SR-IOV
+(Intel i350 limitation)
+Hyper-V runs well; can create
+and run many VMs within CPU/
+RAM limits. <br> No SR-IOV
+means higher vSwitch overhead
+(moderate CPU cost for VM
+networking). <br> Live
+Migration supported over 1GbE
+(recommend enabling
+compression or multi-channel
+for faster VM moves). <br> GPU
+acceleration in VMs requires
+GPU hardware; otherwise VMs
+use CPU-only rendering.
+Remote
+Management
+Windows Admin Center
+(WAC) integration –
+manage via web GUI
+ <br> Azure Arc
+enabled – cloud-based
+management and
+monitoring
+<br> PowerShell 7 and
+OpenSSH for remote
+CLI admin
+Dedicated IPMI
+module with KVM,
+power control
+<br> Out-of-band
+management
+independent of OS
+<br> Standard IPMI
+2.0 commands and
+web interface
+OS-level remote management
+(WAC, PS Remoting) works
+provided network access. <br>
+IPMI allows remote access even
+if OS is down – use for hardware
+management (fan speeds, BIOS
+settings, reinstall OS etc.). <br>
+Combine both: e.g., use IPMI
+for lights-out management, and
+WAC/Arc for day-to-day OS
+management. No conflict
+between them.
+Sources: Official Microsoft documentation and release notes for Windows Server 2025 features
+,
+Supermicro X9QRi-F+ specifications
+, and user reports on compatibility (Reddit)
+. 
+28
+12
+64
+27
+30
+65
+64
+3
+9
+13
+7
+37
+79
+37
+43
+47
+2
+16
+80
+57
+47
+65
+61
+20
+
+------------------------------------------------------------------------
+Page 21
+------------------------------------------------------------------------
+
+Windows Server 2025 released—here are the new
+features
+https://www.bleepingcomputer.com/news/microsoft/windows-server-2025-released-here-are-the-new-features/
+What's new in Windows Server 2025 | Microsoft Learn
+https://learn.microsoft.com/en-us/windows-server/get-started/whats-new-windows-server-2025
+server-shop.ua
+https://server-shop.ua/assets/images/resources/8409/products-supermicro-motherboard-x9qri-fspecification.pdf?
+srsltid=AfmBOorADdXjCZGcmQ3DRUKVc3l6kmaXzvfde6dlLiEFP14wwXlOnLd2
+Windows Server 2025: Key Features and Enhancements | VIKHOST
+https://vikhost.com/windows-server-2025-new-features-and-enhancements
+SUPERMICRO X9QRI-F+ - Motherboard - SHI
+https://www.shi.com/product/27610264/SUPERMICRO-X9QRI-F-Motherboard
+Overview of Changes and New Security Features in Windows ...
+https://mondoo.com/blog/overview-of-changes-and-new-security-features-in-windows-server-2025
+Supermicro X9QRI-F+ Motherboard - Amazon.com
+https://www.amazon.com/Supermicro-MBD-X9QRI-F-B-X9QRI-F-Motherboard/dp/B00B2W81LK
+Supermicro MBD-X9QRi-F+ Quad Socket R(LGA 2011) 6x ... - eBiz Pc
+https://www.ebizpc.com/Supermicro-MBD-X9QRi-F-Quad-Socket-R-LGA-2011-p/mbd-x9qri-fplus.htm?
+srsltid=AfmBOoqfuUcWNhsRoojaOHxSR29lNNTcoPGdMBiKO0ACGlvzGQAhhCYx
+[PDF] X9QRi-F+ - Server-Shop
+https://server-shop.ua/assets/images/resources/8409/products-supermicro-motherboard-x9qri-fspecification.pdf?
+srsltid=AfmBOoqFXX2u7DU4cMvh3ODOSfKwuCKmnqrK8FuxkoRV-4FKhOuRDJP2
+Windows Processor Requirements | Microsoft Learn
+https://learn.microsoft.com/en-us/windows-hardware/design/minimum/windows-processor-requirements
+Running server 2025 to get past windows 11 requirements? : r/PcBuildHelp
+https://www.reddit.com/r/PcBuildHelp/comments/1jembw5/running_server_2025_to_get_past_windows_11/
+Windows Server 2025 system requirements, new features. Now ...
+https://www.windowslatest.com/2024/11/06/windows-server-2025-system-requirements-and-new-features/
+Supermicro Servers with Windows Server 2022 Randomly Freeze – 100% Disk Usage, No Errors in Logs.
+Need Help! : r/sysadmin
+https://www.reddit.com/r/sysadmin/comments/1gmk2p2/supermicro_servers_with_windows_server_2022/
+[Request] SuperMicro X9QR7-TF+ NVMe boot - Win-Raid Forum
+https://winraid.level1techs.com/t/request-supermicro-x9qr7-tf-nvme-boot/37880
+Supermicro X9QR7-TF+/X9QRi-F+ - Geekbench
+https://browser.geekbench.com/geekbench2/1571764
+1
+7
+12
+16
+27
+33
+35
+71
+72
+73
+74
+77
+78
+80
+2
+3
+4
+5
+6
+8
+9
+10
+11
+13
+14
+15
+17
+20
+21
+22
+23
+24
+25
+26
+28
+31
+32
+36
+37
+38
+39
+40
+41
+44
+45
+46
+50
+52
+53
+55
+56
+79
+18
+19
+67
+68
+75
+76
+29
+34
+42
+51
+54
+64
+30
+43
+47
+48
+49
+57
+58
+59
+60
+61
+65
+62
+63
+66
+69
+70
+21

@@ -1,0 +1,789 @@
+Z-Wave Home Automation and the Jasco ZW4104
+Smart Switch: A Developer’s Guide
+Z-Wave Protocol Overview
+What is Z-Wave? Z-Wave is a low-power wireless communication protocol designed specifically for smart
+home and IoT devices. It operates in the sub-1GHz ISM band (e.g. ~908 MHz in North America, ~868 MHz in
+Europe),  which  helps  minimize  Wi-Fi  interference  and  improve  range  through  walls
+.  Z-Wave
+networks are centralized around a primary controller (often a smart home hub) that manages the network
+and acts as a gateway to other systems
+. All other devices (sensors, switches, etc.) communicate with the
+hub using Z-Wave, keeping your smart devices on their own dedicated network for reliability and security
+. Each Z-Wave network has a unique 32-bit Home ID, and devices get a Node ID (8-bit) when
+included, allowing up to 232 devices per network
+. Inclusion (pairing) is the process of adding a device to
+the network – the controller is put in Add Mode and the device’s pairing button is pressed to join, at which
+point it receives its Node ID, network key (for security), and neighbor signal map for routing
+. Devices
+not originally part of the network must be excluded (removed/reset) before they can be included in a new
+network.
+Mesh Networking Model: Z-Wave employs a self-healing mesh network topology. Mains-powered devices
+(like switches, plugs, etc.) act as signal repeaters that can forward messages for others, extending range
+and providing redundant paths
+. Battery-operated nodes typically do not repeat (to conserve power),
+so only always-on devices form the mesh. During inclusion, a device measures signal strength to nearby
+nodes and stores neighbors to build routing tables
+. The controller calculates optimal routes so that
+when it sends a command to a distant device, intermediate nodes will relay it. Up to four hops are allowed
+for a message to reach its destination in standard Z-Wave networks
+. This mesh allows communication
+even without direct line-of-sight: if one path fails (device offline or out of range), messages can reroute via
+alternate nodes, making the network resilient
+. Z-Wave devices acknowledge every message (two-
+way communication), so the sender knows if a command was received
+. This ACK mechanism, combined
+with mesh routing, greatly improves reliability of home automation commands.
+Figure: Example of a Z-Wave mesh network. A central hub/controller communicates with devices through direct or
+routed connections. Mains-powered nodes (like smart plugs and switches) act as repeaters to reach farther
+devices,  while  battery  devices  (gray)  do  not  repeat
+.  The  mesh  can  route  around  failures,  ensuring
+messages find an alternate path if one node is unreachable.
+Device Roles and Node Types: In a Z-Wave network, the primary controller (hub) is typically a static
+controller that maintains the routing table and network information. Other devices are slaves (also called
+end devices or nodes). Z-Wave Plus (5th gen) introduced specific role types: e.g. an “Always On Slave” is a
+mains-powered node that is always listening and can route messages (repeat), whereas a “Sleeping Slave”
+is a battery device that wakes up periodically (and cannot route)
+. The Jasco ZW4104 smart switch, for
+example, is an “On/Off Power Switch” device type and an Always On Slave (meaning it’s a listening node that
+1
+2
+3
+4
+5
+6
+7
+8
+9
+7
+10
+11
+8
+12
+9
+8
+13
+14
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+is always powered and participates in the mesh)
+. Z-Wave Plus devices also broadcast info about their
+role and device type via the Z-Wave Plus Info command class, making network setup more plug-and-play.
+Device Classes: Every Z-Wave device is identified by Device Classes that declare its general and specific
+type and thereby its capabilities. There are three tiers: a Basic device class (e.g. Controller, Routing Slave,
+etc.), a Generic device class (broad category like Binary Switch, Multilevel Sensor, Thermostat, etc.), and a
+Specific device class (more precise role within the generic category). For example, the ZW4104 is a Generic
+Binary Switch (a device that can be turned on/off) with a Specific class of Power Switch (an on/off switch for
+powering appliances). These classes inform controllers what kind of device it is and what command classes
+it will support. They also ensure a level of interoperability – for instance, any Generic Binary Switch must
+respond to basic On/Off commands. Device classes, along with a device’s  Command Class support, are
+announced during the Z-Wave interview (discovery) process when inclusion happens
+. This allows
+the controller’s software to build a user-friendly representation (like showing it as a switch with on/off
+controls, possibly with energy monitoring if a Meter command is supported, etc.).
+Command Classes: Z-Wave defines a large collection of Command Classes (CC) – these are like functional
+modules or interfaces that a device can implement to advertise and use certain features
+. Each CC has an
+identifier (e.g. Basic (0x20), Switch Binary (0x25), Meter (0x32), Configuration (0x70), etc.) and devices
+support those relevant to their function. For example, a simple on/off outlet implements the Switch Binary
+command class for on/off control, and usually also the Basic class for broad compatibility (the Basic CC is a
+generic on/off/dim command that controllers often map to the primary function)
+. The Jasco ZW4104
+supports around 14 command classes, including Basic, Switch Binary, Association (for direct device links),
+Configuration (for custom settings),  Manufacturer Specific (to report model/vendor info),  Version (to
+report  firmware  version),  Device  Reset  Locally,  Firmware  Update  Meta-Data (for  OTA  updates),
+Powerlevel (for RF signal test), Switch All (to respond to “all on/off” commands), and some older scene
+control classes (Scene Activation/Actuator)
+. Command classes define what commands can be sent or
+received. For instance, the Switch Binary CC defines commands like  Switch Binary Set (On/Off),  Get, and
+Report. A controller uses these to turn the plug on or off and to query its state. The Configuration CC allows
+setting device-specific parameters (for example, auto-off timers or LED behavior). When a Z-Wave device is
+included, the controller interviews it to ask “which command classes do you support?” and then queries
+each supported CC for details. This is how the system knows, for example, that a smart plug supports being
+toggled and possibly has parameters to adjust.
+Z-Wave Security (S0 and S2): Security is a critical aspect of Z-Wave, especially for devices like door locks and
+alarms. Older Z-Wave devices could join insecurely (plain-text commands) or using the original Security v1
+(S0) scheme. S0 uses an AES-128 encryption with a shared network key, but its key exchange had known
+weaknesses and it adds a lot of overhead (each encrypted command effectively triples the packets)
+.
+Newer devices (Z-Wave Plus v2, 2017 onward) use the Security S2 framework, which is more robust and
+efficient. S2 uses an  Elliptic Curve Diffie–Hellman (ECDH) based key exchange to securely share keys
+during inclusion, solving the vulnerabilities of S0’s handshake
+. It defines three security classes (S2
+Unauthenticated, S2 Authenticated, and S2 Access Control) which use different keys depending on device
+type – for example, door locks use the high-security “Access Control” class and require a user-entered PIN or
+QR code on the device (the DSK) to ensure the hub is talking to the real device
+. All S2 and S0
+communications still use AES-128 encryption for the payload, but S2’s handshake with ECDH (using modern
+Curve25519) prevents eavesdropping or key compromise during inclusion
+. In practice, when you
+add a Z-Wave Plus device with S2, your controller will ask for a 5-digit code (from the DSK) or scan a QR code
+on the device to verify its identity during secure inclusion. If a device and controller both support S2, they
+14
+15
+16
+15
+16
+17
+18
+19
+20
+20
+21
+22
+23
+24
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+will use it; if not, they may fall back to S0 or unsecured as needed for backward compatibility
+. Secure
+devices will communicate encrypted for all supported command classes (commands are encapsulated in a
+Security layer). Note that security adds some latency and battery cost, so non-critical devices (like light
+switches) can sometimes be included non-securely in older systems to improve performance. The Jasco
+ZW4104 in particular is a Z-Wave Plus device but, being an older model (2015 era), it does not support S2
+security (and apparently not even S0) according to its conformance statement
+. Newer Z-Wave Plus
+devices usually support S2 by default. As a developer or advanced user, it’s important to include devices with
+the desired security level – for example, use S2 Authenticated whenever possible for sensitive devices since
+it  significantly  improves  the  network’s  defense  against  hackers  (S2  also  has  improvements  like  the
+Supervision CC to acknowledge commands and improve reliability).
+Integrating Z-Wave Devices into Smart Home Systems
+Controllers, Hubs and Gateways: To use Z-Wave devices like the ZW4104 plug-in switch, you need a Z-
+Wave controller (often called a hub or gateway). This could be a dedicated hub (e.g. SmartThings, Hubitat,
+Vera, Aeotec Z-Stick with software, etc.) or a USB Z-Wave adapter attached to a home server (for example, a
+Z-Wave USB stick used with Home Assistant, OpenHAB, or HomeSeer software). The controller is the brain of
+the Z-Wave network: it holds the network’s Home ID and knows all the included devices. It also typically
+provides a bridge to your IP network – for instance, a SmartThings hub connects Z-Wave devices to the
+SmartThings cloud and app; Home Assistant’s Z-Wave JS integration exposes Z-Wave devices as entities in
+the Home Assistant system, and so on. From a developer perspective, many controllers offer APIs to
+interact with devices: e.g. Home Assistant’s service calls ( switch.turn_on , etc.), SmartThings’ Groovy
+(legacy) or Edge drivers, or OpenZWave’s MQTT API. All of these abstract the Z-Wave protocol into higher-
+level commands. Under the hood, when you toggle a Z-Wave device via an app or automation, the hub
+sends the appropriate Z-Wave command (like a Switch Binary Set command) to that node over the mesh
+network.
+Inclusion (Pairing) Process: Adding a Z-Wave device to your system is a standardized procedure. First, you
+put the controller into inclusion mode (via the hub’s app or UI). Then you press the device’s include button
+(on the ZW4104, the manual says to press and release the button once to include
+). The device and
+controller exchange information: the device receives the Home ID and a Node ID is assigned, and if joining
+securely, keys are exchanged at this time. The controller will then interrogate (interview) the device’s
+supported command classes. In a modern Z-Wave stack like Z-Wave JS (used by Home Assistant), you can
+see this interview process in logs – it will query things like “Manufacturer Specific” (to get vendor and
+product ID), “Version” (to get firmware version), etc., and then each functional CC like Switch Binary or Meter
+to get initial values. After inclusion, the device is ready for use. It’s good practice to perform a network
+heal/optimization after  adding  devices,  so  that  routing  tables  are  updated  (some  hubs  do  this
+automatically). Exclusion is similarly initiated from the controller (remove mode) and then button press on
+device – this resets the device’s network data so it can join a new network. The ZW4104 also supports a local
+factory reset (unplug, hold button, plug in) if the controller is missing
+. Inclusion should ideally be done
+with the device near its final location, so that neighbors are learned correctly (Z-Wave Plus can use low-
+power inclusion where the initial pairing is done at short range, then it updates neighbors after you place
+it). In any case, remember to exclude a device before selling or repurposing it, so it’s free of the old network.
+Hubs and Software Integration: Once included, the smart plug or other device will appear in your hub’s
+interface. For example, in Home Assistant (with Z-Wave JS), the ZW4104 would show up as a device with a
+switch  entity (for the controlled outlet). You could then control it via the UI or via Home Assistant service
+25
+26
+27
+28
+29
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+calls ( switch.turn_on  or  .turn_off ). In a system like  SmartThings, the plug would pair and be
+assigned a Device Handler (Edge driver) that understands its command classes – it might show up as a
+generic  “Z-Wave  Switch”.  The  integration  layer  often  automatically  picks  up  features:  e.g.,  if  a  device
+supported energy reports (Meter CC), Home Assistant’s Z-Wave integration would expose those as sensor
+entities (e.g. watts, kWh). Since the ZW4104 doesn’t report power, it likely just shows the switch entity. Many
+hubs also allow scene or automation creation via their apps or via code. For instance, using Z-Wave JS API
+or OpenZWave, a developer could send a raw Z-Wave command if needed – but usually it’s not, as the hub
+takes care of translating high-level actions into Z-Wave commands.
+Scenes, Associations, and Automation: There are two ways to link behaviors in Z-Wave: through the hub’s
+logic (scenes/rules) or through direct association between devices. Most modern smart home setups rely
+on the hub’s automation engine: e.g. you create a rule “When motion is detected (sensor), turn on the ZW4104
+plug (lamp)”. The hub subscribes to the sensor’s reports and then issues an on command to the plug. This
+allows complex multi-device conditions, schedules, and integration with non-Z-Wave triggers (like time of
+day or cloud services). On the other hand, Association is a built-in Z-Wave mechanism where devices can
+directly  control  each  other  without  the  hub  in  the  loop once  configured.  Z-Wave  devices  maintain
+association groups, each tied to certain events (like a button press or sensor trigger). When the event
+occurs, the device automatically sends a Basic Set (or other relevant command) to all devices in that group
+. For example, the Jasco ZW4104 has an association Group 1 for “Lifeline” (it sends status reports to the
+controller)
+. It also has Group 2 and 3; according to its conformance statement, one group (Group 2) is
+used to send Basic Set to associated nodes when the local load is switched, and another (Group 3) sends
+Basic Set when the button is double-pressed
+. In practice, you could associate Group 2 of the plug with
+another Z-Wave light so that manually pressing the plug’s button will also turn that light on/off. Association
+is useful for creating hub-independent scenes (like a 3-way switch setup or all lights off with one button)
+and for ensuring critical commands (like a motion sensor triggering a siren) don’t have to go through a
+possibly busy or offline hub. However, associations need to be configured (usually via the hub’s interface or
+a Z-Wave PC Controller software), and they have limitations (devices must be in the same network, and the
+receiving devices must accept the command class sent – e.g., Basic on a dimmer will typically turn it on/off).
+The ZW4104’s inclusion of old  Scene Activation command classes is noteworthy – older Z-Wave scene
+controllers could trigger preconfigured scenes by sending a “Scene Activation” command with a scene ID,
+and devices with Scene Actuator Configuration could recall preset levels for that scene. In modern systems,
+this  is  largely  supplanted  by  hub-managed  scenes  or  the  newer  Central  Scene  CC  (for  multi-tap  on
+switches), so the ZW4104’s scene CC support is mostly for backward compatibility. 
+Case Study: Jasco ZW4104 Plug-in Smart Switch
+Overview of the Device: The Jasco ZW4104 (marketed under GE or Jasco brand, also identified as model
+28172) is a Z-Wave Plus plug-in appliance switch. It’s a small device that plugs into a standard wall outlet
+and provides two sockets: one Z-Wave controlled outlet (for the load you want to automate) and one pass-
+through outlet that is always on
+. This allows you to still use the second outlet for an appliance or
+lamp that you don’t need to control. The ZW4104 is rated for up to 15A total pass-through, with the
+controlled outlet supporting up to 1800W (15A resistive) or ½ HP motor loads (it’s designed for lamps, fans,
+small appliances – not for heavy-duty 240V or large motors)
+. It does  not support dimming (it’s
+strictly on/off, as it’s intended for non-dimmable loads like appliances or non-dimmable lamps)
+. On the
+front, there’s a manual pushbutton which toggles the controlled outlet on or off, and also serves as the
+programming button for inclusion/exclusion and reset
+. An LED indicator is usually built in to show
+on/off status or network activity (many Jasco devices have a tiny LED that can often be configured – e.g.,
+30
+31
+32
+33
+34
+35
+36
+37
+38
+34
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+glow when off vs on, or disabled – via a Configuration parameter). The form-factor of the ZW4104 is a space-
+efficient design that, when plugged into the top receptacle of a wall outlet, leaves the bottom receptacle
+open (it doesn’t cover both sockets)
+. The controlled outlet is typically on the side of the module (so that
+plugs and cords stick out to the side), while the pass-through outlet is on the front face. This arrangement,
+along with a low-profile depth, allows furniture to be placed close to it without bending cords sharply.
+Figure: The Jasco Plug-in Smart Switch (ZW4104). It provides one Z-Wave controlled AC outlet (for lamps, fans, etc.)
+and one always-on outlet in a compact form factor. The button on top is used for manual on/off control and for Z-
+Wave inclusion/exclusion pairing
+.
+Z-Wave Plus Features: Being a Z-Wave Plus certified device, the ZW4104 supports extended range and
+features  over  older  Z-Wave.  It  can  communicate  up  to  ~100-150  feet  line-of-sight
+ (typical  indoor
+effective range is less, depending on walls). It also supports beaming, a feature important for Z-Wave locks
+– while the plug itself doesn’t use beaming, it can forward beamed messages to locks. The device advertises
+Z-Wave Plus Info and supports the  “Lifeline” association group (Group 1) to report its status to the
+controller
+. Group 1 typically will include the hub’s Node ID by default after inclusion, and the ZW4104
+will send it automatic notifications like “Switch Binary Report” when its state changes (e.g., if someone
+presses the button to turn it off, it will immediately notify the hub). This instant status reporting is a big
+advantage over older Z-Wave switches that sometimes required polling – the ZW4104 tells the controller of
+changes in real-time via the Lifeline. The conformance statement on the Z-Wave Alliance site also shows
+additional association Groups 2 and 3, each able to hold 5 nodes, which the device uses for control: Group 2
+sends Basic Set commands when the local (single press) on/off happens, and Group 3 sends Basic Set when
+a double-press of the button is detected
+. In practice, Jasco’s newer devices (and this one) allow double-
+tap as a sort of scene trigger. For instance, you could associate Group 3 to some other Z-Wave lights –
+double-tapping the plug’s button could then turn those lights on (via Basic Set). This provides a simple
+scene control without the hub, if set up.
+Power Control and Commands: The primary function of the ZW4104 is to control power to whatever is
+plugged into its Z-Wave outlet. This is handled through the  Switch Binary command class. To turn the
+outlet on or off, the controller can send a Switch Binary Set  command (with value 0xFF for ON or 0x00
+for OFF) to the device. The ZW4104 will then switch its internal relay accordingly, supplying or cutting power
+to the outlet. It will also typically respond with a  Switch Binary Report  (or the hub may poll a
+Switch Binary Get  to confirm). Because the device also supports the Basic command class (as most Z-
+Wave devices do for interoperability), a Basic Set command will likewise turn it on/off (Basic is usually
+mapped to the same behavior as the primary function – in this case, on/off control of the outlet)
+.
+The plug will also automatically send out a report when manually toggled; Z-Wave Plus mandates that state
+changes are reported via the Lifeline association. So, if you walk up and press the button on the ZW4104, it
+will flip the relay and send a notification to the hub (most likely a Basic Report or Switch Binary Report
+indicating the new state). This way the controller’s UI stays in sync without needing to continuously poll the
+device. Under the hood, the device’s firmware ties the physical button to both local control and to triggering
+those  association  group  commands.  The  Switch  All command  class  support  means  the  ZW4104  can
+respond to a broadcast “All On” or “All Off” command. Many Z-Wave remotes or controllers have a concept
+of turning all lights off; because the plug is a  lighting device class, it will obey those commands (this
+behavior can sometimes be configured or disabled via parameters, e.g., to ignore “all off” if desired). 
+From a developer perspective, controlling the ZW4104 via a home automation system could be as simple as
+calling a high-level function. For example, in Home Assistant one would call the service switch.turn_off
+39
+38
+34
+40
+31
+32
+17
+41
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+with the entity for this plug, which ultimately causes a Z-Wave frame to be sent. In a more raw environment,
+you could use a library (like OZW or Z-Wave JS) to send a command: for instance, using zwave-js, something
+like  node.commandClasses['Binary Switch'].set(true)  would turn it on. The Z-Wave protocol
+handles delivery and retry if needed, and the plug will acknowledge with an ACK at the protocol level. If the
+S2 security was in use (not in this device’s case), that command would be encrypted and the plug would
+decrypt it internally before acting. 
+Monitoring and Energy Reporting: Unlike some smart plugs, the Jasco ZW4104 does not have built-in
+energy or power monitoring – it’s essentially an on/off switch only. Many GE/Jasco plug-in modules from
+that  era  did  not support  the  Meter  command  class  for  energy  usage
+.  They  were  simply  binary
+controlled outlets. That said, the question of “monitoring” can refer to a few aspects: monitoring the on/off
+state (which the ZW4104 does via status reports), and monitoring the power consumption of the connected
+load (which this unit doesn’t do). For completeness, let’s discuss how a Z-Wave device would report energy
+usage if it had that feature. A smart plug that supports energy monitoring (e.g. Aeotec Smart Switch 6, Zooz
+plugs, or some newer Enbrighten models) implements the Meter Command Class (0x32). Through this, the
+device can report parameters like current Wattage (power draw) and accumulated kilowatt-hours (energy
+usage over time), and sometimes voltage or amperage depending on the meter type. The device might
+periodically send a Meter Report  on its own (either at fixed intervals or when the consumption changes
+by a certain percentage) and can also respond to a Meter Get  query from the controller. Typically, there
+are configuration parameters that govern auto-reporting – for example, report wattage every X minutes or
+report if power changes by Y%. These help balance network traffic with timeliness of updates. If the ZW4104
+had this capability, you would expect to see the Meter CC listed in its command classes, and the manual
+would mention the ability to display energy usage. Since it’s not present, the ZW4104’s “monitoring” is
+limited to knowing whether it’s on or off (and of course the controller can infer that if it’s off, the load is
+drawing zero power except negligible standby of the plug itself). Some use cases (discussed later) rely on
+energy reporting – for instance, detecting when a washing machine finishes by the drop in wattage – but
+you would need a different plug that supports it to achieve that. Still, for  power control (on/off), the
+ZW4104 performs reliably and can be used to indirectly monitor device usage (e.g., if a lamp is off, you know
+its energy usage is zero and when it’s on, you know it’s using whatever the lamp consumes). 
+To summarize the ZW4104’s capabilities: it accepts Z-Wave commands to switch a load on/off, it can be part
+of automated scenes, and it will keep the controller updated of its on/off status. It doesn’t measure volts/
+amps/watts, so any “energy monitoring” in the system would be at a coarse level (on vs off time tracking). If
+energy monitoring is required, one might pair this discussion with a similar Z-Wave plug that has metering
+(for example, the newer Jasco/Enbrighten 14294 or a Zooz ZEN plug), which would use the Meter CC to
+report, “e.g. 120 Watts being drawn now” to the hub, which could then be used in automations. 
+Advanced Configuration: The ZW4104, like many Jasco devices, likely offers some configurable parameters
+accessible via the Configuration CC. The product documentation hints at “advanced features that allow you
+to customize your experience” adjustable via a Z-Wave controller with Configuration command class
+. Common adjustable parameters for smart plugs include things like the LED indicator behavior (e.g.,
+parameter to turn the LED off completely, or lit when load is on vs off), or an auto-off timer (for instance,
+turn off automatically after a set period). While the exact parameter list for this model isn’t given in the
+basic manuals, Jasco often publishes the configuration parameters on their support site. For example, other
+Jasco switches have a parameter for “night light” mode (LED). If using software like Home Assistant’s Z-Wave
+JS or OpenZWave control panel, you would see these parameters and could set them. As a developer, if you
+needed  to  change  a  configuration  value  via  code,  you  might  use  something  like  a
+42
+43
+44
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+zwave_js.set_config_parameter  service call (in Home Assistant) or an OZW command to send a
+Configuration Set to the node with the parameter number and desired value. These configurations are
+stored in the device’s non-volatile memory. There’s also support for firmware updates via the  Firmware
+Update Meta-Data CC, meaning the device can receive OTA firmware updates from the controller if Jasco
+provides any (this is rarely used by end-users unless a specific bug fix firmware is needed and available). 
+Practical Implementation Strategies and Best Practices
+Automation via Scenes and Rules
+One of the strengths of integrating Z-Wave devices like the ZW4104 into a smart home is the ability to
+create automations that tie multiple devices and triggers together. Here are a few practical strategies: 
+Time-based Schedules: Using your hub’s scheduling, you can have the ZW4104-controlled outlet
+turn on or off at certain times. For example, turn on a lamp plugged into the ZW4104 at sunset and
+turn it off at 11 PM. This can be configured in a hub’s app or via an automation script. If writing YAML
+for Home Assistant, it might look like: 
+automation:
+- alias: "Porch Lamp on at Sunset"
+trigger:
+platform: sun
+event: sunset
+action:
+service: switch.turn_on
+target:
+entity_id: switch.porch_lamp_plug
+# assuming the ZW4104 is named 
+porch_lamp_plug
+- alias: "Porch Lamp off at 23:00"
+trigger:
+platform: time
+at: "23:00"
+action:
+service: switch.turn_off
+target:
+entity_id: switch.porch_lamp_plug
+This is a simple example, but it shows how the high-level automation translates into the Z-Wave device
+being commanded on/off on schedule.
+Event-based Triggers: Use sensor inputs or other events. For instance, plug a fan or space heater
+into the ZW4104 and use a temperature sensor’s reading to control it (if room temp > 25°C, turn off
+the heater’s plug). Or integrate with motion sensors: e.g., if motion in living room and it’s evening, turn
+on the lamp (ZW4104). Z-Wave devices can work seamlessly in such rules alongside Zigbee, Wi-Fi, etc.,
+since the hub abstracts the protocol differences.
+• 
+• 
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+Scenes  and  Group  Actions: Set  up  a  bedtime  scene  that  turns  off  all  downstairs  lights  and
+appliances: the ZW4104 can be part of that scene (the hub will send it an off command along with
+commands to other devices). Some hubs let you create a “Scene” that you can trigger with one
+command or button. If using association for a group action (not involving the hub), you might, for
+example, associate several Z-Wave plugs or modules to a controller button so they all respond
+together. But often, simply creating a hub automation to send off commands to multiple Node IDs
+achieves a similar outcome (with the hub doing a multicast or sequential sends). Z-Wave does
+support a multicast for basic commands to multiple nodes at once (e.g., turn off 5 nodes with one
+radio message), but not all controllers expose that. In any case, for a small network, sending a few
+commands in a row is fine (they queue up). 
+Direct Association Use Case: Suppose you have a Z-Wave wall switch that doesn’t actually control a
+load (like a battery-powered remote or a scene controller button). You could associate that directly
+with the ZW4104 plug so that pressing the button toggles the plug without waiting for the central
+hub. This is useful for creating a virtual 3-way switch – for example, a plug controlling a corner lamp
+can be linked to a wall transmitter. The association is nearly instantaneous and will still work even if
+your primary controller is offline (since the devices talk directly). To set this up, you’d use your
+controller’s interface to add the ZW4104’s Node ID to the remote’s Group 1 (or appropriate group).
+Once set, the remote’s Basic Set commands will be routed to the plug. Keep in mind the association
+range is limited to direct radio range (or via mesh if it’s a multi-hop association message). 
+Fail-safe automations: If using the plug for something critical (like a pump), you might create rules
+for safety – e.g., if a leak sensor triggers, turn off the plug powering a water pump, etc. This
+highlights how multiple Z-Wave components can work together for home safety.
+Polling and Network Performance Considerations
+In  a  well-configured  Z-Wave  network,  polling should  be  minimized.  Polling  is  when  the  controller
+periodically requests the state or sensor reading from a device. This generates extra traffic that can lead to
+delays if overused. Thankfully, Z-Wave Plus devices like the ZW4104 report their state changes proactively
+(via the lifeline), so there’s usually no need to poll them for on/off status. Older devices (pre-Plus era)
+sometimes didn’t do instant reporting due to patent restrictions; those had to be polled to detect manual
+state changes. If you do have to poll (for example, you want to regularly get a reading from a power meter
+plug or an older sensor), it’s best to set a reasonable interval (like 30 seconds to a few minutes, depending
+on needs). Avoid polling battery devices frequently, as it will wake them up and drain battery life – battery-
+powered sensors typically send their data on their own schedule or when triggered, and they also send a
+periodic wake-up notification for the controller to poll any queued requests (configured via the Wakeup CC).
+Polling a sleeping device is ineffective because it won’t respond until awake.
+For the ZW4104, you might only consider polling if you were unsure of its state due to some missed report
+(which is rare) or if you wanted to enforce an auto-off by polling (a crude method). But since it has an
+internal relay, its state should be very reliable – either the hub got the ack or not. If the hub missed an
+update (maybe due to interference at that moment), a periodic poll (say every hour) could correct the UI
+state, but this is generally handled by retries and supervision commands automatically in modern Z-Wave
+stacks. So best practice: enable polling only if necessary, and only as frequently as needed.
+• 
+• 
+• 
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+Excessive polling or too many frequent status reports can congest the Z-Wave network. Z-Wave is not a
+high-bandwidth protocol; it transmits at 9.6 kbps, 40 kbps, or 100 kbps depending on the region and device
+generation (most Z-Wave Plus are 100 kbps in ideal conditions, but can fall back). Because each message
+also requires an ACK, the effective throughput is limited. If you had dozens of energy-monitoring plugs all
+reporting every few seconds, plus lots of sensors, you could start queuing messages and increasing latency.
+It’s wise to configure reporting thresholds on power plugs (e.g., only report when change > 5%) and not to
+report too often unless needed. Many hubs set sane defaults (like once every 60 seconds for power, which is
+fine for most uses).
+Dealing with Latency and Reliability
+Latency in Z-Wave communication is generally low – on the order of tens of milliseconds per hop – so a
+direct command might happen in <100 ms, and even a few hops might be ~200 ms. In a normal home
+network, turning on a light via Z-Wave feels almost instant (well under a second). However, if you notice
+delays of several seconds, it indicates some network issues or heavy traffic. Here are some strategies to
+ensure low latency and reliability:
+Strong Mesh and Placement: Make sure you have enough mains-powered devices to form a solid
+mesh network across your home. Z-Wave’s range is good, but every wall and floor attenuates the
+signal. If your hub is in the basement and a plug is two floors up on the opposite side, ensure there
+are intermediate powered nodes (like switches or plugs in between) that can relay. Z-Wave allows up
+to 4 hops by default, but fewer is better for speed. Place the hub centrally if possible. The ZW4104
+itself can act as a repeater for other devices, so having one in distant corners can actually improve
+connectivity for nearby sensors.
+Remove Dead Nodes: If a device is unplugged or failed and the controller still thinks it’s in the
+network,  other  nodes  might  try  routing  through  it  and  experience  timeouts.  It’s  important  to
+cleanup any dead nodes from the controller’s routing tables
+. Most controllers will do a periodic
+heal; during heal, they mark unresponsive nodes as failed and reroute. You can manually exclude or
+delete devices that are no longer present. This prevents delays caused by repeatedly trying to reach
+a missing node.
+Association misuse: Only use associations where appropriate. A misconfigured association could
+cause a flood (for example, two devices associated to each other both sending Basic Sets to each
+other could create a loop – though Z-Wave command classes usually are designed to avoid loops, it’s
+possible in weird configurations). Also, as a tip from the Z-Wave manual:  “Remove all dead devices
+from associations. Otherwise you will see severe delays.”
+ – this is because if an associated node is
+dead, the device might try to send commands to it (at the protocol level it will attempt a few times)
+causing a delay in finishing the group broadcast.
+Use Scenes or Multicast for simultaneous actions: If you have an automation that turns on 10 Z-
+Wave devices at once, sending 10 separate commands sequentially can take a couple of seconds.
+Some controllers can use a multicast frame to send a Basic Set to multiple nodes in one go (which is
+more efficient). If your hub supports it, prefer that approach. If not, consider staggering non-critical
+commands by a few hundred milliseconds if you truly have many at once. But generally, up to a
+handful can be handled quickly – Z-Wave can queue and handle about 100 packets per second
+• 
+• 
+45
+• 
+45
+• 
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+theoretically at 40kbps, though in real deployments, keeping below ~20 commands per second is
+wise for stability.
+Check for interference: Because Z-Wave is sub-GHz, it usually doesn’t conflict with Wi-Fi, but
+cordless phones or other ISM devices (like some older baby monitors at 900 MHz) could interfere.
+Also,  metal  enclosures  or  concrete  can  severely  cut  down  range.  If  you  encounter  latency  or
+unreliability to a particular device like the ZW4104, check if relocating the hub or adding a repeater
+between them helps. Also ensure the device’s antenna (usually internal) isn’t pressed against metal
+objects.
+Supervision  and  Retries: Z-Wave  Plus  introduced  the  Supervision  Command  Class,  which
+essentially wraps a command and requires a direct acknowledge from the device’s application layer
+(not just the low-level ACK). This helps detect if a command was received and acted on. Hubs like Z-
+Wave JS use this for S2 devices. If a device doesn’t respond, the controller will retry the command a
+couple times. This usually happens behind the scenes. But if you see logs with multiple retries or
+Supervision CC failing, it indicates communication trouble. Address this by improving the signal
+(move devices, reduce load, etc.). The goal is that each command gets an ACK on first try, which
+should be the case in a healthy network.
+In practice, many users have dozens of Z-Wave devices and get sub-second performance routinely. If you
+were controlling, say, 50 plugs at once (imagine a holiday event turning off every light in a mansion), you
+might hit some limits – but normal home automation remains well within Z-Wave’s capacity. The ZW4104,
+being a non-battery device, will always immediately repeat messages and respond quickly, which helps
+maintain overall mesh responsiveness. If you notice a specific delay, tools like Zniffer (Z-Wave sniffer) or the
+hub’s own statistics can pinpoint if there are a lot of route retries or failed frames, and then you can take
+corrective measures (like adding a repeater or moving a noisy device). 
+Use Cases and Examples
+To ground all this theory, here are a few real-world use cases for a Z-Wave smart plug like the ZW4104 and
+how you’d implement them:
+Lamp Control and Smart Lighting: The classic use: plug a lamp into the ZW4104. Now you can turn
+that  lamp  on/off  via  app,  voice  (if  integrated  with  Alexa/Google  Home  through  the  hub),  or
+automation. For instance, create a rule “When the front door Z-Wave motion sensor detects motion after
+sunset, turn on the entryway lamp (ZW4104) for 5 minutes.” This uses a Z-Wave motion sensor’s trigger,
+possibly some time condition, and the plug’s on/off control. It makes your plug part of a larger smart
+lighting system. You might also tie it into scenes like “Movie Time” to turn off all lights (the lamp goes
+off along with smart bulbs etc.). With a hub like SmartThings or Home Assistant, you can do this
+entirely through their automation engines, and the Z-Wave commands are handled behind the
+scenes. The benefit of Z-Wave here is that everything is local (no cloud needed for execution), so it
+remains fast and works during internet outages
+.
+Appliance Scheduling and Energy Saving: Suppose you have a coffee maker that doesn’t have a
+built-in timer. You could plug it into the ZW4104 and schedule it to turn on every weekday at 6:30am,
+so your coffee brews automatically. Or use it with a portable electric heater in a home office – turn it
+on 30 minutes before you wake up, and off when you leave. Another scenario: use the plug to cut
+• 
+• 
+• 
+46
+• 
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+power to “vampire” devices at night – e.g., entertainment center equipment that draws standby
+power. An automation like “At midnight, turn off the TV’s smart plug” can save energy, and “at 6pm, turn
+it back on” ensures everything is ready for use. Even though the ZW4104 doesn’t measure energy,
+you know roughly those devices aren’t drawing power when the plug is off. For safety-critical
+appliances like an iron or space heater, you could add a rule: if the plug has been on for more than 2
+hours, turn it off (to avoid forgetting it on). Many hubs can do this by tracking the state duration of
+the switch.
+Power Monitoring Alerts: If you did use a Z-Wave plug with energy metering (not ZW4104, but let’s
+say an Aeotec plug on your washing machine), you can create powerful automations: Notify me when
+the washing machine cycle is done (i.e., power drops below 5 W for over 2 minutes). In code, this might
+use a numeric state trigger on the power sensor provided by the plug. While ZW4104 can’t do this,
+it could still be used in a similar fashion for simpler binary detection – e.g., if TV plug turns off (which
+maybe you do manually via remote cut power?), then turn off some related device – but that’s less
+common. Typically, metering plugs are better for these alerts. Still, controlling power draw indirectly
+is possible: e.g., to prevent a space heater from running too long, you might not measure its watts,
+but you can use a temperature sensor or simply a timed cut-off as mentioned.
+Smart Home Integration Example (Home Assistant & Z-Wave JS): In Home Assistant, once the
+ZW4104 is included via Z-Wave JS, you’d see something like: switch.ge_28172_switch  entity. You
+could rename it. You also might see a sensor.ge_28172_alarm_level  or similar (Jasco devices
+sometimes use the Alarm CC to report certain things like overload or button presses, but in this case,
+probably not much since it’s just a switch). You could then do an automation such as: 
+- alias: "Turn off heater if window open"
+description: "If the window is open, cut power to the space heater plug
+to save energy."
+trigger:
+- platform: state
+entity_id: binary_sensor.window_contact
+# a Z-Wave contact sensor
+to: "on"
+# assuming "on" means open
+condition:
+- condition: state
+entity_id: switch.space_heater_plug
+# the ZW4104 on the heater
+state: "on"
+action:
+- service: switch.turn_off
+target:
+entity_id: switch.space_heater_plug
+- service: notify.phone
+data:
+message: "Heater plug was turned off because the window was
+opened."
+• 
+• 
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+This automation shows integration between a Z-Wave contact sensor and the Z-Wave plug, with a
+notification. It demonstrates a practical way to both conserve energy and ensure safety (no running
+heater when a window is open).
+Latency Example with Scene Controller: Let’s say you have a Z-Wave scene controller (e.g., a wall-
+mounted  4-button  pad).  You  configure  one  button  to  toggle  the  ZW4104  via  the  hub’s  scene
+automation. When you press the button, it sends a Central Scene command to the hub, the hub
+processes the automation and sends a Switch Binary Set to the plug. The round-trip is usually a few
+hundred milliseconds – pretty quick, but maybe you notice a slight delay. If you instead associated
+that button directly to the plug, the button’s node would send Basic Set to the plug immediately on
+press, possibly cutting a bit of the latency (and working even if hub is down). The trade-off is
+flexibility (direct associations are fixed behavior, whereas hub logic can be more conditional). In
+critical applications where speed is needed (like a panic button to siren), Z-Wave can achieve sub-
+second performance reliably, but it’s always good to test. If the mesh is overloaded, you might see a
+1-2 second delay, which is a sign to optimize the network.
+Extending to other systems: The ZW4104’s usage isn’t limited to just one ecosystem. For example,
+you might integrate your Z-Wave hub with a voice assistant:  “Alexa, turn on the living room lamp”
+would  trigger  the  hub  to  issue  the  Z-Wave  command  to  the  plug.  Or  integrate  with  energy
+management: if you had a whole-home energy monitor, you could automate “When solar generation
+is high, turn on a dehumidifier plugged into ZW4104”, thereby using excess solar power productively. Z-
+Wave’s interoperability (any certified device works with any certified controller) means you can mix
+and  match  devices  from  various  brands  to  achieve  these  use  cases,  leveraging  the  common
+command classes and the central intelligence of your hub
+.
+Conclusion
+Z-Wave  remains  a  robust  and  developer-friendly  protocol  for  home  automation,  offering  a  mesh-
+networked, reliable, and secure way to control devices like the Jasco ZW4104 smart switch. In this paper, we
+explored the theoretical foundations of Z-Wave – from its mesh networking capabilities that allow up to 232
+devices to communicate over several hops
+, to its security framework that keeps your devices safe
+through  AES  encryption  and  modern  key  exchanges
+.  We  also  dove  into  the  practical  aspects  of
+integrating and using a Z-Wave smart plug in real home scenarios. The Jasco ZW4104 served as an
+illuminating case study: it exemplifies a typical Z-Wave Plus appliance module with on/off control, internal
+relay, and seamless hub integration. We learned that while it doesn’t provide energy metering, it handles
+the core job of power switching with high reliability and immediate status feedback to the controller (thanks
+to  Z-Wave’s  built-in  confirmation  and  association  system)
+.  For  developers  and  power  users,
+understanding command classes and device classes is key to unlocking advanced functionality – whether it’s
+tweaking a configuration parameter or setting up direct associations for instant scene control. On the
+implementation side, we discussed strategies to ensure a responsive network: limit unnecessary polling,
+maintain a strong mesh by placing repeater devices strategically, and leverage the hub’s automation engine
+to orchestrate complex behaviors. By following best practices (like removing dead nodes to avoid delays
+and using the latest security modes), a Z-Wave network can be both fast and secure. 
+In a world where multiple smart home protocols coexist, Z-Wave’s niche is its proven reliability for local
+control  and  its  rich  interoperability  (over  years,  it  has  built  a  library  of  command  classes  that  cover
+everything from simple switches to thermostats and alarms). The ZW4104 smart switch, while a humble
+• 
+• 
+47
+6
+11
+20
+9
+45
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+device, demonstrates how Z-Wave devices participate in a larger ecosystem: it can turn a basic lamp into a
+remotely controlled light, integrate with sensors for automated decisions, and even contribute to energy
+saving  strategies.  From  a  developer’s  perspective,  working  with  Z-Wave  involves  understanding  the
+abstraction (the hub’s API or Z-Wave library) and sometimes digging into device-specific features (like
+configuration parameters or associations). With the concepts and examples provided, one can confidently
+deploy Z-Wave devices like the ZW4104 in a home automation project, knowing not just how to use it, but
+why it behaves the way it does on the network. The theoretical knowledge of mesh networking and
+command classes combined with the practical know-how of inclusion and automation forms a complete
+picture – enabling you to design a smart home that is both robust and responsive. In summary, Z-Wave
+continues to be a backbone of home automation, and devices such as the Jasco ZW4104 smart switch are
+great building blocks, offering reliable power control that can be tailored through both software and
+hardware features to create a truly intelligent home environment. 
+Sources: The information in this report was gathered from Z-Wave protocol specifications and whitepapers,
+product manuals and official conformance statements for the Jasco ZW4104
+, as well as practical
+insights from smart home communities and documentation
+. These references provide further detail
+on Z-Wave’s mesh network design, security classes, and the capabilities of Z-Wave smart switches. 
+A Comprehensive Guide to Z-Wave
+https://linkdhome.com/articles/What-is-z-wave
+manual.zwave.eu
+https://manual.zwave.eu/backend/make.php?lang=en&sku=28172%20(ZW4104)&cert=ZC10-15030009
+GE 28172 - Z-Wave Plug-In Smart Switch - Alarm Grid
+https://www.alarmgrid.com/products/ge-28172
+products.z-wavealliance.org
+https://products.z-wavealliance.org/products/2973/pics
+Z-Way Manual — Command Class Reference
+https://z-wave.me/manual/z-way/Command_Class_Reference.html
+The ultimate guide to z-wave USB sticks - Z-WaveGuide
+https://zwaveguide.com/the-ultimate-guide-to-z-wave-usb-sticks/
+Z-Wave Security Whitepaper 
+https://www.silabs.com/documents/public/white-papers/INS13474-Z-Wave-Security-Whitepaper.pdf
+products.z-wavealliance.org
+https://products.z-wavealliance.org/ProductManual/File?folder=&filename=Manuals/1270/28172%20QSG-UL.pdf
+Z-ZW4104 - Jasco Wireless Z-Wave Plus Plug-In Dual Outlet Smart Switch
+https://www.geoarm.com/z-zw4104-jasco-z-wave-appliance-module.html?
+srsltid=AfmBOorDQ4eoQIx4tNxfAr1MKaa5GpCQT9vXFBOL4rUOPrv2csdsXL3M
+Energy Monitoring in Jasco - Connected Things - SmartThings Community
+https://community.smartthings.com/t/energy-monitoring-in-jasco/1679
+14
+18
+42
+9
+1
+2
+3
+4
+5
+6
+7
+8
+10
+12
+13
+21
+46
+9
+25
+27
+28
+29
+30
+45
+47
+11
+36
+37
+14
+18
+26
+32
+15
+16
+17
+41
+19
+20
+22
+23
+24
+31
+33
+34
+38
+39
+44
+35
+40
+43
+42
+13

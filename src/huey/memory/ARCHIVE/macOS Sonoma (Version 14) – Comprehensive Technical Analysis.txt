@@ -1,0 +1,1446 @@
+macOS Sonoma (Version 14) – Comprehensive
+Technical Analysis
+Abstract:
+This paper provides an in-depth analysis of macOS Sonoma (version 14), Apple’s 2023 major Mac operating
+system release, tailored for developers and IT professionals. We examine Sonoma’s new features – both
+major and minor – including user interface enhancements, productivity tools, and graphics updates, as well
+as underlying architectural changes. We discuss security and privacy improvements, system behavior changes, 
+developer tools and frameworks (new APIs, SDKs, and development features), and compatibility requirements
+relative  to  its  predecessor  macOS  Ventura (13).  Performance  optimizations  and  known  issues  are
+addressed, along with notable updates introduced in minor releases since Sonoma’s initial launch. Citations
+to  official  sources  and  expert  reviews  are  included  to  substantiate  technical  details  and  contextual
+comparisons.
+Introduction
+macOS Sonoma (version 14) is the twentieth major release of Apple’s macOS, announced at WWDC 2023 on
+June 5, 2023 and released publicly on September 26, 2023
+. Named after California’s Sonoma wine
+country, it succeeds macOS Ventura (13) and was eventually followed by macOS Sequoia (15) in late 2024
+. Sonoma continues Apple’s annual update cadence, delivering incremental improvements across the
+OS. Early assessments described Sonoma as a “perfectly typical macOS release, a sort of ‘Ventura-plus’” – an
+iterative update that adds a handful of useful features while maintaining stability and compatibility
+.
+There are few revolutionary changes, but the release focuses on  enhancing productivity, creativity, and
+gaming performance on the Mac
+. 
+From a developer and IT perspective, macOS Sonoma introduces changes in system architecture and APIs
+that require attention. It brings new frameworks (e.g. SwiftData, TipKit), improvements to virtualization and
+game development tools, and deprecates certain legacy technologies. Security is bolstered via numerous
+vulnerability fixes and new privacy features, while system behavior changes (such as alerts for deprecated
+API usage) impact software maintenance
+. In the following sections, we detail Sonoma’s features and
+changes in a structured manner – covering user-facing enhancements, under-the-hood improvements,
+developer  tools  and  frameworks,  security  enhancements,  compatibility  and  performance  aspects,
+differences from macOS Ventura, and issues/updates post-release.
+New Features and Enhancements in macOS Sonoma
+Desktop Personalization and User Interface Enhancements
+One  of  Sonoma’s  most  visible  additions  is  the  introduction  of  interactive  widgets  on  the  desktop,
+significantly expanding widget functionality beyond the Notification Center. Users can now place widgets
+anywhere on the desktop for at-a-glance information and quick actions
+. The widget gallery interface
+has been redesigned similar to iOS, and through Continuity, iPhone widgets can be mirrored and used on
+1
+1
+2
+3
+4
+5
+6
+7
+8
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+the Mac without needing the corresponding Mac app installed
+. Widgets are live and interactive – for
+example, you can check off Reminders, control media playback, or toggle HomeKit devices directly from the
+desktop  widget,  without  launching  the  parent  app
+.  To  avoid  distraction,  Sonoma  also  blends
+widgets into the wallpaper when windows are active (they fade to a subtle color)
+. This revamp makes
+widgets more prominent and useful for productivity and personalization.
+Sonoma also brings stunning new screen savers featuring slow-motion aerial videos of various locations
+around the world (e.g. cityscapes, landscapes, underwater scenes)
+. These screen savers, reminiscent of
+Apple TV’s visuals, seamlessly transition into the desktop background upon login
+. In tandem, the login
+screen UI was adjusted – the login fields are now positioned at the bottom of the screen to accommodate
+the new screen savers, which appear behind the login text
+. This provides a more immersive,
+modern welcome screen. Other subtle UI updates include more rounded app icon corners (harmonizing
+with iOS style), a slightly more compact Spotlight search bar with a rounded design
+, and smoother
+system animations. Users will notice refined animations for notifications (which now slide in with an ease-
+out effect), the lock screen (a zooming transition when locking/unlocking), and the “show desktop” gesture
+(now with a spring-like rebound effect)
+. These polish improvements contribute to a more fluid and
+visually pleasing experience.
+Additional minor enhancements improve everyday interactions. The Lock Screen on Sonoma is redesigned
+to  display  date  and  time  prominently  (much  like  iOS)  and  power  options  are  now  grouped  under  a
+contextual menu accessible from the lock screen
+. The text insertion cursor has been updated to be
+bolder and use smooth blinks; notably, its color now adapts to the active app’s accent color, and it briefly
+displays an indicator of the current input language when you switch keyboards (also signaling Caps Lock
+state)
+. This parity with iOS’s cursor behavior improves text editing feedback. Another throwback feature
+was reintroduced: Print Center, a utility last seen in Mac OS X Tiger, returns in Sonoma to manage print
+jobs  with  a  modern  interface  –  allowing  users  to  view  active  print  queues,  pause/resume  jobs,  and
+troubleshoot printer tasks in a centralized app
+. Its revival aids power users who handle multiple printers
+or high-volume printing workflows. Sonoma also introduced the ability to invoke Siri with a shorter phrase –
+users can now simply say “Siri” (instead of “Hey Siri”) to trigger the voice assistant
+. This matches the
+behavior introduced on iOS 17 and streamlines hands-free interactions (note: a setting allows this change,
+and it requires relatively recent Macs for always-listening Siri support). Overall, these UI and personalization
+changes in Sonoma aim to make the Mac feel more dynamic, context-aware, and aligned with the design
+language of Apple’s broader ecosystem.
+Productivity Tools: Safari, Messaging, and Apps Improvements
+macOS  Sonoma  delivers  numerous  enhancements  to  built-in  apps  and  system  features  that  boost
+productivity and collaboration.  Safari 17, bundled with Sonoma, includes  significant updates to privacy,
+profiles, and web apps. Private Browsing mode in Safari is now more secure – when a user leaves a private
+browsing window idle, it automatically locks, requiring Touch ID (or password) to reopen, thus preventing
+unauthorized access to open tabs
+. Tracking and fingerprinting protections in Safari’s private mode are
+further strengthened to block known tracking scripts and strip identifying information from URLs
+.
+This means websites have a harder time profiling the user, and any tracking parameters appended to web
+links are automatically removed for privacy
+. Another Safari addition is  Profiles, which allow users to
+separate  their  browsing  contexts  (for  example,  Work  vs  Personal)  with  isolated  histories,  cookies,
+extensions, favorites, and tab groups
+. A user can sign into the same site with different accounts in
+different profiles and quickly switch between profiles – a feature useful for developers managing multiple
+9
+10
+11
+10
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+24
+26
+27
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+accounts or IT admins separating privileged access browsing from general use
+. Sonoma’s Safari also
+introduces web apps: any website can be added to the Dock as a standalone app-like experience with its
+own simplified browser window
+. These Safari web apps behave like minimal browsers for a single
+site (similar to Progressive Web Apps), giving users quick desktop access to services like web email or
+dashboards without a full browser UI
+. For developers, this effectively allows deploying web services that
+users can “install” to their Mac Dock with no additional packaging. Safari’s password management sees
+improvements as well: Sonoma allows creating  password sharing groups in iCloud Keychain, so multiple
+people can share a set of passwords (with end-to-end encryption) and all group members’ devices will stay
+up-to-date  with  any  password  changes
+.  Additionally,  one-time  verification  codes  (2FA  codes)
+received via Mail will now auto-fill in Safari, just as SMS codes auto-fill on iOS – streamlining multi-factor
+login flows
+. These updates collectively make Safari more secure and versatile for both users and
+organizations.
+In the realm of communication and conferencing, macOS Sonoma introduces major updates to video calling
+and messaging features. Apple added new  video conferencing effects at the OS level that work across
+popular meeting apps. The flagship example is Presenter Overlay, which during screen sharing places a
+live video of the presenter on top of the shared content
+. This creates a “weatherman-style” overlay
+where  the  speaker  appears  in  a  corner  or  as  a  cutout  alongside  their  presentation,  making  remote
+presentations more engaging. Sonoma’s OS-level support allows this overlay in any app (Zoom, Teams,
+Webex, etc.), not just FaceTime. The system also adds Reactions, fun visual effects like floating balloons,
+confetti, hearts, laser rays, etc., that can be triggered by the user’s hand gestures during a video call
+. For example, raising two thumbs-up might trigger a fireworks animation. These cinematic-quality
+effects are processed locally and inserted into your video feed
+. The idea is to enrich virtual meetings by
+providing built-in expressive tools without needing third-party filters. Sharing your screen or a specific
+window is also easier thanks to an updated Screen Sharing picker: in Sonoma, hovering over the green
+window control (the traffic-light button) now presents an option to share that window directly in a call
+. This saves time compared to manually selecting the window in an app’s screen share menu. Moreover,
+for advanced users, the Screen Sharing app (for remote desktop control) now includes a High Performance
+Mode that leverages Apple silicon’s media engines to deliver low-latency, high-frame-rate remote sessions
+with up to 2 virtual displays and support for reference color accuracy
+. Apple specifically positions
+this for “hybrid and remote pro workflows,” enabling professionals to remotely access demanding creative
+tasks (video editing, 3D rendering, etc.) with near-local responsiveness
+. This is particularly relevant for IT
+administrators and media production teams who can now use standard Screen Sharing for tasks that
+previously required specialized remote desktop software
+.
+The Messages app in Sonoma gains several quality-of-life improvements that originated on iOS 17. Search
+in Messages is made more powerful with precise filters – you can combine criteria (e.g. a person’s name + a
+keyword) to find a specific message within a conversation
+. There’s a new catch-up arrow that jumps to
+the first unread message in a busy chat, helping users keep track in group threads
+. The Tapback (emoji
+reactions) interface was redesigned: instead of a sub-menu, each Tapback symbol is directly shown as an
+icon you can click, speeding up reactions
+. The entire stickers experience is overhauled – all iMessage
+stickers (including custom Live Stickers) are centralized with a new drawer UI, and those stickers sync across
+devices
+. These changes make Message conversations more lively and manageable. Other built-in
+apps received updates too. Notes now supports rich linking and PDF collaboration: in Sonoma’s Notes app,
+you can view PDFs and scans in full width within a note, mark them up or annotate, and thanks to  live
+collaboration, changes to a shared note’s PDF are visible in real-time to others
+. Importantly, you can
+add links from one note to another (wiki-style), which enables connecting notes or even building personal
+28
+29
+30
+29
+31
+32
+31
+33
+34
+35
+34
+35
+34
+36
+37
+38
+39
+39
+40
+41
+42
+43
+44
+45
+46
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+wikis
+. This is a boon for researchers and writers organizing information. The Notes improvements,
+combined with system-wide  PDF AutoFill, significantly boost document productivity – Sonoma’s machine
+learning can identify fields in PDFs (or scanned forms) and auto-fill them with data from your Contacts (like
+names, addresses)
+. This saves time when filling out forms and works similarly to how iOS 17 handles
+PDFs. The Reminders app in Sonoma introduces smart grocery lists: it will automatically group added items
+into common grocery categories (produce, dairy, etc.) making shopping lists easier to use
+. Reminders
+also now allows section grouping in any list and offers a new column view to arrange items in a grid of
+sections
+. These features help users (or IT teams managing checklists) stay organized. On the input
+front, Keyboard and Dictation receive notable updates: Sonoma debuts Apple’s new autocorrect engine
+with a transformer-based language model, which significantly improves autocorrection accuracy and also
+underlines autocorrected words for easier review
+. Inline predictive text is now offered while typing
+(graying out suggestions that you can accept with spacebar) to speed up writing
+. Dictation in Sonoma
+uses updated speech recognition models for better accuracy as well
+. While these features are user-
+facing, they reflect Apple’s continued integration of machine learning to enhance productivity in everyday
+tasks.
+Media and Accessibility Features
+macOS Sonoma also caters to media enthusiasts and integrates new standards support. Notably, Sonoma
+adds  hardware-accelerated AV1 video decoding on Macs that have the appropriate next-generation
+media engines (e.g. Macs with Apple M3 family SoCs support AV1 decode in hardware)
+. AV1 is a modern
+high-efficiency video codec; with native decode support, playing AV1-encoded 4K or HDR content becomes
+more  power-efficient  and  smoother  on  supported  Macs
+.  This  change  primarily  benefits  media
+applications and streaming in the future as AV1 becomes more widespread. Professional video creators will
+see faster video encoding on ultra-high-end chips: Apple reported that on Macs with M1 Ultra or M2 Ultra,
+video encoding (in ProRes and other codecs) in apps like Final Cut Pro and Compressor is significantly faster
+under  Sonoma
+.  This  stems  from  optimizations  in  using  the  multi-media  engines  of  those  chips,
+providing tangible performance gains for pro workflows (e.g. faster render/export times). For general users,
+Apple TV (the TV app) was redesigned with a new sidebar for navigation (replacing the top toolbar)
+, and
+Photos and other media apps benefit from Sonoma’s  graphics refinements, which include the smoother
+animations and improved Metal performance on Apple silicon GPUs (as mentioned later in gaming). 
+Accessibility continues to be a strong focus in Sonoma, bringing several new features beneficial to users
+with disabilities (and by extension, making the OS more customizable for all). For hearing-impaired users,
+Sonoma supports Made for iPhone (MFi) hearing devices directly pairing with the Mac for audio output and
+calls
+.  This  allows  compatible  hearing  aids  to  function  as  headphones  for  the  Mac,  a  significant
+improvement for accessibility in work or learning environments. For users with speech disabilities or who
+are nonspeaking, Live Speech on Mac can speak aloud the user’s typed text in calls (this mirrors an iOS 17
+feature), enabling communication in real-time even if the user cannot vocalize
+. Voice Control (for
+dictation and Mac navigation) adds  phonetic suggestions when correcting text, which helps those with
+speech differences more easily fix misrecognized words by suggesting words that sound similar to what
+was spoken
+. Users with cognitive disabilities benefit from a new setting that can  automatically pause
+animated images (like GIFs) in Messages and Safari, reducing distraction and discomfort
+. Additionally,
+flashing visuals can be dimmed system-wide to help those sensitive to strobe effects (a new “Dim Flashing
+Lights” option, particularly useful for photosensitive epilepsy mitigation)
+. Users who are blind or
+have low vision can now adjust text size across all system and app UI in one place (a feature derived from
+iPadOS) rather than on a per-app basis
+. Apple also highlighted that Xcode is now fully accessible with
+47
+48
+49
+49
+50
+50
+50
+51
+51
+52
+53
+54
+54
+55
+56
+57
+58
+59
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+VoiceOver, meaning blind developers can better use Apple’s IDE with the screen reader
+. These changes
+illustrate Apple’s continued commitment to making macOS usable by everyone, and they introduce new API
+hooks for developers to adopt these features (such as new Accessibility environment values to detect if
+animations should be paused or flashes reduced
+). In summary, Sonoma’s media and accessibility
+updates ensure the OS stays current with emerging standards (like AV1) and empowers a wider range of
+users through thoughtful feature additions.
+Gaming and Graphics Improvements
+Apple placed a special emphasis on gaming in macOS Sonoma, attempting to improve the Mac’s appeal as
+a gaming platform for both players and developers. A key feature is the new  Game Mode, which is
+designed to optimize system performance during gameplay. When Game Mode is activated (it turns on
+automatically  whenever  a  game  is  running  full-screen),  the  system  prioritizes  the  game’s  processes,
+granting the game higher CPU and GPU priority while throttling background tasks
+. The result is more
+consistent frame rates and reduced chance of background activity (updates, indexing, etc.) causing stutters.
+Apple says Game Mode  “delivers an optimized gaming experience with smoother and more consistent frame
+rates” by ensuring the game gets the most out of the hardware
+. In addition, Game Mode cuts down
+latency for peripherals: it dramatically reduces audio latency on AirPods and halves the input latency for
+Bluetooth  controllers  by  doubling  the  Bluetooth  sampling  rate
+.  This  means  using  wireless
+controllers (Xbox, PlayStation controllers) or AirPods during gaming will feel more responsive with less lag,
+which is crucial for fast-paced games. Game Mode is supported only on Apple silicon-based Macs (M-
+series processors) and not on older Intel Macs
+. Apple likely limited it to Apple Silicon to focus on
+their custom power management and QoS capabilities. Any game or 3D application running on macOS
+Sonoma can benefit from Game Mode, with no special coding needed – it works system-wide as long as the
+app is recognized as a game (full-screen window using common game engines, etc.)
+. This feature
+indicates Apple’s continued strategy to leverage the considerable GPU/CPU performance of its M-series
+chips for better gaming experiences. Early tests of Game Mode showed modest but tangible improvements
+in frame stability and input responsiveness in supported games, though not a dramatic performance boost
+beyond what the hardware already delivered.
+For game developers, perhaps the most significant development is Apple’s introduction of a Game Porting
+Toolkit (GPTK) alongside Sonoma. Announced at WWDC 2023 and released as a beta for macOS 14, the
+Game Porting Toolkit is essentially a compatibility layer (based on the open-source Wine project and
+CrossOver  technologies)  that  can  run  unmodified  Windows  PC  games on  macOS  for  evaluation  and
+development
+. It translates Windows API calls, including DirectX 12 graphics calls, into macOS-native
+Metal and other frameworks, allowing a Windows/x86 game to execute on a Mac without official porting
+. The primary aim is to give developers a way to quickly assess how their Windows game might perform on
+Mac and to accelerate the porting process by handling graphics API translation. Apple likened this to Valve’s
+Proton layer for Linux
+. The Toolkit also comes with a  Metal Shader Converter that automatically
+converts HLSL/DX12 shaders into Metal shader language, simplifying one of the hardest parts of porting a
+game engine
+. In practice, some tech enthusiasts found they could run certain DirectX 12 games on
+Apple Silicon Macs via the toolkit with surprisingly good results – one review noted the GPTK’s first beta was
+“impressive” in that many games rendered with few glitches, full controller support, and about ~50% of the
+native Windows frame rate on the same hardware
+. Many games still didn’t work, and performance was
+roughly half of Windows in that test
+, but during the Sonoma beta period Apple updated the toolkit to
+improve compatibility (including 32-bit game support) and achieved around 20% better performance in
+some cases
+. The Game Porting Toolkit is not intended for end-users to play Windows games directly
+60
+61
+62
+63
+64
+64
+63
+65
+66
+67
+67
+68
+69
+69
+70
+70
+71
+71
+72
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+(though some did so), but rather as a developer tool to streamline actual porting. By drastically reducing the
+upfront engineering effort (Apple claims it can eliminate “months of work” in initial code bring-up
+),
+Apple hopes more studios will be willing to create native Mac versions of games. The presence of GPTK in
+Sonoma underscores Apple’s desire to rejuvenate Mac gaming, yet industry commentary has been skeptical
+if these moves alone will trigger a “gaming revolution.” Observers note that while technical barriers are
+lowered, the business incentive for publishers to invest in Mac ports remains lukewarm given the Mac’s
+market  share  and  the  fact  that  many  Mac  users  have  alternative  gaming  devices
+.  Nonetheless,
+Sonoma’s Game Mode and developer toolset mark the biggest push for Mac gaming in years. Apple’s SVP
+Craig Federighi touted that “tens of millions of Macs with Apple silicon can run demanding games with great
+performance and battery life” and highlighted many new or upcoming Mac game titles during the Sonoma
+launch
+. Indeed, games like Death Stranding Director’s Cut and Resident Evil Village were showcased, with
+developers leveraging Metal 3 features introduced in recent macOS versions to maximize performance on
+M-series GPUs
+. In summary, Sonoma delivers both immediate benefits for gamers (smoother play via
+Game Mode) and strategic tools for game developers to bring more titles to the platform in the future.
+Beyond games, graphics technologies get incremental upgrades in Sonoma. The OS supports the latest
+Metal framework capabilities (Metal 3 was introduced in Ventura, and Sonoma continues building on it with
+shader  conversion  tools  and  possibly  enhanced  Metal  Performance  Shaders,  etc.).  AVKit and
+ScreenCaptureKit frameworks were improved to aid video applications: for example, the new screen
+sharing picker and window capture API improvements make it easier for devs to implement the one-click
+window sharing feature in their apps
+. There’s also extended controller support: Sonoma includes
+built-in  drivers  for  new  game  controllers  (if  any  new  ones  were  released,  though  specifics  weren’t
+highlighted; in Ventura Apple had added support for Nintendo Joy-Cons and such). Additionally,  hand
+gesture recognition is exposed for use in video apps – the same tech that drives FaceTime reactions can be
+used by third-party apps via APIs, allowing custom responses to hand poses
+. On the display side,
+Sonoma now allows variable refresh rate (ProMotion) and reference modes to work simultaneously, which
+matters for pro users with Apple’s Pro Display XDR or MacBook Pro screens doing color-sensitive work (this
+came alongside new Mac hardware but is enabled by OS support). Overall, from a graphics and gaming
+perspective, macOS Sonoma takes advantage of Apple’s vertically integrated hardware/software stack –
+optimizing how resources are allocated to games, and providing translation and tooling to entice more
+game  development  on  Mac.  While  it  doesn’t  close  the  gap  with  Windows  overnight,  Sonoma  lays
+groundwork for gradually improving the Mac’s credibility in gaming.
+Developer Tools, APIs, and Frameworks
+macOS Sonoma arrives with a new Xcode 15 development environment and updated SDKs that introduce a
+wide  array  of  APIs  and  frameworks  for  developers.  One  of  the  headline  developer  features  is  the
+introduction  of  SwiftData,  a  new  Swift-native  persistence  framework.  SwiftData  is  built  atop  the
+longstanding Core Data but uses the new Swift macro system to significantly simplify data modeling code
+.  Developers  can  declare  model  objects  (with  @Model  macros)  and  get  persistence  “for  free,”
+leveraging Swift’s  Codable  and eliminating much of the boilerplate of Core Data
+. This was made
+possible by Swift macros, which Swift 5.9 (bundled with Xcode 15) introduced as a way to generate code at
+compile time. Swift macros enable everything from easier boilerplate reduction to domain-specific language
+creation, and Apple demonstrated their use in SwiftData and in SwiftUI animations
+. The  SwiftUI
+framework  itself  continues  to  mature  in  Sonoma:  Apple  added  support  for  observation (the  new
+Observable  macro and @Observable  types) to simplify state management, new animation APIs like
+AnimationPhase  for  multi-stage  animations,  and  full  keyframe  animation support  in  SwiftUI
+.
+73
+74
+4
+75
+76
+77
+78
+79
+79
+80
+81
+82
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+Interactive Widgets on macOS are built using WidgetKit in SwiftUI, now enhanced to allow user interaction
+(buttons, toggles, etc.), whereas previously Mac widgets were non-interactive and only updated periodically
+. This means developers can write a single SwiftUI widget that is interactive on iOS, iPadOS, and macOS
+Sonoma with consistent behavior. Under the hood, Apple indicated that SwiftUI-based architecture is key
+to many new cross-platform features – presumably referring to things like the new widget gallery and App
+Intents integration being done with SwiftUI technologies for consistency
+.
+Sonoma also introduces  TipKit, a brand-new framework for developers to offer in-app tips and feature
+highlight prompts to users
+. TipKit enables apps to intelligently suggest tips (small contextual tutorials or
+hints) to users based on usage heuristics, helping users discover features. For example, an app could pop
+up a one-time tip about a shortcut if it detects the user hasn’t used that feature yet. This framework was
+introduced to reduce the need for custom tooltip implementations and to encourage better user education
+within apps. On the App Intents side, integration deepens: App Intents (which allow apps to expose actions
+to Siri, Shortcuts, Spotlight, etc.) can now tie into system experiences even more. In Sonoma, apps’ Intents
+can be suggested in Spotlight search results and trigger from there, they can appear as quick actions in
+system contexts, and they integrate with the new  platform-wide Siri trigger (“Siri” without “Hey”) for a
+smoother voice control of app actions
+. All these reflect Apple’s push for declarative app features that
+integrate at the OS level with minimal code (Intents, widgets, etc., are declared and the system presents
+them in various UI).
+Developers building cross-platform apps will note improvements in Mac Catalyst and “Designed for iPad”
+Mac apps. The Sonoma 14 SDK release notes indicate various fixes for iPad apps running on Mac – e.g., an
+issue was resolved where macOS would launch the wrong variant of a universal app for iPad vs Mac
+.
+These fixes smooth out the ability to bring iPadOS apps to the Mac App Store. Moreover, with Apple silicon
+Macs, iPhone/iPad apps can run natively on macOS; Sonoma continues to refine this with better windowing
+behaviors and pointer support. For pure AppKit developers, macOS 14 did deprecate some older APIs (like
+the ATSUI text API and older QuickDraw-based calls), but it provides modern replacements via CoreText,
+etc. In fact, one new system behavior is that macOS Sonoma will alert at runtime if an app is using certain
+deprecated APIs that are slated for removal, specifically legacy text layout APIs (ATS/ATSUI) from the early
+2000s
+. These alerts appear as system warnings to the user (once per app) advising that the app “is
+using a deprecated API” and to contact the developer
+. While the implementation drew some criticism
+(the alerts are vague, and even Apple’s own components triggered them in early versions
+), it signals
+that Apple is preparing to eliminate decades-old APIs and is pushing developers to update their code. This
+is an important consideration for enterprise IT: any in-house or legacy apps using very old frameworks may
+need updating to avoid future incompatibility. Sonoma’s SDK formally deprecated numerous APIs (the
+release notes list them), giving developers notice.
+Another  area  of  significant  enhancement  is  the  Virtualization  framework,  which  developers  and  IT
+professionals use to run VMs on macOS. In macOS Sonoma, Virtualization gains powerful new capabilities
+that make running and managing virtual machines more efficient. A major addition is support for saving
+and restoring VM state (snapshotting): developers can now save the entire state of a running VM to a file
+and resume it later
+. This is akin to a “suspend” feature, allowing users to pause VMs and quickly pick
+up where they left off, which is invaluable for testing environments and for switching contexts without
+rebooting VMs. Apple implemented this such that the saved state is hardware-encrypted and tied to the
+machine, ensuring security (no other Mac can open the state file)
+. Also new is support for resizable VM
+displays – by simply setting a flag, a virtual machine’s display will dynamically resize with its window on the
+Mac host
+. This was a long-desired feature (previously, VM resolution changes were manual), making
+83
+84
+85
+86
+87
+5
+88
+89
+90
+88
+91
+92
+93
+94
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+virtualization feel more native and “seamless” for users. In addition, Sonoma’s Virtualization framework
+introduced the ability to use Network Block Device (NBD) attachments for VM storage
+. This means a
+VM’s disk can be located on a remote server over the network; when the VM reads/writes to disk, the
+Virtualization framework will forward those requests to an NBD server (following the standard protocol)
+. In practice, this allows VMs to use centrally-hosted disk images or even physical drives connected to
+another machine, enabling thin-client or network-based VM scenarios. It’s an enterprise-friendly feature:
+e.g., a CI/CD system could keep golden master images on a server and have developer Macs attach them
+over the network for on-demand VMs. The framework also added support for  NVMe virtual storage
+devices (an alternative to Virtio-blk) and improved Mac keyboard handling in VMs (mapping special keys
+like Command or Globe into the guest)
+. Notably, Apple also mentioned that  Rosetta 2 can now
+assist Linux VMs by translating x86_64 code, allowing Linux VMs on Apple Silicon to run Intel binaries even
+faster
+. This is a boon for developers who use ARM Mac host but need to run x86 Linux tools or Docker
+images in a VM – Rosetta acceleration will improve performance of those x86_64 binaries within the VM. All
+these virtualization improvements position Sonoma as a more robust platform for devops, testing, and
+cloud integration tasks.
+Besides  these,  Sonoma  includes  dozens  of  other  new  or  improved  frameworks:  for  instance,
+ScreenCaptureKit now offers a streamlined picker UI for choosing windows to record or share, which
+developers can integrate
+.  VisionKit (for scanning documents and extracting text) received new APIs,
+and frameworks like CoreMotion became available to Mac for the first time (allowing Mac apps, especially
+on laptops, to access sensor data similarly to iOS – Sonoma adds APIs for accessing motion sensors which
+can be useful for games or activity apps on Mac)
+. The  NetworkExtension APIs expanded, giving
+developers more flexibility in building VPNs or filtered network connections – though a major update (like
+the new “filter and tunnel” options) came in a slightly later release or WWDC 2025, Sonoma laid some
+groundwork. Meanwhile, Apple’s push into machine learning and on-device AI continued: while the Create
+ML and  Core ML frameworks were updated, a more notable introduction of a high-level “Foundation
+Models”  framework  occurred  later  (macOS  15);  Sonoma’s  timeframe  did  see  improvements  in  how
+developers use  Neural Engine via BNNS and MPS for ML acceleration. And for web developers,  Safari/
+WebKit in Sonoma supports additional HTML/CSS features and the Web Push API (which actually launched
+in  Ventura  but  Sonoma’s  Safari  17  continued  expanding  standards  support)
+.  Finally,  Apple’s
+development and distribution tools got updates: TestFlight for macOS left beta, and the Mac App Store
+review guidelines were updated to accommodate web apps and gaming content. In summary, macOS
+Sonoma arrives as a developer-friendly release – it not only maintains source compatibility (most Ventura-
+targeted apps run fine) but provides modern tools to simplify app development (SwiftData, macros, TipKit),
+to broaden app capabilities (widgets, intents, extensions), and to better utilize the power of Apple Silicon
+through virtualization and Metal improvements.
+Security and Privacy Enhancements
+Security in macOS Sonoma builds upon Apple’s multi-layered approach, bringing both under-the-hood
+hardening and user-facing privacy features. One of the marquee security improvements is in  Safari’s
+Private Browsing as mentioned earlier: with auto-locking windows and enhanced anti-tracking, it helps
+prevent unauthorized access and web tracking more effectively
+. By locking inactive private tabs behind
+Touch ID, Sonoma mitigates the risk of someone with brief physical access gleaning sensitive browsing info.
+The  tightening  of  tracking  and  fingerprinting defenses  in  WebKit  means  that  known  fingerprinting
+techniques (like querying device details via APIs) are further blocked or anonymized
+. Safari in Sonoma
+also implements Advanced Tracking Protection that removes tracking parameters from URLs users click,
+95
+95
+96
+97
+98
+99
+76
+100
+101
+102
+25
+25
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+even outside private mode
+. This corporate-friendly feature ensures that marketing or analytics tags
+appended to links (e.g. utm_source , Facebook click IDs, etc.) are stripped to protect user privacy when
+possible
+.
+At the system level, Sonoma continues to enforce strict code signing and notarization requirements. All
+executable code (apps, libraries, etc.) must be signed and (for apps distributed outside the App Store)
+notarized by Apple’s servers. This was true in Ventura as well, but macOS 14 likely updated the Gatekeeper
+policy to catch certain new categories of malicious files. Apple’s security release notes for Sonoma 14.0
+highlighted fixes in components ranging from the kernel to apps. In fact, macOS Sonoma 14.0 shipped with
+61 security patches addressing vulnerabilities in areas like Bluetooth, GPU drivers, kernel memory handling,
+iCloud, and WebKit
+. This large number of fixes is typical for a .0 release – Apple collaborated with
+many  researchers  to  close  holes  and  “release  Sonoma  with  as  tight  of  security  as  possible”
+.  For
+example, issues that could allow apps to execute code with kernel privileges (in AMD graphics driver, Neural
+Engine driver, etc.) were fixed by improved memory handling
+. Sandboxing escapes and privilege
+escalation  bugs  were  similarly  patched  across  multiple  subsystems.  From  an  IT  security  perspective,
+upgrading  to  Sonoma  meant  gaining  these  vulnerability  patches;  Apple  no  longer  provides  them  to
+unsupported older macOS once Sonoma is out. Indeed, experts often urge that sticking with an older
+macOS after a new release can leave systems exposed, since the latest OS gets the full suite of security
+updates
+.
+macOS  Sonoma  also  expands  Communication  Safety features  system-wide,  which  is  part  of  Apple’s
+initiative to protect children. Initially introduced in iOS 15 for Messages (blurring potentially explicit images
+for child accounts), Communication Safety in Sonoma extends to content beyond Messages: it now can
+cover AirDrop, the system photo picker, incoming FaceTime video messages, and calls
+. For instance,
+if a child attempts to receive an AirDrop with sensitive adult content, the OS can detect it and intervene with
+warnings and guidance. Relatedly,  Sensitive Content Warning is a feature for adult users that will blur
+unsolicited nude images in Messages, AirDrop, etc., giving the user the option to view or not, and also
+providing quick access to blocking the sender or getting help
+. This user-facing safety enhancement
+leverages on-device machine learning for image analysis to enhance privacy and safety in communications.
+On the enterprise security and management front, Sonoma doesn’t drastically change the fundamentals,
+but it continues trends. All Macs supported by Sonoma have the T2 Security Chip or Apple Silicon’s Secure
+Enclave, meaning features like FileVault encryption, Touch ID, and Hardware Verified Boot are standard.
+Sonoma likely updated the  XProtect and  Malware Removal Tool (MRT) definitions (Apple’s built-in anti-
+malware) with better coverage of new malware. During Sonoma’s lifecycle, Apple also started deploying
+Rapid Security Response (RSR) updates on macOS (a mechanism first seen in iOS 16). While there were no
+RSR patches for Sonoma 14.0 itself at launch (since those fixes were in the 61 patches), Apple did use RSR in
+early 2024 on macOS (for example, an RSR was issued for Ventura and Sonoma to patch WebKit without a
+full OS update). The Sonoma updates also included specific fixes like  Advanced Data Protection (ADP)
+improvements: ADP is Apple’s end-to-end encryption option for iCloud introduced shortly before Sonoma,
+and Sonoma fully supports it. In fact, a minor update (14.6.1) explicitly “fixes an issue that prevented enabling
+or disabling Advanced Data Protection”, underscoring Apple’s attention to getting that important security
+feature  working  reliably
+.  ADP  allows  users  (or  companies)  to  opt  into  broader  iCloud  encryption
+(covering device backups, Photos, etc.), and ensuring the OS handles key escrow and recovery properly was
+key.
+24
+24
+103
+104
+105
+106
+107
+108
+109
+110
+109
+110
+111
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+From an architectural standpoint, macOS Sonoma’s kernel (XNU) was updated (Darwin version 23.x) with
+likely new mitigations. Apple doesn’t always advertise these, but given patch notes, we know constant-time
+cryptographic  implementations  were  improved  to  mitigate  timing  side-channels
+,  and  memory
+initialization issues were addressed to prevent data leaks
+. Apple Silicon’s hardware security (Pointer
+Authentication Codes, memory tagging on M2, etc.) continues to protect against many exploit classes at the
+silicon level; Sonoma is designed to leverage these features by, for example, requiring signed pointers in
+more system libraries.  System Integrity Protection (SIP) remains in effect, now even more mature,
+restricting root and preventing changes to OS files. Sonoma also removed support for the few remaining
+kernel extensions (kexts) that weren’t already deprecated – for several releases, Apple has transitioned
+developers to use  DriverKit and system extensions. By Sonoma, loading third-party kexts (outside of
+perhaps Rosetta environment) is almost entirely blocked, which enhances system stability and security by
+reducing the attack surface in the kernel.
+One subtle but highly visible change was the deprecated API alerts mentioned earlier. While not a security
+feature per se, the fact that Sonoma surfaces alerts for old APIs (like ATS) is partly in service of security and
+modernization – the APIs in question are very old C-based frameworks that could be less safe. By nudging
+developers to move off them, Apple paves the way to remove potentially insecure legacy code from macOS
+in the future
+. For users, the immediate impact was a somewhat confusing alert (for example, an alert
+naming “AltTab” or another process, saying it’s using a deprecated API)
+. Admins should be aware that
+these alerts can appear and that the solution is to update the offending application once the developer
+provides a fix. Sonoma’s release notes mentioned ATS/ATSUI as triggers for these alerts
+.
+Finally, Sonoma carries forward privacy improvements from recent macOS versions:  Mail and Messages
+Link Tracking Protection, which was introduced in iOS 17/macOS 14, strips tracking parameters from links
+you receive in Mail app or Messages to prevent tracking pixels or URLs from reporting back to senders
+.
+Also,  permissions  dialogs for  things  like  Screen  Recording,  Camera/Microphone,  etc.,  are  retained  –
+developers targeting Sonoma should ensure their apps have the correct usage strings and handle the
+possibility that users can now revoke permissions in System Settings at any time. On first launch of an app
+on Sonoma, Gatekeeper will still check notarization and present an open warning if not notarized; nothing
+major changed there, but the OS may verify apps more frequently (some users anecdotally note Gatekeeper
+re-checking  apps  on  each  launch  if  attributes  change,  an  ongoing  improvement  from  Apple’s  cloud
+notarization checks).
+In summary, macOS Sonoma strengthens security by patching vulnerabilities, enhancing privacy features
+like  locked  private  browsing  and  communication  safety,  and  gradually  phasing  out  legacy  insecure
+components. For IT administrators, Sonoma presents a relatively secure-by-default platform with all Macs
+requiring  modern  security  chips.  The  focus  should  be  on  testing  mission-critical  apps  (to  see  if  any
+deprecated frameworks trigger issues) and planning hardware upgrades for any Macs that Sonoma left
+behind (since Ventura will only get two years of security updates post Sonoma
+). Sonoma is an
+evolution  of  macOS’s  security  model,  keeping  the  Mac  environment  robust  against  threats  and
+unauthorized data access.
+Compatibility and System Requirements
+macOS Sonoma raises the baseline for supported Mac hardware, dropping support for several older Mac
+models relative to Ventura. Officially, Sonoma supports Macs released in 2018 or later (with one exception
+for iMac Pro 2017)
+. In practical terms, Sonoma requires either an Apple silicon chip or an Intel
+112
+113
+88
+114
+6
+24
+115
+116
+117
+118
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+CPU with at least 8th-generation architecture (Coffee Lake) or newer, as well as the presence of the
+Apple T2 security chip on Intel models
+. The full list of supported Macs includes: MacBook Pro (2018
+and later), MacBook Air (2018 and later), Mac mini (2018 and later), iMac (2019 and later), Mac Pro
+(2019 and later), all Mac Studio models (2022+), and the iMac Pro (2017)
+. This means Sonoma
+drops official support for any 2017 or earlier MacBook, MacBook Pro/Air, Mac mini, or iMac (except that
+2017 iMac Pro). Notably, this marks the end of the line for the last Macs without Retina displays (e.g. the
+2017 Air) and the end for the 12-inch MacBook, none of which can run Sonoma
+. It also means all
+supported Intel Macs now have a T2 chip, except the 2019 iMac which lacks T2 but meets the CPU
+requirement
+. By requiring T2 on portables and most desktops, Apple ensures Sonoma’s user base
+benefits from hardware security and newer firmware.
+The reasoning for these cuts is likely performance and driver support. 2018 was when Apple introduced T2
+and also Coffee Lake CPUs, which have newer graphics and instruction sets. The dropped 2017 models
+received about 6 years of updates (High Sierra through Ventura) – slightly shorter than some earlier Macs
+which got 7+ years
+. Analysts noted this trend: Intel Macs from around 2009–2015 often got 7–8
+years of OS updates, whereas many 2016–2017 Macs are getting about 6 years
+. This may be due to
+Apple’s transition to Apple Silicon and moving up the requirements to streamline their support burden.
+Developers and IT departments should verify the Mac models in use – any mission-critical Macs from 2017
+or earlier will remain on macOS Ventura and only receive security patches until about 2025 (Apple usually
+provides ~2 years of security updates for the last OS prior to the newest). After that, those machines are
+effectively obsolete software-wise, unless using third-party solutions.
+It’s worth noting that macOS Sonoma is the final version supporting the 2018–2019 MacBook Air; its
+successor (macOS 15 “Sequoia”) drops those as well
+. This is relevant for planning hardware refresh
+cycles. Organizations that rely on those models might consider that Sonoma is their last upgrade path
+before requiring new hardware. Unofficially, enthusiasts have found ways to run Sonoma on unsupported
+older Macs via patching tools (e.g.  OpenCore Legacy Patcher). In fact, the community demonstrated
+Sonoma booting on Macs as old as 2007–2008, though certain features or graphics acceleration may not
+work
+. Of course, this is not supported or recommended for production environments, but it shows the
+underlying OS can run on older hardware if forced, albeit without Apple’s optimizations.
+For supported Macs,  hardware-specific feature support in Sonoma varies. Many of Sonoma’s features
+work across all supported models, but some are exclusive to Apple Silicon. For instance,  Game Mode
+requires an Apple Silicon Mac and will not enable on Intel Macs
+. The AV1 video decode support is
+only available on the latest Apple Silicon that includes AV1 hardware decoder (e.g. M3 family)
+; Intel
+Macs and earlier M1/M2 do not gain AV1 via Sonoma since it’s a hardware capability. The high-performance
+screen sharing mode is leveraged by Apple Silicon media engines, though it can still function on Intel albeit
+likely with higher latency. Features like the new screensavers and desktop widgets work on all supported
+models  (their  performance  is  smooth  even  on  older  supported  Intel  GPUs).  Continuity  Camera and
+Handoff features continue to require relatively recent devices and iCloud setup – Sonoma itself added
+integration like using iPhone as a webcam on iPad, etc., but that extends to Mac too.
+In terms of software compatibility, Sonoma generally maintains a high degree of backward compatibility for
+applications that ran on Ventura. Since it’s a relatively incremental update, most apps needed minimal if any
+changes to run on Sonoma (aside from addressing any deprecated API warnings). One exception was the
+removal of support for legacy Mail plugins – Apple officially removed the ability to load old-style Mail.app
+plug-ins in Sonoma
+. Ventura had already deprecated that in favor of MailKit extensions, and now the
+117
+117
+119
+117
+117
+116
+120
+120
+121
+122
+66
+67
+123
+124
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+old plug-ins will simply not load. Any organization using custom Mail plugins for workflows must migrate
+those to the new extension system or find alternatives. Another removal is the system’s ability to convert
+PostScript files – Apple removed the API for PostScript/EPS to PDF conversion in Sonoma
+. This followed
+Ventura’s earlier removal of Preview support for PostScript. So viewing or converting PS/EPS now requires
+third-party  solutions  (like  installing  Ghostscript)  on  Sonoma.  This  could  impact  graphics  and  printing
+industries that still use PostScript workflows.
+For cross-platform considerations, Sonoma is the required macOS version for some new Apple ecosystem
+features. For example, pairing an Apple Watch running watchOS 10 with a Mac for unlocking or using
+iPhone widgets on Mac via Continuity might require Sonoma on the Mac side (and iOS 17 on the phone).
+Also, developers using Xcode 15 will find that the macOS 14 SDK is required to target Sonoma’s new APIs
+. However, Xcode 15 can still build for older macOS targets down to macOS 13 or 12 as needed. 
+It’s important to note a limitation that persists: Apple Silicon Macs cannot dual-boot Windows via Boot
+Camp, since Apple does not support Boot Camp on M1/M2 Macs
+. Sonoma does not change this –
+Windows  on  Apple  Silicon  is  only  possible  through  virtualization  (e.g.  Parallels,  UTM/Virtualization
+framework). Intel Macs running Sonoma can still use Boot Camp to boot Windows 10 (Windows 11 officially
+requires TPM 2.0, which only 2018+ T2 Intel Macs have – those could run Win11 with some workarounds).
+For IT departments, this means if a workflow needs Windows, one cannot upgrade hardware to Apple
+Silicon  without  adopting  a  virtualization  strategy.  Sonoma’s  improved  Virtualization  framework  makes
+running ARM Windows 11 in a VM quite feasible, but x86 Windows apps would need compatibility layers
+within that (or use Microsoft’s built-in x86-64 emulation for Windows on ARM, which is improving). This is a
+limitation to be aware of, although it’s a hardware platform issue rather than OS-specific.
+Another compatibility aspect is software update delivery: Sonoma uses the modern sealed System Volume
+introduced in Big Sur, and supports delta updates and Rapid Security Response updates. Admins should note
+that Sonoma updates might sometimes be “background installed” if it’s a quick security fix (RSR) – these can
+be rolled back by removing the update in System Settings if needed. As always, major OS upgrades like
+going to Sonoma require about 12–20GB of free disk space to install, and the Mac will do a full snapshot
+backup (if APFS snapshots available) to allow OS downgrade if the user opts within a limited time.
+In summary, macOS Sonoma narrows support to relatively recent Macs (2018+), aligning the platform fully
+with T2 security or Apple Silicon capabilities. This ensures that features like Touch ID, Secure Enclave
+encryption, and advanced media processing are available system-wide. Organizations planning to deploy
+Sonoma should audit their Mac inventory for models that are stuck on Ventura and plan for eventual
+replacement or segregated support. Most application software that ran on Ventura continues to run on
+Sonoma, with the biggest changes being the need to update any legacy system integrations (like kernel
+extensions, mail plugins, or outdated libraries). Sonoma’s compatibility profile reflects Apple’s transition era:
+it supports both Intel and Apple Silicon, but clearly favors the latter for full feature access and will be the
+last OS for some Intel models.
+Performance and System Behavior Changes
+macOS Sonoma generally offers comparable or improved performance relative to macOS Ventura on the
+same hardware, thanks to optimizations in graphics and system scheduling. Users of Apple Silicon Macs
+often report very smooth UI interactions in Sonoma, aided by the refined animations and the heavy lifting
+done by the GPUs. The introduction of Game Mode (discussed in the gaming section) is one example of a
+124
+125
+126
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+performance-centric feature, ensuring that when a game or intensive 3D app is running, it gets the lion’s
+share of CPU/GPU time with less interruption
+. Outside of gaming, these scheduling tweaks may also
+benefit any foreground app under heavy load (though Apple hasn’t explicitly said Game Mode applies
+beyond games). 
+One noticeable improvement in Sonoma is in UI responsiveness and fluidity. The system animations (such
+as Mission Control, window minimizing, notifications) were tuned for smoothness
+. Testers noted that
+these animations feel more cohesive, especially on high refresh rate displays (120Hz ProMotion on newer
+MacBook Pros). The OS also feels responsive in handling multiple desktops and Stage Manager (introduced
+in Ventura) – while Stage Manager itself was not overhauled in Sonoma, any under-the-hood optimizations
+may have reduced its memory overhead or lag when shuffling windows. 
+However, some users observed changes in resource usage. For instance, macOS Sonoma appears to use
+more base RAM than Ventura did. Reports indicated that right after boot, Sonoma’s memory footprint is
+higher – one analysis noted Sonoma would consume over 4GB of RAM for the system and idle processes
+where Ventura might use just over 3GB
+. This suggests the OS and its new features come at a slight cost
+in memory usage, possibly due to additional background services (for widgets, etc.) or less aggressive
+memory compression. On Macs with 8GB RAM, this difference could be felt if the user pushes the system
+with many apps. It’s recommended to have sufficient RAM or manage startup items to mitigate this. That
+said, memory management in macOS is dynamic, and Apple may optimize Sonoma’s memory usage in
+point releases. As of early releases,  some users reported more frequent swaps to disk or memory
+pressure in Sonoma versus Ventura when running the same workload
+. This is an area to monitor;
+Apple often addresses performance and efficiency issues in subsequent updates.
+Battery life is another aspect affected by OS changes. There isn’t clear evidence that Sonoma universally
+improves or worsens battery life; it largely depends on use cases and hardware. Some anecdotal feedback
+indicated that certain MacBooks saw reduced battery runtime after upgrading to Sonoma
+. This could
+be due to early bugs (for example, Spotlight indexing might have been running heavily right after upgrade,
+or an app using deprecated calls might be causing a power management issue). By Sonoma 14.1 and 14.2,
+Apple likely fixed the major battery drain bugs, if any. Generally, the advanced media engine usage (e.g.
+for screen sharing high-performance mode) means that tasks like video encoding/decoding can actually be
+more power-efficient in Sonoma on Apple Silicon, because the dedicated encoders are used. But new visual
+effects (like the screen savers, or widget rendering) might consume a bit more GPU. For typical productivity,
+users shouldn’t see a big difference in battery compared to Ventura, after the initial post-update processing
+settles.
+Sonoma’s boot and login sequence changed slightly (the progress bar on startup is positioned differently,
+as noted)
+, but boot times remain quick, especially on Macs with SSDs. With a sealed system volume and
+snapshot-based updates, Sonoma continues the trend of relatively fast OS updates (the Mac can do much of
+the install in the background and then a quick reboot to finalize). The shutdown and restart processes are
+similar to Ventura’s speed.
+In terms of  system stability, macOS Sonoma is largely stable, but like any .0 release, it had a few quirks.
+During the beta period, testers and developers encountered some bugs – for example, external volume
+encryption issues and location services bugs. Apple addressed many by the 14.1 update: Sonoma 14.1
+fixed an issue where encrypted external drives might fail to mount, and a bug that could reset the Location
+Services > System Services settings unexpectedly
+. These fixes restored expected functionality for users
+63
+127
+128
+129
+130
+16
+131
+13
+
+------------------------------------------------------------------------
+Page 14
+------------------------------------------------------------------------
+
+relying on encrypted Time Machine disks or specific location-based system features. There were also
+reports of some third-party apps misbehaving until they were updated for Sonoma. For example, early on,
+some users of utilities like AltTab or Bartender saw warnings (due to the deprecated API alerts) and needed
+updates from developers
+. Additionally, a few users experienced more frequent app crashes on 14.0
+– possibly because Sonoma’s memory handling changed (some apps needed minor tweaks for stability).
+Apple fixed notable crashes in point releases: e.g., the 14.2 release notes mention resolving a SwiftUI
+toolbar crash issue
+, and 14.3 fixed a bug where a virtualized macOS Monterey guest VM failed to boot
+after an update
+.
+A notable system behavior update in Sonoma is how it handles screen sharing indicators and permissions.
+In Ventura, when an app was recording your screen (or a remote user viewing it), an orange icon or menu
+bar item appeared. Sonoma refines this with possibly new icons (like a stage-shaped icon when Stage
+Manager or other displays are in use). Also, the system now actively shows a menu bar icon for apps using
+“Screen Recording (deprecated)” API, urging developers to move to the newer ScreenCaptureKit
+. The
+presence of these indicators ties back to the deprecated API alerts – for instance, any app using the older
+method to record screen triggers a warning icon in Sonoma’s menu bar stating it’s using a deprecated
+screen capture API
+. Admins might get queries from users on what these new icons mean; the answer is
+that it’s Sonoma’s way of transparently informing about screen access and legacy API use. 
+From an architectural perspective, Sonoma’s Darwin 23.0 kernel may have brought improved scheduling
+on Apple Silicon. The M-series chips have high-performance and high-efficiency cores; Apple continuously
+tunes the macOS scheduler to use those optimally. Sonoma likely refines when background tasks move to
+efficiency cores, which could give a small boost to interactive performance. Also, I/O throughput and
+memory management might be improved. For example, copying files or duplicating large datasets might be
+a bit faster due to APFS enhancements, though Apple didn’t call any out explicitly. 
+Networking in Sonoma is largely the same stack as Ventura’s, with support for Wi-Fi 6E (where hardware
+allows) and some enhancements to VPN (IKEv2) stability. One change was in proxy configuration: Sonoma
+supports per-application VPN rules more robustly, aligning with new MDM options (though that is part of
+the device management enhancements mostly seen in iOS/iPadOS). 
+One interesting performance-related update came in mid-cycle for Sonoma: macOS 14.6 (July 2024) added
+support for dual external displays on the 14-inch M3 MacBook Pro
+. This was a hardware-specific
+enablement  –  the  base  M3  14-inch  Pro  initially  only  supported  one  external  monitor,  but  an  update
+unlocked two. This underscores how OS updates can improve hardware capabilities after launch. Sonoma’s
+life saw Apple release new Macs (M3 series in late 2023), and the OS was updated to support their features
+fully, including any performance tuning needed.
+Finally, we should address any continuing limitations: Many users are aware that some features introduced
+in iOS did not make it to macOS (for instance, macOS still doesn’t have Face ID as no Mac has the hardware,
+and Live Voicemail from iOS 17 is not relevant to Mac). Stage Manager, the window grouping feature from
+Ventura, remains optional and was not significantly changed in Sonoma – no multi-monitor Stage Manager
+support yet, which some power users hoped for. And while Sonoma refined the System Settings app (which
+had replaced System Preferences in Ventura), some users still find it less efficient than the old design. Apple
+did fix numerous UI glitches in System Settings by Sonoma’s release, so it’s more stable. But the overall
+behavior (search in settings, navigation) is the same paradigm as Ventura.
+132
+133
+134
+135
+132
+132
+136
+14
+
+------------------------------------------------------------------------
+Page 15
+------------------------------------------------------------------------
+
+In summary, macOS Sonoma’s performance profile is largely an incremental improvement. It leverages
+Apple Silicon strengths to deliver smooth graphics and introduces Game Mode to squeeze extra consistency
+for high-performance use cases
+. There were some initial trade-offs like higher memory usage, but Apple
+has balanced those with better capabilities. With subsequent updates, Sonoma has become a very polished
+release. It may not make an older Mac feel faster than it was on Ventura, but it shouldn’t slow it down either
+in any noticeable way. Stability issues from early versions have been ironed out, making Sonoma a solid
+platform for daily work or development. As one reviewer summarized, “You probably don’t need to run out
+and install it, but there’s no real reason to avoid it” – it keeps your Mac secure and up-to-date without major
+drawbacks
+.
+Post-Release Updates and Notable Changes Since Initial Release
+Since the initial 14.0 release of macOS Sonoma in September 2023, Apple has issued a number of minor
+updates (14.x), bringing bug fixes, security patches, and a few additional features. Here we highlight the
+notable changes from these point releases:
+macOS 14.1 (October 2023): This first point update introduced new features and important fixes. A
+headline addition was a new liquid ingress detection alert for Macs with USB-C/Thunderbolt ports
+. The system now includes a background service ( liquiddetectiond ) that detects electrical
+changes indicative of liquid in the port and warns the user to disconnect accessories
+. This can
+help prevent corrosion damage – a feature borrowed from iPhone. Sonoma 14.1 also added the
+ability to mark songs, albums, or playlists as favorites in the Music app (improving music library
+organization)
+.  In  System  Settings,  users  gained  a  new  section  to  check  their  AppleCare+
+coverage status for the Mac and paired AirPods, including warranty expiration dates
+. This
+makes it easier for IT or users to know if a machine is under AppleCare coverage without visiting the
+website. On the fixes side, 14.1 addressed the bug preventing some  encrypted external drives
+from mounting, ensuring encrypted disks work reliably
+. It also fixed an issue where the System
+Services settings under Location Services could inadvertently reset
+. Various other stability fixes
+(not explicitly publicized) improved Mail, Spotlight and more. Essentially, 14.1 was an important
+stability update that also delivered a few useful features.
+macOS  14.2  and  14.3  (Late  2023  to  Early  2024): These  updates  further  squashed  bugs  and
+enhanced performance. For instance,  14.2 resolved a toolbar crash related to SwiftUI in some
+apps
+ and likely fixed memory leaks. 14.3 fixed a virtualization issue where macOS Monterey VMs
+failed to boot after certain updates
+. There were also updates to support new hardware (e.g.,
+initial support for new GPU identifiers, etc.). macOS 14.3 was released in January 2024 and included
+the usual round of security patches as detailed on Apple’s support site
+.
+macOS 14.5 (May 2024): In this update, Apple made some Apple News+ improvements (per Apple’s
+release notes)
+. Although not all details are cited in sources, typically such improvements might
+include a new Follow tab or enhancements to the News+ audio stories interface. By this time, Apple
+had also likely improved the performance of the new features – for example, widget reliability and
+compatibility with more iOS widgets might be better in 14.5 than at launch.
+macOS 14.6 (July 2024): This was a significant update aligning with new Mac hardware. Apple
+introduced the M3 series of chips in late 2023/early 2024, and by 14.6 the software support was
+refined. A particularly notable change: macOS 14.6 added dual external display support for the
+65
+2
+• 
+137
+138
+139
+139
+131
+131
+• 
+134
+135
+112
+• 
+140
+• 
+15
+
+------------------------------------------------------------------------
+Page 16
+------------------------------------------------------------------------
+
+14-inch MacBook Pro with base M3 chip
+. Originally, the entry-level M3 MacBook Pro was
+limited to one external monitor; 14.6 enabled two, which was a welcome improvement for users of
+that model. Additionally, 14.6 and its minor follow-ups (14.6.1) were focused on security.  macOS
+14.6.1 (Aug 2024) fixed the Advanced Data Protection toggle bug that we mentioned (ensuring users
+could enable or disable ADP without error)
+. These updates also rolled in critical fixes for any
+zero-day vulnerabilities that emerged mid-year. 
+macOS 14.7 (September–October 2024): This was the final planned Sonoma update as macOS 15
+(Sequoia) launched around the same time. macOS 14.7.x was primarily security and bug fixes. By
+14.7, Sonoma was very polished – Apple included all relevant security content patches (the  14.7.6
+update in May 2025, for example, was noted as a “Critical Security Update” to address actively
+exploited  vulnerabilities
+).  No  major  features  were  added  in  these  late  point  releases;  they
+ensured those sticking with Sonoma for stability would remain protected. Apple’s support article
+catalogs the security content of each of these updates
+.
+It’s also worth noting what did not change in updates: Apple did not reverse course on any deprecations
+(e.g., legacy Mail plugins remained unsupported) and did not add any wholly new applications in Sonoma’s
+cycle. The updates were all about refinement. For instance, if Stage Manager had any rough edges, they
+likely got smoothed out by 14.4 or 14.5. If certain enterprise Wi-Fi or VPN issues popped up, Apple quietly
+fixed them in these updates (the Apple Developer release notes for each minor version list many “Fixed:”
+items covering frameworks like NetworkExtension, MDM, etc. – e.g., 14.4 notes mention fixing a blurry text
+field issue and pointer style update issue
+).
+As of the time of writing (mid 2025), macOS Sonoma stands as a stable, mature OS. It will continue to
+receive  security-only updates while macOS 15 (Sequoia) takes over as the mainline feature release
+.
+Organizations that have standardized on Sonoma can expect Apple to release critical fixes (if needed) for
+roughly another year. Apple’s typical pattern would be to support Sonoma with security updates until Fall
+2026 (since Sonoma was released in 2023 and Apple usually supports the current and two prior macOS
+versions with security patches). Sonoma’s final build (14.7.x) is essentially the reference point for those not
+moving to Sequoia immediately
+.
+Conclusion
+macOS Sonoma represents a  thoughtful evolution of the Mac operating system, bringing a host of
+enhancements for users while introducing important changes for developers and IT administrators. It
+builds on macOS Ventura’s foundations (“Ventura-plus” in effect
+) by refining the user experience with
+interactive widgets, immersive screen savers, and improved built-in apps, all aimed at elevating productivity
+and creativity
+. At the same time, Sonoma aligns macOS more closely with Apple’s broader platform
+strategy: bolstering gaming performance through Game Mode and game porting tools, leveraging Apple
+Silicon’s strengths in media and machine learning, and continuing the transition away from legacy Intel-
+oriented technologies. Security and privacy receive a strong boost – from locked private browsing tabs in
+Safari to expanded Communication Safety – underscoring Apple’s commitment to user protection
+. 
+For developers, Sonoma’s release (accompanied by Xcode 15) brings modern frameworks like SwiftData and
+TipKit and a plethora of new APIs that simplify coding and enable deeper integration with system features
+. The OS also signals Apple’s expectations for the future: deprecating APIs that don’t align with
+current architectures and requiring hardware with modern security capabilities (T2 or M-series chips) as a
+136
+111
+• 
+141
+142
+143
+144
+145
+146
+2
+3
+147
+25
+110
+79
+85
+16
+
+------------------------------------------------------------------------
+Page 17
+------------------------------------------------------------------------
+
+minimum. Compatibility is consequently more focused – only Macs from 2018 onward are supported –
+which allows Sonoma to run exclusively on devices that can fully support its features (Retina displays,
+Secure Enclaves, etc.)
+. In enterprise settings, Sonoma offers a stable target with improved remote
+management hooks (declarative MDM improvements were mostly on the iOS side, but macOS benefits
+indirectly) and a secure base for deployment.
+Comparing Sonoma to Ventura, we observe mostly additive changes: very few features were removed aside
+from intentional deprecations (legacy mail plugins, older file format support)
+. System behavior tweaks
+like the deprecated API alerts are the kind of change that might generate support calls initially, but they
+ultimately guide the ecosystem towards more up-to-date software, which is beneficial. Performance-wise,
+Sonoma keeps Macs running smoothly, and in certain scenarios (media editing on Ultra chips, or gaming on
+Apple Silicon) it offers tangible improvements
+. Any early bugs have been ironed out in updates,
+making the current iteration of Sonoma reliable for daily use.
+From a forward-looking perspective, macOS Sonoma solidifies the Mac’s trajectory. It is likely the last macOS
+to straddle both Intel and Apple Silicon with feature parity – future releases increasingly favor Apple’s own
+chips. Sonoma’s emphasis on on-device capabilities (media engine usage for screen sharing, local analysis
+for safety features, etc.) and integration (widgets, app intents) reflects an OS that is deeply intertwined with
+its hardware and with iOS/iPadOS counterparts. Developers and IT pros should view Sonoma as a stable
+platform to target, especially if they wish to utilize the latest Apple frameworks or distribute apps through
+the Mac App Store with the newest features (like interactive widgets or web app mode). 
+In conclusion, macOS Sonoma is a comprehensive refinement of macOS that caters to both end-users
+and professionals. It introduces welcome features that make the Mac more personal and fun (widgets,
+screen savers, reactions), more efficient for work (profiles in Safari, PDF autofill, better Notes), and more
+capable as a creative and gaming machine (Game Mode, Metal optimizations)
+. Under the hood, it
+lays groundwork for future innovation by updating APIs and leveraging Apple Silicon’s full potential. For
+most Mac users and organizations, upgrading to Sonoma is a straightforward decision given the benefits
+and the lack of major compatibility headaches – as the Ars Technica review aptly noted, there’s “no real
+reason to avoid it” for those on Ventura
+. Sonoma keeps the Mac platform secure, up-to-date with
+modern app capabilities, and aligned with Apple’s ecosystem, all while remaining the familiar, robust
+operating system that professionals rely on.
+Sources:
+Apple Newsroom – macOS Sonoma brings all‑new capabilities...
+Apple Developer Documentation / WWDC 2023 Sessions
+MacRumors – macOS Sonoma: Features, Compatible Devices, and More
+Wikipedia – macOS Sonoma (version 14) overview
+OSNews/Ars Technica – macOS 14 Sonoma review excerpt
+Channel i’M Tech – Apple’s macOS Sonoma 14.1 is Out; Exciting Features too!
+9to5Mac – macOS Sonoma includes these 61 security fixes
+Apple Support – Game Mode on Mac
+ and Security update bulletins
+, etc. 
+117
+124
+52
+63
+64
+148
+2
+• 
+3
+34
+25
+65
+• 
+95
+79
+85
+• 
+63
+149
+118
+• 
+26
+150
+117
+• 
+2
+• 
+137
+139
+131
+• 
+103
+106
+• 
+66
+111
+17
+
+------------------------------------------------------------------------
+Page 18
+------------------------------------------------------------------------
+
+macOS Sonoma - Wikipedia
+https://en.wikipedia.org/wiki/MacOS_Sonoma
+macOS 14 Sonoma: the Ars Technica review – OSnews
+https://www.osnews.com/story/137262/macos-14-sonoma-the-ars-technica-review/
+macOS Sonoma brings new capabilities for elevating productivity and creativity - Apple
+https://www.apple.com/newsroom/2023/06/macos-sonoma-brings-new-capabilities-for-elevating-productivity-and-creativity/
+An Alerting Vista of Sonoma • furbo.org
+https://furbo.org/2023/07/09/an-alerting-vista-of-sonoma/
+macOS Sonoma: Features,
+Compatible Devices, and More
+https://www.macrumors.com/roundup/macos-sonoma/
+Platforms State of the Union - Orange digital accessibility
+guidelines
+https://a11y-guidelines.orange.com/en/mobile/ios/wwdc/nota11y/2023/23PlatformsSotU/
+Use Game Mode on Mac - Apple Support
+https://support.apple.com/en-us/105118
+Apple Explains How Game Mode Works in macOS Sonoma
+https://www.macrumors.com/2023/09/27/apple-explains-how-game-mode-works-in-macos-sonoma/
+Game Mode support for Apple Silicone - Factorio Forums
+https://forums.factorio.com/viewtopic.php?t=109053
+macOS Sonoma 14.5 Release Notes - Apple Developer
+https://developer.apple.com/documentation/macos-release-notes/macos-14_5-release-notes
+Create seamless experiences with Virtualization - WWDC23 - Videos - Apple
+Developer
+https://developer.apple.com/videos/play/wwdc2023/10007/
+WWDC 2023 - VML
+https://www.vml.com/insight/wwdc-2023
+macOS Sonoma includes these 61 security fixes - 9to5Mac
+https://9to5mac.com/2023/09/26/macos-sonoma-61-security-fixes/
+Is it really a necessity to upgrade to a newer macos for security ...
+https://www.reddit.com/r/MacOS/comments/1d6t8tb/is_it_really_a_necessity_to_upgrade_to_a_newer/
+Apple Releases macOS Sonoma 14.6.1 With Bug Fixes - Reddit
+https://www.reddit.com/r/apple/comments/1emj58b/apple_releases_macos_sonoma_1461_with_bug_fixes/
+About the security content of macOS Sonoma 14.3 - Apple Support
+https://support.apple.com/en-us/120309
+About the security content of macOS Sonoma 14.7 - Apple Support
+https://support.apple.com/en-us/121247
+1
+7
+8
+16
+17
+18
+19
+20
+21
+26
+29
+40
+41
+42
+43
+51
+52
+53
+69
+70
+71
+72
+74
+78
+101
+102
+117
+120
+121
+122
+123
+124
+127
+142
+143
+150
+2
+115
+116
+3
+4
+13
+14
+15
+22
+25
+27
+28
+30
+31
+33
+34
+35
+36
+38
+39
+44
+49
+50
+54
+55
+56
+59
+60
+64
+65
+73
+75
+109
+110
+147
+148
+5
+6
+88
+89
+90
+114
+9
+10
+11
+12
+23
+24
+32
+37
+45
+46
+47
+48
+63
+118
+119
+136
+140
+145
+146
+149
+57
+58
+61
+62
+76
+77
+79
+80
+81
+82
+83
+84
+85
+86
+66
+67
+68
+87
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+103
+104
+105
+106
+107
+108
+111
+112
+113
+18
+
+------------------------------------------------------------------------
+Page 19
+------------------------------------------------------------------------
+
+Apple’s macOS Sonoma 14.1 is Out; Exciting Features too! - Channeliam / Channel I'M
+English
+https://en.channeliam.com/2023/11/08/apples-macos-sonoma-14-1-is-out-exciting-features-too/
+My MacBook Air running Sonoma does not su… - Apple Community
+https://discussions.apple.com/thread/255488456
+Sonoma vs Ventura: What Are the Differences Between These Versions of MacOS? [Comparison
+of Features]
+https://mackeeper.com/blog/sonoma-vs-ventura/?srsltid=AfmBOooprntiuzXVNRliDUVGpOsM-tMhs4qP07UQAWc0u1IZyOF0KfWk
+Alert "AltTab" is using a deprecated API that will be removed in the ...
+https://github.com/lwouis/alt-tab-macos/issues/2599
+Support - Bartender 4
+https://www.macbartender.com/Bartender4/support/
+macOS Sonoma 14.2 Release Notes - Apple Developer
+https://developer.apple.com/documentation/macos-release-notes/macos-14_2-release-notes
+macOS Sonoma 14.3 Release Notes - Apple Developer
+https://developer.apple.com/documentation/macos-release-notes/macos-14_3-release-notes
+macOS Sonoma 14.7.6 Released: Critical Security Update Now ...
+https://www.simplymac.com/macos/macos-sonoma-14-7-6-released-critical-security-update-now-available
+macOS Sonoma 14.4 Release Notes - Apple Developer
+https://developer.apple.com/documentation/macos-release-notes/macos-14_4-release-notes
+125
+131
+137
+138
+139
+126
+128
+129
+130
+132
+133
+134
+135
+141
+144
+19

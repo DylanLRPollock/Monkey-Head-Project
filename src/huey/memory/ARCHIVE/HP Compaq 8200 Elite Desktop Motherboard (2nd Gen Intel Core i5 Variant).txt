@@ -1,0 +1,1397 @@
+HP Compaq 8200 Elite Desktop Motherboard (2nd
+Gen Intel Core i5 Variant)
+Introduction: The HP Compaq 8200 Elite is a business-class desktop PC series (circa 2011) built around
+Intel’s 2nd Generation Core processors (Sandy Bridge). The motherboard in these systems is a proprietary
+design using the Intel Q67 Express chipset, optimized for corporate features like remote management and
+security
+. In the  8200 Elite Small Form Factor (SFF) and  Microtower models (the most common
+“desktop” variants), the motherboard provides an LGA1155 socket for 2nd-gen Core i5 CPUs (e.g. the Core
+i5-2400 quad-core 3.1 GHz processor)
+. It supports a range of Intel CPUs along with multiple memory
+slots, expansion slots, and integrated peripherals typical of a high-end business PC. Below is a summary of
+key specifications, followed by detailed sections on each aspect.
+Specifications at a Glance
+Feature
+Specification
+Form Factor
+Small Form Factor / Microtower board (proprietary design, approx. Micro-ATX size). 
+Convertible Minitower (CMT) models use a larger variant with more slots.
+Chipset
+Intel Q67 Express chipset (Desktop Q67 PCH) with vPro support
+. Business-class
+features include Intel Active Management Technology 7.0 (AMT v7) for remote
+management
+ and the Intel Stable Image Platform Program (SIPP) for long
+lifecycle stability
+.
+CPU Socket &
+Support
+LGA 1155 (Socket H2). Supports 2nd Generation Intel Core i7/i5/i3, Pentium, and
+Celeron processors (Sandy Bridge architecture). Quad-core Core i5 and i7 CPUs up to
+95 W TDP are supported (e.g. Core i5-2400 @ 3.10 GHz, 6MB cache, 4 cores)
+, as
+well as dual-core Core i3 and others. (No support for 1st-gen or 3rd-gen Core CPUs since
+the Q67 chipset is specific to 2nd-gen.)
+Memory
+(RAM)
+4× DIMM slots, Dual-channel DDR3 memory (2 channels, 2 DIMMs per channel)
+.
+Supports up to 32 GB total RAM using 4× 8 GB UDIMMs
+. DDR3 SDRAM at 1333
+MT/s or 1066 MT/s speeds (PC3-10600/8500)
+. Non-ECC unbuffered DIMMs only.
+Dual-channel operation requires matching DIMMs in paired slots.
+Storage
+Interfaces
+2× SATA 6 Gb/s ports (SATA III) and 4× SATA 3 Gb/s ports (SATA II) provided by the Q67
+PCH. In SFF/MT models, typically 4 internal SATA ports are present (2 × 6Gb/s + 2 ×
+3Gb/s), used for HDD/SSD and optical drive connections. Supports Intel Rapid Storage
+Technology RAID (RAID 0/1, and 5/10 on select models)
+. An optional eSATA port
+can be added via a bracket; a special 26-pin header on the board provides an eSATA/
+power combo for external SATA devices
+.
+1
+2
+1
+3
+2
+2
+4
+5
+6
+7
+8
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+Feature
+Specification
+Expansion
+Slots
+SFF/Microtower: 1× PCI Express 2.0 x16 slot for graphics (16 lanes, from CPU) and a
+second PCIe x16 (wired as x4) from the chipset
+, 1× PCI Express x1, and 1× legacy
+PCI 32-bit slot
+. (All slots in SFF are low-profile; in the Microtower they are full-height.)
+CMT (Tower) models feature a larger board with 2× PCIe x16, 1× PCIe x1, and 3× PCI
+slots (full-length)
+ for additional expansion.
+Graphics
+Support
+Integrated Intel HD Graphics (built into 2nd-gen Core CPUs). The i5/i7 CPUs include
+Intel HD 2000/3000 GPU – e.g. the Core i5-2400 uses HD Graphics 2000
+. The
+motherboard provides 1× VGA (DB-15) analog output and 1× DisplayPort 1.1a digital
+output on the rear panel
+. It supports dual independent displays simultaneously
+(one via VGA, one via DisplayPort)
+. The DisplayPort is multi-mode (DP++), allowing
+use of adapters for DVI, HDMI, or a second VGA output
+. A discrete GPU can be
+installed in the PCIe x16 slot for enhanced graphics; when a PCIe graphics card is
+added, the system can actually use both the discrete and integrated graphics concurrently
+to drive more than two monitors (on SFF/MT/CMT models)
+. (The Ultra-Slim USDT
+variant uses an MXM slot for laptop-style graphics but is not the focus here.)
+Audio
+Integrated HD audio, using a Realtek ALC261 codec
+. Supports 2-channel stereo
+output (all ports are stereo only). Rear panel has a Line-Out jack (lime green) and Line-
+In jack (light blue)
+; front panel has a headphone output and a microphone input
+(3.5mm jacks)
+. The system supports multi-streaming (audio can play through
+separate output jacks simultaneously) via the driver. (No built-in 5.1/7.1 surround output
+– only stereo, as is common for business desktops.)
+Networking
+Integrated Gigabit Ethernet LAN – Intel 82579LM Gigabit network interface (PHY
+onboard)
+. This NIC supports Intel AMT/vPro remote management features and
+PXE boot. The 8200 Elite also has an internal header for an optional Wi-Fi/Bluetooth
+NIC (a half-length PCIe minicard slot is present in some models for wireless).
+Rear I/O
+Ports
+USB: 6× USB 2.0 ports on back. Video: 1× VGA, 1× DisplayPort 1.1a. Audio: 1× Line-
+Out, 1× Line-In (or mic) 3.5mm jacks
+. Legacy: 1× serial port (RS-232 DB9), 2× PS/2
+ports (for keyboard & mouse)
+. LAN: 1× RJ-45 Gigabit Ethernet. (Optional: some
+configurations include a second serial port or a parallel port via internal headers and cable
+brackets
+.)
+Front I/O &
+Internal
+Front: 4× USB 2.0 ports, 1× headphone out (3.5mm), 1× mic input (3.5mm) on the
+front panel
+. Internal connectors: Front-panel header (power button/LEDs), audio
+header, two USB 2.0 front-panel headers (each supports 2 ports), one internal serial
+header (for a 2nd serial port), one parallel port header (for optional parallel/LPT). 
+Intrusion sensor connector for chassis open detect (HP Hood Sensor) is present on
+board
+. The board also has standard fan headers (CPU and chassis fan) with BIOS
+control.
+9
+10
+11
+2
+12
+13
+13
+14
+15
+15
+15
+1
+15
+16
+17
+15
+18
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+Feature
+Specification
+Power
+Supply &
+Connectors
+24-pin main ATX power connector (HP proprietary pinout on some models) and a 4-pin
+12V CPU power connector on the motherboard. SFF and Microtower units use an
+internal 240 W PSU (available in standard or 90% high-efficiency versions)
+. CMT
+towers have a larger 320 W PSU. The SFF motherboard additionally provides a 4-pin
+disk power connector (and a special 26-pin for eSATA power) to supply drives – HP’s
+design routes some drive power through the board. The board and BIOS support
+advanced power management (ACPI 2.0, S5 power savings, WOL, etc.), and meet
+ENERGY STAR requirements
+.
+Table: Key specifications of the HP Compaq 8200 Elite motherboard (SFF/Microtower variant unless otherwise
+noted).
+CPU Support and Performance (2nd Gen Core i5)
+The  8200  Elite’s  LGA1155  socket  supports  Intel  2nd  Generation  Core processors,  which  introduced
+significant performance gains with the 32nm “Sandy Bridge” architecture. In particular, this model often
+comes equipped with a Core i5-2400 CPU – a quad-core, 3.1 GHz processor with 6 MB L3 cache and a 95 W
+TDP
+. The Core i5-2400 (and other i5’s like the i5-2500) do not have Hyper-Threading, but their 4 true
+cores and high Turbo Boost frequencies make them quite capable for business and multitasking workloads
+of the era. The i5-2400 includes Intel’s vPro technology (when paired with the Q67 chipset) for enterprise
+manageability  and  is  part  of  Intel’s  Stable  Image  Platform  Program  (SIPP)  for  long-term  corporate
+deployment
+. 
+Beyond the i5 series, the motherboard also supports Core i7 models (e.g. the i7-2600, which is 4 cores/8
+threads at 3.4 GHz) as the high-end option, as well as budget Core i3 (dual-core with Hyper-Threading) and
+Pentium/Celeron  processors.  All  supported  CPUs  are  from  the  2nd-gen  Core  family  –  earlier  or  later
+generations  are  not  supported  due  to  BIOS/chipset  limitations.  The  Q67  chipset  and  VRM  design
+accommodate CPUs up to 95 W TDP, so the i7-2600 (also 95 W) is the fastest upgrade path within official
+support. These CPUs, combined with the Q67 chipset, deliver features like Intel VT-x virtualization support
+on all Core models, with VT-d and Trusted Execution Technology available on  vPro-capable chips (e.g.
+i5-2400, i7-2600) for enhanced virtualization and security. 
+In terms of performance, a Core i5-2400 or i5-2500 in this system provides strong mainstream computing
+power – easily handling office productivity, web browsing, and light content creation. The integrated
+memory controller and improved IPC of Sandy Bridge give it a significant boost over previous generation
+Core 2 systems. While these CPUs lack modern instruction sets like AVX2 or newer, they do support original
+AVX, SSE 4.1/4.2, and Quick Sync (for media encoding acceleration on the iGPU). For workloads that can
+utilize multiple cores, the i5’s 4 physical cores (or i7’s 8 threads) still hold up decently. However, being locked
+(non-“K” series), they cannot be overclocked – which is expected in a stable business PC. 
+Thermally, the 95 W processors do produce significant heat, but the OEM cooling solution is designed to
+handle it (more on cooling below). It’s worth noting that if upgrading to the top CPU (i7-2600), one should
+ensure the BIOS is updated to recognize it and that the chassis airflow is unobstructed, as that CPU will run
+the system at its upper thermal limit under full load.
+19
+20
+2
+2
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+Intel Q67 Chipset Features
+The motherboard is based on the Intel Q67 Express chipset, which is part of Intel’s 6-series “Cougar Point”
+chipset family, targeted at business desktops. The Q67 Platform Controller Hub (PCH) provides a wide range
+of functionality and I/O controllers on the board
+:
+PCI Express 2.0: Q67 has 8 PCIe 2.0 lanes from the PCH. On this board, these lanes service the
+additional PCIe slots (such as the x4 wired slot and x1 slot) and onboard controllers. The primary x16
+slot for graphics is fed by the CPU’s PCIe controller (16 lanes) while the PCH can provide other
+expansion connectivity. 
+Legacy PCI: Uniquely, Q67 still includes a PCI 2.3 interface
+. The 8200 Elite board takes
+advantage of this by offering one (or more) conventional PCI slots, allowing use of older expansion
+cards (important for some corporate users with legacy add-in cards). 
+SATA Controllers: The Q67 PCH has a built-in SATA controller with 6 SATA ports total – specifically 2
+ports at 6 Gb/s (SATA 3.0) and 4 ports at 3 Gb/s (SATA 2.0)
+. The board can configure SATA ports
+in AHCI or RAID modes. Intel Rapid Storage Technology on Q67 supports RAID 0, 1, 5, 10 when
+enough drives are present. (SFF and MT models physically accommodate 2–3 drives, allowing RAID
+0/1; the larger CMT can house more drives for RAID 5/10). Note: Early versions of the 6-series
+chipset had a known silicon bug affecting the 3 Gb/s SATA ports (ports 2–5) – a transistor could
+degrade over time, impacting those ports
+. HP’s production units were shipped with the
+corrected chipset (B3 stepping), so this issue was resolved in the retail 8200 Elite models. 
+USB Interfaces: The chipset integrates USB 2.0 controllers for up to 14 USB 2.0 ports
+. In the
+8200 Elite’s configuration, 10 USB ports are used (6 rear, 4 front). USB 3.0 was not native to this
+generation – the board does not have USB 3.0 ports built-in, but HP offered an optional PCIe x1 add-
+in card for USB 3.0 expansion
+. 
+Networking: Q67 includes an integrated Gigabit Ethernet MAC. The 8200 Elite pairs this with an
+Intel 82579LM PHY, a common GbE solution in business PCs, enabling features like VLAN, PXE boot,
+and AMT-managed out-of-band networking. 
+Audio: The chipset’s High Definition Audio interface is used in conjunction with a Realtek ALC261
+codec chip on the board
+, providing the system’s audio functionality (HD stereo sound). 
+Manageability & AMT: One of the hallmark features of Q67 is support for Intel vPro technology
+when used with a vPro-capable CPU. This includes Intel Active Management Technology (AMT)
+version 7.0. AMT 7 allows for powerful remote management capabilities: an IT admin can remotely
+power on/off the machine, access BIOS settings, get hardware inventory info, redirect boot devices,
+and even use KVM remote control (out-of-band) as if they were in front of the system
+. These
+functions work even if the OS is down, thanks to a Management Engine (ME) co-processor
+embedded in the chipset. (HP systems ship with AMT and ME enabled; AMT can be configured via
+the BIOS “MEBx” menu.) Q67’s AMT 7.0 also supports features like remote alerting, agent presence
+checking, and PC alarm clock & scheduled maintenance
+, which are valuable in enterprise
+environments. 
+Security Features: The Q67 chipset, in conjunction with the BIOS, provides business-class security
+options. Notably, the 8200 Elite includes an onboard TPM 1.2 (Trusted Platform Module) chip for
+secure cryptographic operations
+. The BIOS allows enabling/disabling the TPM (it’s often enabled
+by default unless restricted by law). The chipset also supports Intel Trusted Execution Technology
+(TXT) with compatible CPUs, and the BIOS offers features like DriveLock (HDD password), USB port
+control, serial/parallel port disable, and SATA port disable for data security
+. There is also
+support for Computrace (LoJack) persistence module in BIOS for asset tracking. Physical security is
+21
+• 
+• 
+21
+• 
+22
+23
+24
+• 
+25
+26
+• 
+• 
+27
+• 
+3
+28
+3
+28
+• 
+29
+30
+18
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+addressed too: the board has a header for an intrusion sensor (and HP offered an optional 
+Solenoid Hood Lock that can lock the chassis electronically)
+. 
+In summary, the Q67 chipset equips the 8200 Elite motherboard with a robust set of I/O and management
+features tailored for business use. It balances modern high-speed interfaces (PCIe 2.0, SATA 6G) with legacy
+support (PCI, PS/2, etc.) for maximum flexibility. Stable, long-term platform support is a key theme – Q67
+along with Intel’s SIPP meant HP could ensure image and driver stability for enterprise customers over the
+model’s lifecycle. 
+Memory (RAM) Compatibility
+The 8200 Elite’s memory subsystem is reliant on the CPU’s integrated memory controller (IMC) and is
+designed for dual-channel DDR3 SDRAM. Key points about RAM support:
+Slots and Capacity: There are  four DIMM slots on the SFF/MT/CMT motherboards, supporting a
+maximum of  32 GB of RAM (when 8 GB modules are used in all four slots)
+. Originally, HP
+specified 16 GB max (with 4 GB DIMMs) since 8 GB DIMMs were rare at launch, but 32 GB has been
+proven to work and is documented in later specs
+. Each channel consists of two slots, so to
+maximize performance you populate 2 or 4 sticks (for dual-channel operation). It’s recommended to
+install memory in matched pairs. (Slot 1, which is colored black, should always be populated first as
+per HP guidelines
+.) 
+Memory Type: Supports  DDR3 unbuffered, non-ECC DIMMs (standard desktop memory). ECC
+memory is not supported – this is a business desktop, not a workstation, so it uses cheaper non-
+parity memory. 
+Speeds: The IMC supports DDR3 speeds of 1066 MT/s (PC3-8500) and 1333 MT/s (PC3-10600)
+. If
+mixed speeds are installed, it will run all memory at the lowest common speed. There is no support
+for DDR3-1600 in the 2nd-gen Core IMC (it will downclock higher-rated DIMMs to 1333). Running in
+dual-channel mode (with matched DIMMs) doubles the theoretical bandwidth – up to about 21 GB/s
+at 1333 MT/s
+. In practice this improves throughput for memory-intensive tasks. 
+Voltage: Standard 1.5V DDR3 DIMMs are supported.  Ultra-low-voltage (1.25V) DIMMs are not
+supported by this platform
+, so using those could cause boot issues (HP notes to avoid “DDR3U”
+modules). Most common DDR3 sticks are 1.5V, so this is usually not a concern. 
+Dual-Channel Organization: The board supports both dual-channel and single-channel modes. For
+optimal performance, memory should be added in identical pairs. The architecture has two 64-bit
+memory channels, each channel handling two DIMMs
+. If only one DIMM is installed, it will run in
+single-channel mode at reduced bandwidth. With two or four DIMMs, it runs dual-channel (128-bit
+data path). HP notes maximum bandwidth is achieved with dual-channel at 1333 MT/s (~21 GB/s)
+. 
+Population Rules: The DIMM slots are typically color-coded (for example, slot 1 & 3 might be black,
+2 & 4 white). HP’s guidance is to populate the first slot of each channel (slot 1 and 2) before
+populating the second slots (3 and 4)
+. This ensures dual-channel mode. It’s possible to use an
+unbalanced configuration (e.g. 3 modules), but not recommended as it will operate in a flex mode
+18
+• 
+5
+5
+31
+• 
+• 
+6
+32
+• 
+33
+• 
+4
+32
+• 
+34
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+with some performance penalty. Also, if more than 4 GB is installed, a 64-bit OS is required to utilize
+all memory (32-bit Windows will only address ~3.2 GB)
+. 
+Upgradability: The system often came with 2 or 4 GB modules standard (4 GB or 8 GB total).
+Upgrading is straightforward thanks to the tool-less access – just snap in compatible DDR3 DIMMs.
+The chipset supports mixing DIMM sizes and even different speeds (it will auto-clock to the lowest
+speed), though for best results use identical modules. 
+Memory performance on the 8200 Elite is solid for its generation. DDR3-1333 in dual-channel was the
+mainstream standard and provides ample bandwidth for the Core i5/i7 CPUs. If maximum capacity (32 GB)
+is installed, it enables heavy multitasking or memory-intensive applications (though such amounts were
+rarely needed in typical office use at the time). It’s also worth noting that the integrated graphics (if used)
+will appropriate a portion of system RAM as video memory – this is dynamic via Intel’s DVMT. For example,
+with 4 GB installed, the IGD might use up to 256 MB for graphics; with larger RAM, it can allocate more. The
+BIOS/UEFI allows setting a fixed amount for the initial graphics memory if needed
+, but generally it’s
+left on default (DVMT auto-allocation). This is only a consideration if one is pushing the limits of RAM usage
+while using the iGPU for something like HD video. In modern upgrades, 8 or 16 GB RAM is a sweet spot for
+running Windows 10 on this machine, while 32 GB is mostly for specialized cases or future-proofing.
+Graphics and Display Support
+The HP 8200 Elite’s graphics capabilities come in two forms: the integrated graphics built into the CPU, and
+optional discrete graphics via the PCIe x16 slot. Here’s a breakdown:
+Integrated Graphics (Intel HD): All 2nd-gen Core CPUs include an on-die GPU. For the Core i5-2400
+and most others used in this system, it’s Intel HD Graphics 2000, which has 12 execution units and
+supports DirectX 10.1 and OpenGL 3.0
+. Some CPU models (like certain Core i3 or the i5-2500K,
+though the K series wouldn’t be in a business PC) have HD 3000 with . In practical terms, the HD
+2000 can easily handle typical business usage: driving multiple monitors, full HD video playback (it
+has hardware acceleration for MPEG2, H.264, VC-1 decode), and lightweight 3D graphics. It’s not
+intended for heavy gaming or CAD, but it does support Windows Aero, 1080p video, and basic 3D
+apps.  The  QuickSync feature  in  these  GPUs  also  allows  fast  video  transcoding  for  certain
+applications. 
+Displays and Outputs: The motherboard provides two video outputs: 
+VGA (analog) – standard DE-15 connector at the rear. Supports legacy analog monitors and
+projectors. It can do up to 2048×1536 at 75 Hz or higher resolutions at lower refresh (and of course
+common 1080p, 1280×1024, etc. at 60/75 Hz). 
+DisplayPort 1.1a (digital) – located on the rear I/O, this provides a pure digital signal for modern
+monitors. It supports high resolutions (up to 2560×1600) and carries audio as well. The DP on this
+board is multimode
+, meaning with the appropriate passive adapter it can output DVI or HDMI.
+HP offers adapters (DisplayPort-to-DVI, DP-to-HDMI, DP-to-VGA) for this purpose
+. Notably, DP 1.1
+on this generation supports HDCP for protected content. 
+The integrated graphics supports dual independent displays – one analog + one digital at the same time
+. For instance, you can have a VGA monitor and a DisplayPort monitor both active, with extended
+35
+36
+• 
+37
+38
+• 
+39
+• 
+• 
+• 
+40
+13
+13
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+desktop or clone as configured in OS. If you need dual digital displays, one can use a DP-to-DVI adapter plus
+the VGA (with a DP-to-VGA active adapter if two VGA needed, etc.). This flexibility covers most multi-monitor
+office setups (two monitors). 
+Discrete Graphics Support: For users needing more graphics performance or more display outputs,
+the motherboard’s PCIe x16 slot (Gen 2.0) allows installing a discrete GPU. In SFF models, this
+requires a low-profile graphics card. Typical GPU upgrades for this platform might include NVIDIA
+NVS series cards (for multiple business displays), or entry/mid-level GPUs like a GeForce GT 1030 low-
+profile (for video acceleration and light gaming) – mindful that the SFF’s 240 W PSU and limited
+airflow impose limits on how powerful a card can be. The larger CMT tower can accommodate full-
+size cards and has more headroom for power (320 W PSU), thus can take mid-range cards of that era
+(e.g. GeForce GT/GTX or AMD Radeon HD cards, as long as they don’t exceed power/thermal limits). 
+When a discrete card is installed, it typically becomes the primary display output.  However, HP’s BIOS
+supports simultaneous use of integrated graphics alongside a discrete card
+ (in technical terms, this
+is sometimes called “dual graphics active” or hybrid multi-monitor). This means you could drive more than
+two monitors by using, say, a dual-out DMS-59 discrete card and still output via the onboard VGA – giving
+three or more displays in total. HP notes that SFF/MT/CT models support this, whereas the Ultra-slim (with
+MXM graphics) does not expand outputs
+. This is a boon for traders, developers, or anyone needing 3-4
+monitor setups without investing in very high-end GPUs. 
+Integrated Graphics Performance: Intel HD 2000 is modest by modern standards. It shares part of
+system RAM (dynamically up to around 1.7 GB max if you had, say, 8 GB installed, though typically
+far less is actually used)
+. For office apps, UI acceleration, and video decode, it’s sufficient. It
+can even run older or lightweight games at low settings. But it will struggle with newer 3D games or
+GPU  compute  tasks.  The  HD  2000  supports  DX10.1 and  thus  can  run  Windows  10’s  desktop
+smoothly, but it does not support DX12 or feature levels required by some modern software. Still, for
+multi-monitor office work, its output capabilities and video acceleration were a strong point. The fact
+that it’s integrated also means lower power draw when no heavy GPU load is present (the iGPU will
+clock down when idle). 
+Multi-Display Notes: In BIOS, you can configure the primary video device and whether integrated is
+enabled if a GPU is present. By default, if a discrete GPU is added, the system may disable the Intel
+HD or set it as secondary – a setting called “integrated video” can be set to “Enable” to keep it active.
+Within Windows, the Intel and whatever discrete GPU driver can coexist to offer extended desktops.
+This arrangement was fully supported in the 8200 Elite, aligning with business needs (e.g., driving
+3-4 monitors for financial traders or CAD users using multiple smaller GPUs). 
+In summary, graphics on the 8200 Elite are flexible: Out of the box it supports dual monitors via the on-
+CPU Intel HD Graphics (which is ample for 2D and media workloads), and it provides an easy path to
+upgrade for more graphics horsepower or additional displays through its PCIe x16 slot. The presence of
+DisplayPort on such systems was forward-looking, as it supports higher resolutions and digital displays
+common in modern offices. If using the integrated GPU, one just needs to ensure Intel’s graphics driver is
+installed for full capabilities (for Windows 7/8, provided by HP/Intel; for Windows 10, Microsoft’s basic driver
+may install since Intel didn’t release a W10 driver for HD2000, but the Windows 8.1 driver typically works
+fine). If using a discrete GPU, drivers from the GPU vendor would be used instead. 
+• 
+14
+14
+• 
+37
+41
+• 
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+Expansion Slots and Upgrade Options
+Despite being a business desktop with a compact design, the 8200 Elite offers a decent array of expansion
+and upgrade possibilities: 
+PCI Express Expansion: The board has two physical PCIe x16 slots. The primary x16 slot (labelled
+for graphics) is a full 16-lane slot wired directly to the CPU, delivering maximum bandwidth for a
+graphics card or other high-performance adapter. The second x16 slot is wired with 4 lanes to the
+chipset (PCIe 2.0 x4 signal)
+. In the Small Form Factor chassis, both of these are low-profile slots;
+in the larger tower, they accept full-height cards. The x4 slot can be used for additional expansion
+like a storage controller, network card, or even a secondary graphics card (though at x4 bandwidth).
+For example, one might install an SSD PCIe adapter or USB 3.0 expansion card here. Note that the
+Q67 chipset’s 8 PCIe lanes are shared among onboard devices and this slot, so very high-bandwidth
+add-ins may saturate if used concurrently with heavy onboard traffic, but in practice this is rarely an
+issue. 
+Legacy PCI Slot: Uncommonly for newer systems, HP included a standard 32-bit PCI slot on these
+motherboards
+ (and two additional PCI slots on the CMT variant
+). This is a nod to enterprise
+customers who may have specialized PCI cards (such as old interface cards, sound cards, etc.) that
+they needed to carry forward. It runs off a PCI bus bridged from the PCH’s PCI interface. If one has,
+say, an older PCI sound card or a proprietary card for industrial use, it can be installed here. The
+presence of 5V and 3.3V signaling support means a wide range of PCI 2.3-compliant cards are
+supported. In the SFF, the PCI slot is low-profile, limiting the card’s height. 
+Memory Upgrades: As discussed, the RAM is upgradable to 32 GB. Going from the typical 4 GB or 8
+GB that many units shipped with, up to 16 or 32 GB, can extend the life of the machine especially for
+running newer OSes or VMs. DDR3 DIMMs are relatively inexpensive, and installation is tool-free. The
+Maintenance Guide details the memory configurations – essentially you just open the chassis latch,
+swing out any drive cages obstructing, and press in the new DIMMs. The system will auto-detect new
+memory; if an unsupported configuration is used (like an ECC DIMM), it will give a POST error.
+Upgrading memory is one of the first recommendations to improve performance if the unit is still on
+4 or 8 GB and running modern software.
+Storage Upgrades: The motherboard’s SATA ports allow adding SSDs or larger HDDs. Installing an
+SSD as the boot drive (typically connected to one of the 6 Gb/s SATA ports for optimal speed) is a
+highly effective upgrade for this system’s responsiveness. The SFF chassis has one internal 3.5″ bay
+(often occupied by the HDD) and one external 5.25″ bay (usually with a DVD drive). Some creative
+mounting can fit a 2.5″ SSD alongside the 3.5″ HDD (using an adapter bracket or the floppy drive bay
+if present in some models). The Microtower/CMT can fit more drives (e.g., CMT supports two 3.5″
+hard drives + optical). The board supports RAID, so one could configure two drives in RAID1 for data
+redundancy or RAID0 for speed (note: enabling RAID mode in BIOS will use Intel RST and requires
+the appropriate driver). Also, as noted, there is a special eSATA/power header on the board – with
+the corresponding cable and rear bracket, you can have an external SATA port to plug in an external
+drive or backup device and it will be powered from the system (the custom 26-pin connector
+provides both SATA signals and power to the eSATA port bracket)
+. HP sold an accessory kit for
+this, or third-party cables are available. This is useful for hot-plugging an eSATA external drive or
+docking station. 
+• 
+9
+• 
+10
+11
+• 
+• 
+42
+43
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+Optical and Media Drives: The system typically includes a DVD+/-RW drive in the 5.25″ bay (SFF/MT).
+This can be upgraded to a Blu-ray reader or simply replaced if needed. There is also an internal USB
+header that can be used for a media card reader; HP offered a 22-in-1 media card reader in some
+configurations (fitting into a 3.5″ bay, which in SFF might replace the floppy-sized bay if present). The
+motherboard has the USB header for this. If not using HP’s module, generic USB card readers can be
+connected to the front USB header. 
+Add-in Cards: In addition to graphics cards, users have added things like: an external USB 3.0 card
+(as HP listed, a PCIe x1 SuperSpeed USB 3.0 adapter
+); additional NICs (for multiple network
+connections or specialized networking); sound cards (though limited by the low-profile in SFF); or
+storage controllers (e.g., an ESATA/SAS card). The available slots (x1, x4, PCI) cover most needs. The
+Q67’s  PCIe  2.0  lanes  ensure  these  cards  get  reasonable  bandwidth  (500  MB/s  per  lane).  One
+limitation: the SFF power supply at 240 W means you should be cautious adding any card that draws
+significant power (the PCIe x16 slot can provide 75 W, but something like a high-end GPU that needs
+a 6-pin aux power is out of the question in SFF; in the tower, the PSU also lacks dedicated 6-pin
+connectors unless using adapters, and the wattage is only 320 W). So upgrades should stick to
+relatively low-power cards. A GPU up to about 50~75 W TDP (that doesn’t require extra PCIe power) is
+usually fine in SFF. 
+Fan Headers and Cooling Upgrades: The board has a CPU fan header and at least one chassis fan
+header. In SFF, the CPU cooler is actively blowing out the back (and there’s usually not a separate
+case fan – the CPU fan doubles as case exhaust). In the tower, there is a rear case fan in addition to
+the CPU fan. If those fans fail or are noisy, replacements should be done with HP-compatible fans
+(standard PWM 4-wire fans, but HP BIOS will expect a tach signal and specific wiring – using a non-
+HP fan can sometimes trigger fan warnings or run full speed). The BIOS does allow fan speed control
+but not much user tuning (it’s automatic). When upgrading components, ensure these fans remain
+connected and functional to cool any new heat sources like add-in GPUs or extra drives. 
+Front  Panel  and  PSU  Upgrades: It’s  worth  noting  that  HP  uses  a  proprietary  front  panel
+connector (a single multi-pin block rather than individual headers for power switch, LEDs, etc.). This
+makes moving the board to a non-HP case tricky unless one maps out the pins. Additionally, the PSU
+wiring, while a 24-pin connector physically, may route different voltages for the custom drive power
+circuit on the board. For example, HP’s design provides two 4-pin auxiliary power plugs on the board
+for SATA devices, which are fed from the main connector. If one were to replace the PSU with a
+standard ATX unit, an adapter or re-wiring might be needed to ensure those on-board connectors
+get the correct power. Some users have done PSU swaps (especially in the tower model to support a
+better GPU) – it’s possible but requires technical know-how or an adapter cable because the pinout
+isn’t 100% ATX-standard according to community reports
+. Generally, the existing PSU is
+sufficient for the upgrades that the chassis can physically handle (HP sized it appropriately). 
+In summary, the 8200 Elite motherboard provides a fair degree of extensibility. You can upgrade the CPU
+(within the 2nd-gen family), max out the RAM to 32 GB, add faster storage (SSD), and install expansion
+cards for improved graphics, connectivity, or I/O. Many of these upgrades can extend the useful life of the
+PC well beyond its original specs. Importantly, HP made maintenance easy: the chassis features tool-less
+entry  and  component  removal (green  touch  points  and  latches)
+,  so  swapping  in  upgrades  or
+replacements (like adding memory, changing a drive or card) can be done quickly without special tools.
+• 
+• 
+26
+• 
+• 
+44
+45
+46
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+Always check the HP documentation for the proper procedure (for instance, there’s a release latch for the
+expansion slot cover, etc., rather than just unscrewing in SFF), but overall it’s service-friendly. 
+BIOS/UEFI Features and Firmware
+The HP Compaq 8200 Elite uses a UEFI BIOS firmware developed by HP, sometimes referred to by its family
+code (for these models, the BIOS family is J01). It is fundamentally still a classic text-mode BIOS interface,
+but built on a UEFI 2.1 specification under the hood
+. This hybrid approach provides some UEFI features
+(like GPT boot support and pre-boot environments) while maintaining the familiar BIOS setup menus for
+configuration.
+Key BIOS Features and Capabilities:
+UEFI and Legacy Support: The firmware supports both legacy BIOS boot (CSM) and UEFI booting. In
+fact, there is an “EFI Boot Sources” option in BIOS where you can enable or disable UEFI boot devices.
+For example, when installing certain OS or using bootable USBs, users may toggle EFI Boot on/off
+depending on needs
+. This BIOS can boot from GPT-partitioned drives and supports large drives,
+thanks to UEFI 2.1 compliance
+. However, it does not have a fancy graphical UI; navigation is via
+keyboard in a blue/gray text menu interface.
+Security and Access Control: HP’s BIOS offers comprehensive security settings. You can set both a
+power-on password and an administrator (setup) password
+. The admin password locks down
+the BIOS settings – if set, one cannot change BIOS options or update BIOS without providing it.
+There’s also support for DriveLock passwords on HDD/SSD (this ties a password to the drive itself –
+rendering it unreadable if moved to another system without the password)
+. Additionally, the
+BIOS has settings to enable/disable hardware ports: USB ports, SATA ports, serial/parallel, audio,
+network can all be turned off individually to meet security policies
+. For example, USB ports
+can be disabled to prevent unauthorized flash drive use. The TPM can be enabled and activated via
+BIOS as well for use with encryption (and can be disabled for countries where its use is restricted)
+. An intriguing option called “Stringent Security” can be enabled – when on, even if someone
+clears the CMOS jumper, it won’t reset certain security settings without the password
+ (this is to
+thwart intrusion attempts). 
+Manageability and Remote BIOS Support: Because of vPro/AMT, certain BIOS-level functionalities
+can  be  accessed  remotely  by  IT  administrators.  The  BIOS  is  also  designed  to  be  managed  in
+enterprise: HP provides  BIOS Configuration Utility (BCU) and  Replicated Setup capability. This
+means an admin can configure one system’s BIOS and export the settings, then apply them to many
+machines, either via scripts or HP Client Manager. The BIOS supports Wake on LAN, scheduled boot
+times, and AC power loss behavior control (e.g., whether the PC stays off or turns on after power is
+restored). 
+Updates and Recovery: The HP BIOS supports multiple methods of updating. HP releases BIOS
+updates as SoftPaq executables (which can update from Windows via HPQFlash) and also provides a
+BIOS flash utility that can run at boot (by pressing F10 with a special BIOS update USB inserted, or
+via the “Flash System ROM” option in BIOS). Notably, the BIOS is digitally signed and secure – HP
+uses RSA signing on their BIOS updates, and the BIOS enforces that only properly signed firmware is
+accepted
+. This is a security measure to prevent tampering (HP started this with business
+47
+• 
+48
+47
+• 
+49
+30
+30
+50
+51
+52
+• 
+• 
+53
+49
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+models to ensure BIOS integrity). The BIOS has a recovery mechanism as well – if a flash fails or the
+BIOS becomes corrupt, there is a boot block that can attempt to recover from a FAT32 USB drive with
+a BIOS file. In practice, updating the BIOS is recommended if you plan to run a newer OS or need
+fixes; HP delivered many updates over the years. As of 2019, the latest BIOS for the 8200 Elite was
+v02.33 Rev.A (released May 1, 2019) which included updated CPU microcode and security fixes
+.
+This longevity in BIOS support is quite impressive – it means HP addressed issues like Spectre/
+Meltdown mitigations on this 2011 platform via firmware updates.
+BIOS Interface and Setup Options: To enter setup, you press F10 at boot. The BIOS is menu-driven.
+Key menus include  File,  Storage,  Security,  Power, and  Advanced. Under  Storage, you can configure
+SATA  controller  mode  (RAID/AHCI/IDE),  view  connected  drives,  and  control  boot  order.  Under
+Security, you manage passwords, TPM, chassis intrusion detection (there’s an option to require
+pressing F1 on boot if the cover was removed, alerting the user), port disables, etc. Power menu has
+settings for ACPI S3/S5, thermal fan control (there’s a setting for fan idle mode, and the SFF typically
+runs the fan slow unless needed), and hardware power options. Advanced covers devices (enable/
+disable onboard devices like NIC, audio), BIOS critical error action, and option ROM controls (for
+video, network boot, etc.). HP’s manuals provide the full rundown of each setting. One example of an
+advanced setting: you can enable PCIe ASPMs or not, which can affect power savings on add-in cards.
+Another is the ability to manage how the integrated graphics memory is allocated or set the primary
+video device on boot.
+Diagnostics and Monitoring: The BIOS and accompanying HP firmware offer built-in diagnostics.
+By pressing F2 at startup, one can access HP PC Hardware Diagnostics, which can test memory,
+HDD, etc., outside of the OS. (On newer models this is in UEFI, on the 8200 it might require the
+diagnostics to be installed on the HDD or a USB – the QuickSpecs mentions “HP Vision Diagnostics”
+in the software load
+.) Regardless, the BIOS will also display basic hardware info (CPU type, RAM
+size, BIOS version, asset tag) and allows setting an asset tag or ownership tag for inventory. If
+hardware issues are detected at POST, the BIOS will emit beep codes and/or on-screen messages.
+For example, 5 beeps on this system indicates a memory error, 6 beeps a video error, etc., as
+documented in the Service Guide
+. There’s also a BIOS health log that might record events like
+thermal shutdowns.
+Power Management: The 8200’s BIOS is ACPI 4.0 compliant and supports features like wake timers,
+PME wake (allowing devices to wake the PC), and EuP Lot6 compliance (the ability to drop power
+draw in S5 to under 1W when “S5 Maximum Power Savings” is enabled)
+. In enterprise setups,
+these features help reduce power consumption. Wake-on-LAN (WOL) can be enabled so that a magic
+packet can turn the PC on from standby or even off (S5 with WOL is configurable). The chipset’s AMT
+also allows remote “power on”, which works in conjunction with WOL.
+In essence, the BIOS/UEFI firmware of the 8200 Elite is very feature-rich for a system of that time. It gives IT
+departments fine control over the machine’s operation and security. From a user perspective, aside from
+adjusting boot order or enabling virtualization (VT-d/VT-x can be toggled in BIOS if needed for virtual
+machines), there’s usually little need to tinker – the default settings are sane. It is recommended to keep the
+BIOS  updated  (HP  made  updates  available  on  their  support  site  up  to  2019,  addressing  security
+vulnerabilities etc.
+). Also, when replacing hardware (like upgrading CPU or adding RAM), check BIOS
+release notes: e.g., early BIOS versions might not fully support an i7-2600 without an update. 
+54
+• 
+• 
+55
+56
+• 
+57
+54
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+Accessing BIOS: During boot, the prompt at the bottom will show F10 = Setup, F9 = Boot Menu, F12 =
+Network Boot,  F11 = Recovery (if enabled), etc. HP also often includes an  F11 factory recovery (if the
+original HP image is on the HDD). Pressing ESC can bring up a startup menu from which these options can
+be chosen as well. Once in BIOS setup (F10), the UI is text-based and one navigates with arrow keys, ENTER,
+and ESC to back out. The bottom of the screen usually lists keys for help. 
+Notable BIOS features for advanced users: There is an option to disable AMT/ME (for those concerned
+with security, you can provision or even disable the Management Engine through MEBx). There is also
+support for  UEFI Secure Boot on this model  not present – Secure Boot became standard in the next
+generation (HP 8300 with Windows 8). For the 8200, it predates that, so while it has UEFI, it doesn’t enforce
+Secure Boot (which is fine for Windows 7 which was the original OS). The BIOS does support booting from
+>2TB GPT disks in UEFI mode (useful if adding a large storage drive or booting to something like Windows
+10 x64 on a GPT SSD). If both Legacy and UEFI boot are enabled, the boot menu (F9) will list devices under
+two sections (UEFI sources and Legacy sources). That can confuse some at first – for example a UEFI-
+enabled USB stick might show up in one section; if it fails, one might disable EFI Boot to force legacy boot
+for certain tools. The Qubes forum excerpt even mentions adjusting those settings for USB boot reliability
+. So having the flexibility of dual-mode BIOS is nice, though it adds a bit of complexity. 
+In  summary,  the  8200  Elite’s  firmware  is  a  robust,  business-oriented  BIOS  that  balances  new  UEFI
+capabilities with tried-and-true HP BIOS features. It provides strong security, remote management hooks,
+and has been kept up-to-date by HP to address issues over time. Users should leverage the BIOS security
+features if deploying in sensitive environments (e.g., set passwords, disable unused ports) and ensure any
+changes (like enabling RAID or AMT) are done with understanding as they can affect how the OS interacts
+with the hardware. The documentation (HP’s BIOS user guide and technical manual) can walk through each
+option available in BIOS
+.
+Thermal Design and Airflow Considerations
+Thermal management in the HP 8200 Elite is critical given the sometimes small form factor of the case and
+the relatively powerful components (95 W CPU, etc.). HP engineered the cooling with a focus on maintaining
+reliability while minimizing noise, following their business desktop standards. Here’s how the thermal
+design works and what to consider:
+CPU Cooling: In the SFF and Microtower units, the CPU is cooled by an actively ducted heatsink.
+Specifically, the SFF uses a low-profile heatsink with a blower-style fan that pulls air through the fins
+and exhausts it out the rear of the chassis. There’s a plastic shroud directing air over the heatsink
+and straight out the back. This design effectively uses the CPU fan to also expel warm air from the
+case. The Microtower (and CMT) use a more upright heatsink with a 92mm (approx) fan attached,
+blowing toward the rear. In all cases, the CPU fan is 4-pin PWM controlled, and the BIOS dynamically
+adjusts its speed based on temperature sensors (CPU diode and system board temp sensors). At idle
+or low loads, the system is very quiet – often the fan runs at a low RPM (~30% duty). Under sustained
+heavy CPU load, the fan will ramp up to keep the CPU in safe temperatures. HP’s BIOS aims to strike
+a balance between acoustics and cooling – these units were rated around low 30s dB at idle
+ and
+even under load typically stayed under 40 dB, which is fine for office environments. The BIOS
+“Thermal” settings ensure that component temperatures remain within spec for reliability
+, even
+if it means increasing fan noise when needed. 
+48
+58
+59
+• 
+60
+61
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+Chassis Airflow (SFF): The SFF chassis is compact, so efficient airflow is vital. Cool air is drawn in
+primarily through the front and side vents. The front bezel has ventilation slots (often around where
+the drive bays are) and there’s typically a side panel perforation as well. The single blower fan on the
+CPU creates a negative pressure that pulls air in through those vents across the motherboard and
+drives, then out the rear. The power supply in SFF also has a small fan (or it’s integrated in the same
+airflow path depending on exact design – in some SFF the PSU is flat with a top vent). In the 8200
+SFF, the PSU has its own 92mm cooling fan as well
+, which helps exhaust hot air from the PSU and
+incidentally from the case. The coordination of these ensures that hot spots (like the chipset or
+VRMs) get some air movement. The chipset usually has only a modest heatsink (no fan), relying on
+case airflow. There is a sensor on the motherboard for “System temperature” that the BIOS monitors
+and uses to adjust fan speed in addition to CPU temp
+. Users should keep the vents clear of dust
+– after years of use, dust buildup can impede airflow and cooling performance. Periodic cleaning
+(e.g., compressed air through the heatsink fins and PSU) is recommended as part of maintenance. 
+Chassis Airflow (Microtower/CMT): The microtower and convertible minitower have more internal
+volume. The CMT in particular may have an additional 120mm front case fan mount (some came
+with an intake fan in front of the HDD bays). The standard configuration mostly relies on the CPU fan
+and the PSU fan for airflow. The PSU in the towers is usually top-mounted with a 92mm or 120mm
+fan that exhausts out the back. The CPU fan pushes air out the back. This creates front-to-back
+airflow over the expansion cards and drives. If the CMT is fully loaded with 2 HDDs and a high-power
+GPU, adding an intake fan (if not present) can improve cooling. HP’s design expects a typical config
+(one GPU, one or two drives) which the existing fans can handle. The VRM (voltage regulator) area
+on the board (near the CPU socket) is another heat source – HP often used solid-state capacitors and
+high-quality MOSFETs with a small heatspreaders if needed. In the 8200, the VRM is designed for up
+to 95W CPU; under extreme load, those components can get warm. The airflow from the CPU fan
+usually also flows over the VRM area, and the BIOS will increase fan speed if CPU power draw/heat is
+high, indirectly cooling the VRMs too. There haven’t been widespread reports of VRM overheating on
+these, indicating the design is sufficient when the system is clean and properly ventilated. 
+Acoustics: HP Elite desktops are known to be relatively quiet. At boot, the fan might briefly roar (HP’s
+BIOS does a fan self-test at full speed for a second) then settle. During normal use, you might not
+notice the fan at all in an office setting. If you hear the fan frequently at high speed, it may indicate
+either high ambient temperatures, a heavy workload, or something like dried thermal paste causing
+higher CPU temps. Reapplying quality thermal paste to the CPU heatsink after many years can help
+maintain  optimal  contact  and  cooling.  The  BIOS  also  has  an  option  to  run  fans  at  “always
+on” (minimal level) to ensure some airflow even at idle, which can be enabled for improved cooling at
+the  expense  of  a  slight  noise  increase  –  this  is  sometimes  done  in  thermally  challenging
+environments. 
+Thermal Sensors and Controls: The system monitors CPU core temperature (via CPU’s digital
+sensor)  and  an  ambient  board  sensor.  Some  models  also  monitor  inlet  air  temperature.  If
+temperatures  exceed  thresholds,  the  BIOS  will  increase  fan  speed  aggressively.  In  worst-case
+scenarios,  if  a  critical  temperature  is  reached,  the  system  will  shut  down  to  protect  itself.
+Additionally, SMART monitoring on HDDs can trigger warnings if a drive is running too hot (HP’s
+management agents could report it in Windows). The Q67 chipset’s Management Engine also has
+some thermal management capabilities (it can report temperature to central consoles via AMT). As
+long as the fans are functioning and vents are not blocked, the system should not overheat under
+• 
+62
+61
+• 
+• 
+• 
+13
+
+------------------------------------------------------------------------
+Page 14
+------------------------------------------------------------------------
+
+normal conditions. Ensure there’s a few inches of clearance around the case, especially the rear
+exhaust. SFF PCs are sometimes placed in tight cabinets – avoid that or provide ventilation for the
+cabinet. 
+OEM Case Design: The internal layout is carefully organized. Cables are routed to not impede air.
+The drive bays in SFF are situated such that the HDD is near the front, where it gets some intake
+airflow, and the CPU fan’s pull likely also draws some air over the drive. The small internal speaker (if
+present) and other components are tucked away. The case cover has a tight seal – when it’s removed,
+the directed airflow is disrupted, so don’t operate the system with the cover off for extended periods
+as it cools less efficiently. The HP case also has an intrusion switch (in many units) – when the cover is
+opened, this can be set to alert in BIOS and some management software. It’s not directly related to
+thermals, but it encourages keeping the cover on except when servicing.
+Known Thermal-related Issues: Generally, the 8200 Elite doesn’t suffer from chronic overheating if
+maintained. One thing to watch is the thermal sensor on the HDD: HP in some models includes a
+little thermal sensor cable attached to the hard drive to monitor its temp (visible in the Maintenance
+Guide). If that sensor is not put back in place after a drive replacement, the system might think the
+HDD is overheating or might not regulate fan as expected for HDD temp. Always reattach any
+sensors. Another aspect: some users have reported the fan running full speed if a non-HP fan is used
+or if certain BIOS settings get corrupted – clearing CMOS or updating BIOS often resolves such
+issues. The fan speed is mostly automatic, but in BIOS you can set a minimum fan idle speed (for
+instance, “Turbo Fan” mode can be enabled for maximum cooling). 
+Capacitor Aging and Cooling: By now, these systems are a decade+ old. They used largely solid
+capacitors in  VRM  areas  (which  age  well)  and  high-quality  electrolytics  elsewhere.  Even  so,
+prolonged heat can shorten component lifespan. Ensuring good airflow and perhaps proactively
+replacing the PSU (power supply) after many years could avert failures (the PSU capacitors bear the
+brunt of heat). The motherboard caps in the 8200 have not shown the plague issues that early-2000s
+boards did; HP’s choice of components was better by 2011. But a visual inspection is wise: if any
+capacitors on the board appear bulged or leaky, those would need replacement. There have been a
+few anecdotal reports of  capacitor failures in the VRM after 8-10 years (leading to no-power or
+instability) – usually only in systems that ran hot (poor ventilation or heavy load) for long periods. 
+In conclusion, the  thermal design is adequate for the supported CPUs and typical configurations.  HP’s
+BIOS actively manages fan speeds to keep temperatures in check
+, prioritizing component longevity.
+To maintain this: keep the heatsinks and vents clean, ensure fans and sensors are connected, and use the
+machine in a normal ambient environment (the spec’d operating range is typically 10°C to 35°C ambient). If
+the system is operated in a hotter climate or with upgrades (like a higher-TDP CPU or a discrete GPU),
+monitor temperatures (through BIOS or software like HWMonitor) initially to verify they remain safe. The
+8200 Elite’s chassis, while smaller than a generic ATX tower, is engineered for efficient cooling of its
+components with minimal noise – a hallmark of business desktops.
+• 
+• 
+• 
+61
+14
+
+------------------------------------------------------------------------
+Page 15
+------------------------------------------------------------------------
+
+Reliability, Known Issues, and Service Bulletins
+The HP 8200 Elite series has a reputation for solid reliability, but like any platform that’s been widely
+deployed, there are some known issues and points of failure to be aware of. Here we compile known
+problems, fixes, and service advisories relevant to the motherboard and system:
+Capacitor and VRM Reliability: Unlike the infamous capacitor problems of mid-2000s PCs, the 8200
+Elite mostly uses polymer (solid) capacitors in high-stress areas (CPU VRM, etc.), greatly reducing
+the likelihood of capacitor leakage or bulging. Consequently, widespread capacitor plague issues
+have  not been  reported  for  this  model.  That  said,  after  a  decade  of  operation,  electrolytic
+capacitors (present in less critical circuits, e.g. audio output filtering or power input) can degrade. In
+a few cases, individual boards have had VRM MOSFETs or caps fail, often precipitated by events like
+power surges or sustained high thermal stress. If a VRM failure occurs, symptoms might be the PC
+not powering on or shutting off under load. Such incidents are relatively rare – overall the board’s
+power delivery is well within spec for the supported 95 W CPUs. To ensure longevity, keep the area
+dust-free and consider reapplying thermal interface material on the CPU every several years. HP did
+not issue any specific bulletin about bad VRMs or caps on the 8200, so these are isolated cases
+usually resolved by board repair or replacement.
+Intel 6-Series Chipset SATA Issue: As alluded earlier, the Cougar Point SATA bug was a major Intel
+erratum where the original B2 stepping of 6-series chipsets could, over time, lead to degradation of
+the SATA 3 Gb/s ports (ports 2–5)
+. Intel recalled those chipsets in early 2011 and released B3
+stepping to fix it
+. HP, like other OEMs, ensured that shipping units to customers were updated. If
+your 8200 Elite was one of the very first off the line in 2011, it’s conceivable it might have had a B2
+board that was later serviced – but practically all production 8200 Elites in the field have the
+corrected chipset (and if not, HP would have replaced the motherboard under warranty back then).
+Therefore, this issue is more historical footnote than a present worry. If curious, one can check the
+chipset stepping via software (B3 stepping ID is typically revision 04h). For best practice, connect
+critical drives (especially SSDs) to the SATA 6 Gb/s ports (which were unaffected by the bug)
+ –
+they offer better performance and absolute safety from that old issue.
+BIOS Firmware Updates (Stability/Security): HP provided numerous BIOS updates for the 8200
+Elite over its supported life. Some notable fixes in those updates included: improved memory
+compatibility, better USB device support (certain USB keyboards for BIOS access), AMT firmware
+updates, and critical  security patches (mitigations for vulnerabilities like Spectre, Meltdown, and
+others that emerged in 2018 required BIOS microcode updates). One specific update around 2014
+fixed an issue where systems could hang on boot if a certain combination of USB devices were
+connected. Another allowed support for newer PCIe cards. By applying the latest BIOS (v02.33 Rev.A
+as of 2019
+), you ensure the system has all these fixes. There was no UEFI Secure Boot on this
+model, so it wasn’t affected by Secure Boot bugs. HP’s security bulletins (HPSB) included the 8200 in
+advisories related to Intel ME firmware as well – HP released an  Intel ME firmware update (to
+version  7.1.91.3272)  to  patch  AMT  vulnerabilities
+.  It’s  advisable  to  update  that  as  well  (HP
+provided it on their site; it’s applied separately from the BIOS but through a similar flash process).
+Thermal and Fan Issues: Generally, the cooling is robust, but a few forum posts have noted issues
+like the case fan revving to 100% and not slowing down. One cause was using third-party fans
+without the expected tachometer feedback or using a non-HP CPU cooler. The BIOS will default to
+• 
+• 
+23
+24
+63
+22
+• 
+54
+54
+• 
+15
+
+------------------------------------------------------------------------
+Page 16
+------------------------------------------------------------------------
+
+fail-safe full speed if it thinks a fan is missing or unable to read speed. The solution is to use the
+original fan or an equivalent with 4-pin PWM and proper sensing. Another scenario: after a BIOS
+update, some users had fan control reset – simply entering BIOS and re-configuring (or loading
+defaults  and  then  adjusting  settings)  fixed  it.  HP  did  release  a  BIOS  update  that  specifically
+addressed an erratic fan behavior when certain temperature sensor thresholds were misread. So if
+your system’s fan is consistently loud, check that the intake/exhaust isn’t clogged and that you have
+the latest BIOS. Also ensure the “Thermal” setting in BIOS is on “Auto” (or similar; some HP BIOS
+have options like increased cooling mode – which you might not want unless needed).
+RAM  Compatibility  Quirks: The  8200  is  not  too  picky  with  DDR3  RAM,  but  there  have  been
+instances where high-density x8 8GB modules weren’t recognized if they were an unusual spec or
+where mixing modules caused only part of the RAM to be usable. Sticking to known compatible
+memory (PC3-10600E or 10600U) is wise. Also, the system will not utilize ECC features even if ECC
+UDIMMs are installed – it will just treat them as non-ECC if they work at all. Some ECC DIMMs might
+not boot. This isn’t a fault per se, just a limitation by design.
+PCIe Slot and GPU Compatibility: Generally any PCIe 2.0 or 3.0 card that fits the physical slot
+should work (3.0 cards just run at 2.0 speed). One known issue: very power-hungry GPUs or those
+requiring UEFI GOP might not display output if the system is in UEFI-only boot mode – if someone
+tried a modern GPU, they may need to enable legacy boot. Additionally, the SFF’s x16 slot is close to
+the PSU in that chassis, so dual-slot cards physically won’t fit; only single-slot (cooler) cards can go in.
+That’s a mechanical note, not an electrical issue, but worth mentioning as an “upgrade limit.”
+Onboard Audio in Linux: A minor note – Linux users discovered that the Realtek ALC261, which is a
+somewhat older codec (only supports 2-channel), wasn’t always auto-detected on some distributions.
+This could lead to “no sound” until manually configuring the HDA codec settings. In Windows, the
+driver from HP (or the Windows Update driver) handles it fine, enabling the front/rear jack sensing
+etc. Linux support caught up eventually, but if using as a Linux workstation, be prepared to tweak
+audio config if needed. The Qubes OS forum entry
+ noted no audio at first in Qubes 4.0
+(which was likely a driver quirk). This isn’t a hardware fault, just a driver thing on certain OS.
+Miscellaneous: Some 8200 Elite units have an  Intel AMT issue where if AMT is provisioned in
+enterprise mode and then un-provisioned, the ME might still reserve an IP – updating ME firmware
+resolved oddities like that. Another thing: the coin-cell CMOS battery on the motherboard, like all
+PCs,  will  eventually  run  down  (typically  after  5-7  years).  When  it  dies,  you  may  get  RTC  reset
+messages or lost BIOS settings on cold boot. Replacing it (a standard CR2032) is simple and can
+preempt strange behavior. HP didn’t list this as a problem, it’s just normal maintenance around this
+age.
+Service Advisories: Checking HP’s support, the 8200 Elite had a few advisories: one regarding an
+Intel AMT vulnerability (fixed by firmware update), one regarding a potential issue with certain SSD
+self-tests causing hangs (fixed by BIOS update), and one power supply recall for certain serial
+numbers (some early SFF high-efficiency PSUs were swapped out due to a manufacturing issue, but
+that was very limited and would have been serviced long ago). None of these are likely relevant now
+except to ensure firmware is up to date.
+• 
+• 
+• 
+64
+65
+• 
+• 
+16
+
+------------------------------------------------------------------------
+Page 17
+------------------------------------------------------------------------
+
+Overall, the  8200 Elite motherboard and system are considered highly stable and durable. These
+machines  were  deployed  in  offices  worldwide  and  have  proven  quite  resilient.  Many  units  are  still
+operational today running Windows 10. Key tips to ensure reliability: keep the BIOS and ME firmware
+updated for security, keep the system clean and well-ventilated, and use a UPS or quality surge protector to
+avoid electrical stress. If any hardware issue arises (beeps at startup, etc.), consult the HP maintenance
+guide for diagnostic indicators – it contains beep code charts and LED blink codes for troubleshooting
+.
+Replacement parts (like motherboards, PSUs) are readily available on the secondary market (HP spare part
+number for the SFF board is 611834-001, for example), meaning a failed component can often be replaced
+to extend the machine’s life. 
+Operating System Support and Drivers
+Factory OS Options: The HP Compaq 8200 Elite originally shipped with Windows 7 (32 or 64-bit) in most
+cases. HP offered it with Win 7 Professional 64-bit as the standard for business, and also Home Basic/
+Premium on some models
+. Downgrade rights to Windows XP were available for companies that needed
+XP – HP provided XP drivers as it was still common in 2011 for certain environments.  Windows Vista
+(Business/Enterprise) was technically supported as well, but by the time of this model, most had moved to
+Win7. The QuickSpecs list all these: Win 7 (Home Basic/Premium/Pro/Ultimate, 32 or 64), Win Vista (Basic/
+Business/Enterprise) and XP Professional
+. HP also offered FreeDOS for those who wanted to image their
+own OS. 
+Windows 10: Although not officially listed in the original specs (Windows 10 released in 2015, after this
+model’s time), the 8200 Elite can run Windows 10 64-bit very well. In fact, many users have upgraded these
+to Win10 to continue using them. Windows 10 has built-in drivers for most of the hardware: the Intel
+82579LM NIC has an in-box driver, the Intel HD2000 graphics will get a basic Microsoft Display Adapter
+driver (which works for desktop use, though it lacks some OpenGL/OpenCL support – alternatively, the last
+Intel driver for Windows 8.1 can be manually installed on Win10 to enable full features of the GPU). Audio
+(ALC261)  is  supported  by  the  generic  Microsoft  HD  Audio  driver.  Chipset  devices  (SMBus,  etc.)  are
+recognized  natively.  The  one  thing  to  note  is  Windows  10  will  not automatically  enable  AMT/vPro
+functionality – but those are mostly irrelevant on a client OS. Overall, Windows 10 64-bit runs smoothly, and
+performance with an SSD and enough RAM is surprisingly good given the age of the CPU. Officially, HP did
+not release Windows 10-specific drivers for the 8200, but the Windows 7/8 drivers largely carry over or
+Windows Update supplies them. For example, the Windows 7 64-bit graphics driver (which is actually the
+same for 8.1) can be installed in compatibility mode if needed to get Intel Graphics Control Panel. However,
+many have found the default Windows 10 provided drivers are sufficient for general use. 
+One caveat: Windows 11 has come onto the scene, but it has strict requirements (TPM 2.0 and 8th-gen or
+newer CPU) – the Core i5-2400 and TPM 1.2 in the 8200 do not meet Windows 11 requirements. While
+Win11 can be installed via workarounds, it’s not officially supported and not recommended for 8200 Elite in
+production. Sticking with Win10 (supported through 2025) or a supported Linux is a better choice for
+longevity.
+Windows 8/8.1: These OSes are also supported on the 8200. HP did release driver packs for Windows 8, and
+later Windows 8.1 should work with the same. Windows 8.x never got wide enterprise adoption like 7 or 10,
+but if needed, the hardware poses no issue – the UEFI 2.1 firmware can do secure boot if upgraded to Win8
+(though again, on this model secure boot might not be fully implemented). Essentially, if it runs Win7, it can
+run Win8/8.1, as the driver model was similar. 
+56
+66
+66
+17
+
+------------------------------------------------------------------------
+Page 18
+------------------------------------------------------------------------
+
+Linux: HP officially certified the 8200 Elite for  Novell SUSE Linux Enterprise Desktop 11 and  Red Hat
+Enterprise Linux (RHEL) 64-bit
+. The QuickSpecs footnotes enumerate a few features not supported
+under those Linux versions (for instance, certain HP ProtectTools features, and some specific hardware like
+the “Intel Gigabit CT Desktop NIC” – note the 8200 Elite uses an 82579LM, not CT, so that note was likely
+general; also things like Blu-ray playback or the HP 22-in-1 card reader might need extra drivers)
+. In
+practice, modern Linux distributions (Ubuntu, Fedora, etc.) have excellent support for this hardware: Intel
+e1000e driver covers the NIC, the HD2000 graphics are supported by the open-source Intel driver (though
+note that HD2000/3000 do not support hardware acceleration of some newer media in Linux since Intel
+didn’t update those drivers after a point – basic desktop and video is fine). Audio works with the HDA driver
+(though as mentioned, needed some adjustments in certain cases for ALC261). AMT can be used via Intel’s
+amttools if one wants, and TPM 1.2 works with Trousers and related Linux stack for encryption. Overall, a
+Linux-based OS can run quite well on this machine, making it viable as a small server or Linux development
+box.  There’s  even  community  interest  in  coreboot (open-source  firmware)  for  this  board
+ –
+enthusiasts have succeeded in replacing the proprietary BIOS with coreboot and SeaBIOS for a completely
+open firmware, which is a testament to the popularity of repurposing these units (though that’s only for
+advanced users comfortable with firmware flashing).
+Drivers and Software: HP provides a full driver pack and SoftPaq downloads on their support site for the
+8200 Elite (for supported Windows versions). This includes chipset INF, AMT drivers (HECI/MEI and LMS/SOL
+for vPro), integrated graphics driver, audio driver (with SRS Premium Sound software), NIC driver (though
+Intel’s PROset works too), and HP-specific utilities like ProtectTools (security suite) and HP Power Assistant,
+etc., for Windows 7. If reloading Windows 7/8, it’s recommended to install the chipset driver, then Intel ME
+driver, then graphics, audio, NIC, etc., in roughly that order, though Windows Update can handle many. For
+Windows 10, most of these are either in-box or fetched via Windows Update automatically. HP also had HP
+Client Management tools and the HP SoftPaq Download Manager which can pull all necessary drivers for
+a given model – useful in enterprise imaging.
+OS Notes:
+Windows 7 64-bit is the baseline and runs perfectly on this hardware with all features supported
+(including things like BitLocker with TPM, if using Win7 Enterprise/Ultimate).
+Windows XP can run (there are XP drivers for Q67 and even Intel HD Graphics has XP drivers), but XP
+is long out of support. Some specialized use cases might still use XP on these for legacy software – if
+so, note that vPro AMT 7.0 can manage an XP system but features like KVM remote console require
+certain integrated graphics drivers to be active (which Intel provided for XP).
+If using virtualization or certain sandbox software, remember to enable VT-x/VT-d in BIOS (they
+should be on by default unless turned off for security).
+The system is also a good candidate for ESXi or other hypervisors if one wanted to make a home
+lab server – the hardware (i7 with 32GB potential and Intel NIC) is supported by many hypervisors,
+though the small SFF chassis might limit additional cards.
+On the HP support page, one can find documentation for drivers and also the HP Restore Plus
+images if needed to factory reset (though by now, likely not used).
+In summary, the 8200 Elite’s motherboard and platform support a wide range of operating systems:
+virtually all Windows versions from XP up to 10, and modern Linux distributions. The driver ecosystem is
+mature. Ensuring you have the latest drivers or updates will yield the best experience – for instance,
+installing Intel RST drivers if you use RAID, or updating the Intel graphics driver if you want the control
+panel features on Windows. HP’s official stance was up to Win7/8, but community experience has shown
+67
+68
+69
+70
+71
+• 
+• 
+• 
+• 
+• 
+18
+
+------------------------------------------------------------------------
+Page 19
+------------------------------------------------------------------------
+
+Windows 10 is very workable on this machine – making it possible to keep it in service well into the current
+era (with Win10 security updates). Always check HP’s support site for any specific drivers (e.g., if a certain
+device in Device Manager is unknown, HP’s SoftPaq or driver pack will have it). In most cases though, a fresh
+OS will have everything needed to get the machine functional, and any missing bits (like the occasional “PCI
+Serial Port” which is the AMT SOL interface) can be resolved by installing the Intel Management Engine
+Interface driver from HP’s package. 
+Documentation and Maintenance Resources
+One of the strengths of HP’s business-class systems is the thorough documentation and support materials
+provided. For the 8200 Elite desktop series, HP has published several key documents and resources that
+owners or technicians can reference for specifications, upgrades, and troubleshooting:
+Official QuickSpecs: HP’s QuickSpecs for the Compaq 8200 Elite Series is a comprehensive spec
+sheet  (about  70+  pages)  detailing  all  the  configurations,  component  options,  and  technical
+specifications.  It’s  essentially  a  catalog  of  what  the  system  supports  –  including  CPU  models,
+memory  configurations,  storage  options,  peripheral  compatibility,  and  more.  The  QuickSpecs
+document confirms many of the specs we’ve discussed (chipset, sockets, slots, max memory, etc.)
+and lists available accessories. For example, it lists supported processors and their details, the fact
+that the chipset is Q67 with vPro
+, integrated graphics capabilities, and optional add-ons (like the
+USB 3.0 PCIe card, eSATA cable, second serial port adapter, etc.). It’s a great reference for checking if
+a certain upgrade (say a certain CPU or GPU) was offered by HP in that model, which usually implies
+support. (HP 8200 Elite QuickSpecs, document ID “DA-13879”, can be found online in PDF form.)
+Maintenance  and  Service  Guide  (MSG): This  is  the  technician’s  manual  for  the  8200  Elite
+Convertible Minitower, Microtower, Small Form Factor (and Ultra-slim) PCs. It includes step-by-step
+instructions with diagrams for disassembling and servicing the unit. This guide shows how to
+remove/replace components: e.g., opening the chassis, swapping the system board, replacing the
+CPU, adding memory, replacing power supply, etc. It also contains  part numbers for spare parts
+(motherboard spare part number, memory module part numbers, fan part numbers, etc.), and
+diagnostic info such as beep codes and LED error codes. For instance, the MSG states the expansion
+slot configuration (“the 8200 Elite has one PCI slot, one PCIe x1, two PCIe x16” etc.) and how to open
+the slot latches
+, among other details. It’s an invaluable document if you plan to do any hardware
+work. HP typically provides this on their support site as a PDF. According to a user commentary, HP’s
+documentation for the SFF is quite good
+ – including not just the MSG but also a “Parts & Service
+Map” (a one-page diagram of the motherboard and connectors), and disassembly instructions.
+Indeed, HP often includes a poster or PDF with the layout of connectors labeled (“comb” connector,
+internal headers, etc., as an HP forum references). The MSG also includes  wiring and connector
+pinouts for things like the front panel header, which is useful if you ever need to test or if moving
+the board to a non-HP case. 
+Technical Reference Manual: HP provides a Technical Reference Guide for the 8200 Elite series
+.
+This is a more in-depth document (over 100 pages) aimed at IT professionals or developers who
+need low-level details. It covers the system architecture, BIOS/UEFI functions, chipset registers, and
+so on. For instance, it describes the chipset’s capabilities, memory mapping, BIOS interrupts, and
+details like the management engine’s memory allocation
+. While overkill for most, it’s useful for
+understanding how vPro AMT is set up, how the BIOS interacts with ACPI, or if one is writing low-
+• 
+1
+• 
+10
+72
+• 
+73
+74
+19
+
+------------------------------------------------------------------------
+Page 20
+------------------------------------------------------------------------
+
+level software for the machine. It’s not essential for typical upgrades, but it’s a testament to HP’s
+thoroughness that this exists. (It’s more relevant for those doing things like attempting coreboot or
+needing to know how certain hardware is interfaced.)
+Driver Downloads and Support Page: The HP support website has a portal for the 8200 Elite SFF,
+MT,  CMT  models
+.  By  selecting  the  model,  you  can  access  drivers,  firmware,  and  BIOS
+downloads, as well as documentation. HP often categorizes by OS – e.g., there will be a list of
+SoftPaq downloads for Windows 7 x64, etc. There is also a  HP PC Hardware Diagnostics tool
+available for download (for UEFI diagnostics or Windows diagnostics) which can be used to test
+hardware  if  you  suspect  an  issue.  The  support  page  also  includes  any  security  bulletins  or
+advisories (for example, link to a TPM firmware update advisory if it existed, or the Intel AMT
+vulnerability advisory – clicking on “Security Bulletins” shows such info for the model). 
+Community  and  Forums: Over  the  years,  HP’s  official  forums  and  other  tech  forums  have
+accumulated Q&A about the 8200 Elite. For example, threads on the HP forum cover topics like “best
+upgrade for 8200 Elite SFF”
+, and community members and HP experts often respond with what
+works and what doesn’t. Reddit and Tom’s Hardware forums have had discussions (we saw one
+where connectors on the board were being identified
+, which referenced an HP document for the
+board layout). These can be a helpful supplement to official docs, especially when doing non-
+standard tweaks (like case swaps or unusual upgrades). 
+Maintenance Tips: Based on documentation and experience, a few tips: 
+When opening the case to service, always power down and unplug (and drain residual power by
+pressing power button). HP’s guide stresses ESD precautions – use an anti-static wrist strap if
+possible. 
+The green touchpoints in the chassis indicate tool-less latches (for drive bays, expansion slot cover,
+etc.). The Service Guide illustrates these clearly. 
+If removing the motherboard, note the front panel/USB/audio connectors to the board – labeling
+them or taking a photo helps for reassembly. The Service Guide has connector identifiers matching
+the silkscreen on the board (e.g., FP AUDIO, FP USB, FP PWR). 
+BIOS configuration export: The BIOS setup (F10) allows saving settings to a USB key. This can be
+handy before resetting BIOS or replacing the CMOS battery, so you can quickly restore custom
+settings. 
+Utilize HP’s SoftPaq Download Manager (SDM) or the newer HP Image Assistant if you want to
+easily grab all drivers for a fresh OS install – these tools can identify the 8200 and download the
+driver pack. HP also often provides a “Driver Pack” CAB file for SCCM/MDT which contains all drivers
+for the model in one package (useful if imaging multiple machines). 
+Lifecycle and Service: The 8200 Elite being an Elite series had a long lifecycle and support from HP.
+It was under warranty typically for 3 years default (sometimes 5 on certain SKUs). HP guaranteed
+spare  parts  availability  for  quite  a  while.  Even  though  it’s  now  well  past  warranty,  parts  like
+motherboards, PSUs, etc., are still findable through resellers or eBay relatively cheaply due to the
+large numbers in circulation. The Maintenance guide provides HP part numbers: for example, the
+SFF motherboard spare is HP part #611834-001 (which you can use to search for exact replacements)
+,  and  it  lists  different  part  numbers  for  different  chassis  if  they  differ  (CMT  board  was
+• 
+75
+76
+• 
+76
+77
+• 
+• 
+• 
+• 
+• 
+• 
+• 
+78
+20
+
+------------------------------------------------------------------------
+Page 21
+------------------------------------------------------------------------
+
+#611835-001 etc.). Same for power supplies and other components. Having those part numbers
+from the documentation ensures you get the right part in repairs. 
+To summarize,  ample documentation is available for the 8200 Elite: from high-level specs to detailed
+service manuals. Official PDFs like the QuickSpecs and Maintenance and Service Guide are the first places to
+look for factual information (HP has them on their website and they are mirrored on manual sites)
+. They
+cover everything from how to replace a component to specific BIOS settings. The Technical Reference goes
+even deeper for those interested in the engineering details. For day-to-day usage and upgrades, HP’s
+documentation combined with community wisdom makes it straightforward to keep the 8200 Elite running
+smoothly or to troubleshoot issues. Whether you are an IT professional managing a fleet of these PCs or an
+individual upgrading an older unit, these resources ensure you have authoritative information to rely on.
+Sources:
+Official HP 8200 Elite Series QuickSpecs and Technical Manuals
+HP Maintenance and Service Guide for 8200 Elite (user-referenced, covers expansion slots, part
+numbers, beep codes, etc.)
+Intel Q67 Chipset documentation (features like SATA ports, PCIe, AMT 7.0 described)
+AnandTech and technical articles on the Intel 6-series chipset issue (Cougar Point SATA bug)
+HP Support Forum and Qubes OS Forum insights (BIOS updates, coreboot, audio codec info)
+HP Compaq 8200 Elite Series
+https://files.bbystatic.com/2%2F79QfKeyXT24eLAKYm5aw%3D%3D/DA8EE5D3-FC3A-4FC0-AE62-3F360490748F.pdf
+COMPOSERS-001_intro_.fm
+https://www.levnapc.cz/ProductsFiles/HP-8200-Elite-manual-en.pdf
+The Source of Intel's Cougar Point SATA Bug
+https://www.anandtech.com/show/4143/the-source-of-intels-cougar-point-sata-bug
+Can you explain these motherboard connectors? | Tom's Hardware Forum
+https://forums.tomshardware.com/threads/can-you-explain-these-motherboard-connectors.3171644/
+Bought a $65 HP 8200 (Mobo HP 611834-001). Question about HDD/SSD. : r/buildapc
+https://www.reddit.com/r/buildapc/comments/8rwl05/bought_a_65_hp_8200_mobo_hp_611834001_question/
+Hewlett-Packard Compaq 8200 Elite SFF - HCL Reports - Qubes OS Forum
+https://forum.qubes-os.org/t/hewlett-packard-compaq-8200-elite-sff/7324
+HP Compaq 8200 Elite Small Form Factor PC | HP® Support
+https://support.hp.com/ie-en/product/hp-compaq-8200-elite-small-form-factor-pc/5037931
+Best HP Compaq 8200 Elite SFF Upgrade - HP Support Community
+https://h30434.www3.hp.com/t5/Desktop-Hardware-and-Upgrade-Questions/Best-HP-Compaq-8200-Elite-SFF-Upgrade/td-p/
+8829685
+611834-001 - HP Socket LGA1155 System Board (Motherboard ...
+https://harddiskdirect.com/611834-001-hp-system-board-motherboard-refurbished.html?
+srsltid=AfmBOopuNmEL7a6RedG_IZQ8LJWYoWz2dekCpz0N5b8JrbiaMr6G_g8C
+72
+• 
+1
+15
+49
+13
+11
+• 
+10
+56
+• 
+21
+3
+• 
+23
+24
+• 
+54
+64
+1
+2
+3
+4
+5
+6
+7
+8
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+26
+28
+29
+30
+31
+32
+34
+35
+36
+37
+38
+39
+41
+46
+47
+49
+50
+51
+52
+53
+55
+56
+57
+58
+59
+60
+61
+62
+66
+67
+68
+69
+9
+21
+25
+27
+33
+40
+73
+74
+22
+23
+24
+63
+42
+43
+77
+44
+45
+48
+54
+64
+65
+70
+71
+72
+75
+76
+78
+21

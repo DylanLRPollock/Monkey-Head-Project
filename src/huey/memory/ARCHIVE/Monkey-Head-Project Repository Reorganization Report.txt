@@ -1,0 +1,1567 @@
+Monkey-Head-Project Repository Reorganization
+Report
+Executive summary
+The repository’s core problem is not just sprawl. It is canon drift plus mixed strata. The public website still
+presents Huey as a broad embodied platform with dual displays, constitutional governance, PyGPT-net,
+Ollama, custom kernels, and phased embodiment, while the current README.md  frames the active target
+as a much narrower Huey Brain V1 running on a Lenovo Legion Go with a deterministic MP3 →
+transcription → cognition → structured-log loop. At the same time, the repo still exposes a machine-facing
+master plan file at master-plan-v30.2.json , even though the README claims the canonical machine-
+facing spec is master-plan-v32.0.json . That means public narrative, repo front door, and machine-
+facing canon are not synchronized. 
+The second problem is layer collision inside the tree. The repo mixes active Python runtime, legacy
+runtime, constitutional texts, media assets, release payloads, installer/boot binaries, vendored overlays,
+submodules, and security documentation in ways that blur what is live, what is reference, and what is
+archival. The most overloaded example is src/huey/memory/ , which currently acts as a code location, a
+canon shelf, an asset vault, and an archive bucket at once. The repo also carries substantial binary and
+release payload surface, including initrd.gz , kernel images, .deb  packages, .udeb  pools, videos,
+and zip archives; GitHub recommends keeping repos small, warns on files above 50 MiB, blocks files above
+100 MiB, and explicitly recommends Git LFS or Releases for large binaries. 
+The best reorganization is therefore layer-first, not technology-first. I recommend a top-level structure
+that separates: canon/  for authoritative present-tense truth, src/  and infra/  for implementation, 
+experiments/  for non-canonical lab work, history/  for frozen lineage and payload archives, docs/
+for explanatory and operational documentation, assets/  for static media, and third_party/  for
+submodules and overlays. This keeps lineage intact because the migration should use git mv  rather
+than copy/delete, baseline tags before restructuring, pointer READMEs where old paths vanish, and
+release/tag mapping for external references. Git’s own documentation confirms that git mv  updates the
+index and, for submodules, also updates .gitmodules  path metadata. 
+I recommend doing this in two phases. Phase one should separate canon, history, docs, assets, third-party,
+and large artifacts without changing package names or runtime imports. Phase two should tackle the
+harder namespace cleanup ( huey  versus hueyos ) only after the tree is structurally clean and the test
+baseline is stabilized. That sequencing matters because the current package/test surface already relies on
+import shims and mixed namespaces, and the repo’s own recent security remediation summary notes that 
+pytest -q  is not currently green in the tested environment due to collection/import issues. 
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+What the repository is signaling now
+The live materials currently point in different directions. The website says the public “start here” source of
+truth is GitHub and describes a broad, embodied HueyOS stack with phased embodiment and constitutional
+autonomy. The README, by contrast, says the active direction is Huey Brain V1 on a Legion Go, with Body,
+HIMS runtime, PyGPT-net, and distributed compute explicitly deferred. The machine-facing plan visible in
+the repo is still master-plan-v30.2.json , whose content is older than the README’s claimed v32.0
+canon. That is the strongest evidence that any reorganization must start by separating historical, 
+canonical, and implementation materials before doing anything else. 
+The active implementation surface is real, but it is mixed with legacy and doctrinal layers. The repo has a
+Python package defined in pyproject.toml  as hueyos  with Python >=3.13,<3.15 , a FastAPI-facing
+runtime surface, a CLI entrypoint, large optional dependency groups, and active CI/test/security workflows.
+But the tests also reveal import-path accommodation between huey , huey.memory.PY , and src ,
+which is a sign that the runtime boundary is not yet cleanly isolated. The security remediation summary
+further states that the broader suite currently fails collection in the tested environment, which reinforces
+the need to separate structural cleanup from namespace refactoring. 
+The tree also includes prior restructuring work products that are useful evidence. docs/unsorted/
+repository-restructure-recommendation.md  already proposes separating source, generated
+artifacts, release payloads, and ownership boundaries. docs/unsorted/repository-restructure-
+inventory.md  already lists concrete moves such as pushing boot/install artifacts under platform/  and
+releases under archives/ , consolidating PyGPT integrations, and resolving src/huey  versus src/
+hueyos . Those documents are directionally correct, but they remain explanatory documents rather than an
+enforced canonical structure. 
+Verified audit of high-signal files and path families
+The available live connectors did not expose a lossless recursive tree API with exact size and last-modified
+metadata for every tracked file. The repository itself does contain a generated git ls-files  inventory
+and a recent artifact-surface report, which together make the overall content families clear, but not every
+long-tail per-file date could be confirmed interactively. Where exact values were not retrievable from live
+metadata, I mark them as unspecified rather than guessing. 
+Path or family
+Type
+Size or
+count
+Last-modified
+evidence
+Inferred purpose
+Proposed layer
+README.md
+Markdown
+unspecified
+active on 
+main ; version
+text claims 
+v32.0
+human-facing
+front door and
+current-state
+narrative
+canon/  pointer at
+root + source in 
+canon/
+master-plan-
+v30.2.json
+JSON
+unspecified
+exact file
+present on 
+main
+machine-facing
+plan/spec, but
+version-drifted
+canon/machine/
+1
+2
+3
+12
+14
+10
+11
+13
+7
+8
+15
+4
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+Path or family
+Type
+Size or
+count
+Last-modified
+evidence
+Inferred purpose
+Proposed layer
+src/huey/memory/
+TXT/*.txt
+text
+chapters
+unspecified
+referenced by
+README as
+canonical law/
+front matter;
+commit history
+added them in
+April 2026
+constitutional
+canon and
+glossary/book
+matter
+canon/law/
+src/huey/memory/
+PY/api.py
+Python
+large active
+file
+active
+implementation
+file
+FastAPI control
+surface; broad
+runtime scope
+src/  or 
+implementation/
+src/huey/memory/
+PY/run.py
+Python
+large active
+file
+active
+implementation
+file
+runtime
+launcher / PyGPT
+integration path
+src/  or 
+implementation/
+tests/test_cli.py
+Python
+test
+unspecified
+active test file
+CLI behavior
+tests
+tests/
+tests/
+test_api_routes.py
+Python
+test
+unspecified
+active test file
+API behavior/
+security tests,
+currently shim-
+heavy
+tests/
+.github/workflows/
+ci.yml
+YAML
+unspecified
+active workflow
+lint + tests on 
+main  and 
+develop
+.github/
+.github/workflows/
+codeql.yml
+YAML
+unspecified
+active workflow
+code scanning
+on main
+.github/
+.github/workflows/
+security-
+bandit.yml
+YAML
+unspecified
+active workflow
+Bandit scan
+.github/
+.github/workflows/
+security-
+dependency-
+scan.yml
+YAML
+unspecified
+active workflow
+pip-audit
+scan
+.github/
+.github/workflows/
+security-artifact-
+container-scan.yml
+YAML
+unspecified
+active workflow
+large-file / Trivy
+artifact scan
+.github/
+.github/CODEOWNERS
+text
+unspecified
+active file
+review
+ownership, but
+currently stale
+path globs
+.github/
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+Path or family
+Type
+Size or
+count
+Last-modified
+evidence
+Inferred purpose
+Proposed layer
+.gitattributes
+text
+unspecified
+active file
+line ending
+policy, binary
+treatment,
+archive/export
+flags; contains
+stale vendored
+path rule
+root policy file
+.gitmodules
+text
+unspecified
+active file
+submodule
+declaration for 
+integrations/
+pygpt/py-gpt
+root policy file
+integrations/
+pygpt/py-gpt
+submodule
+unspecified
+active
+submodule
+path
+upstream third-
+party
+dependency
+third_party/
+pygpt/upstream/
+integrations/
+pygpt/pygpt-mhp
+vendored
+overlay
+unspecified
+active path
+project-specific
+overlay/
+customization
+around PyGPT
+third_party/
+pygpt/overlay/
+docs/unsorted/
+index.md
+Markdown
+unspecified
+active file
+documentation
+landing page,
+but still under 
+unsorted
+docs/
+docs/unsorted/
+governance.md
+Markdown
+unspecified
+active file
+governance/
+resilience
+explanation, but
+cross-references
+older paths
+docs/
+architecture/
+docs/security/*
+Markdown
+set
+growing
+several files
+added/updated
+recently
+security policy,
+status, incident
+notes
+docs/security/
+apps/huey-gui/*
+Python/UI
+assets
+unspecified
+active path
+GUI surface;
+unclear if current
+production or
+prototype
+experiments/
+gui/  unless
+explicitly current
+config/main.config
+JSON-style
+config
+tiny
+active file
+logging config
+implementation/
+config/  or keep 
+config/
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+Path or family
+Type
+Size or
+count
+Last-modified
+evidence
+Inferred purpose
+Proposed layer
+archives/releases/
+**
+binaries/
+checksums
+multiple
+files
+historical
+payloads
+published
+release artifacts
+and checksums
+history/
+releases/  +
+GitHub Releases
+platform/
+installers/linux/
+gtk/initrd.gz
+generated
+binary
+63.4 MB
+size from
+artifact report
+installer boot
+image
+GitHub Release
+asset or LFS; not
+normal Git
+platform/
+installers/linux/
+initrd.gz
+generated
+binary
+23.2 MB
+size from
+artifact report
+installer boot
+image
+GitHub Release
+asset or LFS
+platform/
+installers/linux/
+gtk/vmlinuz
+generated
+binary
+11.5 MB
+size from
+artifact report
+GTK installer
+kernel
+GitHub Release
+asset or LFS
+platform/
+installers/linux/
+vmlinuz
+generated
+binary
+11.5 MB
+size from
+artifact report
+installer kernel
+GitHub Release
+asset or LFS
+platform/boot/
+legacy/live/
+vmlinuz-6.18.5-
+hueyos
+generated
+binary
+12.2 MB
+size from
+artifact report
+live kernel
+payload
+Release asset, with
+manifest in Git
+platform/boot/
+legacy/live/
+vmlinuz
+generated
+binary
+12.2 MB
+size from
+artifact report
+likely duplicate
+default-path
+kernel
+review for dedupe,
+then release asset
+archives/releases/
+hueyos-6.18.5.../
+*.deb
+.deb
+packages
+17.8 MB, 
+8.9 MB
+examples
+size from
+artifact report
+archived kernel/
+header payloads
+history/
+releases/  +
+GitHub Releases
+platform/
+packaging/pool-
+udeb/**
+.udeb
+pool
+232 files,
+~55.1 MB
+size/count from
+artifact report
+offline installer
+dependency pool
+keep only if offline
+mirror is a first-
+class product;
+otherwise
+externalize
+platform/boot/
+grub/grub/x86_64-
+efi/**
+GRUB
+modules
+279 files,
+~2.9 MB
+size/count from
+artifact report
+prebuilt EFI boot
+module set
+keep only if
+deterministic
+regeneration is not
+yet available
+src/huey/memory/
+ZIP/dlrp-ca-
+v84.3.zip
+ZIP archive
+38.1 MB
+size from
+artifact report
+reference
+archive / bundled
+asset
+history/assets/
+zip/  or release
+asset
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+Path or family
+Type
+Size or
+count
+Last-modified
+evidence
+Inferred purpose
+Proposed layer
+src/huey/memory/
+MP4/TEST.mp4
+video
+11.1 MB
+size from
+artifact report
+media asset /
+test content
+assets/  or 
+history/assets/
+video/
+assets/images/
+HueyOS-
+background.png
+image
+unspecified
+present in
+generated
+inventory
+static image
+asset
+assets/images/
+Evidence for the artifact-heavy side is especially strong. The artifact report identifies initrd.gz , 
+vmlinuz , .deb , .udeb , ZIP, MP4, EFI, and GRUB module families as committed payload surface, and
+recommends moving many of them to release channels or other external storage. GitHub’s own
+documentation aligns with that recommendation: regular repositories warn above 50 MiB, block above 100
+MiB, recommend staying ideally under 1 GB and strongly under 5 GB at the old guidance, and now
+recommend a 10 GB on-disk ceiling with generated files stored outside Git and binary payloads tracked with
+LFS where appropriate. 
+Classification rules by layer
+Because the repo contains both explicitly verified files and very large path families, the cleanest
+classification method is path-rule classification: every file in a subtree inherits the layer unless explicitly
+overridden.
+Layer
+What belongs there now
+Why
+Canonical
+README.md  source content, master-plan-
+v30.2.json , constitutional/front-matter text
+chapters currently under src/huey/memory/
+TXT/
+present-tense truth, law,
+machine-facing spec, public
+front door
+Implementation
+runtime Python packages, active CLI/API code,
+active configs, active infra, active tests
+runnable software and
+operational surfaces
+Experimental
+GUI prototypes, lab scripts, fixtures, exploratory
+model/training notes, optional prototype apps
+real lab work, but non-
+canonical and not
+guaranteed stable
+Historical
+archived releases, frozen old plans, deprecated
+prompts, legacy GUI/runtime materials, old
+distribution payloads
+lineage must be preserved,
+but these should not
+compete with active code
+Docs
+explanatory runbooks, architecture notes,
+contributor guidance, security documentation,
+release notes
+important but not
+themselves canon or
+runtime
+Assets
+images, icons, videos, public-facing media
+static non-code content
+4
+16
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+Layer
+What belongs there now
+Why
+CI
+.github/workflows/* , CI support scripts
+automation and repository
+policy
+Tests
+tests/* , test-specific fixtures
+verification only
+Third-party
+integrations/pygpt/py-gpt  submodule and
+project-specific overlay
+upstream or externally
+derived code with distinct
+maintenance cadence
+That classification also exposes two existing policy drift issues. First, .gitattributes  marks 
+memory/**  as generated but the repo’s high-value canonical and asset content is actually inside src/
+huey/memory/** , so the semantics do not match the live tree. Second, .gitattributes  marks repo/
+py-gpt/**  as vendored, but the live submodule path is integrations/pygpt/py-gpt , so Linguist/
+vendor policy is stale. .github/CODEOWNERS  has a similar drift problem: it assigns /src/huey/api/
+rather than the live file-oriented runtime surface now exposed in the repo. 
+Proposed layered target structure
+The least-destructive structure is one that preserves the familiar root operational surfaces ( src/ , 
+tests/ , .github/ , infra/ ) while moving canon, history, experiments, and third-party into
+unmistakable top-level layers.
+.
+├── .github/                 # workflows, CODEOWNERS, templates, rulesets docs
+├── assets/                  # images, icons, public/static media
+├── canon/                   # authoritative present-tense truth
+│   ├── machine/             # master plans, machine-facing specs
+│   ├── law/                 # constitution, glossary, chapters, doctrine
+│   └── public/              # README source fragments, public-facing summaries
+├── docs/                    # architecture, runbooks, contributor/security docs
+│   ├── architecture/
+│   ├── runbooks/
+│   ├── contributor/
+│   ├── security/
+│   └── reference/
+├── experiments/             # prototypes, fixtures, exploratory work
+│   ├── gui/
+│   ├── fixtures/
+│   ├── prototype-code/
+│   └── notebooks/
+├── history/                 # preserved lineage, frozen snapshots, old payloads
+│   ├── releases/
+│   ├── docs/
+│   ├── prompts/
+5
+17
+18
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+│   ├── assets/
+│   └── platform/
+├── infra/                   # active deployment, containers, secrets templates
+├── src/                     # active implementation only
+├── tests/                   # active tests only
+├── third_party/             # submodules, overlays, vendored integrations
+└── config/                  # active runtime config templates
+This model makes one architectural promise: nothing under canon/  is experimental, nothing under 
+history/  is active by default, and nothing under src/  is doctrinal storage. That single promise
+would remove most of the current ambiguity. It also aligns naturally with the current public needs: the
+website can point to canon/  for truth, the README can be generated or checked against canon/
+public/ , and releases can point to tagged canon/  plus implementation snapshots. 
+Layer relationships
+flowchart TD
+    CANON[canon<br/>authoritative truth]
+    DOCS[docs<br/>explanatory + operational]
+    IMPL[src + infra + config<br/>active implementation]
+    TESTS[tests<br/>verification]
+    EXP[experiments<br/>non-canonical lab work]
+    HIST[history<br/>frozen lineage]
+    TP[third_party<br/>submodules + overlays]
+    ASSETS[assets<br/>static media]
+    SITE[dlrp.ca + GitHub Releases]
+    CANON --> DOCS
+    CANON --> IMPL
+    IMPL --> TESTS
+    EXP -. proven ideas promoted .-> IMPL
+    EXP -. accepted doctrine promoted .-> CANON
+    IMPL -. deprecated or superseded .-> HIST
+    CANON -. superseded versions .-> HIST
+    TP --> IMPL
+    ASSETS --> DOCS
+    ASSETS --> SITE
+    CANON --> SITE
+    HIST --> SITE
+Naming conventions
+Use naming that encodes layer and stability, not just topic.
+19
+2
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+Rule
+Recommendation
+Directories
+lowercase kebab-case for non-Python dirs
+Python
+packages
+keep Python package naming stable during phase one; decide huey  versus 
+hueyos  only in phase two
+Canon files
+numeric prefixes only where order matters materially, such as constitutional
+chapters
+Historical
+snapshots
+date or version prefix, for example history/releases/hueyos-6.18.5/  or 
+history/canon/2026-04-v30.2/
+Experiments
+prefix directories by theme, not outcome, for example experiments/fixtures/ ,
+experiments/gui/ , experiments/model-bench/
+Assets
+group by media type or consumer, for example assets/images/ , assets/
+icons/ , assets/site/
+Third-party
+third_party/<vendor-or-project>/<kind>/  such as 
+third_party/pygpt/upstream  and third_party/pygpt/overlay
+Migration plan and lineage preservation
+The migration should preserve history through small-batch git mv  commits, not a single mega-rename.
+Git documents that git mv  updates the index and stages the rename; it also updates .gitmodules
+path information when moving a submodule. GitHub Releases are the right place for deployable binaries
+attached to a tagged point in history. 
+Recommended branch and tag strategy
+Branch or tag
+Purpose
+main
+protected stable branch
+reorg/layers-2026-05
+integration branch for the structure split
+pre-layer-split-2026-05-03
+immutable baseline tag before moves
+canon-sync
+optional short-lived branch if canon files are cleaned before
+code moves
+archive/pre-namespace-
+cleanup
+optional tag before huey / hueyos  namespace work
+Protect main  with required status checks, at least one non-self review where possible, stale-review
+dismissal, and required CODEOWNERS approval on canonical, implementation, and release-critical paths.
+GitHub explicitly supports required status checks, required reviews, CODEOWNERS review requirements,
+linear history, and merge queue/protected-branch settings for this. 
+20
+21
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+Step-by-step migration sequence
+flowchart LR
+    A[Tag baseline<br/>pre-layer-split] --> B[Add repo-map + layer READMEs]
+    B --> C[Move canon files]
+    C --> D[Move docs out of unsorted]
+    D --> E[Move history/releases + heavy binaries]
+    E --> F[Normalize third_party PyGPT paths]
+    F --> G[Update CI path filters + CODEOWNERS]
+    G --> H[Run tests + manual smoke checks]
+    H --> I[Merge reorg branch]
+    I --> J[Optional phase two:<br/>namespace cleanup]
+High-impact path mapping
+The table below is the path-preserving core of the migration. For old-path continuity, prefer README
+pointer files or minimal stub docs over symlinks for documentation and media, because pointer files are
+more predictable in GitHub’s web UI and across Windows clones.
+Old path
+New path
+Preserve-lineage note
+README.md
+keep at root, but source governed
+from 
+canon/public/README.md
+root README stays as front
+door; canonical source
+tracked separately
+master-plan-v30.2.json
+canon/machine/master-plan-
+v30.2.json
+leave a root pointer file or
+symlink-like README note
+for one release
+src/huey/memory/TXT/00 - 
+TOC_&_Glossary.txt
+canon/law/00-toc-and-
+glossary.txt
+exact move with git mv ;
+update README
+references
+src/huey/memory/TXT/03 - 
+Huey_Constitution.txt
+canon/law/03-huey-
+constitution.txt
+exact move with git mv ;
+protect with CODEOWNERS
+other src/huey/memory/TXT/
+*.txt  canon chapters
+canon/law/chapters/
+preserve numbering
+where it carries meaning
+docs/unsorted/index.md
+docs/reference/index.md  or 
+docs/index.md
+replace unsorted  with
+topical folders
+docs/unsorted/
+governance.md
+docs/architecture/
+governance-runtime.md
+keep explanatory docs
+separate from law
+archives/releases/**
+history/releases/**
+preserve path family;
+attach deployable binaries
+to GitHub Releases
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+Old path
+New path
+Preserve-lineage note
+platform/installers/**
+generated binaries
+release assets + history/
+platform/installers/
+manifest/
+keep recipes in Git, not
+heavy outputs
+platform/boot/**  generated
+images/modules
+history/platform/boot/  plus
+text recipes under active 
+platform/recipes/
+split source recipe from
+generated output
+integrations/pygpt/py-gpt
+third_party/pygpt/upstream
+git mv  submodule path;
+updates .gitmodules
+integrations/pygpt/pygpt-
+mhp
+third_party/pygpt/overlay
+make overlay explicitly
+distinct from upstream
+src/huey/memory/ZIP/**
+history/assets/zip/**
+preserve lineage, remove
+from runtime tree
+src/huey/memory/MP4/**
+assets/video/**  or 
+history/assets/video/**
+choose based on whether
+it is active/public or
+archival
+apps/huey-gui/**
+experiments/gui/**  unless
+explicitly production
+only keep under
+implementation if truly
+current
+config/main.config
+keep config/main.config  or
+move to implementation/
+config/main.config
+low-risk; can remain if
+referenced by tooling
+Example command sequence
+git checkout -b reorg/layers-2026-05
+git tag pre-layer-split-2026-05-03
+mkdir -p canon/machine canon/law/chapters
+mkdir -p docs/{architecture,runbooks,contributor,security,reference}
+mkdir -p experiments/{gui,fixtures,prototype-code}
+mkdir -p history/{releases,docs,prompts,assets,platform}
+mkdir -p third_party/pygpt
+mkdir -p assets/{images,icons,video}
+git mv master-plan-v30.2.json canon/machine/master-plan-v30.2.json
+git mv "src/huey/memory/TXT/00 - TOC_&_Glossary.txt" canon/law/00-toc-and-
+glossary.txt
+git mv "src/huey/memory/TXT/03 - Huey_Constitution.txt" canon/law/03-huey-
+constitution.txt
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+git mv docs/unsorted/index.md docs/reference/index.md
+git mv docs/unsorted/governance.md docs/architecture/governance-runtime.md
+git mv docs/unsorted/repository-restructure-inventory.md docs/contributor/
+repository-restructure-inventory.md
+git mv docs/unsorted/repository-restructure-recommendation.md docs/contributor/
+repository-restructure-recommendation.md
+git mv archives/releases history/releases
+git mv integrations/pygpt/py-gpt third_party/pygpt/upstream
+git mv integrations/pygpt/pygpt-mhp third_party/pygpt/overlay
+git mv src/huey/memory/ZIP history/assets/zip
+git mv src/huey/memory/MP4 assets/video
+git mv apps/huey-gui experiments/gui
+git commit -m
+"move(layer): split canon docs history experiments and third-party paths"
+Example migration helper script
+#!/usr/bin/env bash
+set -euo pipefail
+# Usage: bash scripts/migrate_layers.sh
+# Assumes you are on a dedicated reorg branch.
+mkdir -p canon/machine canon/law/chapters
+mkdir -p docs/{architecture,runbooks,contributor,security,reference}
+mkdir -p experiments/{gui,fixtures,prototype-code}
+mkdir -p history/{releases,docs,prompts,assets,platform}
+mkdir -p third_party/pygpt
+mkdir -p assets/{images,icons,video}
+move_if_exists() {
+local src="$1"
+local dst="$2"
+if git ls-files --error-unmatch "$src" >/dev/null 2>&1; then
+mkdir -p "$(dirname "$dst")"
+git mv "$src" "$dst"
+fi
+}
+move_if_exists "master-plan-v30.2.json" "canon/machine/master-plan-v30.2.json"
+move_if_exists "docs/unsorted/index.md" "docs/reference/index.md"
+move_if_exists "docs/unsorted/governance.md" "docs/architecture/governance-
+runtime.md"
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+move_if_exists "docs/unsorted/repository-restructure-inventory.md" "docs/
+contributor/repository-restructure-inventory.md"
+move_if_exists "docs/unsorted/repository-restructure-recommendation.md" "docs/
+contributor/repository-restructure-recommendation.md"
+move_if_exists "src/huey/memory/ZIP" "history/assets/zip"
+move_if_exists "src/huey/memory/MP4" "assets/video"
+move_if_exists "apps/huey-gui" "experiments/gui"
+# Submodule path move: git mv updates .gitmodules metadata.
+if [ -d "integrations/pygpt/py-gpt" ]; then
+mkdir -p third_party/pygpt
+git mv integrations/pygpt/py-gpt third_party/pygpt/upstream
+fi
+if [ -d "integrations/pygpt/pygpt-mhp" ]; then
+mkdir -p third_party/pygpt
+git mv integrations/pygpt/pygpt-mhp third_party/pygpt/overlay
+fi
+echo "Layer migration moves staged. Review with: git status --short"
+Recommended commit sequence
+Commit
+Purpose
+chore(repo): tag pre-layer-split baseline
+freeze rollback point
+docs(repo): add repo-map and layer policy
+explain structure before moving
+files
+move(canon): relocate master plan and law texts
+establish source of truth
+move(docs): split unsorted docs into topical 
+folders
+make docs navigable
+move(history): relocate releases and heavy assets
+remove archive pressure from
+active tree
+move(third-party): normalize pygpt upstream and 
+overlay paths
+isolate external code
+refactor(ci): update workflows codeowners and path 
+filters
+keep automation aligned
+refactor(runtime): remove compatibility shims
+phase two only, after tests
+stabilize
+13
+
+------------------------------------------------------------------------
+Page 14
+------------------------------------------------------------------------
+
+Artifact, CI/CD, and release handling
+The binary-artifact side of this repository should be handled with a much stricter rule: recipes and
+manifests in Git; heavy generated outputs in Releases or LFS; submodules for live third-party code;
+overlays separate from upstream. That is directly supported by GitHub’s guidance on large files, Releases,
+and LFS object handling in archives. 
+Large files, binaries, and generated artifacts
+Use the following policy:
+Artifact class
+Recommended home
+Why
+Installer kernels, initrd.gz ,
+EFI images, ISO payloads
+GitHub Releases attached to
+tags
+deployable binaries; large and
+generated
+Frequently-needed binary assets
+that must stay cloneable
+Git LFS
+GitHub supports this pattern
+up to plan-based per-file limits
+Old release payloads kept only
+for lineage
+history/releases/  or
+Release assets plus manifest
+preserve lineage without
+cluttering active tree
+Deterministically regenerable
+boot/module sets
+build recipe in Git, output in
+Releases
+source-controlled provenance,
+smaller repo
+Upstream PyGPT dependency
+submodule
+upstream history stays distinct
+Project-specific modifications to
+upstream
+overlay directory, not mixed
+into upstream
+clean diff against third-party
+base
+Checksums, manifests, SBOMs
+keep in Git
+lightweight provenance
+metadata
+The repository’s own ARTIFACT_SURFACE.md  already recommends a checksum-manifest pattern and
+explicitly identifies several heavy files as better suited to release artifacts. GitHub likewise recommends
+Releases for distributing large binaries and LFS for files beyond normal Git comfort. If LFS is used, note that
+GitHub archives exclude LFS objects by default unless repository settings opt in, and those downloads count
+toward LFS bandwidth. 
+Recommended CI/CD changes
+The repo already has useful building blocks: a general CI workflow, CodeQL, Bandit, dependency scanning,
+and artifact/container-adjacent scanning. The missing step is path-aware specialization and layer-aware
+required checks. 
+I recommend this workflow layout:
+22
+4
+22
+23
+24
+25
+26
+27
+14
+
+------------------------------------------------------------------------
+Page 15
+------------------------------------------------------------------------
+
+Workflow
+Trigger paths
+Enforced
+on PRs?
+Purpose
+ci-runtime.yml
+src/** , tests/** , 
+pyproject.toml , 
+requirements.txt , config/**
+yes
+lint, unit tests, import
+smoke tests
+ci-canon.yml
+canon/** , README.md  source, 
+docs/architecture/**
+yes
+canon consistency
+checks, broken-
+reference checks
+ci-docs.yml
+docs/** , README.md , assets/**
+yes
+markdown lint, link
+checks
+ci-security.yml
+src/** , infra/** , .github/** ,
+dependency manifests
+yes
+Bandit, pip-audit,
+secret scan, CodeQL
+ci-artifact-
+policy.yml
+platform/** , history/releases/
+** , assets/video/** , assets/
+images/**
+yes
+large-file policy,
+manifest validation
+release-
+platform.yml
+tags like release/*
+on tag
+build and upload
+release assets
+sync-website-
+metadata.yml
+manual or on canon tag
+optional
+regenerate public-
+facing summaries for 
+dlrp.ca
+That structure uses GitHub Actions path filters correctly. GitHub’s workflow syntax supports paths  and 
+paths-ignore , with the caveat that skipped required workflows can remain pending if branch protection
+expects them. Because of that, required checks should map to always-created workflows with stable job
+names, or you should use rulesets carefully so optional workflows do not block merges. GitHub’s protected-
+branch guidance also warns that job names must be unique across workflows when they are used as
+required status checks. 
+Concrete CI upgrades
+The most useful near-term CI changes are these:
+Add a canon consistency job that fails if the README version badge, README project card, and the
+current file under canon/machine/  disagree on version or path. That would have caught the
+current README v32.0  versus master-plan-v30.2.json  mismatch immediately. 
+Add an import smoke-test job narrower than the full suite, for example:
+python -c "import huey.api"
+python -c "from huey import cli"
+pytest -q tests/test_env_validation.py
+28
+1. 
+2
+3
+2. 
+3. 
+4. 
+5. 
+15
+
+------------------------------------------------------------------------
+Page 16
+------------------------------------------------------------------------
+
+This should run even if the broader suite remains unstable, because the repo’s recent remediation summary
+explicitly notes that failing collection can hide regressions. 
+Add a secret scanner to match the documented policy; the security summary specifically notes no
+committed secret-scanner configuration was detected. 
+Split docs from runtime in CodeQL and artifact scans only where that improves signal. The current
+CodeQL already ignores docs/assets for some events, which is sensible. 
+Governance and repository operating rules
+The repository should adopt governance that matches its new physical structure. GitHub already provides
+the primitives: pull request templates, issue templates/forms, CODEOWNERS, protected branches, and
+rulesets. 
+Recommended repository roles
+Team size is unspecified, so the model should work for a solo maintainer and scale if collaborators are
+added later.
+Role
+Solo-repo reality
+Responsibility
+Founder /
+maintainer
+Dylan holds it
+final merge authority, public posture, release
+approval
+Canon steward
+same person or delegated
+later
+law, glossary, master plan, README truth
+alignment
+Runtime steward
+same person or delegated
+later
+src/ , CLI/API, tests, import stability
+Archive steward
+same person or delegated
+later
+historical payloads, lineage tags, manifests
+Release steward
+same person or delegated
+later
+release assets, checksums, changelog
+Security steward
+same person or delegated
+later
+secret handling, CI security, incident notes
+PR templates
+Create one default PR template and one migration-specific template.
+Recommended default sections:
+## Layer(s) touched
+- canon
+13
+1. 
+13
+2. 
+24
+29
+16
+
+------------------------------------------------------------------------
+Page 17
+------------------------------------------------------------------------
+
+- implementation
+- experiments
+- history
+- docs
+- third_party
+- ci
+## What changed
+## Canon impact
+- [ ] none
+- [ ] README updated
+- [ ] master plan updated
+- [ ] constitutional text updated
+## Lineage impact
+- [ ] no path moves
+- [ ] git mv only
+- [ ] compatibility pointer added
+- [ ] release/reference links updated
+## Artifact impact
+- [ ] no binaries
+- [ ] binaries added
+- [ ] binaries moved to release assets
+- [ ] manifest/checksum updated
+## Verification
+- tests:
+- smoke checks:
+- docs/canon checks:
+GitHub supports repository pull request templates and issue templates on the default branch, and uses
+CODEOWNERS plus protected branches to standardize reviews. 
+Commit message convention
+A lightweight scoped convention is enough:
+Prefix
+Meaning
+canon:
+changes authoritative truth
+impl:
+runtime or infra behavior change
+docs:
+explanatory docs only
+exp:
+experiment/prototype only
+30
+17
+
+------------------------------------------------------------------------
+Page 18
+------------------------------------------------------------------------
+
+Prefix
+Meaning
+archive:
+historical move or archival action
+deps:
+dependency or third-party update
+move:
+structure-only path move with no content change
+ci:
+workflow/ruleset/check change
+release:
+tag/release manifest/assets
+For structural moves, prefer messages that explicitly say no content change when true, for example: 
+move(canon): relocate law texts without content changes .
+Archival policy
+Use a simple content-state rule:
+State
+Rule
+Active canon
+editable, reviewed, versioned
+Active
+implementation
+editable, tested, reviewed
+Experimental
+editable, but never cited as source of truth
+Historical
+frozen by default; edits limited to pointer notes, metadata, and redaction if
+required
+Release assets
+immutable once published except for clear supersession notes
+Tagging policy should reflect the layers:
+Tag family
+Use
+canon/v32.0
+authoritative canon snapshot
+runtime/v1.0.0-alpha.1
+runnable implementation snapshot
+release/hueyos-6.18.5
+public release payload tag
+archive/pre-layer-split-2026-05-03
+structural rollback point
+GitHub Releases are built on tags, so this tagging split maps cleanly to GitHub’s native release model. 
+Risks, rollback, and limitations
+The main reorganization risks are predictable.
+31
+18
+
+------------------------------------------------------------------------
+Page 19
+------------------------------------------------------------------------
+
+Risk
+Why it matters
+Mitigation
+Broken imports
+current runtime/tests already use
+mixed namespaces and shims
+do structural split before namespace
+cleanup
+Broken external
+links
+website, README, docs, and
+scripts may reference old paths
+maintain mapping table, pointer READMEs,
+release notes
+Submodule
+breakage
+moving submodules changes
+.gitmodules  expectations
+use git mv , then 
+git submodule sync && git 
+submodule update --init --
+recursive
+CI deadlocks
+path-filtered workflows can leave
+required checks pending
+use stable always-present required jobs or
+aligned rulesets
+Artifact loss or
+confusion
+release payloads are part of
+lineage
+baseline tag, manifest files, GitHub Releases,
+checksums
+Canon drift
+surviving the
+move
+moving files alone will not
+reconcile truth
+add canon-consistency CI and designate a
+canon steward
+Rollback plan
+Before any move, create and push a signed or at least immutable baseline tag such as pre-layer-
+split-2026-05-03 .
+Land the reorg via a single merge commit from reorg/layers-2026-05  into main , even if the
+reorg branch itself used many commits.
+If rollback is needed after merge, revert the merge commit:
+git checkout main
+git revert -m 1 <merge-commit-sha>
+git push origin main
+If the reorg branch itself becomes confused before merge, reset it hard to the baseline tag and
+restart selectively:
+git checkout reorg/layers-2026-05
+git reset --hard pre-layer-split-2026-05-03
+Keep a checked-in docs/contributor/path-map.md  so even a reverted branch preserves the
+understood lineage mapping.
+1. 
+2. 
+3. 
+1. 
+1. 
+19
+
+------------------------------------------------------------------------
+Page 20
+------------------------------------------------------------------------
+
+Open questions and limitations
+A few details remain explicitly unspecified in the accessible evidence and should be treated as options, not
+facts:
+Exact full per-file appendix: I verified the repo’s structure, major families, and many exact files, but
+I could not retrieve a fully lossless live recursive tree with exact size and last-modified metadata for
+every path through the exposed connector interfaces. The repo’s own generated inventory and
+artifact report make the high-level structure clear, but a local scripted export is still the right way to
+produce the final CSV-grade appendix. 
+Preferred Python import namespace: huey  versus hueyos  should be resolved in phase two,
+after structure cleanup, because the current tree shows both names in live use. 
+Whether offline installer pools are first-class product goals: if yes, some .udeb /boot payloads
+may remain in Git or LFS; if not, they should move to Releases/object storage. 
+LFS entitlement and bandwidth plan: GitHub LFS limits depend on account plan; if that is not yet
+decided, prefer Releases for larger public payloads and reserve LFS for assets that genuinely need
+checkout-time fetch semantics. 
+Prioritized references
+Priority
+Source
+Why it matters
+highest
+live repository files via GitHub connector
+direct evidence of current README, master
+plan, CI, tests, CODEOWNERS, submodule
+config, and artifact policy
+highest
+dlrp.ca  project, software, and download
+pages
+public-facing priority source and narrative
+baseline
+high
+GitHub Docs on large files, Releases, LFS,
+CODEOWNERS, branch protection, rulesets,
+templates, workflow syntax
+primary operational guidance for the exact
+migration/repo-governance questions
+high
+git-scm.com  docs for git mv , git 
+submodule , gitmodules
+primary mechanics for history-preserving
+moves and submodule relocation
+medium
+repo-internal restructure docs and artifact
+report
+confirms existing intent and identifies
+already-known pressure points
+Key sources used in this report include the live README.md , master-plan-v30.2.json , 
+ARTIFACT_SURFACE.md , pyproject.toml , test files, workflow files,
+.gitattributes , .gitmodules , CODEOWNERS, the repo’s own restructuring notes, and the current 
+dlrp.ca  project/download/software pages, along with official GitHub and Git documentation on
+repository limits, LFS, Releases, CODEOWNERS, protected branches, rulesets, templates, workflow syntax, 
+git mv , and submodules. 
+• 
+15
+4
+• 
+12
+10
+11
+• 
+4
+• 
+32
+2
+3
+4
+12
+10
+11
+5
+17
+18
+7
+8
+33
+20
+
+------------------------------------------------------------------------
+Page 21
+------------------------------------------------------------------------
+
+https://dlrp.ca/projects/monkey-head-project-hueyos/
+https://dlrp.ca/projects/monkey-head-project-hueyos/
+README.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/README.md
+docs/unsorted/honeycomb-storage.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/8e83e1ab972dceb3c04024c49b3540f3ce21aa3e/docs/unsorted/
+honeycomb-storage.md
+ARTIFACT_SURFACE.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/ARTIFACT_SURFACE.md
+.gitattributes
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/.gitattributes
+https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-
+files-on-github?platform=linux&ref=rahul-nath
+https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github?
+platform=linux&ref=rahul-nath
+repository-restructure-recommendation.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/docs/unsorted/repository-restructure-recommendation.md
+repository-restructure-inventory.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/docs/unsorted/repository-restructure-inventory.md
+https://git-scm.com/docs/git-mv.html
+https://git-scm.com/docs/git-mv.html
+test_cli.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/tests/test_cli.py
+test_api_routes.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/tests/test_api_routes.py
+pyproject.toml
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/pyproject.toml
+SECURITY_REMEDIATION_SUMMARY.md
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/SECURITY_REMEDIATION_SUMMARY.md
+api.py
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/src/huey/memory/PY/api.py
+git-ls-files.pass-01.txt
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/.migration/inventory/git-ls-files.pass-01.txt
+.gitmodules
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/.gitmodules
+CODEOWNERS
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/.github/CODEOWNERS
+https://dlrp.ca/download/
+https://dlrp.ca/download/
+1
+33
+2
+3
+4
+5
+6
+16
+22
+7
+8
+9
+20
+10
+11
+12
+13
+14
+15
+17
+18
+19
+21
+
+------------------------------------------------------------------------
+Page 22
+------------------------------------------------------------------------
+
+https://docs.github.com/articles/about-code-owners
+https://docs.github.com/articles/about-code-owners
+ci.yml
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/.github/workflows/ci.yml
+codeql.yml
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/.github/workflows/codeql.yml
+security-bandit.yml
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/.github/workflows/security-bandit.yml
+security-dependency-scan.yml
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/.github/workflows/security-dependency-scan.yml
+security-artifact-container-scan.yml
+https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/.github/workflows/security-artifact-container-scan.yml
+https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax?
+utm_cta=website-webinars-vhol-feature
+https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax?utm_cta=website-webinars-vhol-feature
+https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/getting-started/managing-
+and-standardizing-pull-requests
+https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/getting-started/managing-and-standardizing-pull-
+requests
+https://docs.github.com/repositories/releasing-projects-on-github/about-releases
+https://docs.github.com/repositories/releasing-projects-on-github/about-releases
+https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-git-large-file-
+storage?apiVersion=2022-11-28
+https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-git-large-file-storage?
+apiVersion=2022-11-28
+21
+29
+23
+24
+25
+26
+27
+28
+30
+31
+32
+22

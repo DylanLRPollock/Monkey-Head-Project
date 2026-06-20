@@ -1,0 +1,1039 @@
+Legacy Tech in 2025: Floppy Disks, Zip Drives, and
+Vintage Ports
+Introduction and Historical Context
+Floppy disks, Zip drives, and traditional peripheral ports like parallel and serial interfaces were once pillars
+of personal computing. The first floppy disk was developed by IBM in the late 1960s and introduced
+commercially in 1971 as an 8-inch floppy
+. Over the next decade, smaller formats emerged – 5¼-inch
+floppies in 1976 (common in early PCs) and the rigid 3½-inch floppy in 1982, which became a  de facto
+standard by the late 1980s
+. For nearly 40 years, floppy diskettes were ubiquitous for storing files,
+distributing software, and transferring data
+. By the mid-2000s, however, floppies had “gone the way
+of the punched card,” supplanted by CDs, DVDs, USB flash drives, and eventually cloud storage
+. Major
+manufacturers ceased floppy disk production in the 2000s (Sony made its last new disk in 2011
+),
+rendering these once-common 1.44 MB disks a rarity in modern times. 
+Figure 1: Three generations of floppy disk media – the original 8-inch floppy (left), 5¼-inch disk (center), and 3½-
+inch disk (right). These magnetic diskettes were a universal storage medium from the 1970s through the 1990s.
+Alongside floppy drives, other legacy attachments thrived in late-20th-century computing. Iomega’s Zip
+drive, introduced in 1994, was a higher-capacity floppy-like system that offered 100 MB (later 250 MB and
+750 MB) on removable disks
+. It filled a niche for portable storage in the late 1990s as a “superfloppy,”
+though it never fully replaced the 3½-inch floppy and fell out of favor in the 2000s once CD-RWs and USB
+sticks became common
+. Meanwhile, the standard parallel port (the 25-pin printer port) and serial
+port (the 9-pin or 25-pin RS-232 connector) served as essential I/O interfaces on PCs for decades. The
+parallel port, dating back to the IBM PC (1981), allowed printers and scanners to connect, and even provided
+bit-level access for hardware hackers. The serial port, a staple for modems and terminals since the 1970s,
+enabled asynchronous communication one bit at a time
+. These ports persisted through the 1990s
+but were largely phased out on consumer PCs in favor of USB and network interfaces in the 2000s
+.
+1
+2
+2
+3
+4
+5
+4
+6
+7
+8
+9
+10
+11
+12
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+By 2025, it is rare to find modern laptops or desktops with built-in floppy drives or RS-232/parallel ports;
+they are considered legacy hardware. Yet, despite their obsolescence in mainstream use, floppy disks and
+other legacy attachments continue to play surprising roles in the present day.
+Modern-Day Use Cases and Applications
+Even  in  2025,  “outdated”  tech  like  floppies  and  old-school  ports  remains  in  active  use  within  certain
+industries, governments, and legacy systems. These use cases typically involve systems that were designed
+around these technologies and continue to function reliably. Below we explore some notable examples:
+Aviation and Aerospace: Perhaps the most publicized modern floppy disk users are in aviation.
+Many older model aircraft rely on floppies to update avionics databases. For example, some Boeing
+747-200 and 767 jets, as well as early Airbus A320s and 1990s-era Gulfstream business jets, still load
+critical navigation and runway data via 3.5-inch floppies
+. An airline maintenance manager for
+Geosky (a cargo carrier in Georgia) described how every 28-day update to a 36-year-old Boeing 747’s
+flight management system requires downloading data onto two 3.5″ floppy disks and physically
+inserting them into the aircraft’s computer – a process that “takes about an hour”
+. Because
+modern PCs no longer include floppy drives, the airline had to procure external USB floppy drives to
+facilitate this process
+. As recently as 2020, British Airways was still using floppies for navigation
+updates on its 747s
+, underscoring how long-lived these planes (and their storage media) can be.
+Aerospace  agencies  have  likewise  been  known  to  use  legacy  media;  NASA,  for  instance,  had
+equipment and archives utilizing floppies well into the 2010s
+. (Notoriously, until 2019 the U.S.
+nuclear forces even ran on 1970s-era IBM computers using 8-inch floppies
+, illustrating how
+defense systems can lag in updates due to strict certification processes.)
+Government and Infrastructure: Government agencies can be surprisingly dependent on legacy
+tech. In Japan, bureaucratic procedures heavily relied on floppy disks and other media like CD-ROMs
+well into the 2020s, prompting the Digital Minister Taro Kono to declare a “war on floppy disks” in
+2022
+. At that time, some 1,900 government processes still required businesses to submit data
+on floppy disks or other legacy formats
+. After a focused modernization campaign, Japan finally
+eliminated floppies from all government use by mid-2024, with Kono triumphantly announcing
+“We have won the war on floppy disks on June 28!”
+. This victory came two decades after
+floppies’ heyday, highlighting how slowly large institutions move off trusted technology. In the
+United  States,  the  Federal  Aviation  Administration  made  headlines  for  using  1990s  systems
+(Windows 95 PCs with floppy drives) in air traffic control; only in 2025 did the FAA announce plans to
+fully replace these antiquated systems with modern ones – “no more floppy disks or paper strips” in
+the  next-generation  solution
+.  The  persistence  of  floppies  in  critical  infrastructure  often
+comes down to the “if it ain’t broke, don’t fix it” philosophy and the high cost of overhaul. A 2023
+evaluation found a third of U.S. air traffic control systems were running on technology unsustainable
+long-term
+, spurring funding for upgrades. Still, until new systems are operational, those old PCs
+and floppy-dependent processes must be maintained to keep planes moving safely.
+Industrial and Manufacturing Equipment: A great deal of industrial machinery and equipment
+installed  in  the  1980s–1990s  remains  in  service  today  –  from  manufacturing  robots  and  CNC
+machines to medical devices – and many of these rely on legacy media or ports. In factories, you can
+find  machines  controlled  by  software  on  floppy  disks  or  using  RS-232/parallel  interfaces  for
+programming and data transfer. Such machines often cost tens of thousands or even millions of
+• 
+13
+14
+15
+16
+17
+18
+19
+20
+• 
+21
+22
+23
+24
+25
+26
+27
+• 
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+dollars, and replacing them isn’t trivial. As one technician noted, a plastics factory in 2016 still ran a
+critical machine via a Windows 98 PC because a modern replacement for the machine would cost
+around \$5 million; that PC’s role was to interface with the machine’s parallel and serial ports for
+control, and it was kept running out of necessity
+. This scenario is not unique – embedded systems
+in automation frequently use serial (UART/RS-232) links because they are simple and well-proven.
+Industrial control units, CNC milling machines, embroidery machines, and medical analyzers from
+past decades often have only floppy drives or serial/parallel ports for input/output. For example, a
+Mississippi entrepreneur who bought a used 2004 Tajima embroidery machine found that the only
+way to transfer new designs to it was via floppy disk – and as his supply of working floppies
+dwindled, he grew worried about being unable to operate his business
+. (He ultimately solved
+it by installing a floppy-to-USB emulator device in the machine
+, as discussed later.) In another
+case, an aircraft maintenance company executive noted that aviation shops still encounter “strange
+evolutionary dead ends” of tech – “We still use PCMCIA cards and Zip disks, which are harder and harder
+to find as well,” he said, referring to specialized storage used in certain testing and maintenance gear
+. The common thread is that these industries value reliability and continuity over cutting-edge
+tech: as long as a legacy system remains  functional and certified, companies will keep using it
+rather than risk costly downtime or re-engineering
+. Tom Persky, who runs a floppy disk resale
+business, explains that for operators of older medical, aviation, or industrial equipment, “they’re
+going to continue to use it for as long as it continues to serve their purposes”
+. Changing a
+working process incurs expense and risk, so many enterprises stick with what works – even if that
+means scrounging for floppy disks in 2025.
+Legacy Computing and Hobbyist Uses: Outside of mission-critical domains, floppies and old ports
+survive  in  more  elective  contexts  as  well.  Vintage  computing  enthusiasts keep  older  home
+computers,  consoles,  and  arcade  machines  alive,  many  of  which  require  floppies  or  serial
+connections to load software. Retro hobbyists routinely seek out floppy disks for platforms like the
+Apple II, Commodore Amiga, or MS-DOS PCs, either to run original programs or swap data with
+modern systems. According to Persky (of FloppyDisk.com), besides industry clients he also sells disks
+to “computer hobbyists [and] artists” who have creative or nostalgic projects involving floppies
+.
+Musicians, too, sometimes use vintage synthesizers and samplers that load sounds from floppies –
+for instance, the iconic Roland and Ensoniq keyboards of the 80s/90s – and they must maintain
+libraries of floppy disks to use these instruments
+. Even the popular family restaurant chain
+Chuck E. Cheese relied on floppies until recently: as of 2023, about 50 of its locations were still using
+3.5″ floppy disks (branded with the company logo) to update the programming of their animatronic
+stage characters
+. In a viral TikTok video, a Chuck E. Cheese technician demonstrated loading a
+new show: inserting a floppy labeled “Chuck E. Cheese Evergreen Show 2023” into a bulky control
+rack, which in turn coordinates the animatronic movements, lights (via accompanying DVDs), and
+music
+. This decades-old system was being phased out as the chain remodels restaurants
+(opting for costumed performers or digital displays in lieu of animatronics), and the technician noted
+it was likely the  last time he’d perform a floppy-based update
+. The video sparked nostalgia
+among viewers who remembered when “a freaky dancing mouse” controlled by a floppy disk was
+high-tech entertainment
+. It’s a perfect example of how legacy tech can lurk in unexpected
+corners of everyday life. 
+In summary, floppy disks and legacy ports persist wherever systems have a long service life or high
+upgrade barriers. Airlines, government offices, hospitals, factories, and even pizza arcade robots all provide
+proof that this technology, though obsolete, is still doing its job. Their continued use is largely due to inertia
+28
+29
+30
+31
+32
+33
+18
+• 
+34
+19
+35
+36
+37
+38
+39
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+and reliability: changing to something new isn’t worthwhile until absolutely necessary. As one IT author put
+it, older systems stay in place because “if it ain’t broke, why fix it?” – and as a bonus, these self-contained,
+offline setups often have a “layer of security built-in” by virtue of not being networked
+. We explore
+these benefits next.
+Benefits of Legacy Technology in 2025
+Surprisingly, floppy disks and other legacy attachments offer a number of unique advantages in today’s
+context. While their capacities and speeds are laughably small by modern standards, there are scenarios
+where old tech’s simplicity and limitations become strengths. Key benefits include:
+Air-Gapped Security: One oft-cited advantage of removable media like floppies is that they are
+physically offline. Transferring data via a floppy disk or serial cable requires direct access, which
+greatly reduces exposure to remote hacking. In cybersecurity terms, these legacy tools enforce an
+“air gap.” As an example, the animatronic control system at Chuck E. Cheese is entirely off the
+internet – a floppy disk must be hand-carried to update it, eliminating any risk of an online intruder
+making the mascot dance without permission
+. Likewise, military and industrial systems that use
+floppies benefit from this isolation: you can’t remotely inject malware into a 747’s avionics if the
+update must come via a vetted disk in a technician’s hands. Tom Persky notes that floppies are “not
+really hackable” in the sense that there’s no network interface to exploit
+. This inherent security-
+through-offline-design is increasingly valued for critical infrastructure. Even the small  capacity of
+floppies can act as a safeguard – it’s impossible to steal gigabytes of data or plant a huge Trojan
+when the medium maxes out at 1.44 MB. In an era of widespread cyber threats, the humble floppy’s
+limitation becomes an advantage: it forces a controlled, small-scale data exchange. 
+Simplicity and Reliability: Legacy interfaces are extremely well-understood and dependable. The
+technology in floppies, RS-232 serial, and Centronics parallel ports is mature and documented to the
+point  of  being  textbook  material.  “Extremely  stable,  extremely  well-understood”  is  how  Persky
+describes floppy disks’ performance for small data tasks
+. These systems have low complexity –
+no mysterious firmware or Internet dependencies – which means fewer points of failure. A floppy
+disk, if kept in good condition, will operate the same way it did 30 years ago. Serial ports send bits in
+a straightforward stream; there’s no complicated driver stack beyond a UART chip. This simplicity
+also means ease of use and integration: as a blog on medical PCs notes, serial ports “do not require
+custom drivers, and are supported by most operating systems” out of the box
+. In a hospital
+setting, you can plug an old serial-based heart monitor into a new computer and it  just works,
+without  hunting  for  proprietary  USB  drivers.  The  same  often  goes  for  parallel  port  devices.
+Furthermore, many legacy systems were built to be robust – floppies, for instance, have a durability
+in certain conditions (no internet means immunity to network outages; a floppy can’t get a virus
+unless someone deliberately writes one to it). In the field, technicians appreciate that older tech
+“performs an unbelievably great job for very small bits of data” reliably
+. In short, when the task is
+simple (like conveying a configuration file or triggering a machine function), simpler tech can be
+more dependable than complex modern solutions.
+Long-Term Data Retention: Magnetic floppy disks, if stored properly, can retain data for decades –
+long  enough  that  archives  and  libraries  still  occasionally  retrieve  information  from  them.
+Organizations with historical data on floppies find that, despite the media’s fragile reputation, many
+disks remain readable well past their intended lifespan. For example, the National Archives and
+40
+• 
+41
+42
+• 
+42
+43
+44
+42
+• 
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+other institutions have caches of documents and research stored on floppies from the 1980s/90s,
+which can often be recovered with the right drive. Unlike cloud services or modern hard drives that
+might become inaccessible due to format or encryption changes, a floppy disk’s content (usually
+plain FAT12 file system) is relatively straightforward to access as long as a drive is available. Thus,
+some see floppies (and similarly CDs or printouts) as a hedge against rapid obsolescence – you can
+tuck away a floppy and still potentially read it 30 years later, whereas accessing a 30-year-old
+proprietary software file might be harder. Indeed, many archives “have important data still stored
+on floppy disks”, necessitating that they keep drives and know-how around to read them
+.
+Legacy ports share a similar longevity: RS-232 serial protocols dating back to the 1960s are still
+implemented in new microcontrollers today, meaning a device using serial communication in 1990
+can often be interfaced with equipment in 2025 with minimal fuss. This backwards-compatibility
+makes old tech a surprisingly future-proof choice in systems that must operate (and be serviceable)
+across generations of technology.
+Control and Limited Scope: Using older tech can enforce a deliberate simplicity of scope that has
+operational benefits. For example, loading updates via floppy disk means the update process is
+manual and observable – an operator is involved and can notice if something is amiss (like a disk
+error), as opposed to silent automatic updates that might introduce unseen issues. Legacy ports
+often  require  point-to-point  connections,  which  means  you  know  exactly  which  devices  are
+interacting. In industrial settings, engineers often like the  deterministic nature of serial/parallel
+communications: no complex network stack, no contention with other traffic, just a direct line at a
+known speed. This can make troubleshooting much easier. Also, legacy media impose strict size
+limits which, in certain applications, is a feature. For instance, if a machine’s configuration file must fit
+on a 1.44 MB floppy, it inherently can’t be bloated – engineers are forced to be efficient and only
+include what’s necessary. Contrast this with modern systems where configuration or log files can
+grow uncontrollably large. While not a universal advantage, this “forced minimalism” can reduce
+attack surfaces and errors (only small, known-good files are transferred). In essence, the constraints
+of legacy tech can encourage good practices like minimal data transfer and human oversight. 
+Cultural  and  Educational  Value: Beyond  practical  advantages,  it’s  worth  noting  the  cultural
+benefit of keeping legacy technology in view. A floppy disk or a parallel cable can be a fantastic
+educational tool in 2025 to explain the evolution of computing. Students can tangibly understand
+concepts like bytes and baud rates by using these slower, tactile devices. There is also a nostalgia
+and inspiration factor – many current engineers first learned programming or electronics on systems
+with serial ports and floppies. Retaining some legacy elements (like a serial console on a Raspberry
+Pi, or a “Save” icon that looks like a floppy) connects new generations to the lineage of technology
+development.  In  retro-computing  hobbies,  enthusiasts  derive  enjoyment  and  knowledge  from
+restoring old hardware, which often entails dealing with floppies and ISA cards. Far from being
+useless,  these  legacy  items  spark  creative  projects  (for  example,  artists  have  made  musical
+ensembles out of floppy drive sounds, and retro gamers mount old motherboards in modern cases
+for fun). The floppy disk emoji and save-icon omnipresence is a cultural quirk that actually helps
+teach younger users about the history of storage – inevitably someone asks “why is the save icon a
+vending machine?” and that opens a history lesson. Thus, keeping these technologies around in
+some form enriches our understanding of how far computing has come.
+19
+• 
+• 
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+In summary, while no one would argue that a floppy disk is  better than an SSD for general-purpose
+computing, in specific contexts the old tech’s very lack of sophistication becomes an asset. Stability, security,
+and simplicity are the core strengths that have kept legacy attachments on duty well into the 2020s.
+Challenges and Limitations in 2025
+Of course, the flipside of using decades-old technology is dealing with its severe limitations and growing
+pains as the world moves on. Anyone relying on floppies or parallel ports today faces a number of
+challenges:
+Minuscule Capacities: The storage capacity of legacy media is a major drawback. A standard 3½″
+floppy disk holds only 1.44 MB – effectively nothing by modern standards (for perspective, a single
+high-resolution photo or a few seconds of HD video would not fit). The BBC once estimated that it
+would take over 20,000 floppy disks to equal the data on a modest 32 GB USB flash drive
+. Even
+the “high-capacity” Iomega Zip disks topped out at 750 MB
+, less than a CD’s worth. This means
+legacy  media  cannot  handle  modern  file  sizes;  users  must  split  files,  compress  them,  or  limit
+themselves to small data. It’s not just storage size – throughput speed is also abysmal. Floppy drives
+read/write at around 50–125 KB/s in practice, meaning a single 1.44 MB disk can take 20–30 seconds
+to load. Parallel port Zip drives, while faster than floppies, transferred at best around 1–2 MB/s
+ –
+glacial compared to USB2.0 (60 MB/s) or even a basic network connection. Thus, using such media in
+2025 is painfully slow for any significant data transfer. These limitations are workable only because,
+in most current use cases, the data involved truly is tiny (e.g. a few kilobyte config files, text records,
+or simple program instructions). As software and data sizes continue to grow, the gap only widens,
+rendering floppies increasingly impractical except for the most trivial tasks. 
+Media Degradation and Supply Shortage: Physical decay is a real concern. Floppy disks were never
+the most robust storage – they are susceptible to magnetic fields, heat, humidity, and wear from
+repeated use. A floppy might have been rated for perhaps 3,000 – 5,000 insertions in its prime;
+decades later, many disks have far fewer reliable read/write cycles left. Technicians in the field report
+that floppies are “very sensitive and prone to failing”, sometimes becoming unusable after just a few
+uses in critical applications
+. In the airline example, Geosky noted they could use each floppy only
+~3 times on average before it failed, at which point it had to be discarded
+. As for Iomega Zip
+disks, they infamously suffered from the “click of death” – a hardware flaw that could render disks
+unreadable – and are also prone to magnetic degradation over time. Beyond the media lifespan,
+finding new disks is getting hard. No major company manufactures floppies at scale anymore; the
+worldwide inventory is basically whatever stock was produced by the early 2000s and remains
+unused in storage
+. Tom Persky, sitting on a warehouse of floppies, observes that this inventory is
+“fixed” and being  “blown through day by day”
+. He sells about 1,000 floppies per day, which
+actually indicates surprisingly strong demand, but also eats into finite reserves
+. Certain
+formats, like 8-inch diskettes, are virtually extinct – Persky charges \$5 per disk for the few 8-inchers
+he  has  left,  and  notes  “there  aren’t  any  left” beyond  those
+.  As  supplies  dwindle,  prices  for
+remaining stock have risen (3½″ disks that once cost \$0.07 each now go for \$1 or more apiece
+). In the near future, we can expect outright shortages where no amount of money can easily
+procure fresh, reliable disks. This will force many holdouts to finally upgrade or find alternatives.
+Similarly,  authentic  parallel  and  serial  port  hardware  is  getting  scarce  –  for  example,  new
+motherboards rarely include these ports, and high-quality cables or replacement parts may need to
+be special-ordered. The ecosystem sustaining legacy tech is slowly drying up.
+• 
+45
+6
+46
+• 
+47
+47
+48
+49
+50
+51
+52
+50
+51
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+Compatibility with Modern Hardware: Another challenge is simply plugging these devices in to
+contemporary computers. Modern PCs have not included floppy drive controllers on motherboards
+for many years, and laptops eliminated optical and floppy drives long ago. The same goes for serial
+(COM) and parallel (LPT) ports – aside from some specialized business models, you won’t find these
+on new laptops or desktops. This means users must rely on adapters, bridges, or old machines to
+interface with legacy tech. USB floppy disk drives are available (they contain their own floppy
+controller and present the disk as USB storage), and indeed airlines and archives use external USB
+floppy drives to read disks on new computers
+. However, even USB floppy drives have limitations
+– some exotic floppy formats (like older Apple or 5¼″ PC disks) might not be supported by modern
+USB models, necessitating an older vintage PC to read them. For serial and parallel ports, the go-to
+solution  is  USB  converters  or  PCIe  expansion  cards.  USB-to-serial  adapters  are  common  and
+generally work well for basic RS-232 connectivity
+. USB-to-parallel adapters also exist, but notably
+they are usually designed only for printers (implementing a one-way print protocol). They do  not
+replicate a full bidirectional parallel port with direct pin control, which means certain uses – like bit-
+banging a device or using a parallel port dongle – won’t work via a simple USB cable
+. In those
+cases, users might need a PCI Express card that adds a real parallel port, or even maintain an older
+PC that has the native ports. In short, as the native support disappears, using legacy attachments
+often introduces extra hoops to jump through (finding drivers for the adapter, ensuring software
+compatibility, etc.). Even software support is waning: for instance, Windows 10 and 11 dropped built-
+in support for some floppy drive modes and parallel port access that Windows 98/XP handled out-of-
+the-box
+. This can make it increasingly tricky to get a modern OS to talk to old hardware.
+Many in the community lament that they must keep an old Windows XP machine or a DOS boot disk
+around just to run a floppy or parallel-port programmer device. The knowledge gap is also widening
+– younger techs may never have configured a BIOS to recognize a 1.44 MB A: drive, or dealt with
+COM port IRQ settings, making troubleshooting harder as time goes on.
+Physical and Operational Fragility: Legacy devices often require more care and feeding. Floppy
+drives need occasional cleaning (dust on the read head can render disks unreadable). The disks
+themselves can develop mold or binder degradation if kept in humid conditions for years. Serial and
+parallel ports are large and not designed for frequent mating cycles by today’s standards; the pins
+can bend or corrode. A serial port also cannot supply power (unlike USB), so any external device
+needs its own power source, adding complexity for users. In the medical PC realm, it’s noted that
+serial port connectors have “fragile pins that are easy to bend or break” compared to more robust
+USB connectors
+. All this means maintaining legacy attachments is somewhat of a craft. You
+may find yourself digging through eBay for replacement floppy belts or spare Zip drive power
+supplies. As mainstream support evaporates, finding technical support is also a challenge – if an
+old ISA-bus floppy controller fails on an industrial machine, few engineers today know how to repair
+or source that. The original manufacturers may not exist to help, or may have long disavowed the
+product. Thus companies sometimes hoard old parts or cannibalize retired equipment to keep
+others running. The complexity of keeping ancient tech alive grows each year beyond its natural
+lifespan.
+Environmental and Safety Concerns: There is also an argument to be made that clinging to
+outdated tech can have negative impacts on sustainability and safety. Floppy disks and tapes are
+plastic and metal waste once discarded; by Persky’s admission, they are “toxic medium… basically
+plastic  waste”  that  ideally  should  no  longer  exist  in  routine  use
+.  Many  legacy  electronic
+components  contain  leaded  solder,  old  battery  chemistries,  or  other  hazardous  materials  that
+• 
+53
+54
+55
+56
+57
+• 
+58
+59
+• 
+60
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+modern designs have minimized. While using an existing old system is often greener than junking it
+for  a  new  one,  at  some  point  these  devices  become  e-waste  that  must  be  handled  properly.
+Additionally, older software running on these systems might not meet current safety standards – e.g.
+an old medical device running on Windows 98 can’t easily be patched for security vulnerabilities, and
+that could pose risks if it ever connects to a network. So from an IT governance perspective, relying
+on legacy tech introduces some compliance issues. Japan’s push to eliminate floppies was partly to
+improve information security and efficiency (reducing reliance on error-prone human processes)
+.
+And the FAA’s urgency in upgrading air traffic control stems in part from concerns that the old
+systems could fail catastrophically and are hard to repair
+. Thus, the longer one stretches the
+use of legacy attachments, the more one must contend with  “what if it finally breaks?” or  “are we
+meeting modern standards?” questions.
+Despite these many challenges, organizations continue to mitigate them through various strategies, as
+discussed next. The key takeaway is that using floppies and 1980s ports in 2025 is certainly not convenient
+– it is done only when necessary or passionately desired, and it requires dedication to keep everything
+working.
+Adaptation and Compatibility Strategies
+To address the above challenges, users of legacy technology in 2025 have developed clever strategies and
+tools to bridge old and new. A combination of hardware adapters, emulators, and workflow adaptations can
+keep floppy-based and port-based systems running in the modern environment. Here are some common
+approaches:
+External Drives and USB Adapters: The simplest solution for accessing legacy media on a modern
+computer is to use external or adapter hardware. USB floppy disk drives are widely available and
+plug-and-play on contemporary PCs – you connect the drive to USB, and it appears as “A:” drive (or a
+removable drive letter). This allows reading/writing 3½-inch floppies on machines with no built-in
+drive, and it’s exactly what airline technicians or archivists do when they need to get data onto a
+floppy for an aircraft or off a floppy for digital preservation
+. For 5¼-inch floppies or other less
+common formats, specialty USB-attached drives or controllers (like the Kryoflux or Greaseweazle
+boards used by hobbyists) can be used to read those disks bit-by-bit into modern formats. In the
+realm of serial/parallel ports, USB-to-serial adapters are a mainstay – these cables contain a small
+UART chip that converts USB signals to RS-232 serial. They are inexpensive and allow modern laptops
+to interface with networking gear, microcontrollers, or any device’s console port easily
+. USB-to-
+parallel adapters exist primarily for printers (presenting as a USB printing device to the OS). While, as
+noted, they don’t replicate full parallel port functionality for all devices, they suffice to keep many old
+parallel printers working by connecting them to new computers via USB. For more advanced needs,
+users can install PCI Express expansion cards that provide true serial and parallel ports with full
+hardware support. These cards give desktop PCs the same I/O capabilities as legacy machines, often
+even exposing the classic DB9 (serial) and DB25 (parallel) connectors on the back. Using such
+adapters and cards, one can attach everything from an ancient dot-matrix printer to a dial-up
+modem to a 2025 computer system.
+Emulator Hardware (Floppy and Disk Emulators): A popular and ingenious solution for legacy
+drives is to replace the guts of a floppy or Zip drive with a modern emulator that mimics the old
+media but actually uses flash storage. For instance, “floppy-to-USB emulators” have emerged as
+21
+27
+61
+• 
+53
+54
+• 
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+lifesavers for machinery that only accepts floppies. These devices physically fit into the floppy drive
+bay of equipment but present a USB port; internally, a microcontroller translates floppy disk read/
+write commands into reads/writes on a USB flash drive. The result is that the old machine believes it’s
+still using a floppy disk, but in reality it’s reading data from a USB stick (often configured with floppy
+disk image files). In the earlier embroidery machine example, once the owner ran low on good
+floppies, he installed a floppy-to-USB emulator for about \$275 rather than replacing the entire
+machine
+. Companies like PLR Electronics specialize in these floppy emulators, and they report
+brisk sales to industries ranging from textile manufacturing to scientific instruments
+. One
+model of PLR’s emulator can be configured for nearly 600 different machines, from oscilloscopes to
+digital pianos to CNC cutters
+ – showcasing how many disparate devices shared the need for a
+floppy drive and can all be modernized by one universal solution. These emulators solve multiple
+problems: they eliminate dependency on aging disks and drives, greatly expand storage (a USB stick
+can hold many virtual “floppy” images), and speed up transfers, all while requiring no change in the
+legacy machine’s software. Similar emulation approaches exist for other media: SCSI2SD boards
+replace old SCSI hard disks with an SD card, and there are IDE-to-CompactFlash or SD adapters that
+can stand in for older IDE drives. Even  tape drive emulators exist for legacy minicomputers. By
+swapping in an emulator, organizations extend the life of their equipment without the headaches of
+sourcing media. It’s telling that PLR Electronics still sells 2,000–3,000 floppy emulator units each year
+as of 2023
+, indicating ongoing strong demand to retrofit legacy gear.
+Specialized  Legacy-Support  Hardware: Some  modern  hardware  is  built  with  backwards
+compatibility as a selling point, especially for industrial customers. This includes motherboards and
+PCs  that  intentionally  retain  legacy  port  connections.  Certain  business-class  or  industrial  PC
+motherboards continue to offer headers or connectors for PS/2 keyboards, RS-232 serial ports, and
+even parallel ports, recognizing that corporate and factory environments may need them. In one
+illustrative case, a hobbyist building a retro DOS gaming PC in 2024 chose a modern industrial-
+oriented motherboard specifically because it still had a parallel port and supported BIOS (non-UEFI)
+boot modes – features typically dropped from consumer boards
+. The presence of PS/2 and
+parallel indicated the board was designed for compatibility with old hardware, which was exactly
+what he needed for running MS-DOS software natively. Thus, if one truly requires native legacy
+ports, one strategy is to use industrial motherboards, add-in multi-I/O cards, or even old stock
+systems that  haven’t  eliminated  those  features.  Embedded  PC  vendors  also  produce  protocol
+converters and interface boxes – for example, Ethernet-to-serial bridges that allow a serial device to
+be accessed over a network, or PCI cards that emulate a whole bank of virtual COM ports. In
+scenarios  like  large  manufacturing  plants,  rather  than  running  a  modern  computer  directly
+connected to dozens of serial devices, they might use networked serial device servers to aggregate
+those connections, which the modern system can then communicate with via software. These kinds
+of solutions keep the function of legacy ports alive, even if the physical PC doesn’t directly include
+them.
+Software  Emulation  and  File  Conversion: On  the  software  side,  adaptation  often  means
+translating data and preserving formats. For legacy storage, this can involve imaging floppy disks
+into image files ( .img  or .ima  files) that can be mounted on modern systems or written back to
+physical  disks  when  needed.  Emulation  software  (like  DOSBox  or  various  vintage  computer
+emulators) can load floppy images, allowing modern PCs to run old software without needing the
+actual floppy hardware. Conversely, if an old machine is still running but the media is failing, one
+might  convert  the  files into  newer  formats  readable  by  contemporary  systems  (for  example,
+31
+62
+63
+64
+65
+• 
+66
+67
+• 
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+migrating data from an ancient dBase database on floppies into a CSV or SQL that today’s software
+can handle). In cases of parallel port dongles (old software protection devices) or serial-based
+protocols,  software  can  sometimes  mimic  the  device.  For  instance,  there  are  virtual  COM  port
+programs that can redirect serial communications over TCP/IP, effectively letting you replace a direct
+serial cable with a network link between two software endpoints. These tricks can help integrate an
+old system with a new one; e.g., a legacy DOS machine expecting to print to LPT1 (parallel printer)
+can actually have its output captured by a TSR (terminate-stay-resident program) and sent over
+network to a modern PC for printing. While these solutions are often custom or community-driven,
+they form an important part of the toolkit for anyone tasked with bridging eras of technology.
+Maintenance and Stockpiling: Finally, many organizations simply  stockpile spares and develop
+internal expertise to keep legacy tech running. This isn’t so much an adaptation as a life-support
+strategy. For example, an IT department might keep a closet of old PCs or drives that can be
+scavenged for parts if one in service fails. They may buy boxes of unused floppy disks whenever they
+spot them for sale, to build a reserve. Some government and military users have reportedly secured
+long-term contracts or caches of disks and parts to ensure supply. In the Persky NPR interview, he
+mentions loving when someone calls him saying “we found a pallet of floppy disks in a warehouse, will
+you take them?” – there’s a conscious effort to reclaim old stock and redistribute it to those who
+need it
+. Meanwhile, documentation and knowledge are being preserved in online forums
+and communities (for instance, vintage computer forums share tips on aligning floppy drive heads
+or substituting modern components for failed ones). Enthusiasts and engineers thus form a support
+network  that  somewhat  replaces  the  original  manufacturers.  This  human  factor  –  dedicated
+caretakers of obsolete tech – is itself a strategy that keeps legacy attachments viable in 2025.
+Figure 2: An Iomega Zip 100 drive (circa late 1990s) with a parallel port interface. The back of the drive shows two
+connectors: the left port attaches to a PC’s printer (parallel) port, and the right port is a pass-through to connect a
+printer. This daisy-chain ability let users hook up a Zip drive and printer to a single PC port – a creative solution in
+the pre-USB era.
+• 
+68
+69
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+The  adaptations  above  demonstrate  that,  while  challenging,  it  is  far  from  impossible  to  use  legacy
+technology today. With the right mix of adapters and ingenuity, one can make a floppy drive talk to a USB-
+only laptop, or keep a factory of DOS-based machines in communication with modern networks. Each
+adapter or emulator is effectively a tiny piece of translation infrastructure, letting old and new generations
+of  technology  co-exist.  As  time  goes  on,  these  adaptations  may  become  more  niche  and  expensive
+(especially  if  suppliers  like  Persky  wind  down),  but  for  now  they  form  a  crucial  backbone  enabling
+incremental modernization instead of wholesale replacement.
+Cultural Relevance and Retro Tech Communities
+Beyond  the  practical  realms  of  industry  and  government,  floppy  disks  and  other  legacy  tech  hold  a
+significant place in culture and in the hearts of technology enthusiasts. In 2025, these items are
+revered as icons of the computer revolution and continue to inspire through nostalgia, education, and
+creative expression.
+The Save Icon and Pop Culture Presence: It’s often noted that an entire generation has grown up
+recognizing the 3½-inch floppy disk only as the “save” icon in software. This little blue square with a
+shutter is an emoji on smartphones and a universal UI symbol for saving files
+. The irony that
+most youths have never used a real floppy disk isn’t lost on commentators – it highlights how deeply
+entrenched these legacy items are in digital culture. The floppy has achieved a sort of immortality as
+an icon. As Namecheap’s tech blog wryly noted, whether or not you’ve ever seen a floppy in the wild,
+“the floppy disk has become a cultural icon”, featured in movies, TV, and even serving as shorthand for
+the concept of storage itself
+. The continued appearance of floppies in media (often to signify
+something retro, secret, or important) shows their enduring grip on the collective imagination.
+There’s a sense of charm associated with the floppy – a tangible object that stands in stark contrast
+to invisible cloud storage. Similarly, parallel port dongles and clacking keyboards show up in period
+dramas  or  hacker  nostalgia  films,  reinforcing  the  aesthetic  of  earlier  computing  eras.  These
+representations keep legacy tech relevant as storytelling devices and symbols.
+Retrocomputing  and  Hobbyists: A  vibrant  global  community  of  retrocomputing  hobbyists
+ensures that floppy drives and old interfaces remain in active use purely for enjoyment. These
+enthusiasts restore vintage PCs and consoles, swap floppy disks with games and demos, and even
+organize programming competitions that impose old-school limits (like making a game fit in 64 KB
+or on a single floppy). Demoscene parties still have categories for 4k intro or 64k intro, throwbacks
+to times when software had to ship on small media. In some cases, hobbyists will intentionally use
+floppies as a creative constraint – for instance, hosting “Floppy Music” contests where participants
+reprogram floppy drive stepper motors to play tunes (the drives buzz at different frequencies to
+generate notes). Retro fairs often have tables of floppy disks being bought, sold, or traded –
+effectively keeping a small economy alive. Collectors also prize unopened boxes of floppies or rare
+disk formats. There’s even a subculture of people building modern floppy disk art or gadgets: one
+popular project is a floppy disk clock (where the disk rotates to show time), another is crafting
+notebooks out of floppy disk covers. The parallel and serial ports similarly have niches: electronics
+tinkerers might connect a Raspberry Pi’s GPIO pins to act like a parallel port and directly control old
+hardware, or they’ll use an Arduino with a serial shield to interface with 1980s computing kits. These
+projects aren’t about necessity – they’re labors of love that keep the knowledge of legacy tech alive
+and pass it to new makers.
+• 
+70
+71
+• 
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+Educational  and  STEM  Value: Universities  and  educators  sometimes  use  older  tech  to  teach
+fundamental concepts in computer science and engineering. For example, understanding how a
+serial port works can teach the basics of data framing and bit timing. Some computer engineering
+courses have labs where students must program a microcontroller to send data over a simulated
+serial link, reinforcing concepts of baud rate, parity, etc., that originated with RS-232. Likewise,
+examining a floppy disk’s format (how data is laid out in tracks and sectors) can be an illuminating
+exercise in understanding filesystems and error correction – topics that remain relevant in modern
+storage, just at a different scale. Lego robotics competitions in the 1990s famously used parallel
+ports  to  download  programs  to  the  robots;  now,  Lego  has  moved  to  Bluetooth/USB,  but  a
+comparison can be instructive on the evolution of connectivity. Museums and science centers also
+preserve working examples of legacy media to show youngsters “this is what we used back in the
+day.” For instance, seeing a Commodore 64 load a program from a 5¼″ disk, taking a full minute
+while making grinding noises, can build appreciation for how far we’ve come (and also how people
+were still able to be creative within those limits). Some educators report that giving students a
+hands-on experience with retro tech – such as typing a program into a 1980s microcomputer and
+saving  to  tape  or  disk  –  profoundly  influences  their  understanding  of  modern  abstractions.  It
+demystifies the computer: a floppy disk you can hold and flip over makes storage tangible, unlike an
+unseen NVMe SSD chip. Thus, legacy attachments continue to serve as  educational props and
+heritage artifacts that enrich learning.
+Nostalgia and Community Bonding: There is a simple human factor as well – nostalgia. Floppy
+disks, dial-up modems, and chunky beige connectors evoke memories among Gen X and Y folks who
+grew up with them. Sharing those memories (be it on Reddit threads about “the sound of a 56k
+modem” or YouTube channels that refurbish old PCs) creates community. When Chuck E. Cheese’s
+floppy-driven animatronics were revealed in a TikTok, it spurred nostalgic commentary from those
+who recalled the animatronic shows of their childhood and found it amusing and heartwarming that
+a floppy was still behind the magic
+. The decision of that employee to film the floppy update
+process was precisely because he knew it was the “last chance” and that people would appreciate
+seeing how it worked
+. This speaks to a broader cultural appreciation: even as we laugh at the
+primitiveness of the tech, we also admire it and the fact it still can work. In Japan, while officials push
+to modernize, there’s also an undercurrent of sentimentality about the era of technology now ending
+– similar to how typewriters or film cameras invoke nostalgia. Thus, legacy tech fosters a sense of
+continuity with the past. It reminds us of the rapid pace of innovation and also the longevity of good
+designs  (RS-232,  for  instance,  has  survived  as  a  standard  for  nearly  60  years!).  Some  retro
+enthusiasts like to say that using this old tech is like “time travel” – you get to experience what
+computing felt like in earlier times. In doing so, one often develops greater respect for the engineers
+of the past who achieved a lot with very constrained tools.
+In conclusion, floppy disks and their legacy brethren are more than just outdated tools; they are cultural
+artifacts. They continue to contribute to our society by connecting generations of technology users,
+educating learners, and providing enjoyment and meaning to hobbyists. As long as there are people
+passionate about the history and art of computing, there will be a place for a floppy disk or a serial cable on
+someone’s desk.
+• 
+• 
+39
+38
+12
+
+------------------------------------------------------------------------
+Page 13
+------------------------------------------------------------------------
+
+Future Outlook and Speculative Scenarios
+Looking ahead, what does the future hold for floppies and other legacy attachments? Will they finally fade
+completely into museum pieces, or continue to linger in odd niches? While crystal balls are always cloudy,
+we can extrapolate some trends from the present trajectory:
+Phasing Out in Mainstream Use: In most mission-critical and enterprise applications, the writing is on the
+wall for legacy tech. Efforts like Japan’s floppy ban in government and the FAA’s modernization of air traffic
+systems show a clear intent to eliminate these antiquated dependencies within the next few years
+.
+By 2030, it’s likely that almost all government agencies and large companies worldwide will have migrated
+off floppies, Zip disks, and parallel/serial links for regular operations. This will be driven by a combination of
+necessity (vendors of new equipment simply don’t support them) and policy (regulations increasingly
+mandate up-to-date, secure technology). The U.S. military’s replacement of its floppy-based control systems
+in 2019 is a prime example – when even nuclear forces let go of floppies, it signals that time’s up for the
+medium in high-stakes environments
+. We can expect more announcements of “final floppy usage”
+ending. Perhaps the last commercial 3½″ floppy disk will be sold by the end of this decade – Tom Persky,
+one of the last floppy resellers, has mused that the global stock of disks is finite and being rapidly
+consumed
+. He himself only plans to keep the business going a few more years, quipping that he’s “in an
+airplane 50 miles from the airport, about to run out of gas – my job is to land the plane” with regard to
+winding down floppy sales
+. This suggests that by the late 2020s, even dedicated suppliers will close up
+shop, effectively marking the end of new floppies in the supply chain. The same likely goes for Zip disks,
+parallel port peripherals, and related consumables – no new media, no new hardware, only the aftermarket
+and leftovers to sustain use. At some point, using such technology will simply become unviable for lack of
+parts.
+Legacy Tech Becomes Retro Tech Exclusively: As mainstream usage dries up, floppy disks and legacy ports
+will retreat fully into the domain of retro and hobbyist usage. They will become akin to vinyl records – a
+format kept alive not by necessity but by choice and nostalgia. It’s conceivable that in the future there might
+even be small-scale boutique manufacturing revivals for certain legacy media, just as vinyl pressing plants
+saw a resurgence. For example, if there remains a sizable retrocomputing community that genuinely needs
+new floppy disks (and all old stock is depleted), a niche company might start producing small batches of 3½″
+disks again using modern materials – albeit likely at a high price and marketed as a specialty item.
+Alternatively, the community might standardize on floppy emulators and move away from physical disks
+entirely, using SD cards to simulate floppies in all old machines. This latter path is more probable, since it’s
+more cost-effective and aligns with conservation (no need to manufacture disposable media when a single
+SD card can act as hundreds of floppies). We’re already seeing such transitions: many Amiga enthusiasts, for
+instance, have adopted the Gotek USB floppy emulators en masse, so real Amiga disks are becoming
+optional. In a decade, real floppy drives might be like film cameras – still around, but mostly in the hands of
+collectors and specialists, while the practical bulk of use has transitioned to digital mimics.
+Preservation and Digital Archaeology: There’s a growing field of  digital archaeology concerned with
+preserving the ability to read old media and files. In the future, efforts will likely continue to ensure that
+data stored on floppies (and tapes, CDs, etc.) isn’t lost to bit rot. This might involve national libraries and
+archives maintaining legacy drives and creating digital images of every floppy in their collections. By 2025,
+much of this imaging work is underway, but by 2035, one could imagine that most historical floppies sitting
+in archives will have been read and digitized (or declared unreadable and discarded). The knowledge of how
+to interface with legacy ports might similarly consolidate into archival knowledge. Perhaps the last working
+23
+25
+20
+72
+73
+13
+
+------------------------------------------------------------------------
+Page 14
+------------------------------------------------------------------------
+
+8-inch floppy drive will be carefully kept in a tech museum and used when needed to rescue data from an
+old  disk  found  in  a  time  capsule.  Future  historians  might  depend  on  the  emulators  and  adapters
+developed  in  the  2010s/2020s  to  retrieve  information  from  old  hardware,  essentially  freezing  the
+technology  in  a  “useful  state”  even  after  production  ceases.  It  will  be  important  that  open-source
+communities document things like floppy disk encoding schemes, drive signals, parallel port protocols, etc.,
+so that even if physical devices vanish, the  information on how they worked remains accessible. Given
+current trends, this documentation is being preserved on the internet (in technical wikis, old manuals
+scanned to PDF, etc.).
+Continued Niche Utility: It’s conceivable that some legacy attachments will continue to be used in isolated
+pockets for quite a long time – especially serial ports. Unlike floppies, which have no overlapping modern
+equivalent, the serial port’s logical protocol (RS-232) can be implemented over new physical layers (e.g., via
+USB or wireless). In fact, many IoT devices and microcontrollers still have serial interfaces for debugging
+and configuration, even if they use a USB cable (internally it’s often a USB-to-UART bridge). This means
+RS-232 (or its cousins RS-485, etc.) will likely remain in use under the hood. The form-factor of the classic
+DE-9 serial port might disappear entirely from PCs, but serial communication as a concept will live on
+indefinitely wherever a simple, low-overhead link is needed
+. Parallel ports have a less clear future,
+as their function (fast parallel data transfer) was entirely taken over by USB and other serial buses. The
+parallel printer port specifically will probably be extinct once the remaining parallel printers die out –
+modern printing has fully embraced USB/Ethernet/WiFi. That said, the idea of parallel data lines survives
+in things like GPIO pins and certain high-speed interconnects (for example, internal data buses in chips).
+But as an external user-accessible port, the parallel port is likely to be purely retro. We might find it only on
+old  equipment  and  never  on  anything  new,  except  perhaps  a  deliberately  “retro-styled”  PC  or  a
+microcontroller board made for education that includes it as a novelty. 
+Speculative  Scenarios: In  a  more  speculative  vein,  one  could  imagine  scenarios  where  legacy  tech
+experiences  a  small  revival  for  unexpected  reasons.  For  example,  consider  cybersecurity-sensitive
+environments (military intel, etc.) where the threat of digital espionage leads to a policy of using offline,
+low-capacity media for certain data transfers – perhaps floppies could see use as a “secure sneaker-net”
+because it’s easy to monitor and control 1.4MB leaving a building versus a USB drive that could hold
+terabytes. There have been reports in past years of some governments returning to  typewriters for
+drafting extremely sensitive documents, precisely because typewriters leave no digital footprint. In that
+same  spirit,  one  might  see  floppies  used  as  a  deliberate  DLP  (data  loss  prevention)  measure:  if  all
+confidential reports must be hand-carried on an encrypted floppy disk, you inherently limit what can be
+taken and create an audit trail of physical disks. This is admittedly far-fetched and there would likely be
+better modern solutions (like encrypted USB keys with hardware restrictions), but it underscores that
+sometimes the old ways inspire new security models. Another scenario: a future solar flare or EMP event
+that disrupts a lot of modern electronics, and ironically older, simpler devices (with their robust tolerances
+and lack of complex ICs) survive better, leading to a temporary resurgence of pre-2000 computers or
+communication gear. This is the stuff of science fiction, yet it’s true that vacuum tube-based equipment can
+withstand electromagnetic pulses that fry microelectronics. While floppy drives and PCs aren’t vacuum
+tubes, their simplicity could in theory make them easier to repair in a pinch if modern infrastructure
+collapsed. 
+In the  consumer retro space, we might also see floppies and related tech continue to be celebrated.
+Perhaps future gaming consoles or PC cases will include cosmetic 3D-printed floppy drives as homages, or
+someone will create a modern music album released on a set of floppies as a novelty collectible. The retro
+11
+12
+14
+
+------------------------------------------------------------------------
+Page 15
+------------------------------------------------------------------------
+
+computing trend shows no sign of abating – if anything, as the 80s and 90s generations age, nostalgia for
+that era’s tech is increasing. We already have products like newly manufactured vinyl records, cassette
+tapes, and even instant film, so a niche market for new floppies or parallel-port gadgets isn’t impossible if
+the demand is there.
+Overall, though, the long-term trend is that legacy attachments will become increasingly rare, moving
+firmly from utility to curiosity. The world will march on, and by 2040 one might struggle to find a working
+floppy disk outside of a tech museum or enthusiast’s collection. The data and software that once lived on
+floppies will mostly live in preserved digital images or have been migrated. And the average person will
+likely no longer encounter any of these ports or media in daily life.
+Yet, even as physical artifacts disappear, the legacy of the legacy tech will endure. The influence of the floppy
+disk is permanently etched into computing history – it gave us the concept of personal data portability and
+is literally the symbol for saving our work
+. Serial communication principles underpin much of today’s
+networking, and parallel interfaces gave way to faster serial ones that still borrow the old terminology
+(notice how USB identifies devices with COM port numbers internally – a nod to its virtual serial nature).
+Thus, the spirit of these technologies lives on inside modern ones, hidden but foundational. In a sense,
+when we use any modern storage or I/O, we stand on the shoulders of floppies and RS-232. And thanks to
+dedicated communities, we’re ensuring that the knowledge of how these ancestors worked will not be lost
+to time. As one media archaeology expert said, “it’s really hard for me to believe that the floppy disk is just
+going to utterly disappear”
+ – people will preserve them, just as they do phonographs and antique radios,
+perhaps for centuries to come. 
+So, in the year 2025, while floppy disks and legacy ports are firmly past their prime, they are not gone. They
+continue to offer value in certain corners and continue to fascinate as cultural artifacts. The likely future is
+that they will gracefully retire from practical duty over the next decade, but they will always hold a place in
+the pantheon of computing. And who knows – one day, a young engineer in 2040 might dig up a box of old
+floppies and feel the same excitement a 2020s hobbyist feels booting up a Apple II from a dusty disk. The
+cycle of tech nostalgia will ensure that the floppy disk and its contemporaries never truly die; they simply
+become legends.
+Sources:
+Wikipedia – History of the floppy disk
+Namecheap Tech Blog – “Back to the future: the legacy of the floppy disk” (Jackie Dana, April 2023)
+NPR Morning Edition – “Some industries still use floppy disks” (Sept 2022)
+Wired – “Why the Floppy Disk Just Won’t Die” (Jacopo Prisco, Mar 2023)
+PC Gamer – “Chuck E. Cheese still uses floppy disks in 2023” (Rich Stanton, Mar 2023)
+Windows Central – “The FAA still uses Windows 95 and floppy disks...but that’s changing” (Brendan
+Lowry, June 2025)
+Reuters – “Japan declares victory in effort to end government use of floppy disks” (Rocky Swift, July 2024)
+Reddit (/r/sysadmin) discussion on parallel/serial in industry
+Tangent (Tech Blog) – “Why Medical PCs Still Have Serial Ports” (Sept 2022)
+Wikipedia – Serial port (on continued industrial use and adapters)
+Hackaday – modern PC with retro support (Oct 2024)
+5
+74
+1. 
+1
+4
+2. 
+75
+42
+3. 
+76
+18
+4. 
+16
+77
+5. 
+35
+38
+6. 
+25
+27
+7. 
+23
+24
+8. 
+28
+55
+9. 
+43
+44
+10. 
+11
+54
+11. 
+67
+78
+15
+
+------------------------------------------------------------------------
+Page 16
+------------------------------------------------------------------------
+
+IBM Archives – “Floppy disk storage” (IBM100)
+History of the floppy disk - Wikipedia
+https://en.wikipedia.org/wiki/History_of_the_floppy_disk
+Floppy disk storage | IBM
+https://www.ibm.com/history/floppy-disk
+Zip drive - Wikipedia
+https://en.wikipedia.org/wiki/Zip_drive
+Serial port - Wikipedia
+https://en.wikipedia.org/wiki/Serial_port
+Back to the future: the legacy of the floppy disk - Namecheap Blog
+https://www.namecheap.com/blog/back-to-the-future-the-legacy-of-the-floppy-disk/
+Why the Floppy Disk Just
+Won’t Die | WIRED
+https://www.wired.com/story/why-the-floppy-disk-just-wont-die/
+Some industries still use floppy disks. This is one of the only places to buy them : NPR
+https://www.npr.org/2022/09/22/1124441151/some-industries-still-use-floppy-disks-this-is-one-of-the-only-places-to-buy-the
+Japan's government finally stops using floppy disks | Information Age
+https://ia.acs.org.au/article/2024/japan-s-government-finally-stops-using-floppy-disks.html
+Japan declares victory in effort to end government use of floppy disks | Reuters
+https://www.reuters.com/world/asia-pacific/japan-declares-victory-effort-end-government-use-floppy-disks-2024-07-03/
+The FAA still uses Windows 95 and floppy disks for air traffic control, but that's changing |
+Windows Central
+https://www.windowscentral.com/microsoft/the-faa-still-uses-windows-95-and-floppy-disks-for-air-traffic-control-but-thats-
+changing
+When did parallel ports make a come back? : r/sysadmin
+https://www.reddit.com/r/sysadmin/comments/z4czwj/when_did_parallel_ports_make_a_come_back/
+In the year of our lord 2023, Chuck E. Cheese still uses floppy disks to make the
+animatronic mouse dance | PC Gamer
+https://www.pcgamer.com/in-the-year-of-our-lord-2023-chuck-e-cheese-still-uses-floppy-disks-to-make-the-animatronic-mouse-
+dance/
+Why Medical PCs Still Have Serial Ports | Tangent Blog
+https://blog.tangent.com/medical-pcs/
+Parallel Port | Hackaday
+https://hackaday.com/tag/parallel-port/
+12. 
+5
+1
+2
+3
+4
+5
+6
+7
+8
+46
+9
+10
+11
+12
+54
+13
+15
+17
+19
+21
+42
+45
+53
+71
+75
+14
+16
+20
+29
+30
+31
+32
+33
+47
+48
+49
+50
+51
+52
+60
+62
+63
+64
+65
+72
+73
+74
+77
+18
+34
+68
+69
+70
+76
+22
+23
+24
+25
+26
+27
+61
+28
+55
+56
+57
+35
+36
+37
+38
+39
+40
+41
+43
+44
+58
+59
+66
+67
+78
+16

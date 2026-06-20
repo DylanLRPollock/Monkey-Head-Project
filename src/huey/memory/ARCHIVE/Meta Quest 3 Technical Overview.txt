@@ -1,0 +1,755 @@
+Meta Quest 3 Technical Overview
+Detailed Hardware Specifications
+The Meta Quest 3 is a standalone XR headset that significantly upgrades the hardware of its predecessor
+(Quest 2) in almost every aspect. It is built on Qualcomm’s latest Snapdragon XR2 Gen 2 SoC – a chipset
+based on the Snapdragon 8 Gen 2 mobile platform – which delivers over twice the graphics performance
+of the Quest 2’s XR2 Gen1 platform
+. The XR2 Gen 2 includes an octa-core Kryo CPU and an Adreno 740
+GPU (clocked ~599 MHz) for high-end mobile graphics
+. The device comes with 8 GB of LPDDR5 RAM
+ and either  128 GB or 512 GB of internal storage, running  Meta’s Horizon OS (Android-based) –
+updated to Android 14 as of 2025
+. This allows the Quest 3 to run complex applications standalone,
+without a PC, while still supporting PC-tethered use if needed.
+Display and Optics: The Quest 3 uses dual independent displays (one per eye) for improved optics and
+adjustability. Each eye has a 2064×2208 resolution RGB LCD panel (over 30% more pixels than Quest 2)
+.
+These panels refresh at 90 Hz by default, with support for 120 Hz modes for smoother visuals
+. The
+headset features Meta’s custom pancake lenses, a two-element optical design (similar to Quest Pro’s) that
+dramatically slim down the profile (about 40% thinner than Quest 2’s visor) while providing a wide ~110°
+field of view with improved edge-to-edge clarity
+. The interpupillary distance (IPD) is continuously
+adjustable by moving the lenses, allowing precise alignment for each user (a change from Quest 2’s 3-step
+IPD). In practice, the Quest 3’s display and lens combo yields a noticeably sharper image and broader view,
+enhancing immersion.
+Inside-Out Tracking System: For motion tracking, the Quest 3 relies on an array of cameras and sensors
+on the headset itself (“inside-out” tracking). Four wide-angle infrared (IR) cameras are positioned at the
+corners (including bottom-left and bottom-right) of the headset, which feed into a SLAM algorithm for
+6‑DoF positional tracking of the headset in space
+. These IR cameras also track the included controllers
+by picking up IR LED markers on the controllers’ body
+. Tracking is six-degrees-of-freedom, meaning the
+device accurately captures both translation and rotation without any external base stations. The system is
+robust in typical indoor environments and supports direct hand tracking as well – the on-board computer
+vision can recognize the user’s hands in real time, enabling controller-free interactions
+. This tracking
+architecture is entirely on-headset and self-contained, which is ideal for untethered applications like field
+robotics or moving between labs.
+Advanced Sensor Suite: A hallmark of Quest 3 is its rich sensor suite for mixed reality. On the front face,
+the headset has three pill-shaped sensor windows. The left and right pills each contain a 4 MP full-color
+RGB camera alongside a dual-function monochrome/IR camera
+. The two RGB cameras (one on each
+side) work as a stereo pair to provide a high-fidelity color passthrough view of the real world
+. This is a
+major improvement from Quest 2’s grainy B/W passthrough. The  center pill contains an  IR pattern
+projector  (structured-light  depth  sensor) that  projects  a  dot  matrix  to  actively  sense  depth
+.  In
+combination with the front IR cameras, this depth sensor allows the system to map the environment in
+3D,  enabling  features  like  automatic  room-scale  boundary  detection  and  more  realistic  mixed  reality
+(occlusion and collision of virtual objects with real-world geometry)
+. In essence, the Quest 3 can “see”
+1
+2
+3
+2
+4
+5
+3
+6
+7
+8
+8
+9
+10
+9
+11
+11
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+the user’s surroundings in stereo color  and depth, which is highly valuable for robotics and interactive
+setups where understanding the environment is key. Table 1 summarizes the key hardware specifications of
+the Quest 3:
+Table 1: Key Specifications of the Meta Quest 3
+Component
+Specification
+SoC (CPU/GPU)
+Qualcomm Snapdragon XR2 Gen 2 (Octa-core Kryo CPU) with Adreno 740 GPU –
+over 2× the GPU performance of Quest 2’s XR2
+.
+Memory (RAM)
+8 GB LPDDR5
+.
+Storage
+128 GB or 512 GB internal flash storage (no SD slot).
+Display
+Dual independent LCD panels, 2064×2208 pixels per-eye (RGB stripe). Default 90 Hz
+refresh (supports 120 Hz)
+. ~110° horizontal FOV with adjustable IPD
+.
+Optics
+Pancake lenses (2-element) – 40% thinner profile than Quest 2, improved clarity
+.
+Tracking
+System
+Inside-out 6DoF tracking via 4× wide-angle IR cameras (headset SLAM and
+controller tracking)
+. IMU (accelerometer/gyro) for high-frequency motion
+prediction.
+Passthrough
+Cameras
+2× 4 MP RGB cameras (stereoscopic color passthrough view of the real world)
+.
+Depth Sensor
+IR structured-light projector for active depth sensing of environment (improves
+MR occlusion & scene understanding)
+.
+Controllers
+Touch Plus controllers (pair): inside-out tracked via IR LEDs (no tracking rings)
+,
+improved ergonomics and TruTouch haptics. Powered by 1× AA battery each
+(supports optional self-tracked Quest Pro controllers as upgrade).
+Audio
+Built-in stereo speakers (positional audio) and microphone array for voice input/
+chat. 3.5 mm jack (omitted on Quest 3) – audio output via USB-C or Bluetooth
+headsets.
+Connectivity
+Wi‑Fi 6E (802.11ax, tri-band)
+ for high-throughput wireless and low-latency PC
+streaming; Bluetooth 5.2 for peripherals (controllers, keyboards, etc.)
+; USB-C
+port (USB 3.x) for charging, data, and PC link
+.
+Battery
+~4879 mAh Li-ion (~2.0–2.5 hours typical continuous use on a charge)
+;
+~2.3 h charge time with 18 W adapter
+.
+Dimensions
+~515 g headset weight (without strap)
+; noticeably front-heavy but more
+balanced with optional Elite Battery Strap.
+1
+2
+3
+7
+6
+8
+9
+11
+12
+13
+13
+14
+15
+14
+16
+17
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+XR and MR Capabilities
+One of the Quest 3’s standout features is its robust mixed reality (MR) capability, which combines virtual
+content with a view of the real world (often referred to by Meta as  Meta Reality). The dual 4 MP front
+cameras  enable  a  high-resolution  full-color  passthrough view,  allowing  the  user  to  see  their  real
+environment  inside  the  headset.  Because  the  cameras  are  stereoscopically  placed,  the  passthrough
+provides  a  convincing  sense  of  depth  (objects  appear  at  correct  distances),  which  is  crucial  for  MR
+applications. The addition of the depth-sensing IR projector further enhances MR: the headset can measure
+distances to real objects and surfaces in the room
+. Practically, this means virtual objects can interact
+with the physical environment – e.g. a virtual character can appear to sit on your real desk, and the
+system knows the desk’s geometry to render the interaction believably. Meta reports that the Quest 3’s
+“Meta Reality” system (the fusion of dual RGB cams + depth sensor) yields a  far more immersive MR
+experience than that of Quest 2 or even the pro-grade Quest Pro
+. In short, Quest 3 is capable of credible
+augmented reality-style experiences, not just VR.
+Equally important, the Quest 3 supports spatial anchors and scene understanding. Developers can place
+persistent “anchors” in the real world – points or coordinates to which virtual content is tied. For example,
+an MR app can remember where a virtual monitor is positioned on a real wall or where a robot’s virtual
+status display hovers next to the robot. The system’s Spatial Anchor API allows these anchors to be saved
+and even shared across sessions or devices. In fact, Meta’s platform provides Enhanced Spatial Anchors
+services (when enabled in settings) that let multiple devices share a common reference frame
+. This is
+particularly useful in multi-user or multi-device scenarios (such as a lab where several people with Quest
+headsets see the same augmented content attached to a robot or room). Moreover, the Quest 3 can scan
+and semantically understand the room to some extent – it can detect flat surfaces (walls, tables) and
+spatial  boundaries.  Combined  with  the  depth  map from  the  IR  sensor,  apps  can  perform  scene
+reconstruction or occlusion masking (so virtual objects properly disappear behind real objects). All these
+XR features mean the Quest 3 can serve as an AR headset for robotics: for instance, overlaying robot
+navigation paths on the floor, highlighting real objects of interest, or anchoring virtual gauges onto a
+physical machine.
+In terms of input, the Quest 3’s cameras enable advanced hand and body tracking in XR. Out-of-the-box, it
+provides  controller-free hand tracking (both hands with individual finger motions). This is not only an
+interaction method for VR, but also opens up novel MR interactions – e.g. directly “grabbing” a virtual
+overlay on a real object with your hand. In late 2023, Meta even introduced an experimental  inside-out
+body tracking API for Quest 3: using the side-mounted cameras and AI, it can estimate the position of the
+user’s torso and limbs
+. For developers, this means richer avatar representations or the ability to capture
+a person’s movements without external trackers. While not perfect, these features could be useful in
+robotics teleoperation or training, where an operator’s full body gestures might be mapped to a robot (for
+example, controlling a humanoid robot by moving one’s arms, without wearing a motion-capture suit).
+Finally, Meta provides a suite of Presence Platform SDK features to leverage Quest 3’s XR hardware. This
+includes the  Passthrough API (to blend virtual content with the camera feed),  Spatial Anchor API (for
+anchors and co-location), Scene Understanding (to get room layouts, plane detection), Voice SDK (speech
+recognition),  and  Interaction  SDK (pre-made  hand  interaction  models,  object  manipulation,  etc.).  All
+together, the Quest 3 is a capable XR device that can seamlessly transition between pure VR (fully virtual
+environment) and MR (overlaying on the real world). An expert developer can use these capabilities to, for
+example, create an interactive lab scenario where virtual control panels float next to a real robot or to
+11
+18
+19
+20
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+overlay telemetry data (from sensors or a robot’s state) onto the user’s view of an actual scene. The high
+clarity  of  the  passthrough  means  users  can  perform  fine  tasks  (reading  text,  working  with  physical
+instruments)  while  wearing  the  headset  –  a  significant  advantage  for  certain  research  or  industrial
+applications.
+Development Environments and SDKs
+Developing for the Quest 3 will feel familiar to anyone with VR experience, with the added considerations of
+MR. OpenXR is the core API standard that Meta supports on Quest devices. As of the latest SDKs, the Quest
+runtime is fully  OpenXR 1.x compliant and Meta actively encourages using OpenXR for cross-platform
+development
+. This means you can write an application once against OpenXR and have it run on
+Quest 3 (and other headsets) with minimal changes. For the Quest-specific features (like passthrough,
+spatial anchors, etc.), Meta provides OpenXR  extensions and a  Meta XR SDK to access those unique
+capabilities
+. 
+Most developers will use popular game engines or frameworks on top of OpenXR. Unity and Unreal Engine
+are fully supported for Quest 3 development. Unity’s XR plugin with the  Meta OpenXR package has
+reached parity with the old Oculus SDK, allowing developers to tap into hand tracking, passthrough,
+anchors, and other features through Unity’s AR/VR frameworks
+. Unity’s AR Foundation can also be used
+for building cross-platform AR apps that include Quest 3 as a target. On the Unreal side, developers can
+either use stock Unreal Engine (which has built-in OpenXR support) or Meta’s fork of Unreal Engine for
+direct access to some Horizon OS-specific integrations
+. In practice, both Unity and Unreal give you
+access to high-level libraries: physics, 3D UI, etc., which can greatly speed up development of interactive
+simulations or robotics visualizations. There’s also growing support for Godot (an open-source engine) via
+an OpenXR plugin
+, and for WebXR (the Quest browser can run WebXR experiences if a lightweight, web-
+based approach is desired).
+Meta provides developer tools like the Oculus Integration SDK (for Unity) and Unreal plugins, as well as a
+Meta XR Simulator for testing Quest apps in the editor without a device
+. For debugging or high-end
+rendering, Quest Link is available – the Quest 3 can tether to a PC via USB-C or Wi-Fi and act as a PC VR
+headset. This is useful not only for playing PC-based VR, but also for development: you can iterate quickly
+using your PC’s GPU and then deploy to the Quest as needed. (Do note, however, that certain MR features
+like spatial mapping or anchors may only work in true standalone mode, not when running apps over Link
+.)
+From a robotics developer’s perspective, Quest 3’s Android-based OS means you can also develop native
+Android  apps or  use  frameworks  like  Unity’s  ROS-TCP  Connector or  ROS#  to  interface  with  Robot
+Operating System (ROS) nodes. The headset in Developer Mode allows ADB access, letting you deploy
+custom APKs, use sockets, Bluetooth APIs, etc., just like on any Android device. This flexibility means you
+could write a custom C++ app using OpenXR and connect it to, say, a ROS2 publisher over Wi-Fi, or use
+Unity’s C# libraries to subscribe to robot telemetry topics. In summary, Quest 3’s development ecosystem is
+rich: you have the power of modern game engines, the cross-platform ease of OpenXR, and the option of
+low-level Android development, all supported by Meta’s continued updates (the device will receive periodic
+system updates adding features or improving performance).
+21
+22
+23
+24
+25
+26
+27
+28
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+System Architecture and Robotics Interface
+Under the hood, the Quest 3 operates much like a  self-contained mobile computer tuned for XR. Its
+system architecture includes the Qualcomm Snapdragon XR2 Gen2 SoC, which integrates the CPU, GPU, AI
+accelerators, image signal processors (for the cameras), and other co-processors. This SoC is designed for
+low-latency sensor processing – for example, it can take the camera inputs and IMU data and run computer
+vision algorithms (like SLAM and hand tracking) on-device at high framerates. The on-board AI capabilities
+can assist with things like gesture recognition or scene understanding. All of this runs on Meta’s Horizon
+OS, which is essentially a customized Android distribution
+. As a result, the Quest 3 can be thought of as
+an Android device with additional XR-specific hardware and libraries. Developers can interface with many
+system services in Android (networking, storage, etc.), but Meta also provides a real-time VR compositor
+and guardian system to ensure smooth, safe VR experiences. The system’s design prioritizes low motion-
+to-photon  latency –  sensors  feed  into  predictions  that  adjust  each  frame’s  rendering  so  that  head
+movement feels instantaneous. The typical pipeline latency is on the order of 20 milliseconds or less, which
+is critical for comfortable VR and also benefits real-time telerobotic applications.
+When  integrating  Quest   3  with  custom  robotics,  one  typically  establishes  communication  channels
+between the headset and the robot or a companion computer. The Quest 3 has multiple interface
+options for this. The most common is wireless networking (Wi-Fi) – the headset can connect to a lab’s Wi-
+Fi network or even directly to a robot’s access point. With Wi-Fi 6E, it supports high bandwidth and low
+latency, enabling scenarios like streaming a robot’s camera feed to the headset with minimal lag. In many
+teleoperation setups, the Quest runs a client app while a robot or external PC runs a server: e.g. the robot
+might stream video or LIDAR data to the Quest, and the Quest might send control commands or the user’s
+hand/controller movements back to the robot. This client-server architecture can be built with standard
+protocols (UDP/TCP sockets, REST APIs, ROS Bridge, etc.) given the headset’s Android capabilities. For
+instance, the open-source Open Teach system uses a Quest 3 app to send real-time hand pose data (from
+the headset’s hand tracking) to a robot’s control server at 90 Hz, and simultaneously receive live video from
+the robot’s cameras
+. Thanks to Quest 3’s powerful SoC and tracking, it can sustain such high-frequency
+bidirectional communication, effectively acting as a real-time human interface for the robot.
+Another interface path is via the USB-C port. In USB debugging mode, developers can use this for ADB, but
+it can also act as an  USB OTG host if you have drivers for a device. In theory, one could connect a
+microcontroller, sensor, or even a wired Ethernet adapter to the Quest 3’s USB-C. This isn’t a common
+approach (and driver support may vary), but it’s an option for specialized lab setups that need a direct wired
+link. More typically, the USB-C is used to tether the Quest to a PC – for example, to leverage a desktop GPU
+for heavier rendering or to interface with a sophisticated robotics simulation (like Unity or Gazebo running
+on the PC) while the Quest provides head tracking and display. With Oculus Link / Air Link, the Quest can
+become a PC VR headset, which means you could run a high-fidelity robotics simulation on a PC (with ROS,
+etc.) and visualize/operate it through the Quest 3.
+In terms of system-level integration, because Quest 3 runs Android, one cannot directly access some low-
+level hardware streams (for privacy/security, raw camera feeds and depth data are sandboxed to the OS’s
+perception  stack).  Instead,  Meta  provides  APIs  to  get  processed  data  (like  spatial  meshes  or  anchor
+positions). If your interactive system or robot needs those, you’ll use Meta’s SDK to query them. For
+example, if a robot needs to know the user’s head position or the locations of surfaces detected by the
+Quest, the Quest app can obtain that info and transmit it to the robot. The coordinate systems in Quest 3
+are typically headset-centric (with an “origin” at startup or defined by a stationary reference in the room).
+29
+30
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+For robotics applications, you often calibrate a coordinate frame between the Quest and the robot or
+environment. This can be done by placing the headset at a known location relative to the robot or using
+known markers. Quest 3’s spatial anchor system can help here: you could drop an anchor at a physical
+reference point (like a fiducial marker or a known position in the robot’s space), then share that anchor’s
+pose data with the robot so both systems agree on origin.
+Overall, the Quest 3’s architecture – a mobile AI+graphics computer with rich sensors – makes it a versatile
+tool for robotics interfaces. You can run substantial logic on-headset (reducing the need for a tethered
+workstation), yet it’s open enough to connect with external systems. Many research projects leverage this by
+running lightweight UI or sensor processing on the Quest and heavy robot control algorithms on an
+external computer, connected by Wi-Fi. The result is an untethered, agile setup: imagine walking around a
+robotic workcell with a Quest 3, seeing live data overlaid on robots, and issuing commands with natural
+hand gestures – all facilitated by the Quest’s on-board computing and communication with the robots.
+Connectivity Options
+The Quest 3 was designed with modern connectivity in mind to support high data throughput and low
+latency links, which are vital for interactive and robotics use cases:
+Wi-Fi 6E: The headset supports Wi-Fi 6E
+, meaning it can operate on 2.4 GHz, 5 GHz, and the
+newer 6 GHz band. Wi-Fi 6/6E provides reduced latency and the ability to handle high-bandwidth
+streams. For example, streaming an HD stereo video feed from a robot to the Quest, or casting the
+headset view to a monitor, is smoother on Wi-Fi 6E. In practice, developers can set up direct Wi-Fi
+connections (like a dedicated router or an on-robot hotspot) for their Quest-based projects to ensure
+reliable communication. The high throughput also benefits Air Link (wireless PC VR), enabling near-
+wired quality for remote rendering or simulation.
+Bluetooth 5.2: Quest 3 includes Bluetooth 5.2 radios
+. Primarily, Bluetooth is used to connect the
+Touch controllers (they use a proprietary protocol over BLE). But the headset can also pair with
+standard Bluetooth peripherals: e.g. headphones for audio, gamepads, keyboards, or custom BLE
+devices. For robotics, one could use BLE to interface with low-power sensors or wearables. For
+instance, a researcher might connect a BLE-based motion capture sensor or a haptic glove to the
+Quest 3 – this is feasible as long as you implement the BLE communication in an Android context.
+BLE 5.2 offers improved bandwidth and range compared to earlier versions, which helps maintain
+stable connections in a busy lab environment. It’s worth noting that Bluetooth is not as high-speed
+as Wi-Fi, so for large data (video streams, etc.) Wi-Fi is preferred, but for small telemetry or control
+signals, Bluetooth could suffice.
+USB-C Port: The single USB-C port on the Quest 3 serves multiple roles. It is used for charging the
+device and for  data transfer/debugging. For development or heavy data use, the USB link is
+typically run in USB 3 mode, which offers up to 5 Gbps throughput. This is how the Quest can stream
+video to/from a PC when used in wired Link mode. In custom setups, this port could connect to other
+USB devices as mentioned (with appropriate adapters). Some researchers have attached an external
+battery or even an LTE modem via USB to the Quest (treating it like a smartphone) to give it internet
+connectivity in the field. The port also supports DisplayPort alt-mode output in some configurations
+(as it did on Quest 2), but on Quest 3 this is not officially advertised – instead, Meta focuses on using
+the port for PC tethering and accessories. Accessory support via USB-C includes things like Ethernet
+• 
+13
+• 
+13
+• 
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+adapters (for wired networking if Wi-Fi is not desired), or the official Elite Battery Strap which uses
+the port passthrough to charge the headset. When the Quest 3 is mounted on a stationary rig or a
+robot, developers often keep it wired for continuous power and data.
+Casting and Cloud Connectivity: Though not a physical port, it’s worth noting the Quest 3 can cast
+its view wirelessly to a phone or screen (using Wi-Fi Direct or network) – useful in demos or
+collaborative settings so others can see what the operator sees. It also connects to online services
+(Meta Quest Store, cloud backup, etc.) which might not directly impact robotics integration, but
+cloud APIs (like cloud anchors or remote data logging) could be leveraged if internet is available.
+In summary, Quest 3 offers flexible connectivity to integrate into larger systems. You can link it to PCs,
+robots, and peripherals either wirelessly (for mobility) or wired (for maximal reliability). An example scenario
+could be: Quest 3 on Wi-Fi 6 streaming two 720p camera feeds from a robot while sending user inputs back;
+simultaneously, a Bluetooth sensor on the user’s glove sends tactile feedback signals to the headset. All
+these channels can operate concurrently thanks to the modern wireless stack. One limitation to keep in
+mind is the lack of multiple USB ports – you essentially have one port doing it all – so using USB for data
+while charging requires a special splitter or dock. Most robotics setups therefore lean on wireless comms to
+keep the user untethered and the device powered via an external battery if needed.
+Use Cases in Robotics and Research
+The Meta Quest 3’s blend of VR and MR capabilities, along with its standalone convenience, has already
+seen uptake in various robotics and interactive system projects. Below are a few representative use cases
+and scenarios that highlight how Quest 3 can be integrated into robotics or lab research:
+Figure: The Open-Teach system demonstrates Quest 3’s use in robotics teleoperation. A user wearing the Quest 3
+can see both the real world (via color passthrough) and an overlay of robot sensor feeds (inset). Hand tracking at
+• 
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+90 Hz allows natural control of robotic arms, as shown in various task scenarios (surrounding images) where a
+humanoid robot arm is manipulated to perform fine tasks like picking, placing, and tool use
+.
+Real-Time Robot Teleoperation (Immersive Telepresence): A prime example is  Open Teach, a
+versatile teleoperation framework built around the Quest 3
+. In Open Teach, an operator wears
+the Quest 3 and is immersed in a mixed reality view of a robot’s workspace. The color passthrough
+lets them see the physical robot and environment, while additional virtual UI elements (like camera
+feeds or overlays) are superimposed in their view
+. The user’s hand movements, tracked by the
+Quest’s hand-tracking cameras, are transmitted to the robot, effectively allowing the user to “be the
+robot” by moving their hands to control robotic arms
+. Because the Quest 3 can track and update
+at 90 Hz, the teleoperation feels smooth and responsive
+. Open Teach has demonstrated humans
+remotely  performing  precise  tasks  like  stacking  blocks,  ironing  a  cloth,  or  operating  kitchen
+appliances  via  robotic  arms,  with  the  Quest   3  providing  both  the  visual  feedback  and  input
+mechanism
+.  The  affordable  Quest   3  (relative  to  high-end  AR  devices)  makes  such  setups
+accessible to many labs
+. This use case highlights how Quest 3 serves as an interface for robot
+control, offering an intuitive 1:1 mapping between human motion and robot motion, enhanced by
+immersive  visuals.  In  broader  contexts,  similar  VR  telepresence  systems  have  been  used  for
+hazardous environment robots (e.g. bomb disposal, maintenance at height) where an operator can
+see through the robot’s cameras and control its limbs with VR controllers or hand tracking
+.
+Quest 3 is well-suited for these scenarios due to its mobility and MR support (the operator can also
+see their immediate real surroundings for safety while teleoperating).
+Augmented Reality for Human-Robot Interaction: Quest 3 can function as a mixed reality headset
+to assist human workers or researchers interacting with robots in person. For instance, in a lab
+setting, a user wearing Quest 3 might see  annotations and guides over a real robot. Imagine
+looking at a robotic arm and seeing virtual markers indicating joint angles, or having an arrow
+pointing where to load a sample onto a lab robot.  Spatial anchoring ensures these annotations
+stick to the robot as it moves. In manufacturing or maintenance, one could overlay step-by-step
+instructions on a machine through the Quest 3. Because the passthrough is high quality, the user
+can walk around freely and still see these digital aids aligned to the real world. Some cutting-edge
+projects use shared AR: multiple Quest or Quest Pro headsets on different people all viewing a
+shared robot hologram or data. Meta’s colocated experiences motif (introduced in 2025) provides
+patterns for setting up such multi-user MR scenarios
+. For example, two engineers wearing
+Quest 3s could both see a virtual robot design prototype positioned on a table as if it were physically
+there,  or  see  live  telemetry  floating  above  a  real  robot  during  a  test,  facilitating  collaborative
+analysis.
+Data Visualization and Robot Debugging: Robots, especially autonomous systems, generate a lot
+of data (lidar scans, point clouds, trajectory plans). Quest 3 can be employed to visualize this data in
+situ. A researcher could drive a robot around a space and wear the Quest 3 to  see the robot’s
+sensor data layered onto the environment in real time – e.g. seeing the lidar point cloud as a
+semi-transparent mesh over the actual room, or visualizing the robot’s planned path as a line on the
+floor. This kind of XR visualization helps intuitively debug and understand what the robot “sees” and
+intends. There is active research in using VR/MR to debug AI robots, and Quest 3 provides a capable,
+low-cost platform for it. Because it’s standalone, one can take it out into the field or to a factory floor
+without worrying about external trackers or a tethered PC.
+31
+32
+• 
+31
+32
+33
+33
+32
+31
+34
+35
+• 
+36
+• 
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+Training, Simulation, and Education: Quest 3 can serve as a training simulator for robotics. Using
+game engines, one can create virtual twins of robots and environments. Trainees can practice in VR
+first – for example, learning to operate a forklift robot or performing drone piloting tasks in VR –
+then transfer those skills to the real world. The Quest’s hand controllers and hand tracking can
+mimic various input devices. In educational settings, students can use Quest 3 to learn concepts of
+robotics and automation by interacting with virtual robots. Unity’s support on Quest makes it
+possible to run quite complex simulations on the headset (albeit with reduced graphical fidelity
+compared to a PC). And when higher fidelity is needed, Quest 3 can stream the simulation from a PC.
+The result is a very flexible training tool. Companies like Toyota have explored VR for programming
+industrial robots via simulation
+, and researchers have used headsets like the Quest Pro or
+Quest 3 to demonstrate sim-to-real workflows (programming a robot in VR and then executing on a
+real one)
+.
+Telepresence and Remote Collaboration: Building on teleoperation, another scenario is using
+Quest 3 as the viewer for a humanoid robot avatar. Projects like VRoxy (Brown/Cornell University)
+used a Meta Quest Pro to let a user remotely inhabit a humanoid robot in a different location
+.
+The user in the headset feels present in the remote space, seeing through the robot’s cameras and
+hearing through its microphones, and when they move or gesture, the robot mirrors them. While
+VRoxy used the Quest Pro’s features, a Quest 3 can achieve much of the same (minus perhaps facial
+expression tracking) at a fraction of the cost. Such telepresence robots could enable a researcher or
+technician to virtually “visit” a lab across the world, or allow home-bound individuals to attend a
+workplace via a robot – all through the comfort of a Quest 3. The mixed reality aspect can even allow
+a blend where the remote space is shown, but the user’s immediate area (like their desk) is still partly
+visible to avoid disorientation.
+Limitless Interactive Experiments: Because the Quest 3 is relatively low-cost and untethered, some
+labs deploy multiple headsets for experiments in human-robot interaction. For example, one might
+give several participants Quest 3s and have them interact with both virtual agents and a real robot in
+the same space to study collaboration. The headsets can show each participant a personalized view
+(highlighting what the robot is going to do relative to that person). The possibilities are broad –
+anywhere you need humans and robots to understand each other better, an XR device like Quest 3
+can provide a shared visual and control medium.
+Limitations and Considerations
+While the Meta Quest 3 is a powerful tool, developers should be aware of its  limitations and design
+considerations when planning robotics or interactive system projects:
+Mobile Hardware Constraints: Despite its advanced SoC, the Quest 3 is essentially a smartphone-
+class device in a headset. Intensive computations (large-scale SLAM, heavy AI inference, physics
+simulations) can tax the system. When pushing the graphics (e.g., detailed Unity scenes) alongside
+MR  passthrough,  you  may  encounter  frame  rate  drops  or  thermal  throttling.  The  headset
+deliberately underclocks at times to manage heat
+, and extended sessions can warm it up. For
+real-time robotics control, it’s critical to maintain  90 Hz VR rendering to avoid latency; this often
+means optimizing 3D content and possibly leveraging features like Fixed Foveated Rendering or
+ASW (Asynchronous SpaceWarp) which Meta provides to stabilize frame rates. Consider offloading
+• 
+37
+38
+• 
+39
+• 
+• 
+40
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+heavy computations to an external computer or the cloud when possible, using Quest 3 as a
+rendering and input terminal.
+Battery Life and Tethering: With roughly 2 hours of battery life
+ on a full charge (even less if
+you’re  using  Wi-Fi  streaming  or  MR  camera  heavily),  the  Quest   3  may  not  last  through  long
+experiments or demos. For continuous use in a lab, it might be necessary to keep it plugged into
+power (which can be done via USB-C, possibly with a battery pack in the user’s pocket or an
+overhead  cable).  There  are  Elite  Straps  with  battery  that  double  the  runtime,  but  even  then,
+expecting more than 3–4 hours untethered is optimistic. If a Quest 3 is mounted on a robot or a
+stationary rig as a sensor, definitely plan for constant power. Also note, the headset cannot easily
+hot-swap batteries, so charging downtime is a factor if you have only one unit. In high-intensity MR
+(camera on, graphics on) use, battery drains faster and the device can get warm, which might trigger
+slight performance downscaling.
+Tracking  Environment  Limitations: Inside-out  tracking  works  via  visual  features,  so  certain
+environments pose challenges. For example, very low textured areas (plain white walls everywhere)
+or very dark rooms can cause tracking loss since the cameras have trouble identifying reference
+points. On the flip side, extremely  bright sunlight or outdoor use is problematic because the
+infrared tracking cameras can be overwhelmed (and the IR tracking LEDs on controllers won’t be
+visible). If your robotics project involves outdoor scenarios, the Quest 3 is not ideal (it’s really meant
+for  indoor  use  –  also  the  passthrough  has  no  UV/IR  filters  for  outdoor  light).  For  multi-room
+navigation, the Quest can remember some spaces, but moving far (>5m) from the initial area might
+cause it to re-localize; the “you’ve moved too far” guardian prompt can pop up if it thinks you left the
+defined play space
+. This means if an operator walks around a large lab with a Quest 3, you’d
+want to use Stationary Mode or disable guardian for uninterrupted tracking, taking care with safety.
+Multi-Device Coordination: Using multiple Quest 3 headsets in the same physical space is certainly
+possible (there’s no interference in tracking, since each uses passive camera tracking). However,
+coordinating their virtual world alignment is non-trivial. Each headset has its own coordinate system
+origin; if two users are to see the exact same virtual object in the same real spot, you must employ a
+shared calibration. Meta’s  Shared Spatial Anchors service can help by cloud-localizing common
+points
+, but this may require an internet connection and is still an emerging feature. Without that,
+a manual calibration (like having all users look at a known marker or QR code to establish a common
+frame) is needed. Another consideration: network bandwidth. If multiple Quests are all pulling high-
+bandwidth data (like streaming from several robot cameras or all doing Air Link), a robust Wi-Fi
+network (dedicated router or Wi-Fi 6E channels) is required to avoid congestion. On the positive side,
+Quest 3 does not rely on any external beacons, so you can have any number of them in the same
+area without crosstalk (unlike, say, VIVE base stations which have limits). For multi-robot setups, a
+single Quest 3 can theoretically control/view several robots, but UI design must allow easy switching
+or simultaneous monitoring – the limited FOV means the user can only effectively focus on one area
+at a time.
+Sensor and I/O Integration: The Quest 3’s internal sensors (cameras, IMU, depth projector) are
+fixed to the device and not directly user-modifiable. If your project requires a different sensor (for
+example, a thermal camera or a higher precision depth sensor), you cannot simply attach it to the
+Quest and get data into the headset’s OS. The workaround is to use an external sensor on the robot
+or in the environment and stream the data in. For instance, a depth camera on a robot could stream
+• 
+15
+• 
+41
+• 
+19
+• 
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+a processed point cloud to the Quest which then visualizes it. Latency and bandwidth need to be
+managed for this to work in real time. Likewise, integrating haptic feedback beyond the Quest’s own
+vibration requires external hardware (e.g. haptic gloves, vests) that communicate via Bluetooth or a
+PC. These add complexity and potential latency, so testing is needed to ensure the feedback loop is
+tight for real-time interaction. The Quest 3 does have a microphone array for voice input—if voice
+commands  or  audio  interaction  with  robots  are  in  scope,  note  that  by  default  Quest  voice
+recognition happens on-device for system UI or can be accessed via the Voice SDK for apps.
+Software Ecosystem and Constraints: Developing on Quest 3 means working within the Android/
+Meta ecosystem. Apps must be built into APKs and installed on the device (or run via Link). While this
+is  straightforward  for  most,  extremely  low-level  customization  (like  altering  the  OS  or  running
+background daemon processes) is not supported without rooting (and rooting Quest devices is
+generally not supported by Meta). This means your robotics integration has to live in the user-space
+app layer. For example, if you wanted to use the Quest 3 as just a sensor and stream raw camera
+frames out, you’d find that direct access to the raw RGB camera feed isn’t provided – you only get the
+passthrough  layer  as  seen  by  the  user  (with  some  customization).  Similarly,  you  can’t  easily
+repurpose the tracking cameras for custom computer vision; they’re dedicated to inside-out tracking
+and hand tracking, with no public API to grab those infrared images. As long as you use the official
+SDK’s  capabilities,  things  work  well,  but  any  out-of-scope  usage  might  be  blocked.  One
+consideration  for  Unreal/Unity devs:  not  all  engine  features  work  on  Android/Quest  due  to
+performance or API support. High-end visual effects, certain physics or networking libraries might
+need tweaking for the Quest environment. Always test on the actual device early to catch such
+limitations.
+Ergonomics and Human Factors: The Quest 3, at ~515 g, is relatively comfortable but still adds
+weight to the user’s head. For applications that require users to wear it for long periods (e.g., a 2-
+hour  teleoperation  session),  fatigue  can  be  an  issue.  Ensure  you  provide  breaks  or  use  a
+counterbalanced strap. The headset also fully covers the eyes, so users are isolated from the real
+world except through the cameras. MR alleviates this by showing them the room, but the view is
+digital – some users might feel eye strain or slight delay in seeing the real world compared to their
+own eyes. Additionally, the passthrough, while high quality, is not perfect: it has a slight noise and
+warping, and the peripheral vision is limited by the camera FOV. Users cannot see behind the
+headset’s blindspots (around the edges of the lens), so they have a narrower field of view than
+natural. This can be a safety concern in a lab with moving robots – one should use the Guardian
+system or other cues to prevent users from walking into real hazards outside their view. For certain
+precision tasks, the camera passthrough might not have enough resolution to read very small text or
+gauge fine detail (it’s good, but not eyeball-level good). Therefore, for MR applications, test whether
+the user can comfortably do everything via passthrough or if they’ll need to occasionally lift the
+headset.
+In conclusion, the Meta Quest 3 brings a comprehensive suite of advanced XR features that can greatly
+enhance robotics and interactive system projects – from providing an immersive teleoperation interface to
+enabling collaborative augmented reality in the lab. It packs high-end display and tracking tech into a
+(relatively) affordable, standalone package, lowering the barrier to entry for cutting-edge human-robot
+interaction experiments. Developers should leverage its strengths (standalone mobility, rich sensor input,
+open development platforms) while planning around its constraints (mobile hardware limits, battery life,
+and the closed nature of some systems). With careful design, the Quest 3 can serve as a powerful bridge
+• 
+• 
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+between the virtual and physical worlds, empowering experts to build intuitive interfaces for the robots
+and smart environments of the future.
+Sources:
+Wikipedia – Meta Quest 3 specifications
+Meta (AnandTech summary) – Quest 3 sensor and tracking system
+Meta Quest 3 Hardware Overview – Display, lenses, tracking cameras, depth sensor
+Meta Developers Blog – OpenXR support in Unity/Unreal for Quest
+Meta Forum – Spatial Anchors and Enhanced Spatial Services
+Open Teach (Iyer et al. 2024) – Quest 3 for 90 Hz robot teleoperation, MR passthrough use
+BrainXchange Blog – XR & Robotics teleoperation examples (VRoxy, etc.)
+Meta Community / Press – Quest 3 battery life and connectivity
+Meta Quest 3 - Wikipedia
+https://en.wikipedia.org/wiki/Meta_Quest_3
+Meta Reveals Quest 3 VR Headset: Higher Resolutions and Next-Gen Snapdragon SoC
+https://www.anandtech.com/show/18889/meta-reveals-quest-3-vr-headset-higher-resolutions-and-next-gen-snapdragon-soc
+Meta Quest 3 review: an impressive, unnecessary upgrade - Stuff
+https://www.stuff.tv/review/meta-quest-3-review/
+Battery Life Meta Quest 3 - Meta Community Forums - 1095349
+https://communityforums.atmeta.com/t5/Get-Help/Battery-Life-Meta-Quest-3/td-p/1095349
+Meta Quest 3: Mixed reality VR headset – Shop now
+https://www.meta.com/is/quest/quest-3/?srsltid=AfmBOoq7GD0A_F7VpcGx5e207PjPkdpX_4HLfTBV-4q1YM_UYxc92WDd
+Shared Spatial Anchors | Meta Horizon OS Developers
+https://developers.meta.com/horizon/documentation/unity/unity-shared-spatial-anchors/
+Blog | Meta Horizon OS Developers
+https://developers.meta.com/horizon/blog/openxr-standard-quest-horizonos-unity-unreal-godot-developer-success/
+Start Building with Meta Quest 3 | Meta Horizon OS Developers
+https://developers.meta.com/horizon/blog/start-developing-Meta-Quest-3-tips-performance-mixed-reality/
+Do Spatial Anchors work over Quest Link with Meta Quest Pro / 2 / 3
+https://forums.unrealengine.com/t/do-spatial-anchors-work-over-quest-link-with-meta-quest-pro-2-3/1536545
+Open Teach: A Versatile Teleoperation System for Robotic Manipulation
+https://arxiv.org/html/2403.07870v1
+OPEN TEACH: A Versatile Teleoperation System for Robotic Manipulation
+https://open-teach.github.io/
+EnterpriseWear Blog - Teleoperation, Training, and More: Where XR & Robotics Converge
+https://www.brainxchange.com/blog/teleoperation-training-and-more-where-xr-robotics-converge
+Re: [META QUEST 3] Bypass the "you've moved too far" popup
+https://communityforums.atmeta.com/t5/Unity-Development/META-QUEST-3-Bypass-the-quot-you-ve-moved-too-far-quot-
+popup/m-p/1212109
+1. 
+4
+3
+13
+2. 
+9
+18
+3. 
+5
+8
+11
+4. 
+24
+5. 
+19
+6. 
+33
+32
+7. 
+35
+39
+8. 
+15
+14
+1
+2
+3
+4
+5
+6
+7
+8
+10
+11
+12
+13
+17
+20
+29
+9
+18
+40
+14
+15
+16
+19
+21
+22
+23
+24
+25
+26
+36
+27
+28
+30
+33
+31
+32
+34
+35
+37
+38
+39
+41
+12

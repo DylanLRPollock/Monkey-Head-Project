@@ -1,0 +1,695 @@
+Time Machine on macOS Ventura (2017+
+Hardware) with RAID Mirroring and Cloud Backup:
+Performance & Benefits
+Overview of Time Machine on Modern macOS
+Apple’s  Time Machine is the built-in backup system in macOS, designed to work seamlessly with local
+drives (USB, Thunderbolt, etc.) and even network storage
+. Introduced back in 2007 (OS X 10.5), Time
+Machine has evolved significantly. Notably, macOS Big Sur and later (including  Ventura) revamped Time
+Machine to use the APFS file system and snapshot technology, enabling  “faster, more compact, and more
+reliable backups” than the old HFS+ format
+. Independent tests found that the new APFS-based Time
+Machine can be roughly 2.7× faster for the initial backup and 4× faster for subsequent backups, compared
+to the previous version
+. This is especially relevant for Macs from  2017 or newer, which are fully
+compatible  with  these  software  improvements.  In  practice,  Time  Machine  is  commonly  used  with  an
+external drive connected to a Mac (via USB-C, Thunderbolt, etc.), such as an iMac 2017 paired with a high-
+capacity external disk
+.
+Time  Machine’s  core  idea  is  simple:  it  performs  incremental,  versioned  backups of  your  system
+automatically. Once you turn it on, it will back up all files on your Mac that are not part of macOS itself
+(this means user applications, documents, photos, music, source code, etc.)
+. Backups occur hourly,
+with macOS automatically managing a rotation schedule (hourly snapshots for 24 hours, daily snapshots
+for the past month, and weekly snapshots for older data)
+. These backups allow you to restore the entire
+system or individual files to earlier versions as needed. Time Machine even integrates with apps (like Photos
+or Mail) to restore items within those apps’ interface
+. All of this happens in the background with
+minimal user intervention.
+How Time Machine Works (Ventura and Later)
+Time Machine in Ventura uses APFS  snapshots and incremental copy-on-write logic to efficiently store
+changes. The first time you back up to a new disk, Time Machine copies everything (this is the longest
+backup). Thereafter, each hourly backup copies only the changes since the last backup, which is much
+faster and smaller in size
+. For example, if you add or modify 500 MB of files in an hour, only that 500 MB
+(plus some overhead) will be written to the backup during the next run. This design allows continuous data
+protection without saturating your storage after the initial backup. Apple notes that after your first full
+backup, “future backups should be faster” precisely because only changes are saved
+.
+Local Snapshots: On APFS-formatted Macs, Time Machine also leverages local snapshots. macOS will save
+an hourly snapshot of the internal disk (if space allows) and keep it for up to 24 hours
+. This means if
+your external backup drive is temporarily disconnected (e.g. a laptop on the go), you still have 24 hours of
+version history stored on your Mac’s own drive. Once you reconnect your Time Machine disk, those local
+1
+2
+3
+1
+4
+5
+6
+7
+8
+9
+10
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+snapshots get merged into the backup. Local snapshots are automatically managed (deleted as needed for
+space) and are available only on APFS volumes
+.
+Backup Content and Exclusions: By default, Time Machine covers almost everything in your user space –
+documents, research data, applications you’ve installed, etc.
+. It explicitly excludes the macOS system
+files and apps that came with the OS installation
+ (since those can be restored by reinstalling macOS,
+and excluding them saves space and time). You can also manually exclude specific files or folders via Time
+Machine settings if needed (more on this below). Time Machine keeps a history of file versions, so you can
+recover an earlier copy of a file or a deleted file by “entering” the Time Machine interface and navigating the
+timeline of backups
+. This versioning is extremely useful for scientific and AI work – for instance, you can
+retrieve last week’s version of a dataset or source code if a new change introduced errors.
+APFS Requirement: One important technical note – since macOS 11 Big Sur, Time Machine requires the
+backup disk to be APFS-formatted (if you set up a new backup). If you connect an old HFS+ Time Machine
+disk, macOS will prompt to reformat it. In fact, if you use a RAID or certain managed drives, you must
+format them as APFS for Time Machine to work on Big Sur/Ventura
+. Users found that if a disk wasn’t
+APFS, Time Machine would get stuck preparing the backup until it was reformatted to APFS
+. The switch
+to APFS was worth it: Apple reports significantly improved performance and reliability, and as noted earlier,
+tests confirm major speed gains on APFS backups
+. For example, one user using a Thunderbolt 3 RAID
+array reported that after reformatting to APFS, an initial 750 GB backup completed in about 1.5 hours
+ – an impressive throughput on the order of 140 MB/s. This shows that modern hardware (like a 2017
+iMac with Thunderbolt or USB 3) can achieve high backup speeds, especially for the first backup, when the
+backup target and connection are not bottlenecks.
+Performance Considerations
+Background Throttling: It’s important to understand that Time Machine is designed as a  background
+service and macOS will throttle its resource usage to avoid impacting your work. By default, Time Machine
+backup processes are set to a low I/O priority (Apple classifies it as “Tier 3” or IOPOL_THROTTLE  priority) –
+meaning the system lets higher-priority tasks (like your apps) have disk and CPU priority
+. In practical
+terms, this throttling inserts small delays when disk contention is detected, especially on slower drives. How
+does this affect performance? During the first full backup, macOS knows it’s a big one-time job and tends to
+allow  more  use  of  performance  resources  (P-cores,  faster  I/O)
+.  Measurements  have  shown  initial
+backups often run much faster than subsequent hourly backups. For instance, one benchmark saw a fast
+SSD write at 900–1100 MB/s during the first backup, but then the routine hourly backups (with throttling in
+effect) ran at only 190–365 MB/s for sequential writes and as low as 3–32 MB/s for lots of small files
+. In
+other words, the system deliberately slows down Time Machine when it’s running automatically, so that it
+doesn’t overwhelm other tasks. This is by design and usually not a cause for concern – backups still
+complete in a reasonable time, and the Mac remains responsive.
+HDD vs SSD Performance: If your backup drive is a mechanical hard disk (HDD) – as is likely with a large
+20 TB RAID – the throttling has a somewhat bigger impact. Apple uses different throttle timings for SSDs
+versus HDDs. Specifically, when delaying backup I/O, the OS will pause writes longer on a hard disk
+(sleeping ~200 ms) than on an SSD (~25 ms) in each cycle
+. This means backups to spinning disks are
+slowed more aggressively to avoid saturating the drive. Additionally, APFS itself can be slower on HDDs due
+to fragmentation of metadata over time
+. The key point: a large, spinning external drive (like two 10 TB
+drives in RAID1) will not back up as fast as an SSD, especially after long usage. However, given typical data
+11
+4
+5
+12
+13
+14
+2
+15
+16
+17
+18
+19
+20
+21
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+workflows, this is usually fine – Time Machine will still get the job done, just not at the maximum raw
+interface speed. It’s also worth noting that the first backup is often unthrottled or less throttled (especially if
+started  manually),  so  you  might  observe  high  speeds  initially,  and  then  more  moderate  speeds  for
+subsequent hourly increments
+.
+Impact on a 2017 iMac: The iMac (2017) 5K is an Intel-based Mac that can run Ventura and handle Time
+Machine well. It likely has either a Fusion Drive or SSD internally; either way, it can push high data rates over
+Thunderbolt 3 or USB 3. For instance, a USB 3.0 connection to a single HDD can sustain ~100–150 MB/s, and
+Thunderbolt to a RAID can be higher. With Time Machine’s throttling, the actual observed transfer might be
+lower, but it will utilize idle resources efficiently. The goal of Time Machine is not to finish the backup as
+fast as technically possible, but to finish it without interfering with your usage
+. In a scientific
+computing context, this means you can be training models or crunching data while Time Machine quietly
+copies changes in the background. If the workload is very I/O intensive (e.g. you are streaming data to disk
+at high rates), Time Machine will politely yield and slow its pace.
+Large Files and Frequent Changes: Performance is also influenced by the  nature of your data. Time
+Machine works at the file level for backups (it uses file system events and snapshots to determine what
+changed). If you have very large files that change frequently, each time they change Time Machine will
+copy the whole file again in the next backup
+. For example, imagine a 5 GB database or a virtual machine
+disk image that updates daily – every backup will include a fresh 5 GB copy if any portion of that file
+changed. This can obviously impact backup duration and storage. In AI research, you might have large
+datasets or model checkpoints that update often. Apple specifically calls out that “unusually large files that
+update frequently” can make backups “time-consuming,” and recommends considering excluding them from
+backups if appropriate
+. We’ll discuss strategies for that in a later section. The APFS snapshot approach
+slightly mitigates this by copying only changed blocks into snapshots (making incremental differences more
+space-efficient)
+, but over time even changed blocks of a large file can accumulate to effectively the
+whole file size
+. 
+Initial Backup Experience: It’s worth highlighting that the first Time Machine backup is the only time
+you’ll move all data at once. This can take anywhere from minutes to hours depending on how much data
+you have. In your case, if your iMac has, say, 1–2 TB of data and it’s going to a 20 TB external RAID over
+USB 3 or Thunderbolt, the first backup might indeed run for several hours (for 2 TB it could be on the order
+of 4–6 hours over USB 3, assuming ~150 MB/s effective throughput). This is usually an overnight job. The
+example earlier (750 GB in 1.5 hrs) was on a very fast Thunderbolt RAID
+ – your mileage may vary. After
+that initial pass, though, the hourly backups of a typical workday’s changes (maybe a few GB) will likely
+complete in a few minutes or less each. Time Machine also skips running if the Mac is asleep or off; it will
+simply catch up when the Mac is on again (it doesn’t “queue” missed hours beyond saving local snapshots).
+On desktops like iMac, which are often always on, it will run hourly like clockwork. If an hourly backup is still
+running when the next hour comes, macOS will not start a second instance – it will let the current backup
+finish (they effectively run serially). So if you ever  do push massive amounts of new data continuously
+(imagine adding 100 GB every hour), Time Machine might end up running nearly constantly to keep up. In
+such extreme cases, you might opt to adjust backup frequency or exclude certain data, but for most
+workflows this isn’t a problem.
+17
+22
+23
+23
+24
+25
+15
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+RAID Mirrored Storage as a Backup Destination
+Now let’s consider the storage setup: a 20 TB My Book Duo configured as RAID 1 (mirroring), used for
+Time Machine. In RAID 1, the two drives inside the enclosure are exact copies of each other – all data is
+written to both simultaneously, creating a mirrored set. This does  not increase capacity (20 TB mirror =
+10 TB usable, since the second drive is essentially a duplicate), nor does it significantly increase write speed
+(writes go to both drives, so you’re limited by the speed of one drive). The main benefit is redundancy: if
+one of the two drives fails, your Time Machine backup is still intact on the other drive. This is a great
+addition to data safety, because an un-mirrored external drive is a single point of failure (drives  do fail,
+eventually). With a mirror, the chance of both drives failing at the same time is very low. You can replace the
+failed unit and rebuild the mirror without losing the backup. This setup aligns with the principle of keeping
+multiple copies of data on different media to protect against failure
+ – in fact, within the external unit
+you already have two copies of the backup data (one on each disk).
+A few notes on using RAID with Time Machine on macOS Ventura:
+Formatting & Compatibility: The My Book Duo likely presents itself as a single drive to the Mac
+(hardware RAID). You would format that single volume as APFS (preferably APFS Encrypted). Apple’s
+official documentation on Time Machine doesn’t explicitly mention RAIDs, but it treats them like any
+other external drive – as long as the Mac can mount it, Time Machine can use it
+. We saw earlier
+that if using a software-managed RAID like SoftRAID, you must use APFS format or Time Machine
+won’t work
+. With a hardware RAID enclosure, just ensure it’s an APFS volume. Ventura’s Time
+Machine preference will typically prompt to erase and reformat a disk to APFS if it’s not already in the
+correct format
+.
+Performance of RAID 1: Because mirror writes data twice, there may be a slight overhead – but
+practically, writing 100 MB/s to two drives vs one drive isn’t a big difference since the limiting factor
+is likely the USB interface or drive speed. Some RAID enclosures can read from both drives in parallel
+(improving read speed), but Time Machine’s usage pattern (writing backups and occasionally reading
+during restores) won’t greatly benefit from faster reads except during a full restore. In short, using
+RAID 1 should feel about the same as using a single drive for backup in terms of speed. The crucial
+difference is reliability. (If one drive fails, macOS might not even “know” if the enclosure handles it
+transparently – the enclosure would ideally notify you via a utility or LED. It’s good to periodically
+check the RAID status with the WD utility, if available, to ensure both disks are healthy.)
+Disk Failure and Rebuilds: In a mirror setup, when a drive fails, you replace it and the RAID
+hardware rebuilds the new drive from the remaining good drive. This rebuilding process will churn
+the disks (lots of reading/writing for hours) – it might be wise to pause Time Machine during a
+rebuild to avoid stressing the only good copy or slowing the rebuild. Once the mirror is restored,
+Time Machine can resume normal operation, continuing to keep both drives identical. Keep in mind
+that while RAID 1 protects from drive hardware failure, it doesn’t protect against other risks like
+accidental deletion (if you delete a file, that deletion is mirrored) or corruption (if the filesystem gets
+corrupted, it’s mirrored too). That’s why RAID is not a substitute for having separate backups – it’s a
+high-availability feature, not a true backup by itself. In our case, the RAID is an extra layer on top of
+the backup.
+26
+• 
+27
+13
+28
+29
+• 
+• 
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+Encryption: You  mentioned  using  encrypted  Time  Machine  backups,  which  is  highly
+recommended. When you set up Time Machine and enable encryption, the external APFS volume is
+encrypted with AES (XTS-AES 128, typically). On a 2017 iMac (which lacks the Apple T2 security chip),
+encryption  is  done  in  software,  but  thanks  to  CPU  acceleration  (Intel  chips  have  AES-NI),  the
+performance hit is modest. Apple notes that APFS encryption works at the volume level, and it
+doesn’t double-encrypt if a drive is already encrypted – enabling “APFS Encrypted” essentially means
+the entire backup filesystem is encrypted on disk
+. The peace of mind is worth it: if someone
+steals  that  external  drive,  they  cannot  read  your  research  data  or  personal  files  without  the
+encryption password. Just be sure you remember the password or have it stored in your iCloud
+Keychain (macOS usually offers to remember it for you). Losing access to an encrypted backup due
+to a forgotten password is a disaster to avoid. In summary, with APFS you get strong encryption with
+little friction – definitely a good practice since you handle sensitive or valuable data.
+Backup Disk as “Read-Only”: A quick aside – in APFS Time Machine, the backup volume is mounted
+as a read-only volume in normal use. You’ll notice in Finder that you can browse “Backups” but not
+modify  them.  This  is  intentional  to  prevent  tampering.  Time  Machine  manages  the  data  via
+snapshots. Just something to be aware of: don’t try to manually store extra files on the Time Machine
+disk; Apple’s documentation advises using the disk only for Time Machine to avoid any interference
+.
+Including Cloud Backups (iCloud, Dropbox, etc.) for Off-Site Safety
+While Time Machine (especially on a RAID1 drive) gives you an excellent on-site backup, it’s wise to also
+have off-site backups – this is where cloud services come in. In the backup strategy world, there’s a rule of
+thumb called the 3-2-1 rule: keep 3 copies of your data, on at least 2 different types of storage media, with
+at least 1 copy kept off-site (away from the others)
+. In our scenario, you have the original data on your
+iMac (internal drive) and a local backup on the external RAID (that actually has two mirrored copies, but
+both are local). To fully follow 3-2-1, you’d want another copy in a different location – cloud storage fulfills
+that role nicely.
+iCloud: Apple’s iCloud is built into macOS and provides a form of cloud backup/sync for specific data. If you
+sign in with an Apple ID and enable iCloud features, it can automatically sync your  Photos, contacts,
+calendars, notes, passwords, and so on, and can also sync files via iCloud Drive
+. For example, if you
+enable “Desktop & Documents” in iCloud Drive, those folders will be mirrored to Apple’s cloud. iCloud’s
+advantage is that it’s seamless and keeps data accessible anywhere, not just backed up
+. Indeed, Apple
+markets iCloud as keeping your data “safe, automatically backed up, and available anywhere”
+. However, it’s
+important to clarify that iCloud is primarily a synchronization service, not a full Mac backup. It doesn’t
+make a historical archive of your whole system in the way Time Machine does. If you delete a file from an
+iCloud-synced folder, it gets removed from iCloud too (though there is a recently deleted recovery period for
+iCloud  Drive  files).  Also,  iCloud  only  covers  what  you  choose  to  sync:  for  many  users  that’s  photos,
+documents, and app data – which might actually be the most critical subset of their data. 
+One thing to watch out for: if you use the “Optimize Mac Storage” feature, your Mac will offload some
+infrequently used iCloud files from your local disk (to save space), keeping them only in the cloud. Time
+Machine cannot back up files that aren’t on the local disk. So if Optimize Storage is on and, say, a large
+folder is only stored in iCloud (with a download-on-demand icon), Time Machine will not include that data in
+its backup
+. In essence, iCloud is already storing it, so you still have a copy – but it’s something to be
+• 
+30
+31
+• 
+32
+26
+33
+33
+33
+34
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+mindful of. If you want everything to be both in iCloud and in Time Machine, you might disable optimization
+so that all files stay downloaded locally (requiring enough disk space).
+Despite these nuances,  iCloud is very useful as a tertiary backup for key data. It provides  off-site
+coverage – if (heaven forbid) your entire office burned down, the Time Machine drive and Mac might both
+be  lost,  but  your  iCloud  data  (documents,  photos,  etc.)  would  still  exist  on  Apple’s  servers.  It’s  also
+continuously updating (as long as you have internet), which complements Time Machine’s hourly schedule.
+Third-Party Cloud (Dropbox, Google Drive, etc.): Services like Dropbox, Google Drive, OneDrive, or Box
+operate similarly to iCloud Drive in that they sync selected folders/files to the cloud. Many researchers use
+Dropbox or Google Drive to easily share data with colleagues and maintain an off-site copy. The same
+caveats apply: these are sync services. They typically have version history for files (e.g., Dropbox keeps 30
+days of versions on personal accounts), which is somewhat backup-like, but they are not intended to
+snapshot your whole system. You choose what folders to put in the sync folder. For example, you might
+keep your active project data in a “Dropbox” folder so that every edit is sent to the cloud immediately. This is
+great for collaboration and off-site safety of that project. It doesn’t automatically cover, say, your entire
+home directory unless you manually put everything in there (which isn’t practical for something like the
+whole Photos library perhaps). 
+One way to leverage these: identify critical subsets of your data – perhaps your source code repositories,
+papers and notes, or processed results – and ensure those live in a cloud-synced folder (or at least are
+copied to one regularly). That way you have an additional backup beyond Time Machine. For instance, you
+might use iCloud Drive for your Desktop/Documents, and use Dropbox or Google Drive for specific research
+data that you want redundant on another platform or to share with collaborators. There’s no harm in using
+multiple services if you have them.
+Dedicated Cloud Backups: Beyond sync services, there are true  cloud backup services like Backblaze,
+CrashPlan, or Carbonite, as well as tools like Arq that let you back up your Mac to cloud storage (Amazon S3,
+Google Cloud, etc.). These act more like Time Machine in the cloud – automatically backing up everything
+(with version history), regardless of folder, and keeping it in an encrypted archive online. The Apple Support
+site even acknowledges that “some [third-party utilities] can back up to a cloud-based service” and you should
+use whatever meets your needs
+. The advantage of these is comprehensive coverage and set-and-forget
+off-site backup. The downsides are cost (for large amounts of data, you’ll pay ongoing fees) and the initial
+upload  can  be  slow  for  huge  datasets  (your  2  TB  could  take  weeks  to  upload  on  a  typical  internet
+connection). In your case, if you have tens of terabytes of AI data, uploading it all might be impractical, so
+you’d  prioritize  what  truly  needs  an  off-site  copy.  Some  researchers  keep  an  offline  clone that  they
+periodically update and store off-site (e.g. a removable hard drive in a safe deposit box) as an alternative –
+but using cloud is far more convenient if the data size is manageable.
+Combining Strategies (Local + Cloud): The good news is that local Time Machine and cloud backups don’t
+conflict – they address different threat models. Time Machine covers you for quick recovery, versioning, and
+mistakes on a day-to-day basis; cloud/off-site covers you for catastrophic loss (and also allows access to
+some files when away from the Mac). A well-rounded approach is to use  both. In fact, experts strongly
+encourage leveraging both local and cloud solutions, since each has strengths: local disks are cheap and
+fast, while cloud is robust and off-site – using both compensates for the weaknesses of each
+. Following
+this philosophy, you achieve redundancy  and geographic diversity. For instance, Cloudwards (a backup
+review site) states: “Hard drives are cheap and fast, but lack reliability for long term storage. Although the cloud
+35
+36
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+is far more reliable, its cost and slow transfers mean it’s not a silver bullet. For a well-rounded solution, follow the
+3-2-1 rule and use a combination of the two.”
+. In your case, you already have the combination in mind:
+Time Machine on a redundant local disk (RAID1) plus iCloud/Dropbox. This effectively implements 3-2-1: you
+have (at least) 3 copies of important data (original, local TM, cloud), on 2 different media (local disk and
+cloud servers), and 1 off-site copy (cloud). 
+A brief mention on HomeKit/Apple hardware integration (which you noted you do not want to focus on):
+Time Machine is mostly independent of things like HomeKit. There isn’t really an integration there – e.g.,
+you can’t trigger Time Machine via Siri or HomeKit automations in any meaningful way. It runs on its
+schedule or on-demand when you click “Back Up Now.” Likewise, the specific Mac hardware (whether it’s a
+Mac  mini  or  iMac  or  MacBook)  doesn’t  change  how  Time  Machine  operates,  beyond  performance
+differences. So we won’t dwell on hardware gadgetry; the focus remains on software behavior and backup
+strategy.
+Backup Coverage and Data Management for Research/AI Work
+With a 20 TB Time Machine volume (10 TB usable in mirror) dedicated to backups, you have a very large
+space to hold historical data. Time Machine will keep filling the backup disk until it’s nearly full, then start
+deleting the oldest backups to free space as needed
+. With 10 TB available and (let’s say) a 2 TB iMac
+internal disk, you could accumulate many months or even years of backups before running out. This long
+retention is fantastic for research: you might retrieve an old experiment result from last year, for example,
+as long as the backup from that time still exists. It’s essentially an archive of your work over time. 
+However, not all data is equally useful to version or retain. In scientific and AI projects, there are often
+some directories that churn heavily (temporary files, intermediate model checkpoints, cache files, etc.). If
+these are included in the backup, they might consume space without real benefit. For example, if you have
+a cache folder that writes gigabytes and then overwrites them, Time Machine will diligently back up each
+change, but you likely will never need to restore an old cache state. Apple’s guidance is to consider
+excluding such files: “find large and frequently updated documents… [and] exclude such files from your Time
+Machine backup”
+. You can do this by going to Time Machine settings > Options > + (add exclusion). A
+smart strategy is to organize large, volatile data onto certain folders, so you can easily exclude those.
+Some advanced users even put large data on a separate volume and exclude that entire volume from Time
+Machine
+, so that Time Machine focuses on the irreplaceable stuff. For instance, you could store raw AI
+model training data (if it’s reproduciable or downloaded from elsewhere) on an external drive or separate
+partition that isn’t backed up, while keeping your unique research results and documents on the main drive
+(which is backed up). This prevents the backup from ballooning with, say, 500 GB of downloaded ImageNet
+data that you could re-download if needed. Howard Oakley (Eclectic Light Co.) suggests: if you have
+sufficient space, it’s fine to include everything; but if not, “to maintain better control of backup storage, you
+should move VMs and other large files to a separate volume and add that volume to Time Machine’s exclude
+list.”
+ The same principle can apply to large AI datasets or simulation outputs.
+One important thing: never exclude something that you can’t afford to lose unless you have another
+backup of it. It’s easy to get zealous and exclude big folders, but double-check that those truly aren’t
+needed or are backed up elsewhere. For example, if you have a folder of raw experiment data that’s huge
+but only stored on your Mac, you do want that backed up (maybe even in multiple ways). On the other hand,
+a folder of test video files or temporary models might be safely excluded. 
+36
+37
+6
+23
+38
+38
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+Time Machine’s backup coverage by default is broad and meant to be a safety net. It even backs up things
+like your user settings, preferences, and emails. After a disaster, restoring from Time Machine can put
+everything back in place exactly as it was – you could boot a new Mac with your Time Machine and get
+your  entire  environment  (accounts,  apps,  files)  restored.  This  includes  aspects  like  your  development
+environment,  custom  scripts,  etc.,  which  iCloud  or  Dropbox  wouldn’t  capture.  Apple’s  documentation
+confirms you can “restore your entire system to another Mac” using Time Machine
+, which underscores its
+role as a full-system backup (minus the base OS files which are easily reinstalled). For an expert user, this
+means minimal downtime after a crash – just restore from backup and continue working with all your tools
+and data intact.
+Given that your target audience here is expert and this is for scientific/AI usage, a few extra analytical points
+to note:
+Data Integrity: APFS snapshots help ensure that the backup captures a consistent point-in-time
+image of your data, even if the system is active. For example, if a file is being modified during
+backup, APFS can use copy-on-write to snapshot the state at start, so Time Machine sees a stable
+version. This is generally reliable for most files, though for databases or VMs you might still prefer to
+pause them during backup windows or use their internal backup/export features to get a consistent
+state. Time Machine is not application-aware (no specific hooks into, say, MySQL or your machine
+learning processes), so consistency is at a file level. Typically, this is not an issue for things like code,
+documents, static data, etc. Just keep it in mind if you’re doing something like backing up a live
+database or a virtual machine – those might be better handled with specialized backup procedures
+or at least be quiesced.
+Verification  and  Maintenance: Apple  doesn’t  provide  a  user-facing  verification  tool  for  Time
+Machine backups (it periodically checks them silently). As an expert, you might occasionally want to
+ensure the backup is in good shape. You can use the command-line tool tmutil  to verify backups
+or simply try a test restore of some files. Also, monitor that Time Machine is actually running hourly –
+Ventura’s  System  Settings  >  Time  Machine  will  show  the  time  of  last  backup  and  any  errors.
+Thankfully, issues like the infamous “Time Machine must create a new backup” (common in the older
+HFS+ days due to sparsebundle corruption) are much rarer now with APFS
+. Still, keep an eye on
+it.
+Performance Tuning: By default, you likely won’t need to tweak anything. But if you ever wanted to
+speed up backups at the expense of system resources (for instance, you know you’ll be away from
+the computer for a while and want it to finish a huge backup faster), there is a (undocumented) way
+to disable the macOS throttling ( sudo sysctl debug.lowpri_throttle_enabled=0 )
+. This
+makes Time Machine run full throttle. Use with caution – it’s not persistent (resets on reboot) and if
+left off, other background processes might also hog I/O. Generally, it’s not recommended except in
+special cases, and Apple doesn’t officially support it. A third-party utility “App Tamer” even provides a
+toggle for accelerating Time Machine backups by adjusting this setting
+. So, the option is there if
+needed, but in normal usage it’s rarely necessary.
+39
+• 
+• 
+40
+• 
+41
+42
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+Conclusion
+Implementing Time Machine on a Mac running macOS Ventura (or newer) with 2017+ hardware – such as
+your iMac 5K – and pairing it with  RAID1 local storage plus cloud backups provides a  robust, multi-
+layered backup strategy. Let’s summarize the key benefits and findings from this configuration:
+Comprehensive, Automatic Backups: Time Machine will automatically back up all your important
+files  (apps,  documents,  research  data,  etc.)  hourly  without  manual  intervention
+.  It  retains
+multiple versions, allowing easy recovery of accidentally deleted or changed files – a crucial feature
+when working on scientific papers or AI models where reverting to a prior state can save the day.
+The hourly/daily/weekly backup scheme ensures even older versions are available (space permitting)
+.
+APFS and Performance on Ventura: With APFS-based backups, Time Machine on Ventura operates
+more efficiently and reliably than older macOS versions. Backups are faster and take less space due
+to  block-level  differences  and  compression,  as  evidenced  by  Apple’s  claims  and  independent
+benchmarks
+.  The  initial  backup  may  still  be  time-consuming,  but  subsequent  incremental
+backups are much quicker since only changed data is copied
+. The macOS scheduler intelligently
+throttles backup tasks to run in the background, so even on a 2017 iMac you can continue working
+(including  heavy  tasks  like  AI  training)  while  Time  Machine  runs,  with  negligible  impact  on
+foreground performance
+.
+RAID1 Mirrored Backup Drive – Data Redundancy: Using a RAID1 external drive for Time Machine
+provides redundancy for the backup itself. If one of the drives in the mirror fails (a not uncommon
+event for large drives over time), your backup remains accessible on the other drive. This greatly
+reduces the risk of losing your only backup due to a drive failure. It aligns with best practices of
+having multiple copies of data on different devices
+. Keep in mind that while RAID1 protects
+against hardware failure, it does not replace having an off-site copy – which is why the cloud
+component  is  so  important.  Performance-wise,  the  mirror  does  not  hinder  backup  operations
+noticeably, and modern interfaces (USB 3.1/TB3) and drives can handle the throughput easily. The
+system treats the RAID as one volume, and thanks to APFS compatibility, Time Machine works
+seamlessly with it
+. Also, by encrypting the Time Machine volume, you ensure the backup data is
+secure from unauthorized access, which is vital for sensitive research data.
+Cloud Backups – Off-site Protection and Sync: By incorporating iCloud and/or third-party cloud
+services (like Google Drive, Dropbox), you add an off-site backup layer. This means your most critical
+data is stored in a secure data center as well, guarding against site-wide disasters (fire, theft, etc.)
+that  could  strike  both  your  Mac  and  local  backup.  iCloud  seamlessly  keeps  things  like  your
+documents, photos, and app data in sync and accessible on other devices
+. Services like Dropbox
+can continuously sync research folders. The cloud copies also serve as an immediate remote access
+option – e.g. you can retrieve a file from anywhere without needing the Time Machine drive. The
+combination of Time Machine + cloud essentially fulfills the 3-2-1 backup strategy (3 copies, 2 media,
+1 off-site) which is considered a gold standard for data protection
+. Do note that cloud
+services have storage limits and costs, so you might not store everything in the cloud (especially large
+datasets), but even a partial off-site backup of critical items greatly improves your overall data safety
+net. And unlike Time Machine (which is archival), cloud sync is real-time or very frequent, providing
+an up-to-the-minute secondary copy for your most active files.
+• 
+4
+6
+• 
+3
+8
+22
+43
+• 
+26
+14
+• 
+33
+36
+26
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+Focused on Data Integrity and Recovery: Our emphasis has been on the application and benefits
+of this backup approach, rather than Apple-specific hardware features. In practical terms, if a file is
+corrupted or deleted during your AI experiments, you have multiple ways to get it back: Time
+Machine can pull yesterday’s version from the local backup
+, or iCloud/Dropbox might have a
+copy if it was synced. If your entire iMac fails, you can restore a replacement Mac from the Time
+Machine backup (bringing back all your configurations and files)
+, and meanwhile you haven’t lost
+productivity because essential files are in the cloud as well. This layered defense is essential when
+dealing with valuable scientific data and long-running AI training results that would be costly or
+impossible to reproduce. By focusing on the analysis of the backup performance and coverage, we
+can  conclude  that  this  setup  offers  a  strong  balance  between  speed,  reliability,  and  depth  of
+coverage.
+In summary, using Time Machine on macOS Ventura with a 2017+ Mac provides an  efficient, reliable
+backup system that, when paired with RAID mirroring and cloud backups, covers all bases: local quick
+recovery, protection against hardware failure, and protection against catastrophic loss. The performance is
+generally very good (especially with APFS enhancements), and any speed trade-offs (like throttling or HDD
+vs SSD limits) are deliberate choices to favor user experience and long-term disk health
+. For an expert
+user handling scientific papers or AI training material, this approach means you can work with confidence –
+your data is continuously being safeguarded in the background, with multiple redundancies. The benefit is
+not just in worst-case scenarios, but also in day-to-day convenience: you can retrieve previous versions of
+your datasets or code, set up new machines faster, and avoid costly setbacks from data loss. In essence,
+Time Machine combined with RAID and cloud backup provides a comprehensive insurance policy for your
+research data and workflow, allowing you to focus on your research rather than worrying about data loss. 
+Sources:
+Apple Support – How to back up your Mac
+Apple Support – If Time Machine takes a long time to back up
+Apple Support – Back up your files with Time Machine on Mac
+Apple Support – Backup disks you can use with Time Machine
+Michael Tsai’s Blog – APFS Snapshots and Large Files
+Eclectic Light Company – Time Machine backups on faster drives (I/O throttling)
+Apple Community Forums – RAID & Time Machine discussion
+Western Digital Blog – 3-2-1 Backup Strategy
+Cloudwards Backup Guide 2025 – Use of Time Machine + iCloud (3-2-1 rule)
+Time Machine (macOS) - Wikipedia
+https://en.wikipedia.org/wiki/Time_Machine_(macOS)
+Back up your files with Time Machine on Mac - Apple Support
+https://support.apple.com/guide/mac-help/back-up-files-mh35860/mac
+If Time Machine takes a long time to back up - Apple Support
+https://support.apple.com/en-us/102184
+Using a RAID disk for time machine - Apple Community
+https://discussions.apple.com/thread/254555814
+• 
+12
+39
+20
+• 
+44
+33
+45
+• 
+9
+23
+29
+• 
+4
+5
+• 
+28
+• 
+46
+38
+• 
+47
+20
+• 
+30
+15
+• 
+26
+• 
+36
+1
+2
+3
+6
+7
+4
+5
+10
+11
+12
+39
+8
+9
+22
+23
+29
+32
+13
+14
+15
+27
+30
+31
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+Is it worth storing Time Machine backups on a faster drive? – The
+Eclectic Light Company
+https://eclecticlight.co/2024/12/18/is-it-worth-storing-time-machine-backups-on-a-faster-drive/
+Michael Tsai - Blog - APFS Snapshots and Large Files
+https://mjtsai.com/blog/2020/03/03/apfs-snapshots-and-large-files/
+What is the 3-2-1 Backup Strategy? 
+https://blog.westerndigital.com/321strategy/
+Backup disks you can use with Time Machine - Apple Support
+https://support.apple.com/en-us/102423
+How to back up your Mac - Apple Support
+https://support.apple.com/en-us/102307
+Why doesn't Time Machine Backup show iClo… - Apple Community
+https://discussions.apple.com/thread/254963147
+How to Backup a Macbook in 2025: Time Machine, iCloud & More
+https://www.cloudwards.net/how-to-backup-your-mac/
+16
+17
+18
+19
+20
+21
+41
+42
+43
+47
+24
+25
+38
+40
+46
+26
+28
+33
+35
+44
+45
+34
+36
+37
+11

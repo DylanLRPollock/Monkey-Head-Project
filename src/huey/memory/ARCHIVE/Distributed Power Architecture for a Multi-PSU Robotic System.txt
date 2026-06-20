@@ -1,0 +1,653 @@
+Distributed Power Architecture for a Multi-PSU
+Robotic System
+Abstract
+This report presents a conceptual overview of a distributed power architecture for a robotics prototype that
+uses multiple consumer-grade power supply units (PSUs) to power an integrated system. Instead of a single
+supply, several off-the-shelf PSUs are employed in parallel (by dividing the load, not by directly paralleling
+outputs)  to  drive  three  interconnected  motherboard-based  subsystems  alongside  motors,  sensors,
+microcontrollers,  and  auxiliary  devices.  All  PSUs  share  a  common  ground  reference.  We  discuss  the
+rationale for this multi-PSU approach in a prototyping context – including cost benefits and capacity scaling
+– and describe how power is distributed across subsystems. Key technical considerations are examined,
+such as the implications of using a common ground without isolation, potential interference and electrical
+noise between subsystems, and risks like backfeeding or instability in the absence of OR-ing diodes or
+relays. The challenges inherent to this architecture are analyzed, and we outline how the system could be
+refined in future iterations (for example, through improved grounding strategies, power management
+circuitry, or consolidation of supplies). The tone of the report is technical yet accessible, aiming to provide
+an academic-style perspective on leveraging multiple consumer PSUs in robotics prototyping. Citations are
+included to support the discussion in multiple reference styles (APA, MLA, IEEE) where appropriate.
+Introduction
+Robotic systems typically require multiple voltage rails and substantial currents to support components
+ranging from high-performance computing boards to motors and sensors. In professional designs, a
+centralized power architecture might use one high-capacity supply (or battery) feeding all components, or
+a  distributed  power  architecture with  a  single  high-voltage  source  and  point-of-load  converters  at
+subsystems
+.  However,  in  early-stage  prototyping,  engineers  often  repurpose  readily  available
+consumer-grade  PSUs (such  as  PC  ATX  power  supplies)  to  meet  power  needs.  This  approach  offers
+practical benefits: multiple smaller PSUs can provide combined current capacity across different voltages
+and can be cheaper or more accessible than a single purpose-built supply of equivalent power
+. For
+instance, one case study found that using two standard ATX PSUs doubled the available 5 V current (from
+~25–30 A to ~50 A) and spread the load and heat dissipation between units, all at roughly one-quarter the
+cost of a single high-wattage supply
+. In prototyping scenarios, leveraging spare PC PSUs “works in a
+pinch” even if it’s a bit of a kludge compared to a unified supply
+. 
+Rationale for Multiple PSUs: The decision to employ multiple PSUs in the Huey robotic shell (a complex
+system with three onboard motherboards and numerous peripherals) is driven by both practical and
+technical factors. First, no single consumer PSU on hand may meet the aggregate power requirements –
+especially if high currents are needed at standard voltages like 5 V and 12 V for motors, drives, and
+computing components. Using two or three smaller PSUs allows splitting of loads, effectively increasing
+total available current across rails
+. This load-splitting approach has been observed in other high-power
+systems; for example, Backblaze’s storage pods used dual ATX PSUs not for redundancy but to share the
+1
+2
+3
+2
+3
+4
+2
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+heavy load, with each PSU powering a subset of devices
+. Second, prototyping with off-the-shelf PSUs
+provides flexibility – one can mix-and-match units for different sections (e.g. one PSU dedicated to motors,
+another to computing boards) and easily swap or upgrade them as needed. Finally, there is a convenience
+factor:  ATX  PSUs  offer  multiple  voltage  outputs  (+12 V,  +5 V,  +3.3 V,  etc.)  with  built-in  regulation  and
+protection, simplifying the power delivery to diverse robotic components during early development.
+This report focuses on a conceptual understanding of such a multi-PSU power architecture. We will describe
+the overall system architecture and power distribution strategy, detail the common-ground scheme used to
+reference  all  subsystems,  and  examine  the  challenges  that  arise  (including  electrical  noise  coupling,
+interference between subsystems, and safety or stability concerns). We also discuss the limitations of this
+approach – for instance, the lack of isolation or diode OR-ing raises potential issues like backfeeding
+between supplies – and how these might be mitigated or designed out in future refinements of the system.
+The goal is to provide a clear technical overview suitable for an academic or engineering audience, without
+delving into specific implementation details of any one PSU model. In the following sections, we present the
+system architecture (§ System Architecture), analyze key challenges (§ Challenges), discuss the broader
+implications  and  possible  improvements  (§  Discussion),  and  finally  summarize  our  conclusions  (§
+Conclusion).
+System Architecture
+Overview: The prototype robotic shell’s power architecture consists of multiple consumer-grade PSUs
+powering different portions of the system in a distributed manner. Rather than tying all PSUs together on
+the same output, each PSU is allocated to specific subsystems or sets of components. In this design, three
+primary subsystems – each built around a motherboard (e.g., single-board computers or a server-grade
+motherboard and two auxiliary control boards) – are each powered by one or more dedicated PSUs. All PSUs
+share a common ground connection (0 V reference) but their positive outputs are largely kept separate,
+each feeding its intended load group. This means, for example, PSU A might supply a 12 V rail to the main
+motherboard  and  its  peripherals,  PSU  B  might  supply  another  motherboard  or  high-power  motors/
+actuators, and PSU C might power a third control unit and various sensors or auxiliary electronics. By
+partitioning the load in this way, the supplies are not directly paralleled on the same output node; instead,
+they operate in parallel at the system level by each handling a portion of the total load devices
+. This
+avoids  the  complexities  of  current-sharing  between  PSUs  on  a  single  rail  and  instead  resembles  a
+decentralized power distribution, where multiple sources feed different branches of the system.
+Common Ground Strategy: A critical aspect of this architecture is that all subsystems must share a
+common reference potential for their signals to interoperate. The ground (negative) terminals of all PSUs
+are therefore  tied together, creating a single common ground plane across the robot. This common
+ground ensures that any communication signals, sensor references, or control lines between devices
+powered by different PSUs have a mutual reference and can operate correctly. In practice, the PSU ground
+outputs are connected (often at a star point or common grounding bus in the chassis) so that 0 V is uniform
+everywhere
+. It’s worth noting that in ATX PSUs and similar, the DC ground is typically also connected to
+earth ground; since all PSUs are plugged into the same mains circuit, their earth grounds are inherently
+common. Nonetheless, explicitly tying their DC grounds together at a single point helps prevent differences
+in ground potential from arising across the robot’s frame. This common ground bus approach is standard
+when using multiple supplies – one expert advises to “cross-tie the 0 V ends” of all power supplies in such
+multi-PSU setups
+ to avoid floating references between them.
+5
+6
+6
+6
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+By not including any isolation or OR-ing diodes between the grounds, the design essentially treats all
+subsystem grounds as one unified node. Signals (e.g., a PWM control from a microcontroller on one board
+driving a motor driver on another supply) can flow reliably because the return currents all share that same
+ground path. The decision to avoid  diode OR-ing or relay isolation on the outputs means there is  no
+intentional voltage drop or separation between the supplies’ outputs and the loads – every PSU is directly
+connected to its loads and to the common ground. This simplicity is part of the prototyping philosophy:
+fewer components and complexities make it easier to assemble and reconfigure the power system. It is akin
+to a rough implementation of a distributed power architecture: each PSU serves as a local power source for
+a  cluster  of  components,  somewhat  analogous  to  point-of-load  converters  in  a  formal  distributed
+architecture (albeit here the “point-of-load” source is a full PSU)
+.
+Power Distribution to Subsystems: Power wiring in this architecture is arranged so that high-current
+devices are served by the nearest or most capable PSU. For example, power-hungry actuators or drive
+motors (which run on 12 V DC) might be wired directly to the 12 V rail of the PSU that also powers a
+particular  motherboard,  thereby  sharing  that  PSU’s  capacity.  Other  sensitive  electronics  like
+microcontrollers or sensors requiring 5 V or 3.3 V could either be fed from the same PSU’s regulated outputs
+or from small DC-DC converters attached to that PSU’s 12 V rail. The three motherboards themselves each
+receive ATX power from their respective supplies. Importantly, because all grounds are common,  power
+distribution and signal distribution become intertwined: a sensor powered by PSU A can safely send
+data to a processor on PSU B, as their grounds are common. The architecture relies on the fact that each
+PSU independently maintains its output voltage for its load; there is no centralized power management
+ensuring equal load sharing or failover. In essence, the robot has multiple “power islands” (one per PSU)
+that are connected at the ground level and via any inter-system signal wiring. 
+This kind of segmentation requires careful planning of which PSU feeds which component group. A guiding
+principle is to avoid having two different PSUs drive the same exact load or node. There are no parallel
+connections of two supplies to one circuit, which means classic current-sharing problems are averted.
+Instead, each device or module is clearly assigned to one PSU’s domain. The common ground is the only
+intentional connection between the otherwise separate supply domains (aside from data connections). This
+approach has precedent in other multi-supply systems. For instance, in large disk storage arrays, one half of
+the drives can be run off one PSU and the other half off a second PSU – both PSUs’ grounds are common,
+but each drive is powered by only one supply
+. Such a scheme ensures that load distribution is achieved
+without the supplies electrically fighting each other. It’s recommended in engineering forums that if one
+must use multiple PSUs, “split the load into two halves” (or thirds, etc.) and dedicate each supply to a portion
+of the devices, rather than directly paralleling outputs
+.
+No OR-ing Diodes or Redundancy: In this prototype configuration, diode OR-ing (i.e., using diodes or ideal
+diode controllers to combine outputs) is deliberately not used. In a redundant power supply design, OR-ing
+diodes allow one supply to take over if another fails, without backfeeding current into the failed unit
+.
+Here, because each PSU has its own dedicated outputs, redundancy was not a design goal – the aim was
+increased total capacity, not fault-tolerance. Avoiding OR-ing components saves cost and avoids the voltage
+drop that diodes introduce on the lines. It does mean, however, that if one PSU were to lose power, the
+devices it feeds would shut down and there is no automatic failover. The other PSUs would continue
+powering their sections, so the system as a whole might operate in a degraded state. For example, if the
+PSU powering the primary computer fails, the motors and other boards might still have power, but the
+“brain” is off – a potentially unstable scenario. Because of the common ground, a powered-down supply’s
+output  node  will  be  at  0   V,  effectively  disconnected  from  its  load  (unless  some  other  still-powered
+1
+5
+6
+7
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+connection unintentionally sources it current – a risk discussed later). In short, the architecture prioritizes
+simplicity and available hardware usage over advanced features like redundancy or hot-swap capability.
+Each PSU is a single point of failure for its portion of the system.
+In summary, the system architecture can be viewed as a distributed multi-source power network inside
+the robot: multiple PSU “sources” feed various “loads” with all sources joined at ground. This yields a
+functional power solution for the prototype stage, leveraging the strengths of consumer PSUs (multiple
+voltages,  high  current  on  5   V/12   V  rails,  built-in  protections)  while  acknowledging  their  independent
+operation. Next, we explore the challenges and implications that arise from this design, particularly due to
+the common ground coupling and lack of isolation between subsystems.
+Challenges
+While the multi-PSU architecture successfully powers the robot prototype, it introduces several electrical
+challenges and risks that must be managed. These challenges stem from the interactions between the
+multiple supplies and the connected subsystems, especially via the common ground. Key issues include
+ground potential differences and loops, interference and noise coupling between subsystems, the risk of
+backfeeding currents between PSUs, stability during load transients, and difficulties in power monitoring
+and control. We discuss each of these in turn.
+1. Ground Potential Differences and Ground Loops: With all PSUs sharing a common ground, it is crucial
+to ensure that this ground is truly at the same potential throughout the system. In practice, if the ground
+wiring is not ideal, high current flows can cause slight voltage differences between different ground points –
+a phenomenon known as ground offset or ground bounce. For instance, when a heavy motor current
+returns to its PSU, the finite resistance and inductance of the ground wire means that section of ground
+might  rise  a  few  millivolts  (or  more)  above  the  rest  of  the  ground  plane.  If  at  the  same  time  a
+microcontroller ground at a distant point is “quiet,” the difference in ground potential can disturb the
+reference for signals between them
+. One answer on Electrical Engineering Stack Exchange explains this
+using Ohm’s law: any shared ground conductor can be modeled as a small resistor, so large currents through it
+cause a voltage drop that appears as noise to other devices on the same ground
+. The effect is analogous to
+lights dimming in a house when a heavy appliance turns on – the wiring impedance causes a temporary
+drop in the shared supply. In a robot, a sudden motor stall current could momentarily raise the local
+ground, causing sensor readings or logic levels to shift unpredictably.
+Moreover, with multiple PSUs, there is a possibility of ground loops if the ground is connected in more than
+one topology. Ideally, all grounds should connect at a single common point (a star ground configuration) to
+avoid loop currents. If, for example, PSU A and PSU B are both bolted to the metal chassis which itself is
+used as ground, and additionally a cable connects their grounds, a loop is formed. AC currents or noise
+could circulate in this loop. The prototype uses a common ground bus to minimize such loops, but care
+must be taken in routing ground wires. A recommended practice is star grounding, where each PSU ground
+and each major return path meets at one node (or bar) on the chassis
+. This limits the ground current
+paths such that high return currents (from motors, for example) do not flow through sensitive ground
+reference points for electronics. Without isolation, conducted interference is a concern – one PSU’s noisy
+ground currents (from a switching regulator or a motor driver it powers) can introduce noise into another
+PSU’s ground reference. Indeed, engineers caution that tying grounds together is usually fine, but  “be
+cognizant of what return currents are going where and by what path”, especially with high dI/dt loads like
+8
+9
+10
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+motors
+. If poorly managed, these currents can cause different ground nodes to momentarily differ in
+voltage, upsetting the system’s stability.
+Mitigation strategies for ground issues include using sufficiently thick, low-resistance ground wiring (or
+ground planes) to carry heavy currents, thus reducing voltage drops. The prototype should also physically
+cluster high-current devices closer to their PSU ground connection to shorten return paths. Star grounding
+or a single robust ground bus bar is employed to collect all returns. Additionally, separating analog/sensor
+ground returns from power ground returns until a single combine point can help keep noise away from
+sensitive circuits (this is a form of ground isolation without an actual isolation barrier). In summary,
+maintaining a solid common ground in a multi-PSU system is feasible but requires careful attention to
+wiring layout to avoid ground loops and common impedance coupling of noise
+.
+2. Power Interference and Electrical Noise: A direct consequence of the common ground and the lack of
+isolation is that electrical noise generated in one part of the system can propagate into others. Each PSU is
+a switching power supply (in the case of ATX units), which inherently generates some switching noise on its
+outputs. When multiple such supplies and various loads (especially motors, which generate electromagnetic
+interference when their brushes commutate or their drivers chop currents) are all connected, the noise can
+sum and transfer through the common connections. For example, if a DC motor (powered by PSU B) is
+rapidly changing speed, the current surges and voltage spikes from that motor might inject noise onto PSU
+B’s 12 V line and ground. Through the common ground, a portion of this noise could appear as ground
+voltage fluctuations that superimpose on PSU A’s outputs as well, potentially disturbing the electronics
+powered by PSU A. Similarly, any high-frequency ripple or transient from one PSU can couple into other
+subsystems via the shared ground or any other wiring commonalities (like if subsystems share a signal line,
+the reference noise can effectively appear as signal noise).
+Interference can also occur via radiated paths – multiple PSUs with their own fans, transformers, and
+switching circuits can create a complex EMI environment inside the robot’s chassis. Without careful cable
+routing  or  filtering,  sensitive  sensor  lines  could  pick  up  this  electromagnetic  noise.  The  architecture
+currently does not use isolation transformers or optocouplers between subsystems (since everything is
+grounded together), meaning all electronics see each other’s noise. This is an acknowledged trade-off of the
+simple approach: keeping circuits separate would eliminate conducted interference, but “unless there’s a
+technical reason to have a common ground, it’s almost always best to keep circuits separate” one engineer
+notes – in our case we do have a reason (intercommunication) to tie grounds, so we accept the coupling
+and try to manage it
+.
+To manage noise, the prototype can incorporate decoupling capacitors, filters, and shielding. Each PSU
+output feeding a load should have local capacitors to absorb transients (e.g., electrolytic and ceramic
+capacitors near motor drivers, etc.). Ferrite beads or inductors can be used on supply lines to choke high-
+frequency  noise.  In  more  advanced  iterations,  one  could  introduce  isolated  DC/DC  converters for
+particularly noise-sensitive components (for instance, running a sensitive sensor array from an isolated
+regulator fed by one PSU – the sensor would still ultimately reference ground for data lines, but its power
+noise would be isolated). Additionally, good practices like twisting wire pairs and using shielded cables for
+signal lines can reduce noise coupling. In the current conceptual design, these measures are noted as
+necessary refinements: at the prototype stage, some increased noise floor might be tolerated, but it
+underscores the need to refine power distribution in the future to ensure signal integrity.
+11
+9
+12
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+3. Backfeeding and Cross-Regulation Risks: Backfeeding refers to current flowing from one power
+source into another, which is a major risk when multiple supplies are connected without OR-ing diodes or
+isolation. In our architecture, we intentionally avoid directly paralleling any two PSUs on the same supply
+rail. This greatly reduces the chance of backfeeding under normal operation, since each PSU “sees” only the
+loads assigned to it. However, subtle scenarios still exist where backfeed could occur. One scenario is if one
+PSU is powered off (or fails off) while another PSU is still on, and there are connections through the loads or
+signal lines that provide a path. For example, consider a microcontroller board powered by PSU A that has a
+GPIO line connected to a motor driver powered by PSU B. If PSU A is off, the microcontroller is unpowered –
+but the motor driver on PSU B might drive that GPIO line high. In doing so, it could inadvertently source
+current through the protection diodes of the microcontroller’s input pin, effectively feeding 5 V back into
+PSU A’s 5 V rail via the microcontroller. This kind of indirect coupling can power parts of a supposedly off
+subsystem at a phantom low level (often called parasitic or “ghost” powering). It’s not the catastrophic type
+of backfeed that drives large currents, but it can lead to unpredictable behavior (e.g., an MCU partially
+powering through I/O, which can damage components).
+The more dangerous form of backfeeding would be if two PSUs were accidentally tied together on a high-
+current line (say two 12 V lines joined). Without diodes, the one set at slightly higher voltage would push
+current into the other. ATX PSUs are not generally designed to sink current on their outputs; if forced, it
+could damage the supply or trigger protective shutdowns
+. A powered-off PSU typically presents near
+0 V at its output, so if another live PSU is connected, it will drive current into the off PSU’s output capacitors
+and circuitry. As an expert succinctly put it, “you can’t back-feed voltage/current into a powered-off supply… or
+you can, but the power supply may get destroyed.”
+. Therefore, in our design, we absolutely avoid wiring
+two PSU outputs together at different potentials. The common ground is the only shared line; all positive
+rails go to distinct loads.
+However, even with these precautions, one must consider failure modes: if PSU A were to develop a fault
+and output an abnormal voltage, could it feed into devices that connect to PSU B and then into PSU B? This
+is unlikely unless there is a direct device bridging (which our load partitioning prevents), but it highlights
+why in more mature designs OR-ing diodes or FET-based ideal diodes are used – they block reverse currents
+entirely.  Our  prototype  takes  the  calculated  risk  of  running  without  those,  relying  on  careful  wiring
+separation. The consequence is that there is no protection if a PSU outputs out-of-spec voltages or if
+someone  accidentally  cross-connects  outputs.  For  the  prototype  stage,  the  team  is  presumably
+managing this by design discipline (clear labeling, harness design) and accepting the risk in exchange for
+simplicity.
+4. Load Transient Handling and Stability: With multiple independent PSUs, system-wide power stability
+can be an issue under fast load changes. Each PSU regulates its own outputs, but consider a scenario where
+a large motor on PSU B quickly draws a surge of current (for instance, on startup or when hitting a
+mechanical stop). PSU B’s voltage might dip momentarily under the sudden load (even if within spec, there’s
+transient droop). PSU A, which might be powering the main computer, is unaffected in terms of its own
+output voltage – however, the motor surge might have caused a ground bounce as described earlier, or
+even a slight drop in mains voltage that affects all supplies. The result could be the main computer
+experiencing a brown-out or a sensor giving erratic readings at the exact moment of the motor surge. In a
+single-supply system, all loads share the same transient pool and the supply can be designed to handle it
+(or brown-out the whole system uniformly). In a multi-PSU system, one part of the system browns out while
+others remain up, which can be a worse failure mode (partial operation, possibly causing uncontrolled
+behavior).
+7
+7
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+Additionally, the power-up sequencing can be a challenge: when turning on the system, if the PSUs are
+switched on at slightly different times, some subsystems will come up before others. For instance, one PSU
+might ramp to 12 V faster, powering its motherboard, while another PSU is a second behind. This could lead
+to  the  first  subsystem  sending  signals  to  the  second  before  the  second  is  powered,  again  risking
+backfeeding through signal lines or at least causing communication errors. In our prototype, without a
+coordinated power-on mechanism (no relay or single master switch that guarantees simultaneous start),
+the user must take care to turn on all PSUs together. There are products (like “Add2PSU” boards in PC
+modding) that link PS_ON signals so that a primary PSU can auto-start a secondary – but the design
+explicitly did not incorporate such relay triggers. Thus, an operator turning on the robot must remember
+the correct procedure to energize all supplies. During operation, if one PSU were to shut down (due to
+overload or overheat), there is no graceful handover of its load; that part of the system simply loses power.
+This lack of power redundancy or sharing means the architecture is inherently less stable in the face of
+individual PSU faults.
+To improve stability, one might overspec each PSU (use only, say, 50% of each PSU’s max load in normal
+operation) so that transient demands are easily met without significant voltage sag. Also, distributing the
+most variable loads (like motors) on separate PSUs from sensitive loads (like computing) can localize
+disturbances. This seems to have been done by dedicating different PSUs to different functions. If motors
+and logic must run on one PSU, adding large capacitors or even supercapacitors on the motor supply can
+buffer the surges. In terms of start-up sequencing, future revisions could employ a master switch or a small
+microcontroller circuit that activates all PSUs synchronously (by shorting their PS_ON to ground at the same
+time). For now, the prototype likely uses a manual or improvised method (e.g., jumping PS_ON pins and
+using a power strip to turn on AC to all supplies simultaneously). These are workable but not ideal solutions,
+underscoring that power management is rudimentary in the current setup.
+5. Monitoring and Diagnostics: A subtle challenge is the lack of unified power monitoring in a multi-PSU
+scheme. Each PSU has its own feedback and protections (shutdown on overcurrent, etc.), but there’s no
+single dashboard telling the robot operator how power is distributed or if a PSU is nearing its limit. For
+instance, one PSU could be running near maximum load (perhaps the one powering many motors), while
+another is lightly loaded. Without monitoring, this imbalance might go unnoticed until the overloaded PSU
+triggers a shutdown. In a one-supply system, it’s easier to instrument the current draw and voltage of that
+one supply. In the multi-PSU system, one would need multiple sensors – one per PSU output – to get a full
+picture. The prototype likely doesn’t include an elaborate power monitoring network (given the focus on
+basic functionality). This introduces the risk that an overload condition on one supply is not detected in
+time. It also complicates energy management: if the robot were to eventually run on battery power,
+knowing how each subsystem draws power is important for efficiency, but with separate PSUs, the data is
+siloed unless explicitly gathered.
+Furthermore, if something goes wrong – say a short circuit in a sensor board – the corresponding PSU will
+shut down to protect itself. The rest of the system stays on, but now part of the robot is unpowered. This
+partial failure mode can be hard to troubleshoot if you don’t have indicators for each PSU’s status. It may
+not be immediately obvious why a certain subsystem is unresponsive (is it its PSU tripped, or the board
+itself died?). Including LED indicators or voltage readouts for each PSU’s output in the prototype can
+alleviate this. In a refined design, a supervisory microcontroller could monitor all supply voltages and
+perhaps communicate to the main system if any rail falls out of range.
+7
+
+------------------------------------------------------------------------
+Page 8
+------------------------------------------------------------------------
+
+Summary of Challenges: In essence, the multi-PSU architecture trades the convenience of using available
+supplies for a set of challenges in electrical integration.  Grounding and noise issues require careful
+mitigation to prevent interference between subsystems. The absence of  isolation/OR-ing means careful
+wiring discipline is needed to avoid backfeed and to handle failures gracefully (which, in truth, they won’t be
+handled gracefully – it’s a known limitation). Stability under dynamic loads is not as robust as it could be,
+and there is no inherent redundancy or load-sharing beyond static assignment. Finally, monitoring multiple
+independent sources is more complex. These challenges do not mean the architecture is unworkable – only
+that it must be acknowledged as a prototype solution. Many of these issues can be managed with good
+engineering  practices  (as  noted,  e.g.,  heavy  ground  conductors,  star  topology,  decoupling  capacitors,
+prudent load distribution). In the next section, we discuss the implications of these challenges and how the
+architecture could evolve to address them in future iterations.
+Discussion
+The use of multiple consumer-grade PSUs in a single robotic system highlights an interesting balance
+between  short-term  pragmatism  and  long-term  design  ideals.  From  a  conceptual  standpoint,  this
+architecture embodies a decentralized power approach: instead of one central supply, power conversion is
+distributed across several units located near the loads they serve. In fact, it echoes some principles of
+formal Distributed Power Architecture (DPA) used in high-end electronics, albeit in a cruder form. In a DPA,
+a single high-voltage source feeds many local converters at the loads
+. Here, we effectively have multiple
+“local” sources (the PSUs) each directly powering certain loads. The benefits realized are immediate – ease
+of using existing hardware, increased total capacity by splitting loads, and reduced need for custom power
+electronics  at  the  prototype  stage.  The  rationale  discussed  earlier  for  prototyping  (cost,  availability,
+flexibility) has indeed played out in practice: the team achieved a working power solution without waiting
+for or designing a specialty power supply.
+Why It Makes Sense in Prototyping: Prototyping often involves rapidly implementing a solution with
+components on hand, then iterating. Consumer PSUs are modular and well-understood – one can add a
+new PSU to the system to get an extra 12 V rail in a matter of minutes. This modularity is helpful when the
+power budget of the robot is in flux (as features and hardware are added, power needs grow). Using
+multiple smaller PSUs also sidesteps the need to immediately invest in a costly high-power supply. As noted
+earlier, two standard PSUs can sometimes outperform a single larger unit in specific ways (more 5 V current,
+more connectors, etc.)
+. Additionally, the common ground scheme makes it straightforward to integrate
+subsystems: there is no need for complex level shifting or isolation circuits for every signal, because
+everything shares reference ground. This simplicity accelerates development – you can wire components
+together freely knowing their grounds are common, which is often assumed in typical development setups.
+However, as the previous section detailed, these conveniences come at the cost of potential reliability and
+performance issues.  Electrically, the system is less elegant and less robust than it could be. During
+prototyping, one might accept occasional quirks (like a noise-induced sensor glitch when a motor starts) as
+long as the overall system works. But for a production or advanced prototype, those would need ironing
+out.
+1
+2
+8
+
+------------------------------------------------------------------------
+Page 9
+------------------------------------------------------------------------
+
+Evolution and Refinement Opportunities: Looking ahead, there are several pathways to evolve this power
+architecture for greater robustness:
+Consolidation into a Single Supply or Unified Bus: One straightforward improvement is to replace
+multiple PSUs with a single higher-capacity supply that can handle the entire load. By doing so, all
+components naturally share the same power source, eliminating any ground differential issues
+(beyond internal wiring drops) and removing the chance of inter-supply backfeed. An expert on an
+electronics forum suggested exactly this when faced with a multi-PSU rack system, noting that a
+single 750 W–850 W ATX supply can provide 60–70 A on 12 V and would “solve the grounding issue”
+while  simplifying  replacement  and  reducing  complexity
+.  For  the  robotic  shell,  if  a  suitably
+powerful supply (or a custom-designed power distribution unit) is obtained, it could feed all three
+motherboards and peripherals from one source. The downside is the initial reason multiple PSUs
+were used – maybe no single supply was available or one supply might not provide different voltage
+rails needed. A compromise is to have one central high-power DC source (say 48 V battery or 24 V
+supply)  and  then  use  DC-DC  converters  at  each  subsystem  (basically  implementing  a  proper
+distributed  architecture  with  point-of-load  regulators).  This  would  provide  isolation  between
+subsystems in terms of noise (to some degree, depending on converter isolation) and simplify
+grounding (only one ground reference from the single source). The intermediate bus architecture
+approach,  common  in  industry,  could  be  a  model:  use  an  intermediate  voltage  and  multiple
+converters
+. Adopting this in the robot would be a significant redesign, but conceptually it’s the
+direction to move once prototyping transitions to productization.
+Incorporating OR-ing and Redundancy: If there is a desire to keep multiple PSUs for either
+redundancy or increased capacity, then adding OR-ing diodes or ideal diode controllers is a logical
+next step. For instance, two 12 V PSUs could be diode-ORed to feed a common 12 V bus – this would
+allow one PSU to take over if the other fails, improving reliability. It also prevents backfeed because
+the diodes block reverse currents
+. The trade-off is the voltage drop and some efficiency loss
+across the diodes (Schottky diodes drop ~0.3–0.5 V at high current, which can be significant). Modern
+ideal diode circuits use MOSFETs to reduce this drop. Implementing this would require a bit of
+custom circuitry or off-the-shelf OR-ing boards. Given this is a prototype, full redundancy might not
+be a priority now, but if the robot’s design moves toward any kind of  hot-swappable power or
+battery backup, OR-ing is essential. For example, integrating a battery as a backup would involve
+OR-ing the battery with the mains supply so that one can seamlessly take over from the other. The
+current architecture has no provisions for that, but it could evolve in that direction.
+Improved Grounding and Isolation: To tackle interference issues, future designs can segment
+grounds into analog and digital, or dirty (motor) and clean (logic) grounds, that meet at a single
+point. Right now everything is tied together; introducing ground isolation techniques could help. While
+optical or galvanic isolation of every signal is impractical (and contrary to having a common ground),
+selective  isolation  might  be  used.  For  instance,  isolating  the  motor  driver  control  signals  via
+optocouplers would allow one to physically separate the motor ground from the logic ground,
+eliminating a huge noise source. If that’s too drastic, at least ensuring a star grounding scheme (if
+not already in place) should be formalized in the design. Additionally, using differential signaling for
+any long data lines (so that they are less sensitive to ground noise) would be beneficial.
+Active Power Management: The prototype currently likely relies on manual control of PSUs. A more
+advanced iteration could include a  power management board that interfaces with all PSUs. This
+• 
+13
+14
+• 
+7
+• 
+• 
+9
+
+------------------------------------------------------------------------
+Page 10
+------------------------------------------------------------------------
+
+board could do several things: (a) turn on/off all PSUs in a controlled sequence, possibly with a
+staggered start to avoid surges, (b) monitor voltages and currents from each PSU, (c) provide alerts
+or even take action (like shedding non-critical loads) if a PSU is stressed, and (d) balance the load if
+possible (for example, if one PSU is near limit and another has headroom, perhaps some devices
+that can be powered by either could be switched over – though in our architecture devices are fixed
+to one PSU, so this would require hardware changes such as diodes or switches to allow power
+source switching). While implementing full load balancing is complex, monitoring is very feasible.
+Many modern systems use something like an I2C-based power monitor chip per rail. The data could
+be logged by the robot’s main controller to analyze power usage patterns.
+Addressing Thermal and Mechanical Integration: An often overlooked aspect of multiple PSUs is
+the physical space and heat. Three PSUs will take more space and likely produce more waste heat
+(with lower overall efficiency) than a single supply sized for the job. As the design iterates, one might
+consider using  server power supply modules which are compact and efficient. These often support
+current sharing out-of-the-box and are designed for parallel operation (for example, two server PSUs
+each capable of full load, in an N+1 redundant config). Replacing consumer ATX units with industrial
+or server supplies could both save space and add reliability. The trade-off is that those might need
+custom breakout boards and lack the multiple voltage rails (often server PSUs just give 12 V,
+requiring separate DC-DC converters for 5 V, etc.). In the long run, a custom power distribution unit
+could be built, but in the interim, choosing higher-quality PSUs intended for parallel use is an
+improvement path.
+Safety Enhancements: The current approach, lacking isolation, means that a fault in one part could
+potentially propagate. For instance, if a high-voltage spike (from a motor driver fault) occurs on one
+PSU’s output, it could travel through common ground or signal lines to other subsystems. To
+improve safety, transient voltage suppressors (TVS diodes) could be placed on supply lines to clamp
+spikes, and fuses or circuit breakers can isolate faults. Each PSU’s output to its loads should ideally
+have fusing so that a short in one branch doesn’t drag the PSU (or others) down. It’s likely the
+prototype uses the PSUs’ internal protection and maybe some fuses, but as currents and complexity
+grow, a coordinated protection scheme is valuable. For example, a polyfuse on the 5 V line to a
+sensor cluster can prevent one bad sensor board from shorting out that 5 V line and pulling down
+the whole PSU.
+Academic Perspective: Conceptually, this multi-PSU architecture is a case study in leveraging distributed,
+heterogeneous  power  sources in  an  integrated  system.  It  invites  comparison  with  classical  power
+distribution topologies. We can analyze it through the lens of system engineering: it achieves  functional
+power delivery and some degree of modularity, at the expense of violating some design rules about isolation
+and coupling. In an academic context, one could ask: what does this approach mean for system reliability
+and  performance?  We  have  identified  that  it  creates  multiple  single  points  of  failure  (each  PSU  is
+independent), whereas a proper redundant design might eliminate single points of failure but at cost of
+complexity. It also highlights a scaling issue: this approach might work for 2–3 PSUs, but scaling to many
+more would become unmanageable in terms of ground wiring and coordination. Thus, one insight is that
+while using multiple small PSUs is expedient early on, there is a crossover point where designing a
+consolidated power system becomes necessary.
+Comparison to Alternatives: If we consider alternatives – e.g., one large PSU, or batteries plus regulators –
+the multi-PSU approach is perhaps less optimal for final performance, but possibly more adaptable during
+• 
+• 
+10
+
+------------------------------------------------------------------------
+Page 11
+------------------------------------------------------------------------
+
+development. Teams can swap out one PSU for another easily (maybe upgrading one 500 W PSU to 650 W if
+needed, independently of the others). It also allows powering subsets of the system individually (for testing,
+you could turn on just one PSU to power one part while keeping others off). This granularity can be useful in
+debugging and bringing up a complex system incrementally. In contrast, a one-supply system is all-or-
+nothing (though you could still switch sub-circuits off individually if designed that way). 
+In  the  future,  as  the  project  moves  beyond  prototyping,  we  expect  a  convergence  towards  a  more
+integrated power architecture. This could mean designing a custom power distribution backplane that all
+components plug into, possibly powered by one or two sources. That backplane could handle ground
+isolation sections, filtering, and provide connectors for each subsystem, simplifying wiring (right now, with
+multiple ATX PSUs, the wiring is likely a mess of cables). The current approach has been invaluable for
+learning what the power demands are and how the system behaves under load. Those data will inform the
+requirements for any subsequent power system design.
+Conclusion
+In this report, we examined the conceptual design of a distributed power architecture employing multiple
+consumer-grade PSUs in a complex robotic shell prototype. This multi-PSU approach was chosen for
+pragmatic reasons: it allowed the use of readily available hardware to meet the system’s considerable and
+diverse power needs, and enabled partitioning the load across several supplies. We detailed how the
+architecture is arranged – with three PSUs supplying three motherboard-centered subsystems plus motors
+and devices, all tied together with a common ground. This design achieves the basic goal of powering the
+robot’s components and has parallels to distributed power strategies seen elsewhere in computing and
+robotics prototypes (for example, splitting loads between PSUs as done in certain server pods
+). The use
+of  a  common  ground  simplifies  subsystem  integration  but  also  emerges  as  a  focal  point  for  many
+challenges.
+Our  exploration  of  the  challenges highlighted  important  considerations.  The  common  ground,  while
+necessary, can lead to ground loops and noise coupling, especially with high-current motor loads causing
+ground bounce
+. The lack of isolation or diode OR-ing means there is a very real risk of backfeed
+damage if supplies are not perfectly kept to their own loads
+. Stability issues can arise since the supplies
+operate independently – a surge on one rail can indirectly perturb another subsystem. Monitoring multiple
+supplies  is  more  complicated,  potentially  leaving  blind  spots  in  power  management.  These  factors
+underscore that the architecture, as implemented, is a compromise solution characteristic of a prototype:
+it favors immediate functionality and flexibility over refined performance and fault tolerance. In academic
+terms, it sacrifices some system robustness (violating the ideal of a single coordinated power source) in
+exchange for modularity and convenience.
+We also discussed how this architecture could be iterated upon and improved. Future refinements might
+include consolidating power into a single source or a more formalized bus distribution to eliminate inter-
+supply issues. Alternatively, if multiple PSUs remain, adding proper OR-ing circuits and control logic would
+make the system more resilient and safe. Improved grounding practices (like star topology) and filtering will
+be critical to manage interference as the system scales. Essentially, as the project matures, the power
+system would need to evolve from an ad-hoc collection of PC supplies into a purpose-designed power
+distribution network befitting a complex robotic platform. This could involve custom hardware but would
+yield benefits in reliability and performance. Recommendations from experienced engineers – such as using
+5
+11
+8
+7
+11
+
+------------------------------------------------------------------------
+Page 12
+------------------------------------------------------------------------
+
+a higher-capacity single PSU to “make it easy” and avoid multi-ground complications
+ – should be
+weighed against the project’s goals for redundancy and modularity.
+In  conclusion,  using  multiple  consumer  PSUs  with  a  common  ground  has  proven  to  be  a  workable
+strategy in the prototype stage, demonstrating the viability of quickly mobilizing available resources to
+power a multifaceted robotic system. The approach is conceptually simple and provides a learning platform
+to identify power requirements and interactions in the system. However, it comes with clear limitations in
+terms of electrical elegance and safety. As this distributed power architecture is refined, the lessons learned
+– about load distribution, interference management, and failure modes – will guide the design toward a
+more robust solution. The experience underscores a common engineering theme: the solutions that get a
+prototype up and running (multiple cheap PSUs tied together) are often not the same solutions one will use
+in the final implementation, yet they are a critical step in the development process. This report provided a
+detailed overview of the concept, supported by technical insights from literature and practice, in an effort to
+bridge that understanding towards eventual implementation of a safer, more stable power architecture for
+the robotic system.
+References:
+Stilez. (2018). How safe is parallel wiring two ATX PSUs…? Electrical Engineering Stack Exchange 
+. (APA)
+Andy aka. Electrical Engineering Stack Exchange answer. 2018. Parallel vs Split Loads with Dual PSUs
+. 
+(MLA)
+Justme, StackExchange user. (2024). You need two diodes because you can’t back-feed…
+. (IEEE)
+sakai.mci4me.at
+https://sakai.mci4me.at/access/lessonbuilder/item/1183751/group/special.project.paper_mech/Graduates%20of%202024/
+TemsamaniPhillip_MA-paper.pdf
+power supply - How safe is parallel wiring two ATX PSUs, if they weren't explicitly sold as dual
+PSUs? - Electrical Engineering Stack Exchange
+https://electronics.stackexchange.com/questions/351600/how-safe-is-parallel-wiring-two-atx-psus-if-they-werent-explicitly-sold-
+as-dua
+Dual computer PSUs, switching, and common ground - Page 1
+https://www.eevblog.com/forum/projects/dual-computer-psus-switching-and-common-ground/
+Why are 2 diodes needed instead of 1 when diode-ORing two power supplies? - Electrical Engineering
+Stack Exchange
+https://electronics.stackexchange.com/questions/711680/why-are-2-diodes-needed-instead-of-1-when-diode-oring-two-power-
+supplies
+arduino - Can 3 power supplies safely share common ground? - Electrical Engineering
+Stack Exchange
+https://electronics.stackexchange.com/questions/716154/can-3-power-supplies-safely-share-common-ground
+Grounding in a multiple power supply system - Page 1
+https://www.eevblog.com/forum/beginners/grounding-in-a-multiple-power-supply-system/
+13
+• 
+2
+3
+• 
+6
+• 
+7
+1
+14
+2
+3
+5
+6
+4
+7
+8
+9
+10
+11
+12
+13
+12

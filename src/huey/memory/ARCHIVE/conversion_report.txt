@@ -1,0 +1,11 @@
+PDF to TXT conversion report
+Generated: 2026-06-20T06:11:09Z
+Mode: text-layer extraction only. Images were not extracted. OCR was not performed.
+Extractor: PyMuPDF text extraction. This reads embedded/selectable text only.
+Input archive: PDF.zip
+PDF files found: 97
+
+TXT files written: 97
+Extraction failures: 0
+Files with very little/no extractable text (<50 non-whitespace chars): 0
+

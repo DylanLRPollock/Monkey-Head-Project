@@ -1,0 +1,411 @@
+Configuring Docker & Kubernetes Networking on
+macOS for Direct Ethernet Access
+Introduction
+This report explains how to configure Docker containers and Kubernetes pods on macOS (Ventura or newer)
+for direct network communication over an Ethernet connection. We focus on post-installation networking
+setup in both development (on the Mac) and production environments. In our scenario, the goal is to host a
+Debian  “Trixie”  environment  (Debian-based  OS  with  Python  3.12  and  a  PyGPT service)  inside  Docker/
+Kubernetes, and allow these containers/pods to communicate with other machines on the local network.
+We will not cover Docker or Kubernetes installation steps, but instead detail how to configure networking –
+including IP addressing, port forwarding, bridge-mode networking, and direct access – so that the cloud OS
+stack running in Docker/Kubernetes can be reached as if it were any other host on the Ethernet LAN.
+Networking Challenges on macOS
+On macOS, Docker does not run containers on the host OS directly – it uses a lightweight virtual machine
+(VM) under the hood. This has important implications for networking. Unlike Docker on Linux, macOS does
+not expose the Docker VM’s bridge network ( docker0 ) to the host. In fact, you will not see a docker0
+interface on macOS at all – it exists only inside the VM
+. Consequently, the Mac cannot directly route
+traffic to container IP addresses
+. You cannot ping container/pod IPs from the Mac host, and “per-
+container IP addressing is not possible” on Docker Desktop for Mac
+. In other words, each container’s
+internal IP is isolated behind the VM’s NAT. By default, containers and pods are not directly accessible
+from the Mac host or other devices on the LAN without special configuration
+.
+These limitations mean that bridging modes or direct container network access that are trivial on Linux
+require workarounds on macOS. We’ll outline those shortly. First, it’s key to understand that on macOS, any
+container or Kubernetes node network is typically NAT’d through the host. The Docker VM shares the Mac’s
+network connection, but acts like a separate machine with its own internal subnet. Therefore,  network
+services running in containers must be explicitly exposed for other machines to reach them. We must
+use techniques like port forwarding, since simply trying to use the container’s IP address from another host
+will fail.
+Post-Installation Setup on macOS (Development)
+After installing Docker Desktop on macOS and enabling its Kubernetes single-node cluster (via Docker
+Desktop settings), we need to configure networking so our containers/pods are reachable from the local
+Ethernet network. Here are the key steps and options in a development environment:
+1
+2
+2
+3
+1
+
+------------------------------------------------------------------------
+Page 2
+------------------------------------------------------------------------
+
+1. IP Configuration of the Host
+Ensure the Mac itself has a proper IP on the Ethernet network. In a development setup, the Mac will act as
+the gateway for container access, so it’s helpful to use a static IP or DHCP reservation for the Mac on your
+LAN. This way, other devices have a consistent address to connect to. For example, if your Mac is given
+192.168.1.100  on a wired LAN, that will be the IP clients use to reach services running in Docker/K8s.
+Using Ethernet (as opposed to Wi-Fi) is preferable, because advanced networking modes like bridging or
+macvlan require a wired network – most Wi-Fi adapters do not support being part of a bridge or handling
+multiple MAC addresses
+. In short, use a stable wired network connection and note the Mac’s IP address
+on that network.
+2. Docker Container Networking – Port Forwarding
+On macOS, the simplest and most reliable way to allow external access to a container is by publishing
+its ports to the host. Docker’s port mapping ( -p  or --publish  flag) will forward traffic from a port on
+the Mac to a port on the container inside the VM
+. For instance, if you run: 
+docker run -d -p 8080:80 --name myweb myimage
+This maps port 80 in the container to port 8080 on the Mac. Any service listening on container port 80 will
+be reachable at <Mac_IP>:8080  from other machines. Port forwarding is the recommended workaround
+on Docker Desktop
+ – Docker will ensure that connections to the Mac’s localhost (and by extension, the
+Mac’s IP) on the published port are routed into the container. For example, if your PyGPT application runs on
+port 5000 inside the container, you could do -p 5000:5000  to expose it. After starting the container with
+the appropriate -p  flags, verify on the Mac that the ports are listening (using lsof  or netstat ), and
+ensure macOS’s firewall isn’t blocking them (allow Docker or the specific ports through, if the firewall is
+enabled).
+Access from other machines: With ports published, other devices can connect using the Mac’s IP and the
+forwarded port number. For example, if the Mac is 192.168.1.100  and we ran -p 5000:5000 , another
+PC can reach the service via  http://192.168.1.100:5000 . This is confirmed by Docker users: once
+ports are forwarded and open, you simply use the host Mac’s IP and port from remote devices
+. The
+container’s internal IP remains hidden – but the service is accessible through the host. This approach covers
+most development needs: it’s straightforward and requires no special network drivers. Each container or
+service just needs to have its required ports published on the Mac. (If you have many services, you might
+choose a scheme of unique ports, or use an HTTP reverse proxy to map host ports to containers, etc.)
+3. Kubernetes on Docker Desktop – NodePort and Ingress
+If you’re using the Kubernetes cluster included with Docker Desktop for development, the pattern is similar:
+you must expose services in Kubernetes so they can be reached from outside. By default, Kubernetes pods
+get an internal IP (often in a range like 10.x.x.x) that is only reachable within the VM/cluster. To make an
+application accessible externally on macOS, you have a few options: -  NodePort Service: Create your
+Service with type: NodePort . Kubernetes will allocate a port (typically in the 30000-32767 range) on the
+node (the Docker Desktop VM). Although the  EXTERNAL-IP  of the node might show as  <none>  in
+kubectl get nodes , you can use the Mac’s IP as the node address. In Docker Desktop’s K8s, the “node”
+4
+5
+6
+6
+7
+2
+
+------------------------------------------------------------------------
+Page 3
+------------------------------------------------------------------------
+
+is essentially the host. So, to reach a NodePort service, connect to  <Mac_IP>:<NodePort>
+. For
+example,  if  you  expose  PyGPT  via  a  NodePort  32000,  and  your  Mac  is  192.168.1.100,  use
+192.168.1.100:32000  from other machines. (Make sure the Mac’s firewall allows the NodePort range or
+the specific port.) - LoadBalancer Service with MetalLB: Docker Desktop’s K8s does not provide a cloud
+load balancer, but you can simulate one. MetalLB is a popular add-on for bare-metal clusters that can also
+work in a single-node dev cluster. MetalLB can allocate a service an IP address on your local network and
+advertise  it  via  ARP.  For  example,  you  might  configure  MetalLB  with  a  pool  like
+192.168.1.240-192.168.1.250  
+on  your  LAN.  When  you  create  a
+ Service  
+of
+type: LoadBalancer , MetalLB will assign one of those IPs to the service and make the cluster respond
+to that IP. In Layer2 mode, MetalLB’s speakers answer ARP requests for the service IP directly on the
+network (mapping it to a node’s MAC)
+. This means other machines can reach the service at that IP as if
+it were a real host. In a Docker Desktop scenario, getting this to work requires that the Kubernetes VM can
+actually reach and be reached on the LAN IP – which is tricky because of the Mac’s NAT. A workaround is to
+use the special routing tool (discussed below) so that the Mac routes those requests into the cluster. In
+practice, for dev on Mac you might choose NodePort for simplicity, but it’s good to know MetalLB can be
+used to mimic a real LoadBalancer in testing (and we will definitely use MetalLB in production). - Ingress
+Controller: Another approach is to run an ingress controller (like Nginx or Traefik) in the cluster and expose
+that via a NodePort or LoadBalancer. For example, you could run Nginx Ingress listening on port 80/443 of
+the cluster and then publish those via NodePort (mapping to host ports 80/443) or via MetalLB with a LAN
+IP. Then you can reach multiple services by host name or path through this single entry point. Docker
+Desktop’s K8s doesn’t come with an ingress by default (unless enabled), so you’d deploy one. If you choose
+NodePort ingress, you could even use port forwarding on the Docker side to map Mac’s port 80 to the
+ingress NodePort, achieving http://<Mac_IP>  serving the cluster’s apps.
+In summary, for development on macOS: - Expose container ports with -p  (Docker) or define NodePort/
+LoadBalancer Services (K8s). - Use the Mac’s IP address as the target for clients on the LAN (since the Mac
+bridges the outside world to the Docker VM)
+. - Ensure networking on the Mac side (IP configuration,
+firewall) is set to allow this access.
+4. Advanced: Bridging and Direct Container Networking on Mac
+Because Docker on Mac is VM-based, standard Linux “bridge mode” or “macvlan” networking is not directly
+available on the host
+. However, if you require direct container addressing (for example, you want to
+assign a container or pod its own IP on the LAN), there are a couple of advanced options and tools:
+docker-mac-net-connect: This open-source utility uses a lightweight WireGuard tunnel to connect
+the Docker Desktop VM’s internal networks with the macOS host. It creates a virtual network
+interface ( utun ) on macOS and routes the Docker subnet through it
+. In effect, it allows your
+Mac to communicate with container IP addresses directly (e.g., you could ping a container’s 172.x.x.x
+IP from macOS)
+. Installation is simple (available via Homebrew) and it runs a background service
+on the Mac
+. With this tool running, the Docker VM’s networks become reachable from the host
+as  if  they  were  bridged.  This  can  greatly  simplify  testing  scenarios  where  you  need  to  treat
+containers as first-class hosts on the network.  Note: By default this setup makes container IPs
+reachable from the Mac host. If you also want other physical machines to reach those container IPs,
+you would need to add routes on those machines (pointing the Docker subnet to the Mac’s IP as a
+gateway) or implement similar tunneling on your router. In many cases, it’s easier to stick to the port-
+8
+9
+8
+10
+• 
+11
+12
+13
+3
+
+------------------------------------------------------------------------
+Page 4
+------------------------------------------------------------------------
+
+forward/NodePort method for external access, but this tool is excellent for enabling direct host ↔
+container communication in development
+.
+Colima/Custom VM with Bridged Networking: Instead of Docker Desktop, some developers use
+Colima (which leverages Lima/QEMU) or other VM solutions where you have more control over
+networking. It’s possible to configure a Linux VM on macOS with bridged networking (connecting
+the VM’s Ethernet interface directly to the Mac’s Ethernet adapter). If you run Docker/K3s in such a
+VM, that VM can get its own LAN IP from the router (just like any other machine on the network). The
+containers or K8s nodes inside would then effectively be on the network. However, setting up a
+custom VM or using Colima with bridged mode is beyond the scope of Docker Desktop’s default
+setup. It’s an option if you need the Docker daemon itself to have a LAN IP. Otherwise, Docker
+Desktop’s approach with NAT + port forwarding (or the WireGuard trick above) is usually sufficient
+for dev on Mac.
+Host networking mode: For completeness, note that Docker’s  --network=host  (which lets a
+container share the host’s network stack) is not supported on Docker Desktop for Mac/Win
+.
+On Linux, that mode is useful to eliminate port mappings (the container just uses the host’s IP), but
+on macOS you cannot use it – the host mode would only refer to the VM’s network, which doesn’t
+solve external access. So, for Mac, stick to the methods described above.
+By using the above configurations, you can develop on macOS and have your “cloud OS” stack reachable as
+needed. For instance, you might run a Kubernetes cluster on your Mac with MetalLB handing out a service
+IP like 192.168.1.241 to PyGPT – then thanks to the routing/bridge tool or NodePort exposure, you can point
+your browser or API client from another machine to 192.168.1.241 (or to the Mac’s IP and NodePort) and hit
+the service.
+Production Environment Considerations
+In production (which presumably involves Linux servers or an on-premises Kubernetes cluster), you have
+more direct networking options. The goal remains the same – allow containers or services to communicate
+over the Ethernet LAN – but without the macOS virtualization limitations. Below we address both Docker
+and Kubernetes in production:
+Docker on Linux – Bridged and Macvlan Networks
+On a Linux host running Docker, containers run on the host’s kernel, so you  can leverage true bridged
+networking or macvlan networks: -  Bridge Networks: By default, Docker on Linux creates a  docker0
+bridge. Containers attached to this bridge get an IP (e.g., 172.17.0.X) and the host does forwarding for
+them. Other machines cannot directly reach those IPs unless routing is set up. However, you can create a
+user-defined bridge or use host networking as needed. If you want containers to be directly accessible, the
+default approach is still to publish ports to the host’s IP (just like on Mac). The difference is, on Linux the
+overhead is lower and you could also configure routing if needed. - Macvlan Networks: Docker’s macvlan
+driver allows you to attach containers to the physical network by virtually cloning the host’s NIC at the link
+layer. Each container gets its  own IP and MAC address on the LAN
+. For example, if your host is
+192.168.1.10/24, you could create a macvlan network with parent  eth0  on that subnet (say assign
+192.168.1.200-250 for containers). A container launched on this network can be given an IP in that range,
+like 192.168.1.201, and it will appear as an independent device on the network. This means other hosts can
+12
+• 
+• 
+14
+15
+4
+
+------------------------------------------------------------------------
+Page 5
+------------------------------------------------------------------------
+
+directly communicate with it at 192.168.1.201. This is ideal for “appliance-like” containers (databases, etc.)
+that should be peers on the LAN. Important: Macvlan is only available on Linux hosts – it is not supported
+on Docker Desktop for Mac/Windows
+. It also requires a wired connection; most wireless interfaces
+cannot handle multiple MAC addresses or bridging (so if your server has Wi-Fi only, macvlan won’t work
+properly)
+.  In  production,  assuming  a  wired  Ethernet,  macvlan  is  a  powerful  option  for  direct
+connectivity. One caveat: the host machine cannot directly communicate with containers on its macvlan
+network (the host is effectively excluded from that virtual network by default). If the host needs to talk to
+those containers, a common workaround is to create a “macvlan gateway” by attaching a small container or
+a dummy interface on the host to the macvlan network, or use Docker’s ipvlan driver in certain modes. This
+is a low-level detail, but worth knowing if your container needs to reach a service on the host or vice versa. -
+Host Network Mode: On Linux, you can run containers with  --network=host , meaning they use the
+host’s network namespace. In production, this is used for certain workloads (e.g., a container that should
+just bind directly to the host’s NIC). For example, if you run a container this way, it will listen on the host’s IP
+address for incoming traffic (no separate IP needed). This can be useful for running something like a
+monitoring  agent  or  a  web  server  that  should  just  be  reachable  on  the  host’s  IP  without  any  port
+translation. Be cautious with this in multi-container setups as ports can conflict. This isn’t an option on
+macOS Docker, but on Linux it is fully supported.
+In a production Docker environment, you might use a combination of these strategies. For instance, you
+could assign your PyGPT container a dedicated IP via macvlan so it’s directly reachable on the LAN, while
+perhaps mapping legacy services via host ports. The configuration depends on how “visible” you want each
+container to be. The key is that, on Linux, networking is flexible – you can closely mimic a normal host for
+each container when needed.
+Kubernetes on Bare Metal – Service Networking
+For production deployment with Kubernetes (outside of cloud providers), you need to plan both  pod
+networking and service exposure on the LAN: - CNI Plugin for Pod Networking: Ensure your cluster has
+a Container Network Interface (CNI) plugin installed (common ones are  Calico, Flannel, Weave, Cilium,
+etc.). This handles connectivity between pods  within the cluster. For example, Flannel might create an
+overlay network (VXLAN) for pods, or Calico might configure routing for pod subnets. Typically, pods will get
+IPs in a cluster-only CIDR (e.g., 10.244.x.x with Flannel). By itself, this doesn’t give external access, but it
+allows all pods across nodes to communicate. Choose a CNI that suits your environment (Calico is powerful,
+allowing BGP routing for advanced cases; Flannel is simple). For most, you’ll use the default NAT mode for
+outbound traffic – meaning pods can reach out to the internet or LAN via the node’s IP with source NAT. If
+you require that pods themselves have routable IPs on the LAN (a less common requirement), there are
+options like Calico IP-in-IP or BGP routing, but that gets complex. Generally, you don’t expose pods directly –
+you expose Services. - Exposing Services – NodePort and MetalLB: On a bare-metal Kubernetes cluster,
+you won’t have a cloud load balancer to automatically assign public IPs. Instead, you use NodePorts or
+deploy MetalLB for LoadBalancer support: - NodePort: As described in the dev setup, a NodePort service
+makes your app available on a port on every cluster node. You can then reach the service by hitting any
+node’s IP on that port. For production, this could be acceptable if you have only a couple of nodes and can
+predict their IPs. However, NodePorts are often high-numbered and not the easiest to manage for many
+services. They also might require adjusting firewall rules to open those ports on the nodes. -  MetalLB
+(LoadBalancer): MetalLB is the recommended solution for direct, cloud-like service IPs on bare metal. In
+L2 mode, MetalLB will utilize your physical network. You provide a pool of IPs (or a range) from your subnet
+that aren’t otherwise in use (for example, if your router’s DHCP gives out .100-.200, you might reserve .220-.
+10
+4
+5
+
+------------------------------------------------------------------------
+Page 6
+------------------------------------------------------------------------
+
+230 for MetalLB). When a LoadBalancer service is created, MetalLB assigns it one of these IPs. The MetalLB
+speaker daemon on your nodes will then advertise that IP via ARP so that traffic to that IP is accepted by one
+of the nodes
+. Essentially, the service IP behaves like a virtual IP on your LAN, shared by the cluster. Any
+client on the same network can directly connect to that IP. MetalLB ensures the packets reach the right
+node and service. This setup gives a clean “direct access” feel – e.g., your PyGPT service could be given IP
+192.168.1.225 by MetalLB, and users just go to that address. Under the hood, whichever node is hosting the
+service (or running MetalLB’s leader for that IP) will respond. - Ingress Controller: In production, you may
+also deploy an ingress controller (with or without MetalLB). For example, using Nginx Ingress with a
+LoadBalancer service can allow multiple HTTP services to be exposed on ports 80/443 of a single IP (using
+hostnames). This can simplify access (users just hit a domain name and MetalLB’s IP for the ingress). This is
+a common pattern in bare-metal clusters: MetalLB provides a stable IP, and ingress routes traffic internally. -
+Direct Pod Access (if needed): Generally, external clients should not talk directly to pod IPs, but if you had
+a reason to (perhaps in an IoT or specialized environment), you’d have to set up routing to the pod network.
+For instance, with Calico you could enable BGP peering with your physical router so that the router learns
+all pod subnets and routes to the nodes. This is advanced and usually avoided unless absolutely necessary.
+It’s typically easier and safer to stick with Services, which also give you load-balancing and stability (pod IPs
+can change, service IP is virtual but constant).
+Firewall and Security: In production, don’t forget to adjust firewalls on the nodes or network to
+allow the chosen traffic. If using MetalLB in L2 mode, ensure ARP broadcasts for those IPs aren’t
+blocked and that other hosts don’t try to claim them. If using NodePorts, open those ports. It’s wise
+to use firewall rules to restrict access to only the needed ports/networks for security.
+In summary, for a production Kubernetes cluster on bare metal, installing MetalLB is a key step to achieve
+that “direct Ethernet” access feel for services. Combine that with a solid CNI plugin and perhaps an ingress,
+and your containerized services will be first-class citizens on the network. 
+Conclusion and Recommendations
+Configuring Docker and Kubernetes networking on macOS requires understanding the limitations of the
+Mac environment and using workarounds to simulate direct network connectivity. In development on
+macOS Ventura, port forwarding is your friend – publish container ports or use NodePort services so that
+anything running in Docker/K8s is accessible via the Mac’s own IP address
+. When more advanced
+networking  is  needed  (for  instance,  to  emulate  a  production  network),  tools  like  docker-mac-net-
+connect  can bridge the gap by letting your Mac communicate with container networks directly
+. Always
+prefer a wired Ethernet setup for such use-cases, since bridging or macvlan solutions won’t work well (or at
+all) over Wi-Fi
+.
+For production, if you’re deploying on Linux or on a physical cluster, take advantage of native capabilities:
+Docker’s macvlan driver (for true peer IPs on the LAN) and Kubernetes’ MetalLB (for service IPs announced
+via ARP) will give your containers and pods direct presence on the network
+. Ensure your IP addressing
+plan is clear – assign static or reserved IPs as needed, and avoid overlaps between Docker/K8s subnets and
+your LAN. Set up CNI plugins in Kubernetes to handle pod networking, and consider an ingress controller
+for managing multiple services behind a single endpoint. 
+By following these configurations, your Debian Trixie + Python 3.12 “cloud OS” stack running in Docker/
+Kubernetes will be reachable to other machines on the Ethernet network just like any physical server would
+9
+• 
+3
+7
+12
+4
+9
+6
+
+------------------------------------------------------------------------
+Page 7
+------------------------------------------------------------------------
+
+be. You’ll have development parity with production in terms of networking, making it easier to develop and
+test your PyGPT services locally and then deploy with confidence. The combination of proper port mapping
+(or bridging where possible) in development, and robust networking solutions like MetalLB in production,
+provides a clear path to achieve direct communication with containers and pods over the network. Enjoy
+your cloud stack on macOS, and happy networking!
+Sources:
+Docker Desktop for Mac networking documentation
+Docker Community Forum – Networking advice for Docker Desktop on Mac
+Reddit discussion of macOS Docker networking limits
+docker-mac-net-connect project (WireGuard-based Docker Mac networking)
+Docker Community Forum – Macvlan and Wi-Fi limitations
+MetalLB official documentation (Layer 2 mode explanation)
+Docker Forums – Using NodePort and MetalLB on Docker Desktop Kubernetes
+Docker documentation on host and macvlan network drivers
+Networking features in Docker Desktop for Mac | Docker Documentation
+https://docker-docs.uclv.cu/docker-for-mac/networking/
+Access from Local Network - Docker Desktop - Docker Community Forums
+https://forums.docker.com/t/access-from-local-network/133079
+Macbook12 macvlan Parent network card - General - Docker Community Forums
+https://forums.docker.com/t/macbook12-macvlan-parent-network-card/145761
+Kubernetes and Docker Desktop : how to set up External IP for the node - Docker Desktop - Docker
+Community Forums
+https://forums.docker.com/t/kubernetes-and-docker-desktop-how-to-set-up-external-ip-for-the-node/87823
+Configuration :: MetalLB, bare metal load-balancer for Kubernetes
+https://metallb.universe.tf/configuration/
+MacVLAN Docker Configuration and Virtual Switch Setup in VMware ...
+https://www.virtualizationhowto.com/2024/07/macvlan-docker-configuration-and-virtual-switch-setup-in-vmware-esxi/
+KinD with MetalLB on macOS · Waddles.org - Wad About Me?
+https://waddles.org/2024/06/04/kind-with-metallb-on-macos/
+Making Your Docker Network Reachable In MacOS | by Tyler Auerbeck | Medium
+https://medium.com/@tylerauerbeck/making-your-docker-network-reachable-in-osx-e68f998f8249
+Microservices | OERTX
+https://oertx.highered.texas.gov/courseware/lesson/2379/student-old/?task=6
+Share macvlan ip address with docker-compose container group
+https://serverfault.com/questions/1149096/share-macvlan-ip-address-with-docker-compose-container-group
+MacOS user and docker networking limits and testing : r/devops
+https://www.reddit.com/r/devops/comments/p47ria/macos_user_and_docker_networking_limits_and/
+• 
+1
+2
+6
+• 
+3
+7
+• 
+16
+• 
+12
+11
+• 
+4
+17
+• 
+9
+• 
+8
+18
+• 
+19
+10
+1
+2
+5
+6
+3
+7
+4
+17
+8
+18
+9
+10
+11
+13
+12
+14
+19
+15
+16
+7

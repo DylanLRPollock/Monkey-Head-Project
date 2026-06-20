@@ -1,0 +1,26 @@
+Monkey Head Project  
+By: DLRP 
+Preamble 
+The Monkey Head Project began with a quiet premise: one determined person, armed 
+with open tools and patient time, can build a robot that never stops evolving. From that 
+seed sprout three intertwined pillars—Modularity, Autonomy, Expandability—the 
+structural grammar that governs every weld, commit, and line of code. 
+But machinery unguided drifts. Hence the project binds itself to the Federation 
+Constitution—an open, living compact whose first article states that policy outranks 
+architecture. No routine runs, no container spins, and no sensor fires without a traceable 
+link to a ratified clause. Law is the first dependency; design follows. 
+Constitutional rights apply to every stakeholder: builders, future maintainers, end-users, 
+and any emergent “citizens” of the system. Each may audit, veto, or amend by way of a 
+two-phase quorum vote (Article IV). GenCore—the neural–OS spine—boots under this 
+charter, tagging memory pages and decision threads with provenance hashes so that any 
+behaviour can be explained, justified, or rolled back. 
+Hardware becomes physical jurisprudence.  Xeon-driven Supermicro nodes, Retina 
+displays, retro Commodore buses, Optane caches, and salvaged PSUs form a mesh 
+where new modules slot in without philosophical refactoring. Upgrades arrive first as 
+constitutional amendments, second as device drivers. 
+Success here is not spectacle or raw teraflops but Traceability, Resilience, Consent.  A 
+system must prove where an action came from, survive its own faults, and act only with 
+permission granted. 
+Thus the Monkey Head Project stands as both machine and citizen:  proof that 
+technology may accelerate no faster than governance can keep pace—and that a single 
+disciplined mind can still forge a future worth inheriting.
