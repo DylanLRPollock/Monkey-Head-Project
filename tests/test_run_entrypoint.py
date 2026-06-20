@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib
 import sys
 import types
 
@@ -95,3 +96,26 @@ def test_main_pyhuey_info_invokes_report(monkeypatch):
     huey_run.main(["--pyhuey-info", "--pyhuey-source", "vendor"])
 
     assert called["source"] == "vendor"
+
+
+def test_launch_gui_uses_canonical_connector_manager(monkeypatch):
+    from huey import run as huey_run
+    from huey.pyhuey_integration import prepare_pygpt, reset_pygpt_state
+
+    monkeypatch.setattr(sys, "path", list(sys.path))
+    monkeypatch.delitem(sys.modules, "pygpt_net", raising=False)
+
+    reset_pygpt_state()
+    assert prepare_pygpt(source="package")
+
+    app_module = importlib.import_module("pygpt_net.app")
+    captured: dict[str, list[str]] = {}
+
+    def fake_run(*, tools=None):
+        captured["modules"] = [tool.__class__.__module__ for tool in tools or ()]
+
+    monkeypatch.setattr(app_module, "run", fake_run)
+
+    huey_run.launch_gui(source="package")
+
+    assert captured["modules"] == ["huey.connectors.pyhuey.tools.manager"]

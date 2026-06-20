@@ -1,6 +1,7 @@
 # Tool and Plugin Permission Boundaries (PyHuey/MonkeyManager)
 
-This note documents execution boundaries for `huey.pygpt_net.tools.manager.MonkeyManager`.
+This note documents execution boundaries for
+`huey.connectors.pyhuey.tools.manager.MonkeyManager`.
 
 ## Execution surfaces
 
