@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import sys
 from pathlib import Path
 
@@ -21,17 +22,21 @@ def test_candidate_src_paths_resolves_defaults_and_env(monkeypatch, tmp_path):
 
     paths = candidate_src_paths()
 
-    assert paths[0] == root / "src" / "huey"
+    assert paths[0] == root / "src"
     assert paths[1] == root / "integrations" / "pyhuey" / "src"
     assert root / "vendor" / "pygpt" / "pygpt-mhp" / "src" in paths
     assert extra_dir in paths
 
 
 def test_candidate_sources_describe_available_locations():
+    root = Path(__file__).resolve().parents[1]
     sources = candidate_sources()
     names = [source.name for source in sources]
+    package = next(source for source in sources if source.name == "package")
 
     assert names[:3] == ["package", "pyhuey", "vendor"]
+    assert package.package_path == root / "src" / "huey" / "connectors" / "pyhuey"
+    assert package.import_name == "huey.connectors.pyhuey"
     assert any(source.name == "package" for source in available_sources())
 
 
@@ -51,6 +56,20 @@ def test_prepare_pygpt_uses_extra_paths(monkeypatch, tmp_path):
     import pygpt_net  # type: ignore
 
     assert getattr(pygpt_net, "__version__", None) == "test-vendor"
+    reset_pygpt_state()
+
+
+def test_prepare_pygpt_package_source_aliases_canonical_connector(monkeypatch):
+    monkeypatch.setattr(sys, "path", list(sys.path))
+    monkeypatch.delitem(sys.modules, "pygpt_net", raising=False)
+
+    reset_pygpt_state()
+    assert prepare_pygpt(source="package")
+
+    module = importlib.import_module("pygpt_net")
+    module_path = Path(module.__file__).resolve().as_posix()
+
+    assert module_path.endswith("/src/huey/connectors/pyhuey/__init__.py")
     reset_pygpt_state()
 
 

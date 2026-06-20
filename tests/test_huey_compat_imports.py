@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import importlib
 import importlib.metadata
+import importlib.util
 import json
+from pathlib import Path
 
 
 def test_import_huey_api_module():
@@ -59,3 +61,32 @@ def test_import_api_through_legacy_and_new_paths():
     assert legacy.app is maintained.app
     assert callable(legacy.main)
     assert callable(maintained.main)
+
+
+def test_import_huey_connector_canonical_package():
+    module = importlib.import_module("huey.connectors.pyhuey")
+
+    module_file = Path(module.__file__).as_posix()
+    assert module_file.endswith("/huey/connectors/pyhuey/__init__.py")
+    assert getattr(module, "__version__", None)
+
+
+def test_import_huey_connector_legacy_package_shim_points_to_canonical_tree():
+    legacy = importlib.import_module("huey.pygpt_net")
+    canonical = importlib.import_module("huey.connectors.pyhuey")
+
+    legacy_paths = [Path(path).resolve() for path in legacy.__path__]
+
+    assert Path(canonical.__file__).resolve().parent in legacy_paths
+
+
+def test_legacy_connector_submodule_spec_resolves_to_canonical_tree():
+    spec = importlib.util.find_spec("huey.pygpt_net.controller.config.placeholder")
+
+    assert spec is not None
+    assert spec.origin is not None
+    assert (
+        Path(spec.origin)
+        .as_posix()
+        .endswith("/huey/connectors/pyhuey/controller/config/placeholder.py")
+    )

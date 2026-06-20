@@ -1,56 +1,36 @@
 # Monkey Head Project
 # By: Dylan L.R. Pollock
 # www.dlrp.ca
-# HueyOS: Package initializer for huey/pygpt_net
+# HueyOS: Compatibility shim for huey/pygpt_net
 
-"""Minimal stub of the :mod:`pygpt_net` package for integration tests."""
+"""Compatibility shim delegating legacy imports to :mod:`huey.connectors.pyhuey`."""
 
 from __future__ import annotations
 
-import importlib
-import importlib.util
-import os
+from importlib import import_module
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
-__all__ = ["__version__"]
+_CANONICAL_MODULE: Final[str] = "huey.connectors.pyhuey"
+_CANONICAL_PATH: Final[Path] = (
+    Path(__file__).resolve().parents[1] / "connectors" / "pyhuey"
+)
 
-__version__ = "2.6.67"
+__path__ = [str(_CANONICAL_PATH)]
+if __spec__ is not None:  # pragma: no branch - importlib always sets this
+    __spec__.submodule_search_locations = __path__
 
-_NLTK_ENV_VAR: Final[str] = "NLTK_DATA"
-_CUSTOM_ENV_VAR: Final[str] = "PYGPT_NLTK_DATA_DIR"
+_impl = import_module(_CANONICAL_MODULE)
 
-
-def _ensure_private_nltk_data() -> None:
-    """Force NLTK data into a per-user directory to avoid shared caches."""
-
-    if os.environ.get(_NLTK_ENV_VAR):
-        return
-
-    target_dir = Path(
-        os.environ.get(
-            _CUSTOM_ENV_VAR,
-            Path.home() / ".cache" / "pygpt_net" / "nltk_data",
-        )
-    )
-
-    try:
-        target_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
-    except OSError:
-        # If the directory cannot be created we silently fall back to the
-        # upstream defaults rather than break runtime imports.
-        return
-
-    os.environ[_NLTK_ENV_VAR] = str(target_dir)
-
-    nltk_spec = importlib.util.find_spec("nltk")
-    if nltk_spec is None:
-        return
-
-    nltk = importlib.import_module("nltk")
-    resolved_dir = str(target_dir)
-    if resolved_dir not in nltk.data.path:
-        nltk.data.path.insert(0, resolved_dir)
+__all__ = list(getattr(_impl, "__all__", ()))
+__version__ = getattr(_impl, "__version__", None)
 
 
-_ensure_private_nltk_data()
+def __getattr__(name: str) -> Any:
+    """Delegate unknown attributes to :mod:`huey.connectors.pyhuey`."""
+
+    return getattr(_impl, name)
+
+
+def __dir__() -> list[str]:  # pragma: no cover - convenience helper
+    return sorted(set(globals()) | set(dir(_impl)))

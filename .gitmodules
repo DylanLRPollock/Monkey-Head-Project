@@ -1,7 +1,0 @@
-# Monkey Head Project
-# By: Dylan L.R. Pollock
-# www.dlrp.ca
-# HueyOS: .gitmodules
-[submodule "src/huey/connectors/pyhuey"]
-	path = src/huey/connectors/pyhuey
-	url = https://github.com/DylanLRPollock/PyHuey.git

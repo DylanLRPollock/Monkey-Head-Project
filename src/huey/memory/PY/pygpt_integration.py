@@ -27,6 +27,7 @@ class PyHueySource:
     package_path: Path
     kind: str
     description: str
+    import_name: str | None = None
 
     @property
     def exists(self) -> bool:
@@ -37,6 +38,7 @@ class PyHueySource:
             "name": self.name,
             "path": str(self.path),
             "package_path": str(self.package_path),
+            "import_name": self.import_name,
             "kind": self.kind,
             "description": self.description,
             "exists": self.exists,
@@ -65,11 +67,12 @@ def _normalise_source(value: str | None) -> str:
         "": "auto",
         "local": "package",
         "packaged": "package",
+        "pyhuey": "package",
         "stub": "package",
         "src": "package",
-        "submodule": "pyhuey",
-        "integration": "pyhuey",
-        "integrations": "pyhuey",
+        "submodule": "package",
+        "integration": "package",
+        "integrations": "package",
         "mhp": "vendor",
         "pygpt-mhp": "vendor",
         "vendor-mhp": "vendor",
@@ -89,17 +92,18 @@ def candidate_sources(
     sources = [
         PyHueySource(
             name="package",
-            path=root / "src" / "huey",
-            package_path=root / "src" / "huey" / "pygpt_net",
+            path=root / "src",
+            package_path=root / "src" / "huey" / "connectors" / "pyhuey",
+            import_name="huey.connectors.pyhuey",
             kind="packaged",
-            description="Lightweight PyGPT-net compatibility package shipped with HueyOS.",
+            description="Vendored PyHuey connector package shipped with HueyOS.",
         ),
         PyHueySource(
             name="pyhuey",
             path=root / "integrations" / "pyhuey" / "src",
             package_path=root / "integrations" / "pyhuey" / "src" / "pygpt_net",
             kind="submodule",
-            description="Full PyHuey submodule source tree.",
+            description="Historical external PyHuey checkout.",
         ),
         PyHueySource(
             name="vendor",
@@ -200,6 +204,19 @@ def _try_import(module_name: str) -> bool:
     return True
 
 
+def _try_import_source(candidate: PyHueySource, module_name: str) -> bool:
+    import_name = candidate.import_name or module_name
+
+    try:
+        module = importlib.import_module(import_name)
+    except Exception:
+        return False
+
+    if module_name != import_name:
+        sys.modules[module_name] = module
+    return True
+
+
 def prepare_pygpt(
     module_name: str = "pygpt_net",
     *,
@@ -234,7 +251,7 @@ def prepare_pygpt(
         resolved = str(candidate.path.resolve())
         if resolved not in sys.path:
             sys.path.insert(0, resolved)
-        if _try_import(module_name):
+        if _try_import_source(candidate, module_name):
             _PYGPT_PREPARED = True
             _PYGPT_ACTIVE_SOURCE = candidate
             return True
