@@ -77,4 +77,3 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "asyncio: run the marked coroutine test inside an event loop",
     )
-
