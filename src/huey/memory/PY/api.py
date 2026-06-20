@@ -24,9 +24,9 @@ try:  # pragma: no cover - psutil is an optional dependency at runtime
 except Exception:  # pragma: no cover - fall back to stdlib metrics
     psutil = None  # type: ignore[assignment]
 
-from fastapi import FastAPI, HTTPException, Query, Request, Response, status
+from fastapi import FastAPI, HTTPException, Query, Request, status
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
-from fastapi.responses import HTMLResponse, StreamingResponse
 
 from .env_validation import DEVELOPMENT_ENVS as _DEVELOPMENT_ENVS
 from .env_validation import configured_environment as _configured_environment
@@ -250,6 +250,14 @@ app = FastAPI(
 
 _PUBLIC_PATHS = {"/healthz"}
 _TOKEN_MIDDLEWARE_PATHS = {"/dashboard"}
+_LOOPBACK_HOSTS = {
+    "127.0.0.1",
+    "::1",
+    "::ffff:127.0.0.1",
+    "localhost",
+    "testclient",
+    "testserver",
+}
 
 validate_security_sensitive_environment()
 
@@ -267,12 +275,21 @@ def _unsafe_task_submission_enabled() -> bool:
     return value in {"1", "true", "yes", "on"}
 
 
+def _is_loopback_host(host: str) -> bool:
+    """Return ``True`` when ``host`` resolves to an allowed loopback alias."""
+
+    return host.strip().strip("[]").lower() in _LOOPBACK_HOSTS
+
+
 def _is_local_request(request: Request) -> bool:
     """Return ``True`` when the caller appears to be local to this host."""
 
     client = getattr(request, "client", None)
-    host = getattr(client, "host", "") if client is not None else ""
-    return host in {"127.0.0.1", "::1", "localhost", "testclient", "testserver"}
+    client_host = getattr(client, "host", "") if client is not None else ""
+    url_host = request.url.hostname or ""
+    if url_host:
+        return _is_loopback_host(url_host)
+    return _is_loopback_host(client_host)
 
 
 def _require_privileged_surface_access(request: Request) -> None:
@@ -373,9 +390,9 @@ async def require_api_token(request: Request, call_next):
         supplied_token,
         expected_token,
     ):
-        return Response(
+        return JSONResponse(
             status_code=HTTP_401_UNAUTHORIZED,
-            data={"detail": "Missing or invalid API token"},
+            content={"detail": "Missing or invalid API token"},
         )
 
     return await call_next(request)
@@ -1009,7 +1026,7 @@ def _render_dashboard(
     battery_plugged = _fmt(battery.get("power_plugged"))
     battery_runtime = _fmt(battery.get("estimated_runtime_minutes"))
 
-    now = html.escape(dt.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"))
+    now = html.escape(dt.datetime.now(dt.UTC).strftime("%Y-%m-%d %H:%M:%S UTC"))
 
     return f"""
     <!DOCTYPE html>

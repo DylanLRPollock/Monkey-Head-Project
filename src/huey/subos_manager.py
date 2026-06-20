@@ -7,6 +7,7 @@ import subprocess
 try:
     import pwd
 except ImportError:  # pragma: no cover - Windows fallback for tests
+
     class _PwdModule:
         @staticmethod
         def getpwnam(_user: str):

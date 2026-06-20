@@ -55,7 +55,7 @@ def file_summary(path: str | Path, *, max_chars: int = 240) -> str:
         return content[:max_chars]
     if suffix in {".mp3", ".wav", ".flac", ".m4a", ".mp4", ".mov", ".mkv"}:
         try:
-            metadata = probe_media(target)
+            metadata = probe_media(target).raw
         except (OSError, RuntimeError, ValueError):
             return f"Media file: {target.name}"
         duration = metadata.get("format", {}).get("duration", "unknown")

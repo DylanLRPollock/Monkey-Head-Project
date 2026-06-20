@@ -72,6 +72,30 @@ async def test_api_token_is_required_when_configured(monkeypatch):
     assert allowed.status_code == 200
 
 
+@pytest.mark.asyncio
+async def test_dashboard_requires_token_when_configured(monkeypatch):
+    monkeypatch.setenv("HUEY_API_TOKEN", "test-token")
+    monkeypatch.setattr(
+        api_module,
+        "_render_dashboard",
+        lambda *args, **kwargs: "dashboard",
+        raising=True,
+    )
+
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        blocked = await client.get("/dashboard")
+        allowed = await client.get(
+            "/dashboard",
+            headers={"Authorization": "Bearer test-token"},
+        )
+
+    assert blocked.status_code == 401
+    assert blocked.json() == {"detail": "Missing or invalid API token"}
+    assert allowed.status_code == 200
+    assert allowed.text == "dashboard"
+
+
 def test_api_startup_fails_without_token_in_non_development_env(monkeypatch):
     monkeypatch.setenv("HUEY_ENV", "production")
     monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
@@ -640,7 +664,8 @@ async def test_ai_process_text_supports_streaming_and_validation(monkeypatch):
             params={"stream": "true"},
         )
         assert response.status_code == 200
-        assert response.json() == ["hello world"]
+        assert response.headers["content-type"].startswith("text/plain")
+        assert response.text == "hello world"
 
         invalid = await client.post("/ai/process-text", json={"text": "   "})
 
@@ -674,7 +699,8 @@ async def test_sensor_streaming_and_invalid_registration(monkeypatch):
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         response = await client.get("/sensors/alpha/stream")
         assert response.status_code == 200
-        assert response.json() == ["data: alpha\n\n"]
+        assert response.headers["content-type"].startswith("text/event-stream")
+        assert response.text == "data: alpha\n\n"
 
         failure = await client.post(
             "/sensors/register",
@@ -760,8 +786,8 @@ async def test_dashboard_redacts_ai_prompts_and_responses(monkeypatch):
         response = await client.get("/dashboard")
 
     assert response.status_code == 200
-    payload = response.json()
-    assert getattr(payload, "content", None) == "dashboard"
+    assert response.headers["content-type"].startswith("text/html")
+    assert response.text == "dashboard"
     assert observed["ai_records"][0].prompt == "[redacted]"
     assert observed["ai_records"][0].response == "[redacted]"
     assert observed["ai_records"][0].instruction is None

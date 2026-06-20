@@ -98,7 +98,7 @@ def split_video(
 def video_metadata(source: str | Path) -> dict[str, object]:
     """Return full ffprobe metadata for a video file."""
 
-    return probe_media(source)
+    return probe_media(source).raw
 
 
 def video_duration(source: str | Path) -> float:

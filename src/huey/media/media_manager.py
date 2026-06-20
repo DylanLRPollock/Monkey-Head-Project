@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -66,7 +67,9 @@ class FFmpegMediaManager:
         self.timeout_seconds = timeout_seconds
 
     @staticmethod
-    def _resolve_binary(explicit_path: str | Path | None, binary_name: str) -> Path | None:
+    def _resolve_binary(
+        explicit_path: str | Path | None, binary_name: str
+    ) -> Path | None:
         if explicit_path is not None:
             return Path(explicit_path)
 
@@ -186,7 +189,9 @@ class FFmpegMediaManager:
         try:
             raw: dict[str, Any] = json.loads(result.stdout)
         except json.JSONDecodeError as exc:
-            raise RuntimeError(f"ffprobe returned invalid JSON for {input_path}") from exc
+            raise RuntimeError(
+                f"ffprobe returned invalid JSON for {input_path}"
+            ) from exc
 
         format_info = raw.get("format", {})
         if not isinstance(format_info, dict):
@@ -545,6 +550,42 @@ def check_ffmpeg_available() -> bool:
     return get_default_manager().ffmpeg_available()
 
 
+def _coerce_path(path: str | Path) -> Path:
+    """Resolve ``path`` to an absolute filesystem path."""
+
+    return Path(path).expanduser().resolve()
+
+
+def _ensure_source(path: str | Path) -> Path:
+    """Resolve ``path`` and ensure the source file exists."""
+
+    source = _coerce_path(path)
+    if not source.exists():
+        raise FileNotFoundError(source)
+    return source
+
+
+def _raise_for_failure(result: FFmpegCommandResult, operation: str) -> None:
+    """Raise a runtime error when an FFmpeg command did not complete cleanly."""
+
+    if result.ok:
+        return
+    details = result.stderr.strip() or result.stdout.strip() or operation
+    raise RuntimeError(f"{operation}: {details}")
+
+
+def _run_ffmpeg(
+    args: list[str], timeout_seconds: float | None = None
+) -> FFmpegCommandResult:
+    """Run an FFmpeg command through the default manager and enforce success."""
+
+    manager = get_default_manager()
+    ffmpeg = manager.require_ffmpeg()
+    result = manager.run([str(ffmpeg), *[str(arg) for arg in args]], timeout_seconds)
+    _raise_for_failure(result, "ffmpeg command failed")
+    return result
+
+
 def probe_media(path: str | Path) -> MediaProbeResult:
     """Probe media with a default FFmpeg media manager."""
     return get_default_manager().probe(path)
@@ -561,3 +602,251 @@ def prepare_audio_for_transcription(
         output_path=output_path,
         overwrite=overwrite,
     )
+
+
+def convert_audio(
+    source: str | Path,
+    target: str | Path,
+    *,
+    bitrate: str | None = None,
+    sample_rate: int | None = None,
+    channels: int | None = None,
+    overwrite: bool = True,
+) -> Path:
+    """Convert audio to a new container or codec using the default manager."""
+
+    src = _ensure_source(source)
+    dst = _coerce_path(target)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    manager = get_default_manager()
+    ffmpeg = manager.require_ffmpeg()
+    command = [str(ffmpeg), "-y" if overwrite else "-n", "-i", str(src)]
+    if channels is not None:
+        command.extend(["-ac", str(channels)])
+    if sample_rate is not None:
+        command.extend(["-ar", str(sample_rate)])
+    if bitrate is not None:
+        command.extend(["-b:a", str(bitrate)])
+    command.append(str(dst))
+    result = manager.run(command)
+    _raise_for_failure(result, f"audio conversion failed for {src}")
+    return dst
+
+
+def extract_audio(
+    source: str | Path,
+    target: str | Path,
+    *,
+    codec: str | None = None,
+    sample_rate: int | None = 16000,
+    channels: int | None = 1,
+    overwrite: bool = True,
+) -> Path:
+    """Extract audio from a media file using the default manager."""
+
+    src = _ensure_source(source)
+    dst = _coerce_path(target)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    manager = get_default_manager()
+    ffmpeg = manager.require_ffmpeg()
+    command = [str(ffmpeg), "-y" if overwrite else "-n", "-i", str(src), "-vn"]
+    if codec is not None:
+        command.extend(["-acodec", codec])
+    if channels is not None:
+        command.extend(["-ac", str(channels)])
+    if sample_rate is not None:
+        command.extend(["-ar", str(sample_rate)])
+    command.append(str(dst))
+    result = manager.run(command)
+    _raise_for_failure(result, f"audio extraction failed for {src}")
+    return dst
+
+
+def transcode_video(
+    source: str | Path,
+    target: str | Path,
+    *,
+    video_codec: str = "libx264",
+    audio_codec: str | None = None,
+    overwrite: bool = True,
+) -> Path:
+    """Transcode video to a new container or codec using the default manager."""
+
+    src = _ensure_source(source)
+    dst = _coerce_path(target)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    manager = get_default_manager()
+    ffmpeg = manager.require_ffmpeg()
+    command = [
+        str(ffmpeg),
+        "-y" if overwrite else "-n",
+        "-i",
+        str(src),
+        "-c:v",
+        video_codec,
+    ]
+    if audio_codec is not None:
+        command.extend(["-c:a", audio_codec])
+    command.append(str(dst))
+    result = manager.run(command)
+    _raise_for_failure(result, f"video transcode failed for {src}")
+    return dst
+
+
+def resample_audio(
+    source: str | Path,
+    target: str | Path,
+    *,
+    channels: int | None = None,
+    sample_rate: int | None = None,
+    overwrite: bool = True,
+) -> Path:
+    """Resample audio to the requested channel count or sample rate."""
+
+    manager = get_default_manager()
+    result = manager.transform_audio(
+        input_path=source,
+        output_path=target,
+        options=AudioTransformOptions(sample_rate=sample_rate, channels=channels),
+        overwrite=overwrite,
+    )
+    _raise_for_failure(result, f"audio resample failed for {source}")
+    return _coerce_path(target)
+
+
+def normalize_audio(
+    source: str | Path,
+    target: str | Path,
+    *,
+    overwrite: bool = True,
+) -> Path:
+    """Normalize audio loudness for downstream processing."""
+
+    manager = get_default_manager()
+    result = manager.transform_audio(
+        input_path=source,
+        output_path=target,
+        options=AudioTransformOptions(loudnorm=True),
+        overwrite=overwrite,
+    )
+    _raise_for_failure(result, f"audio normalization failed for {source}")
+    return _coerce_path(target)
+
+
+def remove_silence(
+    source: str | Path,
+    target: str | Path,
+    *,
+    threshold: str = "-30dB",
+    min_silence_duration: float = 0.5,
+    overwrite: bool = True,
+) -> Path:
+    """Trim silence from an audio file using FFmpeg's silenceremove filter."""
+
+    src = _ensure_source(source)
+    dst = _coerce_path(target)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    filter_arg = (
+        "silenceremove="
+        f"start_periods=1:start_duration={min_silence_duration}:start_threshold={threshold}:"
+        f"stop_periods=-1:stop_duration={min_silence_duration}:stop_threshold={threshold}"
+    )
+    command = [
+        "-y" if overwrite else "-n",
+        "-i",
+        str(src),
+        "-af",
+        filter_arg,
+        str(dst),
+    ]
+    _run_ffmpeg(command)
+    return dst
+
+
+def extract_frames(
+    source: str | Path,
+    output_pattern: str | Path,
+    *,
+    fps: float = 1.0,
+) -> Path:
+    """Extract frames to ``output_pattern`` using a legacy-compatible wrapper."""
+
+    src = _ensure_source(source)
+    dst = _coerce_path(output_pattern)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    _run_ffmpeg(["-i", str(src), "-vf", f"fps={fps}", str(dst)])
+    return dst
+
+
+def extract_thumbnail(
+    source: str | Path,
+    target: str | Path,
+    *,
+    timestamp: float = 1.0,
+) -> Path:
+    """Extract a single thumbnail frame from a video source."""
+
+    src = _ensure_source(source)
+    dst = _coerce_path(target)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    _run_ffmpeg(["-ss", str(timestamp), "-i", str(src), "-frames:v", "1", str(dst)])
+    return dst
+
+
+def split_audio_chunks(
+    source: str | Path,
+    output_dir: str | Path,
+    *,
+    chunk_seconds: int = 300,
+    overwrite: bool = True,
+) -> Path:
+    """Split audio into fixed-length chunks and return the output directory."""
+
+    manager = get_default_manager()
+    result = manager.split_audio_chunks(
+        input_path=source,
+        output_dir=output_dir,
+        chunk_seconds=chunk_seconds,
+        overwrite=overwrite,
+    )
+    _raise_for_failure(result, f"audio chunking failed for {source}")
+    return _coerce_path(output_dir)
+
+
+def detect_silence(
+    source: str | Path,
+    noise_db: int = -45,
+    duration_seconds: float = 0.2,
+) -> list[dict[str, float]]:
+    """Detect silence ranges and return parsed segment boundaries."""
+
+    result = get_default_manager().detect_silence(
+        input_path=source,
+        noise_db=noise_db,
+        duration_seconds=duration_seconds,
+    )
+    _raise_for_failure(result, f"silence detection failed for {source}")
+    segments: list[dict[str, float]] = []
+    start: float | None = None
+    start_pattern = re.compile(r"silence_start:\s*([0-9.]+)")
+    end_pattern = re.compile(
+        r"silence_end:\s*([0-9.]+)\s*\|\s*silence_duration:\s*([0-9.]+)"
+    )
+    for line in result.stderr.splitlines():
+        start_match = start_pattern.search(line)
+        if start_match:
+            start = float(start_match.group(1))
+            continue
+        end_match = end_pattern.search(line)
+        if end_match:
+            end = float(end_match.group(1))
+            duration = float(end_match.group(2))
+            segments.append(
+                {
+                    "start": start if start is not None else max(0.0, end - duration),
+                    "end": end,
+                    "duration": duration,
+                }
+            )
+            start = None
+    return segments
