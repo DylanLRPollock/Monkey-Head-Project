@@ -60,6 +60,11 @@ TEXT_SUFFIXES: tuple[str, ...] = (
 )
 
 
+def safe_print(message: str) -> None:
+    encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+    sys.stdout.buffer.write(f"{message}\n".encode(encoding, errors="replace"))
+
+
 def git_ls_files() -> list[Path]:
     output = subprocess.check_output(["git", "ls-files"], text=True)
     return [Path(line.strip()) for line in output.splitlines() if line.strip()]
@@ -85,6 +90,8 @@ def main() -> int:
     for path in git_ls_files():
         if not should_scan(path):
             continue
+        if not path.is_file():
+            continue
 
         try:
             text = path.read_text(encoding="utf-8")
@@ -100,15 +107,15 @@ def main() -> int:
                     break
 
     if violations:
-        print("Legacy hueyos import/path check failed.")
-        print(
+        safe_print("Legacy hueyos import/path check failed.")
+        safe_print(
             "Use huey.os for canonical code and keep hueyos only as the compatibility shim."
         )
         for violation in violations:
-            print(f"- {violation}")
+            safe_print(f"- {violation}")
         return 1
 
-    print("Legacy hueyos import/path check passed.")
+    safe_print("Legacy hueyos import/path check passed.")
     return 0
 
 
