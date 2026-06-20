@@ -1,16 +1,25 @@
-# Monkey Head Project
-# By: Dylan L.R. Pollock
-# HueyOS: sources.list
+# Monkey-Head-Project
+# HueyOS: Debian Forky sources.list
+#
+# Primary supported Debian target:
+# - Debian 14 "Forky"
+#
+# Backports are present but disabled by default.
+# Enable forky-backports only when a specific package or hardware enablement
+# reason is documented.
 
-# forky
+## forky
 deb http://deb.debian.org/debian forky main contrib non-free non-free-firmware
 deb-src http://deb.debian.org/debian forky main contrib non-free non-free-firmware
-# forky-security
-deb http://security.debian.org/debian-security forky-security main contrib non-free non-free-firmware
-deb-src http://security.debian.org/debian-security forky-security main contrib non-free non-free-firmware
-# forky-updates
+
+## forky-updates
 deb http://deb.debian.org/debian forky-updates main contrib non-free non-free-firmware
 deb-src http://deb.debian.org/debian forky-updates main contrib non-free non-free-firmware
-# forky-backports
-deb http://deb.debian.org/debian forky-backports main contrib non-free non-free-firmware
-deb-src http://deb.debian.org/debian forky-backports main contrib non-free non-free-firmware
+
+## forky-security
+deb http://security.debian.org/debian-security forky-security main contrib non-free non-free-firmware
+deb-src http://security.debian.org/debian-security forky-security main contrib non-free non-free-firmware
+
+## forky-backports
+# deb http://deb.debian.org/debian forky-backports main contrib non-free non-free-firmware
+# deb-src http://deb.debian.org/debian forky-backports main contrib non-free non-free-firmware

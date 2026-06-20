@@ -5,13 +5,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Generator
-from typing import cast
-
 import asyncio
 import inspect
 import sys
+from collections.abc import Generator
 from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -77,4 +76,3 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "asyncio: run the marked coroutine test inside an event loop",
     )
-
