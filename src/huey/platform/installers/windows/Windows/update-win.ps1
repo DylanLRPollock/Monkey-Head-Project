@@ -45,6 +45,26 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+$script:ForwardedArguments = @()
+foreach ($entry in $PSBoundParameters.GetEnumerator()) {
+  $switchName = "-$($entry.Key)"
+  $value = $entry.Value
+
+  if ($value -is [switch]) {
+    if ($value.IsPresent) { $script:ForwardedArguments += $switchName }
+    continue
+  }
+
+  if ($value -is [bool]) {
+    if ($value) { $script:ForwardedArguments += $switchName }
+    continue
+  }
+
+  if ($null -ne $value -and -not [string]::IsNullOrWhiteSpace([string]$value)) {
+    $script:ForwardedArguments += @($switchName, [string]$value)
+  }
+}
+
 $Timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
 $LogPath = Join-Path $env:TEMP "HueyOS_update_$Timestamp.log"
 
@@ -80,7 +100,7 @@ function Ensure-ElevationIfNeeded {
   if (Test-IsAdmin) { return }
 
   Write-Log "Elevation required. Relaunching as Administrator..." 'INFO'
-  $argList = @("-NoProfile","-ExecutionPolicy","Bypass","-File", $PSCommandPath) + $args
+  $argList = @("-NoProfile","-ExecutionPolicy","Bypass","-File", $PSCommandPath) + $script:ForwardedArguments
   try {
     Start-Process -FilePath "powershell.exe" -Verb RunAs -WorkingDirectory (Get-Location).Path -ArgumentList $argList | Out-Null
     exit 0
@@ -393,7 +413,7 @@ if (-not $SkipPython) {
     Invoke-Native -Exe $venvPip -Args @("install","-e",$pygptPath) -WorkingDirectory $InstallDir -AllowNonZero
   }
 
-  $syncScript = Join-Path $InstallDir "sync_pygpt_structure.py"
+  $syncScript = Join-Path $InstallDir "src\huey\memory\PY\sync_pygpt_structure.py"
   if (Test-Path -LiteralPath $syncScript) {
     Invoke-Native -Exe $venvPython -Args @($syncScript) -WorkingDirectory $InstallDir -AllowNonZero
   }

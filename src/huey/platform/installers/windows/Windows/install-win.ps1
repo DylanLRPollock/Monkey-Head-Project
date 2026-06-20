@@ -56,6 +56,26 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+$script:ForwardedArguments = @()
+foreach ($entry in $PSBoundParameters.GetEnumerator()) {
+  $switchName = "-$($entry.Key)"
+  $value = $entry.Value
+
+  if ($value -is [switch]) {
+    if ($value.IsPresent) { $script:ForwardedArguments += $switchName }
+    continue
+  }
+
+  if ($value -is [bool]) {
+    if ($value) { $script:ForwardedArguments += $switchName }
+    continue
+  }
+
+  if ($null -ne $value -and -not [string]::IsNullOrWhiteSpace([string]$value)) {
+    $script:ForwardedArguments += @($switchName, [string]$value)
+  }
+}
+
 # -----------------------------
 # Logging
 # -----------------------------
@@ -100,7 +120,7 @@ function Ensure-ElevationIfNeeded {
   if (Test-IsAdmin) { return }
 
   Write-Log "Elevation required. Relaunching as Administrator..." 'INFO'
-  $argList = @("-NoProfile","-ExecutionPolicy","Bypass","-File", $PSCommandPath) + $args
+  $argList = @("-NoProfile","-ExecutionPolicy","Bypass","-File", $PSCommandPath) + $script:ForwardedArguments
   try {
     Start-Process -FilePath "powershell.exe" -Verb RunAs -WorkingDirectory (Get-Location).Path -ArgumentList $argList | Out-Null
     exit 0
@@ -492,7 +512,7 @@ try {
   }
 
   # Sync structure + connectivity checks (if present)
-  $syncScript = Join-Path $InstallDir "sync_pygpt_structure.py"
+  $syncScript = Join-Path $InstallDir "src\huey\memory\PY\sync_pygpt_structure.py"
   if (Test-Path -LiteralPath $syncScript) {
     Invoke-Native -Exe $venvPython -Args @($syncScript) -WorkingDirectory $InstallDir
   } else {
@@ -516,16 +536,20 @@ try {
 if ($NonInteractive -or $AcceptLicense) {
   Write-Log "Skipping license GUI (NonInteractive/AcceptLicense)." 'INFO'
 } else {
-  $licenseGui = Join-Path $InstallDir "src\license_gui.py"
+  $licenseGui = Join-Path $InstallDir "src\huey\os\license_gui.py"
   if (Test-Path -LiteralPath $licenseGui) {
     Write-Log "Displaying license agreement GUI..." 'INFO'
     try {
-      Invoke-Native -Exe $venvPython -Args @($licenseGui) -WorkingDirectory $InstallDir -AllowNonZero
+      $originalPythonPath = $env:PYTHONPATH
+      $env:PYTHONPATH = "$InstallDir\src;$originalPythonPath"
+      Invoke-Native -Exe $venvPython -Args @('-c', 'from huey.os.license_gui import show_license_gui; show_license_gui()') -WorkingDirectory $InstallDir -AllowNonZero
     } catch {
       Write-Log "License GUI failed or was closed. Continuing. Error: $($_.Exception.Message)" 'WARN'
+    } finally {
+      $env:PYTHONPATH = $originalPythonPath
     }
   } else {
-    Write-Log "License GUI not found at src\license_gui.py; skipping." 'WARN'
+    Write-Log "License GUI not found at src\huey\os\license_gui.py; skipping." 'WARN'
   }
 }
 
