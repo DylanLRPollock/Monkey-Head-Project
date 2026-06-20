@@ -899,6 +899,7 @@ iMac → WSL Debian → OpenSSH → Huey Brain
 | faster-whisper / Whisper | Local transcription testing |
 | API model provider | Primary V1 response quality and consistency bridge |
 | Git | Version control and project state |
+| HueyOS Launcher Setup (Windows) | Safe local bootstrap for Command Center setup, repo binding, and doctor checks |
 | lm-sensors / system tools | Thermals and status visibility |
 
 ### Tools deferred
@@ -1034,6 +1035,25 @@ Boundary notes:
 - Huey Brain V1 remains the controlled fixture loop only: MP3 fixture → transcription stage → cognition bridge → structured run log.
 - `huey v1-run` currently requires `--mock` unless explicit real providers are wired; this prevents overclaiming live hardware proof.
 - PyHuey stays optional cockpit/tooling (`infra/docker/pyhuey`) and is not the HueyOS/Huey Brain runtime path.
+
+### Windows launcher (safe Command Center bootstrap)
+
+The repository now ships a prebuilt Windows launcher and matching Go source at `src/huey/platform/installers/windows/launcher/`.
+
+| Action | Result |
+|---|---|
+| Double-click | Creates HueyOS folders/config if needed, then tries to launch HueyOS Command Center. |
+| `HueyOS-Launcher-Setup.exe --install` | Creates `%APPDATA%\HueyOS`, `%LOCALAPPDATA%\HueyOS`, `%LOCALAPPDATA%\HueyOS\logs`, and `%LOCALAPPDATA%\HueyOS\workspace`. |
+| `HueyOS-Launcher-Setup.exe --set-repo L:\Monkey-Head-Project` | Saves the local Monkey-Head-Project checkout path. |
+| `HueyOS-Launcher-Setup.exe --set-python C:\Python313\python.exe` | Pins a specific Python executable. |
+| `HueyOS-Launcher-Setup.exe --launch` | Runs the configured HueyOS Command Center entry point. |
+| `HueyOS-Launcher-Setup.exe --doctor` | Generates a local doctor report and opens it in Notepad. |
+| `HueyOS-Launcher-Setup.exe --open-config` | Opens the HueyOS config folder. |
+| `HueyOS-Launcher-Setup.exe --help` | Shows launcher help. |
+
+`--doctor` checks `py`, `python`, `git`, `ffmpeg`, `ffprobe`, the configured repo path, `pyproject.toml`, `scripts/check_ffmpeg_environment.py`, and `scripts/prepare_audio_for_transcription.py`.
+
+Safety boundary: no file deletion, no Git mutation, no firmware flashing, no hardware control, no robot/servo/power actions, and no arbitrary shell execution.
 
 ### API deployment policy (safe defaults)
 

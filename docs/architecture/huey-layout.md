@@ -33,6 +33,8 @@ without a separate architectural decision.
 
 Legacy flat paths under `scripts/` remain as compatibility wrappers where older tooling still references them directly.
 
+`src/huey/platform/installers/windows/launcher` stores the safe Windows HueyOS launcher source and prebuilt executable used for local Command Center bootstrap and doctor checks.
+
 ## Canonical import path
 
 New code should use:

@@ -8,6 +8,7 @@ from huey.gui.defaults import default_migration_phases, default_repositories
 from huey.gui.github_client import client_from_env, summarize_repo_status
 from huey.gui.models import dataclass_list_to_dicts, dataclass_to_dict
 from huey.gui.v1_runs import sample_v1_runs
+from huey.integrations.command_center.launcher import get_launcher_support
 from huey.integrations.command_center.serializers import memory_to_json, state_to_json
 from huey.memory.pipeline.indexing import default_index_path
 from huey.runtime.orchestrator import RuntimeOrchestrator
@@ -99,6 +100,7 @@ def get_api_status() -> dict[str, object]:
 
 __all__ = [
     "get_api_status",
+    "get_launcher_support",
     "get_memory_status",
     "get_repo_status",
     "get_runtime_status",

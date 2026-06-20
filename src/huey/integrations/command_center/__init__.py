@@ -2,6 +2,7 @@
 
 from huey.integrations.command_center.adapter import (
     get_api_status,
+    get_launcher_support,
     get_memory_status,
     get_repo_status,
     get_runtime_status,
@@ -10,6 +11,7 @@ from huey.integrations.command_center.adapter import (
 
 __all__ = [
     "get_api_status",
+    "get_launcher_support",
     "get_memory_status",
     "get_repo_status",
     "get_runtime_status",

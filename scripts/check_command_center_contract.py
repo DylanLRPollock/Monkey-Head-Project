@@ -23,7 +23,9 @@ def assert_routes() -> None:
     app = create_app()
     paths = {route.path: route.methods for route in app.routes}
     required = {
+        "/command-center/launcher",
         "/command-center/meta",
+        "/command-center/state",
         "/command-center/safety",
         "/command-center/repos",
         "/command-center/phases",
@@ -42,6 +44,16 @@ def assert_routes() -> None:
             raise AssertionError(f"Route must remain read-only: {path}")
 
 
+def assert_launcher_support() -> None:
+    from huey.integrations.command_center import get_launcher_support
+
+    payload = get_launcher_support()
+    assert payload["mode"] == "safe-bootstrap"
+    assert payload["assets"]["executable"]["present"] is True
+    assert payload["assets"]["source"]["present"] is True
+    assert "No Git mutation" in payload["safety_guarantees"]
+
+
 def assert_safety_policy() -> None:
     from huey.gui.safety import default_safety_policy
     from huey.gui.validation import all_validation_commands
@@ -58,6 +70,7 @@ def main() -> int:
     try:
         assert_imports()
         assert_routes()
+        assert_launcher_support()
         assert_safety_policy()
     except (AssertionError, ImportError, RuntimeError, ValueError) as exc:
         print(f"Command Center contract check failed: {exc}")

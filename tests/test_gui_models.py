@@ -28,3 +28,13 @@ def test_validation_commands_are_copy_only():
 
     assert commands
     assert all(command.copy_only for command in commands)
+
+
+def test_validation_commands_include_windows_launcher_doctor():
+    commands = default_validation_commands()
+
+    assert any(
+        command.id == "command-center-launcher-doctor"
+        and "HueyOS-Launcher-Setup.exe --doctor" in command.command
+        for command in commands
+    )
