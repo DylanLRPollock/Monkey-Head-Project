@@ -19,6 +19,20 @@ HueyOS uses `src/huey` as the canonical runtime package root.
 `src/huey/memory` is intentionally preserved. Layout migrations must not move it
 without a separate architectural decision.
 
+## Repository script areas
+
+| Path | Purpose |
+| --- | --- |
+| `scripts/repo` | Repository guardrails, drift checks, and packaging helpers |
+| `scripts/media` | Standalone media conversion utilities |
+| `scripts/security` | Local developer security checks |
+| `scripts/automation/py` | Curated Python launchers backed by `src/huey/memory/PY` |
+| `scripts/automation/sh` | Shell wrappers backed by `src/huey/memory/SH` |
+| `scripts/automation/bat` | Batch wrappers backed by `src/huey/memory/BAT` |
+| `scripts/automation/ps1` | PowerShell wrappers backed by `src/huey/memory/PS1` |
+
+Legacy flat paths under `scripts/` remain as compatibility wrappers where older tooling still references them directly.
+
 ## Canonical import path
 
 New code should use:

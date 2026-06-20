@@ -47,25 +47,25 @@ format:
 	isort src tests scripts conftest.py
 
 lint:
-	$(PYTHON) scripts/check_stale_platform_strings.py
-	$(PYTHON) scripts/check_repo_drift.py
-	$(PYTHON) scripts/check_legacy_hueyos_imports.py
+	$(PYTHON) scripts/repo/check_stale_platform_strings.py
+	$(PYTHON) scripts/repo/check_repo_drift.py
+	$(PYTHON) scripts/repo/check_legacy_hueyos_imports.py
 	black --check src tests scripts conftest.py
 	isort --check-only src tests scripts conftest.py
 	ruff check src tests scripts conftest.py
 	flake8 --exclude=src/huey/connectors/pyhuey src tests scripts conftest.py
 
 check-drift:
-	$(PYTHON) scripts/check_repo_drift.py
+	$(PYTHON) scripts/repo/check_repo_drift.py
 
 check-legacy-hueyos:
-	$(PYTHON) scripts/check_legacy_hueyos_imports.py
+	$(PYTHON) scripts/repo/check_legacy_hueyos_imports.py
 
 check-canon:
-	$(PYTHON) scripts/check_canon_terms.py
+	$(PYTHON) scripts/repo/check_canon_terms.py
 
 check-deps-sync:
-	$(PYTHON) scripts/check_dependency_sync.py
+	$(PYTHON) scripts/repo/check_dependency_sync.py
 
 test:
 	$(PYTHON) -m pytest -q

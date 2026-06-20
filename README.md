@@ -1098,13 +1098,13 @@ sphinx-build -b html docs docs/_build/html -W --keep-going
 Run the local helper script before opening a PR:
 
 ```bash
-./scripts/security_check.sh
+./scripts/security/security_check.sh
 ```
 
 Optional outdated dependency report:
 
 ```bash
-./scripts/security_check.sh --outdated
+./scripts/security/security_check.sh --outdated
 ```
 
 The script is developer-friendly by design:
@@ -1114,6 +1114,15 @@ The script is developer-friendly by design:
 - Runs a secret scanner only when a local scanner configuration exists (`.gitleaks.toml`, `gitleaks.toml`, or `.secrets.baseline`).
 - Prints clear install guidance when tools are missing.
 - Avoids printing raw secrets by using redacted scanner modes where supported.
+
+Current script layout:
+
+- `scripts/repo/` for repository maintenance and CI guardrails
+- `scripts/media/` for standalone conversion utilities
+- `scripts/security/` for local security helpers
+- `scripts/automation/{py,sh,bat,ps1}/` for memory-backed launcher surfaces
+
+Legacy flat `scripts/*` entrypoints remain as compatibility wrappers where existing tooling still points at them.
 
 ---
 
