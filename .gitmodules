@@ -2,3 +2,7 @@
 	path = integrations/command-center
 	url = https://github.com/DylanLRPollock/command-center.git
 	branch = main
+[submodule "integrations/dual-agreement"]
+	path = integrations/dual-agreement
+	url = https://github.com/DylanLRPollock/dual-agreement.git
+	branch = main
