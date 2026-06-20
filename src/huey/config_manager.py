@@ -27,7 +27,11 @@ class ConfigManager:
             return Path(env_path)
 
         project_root = Path(__file__).resolve().parents[2]
-        return project_root / "config" / _DEFAULT_CONFIG_NAME
+        legacy_path = project_root / "config" / _DEFAULT_CONFIG_NAME
+        if legacy_path.exists():
+            return legacy_path
+
+        return project_root / "src" / "huey" / "config" / _DEFAULT_CONFIG_NAME
 
     def _load(self) -> dict[str, Any]:
         if not self.path.exists():

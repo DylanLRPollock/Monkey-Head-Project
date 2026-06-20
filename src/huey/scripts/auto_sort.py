@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Auto Sort module (huey/scripts)
 
-"""CLI for the :func:`hueyos.utils.auto_sort.auto_sort_memory` helper."""
+"""CLI for the :func:`huey.os.utils.auto_sort.auto_sort_memory` helper."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import argparse
 import json
 from typing import Any, Dict
 
-from hueyos.utils.auto_sort import auto_sort_memory
+from huey.os.utils.auto_sort import auto_sort_memory
 
 
 def _build_parser() -> argparse.ArgumentParser:

@@ -3,14 +3,14 @@
 # www.dlrp.ca
 # HueyOS: System Checks module (huey/core)
 
-"""Compatibility layer for :mod:`hueyos.system_checks`."""
+"""Compatibility layer for :mod:`huey.os.system_checks`."""
 
 from __future__ import annotations
 
 from importlib import import_module
 from typing import Any
 
-_module = import_module("hueyos.system_checks")
+_module = import_module("huey.os.system_checks")
 
 __all__ = getattr(
     _module, "__all__", [name for name in dir(_module) if not name.startswith("_")]
@@ -39,9 +39,9 @@ def __setattr__(name: str, value: Any) -> None:  # pragma: no cover - proxy
 def check_python_version() -> None:
     """Warn when running on experimental Python versions.
 
-    This wrapper mirrors :func:`hueyos.system_checks.check_python_version`
+    This wrapper mirrors :func:`huey.os.system_checks.check_python_version`
     but uses the ``logger`` attribute from this proxy module. Tests that patch
-    ``hueyos.core.system_checks.logger`` therefore observe the expected
+    ``huey.os.core.system_checks.logger`` therefore observe the expected
     behaviour without needing to modify the legacy implementation directly.
     """
 

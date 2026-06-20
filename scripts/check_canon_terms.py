@@ -54,7 +54,7 @@ def _compile_rules() -> tuple[Rule, ...]:
         Rule(
             "windows-hueybody-path",
             re.compile(r"\\bplatform/windows/hueybody\\b", re.IGNORECASE),
-            "Use platform/windows/huey for cockpit/build path references.",
+            "Use src/huey/platform/windows/huey for cockpit/build path references.",
         ),
         Rule(
             "live-microphone-v1",

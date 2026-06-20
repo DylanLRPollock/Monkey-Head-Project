@@ -16,7 +16,7 @@ set -euo pipefail
 set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 case "$(uname)" in
-    Linux*)  UNINSTALL_SCRIPT="$SCRIPT_DIR/../../../../platform/installers/debian/Debian/uninstall-deb.sh" ;;
+    Linux*)  UNINSTALL_SCRIPT="$SCRIPT_DIR/../../platform/installers/debian/Debian/uninstall-deb.sh" ;;
     Darwin*) UNINSTALL_SCRIPT="$SCRIPT_DIR/setup/macOS/uninstall.sh" ;;
     *)
         echo "Unsupported operating system" >&2

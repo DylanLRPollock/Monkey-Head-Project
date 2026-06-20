@@ -204,14 +204,19 @@ where = ["src"]
 [tool.black]
 target-version = ["py313"]
 line-length = 88
+extend-exclude = '''
+/src/huey/connectors/pyhuey/
+'''
 
 [tool.isort]
 profile = "black"
 line_length = 88
+skip_glob = ["src/huey/connectors/pyhuey/**"]
 
 [tool.ruff]
 target-version = "py313"
 line-length = 88
+extend-exclude = ["src/huey/connectors/pyhuey"]
 
 [tool.ruff.lint]
 ignore = ["E402"]
@@ -222,3 +227,6 @@ extend-ignore = [
   "E501",
 ]
 max-line-length = 88
+exclude = [
+  "src/huey/connectors/pyhuey",
+]

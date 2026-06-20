@@ -963,11 +963,14 @@ This repository is moving toward a cleaner long-term structure.
 |---|---|
 | `docs/` | Architecture, audits, reference material |
 | `src/` | Importable implementation work |
-| `apps/` | Runnable entry points |
-| `integrations/` | Adapter and integration work |
+| `src/huey/os/` | Canonical HueyOS subsystem surface |
+| `src/huey/apps/` | Runnable entry points |
+| `src/huey/connectors/` | Adapter and integration work |
+| `src/huey/core/` | Core runtime and kernel profile assets |
+| `src/huey/config/` | Runtime configuration payloads |
 | `vendor/` | Static third-party mirrors and lightweight compatibility copies |
 | `infra/` | Orchestration and infrastructure support |
-| `platform/` | OS / platform-specific setup |
+| `src/huey/platform/` | OS / platform-specific setup |
 | `archives/` | Frozen payloads, snapshots, legacy material |
 | `assets/` | Project media and visual identity |
 | `tests/` | Regression and test coverage |

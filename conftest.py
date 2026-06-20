@@ -19,7 +19,7 @@ _SRC_PATH = _PROJECT_ROOT / "src"
 if _SRC_PATH.is_dir() and str(_SRC_PATH) not in sys.path:
     sys.path.insert(0, str(_SRC_PATH))
 
-for _path in (_PROJECT_ROOT / "integrations", _PROJECT_ROOT / "vendor"):
+for _path in (_SRC_PATH / "huey" / "connectors", _PROJECT_ROOT / "vendor"):
     if _path.is_dir() and str(_path) not in sys.path:
         sys.path.append(str(_path))
 

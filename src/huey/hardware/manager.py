@@ -16,7 +16,7 @@ from contextlib import suppress
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from huey.honeycomb.storage import HoneycombStorage
-from hueyos.utils.persistence import TelemetryStore
+from huey.os.utils.persistence import TelemetryStore
 
 from .plugins import (
     ActuatorPlugin,

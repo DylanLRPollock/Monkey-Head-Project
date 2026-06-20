@@ -1,5 +1,5 @@
-"""Compatibility shim forwarding to :mod:`hueyos.honeycomb.retention`."""
+"""Compatibility shim forwarding to :mod:`huey.os.honeycomb.retention`."""
 
-from hueyos.honeycomb.retention import RetentionPolicy, parse_duration
+from huey.os.honeycomb.retention import RetentionPolicy, parse_duration
 
 __all__ = ["RetentionPolicy", "parse_duration"]

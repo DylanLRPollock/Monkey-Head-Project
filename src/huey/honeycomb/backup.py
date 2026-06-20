@@ -1,6 +1,6 @@
-"""Compatibility shim forwarding to :mod:`hueyos.honeycomb.backup`."""
+"""Compatibility shim forwarding to :mod:`huey.os.honeycomb.backup`."""
 
-from hueyos.honeycomb.backup import (
+from huey.os.honeycomb.backup import (
     BackupError,
     BackupResult,
     perform_rsync_snapshot,

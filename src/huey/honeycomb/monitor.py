@@ -1,5 +1,5 @@
-"""Compatibility shim forwarding to :mod:`hueyos.honeycomb.monitor`."""
+"""Compatibility shim forwarding to :mod:`huey.os.honeycomb.monitor`."""
 
-from hueyos.honeycomb.monitor import HoneycombMonitor, HoneycombUsageTotals
+from huey.os.honeycomb.monitor import HoneycombMonitor, HoneycombUsageTotals
 
 __all__ = ["HoneycombMonitor", "HoneycombUsageTotals"]

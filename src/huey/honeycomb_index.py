@@ -22,8 +22,8 @@ from typing import (
     Sequence,
 )
 
-from hueyos.honeycomb_storage import HoneycombRecord, HoneycombStorage
-from hueyos.utils.auto_sort import get_extension_map
+from huey.os.honeycomb_storage import HoneycombRecord, HoneycombStorage
+from huey.os.utils.auto_sort import get_extension_map
 
 
 @dataclass(frozen=True)

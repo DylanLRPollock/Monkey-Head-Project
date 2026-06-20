@@ -25,7 +25,7 @@ STRICT_CURRENT_FACING_PREFIXES: tuple[str, ...] = (
     "docs/",
     ".github/",
     "infra/",
-    "platform/",
+    "src/huey/platform/",
     "scripts/",
     "Makefile",
     "Dockerfile",
@@ -51,19 +51,19 @@ NON_CURRENT_FACING_NAMES: tuple[str, ...] = (
 
 
 def _is_pyhuey_canonical() -> bool:
-    return os.path.isdir("integrations/pyhuey")
+    return os.path.isdir("src/huey/connectors/pyhuey")
 
 
 RULES: list[DriftRule] = [
     DriftRule(
         name="repo-py-gpt-path",
         pattern=re.compile(r"\brepo/py-gpt\b"),
-        message="Replace stale path 'repo/py-gpt' with current pathing (for example integrations/pyhuey).",
+        message="Replace stale path 'repo/py-gpt' with current pathing (for example src/huey/connectors/pyhuey).",
     ),
     DriftRule(
         name="windows-hueybody-path",
         pattern=re.compile(r"\bplatform/windows/hueybody\b"),
-        message="Use platform/windows/huey for cockpit/build paths.",
+        message="Use src/huey/platform/windows/huey for cockpit/build paths.",
     ),
     DriftRule(
         name="huey-core-label",
@@ -156,7 +156,7 @@ def main() -> int:
             DriftRule(
                 name="integrations-pygpt-path",
                 pattern=re.compile(r"\bintegrations/pygpt\b"),
-                message="Use integrations/pyhuey as the canonical integration path.",
+                message="Use src/huey/connectors/pyhuey as the canonical integration path.",
             )
         )
 

@@ -5,7 +5,7 @@ usage() {
   cat >&2 <<'USAGE'
 Usage: scripts/kernel/assemble_config.sh <role: core|pulse|lab> <output-config> [kernel-config-dir]
 
-Build a kernel .config by layering kernel/base.config with a role profile.
+Build a kernel .config by layering src/huey/core/base.config with a role profile.
 Supports role fragments via lines like: # include fragments/<name>.config
 Uses merge_config.sh when available, otherwise uses a deterministic fallback.
 USAGE
@@ -20,7 +20,7 @@ ROLE="$1"
 OUTPUT_CONFIG="$2"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-KERNEL_CONFIG_DIR="${3:-${REPO_ROOT}/kernel}"
+KERNEL_CONFIG_DIR="${3:-${REPO_ROOT}/src/huey/core}"
 BASE_CONFIG="${KERNEL_CONFIG_DIR}/base.config"
 
 if [[ ! -f "${BASE_CONFIG}" ]]; then

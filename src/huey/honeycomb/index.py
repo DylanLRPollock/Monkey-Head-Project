@@ -1,5 +1,5 @@
-"""Compatibility shim forwarding to :mod:`hueyos.honeycomb.index`."""
+"""Compatibility shim forwarding to :mod:`huey.os.honeycomb.index`."""
 
-from hueyos.honeycomb.index import HoneycombContentMapping, HoneycombIndex
+from huey.os.honeycomb.index import HoneycombContentMapping, HoneycombIndex
 
 __all__ = ["HoneycombContentMapping", "HoneycombIndex"]

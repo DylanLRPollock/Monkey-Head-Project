@@ -10,12 +10,12 @@ from __future__ import annotations
 from importlib import import_module
 from typing import Any
 
-__all__ = ["messaging", "system_checks", "task_scheduler"]
+__all__ = ["messaging", "resilience", "system_checks", "task_scheduler"]
 
 
 def __getattr__(name: str) -> Any:  # pragma: no cover - thin import proxy
     if name in __all__:
-        module = import_module(f"hueyos.core.{name}")
+        module = import_module(f"huey.os.core.{name}")
         globals()[name] = module
         return module
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

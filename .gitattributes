@@ -102,7 +102,7 @@ memory/** linguist-generated=true
 
 # PyHuey integration submodule is treated as vendored code so it does not skew language stats.
 # (Path matches the submodule path defined in .gitmodules.)
-integrations/pyhuey/** linguist-vendored=true
+src/huey/connectors/pyhuey/** linguist-vendored=true
 
 ###############################################################################
 # Export-ignore for release tarballs

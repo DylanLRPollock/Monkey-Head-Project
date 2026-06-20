@@ -18,7 +18,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 case "$(uname)" in
-    Linux*)  INSTALL_SCRIPT="$SCRIPT_DIR/../../../../platform/installers/debian/Debian/install-deb.sh" ;;
+    Linux*)  INSTALL_SCRIPT="$SCRIPT_DIR/../../platform/installers/debian/Debian/install-deb.sh" ;;
     Darwin*) INSTALL_SCRIPT="$SCRIPT_DIR/setup/macOS/install.sh" ;;
     *)
         echo "Unsupported operating system" >&2

@@ -104,7 +104,7 @@ tar -xf "${KERNEL_TARBALL}"
 cd linux-${KVER}
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 CONFIG_ASSEMBLER="${REPO_ROOT}/scripts/kernel/assemble_config.sh"
-KERNEL_CONFIG_DIR="${REPO_ROOT}/kernel"
+KERNEL_CONFIG_DIR="${REPO_ROOT}/src/huey/core"
 
 if [[ ! -x "${CONFIG_ASSEMBLER}" ]]; then
   echo "Missing config assembly script: ${CONFIG_ASSEMBLER}" >&2
@@ -112,7 +112,7 @@ if [[ ! -x "${CONFIG_ASSEMBLER}" ]]; then
 fi
 
 # generate a repo-managed kernel profile config:
-#   kernel/base.config + kernel/<profile>.config -> .config
+#   src/huey/core/base.config + src/huey/core/<profile>.config -> .config
 "${CONFIG_ASSEMBLER}" "${PROFILE}" .config "${KERNEL_CONFIG_DIR}"
 make olddefconfig
 make -j"$JOBS" bindeb-pkg LOCALVERSION="${LOCALVER}" KDEB_PKGVERSION=1
