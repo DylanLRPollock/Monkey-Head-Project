@@ -29,8 +29,9 @@ except Exception:  # pragma: no cover - can't import GUI libs
     scrolledtext = None
     ttk = None
 
+from huey.gui.theme import as_tk_palette
+
 from .gui_scaling import apply_scaling
-from .license_gui import ACCENT_PURPLE, DARK_BG, LIGHT_FG
 
 try:  # pragma: no cover - psutil optional dependency
     import psutil  # type: ignore
@@ -50,6 +51,11 @@ from huey.utils.paths import ensure_subdirectory, get_memory_path
 from .config_manager import ConfigManager
 
 logger = logging.getLogger(__name__)
+
+_PALETTE = as_tk_palette()
+DARK_BG = _PALETTE["background"]
+LIGHT_FG = _PALETTE["text"]
+ACCENT_PURPLE = _PALETTE["accent"]
 
 
 def _format_bytes(size: float | int | None) -> str:

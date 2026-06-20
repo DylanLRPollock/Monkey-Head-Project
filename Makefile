@@ -11,7 +11,7 @@ PORT ?= 1995
 APP ?= huey.api:app
 PKG_COV ?= --cov=huey
 
-.PHONY: help setup install install-dev precommit-install format lint check-drift check-legacy-hueyos check-canon check-deps-sync test coverage run run-reload health
+.PHONY: help setup install install-dev precommit-install format lint check-drift check-legacy-hueyos check-command-center check-canon check-deps-sync test coverage run run-reload health
 
 help:
 	@echo "Common targets:"
@@ -23,6 +23,7 @@ help:
 	@echo "  make lint             - run drift checks + black/isort/ruff/flake8"
 	@echo "  make check-drift      - run repository drift checker"
 	@echo "  make check-legacy-hueyos - block new legacy hueyos imports"
+	@echo "  make check-command-center - verify Command Center backend contract"
 	@echo "  make check-deps-sync  - check pyproject/requirements/constraints sync"
 	@echo "  make test             - run pytest"
 	@echo "  make coverage         - run pytest with coverage for huey"
@@ -50,6 +51,7 @@ lint:
 	$(PYTHON) scripts/repo/check_stale_platform_strings.py
 	$(PYTHON) scripts/repo/check_repo_drift.py
 	$(PYTHON) scripts/repo/check_legacy_hueyos_imports.py
+	$(PYTHON) scripts/check_command_center_contract.py
 	black --check src tests scripts conftest.py
 	isort --check-only src tests scripts conftest.py
 	ruff check src tests scripts conftest.py
@@ -60,6 +62,9 @@ check-drift:
 
 check-legacy-hueyos:
 	$(PYTHON) scripts/repo/check_legacy_hueyos_imports.py
+
+check-command-center:
+	$(PYTHON) scripts/check_command_center_contract.py
 
 check-canon:
 	$(PYTHON) scripts/repo/check_canon_terms.py
