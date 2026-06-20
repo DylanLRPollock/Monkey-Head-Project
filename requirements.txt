@@ -280,7 +280,7 @@ langgraph==1.1.10
 langgraph-checkpoint==4.0.3
 langgraph-prebuilt==1.0.13
 langgraph-sdk==0.3.14
-langsmith==0.8.3
+langsmith==0.8.18
 librt==0.10.0 ; platform_python_implementation != 'PyPy'
 llama-hub==0.0.79.post1
 llama-index-agent-openai==0.4.12
