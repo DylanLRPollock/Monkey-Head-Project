@@ -5,7 +5,7 @@
 
 import math
 
-from hueyos.utils.gpu import (
+from huey.os.utils.gpu import (
     detect_accelerators,
     recommend_models_for_vram,
     total_vram_bytes,

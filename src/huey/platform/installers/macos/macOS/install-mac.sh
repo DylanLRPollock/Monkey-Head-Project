@@ -485,8 +485,8 @@ show_license() {
 
 preload_data() {
   log "Preloading bundled data (best-effort)..."
-  if python -c 'import importlib; importlib.import_module("hueyos")' >/dev/null 2>&1; then
-    python -m hueyos.scripts.preload_data --summary || warn "Data preload failed (continuing)."
+  if python -c 'import importlib; importlib.import_module("huey.os")' >/dev/null 2>&1; then
+    python -m huey.os.scripts.preload_data --summary || warn "Data preload failed (continuing)."
   else
     warn "HueyOS module not importable; skipping data preload."
   fi

@@ -9,7 +9,7 @@ import pytest
 
 pytest.importorskip("flask")
 
-from hueyos import main as main_mod
+from huey.os import main as main_mod
 
 
 def test_parse_args_defaults():

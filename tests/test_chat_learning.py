@@ -6,7 +6,7 @@
 import pytest
 
 tf = pytest.importorskip("tensorflow")
-from hueyos.chat_learning import train_from_chat_and_pdfs
+from huey.os.chat_learning import train_from_chat_and_pdfs
 
 
 def test_train_from_chat_and_pdfs(tmp_path):

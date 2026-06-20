@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test Custom Pygpt Cli module (tests)
 
-from hueyos.pygpt_custom_cli import CustomPyGPT
+from huey.os.pygpt_custom_cli import CustomPyGPT
 
 
 def test_generate_reply():
@@ -20,8 +20,8 @@ def test_load_main_prompt(tmp_path):
 
 def test_pygpt_wrappers_export_maintained_implementation():
     from huey.memory.PY.pygpt_custom_cli import CustomPyGPT as MaintainedCustomPyGPT
+    from huey.os.pygpt_custom_cli import CustomPyGPT as HueyOSCustomPyGPT
     from huey.pygpt_custom_cli import CustomPyGPT as HueyCustomPyGPT
-    from hueyos.pygpt_custom_cli import CustomPyGPT as HueyOSCustomPyGPT
 
     assert HueyCustomPyGPT is MaintainedCustomPyGPT
     assert HueyOSCustomPyGPT is MaintainedCustomPyGPT

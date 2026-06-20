@@ -9,7 +9,7 @@ import pytest
 
 pytest.importorskip("requests")
 
-from hueyos.services.home_assistant import call_service, get_state
+from huey.os.services.home_assistant import call_service, get_state
 
 
 class DummyResp:

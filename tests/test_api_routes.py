@@ -24,16 +24,16 @@ if not hasattr(fastapi, "Request"):
 
     fastapi.Request = _Request
 
-# Migration shim: ``huey.memory.PY.api`` still imports ``hueyos.core.*`` paths
+# Migration shim: ``huey.memory.PY.api`` still imports ``huey.os.core.*`` paths
 # while implementations live under ``huey.core.*`` during v101.1 stabilization.
 import sys
 import types
 
 sys.modules.setdefault(
-    "hueyos.core.resilience", importlib.import_module("huey.core.resilience")
+    "huey.os.core.resilience", importlib.import_module("huey.core.resilience")
 )
 sys.modules.setdefault(
-    "hueyos.core.task_scheduler", importlib.import_module("huey.core.task_scheduler")
+    "huey.os.core.task_scheduler", importlib.import_module("huey.core.task_scheduler")
 )
 
 api_module = importlib.import_module("huey.api")
@@ -288,7 +288,7 @@ async def test_system_status_endpoint_reports_expected_fields(monkeypatch, tmp_p
 
 @pytest.mark.asyncio
 async def test_resilience_endpoints_support_manual_override(monkeypatch):
-    from hueyos.core.resilience import CrashRecoveryManager
+    from huey.os.core.resilience import CrashRecoveryManager
 
     manager = CrashRecoveryManager()
     monkeypatch.setattr(api_module, "CRASH_MANAGER", manager, raising=False)
@@ -332,7 +332,7 @@ async def test_resilience_endpoints_support_manual_override(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_emergency_endpoints_require_quorum(monkeypatch):
-    from hueyos.core.resilience import EmergencyGovernanceController
+    from huey.os.core.resilience import EmergencyGovernanceController
 
     controller = EmergencyGovernanceController()
     controller.register_service("mock", stop=lambda: None, start=lambda: None)
@@ -360,12 +360,12 @@ async def test_emergency_endpoints_require_quorum(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
-    from hueyos.hardware import drivers
-    from hueyos.hardware.manager import SensorManager
-    from hueyos.hardware.plugins import SensorRegistry
-    from hueyos.honeycomb.storage import HoneycombStorage
-    from hueyos.network.manager import NetworkStatus
-    from hueyos.power.management import PowerEvent
+    from huey.os.hardware import drivers
+    from huey.os.hardware.manager import SensorManager
+    from huey.os.hardware.plugins import SensorRegistry
+    from huey.os.honeycomb.storage import HoneycombStorage
+    from huey.os.network.manager import NetworkStatus
+    from huey.os.power.management import PowerEvent
 
     monkeypatch.setenv("HUEY_API_TOKEN", "test-token")
     auth_headers = {"Authorization": "Bearer test-token"}
@@ -686,7 +686,7 @@ async def test_sensor_streaming_and_invalid_registration(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_telemetry_ai_recent_redacts_sensitive_fields(monkeypatch):
-    from hueyos.utils.persistence import AIInteraction
+    from huey.os.utils.persistence import AIInteraction
 
     monkeypatch.setattr(
         api_module.TELEMETRY_STORE,
@@ -720,7 +720,7 @@ async def test_telemetry_ai_recent_redacts_sensitive_fields(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_dashboard_redacts_ai_prompts_and_responses(monkeypatch):
-    from hueyos.utils.persistence import AIInteraction
+    from huey.os.utils.persistence import AIInteraction
 
     observed = {}
 

@@ -1,6 +1,6 @@
 """Canonical Honeycomb package for HueyOS.
 
-This package provides the maintained ``hueyos.honeycomb`` import path while
+This package provides the maintained ``huey.os.honeycomb`` import path while
 legacy ``huey.honeycomb`` modules remain compatibility shims.
 """
 

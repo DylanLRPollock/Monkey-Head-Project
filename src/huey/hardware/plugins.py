@@ -194,9 +194,13 @@ class SensorRegistry:
             return
         groups = getattr(entry_points, "select", None)
         if callable(groups):
-            sensors = groups(group="hueyos.sensors")
+            sensors = list(groups(group="huey.os.sensors"))
+            if not sensors:
+                sensors = list(groups(group="hueyos.sensors"))
         else:  # pragma: no cover - importlib_metadata < 3.10 compatibility
-            sensors = entry_points.get("hueyos.sensors", [])  # type: ignore[assignment]
+            sensors = entry_points.get("huey.os.sensors", [])  # type: ignore[assignment]
+            if not sensors:
+                sensors = entry_points.get("hueyos.sensors", [])  # type: ignore[assignment]
         for entry_point in sensors:
             try:
                 plugin_cls = entry_point.load()

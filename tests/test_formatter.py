@@ -13,7 +13,7 @@
 # ==================================================
 import unittest
 
-from hueyos.formatter import format_text
+from huey.os.formatter import format_text
 
 
 class TestFormatter(unittest.TestCase):

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from hueyos.runtime.queue import (
+from huey.os.runtime.queue import (
     claim_fixture,
     list_pending_fixtures,
     mark_failed,

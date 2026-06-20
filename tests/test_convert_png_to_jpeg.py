@@ -15,7 +15,7 @@ import pytest
 
 Image = pytest.importorskip("PIL.Image")
 
-from hueyos.convert_png_to_jpeg import convert_png_to_jpeg
+from huey.os.convert_png_to_jpeg import convert_png_to_jpeg
 
 
 def test_convert_png_to_jpeg(tmp_path):

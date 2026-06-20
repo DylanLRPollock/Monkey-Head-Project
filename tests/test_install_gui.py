@@ -1,6 +1,6 @@
 import pytest
 
-from hueyos.install_gui import validate_license_acceptance
+from huey.os.install_gui import validate_license_acceptance
 
 
 def test_validate_license_acceptance_requires_opt_in():

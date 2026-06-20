@@ -229,4 +229,5 @@ extend-ignore = [
 max-line-length = 88
 exclude = [
   "src/huey/connectors/pyhuey",
+  "src\\huey\\connectors\\pyhuey",
 ]

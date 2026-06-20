@@ -1,7 +1,7 @@
 # Monkey Head Project
 # By: Dylan L.R. Pollock
 # www.dlrp.ca
-# HueyOS: Honeycomb Storage module (src/hueyos)
+# HueyOS: Honeycomb Storage module (src/huey/os)
 
 """File-backed honeycomb storage for structured agent memory."""
 

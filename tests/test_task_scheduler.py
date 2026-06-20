@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test Task Scheduler module (tests)
 
-"""Tests for the :mod:`hueyos.core.task_scheduler` module."""
+"""Tests for the :mod:`huey.os.core.task_scheduler` module."""
 
 from __future__ import annotations
 

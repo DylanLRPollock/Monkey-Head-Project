@@ -6,7 +6,7 @@
 import json
 from datetime import datetime
 
-from hueyos.license_gui import accept_license
+from huey.os.license_gui import accept_license
 
 
 def test_accept_license_updates_config(tmp_path):

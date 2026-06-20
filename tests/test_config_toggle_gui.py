@@ -5,7 +5,7 @@
 
 import json
 
-from hueyos.config_toggle_gui import update_toggle_settings
+from huey.os.config_toggle_gui import update_toggle_settings
 
 
 def test_update_toggle_settings(tmp_path):

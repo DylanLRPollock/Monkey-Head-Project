@@ -63,7 +63,10 @@ def _compile_rules() -> tuple[Rule, ...]:
         ),
         Rule(
             "huey-body-v1-runtime",
-            re.compile(r"\\bHuey Body\\b.*\\b(V1|runtime|compute|cognition|node)\\b|\\b(V1|runtime|compute|cognition|node)\\b.*\\bHuey Body\\b", re.IGNORECASE),
+            re.compile(
+                r"\\bHuey Body\\b.*\\b(V1|runtime|compute|cognition|node)\\b|\\b(V1|runtime|compute|cognition|node)\\b.*\\bHuey Body\\b",
+                re.IGNORECASE,
+            ),
             "Do not present Huey Body as V1 compute/cognition/runtime node.",
         ),
         Rule(

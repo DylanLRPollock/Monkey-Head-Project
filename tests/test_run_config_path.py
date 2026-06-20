@@ -18,9 +18,9 @@ def test_run_sets_config_env(monkeypatch, tmp_path):
     )
     monkeypatch.setattr("run.launch_gui", lambda: None)
     monkeypatch.setattr("run._load_cli", lambda: lambda: None)
-    monkeypatch.setattr("hueyos.core.system_checks.check_os_support", lambda: None)
+    monkeypatch.setattr("huey.os.core.system_checks.check_os_support", lambda: None)
     monkeypatch.setattr(
-        "hueyos.core.system_checks.check_python_version",
+        "huey.os.core.system_checks.check_python_version",
         lambda: None,
     )
     monkeypatch.setattr(

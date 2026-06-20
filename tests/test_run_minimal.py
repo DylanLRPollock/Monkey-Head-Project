@@ -5,7 +5,7 @@
 
 import os
 
-from hueyos.pygpt_custom_cli import CustomPyGPT
+from huey.os.pygpt_custom_cli import CustomPyGPT
 from run import minimal_run
 
 

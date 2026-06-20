@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from hueyos.utils.auto_sort import auto_sort_memory
+from huey.os.utils.auto_sort import auto_sort_memory
 
 
 def _prepare_raw(memory_root: Path) -> Path:

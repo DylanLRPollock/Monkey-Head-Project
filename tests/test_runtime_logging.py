@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from hueyos.runtime.logging import append_jsonl_record, validate_run_record
+from huey.os.runtime.logging import append_jsonl_record, validate_run_record
 
 
 def _valid_record() -> dict:

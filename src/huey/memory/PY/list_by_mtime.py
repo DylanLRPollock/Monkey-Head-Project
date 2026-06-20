@@ -11,7 +11,7 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.11.2025
 # ==================================================
-"""Backward-compatible wrapper for :mod:`hueyos.utils.sorting`."""
+"""Backward-compatible wrapper for :mod:`huey.os.utils.sorting`."""
 
 from __future__ import annotations
 

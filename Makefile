@@ -9,9 +9,9 @@ PIP ?= $(PYTHON) -m pip
 HOST ?= 0.0.0.0
 PORT ?= 1995
 APP ?= huey.api:app
-PKG_COV ?= --cov=huey --cov=hueyos
+PKG_COV ?= --cov=huey
 
-.PHONY: help setup install install-dev precommit-install format lint check-drift check-canon check-deps-sync test coverage run run-reload health
+.PHONY: help setup install install-dev precommit-install format lint check-drift check-legacy-hueyos check-canon check-deps-sync test coverage run run-reload health
 
 help:
 	@echo "Common targets:"
@@ -22,9 +22,10 @@ help:
 	@echo "  make format           - run black + isort"
 	@echo "  make lint             - run drift checks + black/isort/ruff/flake8"
 	@echo "  make check-drift      - run repository drift checker"
+	@echo "  make check-legacy-hueyos - block new legacy hueyos imports"
 	@echo "  make check-deps-sync  - check pyproject/requirements/constraints sync"
 	@echo "  make test             - run pytest"
-	@echo "  make coverage         - run pytest with coverage for huey + hueyos"
+	@echo "  make coverage         - run pytest with coverage for huey"
 	@echo "  make run              - run FastAPI app via uvicorn"
 	@echo "  make run-reload       - run FastAPI app with reload for development"
 	@echo "  make health           - hit /healthz on the configured HOST/PORT"
@@ -42,19 +43,23 @@ precommit-install:
 	pre-commit install
 
 format:
-	black src tests conftest.py
-	isort src tests conftest.py
+	black src tests scripts conftest.py
+	isort src tests scripts conftest.py
 
 lint:
 	$(PYTHON) scripts/check_stale_platform_strings.py
 	$(PYTHON) scripts/check_repo_drift.py
-	black --check src tests conftest.py
-	isort --check-only src tests conftest.py
-	ruff check src tests conftest.py
-	flake8 src tests conftest.py
+	$(PYTHON) scripts/check_legacy_hueyos_imports.py
+	black --check src tests scripts conftest.py
+	isort --check-only src tests scripts conftest.py
+	ruff check src tests scripts conftest.py
+	flake8 --exclude=src/huey/connectors/pyhuey src tests scripts conftest.py
 
 check-drift:
 	$(PYTHON) scripts/check_repo_drift.py
+
+check-legacy-hueyos:
+	$(PYTHON) scripts/check_legacy_hueyos_imports.py
 
 check-canon:
 	$(PYTHON) scripts/check_canon_terms.py

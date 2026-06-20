@@ -1,7 +1,7 @@
 # Monkey Head Project
 # By: Dylan L.R. Pollock
 # www.dlrp.ca
-# HueyOS: Honeycomb Monitor module (src/hueyos)
+# HueyOS: Honeycomb Monitor module (src/huey/os)
 
 """Monitoring helpers for analysing honeycomb memory utilisation."""
 

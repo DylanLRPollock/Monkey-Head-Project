@@ -5,7 +5,7 @@
 
 from pathlib import Path
 
-from hueyos.scripts.failover import (
+from huey.os.scripts.failover import (
     build_failover_plan,
     execute_plan,
     simulate_hot_swap,
@@ -45,6 +45,6 @@ def test_simulate_hot_swap_runs_verification(monkeypatch):
     def runner(cmd):
         called.append(cmd)
 
-    monkeypatch.setattr("hueyos.scripts.failover.time.sleep", lambda _: None)
+    monkeypatch.setattr("huey.os.scripts.failover.time.sleep", lambda _: None)
     simulate_hot_swap(plan, runner=runner)
     assert called

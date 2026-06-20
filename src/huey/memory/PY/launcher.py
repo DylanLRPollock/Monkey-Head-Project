@@ -17,7 +17,7 @@ import repair
 import uninstaller
 
 import run
-from hueyos.core.system_checks import system_check
+from huey.os.core.system_checks import system_check
 
 
 def main(argv: list[str] | None = None) -> None:

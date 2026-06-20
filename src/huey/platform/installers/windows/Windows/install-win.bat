@@ -179,7 +179,7 @@ REM Preload data (optional; logic parallels install.sh preload_data)
 REM ----------------------------
 if "%PRELOAD_DATA%"=="1" (
     echo [INFO] Preloading bundled data (best-effort)...
-    "%VENV_PY%" -m hueyos.scripts.preload_data --summary
+    "%VENV_PY%" -m huey.os.scripts.preload_data --summary
     REM do not fail install if preload fails
 )
 

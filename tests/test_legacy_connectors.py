@@ -7,7 +7,7 @@ import asyncio
 
 import pytest
 
-from hueyos.legacy.connectors import (
+from huey.os.legacy.connectors import (
     EmulatedLegacyConnector,
     LegacyConnectorFactory,
     SerialLegacyConnector,
@@ -33,7 +33,7 @@ async def test_emulated_connector_buffers_messages():
 
 @pytest.mark.asyncio
 async def test_serial_connector_requires_pyserial(monkeypatch):
-    monkeypatch.setattr("hueyos.legacy.connectors.serial", None)
+    monkeypatch.setattr("huey.os.legacy.connectors.serial", None)
     connector = SerialLegacyConnector(port="/dev/ttyUSB0")
     with pytest.raises(RuntimeError):
         await connector.connect()

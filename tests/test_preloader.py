@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test Preloader module (tests)
 
-from hueyos.scripts.preload_data import preload_all
+from huey.os.scripts.preload_data import preload_all
 
 
 def test_preload_all():

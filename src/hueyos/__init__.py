@@ -1,4 +1,10 @@
-"""Compatibility namespace exposing :mod:`huey.os` as :mod:`hueyos`."""
+"""Compatibility namespace exposing :mod:`huey.os` as :mod:`hueyos`.
+
+Canonical HueyOS implementation now lives under ``huey.os``. This shim keeps
+legacy ``hueyos`` imports working during the migration window.
+
+New code should import from ``huey.os`` directly.
+"""
 
 from __future__ import annotations
 

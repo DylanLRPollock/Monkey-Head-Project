@@ -1,7 +1,7 @@
 # Monkey Head Project
 # By: Dylan L.R. Pollock
 # www.dlrp.ca
-# HueyOS: Network module (src/hueyos)
+# HueyOS: Network module (src/huey/os)
 
 """Network management helpers bridging to :mod:`huey.network.manager`."""
 

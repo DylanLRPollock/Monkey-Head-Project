@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Repackage files or directories into a new archive."""
+
 from __future__ import annotations
 
 import argparse
@@ -32,7 +33,9 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def create_archive(inputs: list[Path], output: Path, archive_format: str | None) -> None:
+def create_archive(
+    inputs: list[Path], output: Path, archive_format: str | None
+) -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
 
     if archive_format is None:

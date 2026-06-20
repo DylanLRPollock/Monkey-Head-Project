@@ -1,8 +1,8 @@
 """HueyOS API package.
 
 Keep this package initializer lightweight so importing router modules such as
-``hueyos.api.routers.system`` does not eagerly import the full legacy API app.
-The concrete ASGI app remains available from ``hueyos.api.app``.
+``huey.os.api.routers.system`` does not eagerly import the full legacy API app.
+The concrete ASGI app remains available from ``huey.os.api.app``.
 """
 
 from __future__ import annotations

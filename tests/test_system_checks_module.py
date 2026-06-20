@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test System Checks Module module (tests)
 
-"""Unit tests for :mod:`hueyos.system_checks`."""
+"""Unit tests for :mod:`huey.os.system_checks`."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from hueyos import system_checks
+from huey.os import system_checks
 
 
 def test_check_os_support_warns_for_legacy_windows(monkeypatch, caplog):

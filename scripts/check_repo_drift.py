@@ -25,6 +25,7 @@ STRICT_CURRENT_FACING_PREFIXES: tuple[str, ...] = (
     "docs/",
     ".github/",
     "infra/",
+    "src/huey/connectors/",
     "src/huey/platform/",
     "scripts/",
     "Makefile",
@@ -98,7 +99,9 @@ def resolve_base_ref(explicit_base: str | None) -> str:
     try:
         return run_git("rev-parse", "HEAD~1")
     except subprocess.CalledProcessError as exc:
-        raise RuntimeError("Unable to determine a diff base. Pass --base explicitly.") from exc
+        raise RuntimeError(
+            "Unable to determine a diff base. Pass --base explicitly."
+        ) from exc
 
 
 def iter_added_lines(base_ref: str) -> Iterable[tuple[str, str, int]]:
@@ -156,7 +159,7 @@ def main() -> int:
             DriftRule(
                 name="integrations-pygpt-path",
                 pattern=re.compile(r"\bintegrations/pygpt\b"),
-                message="Use src/huey/connectors/pyhuey as the canonical integration path.",
+                message="Use src/huey/connectors/pyhuey as the canonical connector path.",
             )
         )
 

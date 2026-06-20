@@ -1,4 +1,4 @@
-"""Maintained ``hueyos.api`` app entrypoint with legacy compatibility.
+"""Maintained ``huey.os.api`` app entrypoint with legacy compatibility.
 
 This module intentionally re-exports the existing FastAPI application from the
 legacy implementation surface while the API is being split into smaller modules.

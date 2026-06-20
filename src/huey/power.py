@@ -1,7 +1,7 @@
 # Monkey Head Project
 # By: Dylan L.R. Pollock
 # www.dlrp.ca
-# HueyOS: Power module (src/hueyos)
+# HueyOS: Power module (src/huey/os)
 
 """Power management helpers bridging to :mod:`huey.power.management`."""
 

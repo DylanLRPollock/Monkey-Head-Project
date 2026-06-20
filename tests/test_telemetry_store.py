@@ -30,7 +30,7 @@ except ModuleNotFoundError:  # pragma: no cover - fallback for isolated test run
         provenance: Optional[Dict[str, Any]] = None
 
 
-from hueyos.utils.persistence import TelemetryStore
+from huey.os.utils.persistence import TelemetryStore
 
 
 def test_telemetry_store_sensor_and_ai(tmp_path):

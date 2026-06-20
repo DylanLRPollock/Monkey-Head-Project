@@ -17,7 +17,7 @@ from importlib import import_module
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Sequence
 
-from hueyos.cli.main import build_parser
+from huey.os.cli.main import build_parser
 
 __all__ = ["main"]
 
@@ -27,8 +27,8 @@ def _build_parser() -> argparse.ArgumentParser:
 
 
 def _cmd_init(args: argparse.Namespace) -> int:
-    from hueyos.utils.auto_sort import get_extension_map
-    from hueyos.utils.paths import ensure_subdirectory, get_memory_path
+    from huey.os.utils.auto_sort import get_extension_map
+    from huey.os.utils.paths import ensure_subdirectory, get_memory_path
 
     memory_path = get_memory_path(create=True)
     created: List[str] = []
@@ -50,7 +50,7 @@ def _cmd_init(args: argparse.Namespace) -> int:
             print(f"  - {item}")
 
     if args.run_checks:
-        from hueyos.system_checks import system_check
+        from huey.os.system_checks import system_check
 
         results = system_check()
         print("System check results:")
@@ -74,7 +74,7 @@ def _normalise_profiles(profiles: Iterable[str]) -> List[str]:
 
 def _cmd_run(args: argparse.Namespace) -> int:
     runtime = None
-    attempted = ("run", "hueyos.run", "huey.memory.PY.run")
+    attempted = ("run", "huey.os.run", "huey.memory.PY.run")
     for module_name in attempted:
         try:
             runtime = import_module(module_name)
@@ -84,7 +84,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
             break
     if runtime is None:
         raise RuntimeError(
-            "Unable to locate runtime module (tried run, hueyos.run, "
+            "Unable to locate runtime module (tried run, huey.os.run, "
             "huey.memory.PY.run)."
         )
 
@@ -105,7 +105,7 @@ def _cmd_run(args: argparse.Namespace) -> int:
         os.environ["HUEY_PROFILES"] = ",".join(profiles)
 
     if not args.skip_checks:
-        from hueyos.core.system_checks import (
+        from huey.os.core.system_checks import (
             check_os_support,
             check_python_version,
         )
@@ -244,7 +244,7 @@ def _cmd_deploy(args: argparse.Namespace) -> int:
 
 def _cmd_agent_status(args: argparse.Namespace) -> int:
     from huey.api import SCHEDULER
-    from hueyos.core.task_scheduler import Agent, TaskStatus
+    from huey.os.core.task_scheduler import Agent, TaskStatus
 
     records = SCHEDULER.list_tasks()
     status_counts: Dict[str, int] = {status.value: 0 for status in TaskStatus}
@@ -302,7 +302,7 @@ def _cmd_agent_status(args: argparse.Namespace) -> int:
 
 
 def _cmd_memory_sort(args: argparse.Namespace) -> int:
-    from hueyos.utils.auto_sort import auto_sort_memory
+    from huey.os.utils.auto_sort import auto_sort_memory
 
     try:
         summary = auto_sort_memory(
@@ -326,7 +326,7 @@ def _cmd_memory_sort(args: argparse.Namespace) -> int:
 
 
 def _cmd_v1_run(args: argparse.Namespace) -> int:
-    from hueyos.runtime.v1_loop import run_v1_loop
+    from huey.os.runtime.v1_loop import run_v1_loop
 
     if not args.mock:
         raise RuntimeError(
@@ -377,7 +377,7 @@ def _cmd_v1_run(args: argparse.Namespace) -> int:
 
 
 def _cmd_v1_run_queue(args: argparse.Namespace) -> int:
-    from hueyos.runtime.v1_loop import run_v1_loop
+    from huey.os.runtime.v1_loop import run_v1_loop
 
     if not args.mock:
         raise RuntimeError(

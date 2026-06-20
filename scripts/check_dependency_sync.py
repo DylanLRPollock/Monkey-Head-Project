@@ -26,7 +26,9 @@ def parse_requirement_line(line: str) -> Requirement | None:
     stripped = line.strip()
     if not stripped or stripped.startswith("#"):
         return None
-    if stripped.startswith(("-r", "--requirement", "-c", "--constraint", "-e", "--editable")):
+    if stripped.startswith(
+        ("-r", "--requirement", "-c", "--constraint", "-e", "--editable")
+    ):
         return None
     try:
         return Requirement(stripped)

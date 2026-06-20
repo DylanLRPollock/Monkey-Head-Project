@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from hueyos.runtime.v1_loop import run_v1_loop
+from huey.os.runtime.v1_loop import run_v1_loop
 
 REQUIRED_FIELDS = {
     "run_id",

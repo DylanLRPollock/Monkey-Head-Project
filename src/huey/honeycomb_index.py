@@ -1,7 +1,7 @@
 # Monkey Head Project
 # By: Dylan L.R. Pollock
 # www.dlrp.ca
-# HueyOS: Honeycomb Index module (src/hueyos)
+# HueyOS: Honeycomb Index module (src/huey/os)
 
 """Content-aware indexing helpers for :class:`HoneycombStorage`."""
 

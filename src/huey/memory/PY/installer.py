@@ -18,9 +18,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from hueyos.core.system_checks import ensure_admin
-from hueyos.license_cli import show_license_cli
-from hueyos.license_gui import show_license_gui
+from huey.os.core.system_checks import ensure_admin
+from huey.os.license_cli import show_license_cli
+from huey.os.license_gui import show_license_gui
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = Path(__file__).resolve().parents[4]

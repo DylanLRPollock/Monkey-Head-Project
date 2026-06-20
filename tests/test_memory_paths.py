@@ -4,7 +4,7 @@
 # HueyOS: Test Memory Paths module (tests)
 
 
-from hueyos.utils.paths import (
+from huey.os.utils.paths import (
     ensure_subdirectory,
     get_memory_path,
     memory_candidates,

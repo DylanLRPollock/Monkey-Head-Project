@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Decompress audio files to FLAC using ffmpeg."""
+
 from __future__ import annotations
 
 import argparse

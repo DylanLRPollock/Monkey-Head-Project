@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Convert AVI files to MKV using ffmpeg."""
+
 from __future__ import annotations
 
 import argparse
@@ -8,7 +9,9 @@ from pathlib import Path
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Convert AVI files to MKV using ffmpeg.")
+    parser = argparse.ArgumentParser(
+        description="Convert AVI files to MKV using ffmpeg."
+    )
     parser.add_argument(
         "inputs",
         nargs="+",

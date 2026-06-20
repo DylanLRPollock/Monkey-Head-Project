@@ -7,7 +7,7 @@ import logging
 
 import pytest
 
-from hueyos.logging_setup import configure_logging
+from huey.os.logging_setup import configure_logging
 
 
 def test_configure_logging_creates_log(tmp_path):
@@ -60,10 +60,10 @@ def test_critical_error_triggers_gui(monkeypatch, tmp_path):
         root_logger.removeHandler(h)
 
     dummy_tk = DummyTkModule()
-    monkeypatch.setattr("hueyos.logging_setup.tk", dummy_tk)
+    monkeypatch.setattr("huey.os.logging_setup.tk", dummy_tk)
     calls = []
     monkeypatch.setattr(
-        "hueyos.logging_setup.messagebox.showerror",
+        "huey.os.logging_setup.messagebox.showerror",
         lambda title, message: calls.append((title, message)),
     )
 
@@ -100,7 +100,7 @@ def test_default_config_uses_memory(monkeypatch, tmp_path):
     monkeypatch.delenv("MONKEY_HEAD_CONFIG", raising=False)
     logger = configure_logging()
     logger.info("hello")
-    log_file = tmp_path / "memory" / "LOGS" / "hueyos.log"
+    log_file = tmp_path / "memory" / "LOGS" / "huey.os.log"
     assert log_file.exists()
 
 

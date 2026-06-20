@@ -14,7 +14,7 @@ except ImportError:  # pragma: no cover - can't import GUI libs
     tk = None  # type: ignore[assignment]
     messagebox = None  # type: ignore[assignment]
 
-from hueyos.config_manager import ConfigManager
+from huey.os.config_manager import ConfigManager
 
 __all__ = ["CriticalErrorHandler", "configure_logging"]
 
@@ -77,7 +77,7 @@ def _load_logging_settings(config_path: Optional[str]) -> dict[str, object]:
         "logging",
         {
             "log_level": "INFO",
-            "log_file": "LOGS/hueyos.log",
+            "log_file": "LOGS/huey.os.log",
             "log_max_bytes": 10_485_760,
             "log_backup_count": 5,
         },
@@ -91,7 +91,7 @@ def configure_logging(config_path: Optional[str] = None) -> logging.Logger:
     default_logs_dir = get_logs_dir()
 
     log_level = str(logging_cfg.get("log_level", "INFO")).upper()
-    log_file_value = logging_cfg.get("log_file", "LOGS/hueyos.log")
+    log_file_value = logging_cfg.get("log_file", "LOGS/huey.os.log")
     max_bytes = _parse_int(logging_cfg.get("log_max_bytes", 10_485_760), 10_485_760)
     backup_count = _parse_int(logging_cfg.get("log_backup_count", 5), 5)
 

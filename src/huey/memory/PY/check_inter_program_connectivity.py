@@ -26,7 +26,7 @@ except ImportError:  # pragma: no cover - direct script execution
 def check_inter_program_connectivity() -> bool:
     """Return ``True`` if required packages can be imported."""
     try:
-        importlib.import_module("hueyos")
+        importlib.import_module("huey.os")
     except Exception:
         return False
 

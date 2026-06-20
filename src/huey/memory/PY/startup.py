@@ -13,7 +13,7 @@ import os
 import sys
 
 import run
-from hueyos.core.system_checks import (
+from huey.os.core.system_checks import (
     check_os_support,
     check_python_version,
     system_check,

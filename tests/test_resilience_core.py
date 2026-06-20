@@ -7,7 +7,7 @@ import logging
 
 import pytest
 
-from hueyos.core.resilience import (
+from huey.os.core.resilience import (
     CrashRecoveryManager,
     EmergencyGovernanceController,
     EmergencyServiceStatus,

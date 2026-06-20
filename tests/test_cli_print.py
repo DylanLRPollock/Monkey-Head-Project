@@ -5,7 +5,7 @@
 
 import pytest
 
-from hueyos.cli_print import print_message
+from huey.os.cli_print import print_message
 
 
 def test_print_message_outputs(capsys):

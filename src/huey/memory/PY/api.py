@@ -103,29 +103,29 @@ except ModuleNotFoundError:  # pragma: no cover - compatibility shim
 from huey.honeycomb.index import HoneycombIndex
 from huey.honeycomb.monitor import HoneycombMonitor
 from huey.honeycomb.storage import HoneycombStorage
-from hueyos.core.resilience import (
+from huey.os.core.resilience import (
     CrashRecoveryManager,
     EmergencyGovernanceController,
 )
-from hueyos.core.task_scheduler import (
+from huey.os.core.task_scheduler import (
     ResourceProfile,
     TaskPriority,
     TaskScheduler,
     TaskStatus,
 )
-from hueyos.hardware import create_default_sensor_manager
-from hueyos.hardware.plugins import (
+from huey.os.hardware import create_default_sensor_manager
+from huey.os.hardware.plugins import (
     SensorReading,
     list_sensor_plugin_metadata,
     list_sensor_plugins,
 )
-from hueyos.network import NetworkManager
-from hueyos.pdf_utils import find_pdf, list_available_pdfs
-from hueyos.power import BatteryMonitor
-from hueyos.system_checks import system_check
-from hueyos.utils.auto_sort import auto_sort_memory
-from hueyos.utils.paths import get_memory_path
-from hueyos.utils.persistence import AIInteraction, SensorTelemetry, TelemetryStore
+from huey.os.network import NetworkManager
+from huey.os.pdf_utils import find_pdf, list_available_pdfs
+from huey.os.power import BatteryMonitor
+from huey.os.system_checks import system_check
+from huey.os.utils.auto_sort import auto_sort_memory
+from huey.os.utils.paths import get_memory_path
+from huey.os.utils.persistence import AIInteraction, SensorTelemetry, TelemetryStore
 
 __all__ = [
     "AI_PROCESSOR",
@@ -1154,22 +1154,22 @@ def _register_battery_hooks() -> None:
 _register_battery_hooks()
 
 
-from hueyos.api.routers.network import router as network_router
-from hueyos.api.routers.power import router as power_router
-from hueyos.api.routers.sensors import router as sensors_router
-from hueyos.api.routers.system import healthz
-from hueyos.api.routers.system import router as system_router
-from hueyos.api.routers.system import system_status
-from hueyos.api.routers.tasks import (
+from huey.os.api.routers.network import router as network_router
+from huey.os.api.routers.power import router as power_router
+from huey.os.api.routers.sensors import router as sensors_router
+from huey.os.api.routers.system import healthz
+from huey.os.api.routers.system import router as system_router
+from huey.os.api.routers.system import system_status
+from huey.os.api.routers.tasks import (
     cancel_task,
     get_task,
     list_tasks_endpoint,
 )
-from hueyos.api.routers.tasks import router as tasks_router
-from hueyos.api.routers.tasks import (
+from huey.os.api.routers.tasks import router as tasks_router
+from huey.os.api.routers.tasks import (
     submit_task,
 )
-from hueyos.services.tasks import (
+from huey.os.services.tasks import (
     ResourceProfileModel,
     ResourceSnapshotModel,
     TaskHistoryEntry,

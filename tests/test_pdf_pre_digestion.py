@@ -19,7 +19,7 @@ from pathlib import Path
 import pytest
 
 pytest.importorskip("fitz")
-from hueyos.pdf_pre_digestion import pdf_pre_digestion
+from huey.os.pdf_pre_digestion import pdf_pre_digestion
 
 
 def test_pdf_pre_digestion(tmp_path):

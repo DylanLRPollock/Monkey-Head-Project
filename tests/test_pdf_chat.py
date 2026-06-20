@@ -18,7 +18,7 @@ import pytest
 
 pytest.importorskip("pypdf")
 
-pdf_chat = importlib.import_module("hueyos.pdf_chat")
+pdf_chat = importlib.import_module("huey.os.pdf_chat")
 
 
 def test_load_pdf_pages():
