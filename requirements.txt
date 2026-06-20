@@ -112,7 +112,7 @@ sentencepiece==0.2.1
 sortedcontainers==2.4.0
 standard-aifc==3.13.0; python_version >= '3.13' and python_version < '3.14'
 tiktoken==0.12.0
-torch==2.12.0; sys_platform != 'win32'
+torch==2.12.1; sys_platform != 'win32'
 torchaudio==2.11.0; sys_platform != 'win32'
 torchvision==0.26.0; sys_platform != 'win32'
 traitlets==5.15.0
