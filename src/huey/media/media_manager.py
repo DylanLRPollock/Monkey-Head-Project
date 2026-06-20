@@ -1,393 +1,563 @@
-"""Central FFmpeg wrapper used by audio, video, and ingestion pipelines."""
+"""Safe FFmpeg/ffprobe helpers for HueyOS media preprocessing."""
 
 from __future__ import annotations
 
 import json
-import re
+import shutil
 import subprocess
+from dataclasses import dataclass
 from pathlib import Path
-
-from huey.media.ffmpeg_validator import validate_media_environment
-
-SilenceRange = dict[str, float]
+from typing import Any
 
 
-def _coerce_path(value: str | Path) -> Path:
-    return Path(value).expanduser().resolve()
+@dataclass(frozen=True)
+class MediaProbeResult:
+    """Structured ffprobe metadata for a media file."""
+
+    path: Path
+    format_name: str | None
+    duration_seconds: float | None
+    bit_rate: int | None
+    size_bytes: int | None
+    streams: list[dict[str, Any]]
+    raw: dict[str, Any]
 
 
-def _ensure_source(value: str | Path) -> Path:
-    path = _coerce_path(value)
-    if not path.is_file():
-        raise FileNotFoundError(path)
-    return path
+@dataclass(frozen=True)
+class FFmpegCommandResult:
+    """Result from an FFmpeg or ffprobe subprocess invocation."""
+
+    command: list[str]
+    returncode: int
+    stdout: str
+    stderr: str
+
+    @property
+    def ok(self) -> bool:
+        """Return True when the subprocess exited cleanly."""
+        return self.returncode == 0
 
 
-def _prepare_output(value: str | Path) -> Path:
-    path = _coerce_path(value)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    return path
+@dataclass(frozen=True)
+class AudioTransformOptions:
+    """Options for safe audio preprocessing and conversion."""
+
+    sample_rate: int | None = None
+    channels: int | None = None
+    normalize: bool = False
+    loudnorm: bool = False
+    remove_silence: bool = False
+    start_seconds: float | None = None
+    duration_seconds: float | None = None
+    output_format: str | None = None
 
 
-def _run_process(command: list[str]) -> subprocess.CompletedProcess[str]:
-    result = subprocess.run(command, check=False, capture_output=True, text=True)
-    if result.returncode != 0:
-        raise RuntimeError(result.stderr.strip() or result.stdout.strip())
-    return result
+class FFmpegMediaManager:
+    """Safe, subprocess-based wrapper around FFmpeg and ffprobe."""
 
+    def __init__(
+        self,
+        ffmpeg_path: str | Path | None = None,
+        ffprobe_path: str | Path | None = None,
+        timeout_seconds: float = 120.0,
+    ) -> None:
+        self.ffmpeg_path = self._resolve_binary(ffmpeg_path, "ffmpeg")
+        self.ffprobe_path = self._resolve_binary(ffprobe_path, "ffprobe")
+        self.timeout_seconds = timeout_seconds
 
-def _run_ffmpeg(arguments: list[str]) -> subprocess.CompletedProcess[str]:
-    environment = validate_media_environment()
-    if not environment["ffmpeg"]:
-        raise RuntimeError("ffmpeg is not available on PATH")
-    return _run_process(["ffmpeg", "-hide_banner", "-y", *arguments])
+    @staticmethod
+    def _resolve_binary(explicit_path: str | Path | None, binary_name: str) -> Path | None:
+        if explicit_path is not None:
+            return Path(explicit_path)
 
+        resolved = shutil.which(binary_name)
+        if resolved is None:
+            return None
 
-def _run_ffprobe(arguments: list[str]) -> subprocess.CompletedProcess[str]:
-    environment = validate_media_environment()
-    if not environment["ffprobe"]:
-        raise RuntimeError("ffprobe is not available on PATH")
-    return _run_process(["ffprobe", "-v", "error", *arguments])
+        return Path(resolved)
 
+    @staticmethod
+    def _stringify_output(value: str | bytes | None) -> str:
+        if value is None:
+            return ""
+        if isinstance(value, bytes):
+            return value.decode(errors="replace")
+        return value
 
-def probe_media(path: str | Path) -> dict[str, object]:
-    """Return stream and format metadata for a media file."""
+    @staticmethod
+    def _parse_float(value: object) -> float | None:
+        if value in (None, ""):
+            return None
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
 
-    source = _ensure_source(path)
-    result = _run_ffprobe(
-        [
-            "-print_format",
-            "json",
+    @staticmethod
+    def _parse_int(value: object) -> int | None:
+        if value in (None, ""):
+            return None
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
+    @staticmethod
+    def _validate_existing_input(path: str | Path) -> Path:
+        input_path = Path(path)
+        if not input_path.exists():
+            raise FileNotFoundError(f"Media input does not exist: {input_path}")
+        return input_path
+
+    @staticmethod
+    def _validate_output_available(path: str | Path, overwrite: bool) -> Path:
+        output_path = Path(path)
+        if output_path.exists() and not overwrite:
+            raise FileExistsError(
+                f"Output already exists: {output_path}. Pass overwrite=True to replace it."
+            )
+        return output_path
+
+    @staticmethod
+    def _overwrite_arg(overwrite: bool) -> str:
+        return "-y" if overwrite else "-n"
+
+    def ffmpeg_available(self) -> bool:
+        """Return True if an FFmpeg binary path is configured."""
+        return self.ffmpeg_path is not None
+
+    def ffprobe_available(self) -> bool:
+        """Return True if an ffprobe binary path is configured."""
+        return self.ffprobe_path is not None
+
+    def require_ffmpeg(self) -> Path:
+        """Return the FFmpeg path or raise with a clear installation hint."""
+        if self.ffmpeg_path is None:
+            raise RuntimeError(
+                "FFmpeg is not available. Install FFmpeg and ensure 'ffmpeg' is on "
+                "PATH, or pass ffmpeg_path explicitly."
+            )
+        return self.ffmpeg_path
+
+    def require_ffprobe(self) -> Path:
+        """Return the ffprobe path or raise with a clear installation hint."""
+        if self.ffprobe_path is None:
+            raise RuntimeError(
+                "ffprobe is not available. Install FFmpeg and ensure 'ffprobe' is on "
+                "PATH, or pass ffprobe_path explicitly."
+            )
+        return self.ffprobe_path
+
+    def version(self) -> dict[str, str | None]:
+        """Return the first version line for FFmpeg and ffprobe when available."""
+        return {
+            "ffmpeg": self._read_version(self.ffmpeg_path),
+            "ffprobe": self._read_version(self.ffprobe_path),
+        }
+
+    def _read_version(self, binary_path: Path | None) -> str | None:
+        if binary_path is None:
+            return None
+
+        result = self.run([str(binary_path), "-version"])
+        if not result.ok or not result.stdout:
+            return None
+
+        return result.stdout.splitlines()[0] if result.stdout.splitlines() else None
+
+    def probe(self, path: str | Path) -> MediaProbeResult:
+        """Probe media metadata with ffprobe JSON output."""
+        input_path = self._validate_existing_input(path)
+        ffprobe = self.require_ffprobe()
+        command = [
+            str(ffprobe),
+            "-v",
+            "error",
             "-show_format",
             "-show_streams",
-            str(source),
+            "-of",
+            "json",
+            str(input_path),
         ]
-    )
-    return json.loads(result.stdout or "{}")
+        result = self.run(command)
+        if not result.ok:
+            raise RuntimeError(f"ffprobe failed for {input_path}: {result.stderr}")
 
+        try:
+            raw: dict[str, Any] = json.loads(result.stdout)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(f"ffprobe returned invalid JSON for {input_path}") from exc
 
-def convert_audio(
-    source: str | Path,
-    target: str | Path,
-    *,
-    bitrate: str = "192k",
-    codec: str | None = None,
-) -> Path:
-    """Convert audio to a new target format."""
+        format_info = raw.get("format", {})
+        if not isinstance(format_info, dict):
+            format_info = {}
 
-    src = _ensure_source(source)
-    dst = _prepare_output(target)
-    command = ["-i", str(src), "-vn"]
-    if codec:
-        command.extend(["-c:a", codec])
-    command.extend(["-b:a", bitrate, str(dst)])
-    _run_ffmpeg(command)
-    return dst
+        streams = raw.get("streams", [])
+        if not isinstance(streams, list):
+            streams = []
 
+        return MediaProbeResult(
+            path=input_path,
+            format_name=format_info.get("format_name"),
+            duration_seconds=self._parse_float(format_info.get("duration")),
+            bit_rate=self._parse_int(format_info.get("bit_rate")),
+            size_bytes=self._parse_int(format_info.get("size")),
+            streams=streams,
+            raw=raw,
+        )
 
-def extract_audio(
-    source: str | Path,
-    target: str | Path,
-    *,
-    codec: str | None = None,
-) -> Path:
-    """Extract the audio stream from a video file."""
+    def run(
+        self, args: list[str], timeout_seconds: float | None = None
+    ) -> FFmpegCommandResult:
+        """Execute a list-based subprocess command without shell interpolation."""
+        command = [str(arg) for arg in args]
+        timeout = self.timeout_seconds if timeout_seconds is None else timeout_seconds
 
-    src = _ensure_source(source)
-    dst = _prepare_output(target)
-    command = ["-i", str(src), "-vn"]
-    if codec:
-        command.extend(["-c:a", codec])
-    else:
-        command.extend(["-c:a", "copy"])
-    command.append(str(dst))
-    _run_ffmpeg(command)
-    return dst
+        try:
+            completed = subprocess.run(
+                command,
+                shell=False,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                check=False,
+            )
+        except subprocess.TimeoutExpired as exc:
+            return FFmpegCommandResult(
+                command=command,
+                returncode=124,
+                stdout=self._stringify_output(exc.stdout),
+                stderr=(
+                    f"Command timed out after {timeout} seconds: "
+                    f"{' '.join(command)}"
+                ),
+            )
+        except FileNotFoundError as exc:
+            return FFmpegCommandResult(
+                command=command,
+                returncode=127,
+                stdout="",
+                stderr=str(exc),
+            )
+        except OSError as exc:
+            return FFmpegCommandResult(
+                command=command,
+                returncode=1,
+                stdout="",
+                stderr=str(exc),
+            )
 
+        return FFmpegCommandResult(
+            command=command,
+            returncode=completed.returncode,
+            stdout=completed.stdout,
+            stderr=completed.stderr,
+        )
 
-def normalize_audio(
-    source: str | Path,
-    target: str | Path,
-    *,
-    integrated_lufs: int = -16,
-    true_peak: float = -1.5,
-    loudness_range: int = 11,
-) -> Path:
-    """Normalize audio loudness using FFmpeg loudnorm."""
+    def build_audio_transform_command(
+        self,
+        input_path: str | Path,
+        output_path: str | Path,
+        options: AudioTransformOptions,
+        overwrite: bool = False,
+    ) -> list[str]:
+        """Build, but do not run, a safe FFmpeg audio transform command."""
+        input_file = self._validate_existing_input(input_path)
+        output_file = self._validate_output_available(output_path, overwrite)
+        ffmpeg = self.require_ffmpeg()
 
-    src = _ensure_source(source)
-    dst = _prepare_output(target)
-    filter_value = f"loudnorm=I={integrated_lufs}:TP={true_peak}:LRA={loudness_range}"
-    _run_ffmpeg(["-i", str(src), "-af", filter_value, str(dst)])
-    return dst
+        command = [str(ffmpeg), self._overwrite_arg(overwrite)]
 
+        if options.start_seconds is not None:
+            command.extend(["-ss", str(options.start_seconds)])
 
-def trim_audio(
-    source: str | Path,
-    target: str | Path,
-    *,
-    start: float | None = None,
-    end: float | None = None,
-    duration: float | None = None,
-) -> Path:
-    """Trim audio to a requested time window."""
+        command.extend(["-i", str(input_file)])
 
-    src = _ensure_source(source)
-    dst = _prepare_output(target)
-    command: list[str] = []
-    if start is not None:
-        command.extend(["-ss", str(start)])
-    command.extend(["-i", str(src)])
-    if end is not None:
-        command.extend(["-to", str(end)])
-    if duration is not None:
-        command.extend(["-t", str(duration)])
-    command.append(str(dst))
-    _run_ffmpeg(command)
-    return dst
+        if options.duration_seconds is not None:
+            command.extend(["-t", str(options.duration_seconds)])
 
+        if options.channels is not None:
+            command.extend(["-ac", str(options.channels)])
 
-def resample_audio(
-    source: str | Path,
-    target: str | Path,
-    *,
-    sample_rate: int = 16000,
-    channels: int = 1,
-) -> Path:
-    """Resample audio for speech and analysis pipelines."""
+        if options.sample_rate is not None:
+            command.extend(["-ar", str(options.sample_rate)])
 
-    src = _ensure_source(source)
-    dst = _prepare_output(target)
-    _run_ffmpeg(
-        [
+        filters = self._build_audio_filters(options)
+        if filters:
+            command.extend(["-af", ",".join(filters)])
+
+        if options.output_format is not None:
+            command.extend(["-f", options.output_format])
+
+        command.append(str(output_file))
+        return command
+
+    @staticmethod
+    def _build_audio_filters(options: AudioTransformOptions) -> list[str]:
+        filters: list[str] = []
+
+        if options.loudnorm:
+            filters.append("loudnorm=I=-16:TP=-1.5:LRA=11")
+        elif options.normalize:
+            filters.append("dynaudnorm")
+
+        if options.remove_silence:
+            filters.append(
+                "silenceremove=start_periods=1:start_duration=0.2:"
+                "start_threshold=-45dB:stop_periods=-1:stop_duration=0.2:"
+                "stop_threshold=-45dB"
+            )
+
+        return filters
+
+    def transform_audio(
+        self,
+        input_path: str | Path,
+        output_path: str | Path,
+        options: AudioTransformOptions | None = None,
+        overwrite: bool = False,
+    ) -> FFmpegCommandResult:
+        """Run an FFmpeg audio transform without modifying the source file."""
+        output_file = self._validate_output_available(output_path, overwrite)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        transform_options = options or AudioTransformOptions()
+        command = self.build_audio_transform_command(
+            input_path=input_path,
+            output_path=output_file,
+            options=transform_options,
+            overwrite=overwrite,
+        )
+        return self.run(command)
+
+    def convert_audio(
+        self,
+        input_path: str | Path,
+        output_path: str | Path,
+        sample_rate: int | None = None,
+        channels: int | None = None,
+        overwrite: bool = False,
+    ) -> FFmpegCommandResult:
+        """Convenience wrapper for basic audio conversion."""
+        return self.transform_audio(
+            input_path=input_path,
+            output_path=output_path,
+            options=AudioTransformOptions(sample_rate=sample_rate, channels=channels),
+            overwrite=overwrite,
+        )
+
+    def prepare_for_transcription(
+        self,
+        input_path: str | Path,
+        output_path: str | Path,
+        overwrite: bool = False,
+    ) -> FFmpegCommandResult:
+        """Prepare audio for the HueyOS V1 local transcription stage."""
+        return self.transform_audio(
+            input_path=input_path,
+            output_path=output_path,
+            options=AudioTransformOptions(
+                sample_rate=16000,
+                channels=1,
+                loudnorm=True,
+                remove_silence=True,
+            ),
+            overwrite=overwrite,
+        )
+
+    def extract_audio(
+        self,
+        input_path: str | Path,
+        output_path: str | Path,
+        sample_rate: int | None = 16000,
+        channels: int | None = 1,
+        overwrite: bool = False,
+    ) -> FFmpegCommandResult:
+        """Extract or convert audio from an audio/video input."""
+        return self.transform_audio(
+            input_path=input_path,
+            output_path=output_path,
+            options=AudioTransformOptions(sample_rate=sample_rate, channels=channels),
+            overwrite=overwrite,
+        )
+
+    def generate_waveform_image(
+        self,
+        input_path: str | Path,
+        output_path: str | Path,
+        width: int = 1280,
+        height: int = 320,
+        overwrite: bool = False,
+    ) -> FFmpegCommandResult:
+        """Generate a waveform image from an audio file."""
+        return self._run_visual_media_command(
+            input_path=input_path,
+            output_path=output_path,
+            filter_arg=f"showwavespic=s={width}x{height}",
+            overwrite=overwrite,
+        )
+
+    def generate_spectrogram_image(
+        self,
+        input_path: str | Path,
+        output_path: str | Path,
+        width: int = 1280,
+        height: int = 720,
+        overwrite: bool = False,
+    ) -> FFmpegCommandResult:
+        """Generate a spectrogram image from an audio file."""
+        return self._run_visual_media_command(
+            input_path=input_path,
+            output_path=output_path,
+            filter_arg=f"showspectrumpic=s={width}x{height}",
+            overwrite=overwrite,
+        )
+
+    def _run_visual_media_command(
+        self,
+        input_path: str | Path,
+        output_path: str | Path,
+        filter_arg: str,
+        overwrite: bool,
+    ) -> FFmpegCommandResult:
+        input_file = self._validate_existing_input(input_path)
+        output_file = self._validate_output_available(output_path, overwrite)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        ffmpeg = self.require_ffmpeg()
+        command = [
+            str(ffmpeg),
+            self._overwrite_arg(overwrite),
             "-i",
-            str(src),
-            "-ar",
-            str(sample_rate),
-            "-ac",
-            str(channels),
-            str(dst),
+            str(input_file),
+            "-filter_complex",
+            filter_arg,
+            "-frames:v",
+            "1",
+            str(output_file),
         ]
-    )
-    return dst
+        return self.run(command)
 
-
-def transcode_video(
-    source: str | Path,
-    target: str | Path,
-    *,
-    video_codec: str = "libx264",
-    audio_codec: str = "aac",
-    crf: int = 23,
-    preset: str = "medium",
-) -> Path:
-    """Transcode video to a portable distribution format."""
-
-    src = _ensure_source(source)
-    dst = _prepare_output(target)
-    _run_ffmpeg(
-        [
+    def extract_frames(
+        self,
+        input_path: str | Path,
+        output_dir: str | Path,
+        fps: float = 1.0,
+        overwrite: bool = False,
+    ) -> FFmpegCommandResult:
+        """Extract image frames from a video input."""
+        input_file = self._validate_existing_input(input_path)
+        frames_dir = Path(output_dir)
+        frames_dir.mkdir(parents=True, exist_ok=True)
+        ffmpeg = self.require_ffmpeg()
+        output_pattern = frames_dir / "frame_%06d.png"
+        command = [
+            str(ffmpeg),
+            self._overwrite_arg(overwrite),
             "-i",
-            str(src),
-            "-c:v",
-            video_codec,
-            "-preset",
-            preset,
-            "-crf",
-            str(crf),
-            "-c:a",
-            audio_codec,
-            "-movflags",
-            "+faststart",
-            str(dst),
+            str(input_file),
+            "-vf",
+            f"fps={fps}",
+            str(output_pattern),
         ]
-    )
-    return dst
+        return self.run(command)
 
-
-def extract_frames(
-    source: str | Path,
-    output_pattern: str | Path,
-    *,
-    fps: float = 1.0,
-) -> Path:
-    """Extract video frames to an image sequence."""
-
-    src = _ensure_source(source)
-    dst = _prepare_output(output_pattern)
-    _run_ffmpeg(["-i", str(src), "-vf", f"fps={fps}", str(dst)])
-    return dst
-
-
-def generate_waveform(
-    source: str | Path,
-    target: str | Path,
-    *,
-    width: int = 1280,
-    height: int = 320,
-    color: str = "0x7a4fa0",
-) -> Path:
-    """Generate a waveform image for an audio file."""
-
-    src = _ensure_source(source)
-    dst = _prepare_output(target)
-    filter_value = f"showwavespic=s={width}x{height}:colors={color}"
-    _run_ffmpeg(["-i", str(src), "-lavfi", filter_value, "-frames:v", "1", str(dst)])
-    return dst
-
-
-def generate_spectrogram(
-    source: str | Path,
-    target: str | Path,
-    *,
-    width: int = 1280,
-    height: int = 720,
-) -> Path:
-    """Generate a spectrogram image for an audio file."""
-
-    src = _ensure_source(source)
-    dst = _prepare_output(target)
-    filter_value = f"showspectrumpic=s={width}x{height}"
-    _run_ffmpeg(["-i", str(src), "-lavfi", filter_value, "-frames:v", "1", str(dst)])
-    return dst
-
-
-def compress_audio(
-    source: str | Path,
-    target: str | Path,
-    *,
-    bitrate: str = "128k",
-) -> Path:
-    """Create a smaller audio derivative."""
-
-    return convert_audio(source, target, bitrate=bitrate)
-
-
-def compress_video(
-    source: str | Path,
-    target: str | Path,
-    *,
-    crf: int = 28,
-    preset: str = "slow",
-) -> Path:
-    """Create a smaller video derivative."""
-
-    return transcode_video(source, target, crf=crf, preset=preset)
-
-
-def detect_silence(
-    source: str | Path,
-    *,
-    noise: str = "-30dB",
-    duration: float = 0.5,
-) -> list[SilenceRange]:
-    """Return detected silence spans from an audio file."""
-
-    src = _ensure_source(source)
-    result = _run_process(
-        [
-            "ffmpeg",
-            "-hide_banner",
+    def extract_thumbnail(
+        self,
+        input_path: str | Path,
+        output_path: str | Path,
+        timestamp_seconds: float = 1.0,
+        overwrite: bool = False,
+    ) -> FFmpegCommandResult:
+        """Extract a single thumbnail frame from a video input."""
+        input_file = self._validate_existing_input(input_path)
+        output_file = self._validate_output_available(output_path, overwrite)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        ffmpeg = self.require_ffmpeg()
+        command = [
+            str(ffmpeg),
+            self._overwrite_arg(overwrite),
+            "-ss",
+            str(timestamp_seconds),
             "-i",
-            str(src),
+            str(input_file),
+            "-frames:v",
+            "1",
+            str(output_file),
+        ]
+        return self.run(command)
+
+    def detect_silence(
+        self,
+        input_path: str | Path,
+        noise_db: int = -45,
+        duration_seconds: float = 0.2,
+    ) -> FFmpegCommandResult:
+        """Run FFmpeg silencedetect without parsing the output yet."""
+        input_file = self._validate_existing_input(input_path)
+        ffmpeg = self.require_ffmpeg()
+        command = [
+            str(ffmpeg),
+            "-i",
+            str(input_file),
             "-af",
-            f"silencedetect=noise={noise}:d={duration}",
+            f"silencedetect=noise={noise_db}dB:d={duration_seconds}",
             "-f",
             "null",
             "-",
         ]
-    )
-    silence_start = re.compile(r"silence_start: (?P<start>[0-9.]+)")
-    silence_end = re.compile(
-        r"silence_end: (?P<end>[0-9.]+) \| silence_duration: (?P<duration>[0-9.]+)"
-    )
-    starts: list[float] = []
-    ranges: list[SilenceRange] = []
-    for line in (result.stderr or "").splitlines():
-        start_match = silence_start.search(line)
-        if start_match:
-            starts.append(float(start_match.group("start")))
-            continue
-        end_match = silence_end.search(line)
-        if end_match and starts:
-            start = starts.pop(0)
-            ranges.append(
-                {
-                    "start": start,
-                    "end": float(end_match.group("end")),
-                    "duration": float(end_match.group("duration")),
-                }
-            )
-    return ranges
+        return self.run(command)
 
-
-def remove_silence(
-    source: str | Path,
-    target: str | Path,
-    *,
-    threshold: str = "-30dB",
-    min_silence_duration: float = 0.5,
-) -> Path:
-    """Remove leading, trailing, and internal silence using FFmpeg filters."""
-
-    src = _ensure_source(source)
-    dst = _prepare_output(target)
-    filter_value = (
-        "silenceremove="
-        f"start_periods=1:start_duration={min_silence_duration}:"
-        f"start_threshold={threshold}:"
-        f"stop_periods=-1:stop_duration={min_silence_duration}:"
-        f"stop_threshold={threshold}"
-    )
-    _run_ffmpeg(["-i", str(src), "-af", filter_value, str(dst)])
-    return dst
-
-
-def split_audio_chunks(
-    source: str | Path,
-    output_dir: str | Path,
-    *,
-    chunk_seconds: float = 30.0,
-    prefix: str = "chunk",
-    extension: str = ".wav",
-) -> list[Path]:
-    """Split an audio file into evenly-sized chunks."""
-
-    src = _ensure_source(source)
-    directory = _coerce_path(output_dir)
-    directory.mkdir(parents=True, exist_ok=True)
-    suffix = extension if extension.startswith(".") else f".{extension}"
-    pattern = directory / f"{prefix}-%03d{suffix}"
-    _run_ffmpeg(
-        [
+    def split_audio_chunks(
+        self,
+        input_path: str | Path,
+        output_dir: str | Path,
+        chunk_seconds: int = 300,
+        overwrite: bool = False,
+    ) -> FFmpegCommandResult:
+        """Split audio into fixed-length chunks with FFmpeg's segment muxer."""
+        input_file = self._validate_existing_input(input_path)
+        chunks_dir = Path(output_dir)
+        chunks_dir.mkdir(parents=True, exist_ok=True)
+        ffmpeg = self.require_ffmpeg()
+        output_pattern = chunks_dir / "chunk_%03d.wav"
+        command = [
+            str(ffmpeg),
+            self._overwrite_arg(overwrite),
             "-i",
-            str(src),
+            str(input_file),
             "-f",
             "segment",
             "-segment_time",
             str(chunk_seconds),
             "-c",
             "copy",
-            str(pattern),
+            str(output_pattern),
         ]
+        return self.run(command)
+
+
+def get_default_manager() -> FFmpegMediaManager:
+    """Return a default FFmpeg media manager instance."""
+    return FFmpegMediaManager()
+
+
+def check_ffmpeg_available() -> bool:
+    """Return True when FFmpeg is available to the default manager."""
+    return get_default_manager().ffmpeg_available()
+
+
+def probe_media(path: str | Path) -> MediaProbeResult:
+    """Probe media with a default FFmpeg media manager."""
+    return get_default_manager().probe(path)
+
+
+def prepare_audio_for_transcription(
+    input_path: str | Path,
+    output_path: str | Path,
+    overwrite: bool = False,
+) -> FFmpegCommandResult:
+    """Prepare audio for V1 transcription with a default manager."""
+    return get_default_manager().prepare_for_transcription(
+        input_path=input_path,
+        output_path=output_path,
+        overwrite=overwrite,
     )
-    return sorted(directory.glob(f"{prefix}-*{suffix}"))
-
-
-__all__ = [
-    "compress_audio",
-    "compress_video",
-    "convert_audio",
-    "detect_silence",
-    "extract_audio",
-    "extract_frames",
-    "generate_spectrogram",
-    "generate_waveform",
-    "normalize_audio",
-    "probe_media",
-    "remove_silence",
-    "resample_audio",
-    "split_audio_chunks",
-    "transcode_video",
-    "trim_audio",
-]
