@@ -99,7 +99,7 @@ def launch_gui(source: str | None = None) -> None:
 
     from pygpt_net.app import run as pygpt_run
 
-    from huey.pygpt_net.tools.manager import MonkeyManager
+    from huey.connectors.pyhuey.tools.manager import MonkeyManager
 
     pygpt_run(tools=[MonkeyManager()])
 
