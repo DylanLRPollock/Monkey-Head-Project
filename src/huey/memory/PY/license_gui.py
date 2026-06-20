@@ -25,13 +25,15 @@ except Exception:  # pragma: no cover - can't import GUI libs
     messagebox = None
     scrolledtext = None
 
+from huey.gui.theme import as_tk_palette
+
 from .config_manager import ConfigManager
 from .gui_scaling import apply_scaling
 
-# Shared theme colors
-DARK_BG = "#000000"  # black background
-LIGHT_FG = "#00ff00"  # green text
-ACCENT_PURPLE = "#2d2b57"  # dark purple accent
+_PALETTE = as_tk_palette()
+DARK_BG = _PALETTE["background"]
+LIGHT_FG = _PALETTE["text"]
+ACCENT_PURPLE = _PALETTE["accent"]
 
 
 def accept_license(config_path: str | Path, license_hash: str | None = None) -> None:

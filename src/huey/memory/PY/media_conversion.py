@@ -17,8 +17,11 @@ from __future__ import annotations
 
 import os
 import shutil
-import subprocess
 from pathlib import Path
+
+from huey.media.media_manager import convert_audio as _convert_audio
+from huey.media.media_manager import extract_audio as _extract_audio
+from huey.media.media_manager import transcode_video as _transcode_video
 
 __all__ = [
     "convert_audio",
@@ -29,26 +32,18 @@ __all__ = [
 ]
 
 
-def _run_ffmpeg(args: list[str]) -> None:
-    """Run an ffmpeg command and raise if it fails."""
-    cmd = ["ffmpeg", "-y"] + args
-    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if result.returncode != 0:
-        raise RuntimeError(result.stderr.decode("utf-8", "ignore"))
-
-
 def convert_audio(src: str, dst: str, bitrate: str = "192k") -> None:
     """Convert an audio file to a new format using ffmpeg."""
     if not os.path.exists(src):
         raise FileNotFoundError(src)
-    _run_ffmpeg(["-i", src, "-b:a", bitrate, dst])
+    _convert_audio(src, dst, bitrate=bitrate)
 
 
 def convert_video(src: str, dst: str, codec: str = "libx264") -> None:
     """Convert a video file to a new format using ffmpeg."""
     if not os.path.exists(src):
         raise FileNotFoundError(src)
-    _run_ffmpeg(["-i", src, "-vcodec", codec, dst])
+    _transcode_video(src, dst, video_codec=codec)
 
 
 def convert_file(src: str, dst: str) -> None:
@@ -63,10 +58,8 @@ def extract_audio(src: str, dst: str) -> None:
     if not os.path.exists(src):
         raise FileNotFoundError(src)
     ext = Path(dst).suffix.lower()
-    if ext == ".mp3":
-        _run_ffmpeg(["-i", src, "-vn", "-acodec", "libmp3lame", dst])
-    else:
-        _run_ffmpeg(["-i", src, "-vn", "-acodec", "copy", dst])
+    codec = "libmp3lame" if ext == ".mp3" else None
+    _extract_audio(src, dst, codec=codec)
 
 
 AUDIO_EXTENSIONS = {".wav", ".mp3", ".flac", ".m4a", ".aac", ".ogg"}

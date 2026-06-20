@@ -182,6 +182,7 @@ audio = [
 huey = "huey.cli:main"
 # HueyOS API console entrypoint.
 huey-api = "huey.api:main"
+huey-command-center = "huey.apps.command_center.cli:main"
 
 [build-system]
 requires = [

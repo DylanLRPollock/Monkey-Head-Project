@@ -12,15 +12,22 @@ from typing import Any
 
 _CORE_MODULES = (
     "api",
+    "apps",
+    "audio",
     "cli",
     "config",
     "exceptions",
     "function_registry",
+    "gui",
+    "integrations",
+    "media",
+    "runtime",
     "pdf_utils",
     "pyhuey_integration",
     "pygpt_integration",
     "run",
     "utils",
+    "v1",
     "memory",
 )
 
