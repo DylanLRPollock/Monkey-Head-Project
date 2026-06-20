@@ -13,7 +13,14 @@ import os
 from pathlib import Path
 from typing import Final
 
-__all__ = ["__version__"]
+__all__ = [
+    "__version__",
+    "get_status",
+    "launch_pyhuey",
+    "receive_event",
+    "send_event",
+    "shutdown_pyhuey",
+]
 
 __version__ = "2.6.67"
 
@@ -54,3 +61,11 @@ def _ensure_private_nltk_data() -> None:
 
 
 _ensure_private_nltk_data()
+
+from .adapter import (
+    get_status,
+    launch_pyhuey,
+    receive_event,
+    send_event,
+    shutdown_pyhuey,
+)
