@@ -187,6 +187,7 @@ Huey Brain V1 is not presented here as the finished republic. Its role is to pro
 | **V1 response direction** | API-backed cognition bridge as baseline; optional local model experiments later |
 | **V1 record** | Structured run log containing source, transcript, response, timestamps, model/runtime metadata |
 | **Documentation direction** | README = human-facing front door; master plan = machine-facing source of truth |
+| **Command Center** | Local-first migration dashboard/prototype companion, tracked as an optional umbrella submodule at `integrations/command-center` |
 
 ### Paused
 
@@ -1150,6 +1151,7 @@ If the narrative and implementation ever conflict, the **master plan wins for ma
 | **HIMS** | Huey Internal Messaging System: lawful future messaging, validation, routing, and record-preservation layer. |
 | **ThunderMail** | The mail-style delivery layer inside HIMS. |
 | **PyGPT-net** | Later aperture/interface candidate; deferred from V1. |
+| **Command Center** | Optional companion dashboard/prototype repo under the Monkey-Head-Project umbrella; not Huey Brain runtime. |
 | **Portal Terminal** | Non-sovereign external terminal or guest environment used to open sessions into Huey. |
 | **The Farm** | Planned future pooled compute expansion body. |
 | **Aperture** | The interpretation and translation layer where natural language enters without becoming governance. |

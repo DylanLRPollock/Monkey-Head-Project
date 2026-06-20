@@ -19,7 +19,8 @@ This document proposes a practical reorganization so the repository is easier to
 │   ├── huey-core/           # primary Python runtime (from src/huey + src/monkey_head)
 │   └── hueyos-tools/        # CLI/utilities currently spread across scripts/tools
 ├── integrations/
-│   └── pyhuey/              # live PyHuey submodule / adapter work
+│   ├── pyhuey/              # live PyHuey submodule / adapter work
+│   └── command-center/      # optional companion dashboard / prototype submodule
 ├── platform/
 │   ├── boot/                # boot/grub, EFI, isolinux, live
 │   ├── packaging/           # dists, pool, pool-udeb, firmware metadata

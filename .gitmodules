@@ -1,0 +1,4 @@
+[submodule "integrations/command-center"]
+	path = integrations/command-center
+	url = https://github.com/DylanLRPollock/command-center.git
+	branch = main

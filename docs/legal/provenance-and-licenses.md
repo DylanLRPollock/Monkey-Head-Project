@@ -1,6 +1,6 @@
-# Provenance and Licenses (Monkey-Head-Project / PyHuey Boundary)
+# Provenance and Licenses (Monkey-Head-Project / Integration Boundaries)
 
-This document records the current, repository-visible licensing and provenance boundaries for Monkey-Head-Project and the PyHuey integration surface.
+This document records the current, repository-visible licensing and provenance boundaries for Monkey-Head-Project, the PyHuey integration surface, and the Command Center companion subrepo.
 
 ## 1) Monkey-Head-Project code license
 
@@ -23,7 +23,7 @@ This document records the current, repository-visible licensing and provenance b
 
 PyHuey is tracked as an integration boundary, not as the Huey Brain runtime core:
 
-- `.gitmodules` defines `integrations/pyhuey` as a Git submodule from `https://github.com/DylanLRPollock/PyHuey.git`.
+- `src/huey/connectors/pyhuey` carries the packaged connector tree used by the repository runtime/tests.
 - `vendor/pygpt/README.md` states runtime integration order that includes `integrations/pyhuey` and identifies `vendor/pygpt` as static mirrors.
 - `infra/docker/pyhuey/README.md` states the PyHuey image is optional cockpit/tooling and separate from the main HueyOS runtime image.
 
@@ -38,18 +38,28 @@ Repository docs already describe PyHuey as derived from upstream PyGPT/PyGPT-net
 
 At the time of writing, the local checkout does not expose a populated `integrations/pyhuey` tree with a visible upstream license file in this repository snapshot. For license-accurate redistribution of that integration, ensure the initialized submodule retains upstream license and attribution files.
 
-## 5) Rule for copying code across boundaries
+## 5) Command Center umbrella companion boundary
+
+Command Center is tracked as an explicit umbrella companion repository, not as Huey Brain runtime code:
+
+- `.gitmodules` defines `integrations/command-center` as a Git submodule from `https://github.com/DylanLRPollock/command-center.git`.
+- `integrations/command-center/README.md` and `integrations/command-center/docs/project-scope.md` describe it as a local-first migration dashboard and prototype surface under the Monkey-Head-Project umbrella.
+- `integrations/command-center/LICENSE` preserves the repo-local MIT license for the Spark template files shipped there.
+
+**Boundary rule in practice:** treat `integrations/command-center` as a provenance-preserving companion/dashboard subrepo with its own local safety rules and license files, not as part of the Huey Brain runtime boundary.
+
+## 6) Rule for copying code across boundaries
 
 To avoid mixing legal obligations silently:
 
-1. **Do not copy code** between Monkey-Head-Project core paths and PyHuey/PyGPT-derived paths without preserving original copyright and license notices.
+1. **Do not copy code** between Monkey-Head-Project core paths and PyHuey/PyGPT-derived or Command Center companion paths without preserving original copyright and license notices.
 2. **When importing/adapting upstream snippets**, add provenance comments or commit notes that identify source repository and commit/tag.
-3. **Keep integration paths explicit** (`integrations/pyhuey`, `vendor/pygpt`) so reviewers can distinguish first-party code from fork/vendor code.
+3. **Keep integration paths explicit** (`integrations/pyhuey`, `integrations/command-center`, `vendor/pygpt`) so reviewers can distinguish first-party code from fork/vendor code.
 4. **If license terms differ or are uncertain**, stop and verify upstream license files before merging copied code.
 
 This policy is procedural/documentary only; it does not change any license terms.
 
-## 6) NOTICE expectations
+## 7) NOTICE expectations
 
 There is no repository-wide `NOTICE` file requirement explicitly declared in current top-level license metadata. However, if a copied or bundled third-party component requires NOTICE preservation, include that NOTICE text in the distributed artifact or in a dedicated notices file for that component.
 
@@ -59,7 +69,7 @@ Recommended minimal practice for this repository:
 - Record provenance in docs or release notes when syncing/updating fork/vendor content.
 - Do not remove upstream attribution headers from imported files.
 
-## 7) Non-goals / explicit limits
+## 8) Non-goals / explicit limits
 
 - This document does **not** relicense any component.
 - This document does **not** claim legal terms not present in current repository files.
