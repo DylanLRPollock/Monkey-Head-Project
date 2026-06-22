@@ -31,7 +31,12 @@ class CommandResult:
 class FFmpegManager:
     """Small, testable wrapper around local FFmpeg binaries."""
 
-    def __init__(self, ffmpeg_bin: str = "ffmpeg", ffprobe_bin: str = "ffprobe", runner: Runner = subprocess.run) -> None:
+    def __init__(
+        self,
+        ffmpeg_bin: str = "ffmpeg",
+        ffprobe_bin: str = "ffprobe",
+        runner: Runner = subprocess.run,
+    ) -> None:
         self.ffmpeg_bin = ffmpeg_bin
         self.ffprobe_bin = ffprobe_bin
         self._runner = runner
@@ -40,7 +45,9 @@ class FFmpegManager:
         """Raise a clear error if FFmpeg or ffprobe is unavailable."""
         for binary in (self.ffmpeg_bin, self.ffprobe_bin):
             if shutil.which(binary) is None:
-                raise FileNotFoundError(f"Required media binary not found on PATH: {binary}")
+                raise FileNotFoundError(
+                    f"Required media binary not found on PATH: {binary}"
+                )
 
     def run(self, command: Sequence[str]) -> CommandResult:
         """Run a list-based command and return an auditable result."""
@@ -53,9 +60,16 @@ class FFmpegManager:
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
-        result = CommandResult(list(command), completed.stdout or "", completed.stderr or "", completed.returncode)
+        result = CommandResult(
+            list(command),
+            completed.stdout or "",
+            completed.stderr or "",
+            completed.returncode,
+        )
         if result.returncode != 0:
-            raise FFmpegError(result.stderr.strip() or f"Command failed: {result.command}")
+            raise FFmpegError(
+                result.stderr.strip() or f"Command failed: {result.command}"
+            )
         return result
 
     def probe_json(self, source: str | Path) -> dict:
@@ -81,9 +95,13 @@ class FFmpegManager:
         duration = _optional_float(fmt.get("duration"))
         bit_rate = _optional_int(fmt.get("bit_rate"))
         streams = raw.get("streams", [])
-        return MediaProbe(str(source_path), fmt.get("format_name"), duration, bit_rate, streams)
+        return MediaProbe(
+            str(source_path), fmt.get("format_name"), duration, bit_rate, streams
+        )
 
-    def prepare_transcription_wav(self, source: str | Path, output: str | Path, *, overwrite: bool = False) -> CommandResult:
+    def prepare_transcription_wav(
+        self, source: str | Path, output: str | Path, *, overwrite: bool = False
+    ) -> CommandResult:
         """Convert audio to mono 16 kHz WAV with loudness normalization."""
         source_path = self._require_file(source)
         output_path = self._prepare_output(output, overwrite=overwrite)
@@ -106,11 +124,20 @@ class FFmpegManager:
         ]
         return self.run(command)
 
-    def extract_audio(self, source: str | Path, output: str | Path, *, overwrite: bool = False) -> CommandResult:
+    def extract_audio(
+        self, source: str | Path, output: str | Path, *, overwrite: bool = False
+    ) -> CommandResult:
         """Extract normalized mono WAV audio from a video or audio file."""
         return self.prepare_transcription_wav(source, output, overwrite=overwrite)
 
-    def thumbnail(self, source: str | Path, output: str | Path, *, timestamp: str = "00:00:01", overwrite: bool = False) -> CommandResult:
+    def thumbnail(
+        self,
+        source: str | Path,
+        output: str | Path,
+        *,
+        timestamp: str = "00:00:01",
+        overwrite: bool = False,
+    ) -> CommandResult:
         """Extract a single thumbnail image from a video."""
         source_path = self._require_file(source)
         output_path = self._prepare_output(output, overwrite=overwrite)
@@ -128,7 +155,14 @@ class FFmpegManager:
         ]
         return self.run(command)
 
-    def extract_frame(self, source: str | Path, output: str | Path, *, frame_number: int, overwrite: bool = False) -> CommandResult:
+    def extract_frame(
+        self,
+        source: str | Path,
+        output: str | Path,
+        *,
+        frame_number: int,
+        overwrite: bool = False,
+    ) -> CommandResult:
         """Extract one frame by zero-based frame number."""
         if frame_number < 0:
             raise ValueError("frame_number must be zero or greater")
@@ -148,7 +182,15 @@ class FFmpegManager:
         ]
         return self.run(command)
 
-    def waveform(self, source: str | Path, output: str | Path, *, width: int = 1280, height: int = 240, overwrite: bool = False) -> CommandResult:
+    def waveform(
+        self,
+        source: str | Path,
+        output: str | Path,
+        *,
+        width: int = 1280,
+        height: int = 240,
+        overwrite: bool = False,
+    ) -> CommandResult:
         """Generate a waveform image for an audio or video file."""
         source_path = self._require_file(source)
         output_path = self._prepare_output(output, overwrite=overwrite)
@@ -166,7 +208,15 @@ class FFmpegManager:
         ]
         return self.run(command)
 
-    def spectrogram(self, source: str | Path, output: str | Path, *, width: int = 1280, height: int = 720, overwrite: bool = False) -> CommandResult:
+    def spectrogram(
+        self,
+        source: str | Path,
+        output: str | Path,
+        *,
+        width: int = 1280,
+        height: int = 720,
+        overwrite: bool = False,
+    ) -> CommandResult:
         """Generate a spectrogram image for an audio or video file."""
         source_path = self._require_file(source)
         output_path = self._prepare_output(output, overwrite=overwrite)
@@ -184,12 +234,21 @@ class FFmpegManager:
         ]
         return self.run(command)
 
-    def split_audio_chunks(self, source: str | Path, output_pattern: str | Path, *, seconds: int = 300, overwrite: bool = False) -> CommandResult:
+    def split_audio_chunks(
+        self,
+        source: str | Path,
+        output_pattern: str | Path,
+        *,
+        seconds: int = 300,
+        overwrite: bool = False,
+    ) -> CommandResult:
         """Split audio into deterministic time chunks."""
         if seconds <= 0:
             raise ValueError("seconds must be greater than zero")
         source_path = self._require_file(source)
-        output_path = self._prepare_output(output_pattern, overwrite=overwrite, allow_pattern=True)
+        output_path = self._prepare_output(
+            output_pattern, overwrite=overwrite, allow_pattern=True
+        )
         command = [
             self.ffmpeg_bin,
             "-hide_banner",
@@ -214,7 +273,9 @@ class FFmpegManager:
         return candidate
 
     @staticmethod
-    def _prepare_output(path: str | Path, *, overwrite: bool, allow_pattern: bool = False) -> Path:
+    def _prepare_output(
+        path: str | Path, *, overwrite: bool, allow_pattern: bool = False
+    ) -> Path:
         output_path = Path(path)
         if output_path.exists() and not overwrite:
             raise FileExistsError(f"Output already exists: {output_path}")
@@ -237,4 +298,3 @@ def _optional_int(value: object) -> int | None:
         return None if value is None else int(value)
     except (TypeError, ValueError):
         return None
-

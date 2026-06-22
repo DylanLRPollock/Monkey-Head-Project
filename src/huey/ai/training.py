@@ -48,4 +48,5 @@ class TrainingPipeline:
         )
         return TrainingRun.from_record(record)
 
+
 __all__ = ["TrainingPipeline", "TrainingRun"]

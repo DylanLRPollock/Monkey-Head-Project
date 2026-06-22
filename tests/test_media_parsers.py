@@ -52,13 +52,18 @@ def test_audio_parser_prepare_audio_uses_speech_pipeline(tmp_path, monkeypatch) 
     assert result.format_name == "wav"
 
 
-def test_video_pipeline_inspect_returns_structured_metadata(tmp_path, monkeypatch) -> None:
+def test_video_pipeline_inspect_returns_structured_metadata(
+    tmp_path, monkeypatch
+) -> None:
     source = tmp_path / "clip.mp4"
     source.write_bytes(b"video")
 
     monkeypatch.setattr(
         "huey.media.video_pipeline.video_metadata",
-        lambda path: {"format": {"duration": "2.0"}, "streams": [{"r_frame_rate": "24/1"}]},
+        lambda path: {
+            "format": {"duration": "2.0"},
+            "streams": [{"r_frame_rate": "24/1"}],
+        },
     )
     monkeypatch.setattr("huey.media.video_pipeline.video_duration", lambda path: 2.0)
     monkeypatch.setattr("huey.media.video_pipeline.video_fps", lambda path: 24.0)

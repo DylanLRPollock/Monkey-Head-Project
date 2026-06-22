@@ -6,8 +6,8 @@ from huey.apps.command_center.server import (
     create_app,
     get_app_metadata,
     get_launcher_support,
-    get_state_payload,
     get_safety_policy,
+    get_state_payload,
     get_validation_commands,
 )
 
@@ -38,8 +38,7 @@ def test_create_app_exposes_launcher_route():
     assert launcher["assets"]["executable"]["present"] is True
     assert launcher["assets"]["source"]["present"] is True
     assert any(
-        command["option"] == "--doctor"
-        for command in launcher["supported_commands"]
+        command["option"] == "--doctor" for command in launcher["supported_commands"]
     )
 
 

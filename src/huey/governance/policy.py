@@ -35,7 +35,8 @@ class PolicyEnforcer:
             Rule(
                 "remote-control",
                 "Require explicit opt-in for remote control actions.",
-                lambda payload: not payload.get("remote_control") or bool(payload.get("allowed")),
+                lambda payload: not payload.get("remote_control")
+                or bool(payload.get("allowed")),
             )
         )
 

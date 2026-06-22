@@ -61,10 +61,7 @@ class ModelRegistry:
         return self._models[selected]
 
     def catalog(self) -> list[dict[str, object]]:
-        return [
-            self._models[name].as_dict()
-            for name in sorted(self._models)
-        ]
+        return [self._models[name].as_dict() for name in sorted(self._models)]
 
 
 __all__ = ["ModelCallable", "ModelRecord", "ModelRegistry"]

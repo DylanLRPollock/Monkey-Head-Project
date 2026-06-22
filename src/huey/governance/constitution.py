@@ -19,8 +19,12 @@ class HueyConstitution:
         self._principles = principles or [
             Principle("safety", "Protect humans, hardware, and data integrity.", 1.3),
             Principle("transparency", "Leave clear traces of decisions and actions."),
-            Principle("resilience", "Prefer reversible and fault-tolerant actions.", 1.1),
-            Principle("autonomy", "Empower local operation before external dependency."),
+            Principle(
+                "resilience", "Prefer reversible and fault-tolerant actions.", 1.1
+            ),
+            Principle(
+                "autonomy", "Empower local operation before external dependency."
+            ),
         ]
 
     def principles(self) -> list[Principle]:

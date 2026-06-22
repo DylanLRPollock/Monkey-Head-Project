@@ -9,7 +9,9 @@ class FernetVault:
     def __init__(self, key: bytes | None = None) -> None:
         try:
             from cryptography.fernet import Fernet
-        except ImportError as exc:  # pragma: no cover - dependency should exist in core env
+        except (
+            ImportError
+        ) as exc:  # pragma: no cover - dependency should exist in core env
             raise RuntimeError("cryptography is required for FernetVault") from exc
         self._fernet_cls = Fernet
         self.key = key or Fernet.generate_key()

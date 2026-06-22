@@ -71,7 +71,9 @@ def write_manifest(output_path: Path, *, overwrite: bool = False) -> dict[str, A
         raise FileExistsError(f"Output exists and overwrite is false: {output_path}")
     manifest = build_manifest()
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    output_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8"
+    )
     return manifest
 
 
@@ -83,11 +85,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
-    manifest = write_manifest(args.output, overwrite=args.overwrite) if args.output else build_manifest()
-    print(json.dumps(manifest, indent=2, sort_keys=True) if args.json or not args.output else f"wrote: {args.output}")
+    manifest = (
+        write_manifest(args.output, overwrite=args.overwrite)
+        if args.output
+        else build_manifest()
+    )
+    print(
+        json.dumps(manifest, indent=2, sort_keys=True)
+        if args.json or not args.output
+        else f"wrote: {args.output}"
+    )
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

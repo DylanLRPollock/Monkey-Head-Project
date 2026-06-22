@@ -28,7 +28,10 @@ class ProtocolEnvelope:
         return cls(
             topic=str(data["topic"]),
             payload=dict(data.get("payload", {})),
-            headers={str(key): str(value) for key, value in dict(data.get("headers", {})).items()},
+            headers={
+                str(key): str(value)
+                for key, value in dict(data.get("headers", {})).items()
+            },
         )
 
 

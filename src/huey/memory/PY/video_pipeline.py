@@ -28,8 +28,12 @@ def build_video_preview(
     manifest_path = target_dir / f"{source_path.stem}.video.manifest.json"
 
     probe = media_manager.probe(source_path)
-    thumbnail_result = media_manager.thumbnail(source_path, thumbnail_path, overwrite=overwrite)
-    audio_result = media_manager.extract_audio(source_path, audio_path, overwrite=overwrite)
+    thumbnail_result = media_manager.thumbnail(
+        source_path, thumbnail_path, overwrite=overwrite
+    )
+    audio_result = media_manager.extract_audio(
+        source_path, audio_path, overwrite=overwrite
+    )
 
     manifest = MediaManifest(
         source_path=str(source_path),
@@ -37,7 +41,9 @@ def build_video_preview(
         probe=probe,
         artifacts=[
             MediaArtifact(kind="image", path=str(thumbnail_path), role="thumbnail"),
-            MediaArtifact(kind="audio", path=str(audio_path), role="extracted_transcription_audio"),
+            MediaArtifact(
+                kind="audio", path=str(audio_path), role="extracted_transcription_audio"
+            ),
         ],
         commands=[thumbnail_result.command, audio_result.command],
         metadata={"preserves_source": True},
@@ -56,6 +62,7 @@ def extract_video_frame(
 ) -> Path:
     """Extract one frame from ``source`` and return the output path."""
     media_manager = manager or FFmpegManager()
-    media_manager.extract_frame(source, output, frame_number=frame_number, overwrite=overwrite)
+    media_manager.extract_frame(
+        source, output, frame_number=frame_number, overwrite=overwrite
+    )
     return Path(output)
-

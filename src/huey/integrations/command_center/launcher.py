@@ -6,12 +6,7 @@ from pathlib import Path
 
 LAUNCHER_VERSION = "0.2.0"
 LAUNCHER_ASSET_DIR = (
-    Path("src")
-    / "huey"
-    / "platform"
-    / "installers"
-    / "windows"
-    / "launcher"
+    Path("src") / "huey" / "platform" / "installers" / "windows" / "launcher"
 )
 LAUNCHER_EXECUTABLE = LAUNCHER_ASSET_DIR / "HueyOS-Launcher-Setup.exe"
 LAUNCHER_SOURCE = LAUNCHER_ASSET_DIR / "hueyos_launcher.go"

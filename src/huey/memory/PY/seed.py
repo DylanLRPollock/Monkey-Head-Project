@@ -40,7 +40,9 @@ def build_seed_data(project_root: Path) -> dict[str, Any]:
     }
 
 
-def write_seed_data(project_root: Path, output_path: Path, *, overwrite: bool = False) -> dict[str, Any]:
+def write_seed_data(
+    project_root: Path, output_path: Path, *, overwrite: bool = False
+) -> dict[str, Any]:
     """Write seed data to JSON without overwriting by default."""
 
     output_path = Path(output_path)
@@ -66,10 +68,13 @@ def main(argv: list[str] | None = None) -> int:
         if args.output
         else build_seed_data(args.project_root)
     )
-    print(json.dumps(data, indent=2, sort_keys=True) if args.json or not args.output else f"wrote: {args.output}")
+    print(
+        json.dumps(data, indent=2, sort_keys=True)
+        if args.json or not args.output
+        else f"wrote: {args.output}"
+    )
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

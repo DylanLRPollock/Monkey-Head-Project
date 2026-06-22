@@ -58,7 +58,10 @@ class MediaManifest:
         if output_path.exists() and not overwrite:
             raise FileExistsError(f"Manifest already exists: {output_path}")
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        output_path.write_text(
+            json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
         return output_path
 
 
@@ -68,4 +71,3 @@ def read_manifest(path: str | Path) -> dict[str, Any]:
     if not manifest_path.is_file():
         raise FileNotFoundError(f"Manifest not found: {manifest_path}")
     return json.loads(manifest_path.read_text(encoding="utf-8"))
-

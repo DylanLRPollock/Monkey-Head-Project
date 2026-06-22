@@ -13,7 +13,9 @@ class InterfaceController:
     def __init__(self) -> None:
         self.adaptive = AdaptiveUIEngine()
 
-    def present(self, status: dict[str, object], *, mode: str = "summary") -> dict[str, object]:
+    def present(
+        self, status: dict[str, object], *, mode: str = "summary"
+    ) -> dict[str, object]:
         profile = self.adaptive.choose(mode=mode)
         return {
             "profile": profile,

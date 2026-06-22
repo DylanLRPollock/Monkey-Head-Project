@@ -15,4 +15,3 @@ def test_build_seed_data(monkeypatch, tmp_path: Path) -> None:
     data = seed.build_seed_data(tmp_path)
     assert data["schema"] == "huey.command_center.seed"
     assert "live microphone capture" in data["deferred_by_default"]
-

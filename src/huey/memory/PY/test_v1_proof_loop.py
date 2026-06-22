@@ -32,7 +32,9 @@ def test_proof_loop_with_patched_audio(tmp_path: Path, monkeypatch) -> None:
             overwrite=True,
         )
 
-    monkeypatch.setattr("huey.v1.proof_loop.prepare_audio_for_transcription", fake_prepare)
+    monkeypatch.setattr(
+        "huey.v1.proof_loop.prepare_audio_for_transcription", fake_prepare
+    )
     log = StructuredRunLog(tmp_path / "run.jsonl")
     result = ProofLoop(response_bridge=ResponseBridge(), run_log=log).run(
         source,
@@ -43,4 +45,3 @@ def test_proof_loop_with_patched_audio(tmp_path: Path, monkeypatch) -> None:
     assert result.prepared_audio.exists()
     assert "hello huey" in result.response
     assert log.read()[0]["event_type"] == "proof_loop.completed"
-

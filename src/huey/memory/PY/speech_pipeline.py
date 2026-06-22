@@ -29,7 +29,9 @@ def prepare_audio_for_transcription(
     manifest_path = target_dir / f"{source_path.stem}.transcription.manifest.json"
 
     probe = media_manager.probe(source_path)
-    result = media_manager.prepare_transcription_wav(source_path, wav_path, overwrite=overwrite)
+    result = media_manager.prepare_transcription_wav(
+        source_path, wav_path, overwrite=overwrite
+    )
 
     manifest = MediaManifest(
         source_path=str(source_path),
@@ -40,7 +42,11 @@ def prepare_audio_for_transcription(
                 kind="audio",
                 path=str(wav_path),
                 role="transcription_wav",
-                metadata={"channels": 1, "sample_rate_hz": TRANSCRIPTION_SAMPLE_RATE, "codec": "pcm_s16le"},
+                metadata={
+                    "channels": 1,
+                    "sample_rate_hz": TRANSCRIPTION_SAMPLE_RATE,
+                    "codec": "pcm_s16le",
+                },
             )
         ],
         commands=[result.command],
@@ -48,4 +54,3 @@ def prepare_audio_for_transcription(
     )
     manifest.write_json(manifest_path, overwrite=overwrite)
     return manifest
-

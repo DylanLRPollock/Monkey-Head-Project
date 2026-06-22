@@ -12,14 +12,21 @@ class PowerController:
 
     def allocate(self, subsystem: str, watts: float) -> dict[str, object]:
         self._allocations[subsystem] = watts
-        return {"subsystem": subsystem, "watts": watts, "remaining": self.remaining_watts}
+        return {
+            "subsystem": subsystem,
+            "watts": watts,
+            "remaining": self.remaining_watts,
+        }
 
     @property
     def remaining_watts(self) -> float:
         return round(self.budget_watts - sum(self._allocations.values()), 2)
 
     def snapshot(self) -> dict[str, object]:
-        return {"budget_watts": self.budget_watts, "allocations": dict(self._allocations)}
+        return {
+            "budget_watts": self.budget_watts,
+            "allocations": dict(self._allocations),
+        }
 
 
 __all__ = ["PowerController"]

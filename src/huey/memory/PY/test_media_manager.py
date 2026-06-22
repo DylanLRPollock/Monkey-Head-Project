@@ -26,4 +26,3 @@ def test_existing_output_requires_overwrite(tmp_path: Path) -> None:
 def test_command_result_is_json_safe(tmp_path: Path) -> None:
     result = CommandResult(0, "", "", ["ffmpeg"], tmp_path / "out.wav")
     assert result.to_json_dict()["output_path"].endswith("out.wav")
-

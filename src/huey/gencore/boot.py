@@ -32,7 +32,9 @@ class BootSequence:
         *,
         required: bool = True,
     ) -> BootStage:
-        stage = BootStage(name=name, description=description, check=check, required=required)
+        stage = BootStage(
+            name=name, description=description, check=check, required=required
+        )
         self._stages.append(stage)
         return stage
 

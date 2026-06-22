@@ -31,7 +31,9 @@ class AudioAnalysis:
         return asdict(self)
 
 
-def analyze_audio(source: str | Path, *, manager: FFmpegManager | None = None) -> AudioAnalysis:
+def analyze_audio(
+    source: str | Path, *, manager: FFmpegManager | None = None
+) -> AudioAnalysis:
     """Analyze duration, stream basics, volume, and silence regions."""
     media_manager = manager or FFmpegManager()
     source_path = Path(source)
@@ -39,7 +41,9 @@ def analyze_audio(source: str | Path, *, manager: FFmpegManager | None = None) -
         raise FileNotFoundError(f"Audio source not found: {source_path}")
 
     probe = media_manager.probe(source_path)
-    audio_stream = next((stream for stream in probe.streams if stream.get("codec_type") == "audio"), {})
+    audio_stream = next(
+        (stream for stream in probe.streams if stream.get("codec_type") == "audio"), {}
+    )
 
     volume_result = media_manager.run(
         [
@@ -90,4 +94,3 @@ def _optional_int(value: object) -> int | None:
         return None if value is None else int(value)
     except (TypeError, ValueError):
         return None
-

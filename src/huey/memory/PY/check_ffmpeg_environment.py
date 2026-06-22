@@ -11,17 +11,27 @@ from huey.media.ffmpeg_validator import validate_ffmpeg_environment
 
 def build_parser() -> argparse.ArgumentParser:
     """Build the command-line parser."""
-    parser = argparse.ArgumentParser(description="Check FFmpeg readiness for HueyOS V1 media preparation.")
-    parser.add_argument("--ffmpeg-bin", default="ffmpeg", help="FFmpeg binary name or path.")
-    parser.add_argument("--ffprobe-bin", default="ffprobe", help="ffprobe binary name or path.")
-    parser.add_argument("--json", action="store_true", help="Print machine-readable JSON.")
+    parser = argparse.ArgumentParser(
+        description="Check FFmpeg readiness for HueyOS V1 media preparation."
+    )
+    parser.add_argument(
+        "--ffmpeg-bin", default="ffmpeg", help="FFmpeg binary name or path."
+    )
+    parser.add_argument(
+        "--ffprobe-bin", default="ffprobe", help="ffprobe binary name or path."
+    )
+    parser.add_argument(
+        "--json", action="store_true", help="Print machine-readable JSON."
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     """Run the FFmpeg readiness check."""
     args = build_parser().parse_args(argv)
-    report = validate_ffmpeg_environment(ffmpeg_bin=args.ffmpeg_bin, ffprobe_bin=args.ffprobe_bin)
+    report = validate_ffmpeg_environment(
+        ffmpeg_bin=args.ffmpeg_bin, ffprobe_bin=args.ffprobe_bin
+    )
     if args.json:
         print(report.to_json())
     else:
@@ -34,4 +44,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

@@ -11,21 +11,18 @@ streaming.  It is intentionally lightweight so that downstream projects can
 extend the robotics stack without touching core application code.
 """
 
+from .actuators import ActuatorHub
+from .cooling import CoolingController
+from .gpio import GPIOController
+from .legacy import LegacyHardwareBridge
 from .manager import (
     ActuatorManager,
     SensorManager,
     create_default_actuator_manager,
     create_default_sensor_manager,
 )
-from .actuators import ActuatorHub
-from .cooling import CoolingController
-from .gpio import GPIOController
-from .legacy import LegacyHardwareBridge
 from .motherboard import MotherboardProfile
 from .optane import OptaneManager
-from .power import PowerController
-from .sensors import SensorHub
-from .serial import SerialBus
 from .plugins import (
     ActuatorPlugin,
     ActuatorRegistry,
@@ -36,6 +33,9 @@ from .plugins import (
     list_sensor_plugin_metadata,
     list_sensor_plugins,
 )
+from .power import PowerController
+from .sensors import SensorHub
+from .serial import SerialBus
 
 __all__ = [
     "ActuatorManager",

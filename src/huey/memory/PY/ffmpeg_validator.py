@@ -34,7 +34,12 @@ def validate_ffmpeg_environment(
     *,
     ffmpeg_bin: str = "ffmpeg",
     ffprobe_bin: str = "ffprobe",
-    required_filters: Sequence[str] = ("loudnorm", "silencedetect", "showwavespic", "showspectrumpic"),
+    required_filters: Sequence[str] = (
+        "loudnorm",
+        "silencedetect",
+        "showwavespic",
+        "showspectrumpic",
+    ),
 ) -> FFmpegValidationReport:
     """Check binaries and filters needed for Phase 1 media work."""
     ffmpeg_available = shutil.which(ffmpeg_bin) is not None
@@ -78,8 +83,13 @@ def _version_line(binary: str) -> str | None:
 
 
 def _command_stdout(command: Sequence[str]) -> str:
-    completed = subprocess.run(list(command), check=False, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    completed = subprocess.run(
+        list(command),
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
     if completed.returncode != 0:
         return ""
     return completed.stdout or ""
-

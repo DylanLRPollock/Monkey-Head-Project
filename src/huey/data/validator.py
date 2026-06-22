@@ -6,7 +6,9 @@ from typing import Any
 
 
 def validate_required_fields(record: dict[str, object], fields: list[str]) -> list[str]:
-    return [field for field in fields if field not in record or record[field] in {"", None}]
+    return [
+        field for field in fields if field not in record or record[field] in {"", None}
+    ]
 
 
 def validate_schema(
@@ -19,7 +21,9 @@ def validate_schema(
             errors[field] = "missing"
             continue
         if not isinstance(value, expected_type):
-            errors[field] = f"expected {expected_type.__name__}, got {type(value).__name__}"
+            errors[field] = (
+                f"expected {expected_type.__name__}, got {type(value).__name__}"
+            )
     return errors
 
 

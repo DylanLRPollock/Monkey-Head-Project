@@ -19,7 +19,9 @@ class TransformerBlock:
         tokens = self.tokenizer.tokenize(text)
         counts = self.tokenizer.token_counts(text)
         query = embed_text(text)
-        candidates = {token: embed_text(token, dimensions=len(query)) for token in counts}
+        candidates = {
+            token: embed_text(token, dimensions=len(query)) for token in counts
+        }
         ranked = rank_candidates(query, candidates)
         return {
             "tokens": tokens,

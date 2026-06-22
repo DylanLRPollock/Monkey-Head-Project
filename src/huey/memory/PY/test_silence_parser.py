@@ -14,9 +14,11 @@ class SilenceParserTests(unittest.TestCase):
 
         regions = parse_silencedetect_text(text)
 
-        self.assertEqual(regions, [{"start_seconds": 1.5, "end_seconds": 3.25, "duration_seconds": 1.75}])
+        self.assertEqual(
+            regions,
+            [{"start_seconds": 1.5, "end_seconds": 3.25, "duration_seconds": 1.75}],
+        )
 
 
 if __name__ == "__main__":
     unittest.main()
-

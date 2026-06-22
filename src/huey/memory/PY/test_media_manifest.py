@@ -14,7 +14,11 @@ class MediaManifestTests(unittest.TestCase):
             manifest = MediaManifest(
                 source_path="fixture.mp3",
                 operation="test",
-                artifacts=[MediaArtifact(kind="audio", path="out.wav", role="transcription_wav")],
+                artifacts=[
+                    MediaArtifact(
+                        kind="audio", path="out.wav", role="transcription_wav"
+                    )
+                ],
             )
 
             manifest.write_json(output)
@@ -25,7 +29,9 @@ class MediaManifestTests(unittest.TestCase):
     def test_manifest_round_trip(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             output = Path(temp_dir) / "manifest.json"
-            MediaManifest(source_path="fixture.mp3", operation="test").write_json(output)
+            MediaManifest(source_path="fixture.mp3", operation="test").write_json(
+                output
+            )
 
             loaded = read_manifest(output)
 
@@ -35,4 +41,3 @@ class MediaManifestTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

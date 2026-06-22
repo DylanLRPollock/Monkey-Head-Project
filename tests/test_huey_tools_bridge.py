@@ -50,7 +50,9 @@ def test_run_script_uses_list_command_and_no_shell(tmp_path, monkeypatch) -> Non
     def fake_run(command, **kwargs):
         captured["command"] = command
         captured["shell"] = kwargs.get("shell")
-        return subprocess.CompletedProcess(command, 0, stdout='{"ready": true}', stderr="")
+        return subprocess.CompletedProcess(
+            command, 0, stdout='{"ready": true}', stderr=""
+        )
 
     monkeypatch.setattr(
         "huey.connectors.pyhuey.plugin.huey_tools.bridge.subprocess.run",
@@ -100,7 +102,9 @@ def test_prepare_audio_calls_fixed_script(tmp_path, monkeypatch) -> None:
 
     def fake_run(command, **kwargs):
         payload = {"output_path": str(project / "input.prepared.wav"), "exists": True}
-        return subprocess.CompletedProcess(command, 0, stdout=json.dumps(payload), stderr="")
+        return subprocess.CompletedProcess(
+            command, 0, stdout=json.dumps(payload), stderr=""
+        )
 
     monkeypatch.setattr(
         "huey.connectors.pyhuey.plugin.huey_tools.bridge.subprocess.run",

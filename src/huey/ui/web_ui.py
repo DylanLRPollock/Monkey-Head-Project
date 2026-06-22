@@ -18,7 +18,9 @@ class WebInterface:
             "/agents": "agent overview",
         }
 
-    def render(self, status: dict[str, object], *, mode: str = "summary") -> dict[str, object]:
+    def render(
+        self, status: dict[str, object], *, mode: str = "summary"
+    ) -> dict[str, object]:
         presentation = self.controller.present(status, mode=mode)
         return {
             "routes": self.routes(),

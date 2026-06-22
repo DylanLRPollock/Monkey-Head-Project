@@ -10,7 +10,9 @@ from .pdf_parser import parse_pdf_bytes
 from .text_parser import normalize_text, split_sentences, token_frequency
 
 
-def parse_data(payload: bytes | str | dict[str, Any], *, source: str = "") -> dict[str, object]:
+def parse_data(
+    payload: bytes | str | dict[str, Any], *, source: str = ""
+) -> dict[str, object]:
     if isinstance(payload, dict):
         return {"kind": "mapping", "data": dict(payload)}
     if isinstance(payload, bytes):

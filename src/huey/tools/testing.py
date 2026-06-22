@@ -13,7 +13,9 @@ def build_fixture_payload(**overrides: object) -> dict[str, object]:
     return payload
 
 
-def assert_mapping_subset(expected: dict[str, object], actual: dict[str, object]) -> None:
+def assert_mapping_subset(
+    expected: dict[str, object], actual: dict[str, object]
+) -> None:
     for key, value in expected.items():
         assert key in actual, f"Missing key: {key}"
         assert actual[key] == value, f"Unexpected value for {key}: {actual[key]!r}"

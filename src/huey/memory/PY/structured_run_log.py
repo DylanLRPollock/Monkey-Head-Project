@@ -46,7 +46,9 @@ class StructuredRunLog:
                 try:
                     records.append(json.loads(line))
                 except json.JSONDecodeError as exc:
-                    raise ValueError(f"Invalid JSONL at line {line_number}: {exc}") from exc
+                    raise ValueError(
+                        f"Invalid JSONL at line {line_number}: {exc}"
+                    ) from exc
         return records
 
 
@@ -64,7 +66,9 @@ def main(argv: list[str] | None = None) -> int:
     log = StructuredRunLog(args.log_path)
     if args.command == "append":
         payload = json.loads(args.payload_json)
-        print(json.dumps(log.append(args.event_type, payload), indent=2, sort_keys=True))
+        print(
+            json.dumps(log.append(args.event_type, payload), indent=2, sort_keys=True)
+        )
     elif args.command == "read":
         print(json.dumps(log.read(), indent=2, sort_keys=True))
     return 0
@@ -72,4 +76,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

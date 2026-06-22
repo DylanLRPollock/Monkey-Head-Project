@@ -52,4 +52,3 @@ def parse_silencedetect_lines(lines: Iterable[str]) -> list[SilenceRegion]:
 def parse_silencedetect_text(text: str) -> list[dict[str, float | None]]:
     """Parse FFmpeg stderr text into JSON-safe silence region dictionaries."""
     return [region.to_dict() for region in parse_silencedetect_lines(text.splitlines())]
-

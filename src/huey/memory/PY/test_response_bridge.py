@@ -15,4 +15,3 @@ def test_api_mode_requires_environment(monkeypatch) -> None:
     monkeypatch.delenv("HUEY_RESPONSE_API_KEY", raising=False)
     with pytest.raises(RuntimeError):
         ResponseBridge("api").respond("hello")
-

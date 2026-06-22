@@ -13,7 +13,6 @@ from huey.settings import RuntimeSettings
 from huey.storage.honeycomb import HoneycombStore
 from huey.wsgi import application
 
-
 EXPECTED_MODULES = (
     "huey",
     "huey.main",

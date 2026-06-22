@@ -68,21 +68,24 @@ class FixtureRegistry:
             for fixture_id, record in data.get("fixtures", {}).items()
         }
 
-    def save(self, records: dict[str, FixtureRecord], *, overwrite: bool = True) -> None:
+    def save(
+        self, records: dict[str, FixtureRecord], *, overwrite: bool = True
+    ) -> None:
         """Persist fixture records as sorted JSON."""
 
         if self.registry_path.exists() and not overwrite:
-            raise FileExistsError(f"Registry exists and overwrite is false: {self.registry_path}")
+            raise FileExistsError(
+                f"Registry exists and overwrite is false: {self.registry_path}"
+            )
         self.registry_path.parent.mkdir(parents=True, exist_ok=True)
         data = {
             "schema": "huey.v1.fixture_registry",
             "updated_at": datetime.now(UTC).isoformat(),
-            "fixtures": {
-                key: records[key].to_json_dict()
-                for key in sorted(records)
-            },
+            "fixtures": {key: records[key].to_json_dict() for key in sorted(records)},
         }
-        self.registry_path.write_text(json.dumps(data, indent=2, sort_keys=True), encoding="utf-8")
+        self.registry_path.write_text(
+            json.dumps(data, indent=2, sort_keys=True), encoding="utf-8"
+        )
 
     def register(
         self,
@@ -158,10 +161,15 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(json.dumps(record.to_json_dict(), indent=2, sort_keys=True))
     elif args.command == "list":
-        print(json.dumps({k: v.to_json_dict() for k, v in registry.load().items()}, indent=2, sort_keys=True))
+        print(
+            json.dumps(
+                {k: v.to_json_dict() for k, v in registry.load().items()},
+                indent=2,
+                sort_keys=True,
+            )
+        )
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

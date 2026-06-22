@@ -11,4 +11,3 @@ def test_append_and_read_jsonl(tmp_path: Path) -> None:
     records = log.read()
     assert records[0]["event_id"] == event["event_id"]
     assert records[0]["payload"]["ok"] is True
-

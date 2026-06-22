@@ -16,4 +16,3 @@ def test_validator_main_json(monkeypatch, capsys) -> None:
     exit_code = ffmpeg_validator.main(["--json"])
     assert exit_code == 0
     assert '"available": false' in capsys.readouterr().out
-

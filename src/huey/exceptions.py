@@ -41,6 +41,7 @@ class HardwareError(HueyError):
 class NetworkError(HueyError):
     """Raised when network orchestration fails."""
 
+
 __all__ = [
     "HueyError",
     "DataNotFoundError",

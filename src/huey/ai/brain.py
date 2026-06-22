@@ -22,7 +22,11 @@ class HueyBrain:
         self.inference = InferenceEngine(self.registry)
 
     def think(
-        self, prompt: str, *, context: dict[str, object] | None = None, model: str | None = None
+        self,
+        prompt: str,
+        *,
+        context: dict[str, object] | None = None,
+        model: str | None = None,
     ) -> dict[str, object]:
         return self.inference.run(
             InferenceRequest(prompt=prompt, context=dict(context or {}), model=model)

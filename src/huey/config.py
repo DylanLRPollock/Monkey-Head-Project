@@ -84,6 +84,7 @@ def build_runtime_config(
         metadata=resolved_metadata,
     )
 
+
 __all__ = [
     "RuntimeConfig",
     "build_runtime_config",

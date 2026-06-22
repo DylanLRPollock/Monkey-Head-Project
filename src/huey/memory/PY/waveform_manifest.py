@@ -28,8 +28,12 @@ def generate_waveform_manifest(
     manifest_path = target_dir / f"{source_path.stem}.preview.manifest.json"
 
     probe = media_manager.probe(source_path)
-    waveform_result = media_manager.waveform(source_path, waveform_path, overwrite=overwrite)
-    spectrogram_result = media_manager.spectrogram(source_path, spectrogram_path, overwrite=overwrite)
+    waveform_result = media_manager.waveform(
+        source_path, waveform_path, overwrite=overwrite
+    )
+    spectrogram_result = media_manager.spectrogram(
+        source_path, spectrogram_path, overwrite=overwrite
+    )
 
     manifest = MediaManifest(
         source_path=str(source_path),
@@ -44,4 +48,3 @@ def generate_waveform_manifest(
     )
     manifest.write_json(manifest_path, overwrite=overwrite)
     return manifest
-

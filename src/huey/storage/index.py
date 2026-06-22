@@ -10,7 +10,9 @@ class StorageIndex:
         self._labels: dict[str, set[str]] = {}
         self._clusters: dict[str, set[str]] = {}
 
-    def add(self, key: str, *, labels: list[str] | None = None, cluster: str = "") -> None:
+    def add(
+        self, key: str, *, labels: list[str] | None = None, cluster: str = ""
+    ) -> None:
         for label in labels or []:
             self._labels.setdefault(label, set()).add(key)
         if cluster:

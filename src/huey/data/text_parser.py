@@ -13,7 +13,9 @@ def split_sentences(text: str) -> list[str]:
     normalized = normalize_text(text)
     if not normalized:
         return []
-    return [part.strip() for part in re.split(r"(?<=[.!?])\s+", normalized) if part.strip()]
+    return [
+        part.strip() for part in re.split(r"(?<=[.!?])\s+", normalized) if part.strip()
+    ]
 
 
 def token_frequency(text: str) -> dict[str, int]:

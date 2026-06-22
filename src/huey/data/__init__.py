@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from .parsers import AudioParseResult, AudioParser, VideoParseResult, VideoParser
 from .extractor import extract_key_values, extract_sections
 from .loader import load_data, load_text
 from .parser import parse_data
+from .parsers import AudioParser, AudioParseResult, VideoParser, VideoParseResult
 from .pdf_parser import parse_pdf_bytes
 from .text_parser import normalize_text, split_sentences
 from .transformer import transform_records

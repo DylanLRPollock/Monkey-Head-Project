@@ -23,4 +23,3 @@ def test_register_refuses_duplicate_without_overwrite(tmp_path: Path) -> None:
     registry.register("known-audio", fixture)
     with pytest.raises(ValueError):
         registry.register("known-audio", fixture)
-

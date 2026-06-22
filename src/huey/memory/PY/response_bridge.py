@@ -70,10 +70,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
     result = ResponseBridge(args.mode).respond(args.prompt)
-    print(json.dumps(result.to_json_dict(), indent=2, sort_keys=True) if args.json else result.response)
+    print(
+        json.dumps(result.to_json_dict(), indent=2, sort_keys=True)
+        if args.json
+        else result.response
+    )
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

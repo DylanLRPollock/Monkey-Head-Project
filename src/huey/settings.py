@@ -45,9 +45,7 @@ class RuntimeSettings:
     hardware_enabled: bool = True
 
     @classmethod
-    def from_env(
-        cls, environ: Mapping[str, str] | None = None
-    ) -> "RuntimeSettings":
+    def from_env(cls, environ: Mapping[str, str] | None = None) -> "RuntimeSettings":
         env = dict(os.environ if environ is None else environ)
         return cls(
             environment=env.get("HUEY_ENV", DEFAULT_ENVIRONMENT),

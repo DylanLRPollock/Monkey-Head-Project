@@ -38,7 +38,9 @@ class BaseAgent:
             "fit": float(meta.get("fit", 0.65)),
         }
         constraints = [str(item) for item in meta.get("constraints", ())]
-        return DecisionContext(goal=task, signals=signals, constraints=constraints, metadata=meta)
+        return DecisionContext(
+            goal=task, signals=signals, constraints=constraints, metadata=meta
+        )
 
     def respond(
         self, task: str, *, metadata: dict[str, object] | None = None

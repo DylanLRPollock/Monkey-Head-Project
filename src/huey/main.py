@@ -25,7 +25,6 @@ except ModuleNotFoundError:  # pragma: no cover - source checkout namespace
             return {"available": False, "reason": "torch is not installed"}
 
 
-from .pyhuey_integration import pyhuey_status as get_pyhuey_status
 from .agents.agent_manager import AgentManager
 from .ai.brain import HueyBrain
 from .bridges.api_bridge import ApiBridge
@@ -35,6 +34,7 @@ from .config import RuntimeConfig, build_runtime_config
 from .gencore.kernel import GenCoreKernel
 from .governance.policy import PolicyEnforcer
 from .logger import configure_logging
+from .pyhuey_integration import pyhuey_status as get_pyhuey_status
 from .settings import RuntimeSettings
 from .storage.honeycomb import HoneycombStore
 from .ui.interface import InterfaceController

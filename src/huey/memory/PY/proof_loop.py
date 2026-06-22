@@ -77,11 +77,14 @@ class ProofLoop:
             created_at=datetime.now(UTC).isoformat(),
         )
         if self.run_log:
-            self.run_log.append("proof_loop.completed", {
-                "result": result.to_json_dict(),
-                "audio_manifest": manifest.to_json_dict(),
-                "response": response.to_json_dict(),
-            })
+            self.run_log.append(
+                "proof_loop.completed",
+                {
+                    "result": result.to_json_dict(),
+                    "audio_manifest": manifest.to_json_dict(),
+                    "response": response.to_json_dict(),
+                },
+            )
         return result
 
 
@@ -103,10 +106,13 @@ def main(argv: list[str] | None = None) -> int:
         transcript_text=args.transcript_text,
         overwrite=args.overwrite,
     )
-    print(json.dumps(result.to_json_dict(), indent=2, sort_keys=True) if args.json else result.response)
+    print(
+        json.dumps(result.to_json_dict(), indent=2, sort_keys=True)
+        if args.json
+        else result.response
+    )
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

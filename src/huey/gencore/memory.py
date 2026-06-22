@@ -44,7 +44,9 @@ class MemoryManager:
     def used_capacity(self) -> int:
         return sum(page.size for page in self._pages.values())
 
-    def allocate(self, key: str, value: Any, *, namespace: str = "global") -> MemoryPage:
+    def allocate(
+        self, key: str, value: Any, *, namespace: str = "global"
+    ) -> MemoryPage:
         page = MemoryPage(
             key=key,
             value=value,

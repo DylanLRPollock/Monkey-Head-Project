@@ -118,7 +118,9 @@ class GenCoreKernel:
         priority: int = 100,
         payload: dict[str, object] | None = None,
     ) -> dict[str, object]:
-        return self.scheduler.schedule(name, priority=priority, payload=payload).as_dict()
+        return self.scheduler.schedule(
+            name, priority=priority, payload=payload
+        ).as_dict()
 
     def emit_interrupt(
         self, code: str, source: str, payload: dict[str, object] | None = None
