@@ -3,25 +3,11 @@
 # www.dlrp.ca
 # HueyOS: Test Error Handler module (tests)
 
-import importlib.util
 import logging
-import sys
-import types
-from pathlib import Path
 
 import pytest
 
-PACKAGE_ROOT = Path(__file__).resolve().parents[1] / "huey" / "memory" / "PY"
-spec = importlib.util.spec_from_file_location(
-    "huey.os.error_handler",
-    PACKAGE_ROOT / "error_handler.py",
-    submodule_search_locations=[str(PACKAGE_ROOT)],
-)
-module = importlib.util.module_from_spec(spec)
-sys.modules.setdefault("hueyos", types.ModuleType("hueyos"))
-sys.modules["huey.os.error_handler"] = module
-spec.loader.exec_module(module)  # type: ignore[union-attr]
-ErrorHandler = module.ErrorHandler
+from huey.os.error_handler import ErrorHandler
 
 
 def test_handle_exception_logs_and_reraises(tmp_path, caplog):
