@@ -41,9 +41,9 @@ except ImportError:  # pragma: no cover - can't import GUI libs
 from huey.config_toggle_gui import run_config_toggle_gui
 from huey.gui_scaling import apply_scaling
 from huey.license_gui import show_license_gui
+from huey.media.media_conversion import convert_media
 from huey.memory.PY.ai_tools_gui import run_ai_tools
 from huey.memory.PY.dashboard import launch_dashboard
-from huey.memory.PY.media_conversion import convert_media
 from huey.memory.PY.preload_data import preload_all
 from huey.services.container_management import (
     build_docker_image,

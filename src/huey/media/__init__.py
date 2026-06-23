@@ -1,8 +1,29 @@
-"""HueyOS media preprocessing helpers."""
+"""HueyOS media helpers exposed from the canonical ``huey.media`` package."""
 
+from huey.media.audio_analysis import (
+    AudioAnalysis,
+    analyze_audio,
+)
+from huey.media.convert_mkv_to_mp4 import convert_mkv_to_mp4
+from huey.media.convert_png_to_jpeg import convert_png_to_jpeg
+from huey.media.convert_video_to_gif import convert_video_to_gif
+from huey.media.ffmpeg_validator import (
+    FFmpegValidationReport,
+    check_ffmpeg,
+    check_ffprobe,
+    get_ffmpeg_version,
+    validate_ffmpeg_environment,
+    validate_media_environment,
+)
+from huey.media.media_conversion import (
+    convert_file,
+    convert_media,
+)
 from huey.media.media_manager import (
     AudioTransformOptions,
+    CommandResult,
     FFmpegCommandResult,
+    FFmpegManager,
     FFmpegMediaManager,
     MediaProbeResult,
     check_ffmpeg_available,
@@ -12,36 +33,101 @@ from huey.media.media_manager import (
     extract_frames,
     get_default_manager,
     normalize_audio,
-    prepare_audio_for_transcription,
     probe_media,
     remove_silence,
     resample_audio,
     transcode_video,
 )
+from huey.media.media_manifest import (
+    MediaArtifact,
+    MediaManifest,
+    MediaProbe,
+    read_manifest,
+)
+from huey.media.silence_parser import (
+    SilenceRegion,
+    parse_silencedetect_lines,
+    parse_silencedetect_text,
+)
+from huey.media.speech_pipeline import (
+    convert_to_16khz,
+    convert_to_mono,
+    denoise_audio,
+    generate_transcription_ready_file,
+    normalize_volume,
+    prepare_audio_for_transcription,
+    prepare_for_whisper,
+)
 from huey.media.video_pipeline import (
     VideoFramePreview,
     VideoPipeline,
     VideoPipelineResult,
+    build_video_preview,
+    extract_keyframes,
+    extract_thumbnail,
+    extract_video_frame,
+    split_video,
+    video_duration,
+    video_fps,
+    video_metadata,
 )
+from huey.media.waveform_manifest import generate_waveform_manifest
 
 __all__ = [
     "AudioTransformOptions",
+    "AudioAnalysis",
+    "CommandResult",
+    "analyze_audio",
+    "check_ffmpeg",
     "convert_audio",
+    "convert_file",
+    "convert_mkv_to_mp4",
+    "convert_media",
+    "convert_png_to_jpeg",
+    "convert_to_16khz",
+    "convert_to_mono",
+    "convert_video_to_gif",
+    "check_ffprobe",
+    "denoise_audio",
     "detect_silence",
     "extract_audio",
     "extract_frames",
+    "extract_keyframes",
+    "extract_thumbnail",
     "FFmpegCommandResult",
+    "FFmpegManager",
     "FFmpegMediaManager",
+    "FFmpegValidationReport",
+    "generate_waveform_manifest",
+    "generate_transcription_ready_file",
+    "get_ffmpeg_version",
+    "MediaArtifact",
+    "MediaManifest",
+    "MediaProbe",
     "MediaProbeResult",
     "VideoFramePreview",
     "VideoPipeline",
     "VideoPipelineResult",
+    "build_video_preview",
     "check_ffmpeg_available",
+    "extract_video_frame",
     "get_default_manager",
     "normalize_audio",
+    "normalize_volume",
+    "parse_silencedetect_lines",
+    "parse_silencedetect_text",
     "prepare_audio_for_transcription",
+    "prepare_for_whisper",
     "probe_media",
+    "read_manifest",
     "remove_silence",
     "resample_audio",
+    "SilenceRegion",
+    "split_video",
     "transcode_video",
+    "validate_ffmpeg_environment",
+    "validate_media_environment",
+    "video_duration",
+    "video_fps",
+    "video_metadata",
 ]

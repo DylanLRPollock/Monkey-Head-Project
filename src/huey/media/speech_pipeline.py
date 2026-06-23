@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from huey.media.media_manager import (
+    FFmpegManager,
     _coerce_path,
     _ensure_source,
     _run_ffmpeg,
@@ -12,7 +13,10 @@ from huey.media.media_manager import (
 from huey.media.media_manager import normalize_audio as _normalize_audio
 from huey.media.media_manager import remove_silence as _remove_silence
 from huey.media.media_manager import resample_audio as _resample_audio
+from huey.media.media_manifest import MediaArtifact, MediaManifest
 from huey.utils.paths import ensure_subdirectory
+
+TRANSCRIPTION_SAMPLE_RATE = 16000
 
 
 def normalize_volume(source: str | Path, target: str | Path) -> Path:
@@ -93,6 +97,71 @@ def generate_transcription_ready_file(
     return final_path
 
 
+def _command_list(result: object) -> list[str]:
+    command = getattr(result, "command", None)
+    if isinstance(command, list):
+        return [str(part) for part in command]
+    return []
+
+
+def prepare_audio_for_transcription(
+    source: str | Path,
+    output_path: str | Path,
+    *,
+    manager: FFmpegManager | object | None = None,
+    overwrite: bool = False,
+) -> MediaManifest:
+    """Prepare an audio file and return a manifest describing the derived output."""
+
+    media_manager = manager or FFmpegManager()
+    source_path = _ensure_source(source)
+    target_path = _coerce_path(output_path)
+    if target_path.exists() and not overwrite:
+        raise FileExistsError(f"Output already exists: {target_path}")
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+
+    intermediate_path = target_path.with_name(f"{target_path.stem}.converted.wav")
+    probe = (
+        media_manager.probe(source_path) if hasattr(media_manager, "probe") else None
+    )
+
+    try:
+        convert_result = media_manager.convert_audio(
+            source_path,
+            intermediate_path,
+            sample_rate=TRANSCRIPTION_SAMPLE_RATE,
+            channels=1,
+            overwrite=overwrite,
+        )
+        normalize_result = media_manager.normalize_audio(
+            intermediate_path,
+            target_path,
+            overwrite=overwrite,
+        )
+    finally:
+        if intermediate_path.exists():
+            intermediate_path.unlink()
+
+    return MediaManifest(
+        source_path=str(source_path),
+        operation="prepare_audio_for_transcription",
+        probe=probe,
+        artifacts=[
+            MediaArtifact(
+                kind="audio",
+                path=str(target_path),
+                role="transcription_wav",
+                metadata={
+                    "channels": 1,
+                    "sample_rate_hz": TRANSCRIPTION_SAMPLE_RATE,
+                },
+            )
+        ],
+        commands=[_command_list(convert_result), _command_list(normalize_result)],
+        metadata={"preserves_source": True},
+    )
+
+
 def prepare_for_whisper(
     source: str | Path,
     *,
@@ -109,6 +178,7 @@ __all__ = [
     "denoise_audio",
     "generate_transcription_ready_file",
     "normalize_volume",
+    "prepare_audio_for_transcription",
     "prepare_for_whisper",
     "remove_silence",
 ]

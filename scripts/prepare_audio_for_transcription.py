@@ -12,7 +12,7 @@ SRC_PATH = REPO_ROOT / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from huey.media.speech_pipeline import prepare_for_whisper
+from huey.media.speech_pipeline import prepare_audio_for_transcription
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -38,7 +38,12 @@ def main(argv: list[str] | None = None) -> int:
         raise FileExistsError(
             f"Refusing to overwrite existing output without --overwrite: {output}"
         )
-    prepared = prepare_for_whisper(source, output_path=output)
+    manifest = prepare_audio_for_transcription(
+        source,
+        output,
+        overwrite=args.overwrite,
+    )
+    prepared = Path(manifest.artifacts[0].path)
     payload = {
         "source_path": str(source),
         "output_path": str(prepared),

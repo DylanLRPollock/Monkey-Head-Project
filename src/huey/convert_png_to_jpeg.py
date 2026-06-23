@@ -4,7 +4,7 @@ from __future__ import annotations
 from importlib import import_module
 from typing import Any
 
-_impl = import_module("huey.memory.PY.convert_png_to_jpeg")
+_impl = import_module("huey.media.convert_png_to_jpeg")
 __all__ = getattr(
     _impl, "__all__", [name for name in dir(_impl) if not name.startswith("_")]
 )
