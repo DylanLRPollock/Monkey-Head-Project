@@ -2,12 +2,16 @@
 """Guardrail for obvious dependency drift across pyproject/requirements/constraints.
 
 Checks:
-- direct dependencies declared in pyproject.toml are present in requirements.txt
-- conflicting exact pins between pyproject and requirements.txt
+- tracked dependencies declared in pyproject.toml are present in requirements.txt
+- conflicting exact pins between tracked pyproject deps and requirements.txt
 - conflicting exact pins between constraints.txt and requirements.txt
 
-This intentionally focuses on direct dependencies and exact-pin conflicts; it does not
-attempt to enforce equality for transitive dependencies.
+The tracked set defaults to the supported root requirements surface:
+- [project].dependencies
+- [project.optional-dependencies].dev
+
+Heavier optional groups remain declared in pyproject extras and are validated
+independently when those install surfaces are exercised.
 """
 
 from __future__ import annotations
@@ -51,13 +55,15 @@ def read_requirements_file(path: Path) -> Dict[str, Requirement]:
     return collect_requirements(lines)
 
 
-def load_pyproject_direct_requirements(path: Path) -> Dict[str, Requirement]:
+def load_pyproject_direct_requirements(
+    path: Path, optional_groups: list[str]
+) -> Dict[str, Requirement]:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     project = data.get("project", {})
     deps: list[str] = list(project.get("dependencies", []))
     optional = project.get("optional-dependencies", {})
-    for extra_deps in optional.values():
-        deps.extend(extra_deps)
+    for group in optional_groups:
+        deps.extend(optional.get(group, []))
     return collect_requirements(deps)
 
 
@@ -75,13 +81,25 @@ def main() -> int:
     parser.add_argument("--pyproject", default="pyproject.toml")
     parser.add_argument("--requirements", default="requirements.txt")
     parser.add_argument("--constraints", default="constraints.txt")
+    parser.add_argument(
+        "--optional-group",
+        dest="optional_groups",
+        action="append",
+        default=None,
+        help="Optional pyproject dependency group to mirror into requirements.txt. Repeatable.",
+    )
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args()
 
     if args.self_test:
         return run_self_test()
 
-    pyproject_reqs = load_pyproject_direct_requirements(Path(args.pyproject))
+    if args.optional_groups is None:
+        args.optional_groups = ["dev"]
+
+    pyproject_reqs = load_pyproject_direct_requirements(
+        Path(args.pyproject), args.optional_groups
+    )
     requirements_reqs = read_requirements_file(Path(args.requirements))
     constraints_reqs = read_requirements_file(Path(args.constraints))
 
@@ -113,13 +131,15 @@ def main() -> int:
     had_issue = False
     if missing_from_requirements:
         had_issue = True
-        print("Direct dependencies missing from requirements.txt:")
+        print("Tracked pyproject dependencies missing from requirements.txt:")
         for dep in missing_from_requirements:
             print(f"  - {dep}")
 
     if pyproject_req_conflicts:
         had_issue = True
-        print("Conflicting exact pins between pyproject.toml and requirements.txt:")
+        print(
+            "Conflicting exact pins between tracked pyproject deps and requirements.txt:"
+        )
         for conflict in pyproject_req_conflicts:
             print(f"  - {conflict}")
 

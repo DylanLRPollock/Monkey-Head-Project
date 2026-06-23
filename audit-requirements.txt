@@ -167,8 +167,10 @@ sounddevice==0.5.5
 soundfile==0.13.1
 # System package requirement (not pip-installable):
 # - pavucontrol (PulseAudio/PipeWire volume control UI used by HueyOS pulse profile)
+#
+# Keep the pip pin in constraints.txt only. Exact self-pins break pip-compile-based
+# dependency submission when the runner is executing under a different pip version.
 
-pip==26.1.1
 setuptools==82.0.1
 wheel==0.47.0
 

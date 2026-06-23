@@ -953,7 +953,7 @@ This repository now uses a canonical `src/huey` / `huey.os` layout, with compati
 | `master-plan-v101.1.json` | Canonical machine-facing implementation spec |
 | `src/huey/memory/TXT/03 - Huey_Constitution.txt` | Constitutional / law layer |
 | `src/huey/memory/TXT/00 - TOC_&_Glossary.txt` | Book front matter and glossary |
-| `requirements.txt` | Dependency baseline |
+| `requirements.txt` | Core + dev dependency baseline |
 | `constraints.txt` | Shared install constraints |
 | `pyproject.toml` | Package and install contract |
 | `docs/development/python-support-policy.md` | Python runtime support policy |

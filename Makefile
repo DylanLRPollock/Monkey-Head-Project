@@ -20,7 +20,7 @@ help:
 	@echo "  make install-dev      - install developer extras with constraints"
 	@echo "  make precommit-install- install git hooks"
 	@echo "  make format           - run black + isort"
-	@echo "  make lint             - run drift checks + black/isort/ruff/flake8"
+	@echo "  make lint             - run repo guardrails + black/isort/ruff/flake8"
 	@echo "  make check-drift      - run repository drift checker"
 	@echo "  make check-legacy-hueyos - block new legacy hueyos imports"
 	@echo "  make check-command-center - verify Command Center backend contract"
@@ -52,6 +52,7 @@ lint:
 	$(PYTHON) scripts/repo/check_repo_drift.py
 	$(PYTHON) scripts/repo/check_legacy_hueyos_imports.py
 	$(PYTHON) scripts/check_command_center_contract.py
+	$(PYTHON) scripts/repo/check_dependency_sync.py
 	black --check src tests scripts conftest.py
 	isort --check-only src tests scripts conftest.py
 	ruff check src tests scripts conftest.py

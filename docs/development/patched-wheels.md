@@ -4,7 +4,7 @@ This document defines how to use and audit locally patched wheels without making
 
 ## Scope
 
-- `requirements.txt` remains the portable baseline install for the repository.
+- `requirements.txt` remains the portable core + dev baseline install for the repository.
 - Patched wheel overlays are optional and must be explicitly applied.
 - No absolute local user path (for example `C:\\Users\\...`) may be required for standard installs.
 

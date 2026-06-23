@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inspect the active dependency surface for obvious drift and duplicates."""
+"""Inspect the supported root dependency surface for obvious drift and duplicates."""
 
 from __future__ import annotations
 
@@ -22,12 +22,12 @@ def _parse_requirements(path: Path) -> dict[str, Requirement]:
     return result
 
 
-def _load_pyproject(path: Path) -> dict[str, Requirement]:
+def _load_pyproject(path: Path, optional_groups: list[str]) -> dict[str, Requirement]:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     dependencies: list[str] = list(data.get("project", {}).get("dependencies", []))
     optional = data.get("project", {}).get("optional-dependencies", {})
-    for values in optional.values():
-        dependencies.extend(values)
+    for group in optional_groups:
+        dependencies.extend(optional.get(group, []))
     result: dict[str, Requirement] = {}
     for value in dependencies:
         requirement = Requirement(value)
@@ -36,7 +36,8 @@ def _load_pyproject(path: Path) -> dict[str, Requirement]:
 
 
 def main() -> int:
-    pyproject = _load_pyproject(Path("pyproject.toml"))
+    optional_groups = ["dev"]
+    pyproject = _load_pyproject(Path("pyproject.toml"), optional_groups)
     requirements = _parse_requirements(Path("requirements.txt"))
     constraints = _parse_requirements(Path("constraints.txt"))
 
@@ -56,12 +57,12 @@ def main() -> int:
 
     if missing_from_requirements or missing_from_constraints or orphan_requirements:
         if missing_from_requirements:
-            print("Direct pyproject dependencies missing from requirements.txt:")
+            print("Tracked pyproject dependencies missing from requirements.txt:")
             for name in missing_from_requirements:
                 print(f"  - {name}")
         if missing_from_constraints:
             print(
-                "Direct pyproject dependencies missing from both requirements and constraints:"
+                "Tracked pyproject dependencies missing from both requirements and constraints:"
             )
             for name in missing_from_constraints:
                 print(f"  - {name}")
