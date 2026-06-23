@@ -189,6 +189,8 @@ def test_v1_run_mock_writes_structured_log(tmp_path: Path, capsys):
     output = json.loads(capsys.readouterr().out)
     log_file = Path(output["log_file"])
     assert log_file.exists()
+    assert Path(output["hims_shadow_dir"]).exists()
+    assert (Path(output["hims_shadow_dir"]) / "ledger.jsonl").exists()
     lines = log_file.read_text(encoding="utf-8").strip().splitlines()
     assert len(lines) == 1
 
@@ -242,6 +244,8 @@ def test_v1_run_queue_mock_processes_sorted_and_handles_failures(
     assert output["total"] == 3
     assert output["processed"] == 2
     assert output["failed"] == 1
+    assert Path(output["hims_shadow_dir"]).exists()
+    assert (Path(output["hims_shadow_dir"]) / "ledger.jsonl").exists()
 
     processed_dir = queue_dir / "processed"
     assert (processed_dir / "a-fixture.mp3").exists()
@@ -267,3 +271,5 @@ def test_v1_run_queue_mock_processes_sorted_and_handles_failures(
     assert run_records[1]["exit_status"] == "success"
     assert run_records[2]["exit_status"] == "error"
     assert run_records[2]["error_message_if_any"] == "mock fixture failure"
+    shadow_records = sorted((Path(output["hims_shadow_dir"]) / "records").glob("*.json"))
+    assert len(shadow_records) == 12

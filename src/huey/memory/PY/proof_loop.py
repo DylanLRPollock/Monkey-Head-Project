@@ -9,6 +9,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from huey.hims.shadow import ShadowHIMS
 from huey.media.speech_pipeline import prepare_audio_for_transcription
 from huey.v1.response_bridge import ResponseBridge
 from huey.v1.structured_run_log import StructuredRunLog
@@ -44,9 +45,11 @@ class ProofLoop:
         *,
         response_bridge: ResponseBridge | None = None,
         run_log: StructuredRunLog | None = None,
+        shadow_hims: ShadowHIMS | None = None,
     ) -> None:
         self.response_bridge = response_bridge or ResponseBridge(mode="mock")
         self.run_log = run_log
+        self.shadow_hims = shadow_hims
 
     def run(
         self,
@@ -76,14 +79,30 @@ class ProofLoop:
             response=response.response,
             created_at=datetime.now(UTC).isoformat(),
         )
+        log_event = None
         if self.run_log:
-            self.run_log.append(
+            log_event = self.run_log.append(
                 "proof_loop.completed",
                 {
                     "result": result.to_json_dict(),
                     "audio_manifest": manifest.to_json_dict(),
                     "response": response.to_json_dict(),
                 },
+            )
+        shadow_hims = self.shadow_hims
+        if shadow_hims is None and self.run_log:
+            shadow_hims = ShadowHIMS(self.run_log.log_path.parent / "hims-shadow")
+        if shadow_hims is not None:
+            shadow_hims.emit_proof_loop_record(
+                source_file=source_audio,
+                prepared_audio=prepared_audio,
+                transcript=transcript,
+                response_text=response.response,
+                audio_manifest=manifest.to_json_dict(),
+                response_payload=response.to_json_dict(),
+                structured_log_event_id=(
+                    str(log_event["event_id"]) if log_event is not None else None
+                ),
             )
         return result
 

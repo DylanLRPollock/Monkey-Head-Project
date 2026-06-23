@@ -326,6 +326,7 @@ def _cmd_memory_sort(args: argparse.Namespace) -> int:
 
 
 def _cmd_v1_run(args: argparse.Namespace) -> int:
+    from huey.hims.shadow import ShadowHIMS
     from huey.os.runtime.v1_loop import run_v1_loop
 
     if not args.mock:
@@ -345,6 +346,7 @@ def _cmd_v1_run(args: argparse.Namespace) -> int:
     )
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / "v1-run.jsonl"
+    shadow_hims = ShadowHIMS(log_dir / "hims-shadow")
 
     def _mock_transcribe(_source_file: str) -> dict[str, str]:
         return {
@@ -367,16 +369,28 @@ def _cmd_v1_run(args: argparse.Namespace) -> int:
         with log_path.open("a", encoding="utf-8") as file_obj:
             file_obj.write(json.dumps(record, sort_keys=True) + "\n")
 
-    record = run_v1_loop(source_file, _mock_transcribe, _mock_cognition, _append_jsonl)
+    record = run_v1_loop(
+        source_file,
+        _mock_transcribe,
+        _mock_cognition,
+        _append_jsonl,
+        shadow_hims.emit_run_record,
+    )
     print(
         json.dumps(
-            {"log_file": str(log_path), "run_id": record["run_id"]}, sort_keys=True
+            {
+                "hims_shadow_dir": str(shadow_hims.root),
+                "log_file": str(log_path),
+                "run_id": record["run_id"],
+            },
+            sort_keys=True,
         )
     )
     return 0
 
 
 def _cmd_v1_run_queue(args: argparse.Namespace) -> int:
+    from huey.hims.shadow import ShadowHIMS
     from huey.os.runtime.v1_loop import run_v1_loop
 
     if not args.mock:
@@ -391,6 +405,7 @@ def _cmd_v1_run_queue(args: argparse.Namespace) -> int:
 
     log_dir = Path(args.log_dir).expanduser().resolve()
     log_dir.mkdir(parents=True, exist_ok=True)
+    shadow_hims = ShadowHIMS(log_dir / "hims-shadow")
     processed_dir = queue_dir / "processed"
     processed_dir.mkdir(parents=True, exist_ok=True)
 
@@ -431,7 +446,13 @@ def _cmd_v1_run_queue(args: argparse.Namespace) -> int:
             with target.open("w", encoding="utf-8") as file_obj:
                 json.dump(record, file_obj, sort_keys=True)
 
-        record = run_v1_loop(fixture, _mock_transcribe, _mock_cognition, _write_json)
+        record = run_v1_loop(
+            fixture,
+            _mock_transcribe,
+            _mock_cognition,
+            _write_json,
+            shadow_hims.emit_run_record,
+        )
         if record["exit_status"] == "success":
             fixture.rename(processed_dir / fixture.name)
             processed_count += 1
@@ -447,6 +468,7 @@ def _cmd_v1_run_queue(args: argparse.Namespace) -> int:
                 "total": len(fixtures),
                 "processed": processed_count,
                 "failed": failed_count,
+                "hims_shadow_dir": str(shadow_hims.root),
             },
             sort_keys=True,
         )

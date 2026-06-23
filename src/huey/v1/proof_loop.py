@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from huey.audio.transcription_pipeline import transcribe
+from huey.hims.shadow import ShadowHIMS
 from huey.media.speech_pipeline import prepare_audio_for_transcription
 from huey.os.runtime.v1_loop import run_v1_loop
 from huey.utils.paths import ensure_subdirectory
@@ -51,9 +52,11 @@ class ProofLoop:
         *,
         response_bridge: ResponseBridge | None = None,
         run_log: StructuredRunLog | None = None,
+        shadow_hims: ShadowHIMS | None = None,
     ) -> None:
         self.response_bridge = response_bridge or ResponseBridge(mode="mock")
         self.run_log = run_log
+        self.shadow_hims = shadow_hims
 
     def run(
         self,
@@ -83,14 +86,30 @@ class ProofLoop:
             response=response.response,
             created_at=datetime.now(UTC).isoformat(),
         )
+        log_event = None
         if self.run_log:
-            self.run_log.append(
+            log_event = self.run_log.append(
                 "proof_loop.completed",
                 {
                     "result": result.to_json_dict(),
                     "audio_manifest": manifest.to_json_dict(),
                     "response": response.to_json_dict(),
                 },
+            )
+        shadow_hims = self.shadow_hims
+        if shadow_hims is None and self.run_log:
+            shadow_hims = ShadowHIMS(self.run_log.log_path.parent / "hims-shadow")
+        if shadow_hims is not None:
+            shadow_hims.emit_proof_loop_record(
+                source_file=source_audio,
+                prepared_audio=prepared_audio,
+                transcript=transcript,
+                response_text=response.response,
+                audio_manifest=manifest.to_json_dict(),
+                response_payload=response.to_json_dict(),
+                structured_log_event_id=(
+                    str(log_event["event_id"]) if log_event is not None else None
+                ),
             )
         return result
 
@@ -126,6 +145,7 @@ def run_fixture(
         source_file = str(Path(fixture).expanduser().resolve())
     selected_log_dir = _default_log_dir(Path(log_dir) if log_dir else None)
     jsonl_path = selected_log_dir / "v1-runs.jsonl"
+    shadow_hims = ShadowHIMS(selected_log_dir / "hims-shadow")
 
     def _transcribe(source_path: str) -> dict[str, object] | str:
         if transcribe_func is not None:
@@ -146,7 +166,13 @@ def run_fixture(
             handle.write(json.dumps(record, sort_keys=True))
             handle.write("\n")
 
-    return run_v1_loop(source_file, _transcribe, _cognition, _log_writer)
+    return run_v1_loop(
+        source_file,
+        _transcribe,
+        _cognition,
+        _log_writer,
+        shadow_hims.emit_run_record,
+    )
 
 
 def run_all_fixtures(

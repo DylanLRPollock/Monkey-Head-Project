@@ -87,3 +87,27 @@ def test_v1_loop_writes_jsonl_record(tmp_path: Path):
     assert set(persisted.keys()) == REQUIRED_FIELDS
     assert persisted["transcript"] == "sample transcript"
     assert persisted["response"] == "mock response"
+
+
+def test_v1_loop_calls_shadow_writer(tmp_path: Path):
+    fixture = tmp_path / "fixture.mp3"
+    fixture.write_bytes(b"fake-mp3-content")
+    observed: list[dict] = []
+
+    record = run_v1_loop(
+        fixture,
+        lambda _source_file: {
+            "transcription_engine": "local-mock",
+            "transcription_model": "mock-whisper-small",
+            "transcript": "shadow transcript",
+        },
+        lambda _transcript: {
+            "cognition_provider": "bridge-mock",
+            "cognition_model": "mock-cognition-v1",
+            "response": "shadow response",
+        },
+        lambda _record: None,
+        observed.append,
+    )
+
+    assert observed == [record]

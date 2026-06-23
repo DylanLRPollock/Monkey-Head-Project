@@ -45,3 +45,4 @@ def test_proof_loop_with_patched_audio(tmp_path: Path, monkeypatch) -> None:
     assert result.prepared_audio.exists()
     assert "hello huey" in result.response
     assert log.read()[0]["event_type"] == "proof_loop.completed"
+    assert (tmp_path / "hims-shadow" / "ledger.jsonl").exists()

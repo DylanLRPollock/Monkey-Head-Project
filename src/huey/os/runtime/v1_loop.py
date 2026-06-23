@@ -21,6 +21,7 @@ def run_v1_loop(
     transcribe_func,
     cognition_func,
     log_writer,
+    shadow_writer=None,
 ) -> dict:
     """Run the CI-safe V1 orchestration with injected dependencies.
 
@@ -79,4 +80,6 @@ def run_v1_loop(
     run_record["runtime_seconds"] = round(perf_counter() - start_perf, 6)
 
     log_writer(run_record)
+    if shadow_writer is not None:
+        shadow_writer(run_record)
     return run_record

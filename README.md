@@ -714,6 +714,8 @@ Its purpose is to ensure that meaningful requests can become structured, reviewa
 
 HIMS doctrine remains active, but HIMS runtime is not part of V1.
 
+The current codebase may emit **shadow-mode HIMS** mailbox and ledger artifacts alongside V1 structured logs for traceability. Those artifacts do **not** replace the simple V1 pipeline and do **not** claim that full HIMS runtime or governance has been reintroduced.
+
 ### Future HIMS flow
 
 ```mermaid

@@ -28,3 +28,4 @@ def test_run_fixture_generates_successful_record(tmp_path):
 
     assert validate_result(record) is True
     assert (tmp_path / "runs" / "v1-runs.jsonl").exists()
+    assert (tmp_path / "runs" / "hims-shadow" / "ledger.jsonl").exists()
