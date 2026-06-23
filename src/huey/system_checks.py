@@ -13,7 +13,7 @@ import platform
 import re
 import shutil
 import sys
-from typing import Any, Dict, Tuple
+from typing import Any
 
 try:  # pragma: no cover - optional dependency on Linux only
     import distro  # type: ignore
@@ -31,8 +31,8 @@ LAB_KERNEL_ROLES = frozenset({"lab", "test"})
 PRODUCTION_KERNEL_ROLES = frozenset({"core", "pulse"})
 DEFAULT_RUNTIME_POLICY = "production"
 MIN_PYTHON_VERSION = (3, 13)
-MAX_PYTHON_VERSION = (3, 15)
-BASE_REQUIRED_TOOLS: Tuple[str, ...] = (
+MAX_PYTHON_VERSION = (3, 14)
+BASE_REQUIRED_TOOLS: tuple[str, ...] = (
     "git",
     "python3",
     "bash",
@@ -44,7 +44,7 @@ BASE_REQUIRED_TOOLS: Tuple[str, ...] = (
     "mount",
 )
 
-ROLE_REQUIRED_TOOLS: Dict[str, Tuple[str, ...]] = {
+ROLE_REQUIRED_TOOLS: dict[str, tuple[str, ...]] = {
     "core": (
         "lsblk",
         "blkid",
@@ -123,7 +123,7 @@ def check_error(command: object, description: str) -> None:
         raise RuntimeError(message)
 
 
-def _detect_linux_distribution() -> Tuple[str, str]:
+def _detect_linux_distribution() -> tuple[str, str]:
     """Return a tuple of ``(distribution_id, codename)`` for Linux hosts."""
 
     dist_id = ""
@@ -213,7 +213,7 @@ def _extract_kernel_role(raw_release: str) -> str:
     return role.strip()
 
 
-def _parse_numeric_kernel_prefix(version_str: str) -> Tuple[int, ...]:
+def _parse_numeric_kernel_prefix(version_str: str) -> tuple[int, ...]:
     """Convert a dotted kernel version prefix into a numeric tuple."""
 
     if not version_str:
@@ -244,7 +244,7 @@ def _check_kernel_naming() -> bool:
     return bool(kernel_result["production_supported"])
 
 
-def check_kernel_policy() -> Dict[str, Any]:
+def check_kernel_policy() -> dict[str, Any]:
     """Evaluate kernel naming and policy support for production and lab modes."""
 
     release = platform.release()
@@ -252,7 +252,7 @@ def check_kernel_policy() -> Dict[str, Any]:
     lowered = release.strip().lower()
     runtime_policy = DEFAULT_RUNTIME_POLICY
 
-    result: Dict[str, Any] = {
+    result: dict[str, Any] = {
         "release": release,
         "version": version_str,
         "version_prefix": _parse_numeric_kernel_prefix(version_str),
@@ -347,15 +347,44 @@ def _check_kernel_version() -> bool:
     return _check_kernel_naming()
 
 
+def _python_version_parts(info: object) -> tuple[int, int]:
+    """Return the active interpreter's ``(major, minor)`` version tuple."""
+
+    if isinstance(info, tuple):  # pragma: no cover - compatibility for patched tuples
+        major, minor = (info + (0, 0))[:2]
+        return int(major), int(minor)
+
+    major = getattr(info, "major", 0)
+    minor = getattr(info, "minor", 0)
+    return int(major), int(minor)
+
+
+def _is_free_threaded_build() -> bool:
+    """Return ``True`` when running on an experimental free-threaded CPython build."""
+
+    version_text = str(getattr(sys, "version", "")).lower()
+    if "free-threading build" in version_text:
+        return True
+    return str(getattr(sys, "abiflags", "")) == "t"
+
+
+def _python_gil_enabled() -> bool | None:
+    """Return the current GIL state when the interpreter exposes it."""
+
+    checker = getattr(sys, "_is_gil_enabled", None)
+    if not callable(checker):
+        return None
+
+    try:
+        return bool(checker())
+    except Exception:  # pragma: no cover - interpreter-specific edge cases
+        return None
+
+
 def check_python_version() -> bool:
     """Ensure the active Python interpreter falls within the supported range."""
 
-    info = sys.version_info
-    if isinstance(info, tuple):  # pragma: no cover - compatibility for patched tuples
-        major, minor = (info + (0, 0))[:2]
-    else:
-        major = getattr(info, "major", 0)
-        minor = getattr(info, "minor", 0)
+    major, minor = _python_version_parts(sys.version_info)
 
     supported = (major, minor) >= MIN_PYTHON_VERSION and (
         major,
@@ -363,18 +392,49 @@ def check_python_version() -> bool:
     ) < MAX_PYTHON_VERSION
 
     if not supported:
+        if (major, minor) == MAX_PYTHON_VERSION:
+            logger.warning(
+                "Python %s.%s detected. Python %s.%s.x is a testing-only "
+                "compatibility lane; supported target is Python %s.%s.x.",
+                major,
+                minor,
+                MAX_PYTHON_VERSION[0],
+                MAX_PYTHON_VERSION[1],
+                MIN_PYTHON_VERSION[0],
+                MIN_PYTHON_VERSION[1],
+            )
+        else:
+            logger.warning(
+                "Python %s.%s detected. Supported target is Python %s.%s.x.",
+                major,
+                minor,
+                MIN_PYTHON_VERSION[0],
+                MIN_PYTHON_VERSION[1],
+            )
+        return False
+
+    if _is_free_threaded_build():
+        gil_enabled = _python_gil_enabled()
+        gil_suffix = ""
+        if gil_enabled is False:
+            gil_suffix = " with the GIL disabled"
+        elif gil_enabled is True:
+            gil_suffix = " with the GIL re-enabled"
         logger.warning(
-            "Python %s.%s detected. Supported target is Python %s.%s.x.",
+            "Experimental free-threaded Python %s.%s build detected%s. "
+            "HueyOS currently supports the standard GIL-enabled Python %s.%s.x runtime only.",
             major,
             minor,
+            gil_suffix,
             MIN_PYTHON_VERSION[0],
             MIN_PYTHON_VERSION[1],
         )
+        return False
 
-    return supported
+    return True
 
 
-def _required_tools_for_role(role: str) -> Tuple[str, ...]:
+def _required_tools_for_role(role: str) -> tuple[str, ...]:
     """Return required executables for the detected kernel role."""
 
     normalized_role = role.strip().lower()
@@ -386,10 +446,10 @@ def _required_tools_for_role(role: str) -> Tuple[str, ...]:
     return tuple(ordered_tools)
 
 
-def _check_required_tools(role: str = "") -> Dict[str, bool]:
+def _check_required_tools(role: str = "") -> dict[str, bool]:
     """Return a mapping of required tool names to their availability."""
 
-    results: Dict[str, bool] = {}
+    results: dict[str, bool] = {}
     for tool in _required_tools_for_role(role):
         available = shutil.which(tool) is not None
         if not available:
@@ -398,11 +458,11 @@ def _check_required_tools(role: str = "") -> Dict[str, bool]:
     return results
 
 
-def system_check() -> Dict[str, Any]:
+def system_check() -> dict[str, Any]:
     """Run the suite of system checks and return their boolean results."""
 
     logger.info("Performing system checks...")
-    results: Dict[str, Any] = {}
+    results: dict[str, Any] = {}
 
     results["os_supported"] = check_os_support()
     kernel_policy = check_kernel_policy()

@@ -26,9 +26,20 @@ def test_python_313_supported_no_warning():
         log.warning.assert_not_called()
 
 
-def test_python_315_warning():
+def test_python_314_testing_lane_warning():
     with (
-        patch("huey.os.core.system_checks.sys.version_info", (3, 15, 0)),
+        patch("huey.os.core.system_checks.sys.version_info", (3, 14, 0)),
+        patch("huey.os.core.system_checks.logger") as log,
+    ):
+        check_python_version()
+        log.warning.assert_called_once()
+
+
+def test_python_313t_warning():
+    with (
+        patch("huey.os.core.system_checks.sys.version_info", (3, 13, 1)),
+        patch("huey.os.core.system_checks._is_free_threaded_build", return_value=True),
+        patch("huey.os.core.system_checks._python_gil_enabled", return_value=False),
         patch("huey.os.core.system_checks.logger") as log,
     ):
         check_python_version()

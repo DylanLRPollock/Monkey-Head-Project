@@ -27,7 +27,9 @@ repository operationally up to date.
      - Supported Docker runtime images default to Python `3.13`.
      - Python `3.14.x` is exercised in experimental CI/package-smoke jobs only.
    - Recommendation:
-     - Keep Python 3.13 as the only supported runtime until the 3.14 testing lane is consistently green across dependency, packaging, audio, ML, and PyGPT/PyHuey surfaces.
+     - Keep Python 3.13 as the only supported runtime until the 3.14
+       testing lane is consistently green across dependency, packaging,
+       audio, ML, and PyGPT/PyHuey surfaces.
 
 3. **Fix console-script entrypoint mismatch**
    - `pyproject.toml` maps `huey-api = "huey.api:main"`.
@@ -39,19 +41,19 @@ repository operationally up to date.
 
 ## Medium priority
 
-4. **Reduce optional broad exception handling where possible**
+1. **Reduce optional broad exception handling where possible**
    - Several modules intentionally catch broad `Exception` during optional
      imports/telemetry collection. This is acceptable for compatibility but can
      mask unexpected errors in production.
    - Recommendation:
      - Narrow exceptions where feasible and emit structured logs/metrics.
 
-5. **Add dependency vulnerability scanning to CI**
+2. **Add dependency vulnerability scanning to CI**
    - Recommendation:
      - Add `pip-audit` (or `safety`) in CI for base + selected extras.
      - Fail builds on known critical vulnerabilities.
 
-6. **Harden deployment defaults**
+3. **Harden deployment defaults**
    - Compose binds API to `0.0.0.0` and mounts host memory/config by default.
    - Recommendation:
      - Provide secure production profile with:

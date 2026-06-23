@@ -731,7 +731,7 @@ class ServicesOverviewResponse(BaseModel):
 class SystemCheckResponse(BaseModel):
     """Result of executing the HueyOS system check suite."""
 
-    results: Dict[str, bool] = Field(..., description="Individual check outcomes")
+    results: Dict[str, Any] = Field(..., description="Individual check outcomes")
     passed: bool = Field(..., description="True when every reported check passed")
 
 
@@ -1837,7 +1837,7 @@ def admin_system_check() -> SystemCheckResponse:
     """Execute the full HueyOS system check suite and report individual results."""
 
     results = system_check()
-    passed = all(results.values()) if results else True
+    passed = all(value for value in results.values() if isinstance(value, bool))
     return SystemCheckResponse(results=results, passed=passed)
 
 

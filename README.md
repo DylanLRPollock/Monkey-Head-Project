@@ -998,48 +998,71 @@ Supported range:
 >=3.13,<3.14
 ```
 
-Python 3.11.x and Python 3.12.x are not part of the current supported runtime contract.
+Python 3.11.x and Python 3.12.x are not part of the current supported
+runtime contract.
 
-Python 3.14.x is the active **testing-only** compatibility lane. It runs in experimental CI/package-smoke jobs, but it is not a supported install target or release baseline until the dependency stack, audio compatibility packages, ML packages, PyGPT/PyHuey integration, and HueyOS runtime path have all been validated.
+Python 3.14.x is the active **testing-only** compatibility lane. It runs
+in experimental CI/package-smoke jobs, but it is not a supported install
+target or release baseline until the dependency stack, audio compatibility
+packages, ML packages, PyGPT/PyHuey integration, and HueyOS runtime path
+have all been validated.
 
-The repository also tracks `.python-version` as `3.13`, and the Windows `Makefile` path defaults to `py -3.13` so local commands stay on the supported runtime by default.
+The repository also tracks `.python-version` as `3.13`, and the Windows
+`Makefile` path defaults to `py -3.13` so local commands stay on the
+supported runtime by default.
 
 See `docs/development/python-support-policy.md` for the canonical support policy.
 
-
 - **Source install path:**
+
 ```bash
 cd /workspace/Monkey-Head-Project
 ```
+
 - **Editable install command:**
+
 ```bash
 python3.13 -m pip install -c constraints.txt -e .
 ```
+
 - **Test command:**
+
 ```bash
 python3.13 -m pytest -q
 ```
+
 - **System check command:**
+
 ```bash
 huey system-check --json
 ```
+
 - **API launch command:**
+
 ```bash
 huey-api
 ```
+
 - **Health check command (after API launch):**
+
 ```bash
 curl -fsS http://127.0.0.1:1995/healthz
 ```
+
 - **V1 mock proof-loop command (implemented, CI-safe):**
+
 ```bash
 huey v1-run --mock path/to/fixture.mp3 --log-dir runs
 ```
 
 Boundary notes:
-- Huey Brain V1 remains the controlled fixture loop only: MP3 fixture → transcription stage → cognition bridge → structured run log.
-- `huey v1-run` currently requires `--mock` unless explicit real providers are wired; this prevents overclaiming live hardware proof.
-- PyHuey stays optional cockpit/tooling (`infra/docker/pyhuey`) and is not the HueyOS/Huey Brain runtime path.
+
+- Huey Brain V1 remains the controlled fixture loop only: MP3 fixture
+  → transcription stage → cognition bridge → structured run log.
+- `huey v1-run` currently requires `--mock` unless explicit real providers
+  are wired; this prevents overclaiming live hardware proof.
+- PyHuey stays optional cockpit/tooling (`infra/docker/pyhuey`) and is not
+  the HueyOS/Huey Brain runtime path.
 
 ### Windows launcher (safe Command Center bootstrap)
 

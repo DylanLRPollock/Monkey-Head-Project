@@ -7,16 +7,18 @@
 
 from __future__ import annotations
 
+import tomllib
 from pathlib import Path
 
 from packaging.requirements import Requirement
 
 
-def _get_requirement_line(package_name: str) -> str:
-    for line in Path("requirements.txt").read_text().splitlines():
-        if line.startswith("#") or not line.strip():
-            continue
-        if line.split("==")[0].strip().startswith(package_name):
+def _get_requirement_line(package_name: str, *, group: str = "ml") -> str:
+    data = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+    dependencies = data["project"]["optional-dependencies"][group]
+    for line in dependencies:
+        requirement = Requirement(line)
+        if requirement.name == package_name:
             return line
     raise AssertionError(f"Requirement for {package_name!r} not found")
 
@@ -41,3 +43,13 @@ def test_audio_bridge_allows_python_313() -> None:
 def test_aifc_bridge_allows_python_313() -> None:
     line = _get_requirement_line("standard-aifc")
     assert _marker_allows(line, "3.13")
+
+
+def test_audio_bridge_blocks_python_314() -> None:
+    line = _get_requirement_line("audioop-lts")
+    assert not _marker_allows(line, "3.14")
+
+
+def test_aifc_bridge_blocks_python_314() -> None:
+    line = _get_requirement_line("standard-aifc")
+    assert not _marker_allows(line, "3.14")

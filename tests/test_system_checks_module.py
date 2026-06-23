@@ -45,17 +45,17 @@ def test_check_os_support_warns_for_non_debian_linux(monkeypatch, caplog):
     assert "Unsupported Linux distribution" in caplog.text
 
 
-def test_check_python_version_warns_on_experimental_release(monkeypatch, caplog):
+def test_check_python_version_warns_on_testing_lane(monkeypatch, caplog):
     class FakeInfo:
         major = 3
-        minor = 15
+        minor = 14
 
     monkeypatch.setattr(system_checks.sys, "version_info", FakeInfo())
 
     with caplog.at_level(logging.WARNING):
         system_checks.check_python_version()
 
-    assert "Python 3.15 detected" in caplog.text
+    assert "testing-only compatibility lane" in caplog.text
 
 
 def test_check_python_version_accepts_primary_target(monkeypatch, caplog):
@@ -69,6 +69,22 @@ def test_check_python_version_accepts_primary_target(monkeypatch, caplog):
         system_checks.check_python_version()
 
     assert "Python 3.13" not in caplog.text
+
+
+def test_check_python_version_rejects_free_threaded_build(monkeypatch, caplog):
+    class FakeInfo:
+        major = 3
+        minor = 13
+
+    monkeypatch.setattr(system_checks.sys, "version_info", FakeInfo())
+    monkeypatch.setattr(system_checks, "_is_free_threaded_build", lambda: True)
+    monkeypatch.setattr(system_checks, "_python_gil_enabled", lambda: False)
+
+    with caplog.at_level(logging.WARNING):
+        supported = system_checks.check_python_version()
+
+    assert supported is False
+    assert "free-threaded Python 3.13 build" in caplog.text
 
 
 def test_check_kernel_naming_accepts_hueyos_family_role(monkeypatch, caplog):
@@ -251,10 +267,10 @@ def test_check_kernel_policy_disallows_rc_build_for_production_mode(monkeypatch)
 
 def test_system_check_collects_expected_results(monkeypatch):
     def fake_os_check():
-        return None
+        return True
 
     monkeypatch.setattr(system_checks, "check_os_support", fake_os_check)
-    monkeypatch.setattr(system_checks, "check_python_version", lambda: None)
+    monkeypatch.setattr(system_checks, "check_python_version", lambda: True)
     monkeypatch.setattr(
         system_checks,
         "check_kernel_policy",
