@@ -1,7 +1,7 @@
 # Monkey-Head-Project
 
 <p align="center">
-  <img src="src/huey/memory/PNG/logo.png" alt="Huey / Monkey-Head-Project hero image" width="100%">
+  <img src="src/huey/memory/PNG/HueyOS.png" alt="Huey / Monkey-Head-Project hero image" width="100%">
 </p>
 
 <h2 align="center">HueyOS — Offline-First Embodied AI / OS</h2>
@@ -20,7 +20,7 @@
 
 <p align="center">
   <img alt="README version" src="https://img.shields.io/badge/README-v32.1-blue">
-  <img alt="Master plan" src="https://img.shields.io/badge/master%20plan-v32.0-purple">
+  <img alt="Master plan" src="https://img.shields.io/badge/master%20plan-v101.1-purple">
   <img alt="Status" src="https://img.shields.io/badge/status-Huey%20Brain%20V1-orange">
   <img alt="V1 boundary" src="https://img.shields.io/badge/V1%20boundary-Legion%20Go-brightgreen">
   <img alt="Python" src="https://img.shields.io/badge/python-3.13.x-blue">
@@ -39,9 +39,9 @@
 | **AI identity** | `Huey` |
 | **Human counterpart** | Dylan L.R. Pollock |
 | **README version** | `32.1` |
-| **Canonical machine-facing spec** | `master-plan-v32.0.json` |
-| **Canonical law layer** | `03 - Huey_Constitution.txt` |
-| **Canonical book front matter** | `00 - TOC_&_Glossary.txt` |
+| **Canonical machine-facing spec** | `master-plan-v101.1.json` |
+| **Canonical law layer** | `src/huey/memory/TXT/03 - Huey_Constitution.txt` |
+| **Canonical book front matter** | `src/huey/memory/TXT/00 - TOC_&_Glossary.txt` |
 | **Current phase** | Huey Brain V1 implementation |
 | **V1 execution boundary** | Lenovo Legion Go / Huey Brain only |
 | **Current proof loop** | controlled MP3 fixture → local transcription → cognition bridge → structured log |
@@ -899,6 +899,7 @@ iMac → WSL Debian → OpenSSH → Huey Brain
 | faster-whisper / Whisper | Local transcription testing |
 | API model provider | Primary V1 response quality and consistency bridge |
 | Git | Version control and project state |
+| HueyOS Launcher Setup (Windows) | Safe local bootstrap for Command Center setup, repo binding, and doctor checks |
 | lm-sensors / system tools | Thermals and status visibility |
 
 ### Tools deferred
@@ -920,13 +921,13 @@ The README should stay visually clear without becoming theatrical.
 
 Recommended image roles:
 
-| Image role | Suggested asset |
+| Image role | Repository-backed asset |
 |---|---|
-| README hero | `assets/img/huey/huey-hero-wide-v85.webp` |
-| Project origin / umbrella | `assets/img/pages/monkey-head-project-hero.webp` |
-| Huey body lineage | `assets/img/huey/lineage/huey-shell-v2-body-v80.webp` |
-| Huey closeup | `assets/img/huey/core/huey-core-closeup-v80.webp` |
-| README social / OG card | `assets/img/og/og-readme.png` |
+| README hero | `src/huey/memory/PNG/HueyOS.png` |
+| Project origin / umbrella | `src/huey/memory/PNG/DLRP.png` |
+| Huey identity mark | `src/huey/memory/PNG/Huey.png` |
+| PyHuey companion mark | `src/huey/memory/PNG/PyHuey.png` |
+| Package icon | `src/huey/assets/icon.svg` |
 
 Image rules:
 
@@ -936,22 +937,22 @@ Image rules:
 - avoid implying completed capabilities visually before they exist,
 - keep diagrams structural and honest.
 
-If this README is used outside the website archive, copy the referenced assets into the repository or remove the top hero image block.
+Older website/archive asset paths under `assets/img/...` are not present in this checkout. When editing locally, prefer the repository-backed files above or remove the image block.
 
 ---
 
 ## Repository map
 
-This repository is moving toward a cleaner long-term structure.
+This repository now uses a canonical `src/huey` / `huey.os` layout, with compatibility surfaces kept around it where tests and runtime entrypoints still depend on them.
 
 ### Core reference points
 
 | File / area | Role |
 |---|---|
 | `README.md` | Human-facing front door |
-| `master-plan-v32.0.json` | Canonical machine-facing implementation spec |
-| `03 - Huey_Constitution.txt` | Constitutional / law layer |
-| `00 - TOC_&_Glossary.txt` | Book front matter and glossary |
+| `master-plan-v101.1.json` | Canonical machine-facing implementation spec |
+| `src/huey/memory/TXT/03 - Huey_Constitution.txt` | Constitutional / law layer |
+| `src/huey/memory/TXT/00 - TOC_&_Glossary.txt` | Book front matter and glossary |
 | `requirements.txt` | Dependency baseline |
 | `constraints.txt` | Shared install constraints |
 | `pyproject.toml` | Package and install contract |
@@ -969,11 +970,15 @@ This repository is moving toward a cleaner long-term structure.
 | `src/huey/connectors/` | Adapter and integration work |
 | `src/huey/core/` | Core runtime and kernel profile assets |
 | `src/huey/config/` | Runtime configuration payloads |
+| `src/huey/assets/` | Package-scoped visual assets shipped in this checkout |
+| `src/huey/memory/` | Legacy memory corpus, preserved scripts, media, and source canon |
 | `vendor/` | Static third-party mirrors and lightweight compatibility copies |
 | `infra/` | Orchestration and infrastructure support |
 | `src/huey/platform/` | OS / platform-specific setup |
+| `scripts/automation/` | Structured wrapper entrypoints for preserved shell, batch, PowerShell, and Python tools |
+| `huey/` | Compatibility import surface pointing at maintained code and legacy memory modules |
+| `hueyos/` | Lightweight compatibility namespace for preserved utilities and tests |
 | `archives/` | Frozen payloads, snapshots, legacy material |
-| `assets/` | Project media and visual identity |
 | `tests/` | Regression and test coverage |
 
 ---
@@ -1034,6 +1039,27 @@ Boundary notes:
 - Huey Brain V1 remains the controlled fixture loop only: MP3 fixture → transcription stage → cognition bridge → structured run log.
 - `huey v1-run` currently requires `--mock` unless explicit real providers are wired; this prevents overclaiming live hardware proof.
 - PyHuey stays optional cockpit/tooling (`infra/docker/pyhuey`) and is not the HueyOS/Huey Brain runtime path.
+
+### Windows launcher (safe Command Center bootstrap)
+
+The repository now ships a prebuilt Windows launcher and matching Go source at `src/huey/platform/installers/windows/launcher/`.
+
+From the repository root on Windows, invoke `.\src\huey\platform\installers\windows\launcher\HueyOS-Launcher-Setup.exe` for CLI usage.
+
+| Action | Result |
+|---|---|
+| Double-click | Creates HueyOS folders/config if needed, then tries to launch HueyOS Command Center. |
+| `HueyOS-Launcher-Setup.exe --install` | Creates `%APPDATA%\HueyOS`, `%LOCALAPPDATA%\HueyOS`, `%LOCALAPPDATA%\HueyOS\logs`, and `%LOCALAPPDATA%\HueyOS\workspace`. |
+| `HueyOS-Launcher-Setup.exe --set-repo L:\Monkey-Head-Project` | Saves the local Monkey-Head-Project checkout path. |
+| `HueyOS-Launcher-Setup.exe --set-python C:\Python313\python.exe` | Pins a specific Python executable. |
+| `HueyOS-Launcher-Setup.exe --launch` | Runs the configured HueyOS Command Center entry point. |
+| `HueyOS-Launcher-Setup.exe --doctor` | Generates a local doctor report and opens it in Notepad. |
+| `HueyOS-Launcher-Setup.exe --open-config` | Opens the HueyOS config folder. |
+| `HueyOS-Launcher-Setup.exe --help` | Shows launcher help. |
+
+`--doctor` checks `py`, `python`, `git`, `ffmpeg`, `ffprobe`, the configured repo path, `pyproject.toml`, `scripts/check_ffmpeg_environment.py`, and `scripts/prepare_audio_for_transcription.py`.
+
+Safety boundary: no file deletion, no Git mutation, no firmware flashing, no hardware control, no robot/servo/power actions, and no arbitrary shell execution.
 
 ### API deployment policy (safe defaults)
 

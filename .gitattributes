@@ -69,6 +69,7 @@ docker-compose*.yml text eol=lf
 *.iso  binary
 
 # Fonts and other opaque binary formats
+*.exe   binary
 *.ttf   binary
 *.otf   binary
 *.woff  binary

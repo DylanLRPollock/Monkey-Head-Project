@@ -5,7 +5,9 @@ from __future__ import annotations
 from huey.apps.command_center.server import (
     create_app,
     get_app_metadata,
+    get_launcher_support,
     get_safety_policy,
+    get_state_payload,
     get_validation_commands,
 )
 
@@ -26,6 +28,20 @@ def test_create_app_exposes_safety_route():
     assert get_safety_policy()["mock_only"] is True
 
 
+def test_create_app_exposes_launcher_route():
+    app = create_app()
+    paths = {route.path for route in app.routes}
+    launcher = get_launcher_support()
+
+    assert "/command-center/launcher" in paths
+    assert launcher["mode"] == "safe-bootstrap"
+    assert launcher["assets"]["executable"]["present"] is True
+    assert launcher["assets"]["source"]["present"] is True
+    assert any(
+        command["option"] == "--doctor" for command in launcher["supported_commands"]
+    )
+
+
 def test_create_app_exposes_validation_route():
     app = create_app()
     paths = {route.path for route in app.routes}
@@ -34,6 +50,13 @@ def test_create_app_exposes_validation_route():
     assert "/command-center/validation" in paths
     assert commands
     assert all(command["copy_only"] for command in commands)
+
+
+def test_state_payload_includes_launcher_metadata():
+    payload = get_state_payload()
+
+    assert payload["launcher"]["launch_target"] == "HueyOS Command Center"
+    assert "No Git mutation" in payload["launcher"]["safety_guarantees"]
 
 
 def test_backend_does_not_expose_command_execution_route():

@@ -18,6 +18,11 @@ from huey.media.media_manager import (
     resample_audio,
     transcode_video,
 )
+from huey.media.video_pipeline import (
+    VideoFramePreview,
+    VideoPipeline,
+    VideoPipelineResult,
+)
 
 __all__ = [
     "AudioTransformOptions",
@@ -28,6 +33,9 @@ __all__ = [
     "FFmpegCommandResult",
     "FFmpegMediaManager",
     "MediaProbeResult",
+    "VideoFramePreview",
+    "VideoPipeline",
+    "VideoPipelineResult",
     "check_ffmpeg_available",
     "get_default_manager",
     "normalize_audio",

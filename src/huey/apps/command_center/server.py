@@ -22,6 +22,7 @@ from huey.gui.v1_runs import sample_v1_runs
 from huey.gui.validation import all_validation_commands
 from huey.integrations.command_center.adapter import (
     get_api_status,
+    get_launcher_support,
     get_memory_status,
     get_repo_status,
     get_runtime_status,
@@ -95,6 +96,7 @@ def get_state_payload() -> dict[str, object]:
 
     return {
         "meta": get_app_metadata(),
+        "launcher": get_launcher_support(),
         "safety": get_safety_policy(),
         "repos": get_repositories(),
         "phases": get_migration_phases(),
@@ -114,6 +116,10 @@ def register_routes(app: FastAPI) -> None:
     @app.get("/command-center/meta")
     def command_center_meta() -> dict[str, object]:
         return get_app_metadata()
+
+    @app.get("/command-center/launcher")
+    def command_center_launcher() -> dict[str, object]:
+        return get_launcher_support()
 
     @app.get("/command-center/safety")
     def command_center_safety() -> dict[str, object]:
@@ -185,6 +191,7 @@ __all__ = [
     "app",
     "create_app",
     "get_app_metadata",
+    "get_launcher_support",
     "get_migration_phases",
     "get_operator_panel_state",
     "get_repositories",

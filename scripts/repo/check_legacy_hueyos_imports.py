@@ -45,6 +45,11 @@ ACTIVE_PATHS: set[str] = {
     "conftest.py",
 }
 
+EXCLUDED_PATH_PREFIXES: tuple[str, ...] = (
+    "src/huey/memory/ARCHIVE/",
+    "src/huey/memory/MD/",
+)
+
 TEXT_SUFFIXES: tuple[str, ...] = (
     ".py",
     ".md",
@@ -73,6 +78,8 @@ def git_ls_files() -> list[Path]:
 def should_scan(path: Path) -> bool:
     normalized = path.as_posix()
     if normalized in ALLOWED_PATHS:
+        return False
+    if any(normalized.startswith(prefix) for prefix in EXCLUDED_PATH_PREFIXES):
         return False
     if normalized in ACTIVE_PATHS:
         return True
@@ -120,4 +127,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    reconfigure = getattr(sys.stdout, "reconfigure", None)
+    if callable(reconfigure):
+        reconfigure(errors="backslashreplace")
     sys.exit(main())

@@ -151,6 +151,31 @@ def command_center_validation_commands() -> list[ValidationCommand]:
             phase_id="phase-5-v1-run-dashboard",
         ),
         ValidationCommand(
+            id="command-center-launcher-doctor",
+            repo="DylanLRPollock/Monkey-Head-Project",
+            command=(
+                r".\src\huey\platform\installers\windows\launcher"
+                r"\HueyOS-Launcher-Setup.exe --doctor"
+            ),
+            purpose=(
+                "Generate the local Windows launcher doctor report for Command "
+                "Center bootstrap prerequisites."
+            ),
+            expected_result=(
+                r"The launcher writes %LOCALAPPDATA%\HueyOS\doctor-report.txt "
+                "and opens it in Notepad without mutating the repo or shell state."
+            ),
+            risk="low",
+            phase_id="phase-5-v1-run-dashboard",
+            notes=(
+                r"Windows-only. Run "
+                r".\src\huey\platform\installers\windows\launcher"
+                r"\HueyOS-Launcher-Setup.exe --set-repo "
+                r"L:\Monkey-Head-Project "
+                "once before using --launch or repo-aware doctor checks."
+            ),
+        ),
+        ValidationCommand(
             id="command-center-backend-tests",
             repo="DylanLRPollock/Monkey-Head-Project",
             command=(
