@@ -6,10 +6,11 @@
 
 """Print functions registered in ``huey.os.function_registry``."""
 
-from huey.os.function_registry import list_functions
+from huey.os.function_registry import ensure_registered_functions, list_functions
 
 
 def main() -> None:
+    ensure_registered_functions()
     for name in list_functions():
         print(name)
 

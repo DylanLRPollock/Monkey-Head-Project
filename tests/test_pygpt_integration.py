@@ -4,6 +4,7 @@ import importlib
 import sys
 from pathlib import Path
 
+from huey import function_registry
 from huey.pygpt_integration import (
     available_sources,
     candidate_sources,
@@ -73,6 +74,22 @@ def test_prepare_pygpt_package_source_aliases_canonical_connector(monkeypatch):
     reset_pygpt_state()
 
 
+def test_prepare_pygpt_registers_custom_functions(monkeypatch):
+    monkeypatch.setattr(function_registry, "_FUNCTIONS", {})
+    monkeypatch.setattr(sys, "path", list(sys.path))
+    monkeypatch.delitem(sys.modules, "pygpt_net", raising=False)
+
+    reset_pygpt_state()
+    assert prepare_pygpt(source="package")
+
+    assert {
+        "auto_sort_memory",
+        "find_pdf",
+        "format_text",
+        "list_available_pdfs",
+    } <= set(function_registry.list_functions())
+
+
 def test_pyhuey_status_reports_candidates():
     reset_pygpt_state()
     status = pyhuey_status(source="package")
@@ -80,3 +97,10 @@ def test_pyhuey_status_reports_candidates():
     assert status["prepared"] is True
     assert status["module"] == "pygpt_net"
     assert any(candidate["name"] == "pyhuey" for candidate in status["candidates"])
+    assert status["custom_function_count"] >= 4
+    assert {
+        "auto_sort_memory",
+        "find_pdf",
+        "format_text",
+        "list_available_pdfs",
+    } <= {item["name"] for item in status["custom_functions"]}

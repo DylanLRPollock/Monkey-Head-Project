@@ -6,6 +6,8 @@ import importlib
 import sys
 import types
 
+import pytest
+
 
 def test_run_module_invokes_target():
     from huey import run as huey_run
@@ -96,6 +98,50 @@ def test_main_pyhuey_info_invokes_report(monkeypatch):
     huey_run.main(["--pyhuey-info", "--pyhuey-source", "vendor"])
 
     assert called["source"] == "vendor"
+
+
+def test_main_list_custom_functions_invokes_report(monkeypatch):
+    from huey import run as huey_run
+
+    called: dict[str, str] = {}
+
+    monkeypatch.setattr(
+        huey_run,
+        "print_custom_functions",
+        lambda source=None: called.setdefault("source", source),
+    )
+    monkeypatch.setattr(
+        huey_run,
+        "launch_gui",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("unexpected launch_gui")
+        ),
+    )
+
+    huey_run.main(["--list-custom-functions", "--pyhuey-source", "package"])
+
+    assert called["source"] == "package"
+
+
+def test_run_custom_function_executes_registered_callable():
+    from huey import run as huey_run
+    from huey.pyhuey_integration import reset_pygpt_state
+
+    reset_pygpt_state()
+    result = huey_run.run_custom_function(
+        "format_text",
+        '{"text": "alpha beta", "line_length": 20}',
+        source="package",
+    )
+
+    assert result == "alpha beta"
+
+
+def test_run_custom_function_requires_json_object():
+    from huey import run as huey_run
+
+    with pytest.raises(ValueError):
+        huey_run.run_custom_function("format_text", '["not", "an", "object"]')
 
 
 def test_launch_gui_uses_canonical_connector_manager(monkeypatch):

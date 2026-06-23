@@ -17,7 +17,10 @@ minimal_run = _run.minimal_run
 run_sys_code = _run.run_sys_code
 launch_install_gui = _run.launch_install_gui
 launch_gui = _run.launch_gui
+list_custom_functions = _run.list_custom_functions
+print_custom_functions = _run.print_custom_functions
 print_pyhuey_info = _run.print_pyhuey_info
+run_custom_function = _run.run_custom_function
 
 __all__ = [
     "main",
@@ -26,7 +29,10 @@ __all__ = [
     "run_sys_code",
     "launch_install_gui",
     "launch_gui",
+    "list_custom_functions",
+    "print_custom_functions",
     "print_pyhuey_info",
+    "run_custom_function",
 ]
 
 

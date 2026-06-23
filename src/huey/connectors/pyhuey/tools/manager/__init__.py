@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import platform
@@ -65,6 +66,11 @@ except (
 
 from huey.pyhuey_integration import pyhuey_status
 from huey.services import container_management
+from huey.function_registry import (
+    describe_functions,
+    ensure_registered_functions,
+    invoke_function,
+)
 
 
 def _project_root() -> Path:
@@ -84,6 +90,7 @@ class MonkeyManager(BaseTool):
         self.update_path: Path | None = None
         self.run_path: Path | None = None
         self._setup_paths()
+        ensure_registered_functions()
 
     def _setup_paths(self) -> None:
         root = _project_root()
@@ -165,6 +172,35 @@ class MonkeyManager(BaseTool):
         print(f"prepared: {status['prepared']}")
         print(f"version: {status['version'] or 'unknown'}")
         print(f"module: {status['module_file'] or 'unresolved'}")
+        print(f"custom functions: {status['custom_function_count']}")
+        for function in status["custom_functions"]:
+            print(f"- {function['name']}{function['signature']}")
+
+    def registered_functions(self) -> list[dict[str, object]]:
+        """Return structured metadata for registered custom functions."""
+
+        ensure_registered_functions()
+        return describe_functions()
+
+    def print_registered_functions(self) -> None:
+        """Print the custom functions available through the PyHuey bridge."""
+
+        functions = self.registered_functions()
+        if not functions:
+            print("No custom functions registered.")
+            return
+
+        print("Custom functions:")
+        for function in functions:
+            print(
+                "  - "
+                f"{function['name']}{function['signature']} :: {function['module']}"
+            )
+
+    def invoke_registered_function(self, function_name: str, /, **kwargs: object) -> Any:
+        """Invoke a registered custom function by name."""
+
+        return invoke_function(function_name, **kwargs)
 
     def list_pdfs(self) -> list[str]:
         """Return PDF files visible to the HueyOS runtime."""
@@ -191,6 +227,14 @@ class MonkeyManager(BaseTool):
 
         system_check()
 
+    def print_registered_function_result(
+        self, function_name: str, /, **kwargs: object
+    ) -> None:
+        """Invoke and print a registered custom function result."""
+
+        result = self.invoke_registered_function(function_name, **kwargs)
+        print(json.dumps(result, indent=2, sort_keys=True, default=str))
+
     def setup_menu(self) -> Dict[str, QAction]:
         actions: Dict[str, QAction] = {}
         actions["monkey.install"] = self._action("Monkey Install", self.install)
@@ -198,6 +242,9 @@ class MonkeyManager(BaseTool):
         actions["monkey.update"] = self._action("Monkey Update", self.update)
         actions["monkey.pyhuey.status"] = self._action(
             "PyHuey Status", self.print_integration_status
+        )
+        actions["monkey.functions.list"] = self._action(
+            "List Custom Functions", self.print_registered_functions
         )
         actions["monkey.pdfs.list"] = self._action("List PDFs", self.print_pdfs)
         actions["monkey.system.check"] = self._action(

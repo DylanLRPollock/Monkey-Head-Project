@@ -15,8 +15,27 @@ def test_monkey_manager_imports_without_full_pyside_stack():
     actions = manager.setup_menu()
 
     assert "monkey.pyhuey.status" in actions
+    assert "monkey.functions.list" in actions
     assert "monkey.system.check" in actions
     assert manager.integration_status()["prepared"] is True
+
+
+def test_manager_exposes_and_invokes_registered_functions():
+    reset_pygpt_state()
+    assert prepare_pygpt(source="package")
+
+    from huey.connectors.pyhuey.tools.manager import MonkeyManager
+
+    manager = MonkeyManager()
+    functions = {item["name"]: item for item in manager.registered_functions()}
+
+    assert "format_text" in functions
+    assert (
+        manager.invoke_registered_function(
+            "format_text", text="alpha beta", line_length=20
+        )
+        == "alpha beta"
+    )
 
 
 def test_destructive_action_requires_explicit_intent(monkeypatch, caplog):

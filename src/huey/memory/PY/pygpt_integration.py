@@ -14,6 +14,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, List
 
+from .function_registry import (
+    describe_functions,
+    discover_function_modules,
+    ensure_registered_functions,
+)
+
 _PYGPT_PREPARED = False
 _PYGPT_ACTIVE_SOURCE: "PyHueySource | None" = None
 
@@ -233,11 +239,13 @@ def prepare_pygpt(
     preference = _normalise_source(source)
 
     if _PYGPT_PREPARED:
+        ensure_registered_functions()
         return True
 
     if preference in {"auto", "installed"} and _try_import(module_name):
         _PYGPT_PREPARED = True
         _PYGPT_ACTIVE_SOURCE = None
+        ensure_registered_functions()
         return True
 
     if preference == "installed":
@@ -254,6 +262,7 @@ def prepare_pygpt(
         if _try_import_source(candidate, module_name):
             _PYGPT_PREPARED = True
             _PYGPT_ACTIVE_SOURCE = candidate
+            ensure_registered_functions()
             return True
 
     return False
@@ -268,6 +277,7 @@ def pyhuey_status(
 
     prepared = prepare_pygpt(module_name, source=source)
     module = sys.modules.get(module_name)
+    custom_functions = describe_functions()
     return {
         "prepared": prepared,
         "module": module_name,
@@ -279,6 +289,9 @@ def pyhuey_status(
             else "installed" if prepared else "unresolved"
         ),
         "candidates": [source.as_dict() for source in candidate_sources()],
+        "custom_function_modules": discover_function_modules(),
+        "custom_functions": custom_functions,
+        "custom_function_count": len(custom_functions),
     }
 
 

@@ -62,3 +62,27 @@ def test_get_functions_returns_copy():
 
     # The internal registry should remain intact even after mutating the copy.
     assert function_registry.list_functions() == ["<lambda>"]
+
+
+def test_ensure_registered_functions_discovers_project_functions():
+    registry = function_registry.ensure_registered_functions()
+
+    assert {
+        "auto_sort_memory",
+        "find_pdf",
+        "format_text",
+        "list_available_pdfs",
+    } <= set(registry)
+
+
+def test_describe_and_invoke_registered_functions():
+    descriptions = {
+        item["name"]: item for item in function_registry.describe_functions()
+    }
+    result = function_registry.invoke_function(
+        "format_text", text="alpha beta", line_length=20
+    )
+
+    assert descriptions["format_text"]["required_parameters"] == ["text"]
+    assert descriptions["find_pdf"]["required_parameters"] == ["filename"]
+    assert result == "alpha beta"

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import importlib
+import json
 import os
 import shlex
 import subprocess
@@ -16,6 +17,7 @@ import sys
 from pathlib import Path
 from typing import Callable
 
+from .function_registry import describe_functions, invoke_function
 from .pygpt_integration import prepare_pygpt, pyhuey_status
 
 
@@ -104,6 +106,55 @@ def launch_gui(source: str | None = None) -> None:
     pygpt_run(tools=[MonkeyManager()])
 
 
+def list_custom_functions(source: str | None = None) -> list[dict[str, object]]:
+    """Return metadata for custom functions exposed through the PyHuey bridge."""
+
+    _prepare_pygpt(source)
+    return describe_functions()
+
+
+def print_custom_functions(source: str | None = None) -> None:
+    """Print the registered custom functions available to PyHuey."""
+
+    functions = list_custom_functions(source)
+    if not functions:
+        print("No custom functions registered.")
+        return
+
+    print("Custom functions")
+    for function in functions:
+        print(
+            "  - "
+            f"{function['name']}{function['signature']} :: {function['module']}"
+        )
+
+
+def _parse_custom_function_kwargs(raw: str | None) -> dict[str, object]:
+    if raw in {None, "", "{}"}:
+        return {}
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError("Custom function kwargs must be valid JSON") from exc
+    if not isinstance(payload, dict):
+        raise ValueError("Custom function kwargs must decode to a JSON object")
+    return payload
+
+
+def run_custom_function(
+    function_name: str,
+    kwargs_json: str | None = None,
+    *,
+    source: str | None = None,
+) -> object:
+    """Run a registered custom function and return its result."""
+
+    _prepare_pygpt(source)
+    return invoke_function(
+        function_name, **_parse_custom_function_kwargs(kwargs_json)
+    )
+
+
 def print_pyhuey_info(source: str | None = None) -> None:
     """Print a concise PyHuey integration report."""
 
@@ -124,6 +175,9 @@ def print_pyhuey_info(source: str | None = None) -> None:
     for candidate in status["candidates"]:
         marker = "yes" if candidate["exists"] else "no"
         print(f"    - {candidate['name']}: {marker} :: {candidate['path']}")
+    print(f"  custom functions: {status['custom_function_count']}")
+    for function in status["custom_functions"]:
+        print(f"    - {function['name']}{function['signature']}")
 
 
 def launch_manager_ui() -> None:
@@ -182,6 +236,24 @@ def main(argv: list[str] | None = None) -> None:
         choices=("auto", "installed", "package", "pyhuey", "vendor"),
         default=os.environ.get("PYHUEY_SOURCE", "auto"),
         help="Select PyHuey/PyGPT-net source discovery preference",
+    )
+    parser.add_argument(
+        "--list-custom-functions",
+        action="store_true",
+        help="List custom functions available through the PyHuey integration",
+    )
+    parser.add_argument(
+        "--run-custom-function",
+        type=str,
+        metavar="NAME",
+        help="Run a registered custom function and print its JSON result",
+    )
+    parser.add_argument(
+        "--custom-function-kwargs",
+        type=str,
+        default="{}",
+        metavar="JSON",
+        help="JSON object of keyword arguments for --run-custom-function",
     )
     parser.add_argument(
         "--list-pdfs", action="store_true", help="List PDF files available to the app"
@@ -292,6 +364,19 @@ def main(argv: list[str] | None = None) -> None:
         print_pyhuey_info(args.pyhuey_source)
         return
 
+    if args.list_custom_functions:
+        print_custom_functions(args.pyhuey_source)
+        return
+
+    if args.run_custom_function:
+        result = run_custom_function(
+            args.run_custom_function,
+            args.custom_function_kwargs,
+            source=args.pyhuey_source,
+        )
+        print(json.dumps(result, indent=2, sort_keys=True, default=str))
+        return
+
     if args.version:
         _prepare_pygpt(args.pyhuey_source)
         try:
@@ -332,9 +417,12 @@ __all__ = [
     "launch_gui",
     "launch_manager_ui",
     "launch_install_gui",
+    "list_custom_functions",
     "print_pyhuey_info",
+    "print_custom_functions",
     "main",
     "minimal_run",
+    "run_custom_function",
     "run_module",
     "run_sys_code",
 ]
