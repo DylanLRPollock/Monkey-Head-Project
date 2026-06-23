@@ -1,6 +1,11 @@
 """Tests for the canonical GUI theme helpers."""
 
-from huey.gui.theme import as_css_variables, as_tk_palette, get_default_theme
+from huey.gui.theme import (
+    as_css_variables,
+    as_qt_stylesheet,
+    as_tk_palette,
+    get_default_theme,
+)
 
 
 def test_default_theme_has_required_colors():
@@ -28,3 +33,12 @@ def test_css_variables_are_prefixed():
 
     assert css_variables
     assert all(key.startswith("--huey-") for key in css_variables)
+
+
+def test_qt_stylesheet_contains_theme_colors():
+    theme = get_default_theme()
+    stylesheet = as_qt_stylesheet()
+
+    assert theme.background in stylesheet
+    assert theme.accent in stylesheet
+    assert "QMainWindow" in stylesheet

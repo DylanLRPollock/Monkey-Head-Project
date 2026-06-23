@@ -74,8 +74,77 @@ def as_css_variables(theme: HueyTheme | None = None) -> dict[str, str]:
     }
 
 
+def as_qt_stylesheet(theme: HueyTheme | None = None) -> str:
+    """Return a Qt stylesheet aligned to the canonical HueyOS theme."""
+
+    selected = theme or get_default_theme()
+    return f"""
+QMainWindow, QWidget {{
+    background-color: {selected.background};
+    color: {selected.text};
+}}
+QLabel#hueyHeaderTitle {{
+    color: {selected.text};
+    font-size: 22px;
+    font-weight: 700;
+}}
+QLabel#hueyHeaderSubtitle {{
+    color: {selected.muted_text};
+    font-size: 13px;
+}}
+QTabWidget::pane,
+QTreeWidget,
+QTableWidget,
+QHeaderView::section {{
+    background-color: {selected.panel};
+    border: 1px solid {selected.border};
+}}
+QTabBar::tab {{
+    background-color: {selected.panel_alt};
+    color: {selected.text};
+    border: 1px solid {selected.border};
+    padding: 8px 14px;
+}}
+QTabBar::tab:selected {{
+    background-color: {selected.accent};
+}}
+QPushButton {{
+    background-color: {selected.accent};
+    color: {selected.text};
+    border: 1px solid {selected.border};
+    border-radius: 6px;
+    padding: 7px 12px;
+}}
+QPushButton:hover {{
+    background-color: {selected.panel_alt};
+}}
+QPushButton:pressed {{
+    background-color: {selected.accent_green};
+}}
+QProgressBar {{
+    background-color: {selected.panel};
+    border: 1px solid {selected.border};
+    border-radius: 4px;
+    text-align: center;
+}}
+QProgressBar::chunk {{
+    background-color: {selected.success};
+}}
+QLineEdit,
+QTextEdit,
+QPlainTextEdit,
+QComboBox,
+QListWidget {{
+    background-color: {selected.panel_alt};
+    color: {selected.text};
+    border: 1px solid {selected.border};
+}}
+"""
+
+
 __all__ = [
     "HueyTheme",
+    "as_qt_stylesheet",
     "as_css_variables",
     "as_json",
     "as_tk_palette",

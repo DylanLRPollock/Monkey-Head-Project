@@ -45,11 +45,6 @@ try:  # pragma: no cover - optional GUI dependencies
 except Exception:  # pragma: no cover - GUI not available
     QApplication = None  # type: ignore[assignment]
 
-try:  # pragma: no cover - optional theming
-    from qt_material import apply_stylesheet
-except Exception:  # pragma: no cover - theme not installed
-    apply_stylesheet = None  # type: ignore[assignment]
-
 try:  # pragma: no cover - psutil optional
     import psutil  # type: ignore
 except Exception:  # pragma: no cover - psutil missing at runtime
@@ -61,6 +56,7 @@ from huey.core.task_scheduler import (
     TaskScheduler,
     TaskStatus,
 )
+from huey.gui.theme import as_qt_stylesheet
 from huey.utils.paths import get_memory_path
 
 
@@ -172,12 +168,14 @@ class DashboardWindow(QMainWindow):
 
         super().__init__()
         self.scheduler = scheduler or TaskScheduler()
-        self.setWindowTitle("Monkey Head Dashboard")
+        self.setWindowTitle("HueyOS Operations Dashboard")
         self.resize(1100, 720)
 
         central = QWidget(self)
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
+
+        self._setup_header(layout)
 
         self.tabs = QTabWidget()
         layout.addWidget(self.tabs)
@@ -191,6 +189,19 @@ class DashboardWindow(QMainWindow):
         self._timer.timeout.connect(self.refresh_all)
         self._timer.start(5000)
         self.refresh_all()
+
+    def _setup_header(self, layout: QVBoxLayout) -> None:
+        title = QLabel("HueyOS Operations Dashboard")
+        title.setObjectName("hueyHeaderTitle")
+        layout.addWidget(title)
+
+        subtitle = QLabel(
+            "Track system health, memory, task orchestration, and agent load "
+            "without leaving the same HueyOS visual language."
+        )
+        subtitle.setObjectName("hueyHeaderSubtitle")
+        subtitle.setWordWrap(True)
+        layout.addWidget(subtitle)
 
     # ------------------------------------------------------------------
     # Tab setup helpers
@@ -448,8 +459,7 @@ def launch_dashboard(scheduler: TaskScheduler | None = None) -> None:
     if app is None:
         app = QApplication(sys.argv)
         owns_app = True
-    if apply_stylesheet is not None:
-        apply_stylesheet(app, theme="dark_teal.xml")
+    app.setStyleSheet(as_qt_stylesheet())
 
     window = DashboardWindow(scheduler=scheduler)
     window.show()

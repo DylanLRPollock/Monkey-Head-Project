@@ -17,10 +17,12 @@ from huey.gui.state import (
     RuntimeState,
     build_default_state,
 )
-from huey.gui.theme import HueyTheme, get_default_theme
+from huey.gui.theme import HueyTheme, as_qt_stylesheet, as_tk_palette, get_default_theme
 
 __all__ = [
     "HueyTheme",
+    "as_qt_stylesheet",
+    "as_tk_palette",
     "get_default_theme",
     "RepoStatus",
     "MigrationPhase",
