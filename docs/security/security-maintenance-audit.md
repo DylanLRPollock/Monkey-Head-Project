@@ -19,13 +19,15 @@ repository operationally up to date.
      - Add role-based guards (operator/admin/governance).
      - Restrict dangerous routes to localhost or private networks by default.
 
-2. **Resolve Python runtime baseline drift**
-   - Packaging requires Python `>=3.13,<3.15`.
-   - Contributor docs specify Python `3.14.x`.
-   - Docker Compose currently builds with `3.11-slim` by default.
+2. **Keep Python runtime policy aligned**
+   - Status update (2026-06):
+     - Packaging requires Python `>=3.13,<3.14`.
+     - The repository tracks `.python-version` as `3.13`.
+     - Windows `Makefile` commands default to `py -3.13`.
+     - Supported Docker runtime images default to Python `3.13`.
+     - Python `3.14.x` is exercised in experimental CI/package-smoke jobs only.
    - Recommendation:
-     - Set Compose default to a supported runtime (3.13/3.14).
-     - Align README/CONTRIBUTING/compose defaults with one canonical baseline.
+     - Keep Python 3.13 as the only supported runtime until the 3.14 testing lane is consistently green across dependency, packaging, audio, ML, and PyGPT/PyHuey surfaces.
 
 3. **Fix console-script entrypoint mismatch**
    - `pyproject.toml` maps `huey-api = "huey.api:main"`.

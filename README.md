@@ -47,7 +47,8 @@
 | **Current proof loop** | controlled MP3 fixture → local transcription → cognition bridge → structured log |
 | **V1 hardware policy** | stock/unmodified Legion Go; observe thermals, do not alter enclosure |
 | **V1 audio policy** | predetermined MP3 fixture suite; no live microphone |
-| **Supported Python** | Python 3.13.x only; Python 3.14.x is research-stage only |
+| **Supported Python** | Python 3.13.x only |
+| **Python next-version testing** | Python 3.14.x experimental CI/package smoke lane only |
 
 > HueyOS is the software and operating-system layer behind Huey: the environment that coordinates local AI, memory, tools, access paths, hardware, and later embodied control into one offline-first system.
 >
@@ -999,11 +1000,11 @@ Supported range:
 
 Python 3.11.x and Python 3.12.x are not part of the current supported runtime contract.
 
-Python 3.14.x is **research-stage only**. It may be explored in isolated branches or throwaway environments, but it should not be treated as supported until the dependency stack, audio compatibility packages, ML packages, PyGPT/PyHuey integration, and HueyOS runtime path have all been validated.
+Python 3.14.x is the active **testing-only** compatibility lane. It runs in experimental CI/package-smoke jobs, but it is not a supported install target or release baseline until the dependency stack, audio compatibility packages, ML packages, PyGPT/PyHuey integration, and HueyOS runtime path have all been validated.
 
-See `
-docs/development/python-support-policy.md
-` for the canonical support policy.
+The repository also tracks `.python-version` as `3.13`, and the Windows `Makefile` path defaults to `py -3.13` so local commands stay on the supported runtime by default.
+
+See `docs/development/python-support-policy.md` for the canonical support policy.
 
 
 - **Source install path:**
@@ -1283,7 +1284,7 @@ Huey Brain V1 implementation:
 
 ## License
 
-Code is licensed under **GPL-3.0-only**.  
+Code is licensed under **GPL-3.0-only**.
 Documentation and media are licensed under **CC-BY-SA-4.0** unless otherwise noted.
 
 ---

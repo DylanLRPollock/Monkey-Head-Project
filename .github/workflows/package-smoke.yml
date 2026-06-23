@@ -10,17 +10,28 @@ on:
 
 jobs:
   package-smoke:
-    name: Build + Install Smoke (Py3.13)
+    name: Build + Install Smoke (Py ${{ matrix.python-version }} - ${{ matrix.track }})
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python-version: "3.13"
+            track: supported
+            experimental: false
+          - python-version: "3.14"
+            track: testing
+            experimental: true
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Set up Python 3.13
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install build tooling
         run: |
@@ -38,7 +49,12 @@ jobs:
         run: |
           source .pkg-smoke-venv/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install dist/*.whl
+          if [ "${{ matrix.experimental }}" = "true" ]; then
+            # Exercise 3.14 compatibility without promoting 3.14 to supported metadata.
+            python -m pip install --ignore-requires-python dist/*.whl
+          else
+            python -m pip install dist/*.whl
+          fi
 
       - name: Import smoke checks
         shell: bash
@@ -59,5 +75,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: package-dist-artifacts
+          name: package-dist-artifacts-${{ matrix.python-version }}-${{ matrix.track }}
           path: dist/

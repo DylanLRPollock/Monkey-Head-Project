@@ -13,7 +13,8 @@ __pycache__/
 *.pyo
 *.so
 __pypackages__/
-.python-version
+
+# Keep the canonical repository Python pin in version control.
 
 # Virtual environments
 .venv/

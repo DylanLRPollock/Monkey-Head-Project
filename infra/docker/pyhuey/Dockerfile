@@ -1,4 +1,4 @@
-FROM python:3.12-bookworm
+FROM python:3.13-bookworm
 
 # Optional PyHuey cockpit/tooling image derived from upstream PyGPT runtime.
 # This image is intentionally separate from the HueyOS runtime image.

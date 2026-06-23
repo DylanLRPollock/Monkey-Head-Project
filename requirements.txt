@@ -1,6 +1,6 @@
 # Monkey-Head-Project / HueyOS
 # Supported core + dev requirements baseline for repository installs, scans, and CI-adjacent tooling.
-# Target Python: 3.13.x only (>=3.13,<3.14); Python 3.14.x is research-only.
+# Target Python: 3.13.x only (>=3.13,<3.14); Python 3.14.x is testing-only.
 # V1 scope: Huey Brain / Legion Go controlled MP3 fixture -> transcription -> cognition bridge -> structured log.
 # Package/runtime contract: keep aligned with pyproject.toml, constraints.txt, README-v101.0.md, and master-plan-v101.0.json.
 #

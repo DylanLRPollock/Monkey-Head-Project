@@ -16,13 +16,21 @@ The following Python versions are not part of the current supported runtime cont
 
 - Python 3.11.x
 - Python 3.12.x
-- Python 3.14.x
 
-## Python 3.14.x research status
+## Python 3.14.x testing status
 
-Python 3.14.x is considered **research-stage only**.
+Python 3.14.x is the active **testing-only** compatibility lane.
 
-It may be explored in isolated branches or throwaway environments, but it should not be treated as the supported project runtime until the dependency stack, audio compatibility packages, ML packages, PyGPT/PyHuey integration, and HueyOS runtime path have all been validated.
+It is exercised in experimental CI/package-smoke jobs, but it should not be treated as the supported project runtime until the dependency stack, audio compatibility packages, ML packages, PyGPT/PyHuey integration, and HueyOS runtime path have all been validated.
+
+The 3.14 lane intentionally overrides `requires-python` during install so compatibility can be measured without advertising 3.14 as a supported release/runtime target.
+
+## Tooling enforcement
+
+- `pyproject.toml` requires `>=3.13,<3.14`.
+- `.python-version` pins local version-manager flows to `3.13`.
+- The Windows `Makefile` path defaults to `py -3.13`.
+- Stable CI/package validation runs on Python 3.13; Python 3.14 stays experimental.
 
 ## Reason
 

@@ -1,9 +1,9 @@
 # Monkey-Head-Project / HueyOS Makefile
-# Target baseline: Python 3.13.x
+# Target baseline: Python 3.13.x (3.14 remains testing-only)
 
 PYTHON ?= python3.13
 ifeq ($(OS),Windows_NT)
-PYTHON ?= python
+PYTHON ?= py -3.13
 endif
 PIP ?= $(PYTHON) -m pip
 HOST ?= 0.0.0.0

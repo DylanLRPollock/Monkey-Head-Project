@@ -6,7 +6,7 @@ ARG DEBIAN_VERSION=forky
 ARG DEBIAN_VARIANT=slim
 ARG PYTHON_VERSION=3.13.5
 ARG PYTHON_NEXT_VERSION=3.14.0
-ARG PYTHON_SUPPORTED_MAX=3.14
+ARG PYTHON_SUPPORTED_MAX=3.13
 ARG APP_USER=app
 ARG APP_UID=1000
 ARG APP_GID=1000
@@ -53,7 +53,7 @@ EXPOSE 1995
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=5   CMD python -c "import sys; sys.exit(0)"
 
-LABEL org.opencontainers.image.title="HueyOS Base Image"       org.opencontainers.image.description="Debian ${DEBIAN_VERSION} + CPython ${PYTHON_VERSION} runtime base (non-root, venv, tini) · staged upgrade to ${PYTHON_NEXT_VERSION} (max supported ${PYTHON_SUPPORTED_MAX})"       org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.title="HueyOS Base Image"       org.opencontainers.image.description="Debian ${DEBIAN_VERSION} + CPython ${PYTHON_VERSION} runtime base (non-root, venv, tini) · supported runtime ${PYTHON_SUPPORTED_MAX}.x with next-version testing at ${PYTHON_NEXT_VERSION}"       org.opencontainers.image.licenses="MIT"
 
 ENTRYPOINT ["/usr/bin/tini","--"]
 CMD ["sleep","infinity"]
