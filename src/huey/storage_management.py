@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-import os
 import shutil
 import time
 from pathlib import Path
-from typing import List
 
 
 class StorageManager:
@@ -26,32 +24,31 @@ class StorageManager:
                 dest_dir = self._ensure_dir(suffix)
                 shutil.move(str(item), dest_dir / item.name)
 
-    def list_files(self, folder: str) -> List[str]:
+    def list_files(self, folder: str) -> list[str]:
         path = self.base_path / folder
         if not path.exists():
             return []
         return [str(p) for p in path.iterdir() if p.is_file()]
 
     def cleanup_empty_dirs(self) -> None:
-        for dirpath, _dirnames, _filenames in os.walk(self.base_path, topdown=False):
-            path = Path(dirpath)
-            if not list(path.iterdir()):
+        for path, dirnames, filenames in self.base_path.walk(top_down=False):
+            if not dirnames and not filenames:
                 path.rmdir()
 
     def get_total_size(self) -> int:
         total = 0
-        for path, _, files in os.walk(self.base_path):
-            for f in files:
-                fp = Path(path) / f
+        for path, _dirnames, filenames in self.base_path.walk():
+            for filename in filenames:
+                fp = path / filename
                 total += fp.stat().st_size
         return total
 
     def remove_older_than(self, days: int) -> int:
         threshold = time.time() - days * 86400
         removed = 0
-        for dirpath, _, files in os.walk(self.base_path):
-            for name in files:
-                fp = Path(dirpath) / name
+        for path, _dirnames, filenames in self.base_path.walk():
+            for filename in filenames:
+                fp = path / filename
                 if fp.stat().st_mtime < threshold:
                     fp.unlink()
                     removed += 1

@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Mapping
+from typing import Self
 
 from .constants import (
     DEFAULT_BOOT_PROFILE,
@@ -45,7 +46,7 @@ class RuntimeSettings:
     hardware_enabled: bool = True
 
     @classmethod
-    def from_env(cls, environ: Mapping[str, str] | None = None) -> "RuntimeSettings":
+    def from_env(cls, environ: Mapping[str, str] | None = None) -> Self:
         env = dict(os.environ if environ is None else environ)
         return cls(
             environment=env.get("HUEY_ENV", DEFAULT_ENVIRONMENT),

@@ -45,8 +45,17 @@ def test_run_cli_invokes_main(tmp_path):
     cfg.write_text("logging:\n  level: INFO")
     test_args = ["prog", "--config", str(cfg)]
     with patch.object(sys, "argv", test_args), patch("huey.cli.huey_main") as main_mock:
-        run_cli()
+        with pytest.deprecated_call():
+            run_cli()
         main_mock.assert_called_once_with(config_file=str(cfg))
+
+
+def test_huey_main_is_deprecated_and_unavailable():
+    from huey.cli import huey_main
+
+    with pytest.deprecated_call():
+        with pytest.raises(NotImplementedError):
+            huey_main()
 
 
 # Tests for exception hierarchy

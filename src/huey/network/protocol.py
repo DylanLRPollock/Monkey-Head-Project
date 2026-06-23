@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
+from typing import Self
+
+type ProtocolPayload = dict[str, object]
 
 
 @dataclass(slots=True)
 class ProtocolEnvelope:
     topic: str
-    payload: dict[str, object]
+    payload: ProtocolPayload
     headers: dict[str, str] = field(default_factory=dict)
 
     def encode(self) -> str:
@@ -23,7 +26,7 @@ class ProtocolEnvelope:
         )
 
     @classmethod
-    def decode(cls, payload: str) -> "ProtocolEnvelope":
+    def decode(cls, payload: str) -> Self:
         data = json.loads(payload)
         return cls(
             topic=str(data["topic"]),

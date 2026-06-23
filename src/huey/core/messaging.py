@@ -22,9 +22,11 @@ import json
 import time
 import uuid
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any, Self
 
 from pydantic import BaseModel, Field, field_validator
+
+type MessagePayload = dict[str, Any]
 
 
 class Component(str, Enum):
@@ -65,11 +67,11 @@ class MessageHeader(BaseModel):
         default_factory=lambda: uuid.uuid4().hex,
         description="Unique identifier for this message instance.",
     )
-    correlation_id: Optional[str] = Field(
+    correlation_id: str | None = Field(
         None,
         description="Identifier linking request / response message flows.",
     )
-    reply_to: Optional[str] = Field(
+    reply_to: str | None = Field(
         None,
         description="Logical component or topic for directed replies.",
     )
@@ -92,7 +94,7 @@ class MessageHeader(BaseModel):
         default_factory=lambda: time.time(),
         description="Unix epoch timestamp at message creation.",
     )
-    expiry: Optional[float] = Field(
+    expiry: float | None = Field(
         None,
         description=(
             "Optional unix epoch after which the recipient should discard the "
@@ -116,11 +118,11 @@ class MessageEnvelope(BaseModel):
     """Full message wrapper used across transports."""
 
     header: MessageHeader
-    payload: Dict[str, Any] = Field(
+    payload: MessagePayload = Field(
         default_factory=dict,
         description="Arbitrary JSON compatible payload to deliver to recipient.",
     )
-    signature: Optional[str] = Field(
+    signature: str | None = Field(
         None,
         description="Optional detached signature for tamper detection.",
     )
@@ -128,7 +130,7 @@ class MessageEnvelope(BaseModel):
     def to_json(self) -> str:
         """Serialise the envelope to a canonical JSON string."""
 
-        return self.json(sort_keys=True)
+        return json.dumps(self.model_dump(mode="json"), sort_keys=True)
 
     def to_bytes(self) -> bytes:
         """Serialise the envelope to UTF-8 encoded bytes."""
@@ -136,20 +138,18 @@ class MessageEnvelope(BaseModel):
         return self.to_json().encode("utf-8")
 
     @classmethod
-    def from_json(cls, data: str) -> "MessageEnvelope":
+    def from_json(cls, data: str) -> Self:
         """Deserialize a :class:`MessageEnvelope` from JSON text."""
 
-        return cls.parse_raw(data)
+        return cls.model_validate_json(data)
 
     @classmethod
-    def from_bytes(cls, data: bytes) -> "MessageEnvelope":
+    def from_bytes(cls, data: bytes) -> Self:
         """Deserialize a :class:`MessageEnvelope` from bytes."""
 
         return cls.from_json(data.decode("utf-8"))
 
-    def build_ack(
-        self, status: str, payload: Optional[Dict[str, Any]] = None
-    ) -> "MessageEnvelope":
+    def build_ack(self, status: str, payload: MessagePayload | None = None) -> Self:
         """Create a reply envelope acknowledging the current message."""
 
         if not self.header.reply_to:
@@ -185,12 +185,12 @@ def envelope_from_components(
     sender: Component,
     recipient: Component,
     topic: str,
-    payload: Optional[Dict[str, Any]] = None,
+    payload: MessagePayload | None = None,
     priority: MessagePriority = MessagePriority.NORMAL,
-    correlation_id: Optional[str] = None,
-    reply_to: Optional[str] = None,
+    correlation_id: str | None = None,
+    reply_to: str | None = None,
     transport: Transport = Transport.ZEROMQ,
-    expiry: Optional[float] = None,
+    expiry: float | None = None,
     requires_ack: bool = False,
 ) -> MessageEnvelope:
     """Create a :class:`MessageEnvelope` from primitive components."""

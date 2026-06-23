@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from huey.media.speech_pipeline import prepare_for_whisper
 from huey.utils.paths import ensure_subdirectory
 
-Transcriber = Callable[[str], dict[str, object] | str]
+type TranscriptionPayload = dict[str, object]
+type Transcriber = Callable[[str], TranscriptionPayload | str]
 
 
 def _default_prepared_path(source: str | Path) -> Path:
@@ -104,7 +105,7 @@ def batch_transcribe(
     language: str = "en",
     prepare_audio: bool = True,
     mock: bool = False,
-) -> list[dict[str, object]]:
+) -> list[TranscriptionPayload]:
     """Transcribe multiple audio fixtures."""
 
     return [
@@ -120,7 +121,7 @@ def batch_transcribe(
     ]
 
 
-def transcription_metadata(payload: dict[str, object]) -> dict[str, object]:
+def transcription_metadata(payload: TranscriptionPayload) -> TranscriptionPayload:
     """Return a stable metadata subset for a transcription result."""
 
     return {

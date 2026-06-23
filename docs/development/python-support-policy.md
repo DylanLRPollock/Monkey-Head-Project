@@ -44,10 +44,23 @@ release/runtime target.
   HueyOS system checks now account for Python 3.13's free-threaded build
   support and keep the supported lane on the standard GIL-enabled 3.13
   runtime.
+- **PEP 702 deprecation markers are now available in maintained code.**
+  Legacy compatibility entry points can use `warnings.deprecated` instead of
+  ad-hoc docstring-only deprecation notes.
+- **PEP 695-style `type` aliases and modern typing are preferred.** New and
+  touched code can rely on alias syntax, built-in generics, `Self`, and
+  `typing.TypeIs` instead of older `typing.Dict`/`typing.Optional` patterns
+  or weaker JSON-shape narrowing.
+- **`Path.walk()` is available for filesystem traversal.** Touched
+  filesystem helpers should prefer `pathlib.Path` traversal APIs over older
+  `os.walk()` loops when that improves clarity.
 - **Removed stdlib audio bridges are tracked deliberately.** The optional
   ML surface keeps `audioop-lts` and `standard-aifc` under Python 3.13-only
   markers so the `audioop`/`aifc` removals are handled intentionally instead
   of by accident.
+- **Pydantic v2 APIs should be used directly in touched code.** Prefer
+  `model_dump`, `model_dump_json`, and `model_validate_json` over older
+  `json()` / `parse_raw()` compatibility paths.
 - **The supported-vs-testing split is enforced in tooling.** Local pinning,
   repo commands, and stable CI stay on 3.13, while 3.14 compatibility is
   exercised separately without being promoted to a supported runtime.

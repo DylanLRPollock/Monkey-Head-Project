@@ -4,10 +4,24 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from typing import TypeIs
 
 import requests
 
-from huey.gui.models import RepoStatus
+from huey.gui.models import RepoRole, RepoStatus
+
+type GitHubRecord = dict[str, object]
+type GitHubCollection = list[GitHubRecord]
+
+
+def _is_github_record(payload: GitHubRecord | GitHubCollection) -> TypeIs[GitHubRecord]:
+    return isinstance(payload, dict)
+
+
+def _is_github_collection(
+    payload: GitHubRecord | GitHubCollection,
+) -> TypeIs[GitHubCollection]:
+    return isinstance(payload, list)
 
 
 @dataclass(frozen=True)
@@ -34,25 +48,32 @@ class GitHubReadOnlyClient:
         if self.config.token:
             self.session.headers["Authorization"] = f"Bearer {self.config.token}"
 
-    def get_repo(self, full_name: str) -> dict[str, object]:
+    def get_repo(self, full_name: str) -> GitHubRecord:
         """Fetch public repository metadata."""
 
-        return self._request(f"/repos/{full_name}")
+        payload = self._request(f"/repos/{full_name}")
+        if not _is_github_record(payload):
+            raise TypeError(
+                "Expected GitHub API object payload for repository metadata"
+            )
+        return payload
 
     def list_pull_requests(
         self, full_name: str, state: str = "open"
-    ) -> list[dict[str, object]]:
+    ) -> GitHubCollection:
         """Fetch PR metadata."""
 
         payload = self._request(f"/repos/{full_name}/pulls", params={"state": state})
+        if not _is_github_collection(payload):
+            raise TypeError("Expected GitHub API list payload for pull requests")
         return list(payload)
 
-    def list_issues(
-        self, full_name: str, state: str = "open"
-    ) -> list[dict[str, object]]:
+    def list_issues(self, full_name: str, state: str = "open") -> GitHubCollection:
         """Fetch issues excluding pull requests."""
 
         payload = self._request(f"/repos/{full_name}/issues", params={"state": state})
+        if not _is_github_collection(payload):
+            raise TypeError("Expected GitHub API list payload for issues")
         return [
             item
             for item in payload
@@ -61,7 +82,7 @@ class GitHubReadOnlyClient:
 
     def list_workflow_runs(
         self, full_name: str, branch: str | None = None
-    ) -> list[dict[str, object]]:
+    ) -> GitHubCollection:
         """Fetch recent workflow run metadata."""
 
         params = {"per_page": 10}
@@ -71,24 +92,26 @@ class GitHubReadOnlyClient:
             f"/repos/{full_name}/actions/runs",
             params=params,
         )
+        if not _is_github_record(payload):
+            raise TypeError("Expected GitHub API object payload for workflow runs")
         return list(payload.get("workflow_runs", []))
 
-    def get_latest_commit(
-        self, full_name: str, branch: str = "main"
-    ) -> dict[str, object]:
+    def get_latest_commit(self, full_name: str, branch: str = "main") -> GitHubRecord:
         """Fetch the latest commit on a branch."""
 
         payload = self._request(
             f"/repos/{full_name}/commits",
             params={"sha": branch, "per_page": 1},
         )
+        if not _is_github_collection(payload):
+            raise TypeError("Expected GitHub API list payload for commits")
         if not payload:
             return {}
         return dict(payload[0])
 
     def _request(
         self, path: str, params: dict[str, object] | None = None
-    ) -> dict[str, object] | list[dict[str, object]]:
+    ) -> GitHubRecord | GitHubCollection:
         response = self.session.get(
             f"{self.base_url}{path}",
             params=params,
@@ -114,17 +137,18 @@ def summarize_repo_status(client: GitHubReadOnlyClient, full_name: str) -> RepoS
     workflows = client.list_workflow_runs(full_name, branch=default_branch)
     commit = client.get_latest_commit(full_name, branch=default_branch)
     repo_name = full_name.rsplit("/", 1)[-1]
-    role = {
+    role_map: dict[str, RepoRole] = {
         "Monkey-Head-Project": "runtime",
         "PyHuey": "cockpit",
         "command-center": "dashboard",
         "dlrp.ca": "website",
-    }.get(repo_name, "tooling")
+    }
+    role: RepoRole = role_map.get(repo_name, "tooling")
     latest_workflow = workflows[0] if workflows else {}
     return RepoStatus(
         name=repo_name,
         full_name=full_name,
-        role=role,  # type: ignore[arg-type]
+        role=role,
         description=str(repo.get("description") or ""),
         default_branch=default_branch,
         url=str(repo.get("html_url") or ""),

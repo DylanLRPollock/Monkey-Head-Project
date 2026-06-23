@@ -9,14 +9,17 @@ from __future__ import annotations
 
 import argparse
 import sys
-from typing import Iterable, Optional
+from collections.abc import Iterable
+from warnings import deprecated
 
 from .memory.PY import cli as _cli
 
 __all__ = ["main", "parse_arguments", "run_cli", "huey_main", "run_command_center"]
 
+type Argv = Iterable[str] | None
 
-def parse_arguments(argv: Optional[Iterable[str]] = None) -> argparse.Namespace:
+
+def parse_arguments(argv: Argv = None) -> argparse.Namespace:
     """Parse CLI arguments for the legacy Huey entry point."""
 
     parser = argparse.ArgumentParser(description="Huey CLI wrapper")
@@ -33,6 +36,11 @@ def parse_arguments(argv: Optional[Iterable[str]] = None) -> argparse.Namespace:
     return parser.parse_args(list(argv) if argv is not None else None)
 
 
+@deprecated(
+    "huey.cli.huey_main() is a legacy compatibility entry point; use "
+    "huey.cli.main() instead.",
+    stacklevel=2,
+)
 def huey_main(config_file: str = "config.yaml") -> None:
     """Compatibility shim for legacy CLI entry points."""
 
@@ -49,14 +57,19 @@ def run_command_center(argv: list[str] | None = None) -> int:
     return command_center_main(argv)
 
 
-def run_cli(argv: Optional[Iterable[str]] = None) -> None:
+@deprecated(
+    "huey.cli.run_cli() is a legacy compatibility wrapper; use huey.cli.main() "
+    "instead.",
+    stacklevel=2,
+)
+def run_cli(argv: Argv = None) -> None:
     """Invoke the legacy CLI with parsed arguments."""
 
     args = parse_arguments(argv)
     huey_main(config_file=args.config)
 
 
-def main(argv: Optional[Iterable[str]] = None) -> int:
+def main(argv: Argv = None) -> int:
     """Route the Command Center subcommand before falling back to the main CLI."""
 
     args = list(argv) if argv is not None else sys.argv[1:]
