@@ -72,6 +72,36 @@ def _normalise_profiles(profiles: Iterable[str]) -> List[str]:
     return list(seen.keys())
 
 
+def _resolve_shadow_hims_root(args: argparse.Namespace) -> Path:
+    from huey.os.utils.paths import get_memory_path
+
+    explicit_root = getattr(args, "shadow_root", None)
+    if explicit_root:
+        root = Path(explicit_root).expanduser().resolve()
+        if not root.exists() or not root.is_dir():
+            raise RuntimeError(f"Shadow HIMS root not found: {root}")
+        return root
+
+    log_dir = getattr(args, "log_dir", None)
+    if log_dir:
+        root = Path(log_dir).expanduser().resolve() / "hims-shadow"
+        if not root.exists() or not root.is_dir():
+            raise RuntimeError(f"Shadow HIMS root not found: {root}")
+        return root
+
+    candidates = [Path("runs").resolve() / "hims-shadow"]
+    memory_root = get_memory_path(create=False)
+    candidates.append(memory_root / "V1" / "runs" / "hims-shadow")
+
+    for candidate in candidates:
+        if candidate.exists() and candidate.is_dir():
+            return candidate
+
+    raise RuntimeError(
+        "Shadow HIMS root not found. Pass --shadow-root or --log-dir."
+    )
+
+
 def _cmd_run(args: argparse.Namespace) -> int:
     runtime = None
     attempted = ("run", "huey.os.run", "huey.memory.PY.run")
@@ -473,6 +503,73 @@ def _cmd_v1_run_queue(args: argparse.Namespace) -> int:
             sort_keys=True,
         )
     )
+    return 0
+
+
+def _cmd_hims_summary(args: argparse.Namespace) -> int:
+    from huey.hims.shadow import ShadowHIMS
+
+    shadow_hims = ShadowHIMS(_resolve_shadow_hims_root(args))
+    payload = shadow_hims.summary()
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print(f"Shadow root: {payload['shadow_root']}")
+        print(f"Ledger path: {payload['ledger_path']}")
+        print(f"Messages: {payload['messages_total']}")
+        print(f"Ledger entries: {payload['ledger_entries_total']}")
+        print(f"Lineages: {payload['lineages_total']}")
+        print("Mailboxes:")
+        for mailbox, count in payload["mailboxes"].items():
+            print(f"  {mailbox}: {count}")
+    return 0
+
+
+def _cmd_hims_mailbox(args: argparse.Namespace) -> int:
+    from huey.hims.shadow import ShadowHIMS
+
+    shadow_hims = ShadowHIMS(_resolve_shadow_hims_root(args))
+    messages = shadow_hims.list_mailbox(args.mailbox)
+    payload = {
+        "shadow_root": str(shadow_hims.root),
+        "mailbox": args.mailbox,
+        "count": len(messages),
+        "messages": messages,
+    }
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print(f"Shadow root: {payload['shadow_root']}")
+        print(f"Mailbox: {payload['mailbox']}")
+        print(f"Count: {payload['count']}")
+        for record in payload["messages"]:
+            print(
+                f"  {record['message_id']} {record['intent_type']} "
+                f"{record['status']} lineage={record['lineage_metadata']['root_lineage_id']}"
+            )
+    return 0
+
+
+def _cmd_hims_lineage(args: argparse.Namespace) -> int:
+    from huey.hims.shadow import ShadowHIMS
+
+    shadow_hims = ShadowHIMS(_resolve_shadow_hims_root(args))
+    try:
+        payload = shadow_hims.lineage(args.lineage_id)
+    except FileNotFoundError as exc:
+        raise RuntimeError(str(exc)) from exc
+    if args.json:
+        print(json.dumps(payload, indent=2, sort_keys=True))
+    else:
+        print(f"Shadow root: {payload['shadow_root']}")
+        print(f"Lineage: {payload['root_lineage_id']}")
+        print(f"Messages: {payload['message_count']}")
+        print(f"Ledger entries: {payload['ledger_entries_total']}")
+        for record in payload["messages"]:
+            print(
+                f"  {record['message_id']} {record['intent_type']} "
+                f"{record['status']} mailbox={record['current_mailbox']}"
+            )
     return 0
 
 

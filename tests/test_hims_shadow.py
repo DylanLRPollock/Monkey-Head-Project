@@ -82,3 +82,42 @@ def test_shadow_hims_emits_failure_trace(tmp_path: Path) -> None:
     assert outcome_snapshot["intent_type"] == "alert"
     assert outcome_snapshot["payload"]["error_message"] == "mock fixture failure"
     assert (shadow.root / "rejected" / f"{result['request_message_id']}.json").exists()
+
+
+def test_shadow_hims_summary_and_lineage_views(tmp_path: Path) -> None:
+    fixture = tmp_path / "fixture.mp3"
+    fixture.write_bytes(b"fixture")
+    shadow = ShadowHIMS(tmp_path / "hims-shadow")
+    shadow.emit_run_record(
+        _build_run_record(fixture, exit_status="success", error_message=None)
+    )
+
+    summary = shadow.summary()
+    lineage = shadow.lineage("run-001")
+    archived = shadow.list_mailbox("archived")
+
+    assert summary["messages_total"] == 4
+    assert summary["ledger_entries_total"] == 7
+    assert summary["lineages_total"] == 1
+    assert summary["mailboxes"]["archived"] == 2
+    assert summary["mailboxes"]["executed"] == 2
+    assert summary["statuses"] == {"archived": 2, "executed": 2}
+    assert summary["intent_types"] == {
+        "archived_record": 1,
+        "external_interface_packet": 1,
+        "report": 1,
+        "request": 1,
+    }
+    assert lineage["message_count"] == 4
+    assert lineage["ledger_entries_total"] == 7
+    assert [record["intent_type"] for record in lineage["messages"]] == [
+        "external_interface_packet",
+        "request",
+        "report",
+        "archived_record",
+    ]
+    assert len(archived) == 2
+    assert {record["intent_type"] for record in archived} == {
+        "external_interface_packet",
+        "archived_record",
+    }

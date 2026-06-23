@@ -64,5 +64,15 @@ class ThunderMail:
 
         return self.storage.read_ledger()
 
+    def list_messages(self) -> list[dict[str, Any]]:
+        """Return all current message snapshots."""
+
+        return self.storage.list_messages()
+
+    def list_mailbox(self, mailbox: str) -> list[dict[str, Any]]:
+        """Return current message snapshots for one mailbox."""
+
+        return self.storage.list_mailbox(mailbox)
+
 
 __all__ = ["ThunderMail"]

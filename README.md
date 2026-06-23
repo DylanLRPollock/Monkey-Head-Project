@@ -716,6 +716,22 @@ HIMS doctrine remains active, but HIMS runtime is not part of V1.
 
 The current codebase may emit **shadow-mode HIMS** mailbox and ledger artifacts alongside V1 structured logs for traceability. Those artifacts do **not** replace the simple V1 pipeline and do **not** claim that full HIMS runtime or governance has been reintroduced.
 
+### Shadow HIMS inspection
+
+When shadow-mode HIMS is enabled by a V1 run, artifacts are written under the selected log directory as `hims-shadow\`.
+
+- `records\` stores the latest snapshot of each shadow HIMS message.
+- Mailbox folders such as `inbox\`, `pending_validation\`, `executed\`, and `archived\` store the current routed view.
+- `ledger.jsonl` preserves the append-only transition history.
+
+Read-only inspection commands:
+
+```text
+huey hims-summary --log-dir <runs-dir> --json
+huey hims-mailbox archived --log-dir <runs-dir> --json
+huey hims-lineage <root-lineage-id> --log-dir <runs-dir> --json
+```
+
 ### Future HIMS flow
 
 ```mermaid

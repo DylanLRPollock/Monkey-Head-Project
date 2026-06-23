@@ -45,6 +45,23 @@ class HIMSStorage:
 
         return self.ledger.read()
 
+    def list_messages(self) -> list[dict[str, Any]]:
+        """Return all current message snapshots."""
+
+        records: list[dict[str, Any]] = []
+        for path in sorted(self.records_dir.glob("*.json")):
+            records.append(json.loads(path.read_text(encoding="utf-8")))
+        return records
+
+    def list_mailbox(self, mailbox: Mailbox | str) -> list[dict[str, Any]]:
+        """Return the current message snapshots for one mailbox."""
+
+        selected = Mailbox(mailbox)
+        records: list[dict[str, Any]] = []
+        for path in sorted((self.root / selected.value).glob("*.json")):
+            records.append(json.loads(path.read_text(encoding="utf-8")))
+        return records
+
     def write_message(
         self,
         message: HIMSMessage,

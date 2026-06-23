@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 from typing import Callable
 
+from huey.hims.router import Mailbox
+
 
 def _legacy_handler(name: str) -> Callable[[argparse.Namespace], int]:
     def _handler(args: argparse.Namespace) -> int:
@@ -13,6 +15,19 @@ def _legacy_handler(name: str) -> Callable[[argparse.Namespace], int]:
         return getattr(legacy_cli, name)(args)
 
     return _handler
+
+
+def _add_shadow_hims_location_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--shadow-root",
+        default=None,
+        help="Explicit path to the shadow HIMS root directory.",
+    )
+    parser.add_argument(
+        "--log-dir",
+        default=None,
+        help="V1 log directory containing the hims-shadow folder.",
+    )
 
 
 def register_runtime_commands(
@@ -167,3 +182,45 @@ def register_runtime_commands(
         help="Directory for per-fixture structured logs.",
     )
     v1_run_queue_cmd.set_defaults(handler=_legacy_handler("_cmd_v1_run_queue"))
+
+    hims_summary_cmd = subparsers.add_parser(
+        "hims-summary",
+        help="Summarise the current shadow-mode HIMS mailbox and ledger state.",
+    )
+    _add_shadow_hims_location_args(hims_summary_cmd)
+    hims_summary_cmd.add_argument(
+        "--json",
+        action="store_true",
+        help="Emit the summary payload as JSON.",
+    )
+    hims_summary_cmd.set_defaults(handler=_legacy_handler("_cmd_hims_summary"))
+
+    hims_mailbox_cmd = subparsers.add_parser(
+        "hims-mailbox",
+        help="Inspect current messages in one shadow-mode HIMS mailbox.",
+    )
+    hims_mailbox_cmd.add_argument(
+        "mailbox",
+        choices=[mailbox.value for mailbox in Mailbox],
+        help="Mailbox name to inspect.",
+    )
+    _add_shadow_hims_location_args(hims_mailbox_cmd)
+    hims_mailbox_cmd.add_argument(
+        "--json",
+        action="store_true",
+        help="Emit the mailbox payload as JSON.",
+    )
+    hims_mailbox_cmd.set_defaults(handler=_legacy_handler("_cmd_hims_mailbox"))
+
+    hims_lineage_cmd = subparsers.add_parser(
+        "hims-lineage",
+        help="Inspect one shadow-mode HIMS lineage by root lineage ID.",
+    )
+    hims_lineage_cmd.add_argument("lineage_id", help="Root lineage ID to inspect.")
+    _add_shadow_hims_location_args(hims_lineage_cmd)
+    hims_lineage_cmd.add_argument(
+        "--json",
+        action="store_true",
+        help="Emit the lineage payload as JSON.",
+    )
+    hims_lineage_cmd.set_defaults(handler=_legacy_handler("_cmd_hims_lineage"))

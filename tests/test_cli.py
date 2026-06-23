@@ -12,7 +12,32 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 from huey import cli
+from huey.hims.shadow import ShadowHIMS
 from huey.memory.PY import cli as legacy_cli
+
+
+def _build_shadow_run_record(
+    fixture: Path,
+    *,
+    run_id: str = "cli-run-001",
+    exit_status: str = "success",
+    error_message: str | None = None,
+) -> Dict[str, Any]:
+    return {
+        "run_id": run_id,
+        "timestamp_start": "2026-06-23T00:00:00Z",
+        "timestamp_end": "2026-06-23T00:00:01Z",
+        "source_file": str(fixture),
+        "transcription_engine": "mock-transcriber",
+        "transcription_model": "mock-whisper-v1",
+        "transcript": "fixture transcript",
+        "cognition_provider": "mock-cognition",
+        "cognition_model": "mock-cognition-v1",
+        "response": {"status": "ok"} if exit_status == "success" else None,
+        "runtime_seconds": 1.0,
+        "exit_status": exit_status,
+        "error_message_if_any": error_message,
+    }
 
 
 def test_system_check_json(monkeypatch, capsys):
@@ -273,3 +298,63 @@ def test_v1_run_queue_mock_processes_sorted_and_handles_failures(
     assert run_records[2]["error_message_if_any"] == "mock fixture failure"
     shadow_records = sorted((Path(output["hims_shadow_dir"]) / "records").glob("*.json"))
     assert len(shadow_records) == 12
+
+
+def test_hims_summary_command_reports_shadow_state(tmp_path: Path, capsys):
+    fixture = tmp_path / "fixture.mp3"
+    fixture.write_bytes(b"fixture")
+    shadow = ShadowHIMS(tmp_path / "hims-shadow")
+    shadow.emit_run_record(_build_shadow_run_record(fixture))
+
+    exit_code = cli.main(
+        ["hims-summary", "--shadow-root", str(shadow.root), "--json"]
+    )
+
+    assert exit_code == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["shadow_root"] == str(shadow.root)
+    assert payload["messages_total"] == 4
+    assert payload["mailboxes"]["archived"] == 2
+    assert payload["lineages_total"] == 1
+
+
+def test_hims_mailbox_and_lineage_commands_report_details(tmp_path: Path, capsys):
+    fixture = tmp_path / "fixture.mp3"
+    fixture.write_bytes(b"fixture")
+    shadow = ShadowHIMS(tmp_path / "hims-shadow")
+    shadow.emit_run_record(_build_shadow_run_record(fixture, run_id="cli-run-002"))
+
+    mailbox_exit_code = cli.main(
+        [
+            "hims-mailbox",
+            "executed",
+            "--shadow-root",
+            str(shadow.root),
+            "--json",
+        ]
+    )
+
+    assert mailbox_exit_code == 0
+    mailbox_payload = json.loads(capsys.readouterr().out)
+    assert mailbox_payload["mailbox"] == "executed"
+    assert mailbox_payload["count"] == 2
+    assert {record["intent_type"] for record in mailbox_payload["messages"]} == {
+        "report",
+        "request",
+    }
+
+    lineage_exit_code = cli.main(
+        [
+            "hims-lineage",
+            "cli-run-002",
+            "--shadow-root",
+            str(shadow.root),
+            "--json",
+        ]
+    )
+
+    assert lineage_exit_code == 0
+    lineage_payload = json.loads(capsys.readouterr().out)
+    assert lineage_payload["root_lineage_id"] == "cli-run-002"
+    assert lineage_payload["message_count"] == 4
+    assert lineage_payload["ledger_entries_total"] == 7

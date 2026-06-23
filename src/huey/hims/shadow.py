@@ -2,12 +2,36 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
+from huey.hims.router import Mailbox
 from huey.hims.schema import HIMSMessage, MessageStatus, TrustClass
 from huey.hims.thundermail import ThunderMail
+
+_LINEAGE_STAGE_ORDER = {
+    "external_interface_packet": 0,
+    "external_interface_packet_archived": 0,
+    "request": 1,
+    "report": 2,
+    "alert": 2,
+    "archived_record": 3,
+}
+
+
+def _message_sort_key(record: dict[str, Any]) -> tuple[int, str, str]:
+    lineage_stage = str(record.get("lineage_metadata", {}).get("lineage_stage", ""))
+    return (
+        _LINEAGE_STAGE_ORDER.get(lineage_stage, 99),
+        str(record.get("updated_at", "")),
+        str(record.get("message_id", "")),
+    )
+
+
+def _ledger_sort_key(record: dict[str, Any]) -> tuple[str, str]:
+    return (str(record.get("created_at", "")), str(record.get("event_id", "")))
 
 
 class ShadowHIMS:
@@ -33,6 +57,144 @@ class ShadowHIMS:
         """Return the append-only ledger entries."""
 
         return self.mail.read_ledger()
+
+    def list_messages(self) -> list[dict[str, Any]]:
+        """Return all current shadow-mode HIMS message snapshots."""
+
+        return sorted(self.mail.list_messages(), key=_message_sort_key)
+
+    def list_mailbox(self, mailbox: Mailbox | str) -> list[dict[str, Any]]:
+        """Return the current message snapshots for one mailbox."""
+
+        selected = mailbox.value if isinstance(mailbox, Mailbox) else str(mailbox)
+        return sorted(self.mail.list_mailbox(selected), key=_message_sort_key)
+
+    def lineage(self, root_lineage_id: str) -> dict[str, Any]:
+        """Return all current snapshots and ledger entries for one lineage."""
+
+        selected_lineage = root_lineage_id.strip()
+        if not selected_lineage:
+            raise ValueError("root_lineage_id is required")
+
+        messages = [
+            record
+            for record in self.list_messages()
+            if str(record.get("lineage_metadata", {}).get("root_lineage_id", ""))
+            == selected_lineage
+        ]
+        ledger_entries = [
+            record
+            for record in self.read_ledger()
+            if str(
+                record.get("payload", {})
+                .get("record", {})
+                .get("lineage_metadata", {})
+                .get("root_lineage_id", "")
+            )
+            == selected_lineage
+        ]
+        ledger_entries.sort(key=_ledger_sort_key)
+
+        if not messages and not ledger_entries:
+            raise FileNotFoundError(f"HIMS lineage not found: {selected_lineage}")
+
+        return {
+            "root_lineage_id": selected_lineage,
+            "shadow_root": str(self.root),
+            "ledger_path": str(self.ledger_path),
+            "messages": messages,
+            "message_count": len(messages),
+            "message_ids": [str(record["message_id"]) for record in messages],
+            "statuses": dict(
+                sorted(Counter(str(record.get("status", "")) for record in messages).items())
+            ),
+            "intent_types": dict(
+                sorted(
+                    Counter(str(record.get("intent_type", "")) for record in messages).items()
+                )
+            ),
+            "ledger_entries": ledger_entries,
+            "ledger_entries_total": len(ledger_entries),
+        }
+
+    def summary(self) -> dict[str, Any]:
+        """Return a read-only summary of the current shadow-mode HIMS state."""
+
+        messages = self.list_messages()
+        ledger_entries = self.read_ledger()
+        mailbox_counts = {mailbox.value: 0 for mailbox in Mailbox}
+        status_counts = Counter()
+        intent_counts = Counter()
+        lineages: dict[str, dict[str, Any]] = {}
+
+        for record in messages:
+            mailbox = str(record.get("current_mailbox", "")).strip()
+            if mailbox:
+                mailbox_counts[mailbox] = mailbox_counts.get(mailbox, 0) + 1
+
+            status = str(record.get("status", "")).strip()
+            if status:
+                status_counts[status] += 1
+
+            intent = str(record.get("intent_type", "")).strip()
+            if intent:
+                intent_counts[intent] += 1
+
+            root_lineage_id = str(
+                record.get("lineage_metadata", {}).get("root_lineage_id", "")
+            ).strip()
+            if not root_lineage_id:
+                continue
+
+            lineage_summary = lineages.setdefault(
+                root_lineage_id,
+                {
+                    "root_lineage_id": root_lineage_id,
+                    "message_count": 0,
+                    "message_ids": [],
+                    "intent_types": [],
+                    "terminal_statuses": [],
+                    "last_updated_at": "",
+                },
+            )
+            lineage_summary["message_count"] += 1
+            lineage_summary["message_ids"].append(str(record.get("message_id", "")))
+            intent_value = str(record.get("intent_type", "")).strip()
+            if intent_value and intent_value not in lineage_summary["intent_types"]:
+                lineage_summary["intent_types"].append(intent_value)
+            status_value = str(record.get("status", "")).strip()
+            if status_value and status_value not in lineage_summary["terminal_statuses"]:
+                lineage_summary["terminal_statuses"].append(status_value)
+            updated_at = str(record.get("updated_at", ""))
+            if updated_at >= str(lineage_summary["last_updated_at"]):
+                lineage_summary["last_updated_at"] = updated_at
+
+        return {
+            "shadow_root": str(self.root),
+            "ledger_path": str(self.ledger_path),
+            "messages_total": len(messages),
+            "ledger_entries_total": len(ledger_entries),
+            "mailboxes": dict(sorted(mailbox_counts.items())),
+            "statuses": dict(sorted(status_counts.items())),
+            "intent_types": dict(sorted(intent_counts.items())),
+            "lineages_total": len(lineages),
+            "lineages": [
+                {
+                    **summary,
+                    "message_ids": sorted(summary["message_ids"]),
+                    "intent_types": sorted(summary["intent_types"]),
+                    "terminal_statuses": sorted(summary["terminal_statuses"]),
+                }
+                for summary in sorted(
+                    lineages.values(),
+                    key=lambda item: (
+                        str(item["last_updated_at"]),
+                        str(item["root_lineage_id"]),
+                    ),
+                    reverse=True,
+                )
+            ],
+        }
 
     def emit_run_record(self, run_record: dict[str, Any]) -> dict[str, Any]:
         """Translate one authoritative V1 run record into shadow HIMS traces."""
