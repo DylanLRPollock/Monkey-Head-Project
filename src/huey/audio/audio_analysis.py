@@ -1,99 +1,25 @@
-"""Audio inspection helpers built on top of the FFmpeg media subsystem."""
+"""Compatibility wrapper for canonical audio analysis helpers.
 
-from __future__ import annotations
+The canonical implementation lives in :mod:`huey.media.audio_analysis`.
+This module is retained so existing imports from :mod:`huey.audio.audio_analysis`
+continue to work during the media-tools consolidation.
+"""
 
-import re
-import subprocess
-from pathlib import Path
-
-from huey.media.ffmpeg_validator import check_ffmpeg
-from huey.media.media_manager import detect_silence, probe_media
-
-
-def _audio_stream(source: str | Path) -> dict[str, object]:
-    payload = probe_media(source)
-    for stream in payload.streams:
-        if stream.get("codec_type") == "audio":
-            return dict(stream)
-    return {}
-
-
-def duration(source: str | Path) -> float:
-    """Return audio duration in seconds."""
-
-    payload = probe_media(source)
-    return float(payload.duration_seconds or 0.0)
-
-
-def bitrate(source: str | Path) -> int:
-    """Return audio bitrate in bits per second."""
-
-    payload = probe_media(source)
-    stream = _audio_stream(source)
-    raw_value = stream.get("bit_rate") or payload.bit_rate or 0
-    return int(float(raw_value or 0))
-
-
-def sample_rate(source: str | Path) -> int:
-    """Return audio sample rate."""
-
-    return int(float(_audio_stream(source).get("sample_rate", 0)))
-
-
-def channels(source: str | Path) -> int:
-    """Return the number of audio channels."""
-
-    return int(_audio_stream(source).get("channels", 0))
-
-
-def _volumedetect(source: str | Path) -> dict[str, float]:
-    if not check_ffmpeg():
-        raise RuntimeError("ffmpeg is not available on PATH")
-    result = subprocess.run(
-        [
-            "ffmpeg",
-            "-hide_banner",
-            "-i",
-            str(Path(source).expanduser().resolve()),
-            "-af",
-            "volumedetect",
-            "-f",
-            "null",
-            "-",
-        ],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        raise RuntimeError(result.stderr.strip() or result.stdout.strip())
-    mean_match = re.search(r"mean_volume:\s*(-?[0-9.]+) dB", result.stderr or "")
-    peak_match = re.search(r"max_volume:\s*(-?[0-9.]+) dB", result.stderr or "")
-    return {
-        "mean_volume": float(mean_match.group(1)) if mean_match else 0.0,
-        "max_volume": float(peak_match.group(1)) if peak_match else 0.0,
-    }
-
-
-def peak_level(source: str | Path) -> float:
-    """Return the detected peak level in dB."""
-
-    return _volumedetect(source)["max_volume"]
-
-
-def rms_level(source: str | Path) -> float:
-    """Return the mean/RMS volume in dB."""
-
-    return _volumedetect(source)["mean_volume"]
-
-
-def silence_map(source: str | Path) -> list[dict[str, float]]:
-    """Return silence segments detected in the audio."""
-
-    return detect_silence(source)
-
+from huey.media.audio_analysis import (
+    AudioAnalysis,
+    analyze_audio,
+    bitrate,
+    channels,
+    duration,
+    peak_level,
+    rms_level,
+    sample_rate,
+    silence_map,
+)
 
 __all__ = [
+    "AudioAnalysis",
+    "analyze_audio",
     "bitrate",
     "channels",
     "duration",
