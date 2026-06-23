@@ -3,24 +3,37 @@
 # www.dlrp.ca
 # HueyOS: .gitignore
 
+# ---------------------------------------------------------------------------
 # Python
+# ---------------------------------------------------------------------------
+
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyo
 *.so
 __pypackages__/
-.env
-.env.*
-!.env.example
-.venv/
-venv/
-env/
 .python-version
 
-# Packaging metadata
-pip-wheel-metadata/
+# Virtual environments
+.venv/
+.venv*/
+.venv313-ci/
+venv/
+env/
+ENV/
 
-# Dev/Tool caches
+# Packaging metadata
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+src/hueyos.egg-info/
+
+# ---------------------------------------------------------------------------
+# Dev / tool caches
+# ---------------------------------------------------------------------------
+
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -29,53 +42,62 @@ pip-wheel-metadata/
 .tox/
 .nox/
 .hypothesis/
+.pyre/
 
 # Coverage reports
 .coverage
 .coverage.*
-htmlcov/
 coverage.xml
+htmlcov/
 
-# IDE
-.vscode/
-.idea/
-.spyproject/
-.ropeproject/
+# ---------------------------------------------------------------------------
+# Documentation build output
+# ---------------------------------------------------------------------------
 
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
+docs/_build/
 
-# Build/Dist
-build/
+# ---------------------------------------------------------------------------
+# Node / frontend / integration build artifacts
+# ---------------------------------------------------------------------------
+
+node_modules/
 dist/
-*.egg-info/
 
-# Logs & runtime artifacts
+integrations/*/node_modules/
+integrations/*/dist/
+integrations/*/.tmp/
+integrations/*/.vite-temp/
+integrations/*/.cache/
+
+# Keep package manifests trackable
+!integrations/*/package.json
+!integrations/*/package-lock.json
+!integrations/*/pnpm-lock.yaml
+!integrations/*/yarn.lock
+
+# ---------------------------------------------------------------------------
+# Logs and runtime artifacts
+# ---------------------------------------------------------------------------
+
 *.log
 *.sqlite
 *.sqlite3
+
+logs/
+!logs/.gitkeep
+
+src/huey/memory/LOG/*
+!src/huey/memory/LOG/.gitkeep
+
 src/huey/memory/LOGS/*
 !src/huey/memory/LOGS/.gitkeep
 
-# Secrets and generated key material
-infra/secrets/*
-!infra/secrets/README.md
-!infra/secrets/*-example
-!infra/secrets/*.pub
-*.pem
-*.key
-id_rsa
-id_ed25519
+# ---------------------------------------------------------------------------
+# Project data / local memory outputs
+# ---------------------------------------------------------------------------
 
-# Editor backups/swaps
-*~
-*.swp
-*.swo
-
-# Project data
 raw/
+
 memory/*
 !memory/.gitkeep
 !memory/LOGS/
@@ -83,70 +105,87 @@ memory/*
 !memory/RAW/
 !memory/RAW/.gitkeep
 
-# Local env/config (real env; example stays tracked)
-huey.env
+# ---------------------------------------------------------------------------
+# Local env/config
+# ---------------------------------------------------------------------------
 
-# Local/generated secret-bearing files (keep templates/examples committed)
-config/pygpt_net/config.json
+.env
+.env.*
 *.env
 *.env.*
+huey.env
+
 !.env.example
 !*.env.example
 !*.env.template
 !*.env.sample
+!huey.env.example
+
+# Local/generated secret-bearing files
+config/pygpt_net/config.json
+
+# ---------------------------------------------------------------------------
+# Secrets and generated key material
+# ---------------------------------------------------------------------------
+
+infra/secrets/*
+!infra/secrets/README.md
+!infra/secrets/*-example
+!infra/secrets/*.pub
+
+secrets/
+local_secrets/
+**/secrets.local/
+
 *.apikey
 *.api_key
 apikey.txt
 api_key.txt
-secrets/
-local_secrets/
-**/secrets.local/
+
+*.pem
+*.key
 *.p12
 *.jks
 *.keystore
+id_rsa
+id_ed25519
+
+# ---------------------------------------------------------------------------
+# Security scan reports
+# ---------------------------------------------------------------------------
+
 pip-audit-report*
+pip-audit*.json
 safety-report*
 bandit-report*
-
-# --- Local generated tooling artifacts ---
-
-# Python caches
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Test/type/lint caches
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-coverage.xml
-htmlcov/
-
-# Virtual environments
-.venv/
-.venv*/
-venv/
-env/
-ENV/
-.venv313-ci/
-
-# Build/package outputs
-build/
-dist/
-*.egg-info/
-
-# Local reports/artifacts
 bandit-results*.json
-pip-audit*.json
-*.log
+bandit-results*.zip
 
+# ---------------------------------------------------------------------------
 # Local archive / inspection bundles
-/folders.zip
-*.zip
+# ---------------------------------------------------------------------------
 
-# OS/editor noise
+/folders.zip
+*-inspection.zip
+*-local.zip
+*-tmp.zip
+
+# Do not globally ignore all ZIP files; release archives may be intentional.
+# Add specific local ZIP patterns above instead.
+
+# ---------------------------------------------------------------------------
+# IDE / editor / OS noise
+# ---------------------------------------------------------------------------
+
+.vscode/
+.idea/
+.spyproject/
+.ropeproject/
+
+*~
+*.swp
+*.swo
+
 .DS_Store
 Thumbs.db
-
-# --- End local generated tooling artifacts ---
+desktop.ini
