@@ -604,6 +604,26 @@ def prepare_audio_for_transcription(
     )
 
 
+__all__ = [
+    "AudioTransformOptions",
+    "convert_audio",
+    "detect_silence",
+    "extract_audio",
+    "extract_frames",
+    "FFmpegCommandResult",
+    "FFmpegMediaManager",
+    "MediaProbeResult",
+    "check_ffmpeg_available",
+    "get_default_manager",
+    "normalize_audio",
+    "prepare_audio_for_transcription",
+    "probe_media",
+    "remove_silence",
+    "resample_audio",
+    "transcode_video",
+]
+
+
 def convert_audio(
     source: str | Path,
     target: str | Path,

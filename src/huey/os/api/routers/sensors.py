@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Annotated
+
 from fastapi import APIRouter, Query, status
 
 from huey.memory.PY.api import SensorRegistrationRequest
@@ -54,9 +56,9 @@ def poll_all_sensors():
 @router.get("/sensors/{sensor_name}/history")
 def sensor_history(
     sensor_name: str,
-    limit: int = Query(
-        50, ge=1, le=500, description="Maximum number of readings to return"
-    ),
+    limit: Annotated[
+        int, Query(ge=1, le=500, description="Maximum number of readings to return")
+    ] = 50,
 ):
     from huey.memory.PY import api as legacy_api
 

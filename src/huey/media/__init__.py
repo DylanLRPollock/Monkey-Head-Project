@@ -6,9 +6,17 @@ from huey.media.media_manager import (
     FFmpegMediaManager,
     MediaProbeResult,
     check_ffmpeg_available,
+    convert_audio,
+    detect_silence,
+    extract_audio,
+    extract_frames,
     get_default_manager,
+    normalize_audio,
     prepare_audio_for_transcription,
     probe_media,
+    remove_silence,
+    resample_audio,
+    transcode_video,
 )
 from huey.media.video_pipeline import (
     VideoFramePreview,
@@ -18,6 +26,10 @@ from huey.media.video_pipeline import (
 
 __all__ = [
     "AudioTransformOptions",
+    "convert_audio",
+    "detect_silence",
+    "extract_audio",
+    "extract_frames",
     "FFmpegCommandResult",
     "FFmpegMediaManager",
     "MediaProbeResult",
@@ -26,6 +38,10 @@ __all__ = [
     "VideoPipelineResult",
     "check_ffmpeg_available",
     "get_default_manager",
+    "normalize_audio",
     "prepare_audio_for_transcription",
     "probe_media",
+    "remove_silence",
+    "resample_audio",
+    "transcode_video",
 ]

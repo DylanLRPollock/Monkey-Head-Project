@@ -176,7 +176,10 @@ class RuntimeOrchestrator:
         )
         self.register_pipeline(
             "v1-proof-loop",
-            description="Controlled MP3 fixture -> transcription -> cognition -> structured log.",
+            description=(
+                "Controlled MP3 fixture -> transcription -> cognition -> "
+                "structured log."
+            ),
             steps=[
                 "prepare-media",
                 "transcribe-fixture",

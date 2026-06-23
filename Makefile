@@ -55,7 +55,7 @@ lint:
 	black --check src tests scripts conftest.py
 	isort --check-only src tests scripts conftest.py
 	ruff check src tests scripts conftest.py
-	flake8 --exclude=src/huey/connectors/pyhuey src tests scripts conftest.py
+	flake8 src tests scripts conftest.py
 
 check-drift:
 	$(PYTHON) scripts/repo/check_repo_drift.py

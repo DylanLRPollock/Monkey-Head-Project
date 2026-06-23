@@ -80,8 +80,8 @@ class TelemetryStore:
                 """)
 
     def log_sensor_reading(self, reading: Any) -> None:
-        name = str(getattr(reading, "name"))
-        value = getattr(reading, "value")
+        name = str(reading.name)
+        value = reading.value
         timestamp = _coerce_timestamp(getattr(reading, "timestamp", None))
         provenance = _coerce_mapping(getattr(reading, "provenance", None))
         with self._connect() as connection:

@@ -33,7 +33,7 @@ class StorageManager:
         return [str(p) for p in path.iterdir() if p.is_file()]
 
     def cleanup_empty_dirs(self) -> None:
-        for dirpath, dirnames, filenames in os.walk(self.base_path, topdown=False):
+        for dirpath, _dirnames, _filenames in os.walk(self.base_path, topdown=False):
             path = Path(dirpath)
             if not list(path.iterdir()):
                 path.rmdir()

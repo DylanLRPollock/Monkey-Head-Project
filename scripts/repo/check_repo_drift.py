@@ -59,7 +59,10 @@ RULES: list[DriftRule] = [
     DriftRule(
         name="repo-py-gpt-path",
         pattern=re.compile(r"\brepo/py-gpt\b"),
-        message="Replace stale path 'repo/py-gpt' with current pathing (for example src/huey/connectors/pyhuey).",
+        message=(
+            "Replace stale path 'repo/py-gpt' with current pathing "
+            "(for example src/huey/connectors/pyhuey)."
+        ),
     ),
     DriftRule(
         name="windows-hueybody-path",
@@ -69,12 +72,18 @@ RULES: list[DriftRule] = [
     DriftRule(
         name="huey-core-label",
         pattern=re.compile(r"\bHuey Core\b"),
-        message="Use 'Huey Body' for current-facing docs, keeping Huey Core only for archive/provenance contexts.",
+        message=(
+            "Use 'Huey Body' for current-facing docs, keeping Huey Core only "
+            "for archive/provenance contexts."
+        ),
     ),
     DriftRule(
         name="docker-primary-pygpt",
         pattern=re.compile(r"\b(pygpt|pygpt-net)\b", re.IGNORECASE),
-        message="Do not present PyGPT as the primary runtime in main Dockerfiles; use hueyos/HueyOS runtime entrypoints.",
+        message=(
+            "Do not present PyGPT as the primary runtime in main Dockerfiles; "
+            "use hueyos/HueyOS runtime entrypoints."
+        ),
     ),
 ]
 

@@ -34,7 +34,7 @@ class GPIOZeroDigitalSensor(SensorPlugin):
         LOGGER.debug("Initialised gpiozero sensor %s on pin %s", self.name, pin)
 
     def read(self) -> Any:
-        return float(getattr(self, "_device").value)
+        return float(self._device.value)
 
 
 class GPIOZeroDigitalActuator(ActuatorPlugin):
@@ -54,7 +54,7 @@ class GPIOZeroDigitalActuator(ActuatorPlugin):
         LOGGER.debug("Initialised gpiozero actuator %s on pin %s", self.name, pin)
 
     def perform(self, command: str, payload: Optional[Dict[str, Any]] = None) -> Any:
-        device = getattr(self, "_device")
+        device = self._device
         if command == "on":
             device.on()
         elif command == "off":
@@ -83,7 +83,7 @@ class SerialLineSensor(SensorPlugin):
         LOGGER.debug("Opened serial sensor %s on %s @ %s", self.name, port, baudrate)
 
     def read(self) -> Any:
-        line = getattr(self, "_serial").readline().decode("utf-8", "ignore").strip()
+        line = self._serial.readline().decode("utf-8", "ignore").strip()
         return line
 
 
@@ -108,7 +108,7 @@ class SerialCommandActuator(ActuatorPlugin):
     def perform(self, command: str, payload: Optional[Dict[str, Any]] = None) -> Any:
         message = payload.get("message") if payload else command
         data = f"{message}\n".encode("utf-8")
-        getattr(self, "_serial").write(data)
+        self._serial.write(data)
         return {"written": message}
 
 
@@ -136,9 +136,7 @@ class SMBusSensor(SensorPlugin):
     def read(self) -> Any:
         register = int(self.config.get("register", 0))
         length = int(self.config.get("length", 2))
-        data = getattr(self, "_bus").read_i2c_block_data(
-            self._address, register, length
-        )
+        data = self._bus.read_i2c_block_data(self._address, register, length)
         return data
 
 
