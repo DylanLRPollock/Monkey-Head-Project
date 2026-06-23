@@ -113,6 +113,7 @@ def describe_functions(
     descriptions: List[Dict[str, object]] = []
     for name, func in sorted(ensure_registered_functions(extra_modules).items()):
         signature = inspect.signature(func)
+        parameters = []
         required_parameters = [
             parameter.name
             for parameter in signature.parameters.values()
@@ -123,12 +124,27 @@ def describe_functions(
                 inspect.Parameter.VAR_KEYWORD,
             )
         ]
+        for parameter in signature.parameters.values():
+            parameters.append(
+                {
+                    "name": parameter.name,
+                    "kind": parameter.kind.name.lower(),
+                    "required": parameter.name in required_parameters,
+                    "default": (
+                        None
+                        if parameter.default is inspect.Signature.empty
+                        else repr(parameter.default)
+                    ),
+                }
+            )
         descriptions.append(
             {
                 "name": name,
                 "module": getattr(func, "__module__", ""),
                 "signature": str(signature),
                 "doc": inspect.getdoc(func) or "",
+                "callable_without_arguments": not required_parameters,
+                "parameters": parameters,
                 "required_parameters": required_parameters,
             }
         )

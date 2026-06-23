@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from collections import defaultdict
 import json
 import logging
 import os
@@ -150,6 +151,17 @@ class MonkeyManager(BaseTool):
         action.triggered.connect(callback)
         return action
 
+    @staticmethod
+    def _json_ready_path(path: Path | None) -> dict[str, object]:
+        return {
+            "path": None if path is None else str(path),
+            "exists": bool(path and path.exists()),
+        }
+
+    @staticmethod
+    def _print_json(payload: object) -> None:
+        print(json.dumps(payload, indent=2, sort_keys=True, default=str))
+
     def install(self) -> None:
         self._run_script(self.install_path)
 
@@ -163,6 +175,22 @@ class MonkeyManager(BaseTool):
         """Return current PyHuey integration discovery details."""
 
         return pyhuey_status()
+
+    def path_status(self) -> Dict[str, object]:
+        """Return resolved project and launcher paths for the current platform."""
+
+        return {
+            "platform": platform.system(),
+            "project_root": str(_project_root()),
+            "install": self._json_ready_path(self.install_path),
+            "update": self._json_ready_path(self.update_path),
+            "run": self._json_ready_path(self.run_path),
+        }
+
+    def print_path_status(self) -> None:
+        """Print the resolved project and launcher paths."""
+
+        self._print_json(self.path_status())
 
     def print_integration_status(self) -> None:
         """Print a readable PyHuey integration status report."""
@@ -202,6 +230,35 @@ class MonkeyManager(BaseTool):
 
         return invoke_function(function_name, **kwargs)
 
+    def action_catalog(self) -> list[dict[str, object]]:
+        """Return structured metadata for the manager menu/actions."""
+
+        return [dict(spec) for spec, _callback in self._action_specs()]
+
+    def gui_payload(self) -> dict[str, object]:
+        """Return a structured GUI/dashboard payload for the PyHuey side."""
+
+        grouped: dict[str, list[dict[str, object]]] = defaultdict(list)
+        for action in self.action_catalog():
+            grouped[str(action["group"])].append(action)
+
+        return {
+            "id": self.id,
+            "title": "Monkey Manager",
+            "paths": self.path_status(),
+            "integration": self.integration_status(),
+            "custom_functions": self.registered_functions(),
+            "action_groups": [
+                {"group": group, "actions": actions}
+                for group, actions in sorted(grouped.items())
+            ],
+        }
+
+    def print_gui_payload(self) -> None:
+        """Print the full GUI/dashboard payload for the manager."""
+
+        self._print_json(self.gui_payload())
+
     def list_pdfs(self) -> list[str]:
         """Return PDF files visible to the HueyOS runtime."""
 
@@ -233,60 +290,220 @@ class MonkeyManager(BaseTool):
         """Invoke and print a registered custom function result."""
 
         result = self.invoke_registered_function(function_name, **kwargs)
-        print(json.dumps(result, indent=2, sort_keys=True, default=str))
+        self._print_json(result)
+
+    def _action_specs(self) -> list[tuple[dict[str, object], Callable[[], None]]]:
+        return [
+            (
+                {
+                    "id": "monkey.install",
+                    "label": "Monkey Install",
+                    "group": "runtime",
+                    "available": bool(self.install_path and self.install_path.exists()),
+                    "destructive": False,
+                    "description": "Run the platform installer for the current OS.",
+                },
+                self.install,
+            ),
+            (
+                {
+                    "id": "monkey.run",
+                    "label": "Monkey Run",
+                    "group": "runtime",
+                    "available": bool(self.run_path and self.run_path.exists()),
+                    "destructive": False,
+                    "description": "Launch the primary project runtime script.",
+                },
+                self.run_app,
+            ),
+            (
+                {
+                    "id": "monkey.update",
+                    "label": "Monkey Update",
+                    "group": "runtime",
+                    "available": bool(self.update_path and self.update_path.exists()),
+                    "destructive": False,
+                    "description": "Run the platform update script for the current OS.",
+                },
+                self.update,
+            ),
+            (
+                {
+                    "id": "monkey.pyhuey.status",
+                    "label": "PyHuey Status",
+                    "group": "integration",
+                    "available": True,
+                    "destructive": False,
+                    "description": "Print the current PyHuey discovery and readiness report.",
+                },
+                self.print_integration_status,
+            ),
+            (
+                {
+                    "id": "monkey.paths.status",
+                    "label": "Project Paths",
+                    "group": "integration",
+                    "available": True,
+                    "destructive": False,
+                    "description": "Print resolved project, install, update, and run paths.",
+                },
+                self.print_path_status,
+            ),
+            (
+                {
+                    "id": "monkey.gui.snapshot",
+                    "label": "GUI Snapshot",
+                    "group": "integration",
+                    "available": True,
+                    "destructive": False,
+                    "description": "Print the structured MonkeyManager GUI/dashboard payload.",
+                },
+                self.print_gui_payload,
+            ),
+            (
+                {
+                    "id": "monkey.functions.list",
+                    "label": "List Custom Functions",
+                    "group": "custom_functions",
+                    "available": True,
+                    "destructive": False,
+                    "description": "List the registered custom functions and their signatures.",
+                },
+                self.print_registered_functions,
+            ),
+            (
+                {
+                    "id": "monkey.pdfs.list",
+                    "label": "List PDFs",
+                    "group": "memory",
+                    "available": True,
+                    "destructive": False,
+                    "description": "List PDF files visible to the HueyOS runtime.",
+                },
+                self.print_pdfs,
+            ),
+            (
+                {
+                    "id": "monkey.system.check",
+                    "label": "System Check",
+                    "group": "diagnostics",
+                    "available": True,
+                    "destructive": False,
+                    "description": "Run the HueyOS environment diagnostics.",
+                },
+                self.run_system_check,
+            ),
+            (
+                {
+                    "id": "monkey.docker.build",
+                    "label": "Build Docker Image",
+                    "group": "docker",
+                    "available": True,
+                    "destructive": False,
+                    "description": "Build the configured project Docker image.",
+                },
+                container_management.build_docker_image,
+            ),
+            (
+                {
+                    "id": "monkey.docker.start",
+                    "label": "Start Containers",
+                    "group": "docker",
+                    "available": True,
+                    "destructive": False,
+                    "description": "Start the project's container stack.",
+                },
+                container_management.manage_containers,
+            ),
+            (
+                {
+                    "id": "monkey.docker.stop",
+                    "label": "Stop Containers",
+                    "group": "docker",
+                    "available": True,
+                    "destructive": True,
+                    "description": "Stop running project containers after explicit intent confirmation.",
+                },
+                lambda: self._run_destructive_action(
+                    "stop_containers", container_management.stop_containers
+                ),
+            ),
+            (
+                {
+                    "id": "monkey.docker.clean",
+                    "label": "Cleanup Images",
+                    "group": "docker",
+                    "available": True,
+                    "destructive": True,
+                    "description": "Remove stale project container images after explicit intent confirmation.",
+                },
+                lambda: self._run_destructive_action(
+                    "cleanup_images", container_management.cleanup_images
+                ),
+            ),
+            (
+                {
+                    "id": "monkey.docker.volumes",
+                    "label": "Manage Volumes",
+                    "group": "docker",
+                    "available": True,
+                    "destructive": False,
+                    "description": "Inspect or manage project container volumes.",
+                },
+                container_management.manage_volumes,
+            ),
+            (
+                {
+                    "id": "monkey.docker.networks",
+                    "label": "Manage Networks",
+                    "group": "docker",
+                    "available": True,
+                    "destructive": False,
+                    "description": "Inspect or manage project container networks.",
+                },
+                container_management.manage_networks,
+            ),
+            (
+                {
+                    "id": "monkey.k8s.deploy",
+                    "label": "Deploy Kubernetes",
+                    "group": "kubernetes",
+                    "available": True,
+                    "destructive": False,
+                    "description": "Deploy the project's Kubernetes resources.",
+                },
+                container_management.deploy_kubernetes,
+            ),
+            (
+                {
+                    "id": "monkey.k8s.cleanup",
+                    "label": "Cleanup Kubernetes",
+                    "group": "kubernetes",
+                    "available": True,
+                    "destructive": True,
+                    "description": "Remove Kubernetes resources after explicit intent confirmation.",
+                },
+                lambda: self._run_destructive_action(
+                    "cleanup_kubernetes", container_management.cleanup_kubernetes
+                ),
+            ),
+            (
+                {
+                    "id": "monkey.k8s.scale",
+                    "label": "Scale Deployment",
+                    "group": "kubernetes",
+                    "available": True,
+                    "destructive": False,
+                    "description": "Scale the default project deployment.",
+                },
+                lambda: container_management.scale_deployment("deployment", 1),
+            ),
+        ]
 
     def setup_menu(self) -> Dict[str, QAction]:
         actions: Dict[str, QAction] = {}
-        actions["monkey.install"] = self._action("Monkey Install", self.install)
-        actions["monkey.run"] = self._action("Monkey Run", self.run_app)
-        actions["monkey.update"] = self._action("Monkey Update", self.update)
-        actions["monkey.pyhuey.status"] = self._action(
-            "PyHuey Status", self.print_integration_status
-        )
-        actions["monkey.functions.list"] = self._action(
-            "List Custom Functions", self.print_registered_functions
-        )
-        actions["monkey.pdfs.list"] = self._action("List PDFs", self.print_pdfs)
-        actions["monkey.system.check"] = self._action(
-            "System Check", self.run_system_check
-        )
-        actions["monkey.docker.build"] = self._action(
-            "Build Docker Image", container_management.build_docker_image
-        )
-        actions["monkey.docker.start"] = self._action(
-            "Start Containers", container_management.manage_containers
-        )
-        actions["monkey.docker.stop"] = self._action(
-            "Stop Containers",
-            lambda: self._run_destructive_action(
-                "stop_containers", container_management.stop_containers
-            ),
-        )
-        actions["monkey.docker.clean"] = self._action(
-            "Cleanup Images",
-            lambda: self._run_destructive_action(
-                "cleanup_images", container_management.cleanup_images
-            ),
-        )
-        actions["monkey.docker.volumes"] = self._action(
-            "Manage Volumes", container_management.manage_volumes
-        )
-        actions["monkey.docker.networks"] = self._action(
-            "Manage Networks", container_management.manage_networks
-        )
-        actions["monkey.k8s.deploy"] = self._action(
-            "Deploy Kubernetes", container_management.deploy_kubernetes
-        )
-        actions["monkey.k8s.cleanup"] = self._action(
-            "Cleanup Kubernetes",
-            lambda: self._run_destructive_action(
-                "cleanup_kubernetes", container_management.cleanup_kubernetes
-            ),
-        )
-        actions["monkey.k8s.scale"] = self._action(
-            "Scale Deployment",
-            lambda: container_management.scale_deployment("deployment", 1),
-        )
+        for spec, callback in self._action_specs():
+            actions[str(spec["id"])] = self._action(str(spec["label"]), callback)
 
         return actions
 

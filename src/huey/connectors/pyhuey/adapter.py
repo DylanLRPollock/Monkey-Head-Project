@@ -7,7 +7,7 @@ from typing import Iterable
 
 from huey.pygpt_integration import pyhuey_status
 
-from .app import run as run_app
+from .app import get_last_launch_state, run as run_app
 
 _EVENT_QUEUE: deque[dict[str, object]] = deque()
 _RUNNING = False
@@ -59,6 +59,7 @@ def get_status() -> dict[str, object]:
             "ready": bool(payload.get("prepared")),
         }
     )
+    payload["gui_state"] = get_last_launch_state()
     if _EVENT_QUEUE:
         payload["last_event"] = _EVENT_QUEUE[-1]
     return payload
