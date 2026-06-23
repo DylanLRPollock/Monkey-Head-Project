@@ -77,3 +77,31 @@ def test_launch_command_center_uses_browser_child_process() -> None:
         fallback=main_ui.open_command_center,
     )
     assert "browser" in workflow_state["value"].lower()
+
+
+def test_launch_quick_access_selection_runs_selected_action() -> None:
+    ui = MainUI.__new__(MainUI)
+    surface_var, surface_state = _make_var()
+    workflow_var, workflow_state = _make_var()
+    action = main_ui.action_lookup(main_ui.default_gui_actions())["command-center"]
+    called: dict[str, object] = {}
+
+    ui.gui_action_map = {action.id: action}
+    ui.action_tab_ids = {action.id: "connectors-and-windows"}
+    ui.quick_access_matches = [action]
+    ui.quick_access_listbox = SimpleNamespace(curselection=lambda: (0,))
+    ui.surface_var = surface_var
+    ui.workflow_hint_var = workflow_var
+    ui.select_tab = lambda tab_id: called.setdefault("tab", tab_id)
+
+    with patch.object(
+        MainUI,
+        "_action_handlers",
+        return_value={action.id: lambda: called.setdefault("ran", True)},
+    ):
+        MainUI.launch_quick_access_selection(ui)
+
+    assert called["tab"] == "connectors-and-windows"
+    assert called["ran"] is True
+    assert surface_state["value"] == "Command Center"
+    assert "browser" in workflow_state["value"].lower()

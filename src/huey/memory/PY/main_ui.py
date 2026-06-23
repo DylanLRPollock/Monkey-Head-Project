@@ -39,9 +39,11 @@ from huey.gui import EventBus, EventType, build_default_state
 from huey.gui.process import build_gui_process_command, build_gui_process_env
 from huey.gui.surfaces import (
     GuiActionSection,
+    action_lookup,
     default_gui_actions,
     default_gui_sections,
     default_gui_surfaces,
+    search_gui_actions,
     section_actions,
 )
 from huey.gui.theme import as_tk_palette
@@ -100,12 +102,16 @@ class MainUI:
         self.root = root
         self.project_root = Path(__file__).resolve().parents[4]
         self.gui_actions = default_gui_actions()
+        self.gui_action_map = action_lookup(self.gui_actions)
         self.gui_sections = default_gui_sections()
         self.gui_surfaces = default_gui_surfaces(self.gui_actions)
+        self.action_tab_ids, self.action_tab_titles = self._build_action_tab_index()
         self.state = build_default_state()
         self.event_bus = EventBus()
         self.background_image = None
         self.background_label = None
+        self.surface_tab_frames: dict[str, tk.Frame] = {}
+        self.surface_tab_titles: dict[str, str] = {}
         self.surface_var = tk.StringVar(value="Launch Pad")
         self.workflow_hint_var = tk.StringVar(
             value=(
@@ -113,6 +119,8 @@ class MainUI:
                 "surfaces without leaving the same control deck."
             )
         )
+        self.quick_access_var = tk.StringVar(value="")
+        self.quick_access_matches = list(self.gui_actions)
         self.activity_var = tk.StringVar(value="Waiting for the first action.")
         self.repository_var = tk.StringVar(value="DylanLRPollock/Monkey-Head-Project")
         self.platform_var = tk.StringVar(value=platform.system())
@@ -135,6 +143,7 @@ class MainUI:
         self._bootstrap_state()
         self.create_menu()
         self.create_widgets()
+        self._bind_navigation_shortcuts()
         self.apply_background_image()
         self.check_license()
         self.log_message("HueyOS control deck ready.")
@@ -319,6 +328,15 @@ class MainUI:
             return "Unavailable on this platform"
         return str(path)
 
+    def _build_action_tab_index(self) -> tuple[dict[str, str], dict[str, str]]:
+        tab_ids: dict[str, str] = {}
+        tab_titles: dict[str, str] = {}
+        for section in self.gui_sections:
+            for action_id in section.action_ids:
+                tab_ids.setdefault(action_id, section.tab_id)
+                tab_titles.setdefault(action_id, section.tab_title)
+        return tab_ids, tab_titles
+
     def create_menu(self):
         menu_bar = tk.Menu(self.root, bg=DARK_BG, fg=LIGHT_FG, tearoff=0)
         self.root.config(menu=menu_bar)
@@ -470,6 +488,97 @@ class MainUI:
             wraplength=_WRAP_SIDEBAR,
         ).pack(fill=tk.X, padx=18, pady=(6, 16))
 
+        quick_access_card = self._make_card(parent)
+        self._add_card_heading(
+            quick_access_card,
+            "Quick access",
+            "Search actions, jump between tabs, and open functions without scanning every section manually.",
+            wraplength=_WRAP_SIDEBAR,
+        )
+        nav_row = tk.Frame(quick_access_card, bg=PANEL_BG)
+        nav_row.pack(fill=tk.X, padx=18, pady=(0, 10))
+        for tab_id, label in (
+            ("launch-pad", "Launch"),
+            ("connectors-and-windows", "Windows"),
+            ("runtime-ops", "Runtime"),
+        ):
+            tk.Button(
+                nav_row,
+                text=label,
+                command=lambda target=tab_id: self.select_tab(target),
+                bg=ACCENT_PURPLE,
+                fg=LIGHT_FG,
+                activebackground=PANEL_ALT_BG,
+                activeforeground=LIGHT_FG,
+                padx=8,
+                pady=4,
+            ).pack(side=tk.LEFT, padx=(0, 6))
+        self.quick_access_entry = tk.Entry(
+            quick_access_card,
+            textvariable=self.quick_access_var,
+            bg=PANEL_ALT_BG,
+            fg=LIGHT_FG,
+            insertbackground=LIGHT_FG,
+            highlightbackground=BORDER,
+            highlightcolor=BORDER,
+            highlightthickness=1,
+        )
+        self.quick_access_entry.pack(fill=tk.X, padx=18, pady=(0, 8))
+        self.quick_access_entry.bind("<Return>", self.launch_quick_access_selection)
+        tk.Label(
+            quick_access_card,
+            text="Ctrl+K focuses search. Enter or double-click opens the selected function.",
+            bg=PANEL_BG,
+            fg=MUTED_FG,
+            justify=tk.LEFT,
+            wraplength=_WRAP_SIDEBAR,
+        ).pack(fill=tk.X, padx=18, pady=(0, 8))
+        self.quick_access_listbox = tk.Listbox(
+            quick_access_card,
+            height=7,
+            bg=PANEL_ALT_BG,
+            fg=LIGHT_FG,
+            selectbackground=ACCENT_PURPLE,
+            selectforeground=LIGHT_FG,
+            activestyle="none",
+            highlightbackground=BORDER,
+            highlightcolor=BORDER,
+            highlightthickness=1,
+        )
+        self.quick_access_listbox.pack(fill=tk.X, padx=18, pady=(0, 8))
+        self.quick_access_listbox.bind(
+            "<Double-Button-1>", self.launch_quick_access_selection
+        )
+        self.quick_access_listbox.bind("<Return>", self.launch_quick_access_selection)
+        button_row = tk.Frame(quick_access_card, bg=PANEL_BG)
+        button_row.pack(fill=tk.X, padx=18, pady=(0, 16))
+        tk.Button(
+            button_row,
+            text="Open Selected",
+            command=self.launch_quick_access_selection,
+            bg=ACCENT_PURPLE,
+            fg=LIGHT_FG,
+            activebackground=PANEL_ALT_BG,
+            activeforeground=LIGHT_FG,
+            padx=8,
+            pady=4,
+        ).pack(side=tk.LEFT)
+        tk.Button(
+            button_row,
+            text="Clear Search",
+            command=self.clear_quick_access,
+            bg=ACCENT_PURPLE,
+            fg=LIGHT_FG,
+            activebackground=PANEL_ALT_BG,
+            activeforeground=LIGHT_FG,
+            padx=8,
+            pady=4,
+        ).pack(side=tk.LEFT, padx=(6, 0))
+        self.quick_access_var.trace_add(
+            "write", lambda *_args: self.refresh_quick_access_results()
+        )
+        self.refresh_quick_access_results()
+
         surfaces_card = self._make_card(parent)
         self._add_card_heading(
             surfaces_card,
@@ -558,18 +667,22 @@ class MainUI:
         self.surface_notebook = notebook
 
         tab_frames: dict[str, tk.Frame] = {}
+        tab_titles: dict[str, str] = {}
         for section in self.gui_sections:
             frame = tab_frames.get(section.tab_id)
             if frame is None:
                 frame = tk.Frame(notebook, bg=DARK_BG)
                 notebook.add(frame, text=section.tab_title)
                 tab_frames[section.tab_id] = frame
+                tab_titles[section.tab_id] = section.tab_title
             self._build_action_card(
                 frame,
                 section.title,
                 section.description,
                 self._launcher_actions_for(section),
             )
+        self.surface_tab_frames = tab_frames
+        self.surface_tab_titles = tab_titles
 
         log_card = self._make_card(parent)
         self._add_card_heading(
@@ -765,6 +878,61 @@ class MainUI:
             )
         return actions
 
+    def refresh_quick_access_results(self) -> None:
+        query = self.quick_access_var.get()
+        self.quick_access_matches = list(search_gui_actions(query, self.gui_actions))
+        listbox = getattr(self, "quick_access_listbox", None)
+        if listbox is None:
+            return
+        listbox.delete(0, getattr(tk, "END", "end"))
+        for action in self.quick_access_matches:
+            tab_title = self.action_tab_titles.get(action.id, "Launch Pad")
+            launch_mode = action.launch_mode.replace("-", " ").title()
+            listbox.insert(
+                getattr(tk, "END", "end"),
+                f"{action.label} | {launch_mode} | {tab_title}",
+            )
+        if self.quick_access_matches:
+            listbox.selection_set(0)
+
+    def clear_quick_access(self) -> None:
+        self.quick_access_var.set("")
+        self._focus_quick_access()
+
+    def _focus_quick_access(self, _event=None) -> str:
+        entry = getattr(self, "quick_access_entry", None)
+        if entry is not None:
+            entry.focus_set()
+            if hasattr(entry, "selection_range"):
+                entry.selection_range(0, getattr(tk, "END", "end"))
+        return "break"
+
+    def launch_quick_access_selection(self, _event=None) -> str:
+        if not self.quick_access_matches:
+            return "break"
+        listbox = getattr(self, "quick_access_listbox", None)
+        selected_index = 0
+        if listbox is not None and hasattr(listbox, "curselection"):
+            selection = listbox.curselection()
+            if selection:
+                selected_index = int(selection[0])
+        action = self.quick_access_matches[selected_index]
+        self._execute_gui_action(action.id)
+        return "break"
+
+    def _execute_gui_action(self, action_id: str) -> None:
+        action = self.gui_action_map.get(action_id)
+        if action is None:
+            return
+        tab_id = self.action_tab_ids.get(action_id)
+        if tab_id:
+            self.select_tab(tab_id)
+        self.surface_var.set(action.label)
+        self.workflow_hint_var.set(action.description)
+        handler = self._action_handlers().get(action_id)
+        if handler is not None:
+            handler()
+
     def _action_handlers(self) -> dict[str, Callable[[], None]]:
         return {
             "install": self.install,
@@ -790,6 +958,31 @@ class MainUI:
             "get-pod-logs": self.get_pod_logs_prompt,
             "cleanup-kubernetes": self.cleanup_kubernetes,
         }
+
+    def select_tab(self, tab_id: str) -> None:
+        notebook = getattr(self, "surface_notebook", None)
+        frame = self.surface_tab_frames.get(tab_id)
+        if notebook is None or frame is None:
+            return
+        notebook.select(frame)
+        self.surface_var.set(self.surface_tab_titles.get(tab_id, tab_id))
+        self.state.operator.active_view = tab_id
+
+    def _bind_navigation_shortcuts(self) -> None:
+        if not hasattr(self.root, "bind_all"):
+            return
+        self.root.bind_all("<Control-k>", self._focus_quick_access)
+        self.root.bind_all("<Control-K>", self._focus_quick_access)
+        self.root.bind_all(
+            "<Control-Key-1>", lambda _event: self.select_tab("launch-pad")
+        )
+        self.root.bind_all(
+            "<Control-Key-2>",
+            lambda _event: self.select_tab("connectors-and-windows"),
+        )
+        self.root.bind_all(
+            "<Control-Key-3>", lambda _event: self.select_tab("runtime-ops")
+        )
 
     def _focus_action(
         self, label: str, detail: str, callback: Callable[[], None]

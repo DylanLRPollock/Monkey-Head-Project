@@ -364,6 +364,45 @@ def default_gui_surfaces(
     )
 
 
+def search_gui_actions(
+    query: str, actions: tuple[GuiAction, ...] | None = None
+) -> tuple[GuiAction, ...]:
+    """Return actions ranked by how well they match ``query``."""
+
+    catalog = actions or default_gui_actions()
+    normalized = query.strip().lower()
+    if not normalized:
+        return catalog
+
+    exact: list[GuiAction] = []
+    prefix: list[GuiAction] = []
+    contains: list[GuiAction] = []
+
+    for action in catalog:
+        label = action.label.lower()
+        action_id = action.id.lower()
+        haystack = " ".join(
+            filter(
+                None,
+                (
+                    action_id,
+                    label,
+                    action.description.lower(),
+                    action.source.lower(),
+                    action.entry_point.lower(),
+                ),
+            )
+        )
+        if normalized in {action_id, label}:
+            exact.append(action)
+        elif label.startswith(normalized) or action_id.startswith(normalized):
+            prefix.append(action)
+        elif normalized in haystack:
+            contains.append(action)
+
+    return tuple(exact + prefix + contains)
+
+
 __all__ = [
     "GuiAction",
     "GuiActionSection",
@@ -372,5 +411,6 @@ __all__ = [
     "default_gui_actions",
     "default_gui_sections",
     "default_gui_surfaces",
+    "search_gui_actions",
     "section_actions",
 ]

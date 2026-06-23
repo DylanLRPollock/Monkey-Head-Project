@@ -7,6 +7,7 @@ from huey.gui.surfaces import (
     default_gui_actions,
     default_gui_sections,
     default_gui_surfaces,
+    search_gui_actions,
     section_actions,
 )
 
@@ -48,3 +49,13 @@ def test_connectors_and_windows_tab_contains_surface_catalog() -> None:
         action.id for section in sections for action in section_actions(section)
     }
     assert {"command-center", "simple-chat", "ai-console", "dashboard"} <= section_ids
+
+
+def test_search_gui_actions_supports_navigation_queries() -> None:
+    command_center_results = {action.id for action in search_gui_actions("browser")}
+    kubernetes_results = {action.id for action in search_gui_actions("kubernetes")}
+
+    assert "command-center" in command_center_results
+    assert {"deploy-kubernetes", "scale-deployment", "cleanup-kubernetes"} <= (
+        kubernetes_results
+    )

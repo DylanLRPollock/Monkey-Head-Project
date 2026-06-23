@@ -33,6 +33,7 @@ from huey.gui.surfaces import (
     default_gui_actions,
     default_gui_sections,
     default_gui_surfaces,
+    search_gui_actions,
     section_actions,
 )
 
@@ -69,5 +70,6 @@ __all__ = [
     "default_gui_actions",
     "default_gui_sections",
     "default_gui_surfaces",
+    "search_gui_actions",
     "section_actions",
 ]
