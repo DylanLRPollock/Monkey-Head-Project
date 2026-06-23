@@ -550,45 +550,230 @@ def check_ffmpeg_available() -> bool:
     return get_default_manager().ffmpeg_available()
 
 
-def _coerce_path(path: str | Path) -> Path:
-    """Resolve ``path`` to an absolute filesystem path."""
+def probe_media(path: str | Path) -> MediaProbeResult:
+    """Probe media with a default FFmpeg media manager."""
+    return get_default_manager().probe(path)
 
+
+def _coerce_path(path: str | Path) -> Path:
     return Path(path).expanduser().resolve()
 
 
 def _ensure_source(path: str | Path) -> Path:
-    """Resolve ``path`` and ensure the source file exists."""
-
     source = _coerce_path(path)
-    if not source.exists():
+    if not source.is_file():
         raise FileNotFoundError(source)
     return source
 
 
-def _raise_for_failure(result: FFmpegCommandResult, operation: str) -> None:
-    """Raise a runtime error when an FFmpeg command did not complete cleanly."""
-
-    if result.ok:
-        return
-    details = result.stderr.strip() or result.stdout.strip() or operation
-    raise RuntimeError(f"{operation}: {details}")
+def _prepare_target(path: str | Path, *, overwrite: bool = True) -> Path:
+    target = _coerce_path(path)
+    if target.exists() and not overwrite:
+        raise FileExistsError(
+            f"Output already exists: {target}. Pass overwrite=True to replace it."
+        )
+    target.parent.mkdir(parents=True, exist_ok=True)
+    return target
 
 
 def _run_ffmpeg(
-    args: list[str], timeout_seconds: float | None = None
+    args: list[str], *, overwrite: bool = True, timeout_seconds: float | None = None
 ) -> FFmpegCommandResult:
-    """Run an FFmpeg command through the default manager and enforce success."""
-
     manager = get_default_manager()
     ffmpeg = manager.require_ffmpeg()
-    result = manager.run([str(ffmpeg), *[str(arg) for arg in args]], timeout_seconds)
-    _raise_for_failure(result, "ffmpeg command failed")
+    command = [
+        str(ffmpeg),
+        manager._overwrite_arg(overwrite),
+        *[str(arg) for arg in args],
+    ]
+    result = manager.run(command, timeout_seconds=timeout_seconds)
+    if not result.ok:
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip())
     return result
 
 
-def probe_media(path: str | Path) -> MediaProbeResult:
-    """Probe media with a default FFmpeg media manager."""
-    return get_default_manager().probe(path)
+def convert_audio(
+    input_path: str | Path,
+    output_path: str | Path,
+    *,
+    bitrate: str | None = None,
+    overwrite: bool = True,
+) -> Path:
+    """Convert an audio file to the destination format inferred from ``output_path``."""
+    source = _ensure_source(input_path)
+    target = _prepare_target(output_path, overwrite=overwrite)
+    command = ["-i", str(source)]
+    if bitrate is not None:
+        command.extend(["-b:a", bitrate])
+    command.append(str(target))
+    _run_ffmpeg(command, overwrite=overwrite)
+    return target
+
+
+def resample_audio(
+    input_path: str | Path,
+    output_path: str | Path,
+    *,
+    channels: int | None = None,
+    sample_rate: int | None = None,
+    overwrite: bool = True,
+) -> Path:
+    """Resample audio to a different channel count and/or sample rate."""
+    source = _ensure_source(input_path)
+    target = _prepare_target(output_path, overwrite=overwrite)
+    options = AudioTransformOptions(sample_rate=sample_rate, channels=channels)
+    result = get_default_manager().transform_audio(
+        source, target, options=options, overwrite=overwrite
+    )
+    if not result.ok:
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip())
+    return target
+
+
+def normalize_audio(
+    input_path: str | Path,
+    output_path: str | Path,
+    *,
+    overwrite: bool = True,
+) -> Path:
+    """Apply a gentle normalization filter to an audio file."""
+    source = _ensure_source(input_path)
+    target = _prepare_target(output_path, overwrite=overwrite)
+    options = AudioTransformOptions(normalize=True)
+    result = get_default_manager().transform_audio(
+        source, target, options=options, overwrite=overwrite
+    )
+    if not result.ok:
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip())
+    return target
+
+
+def remove_silence(
+    input_path: str | Path,
+    output_path: str | Path,
+    *,
+    threshold: str = "-30dB",
+    min_silence_duration: float = 0.5,
+    overwrite: bool = True,
+) -> Path:
+    """Trim silence from an audio file using FFmpeg's ``silenceremove`` filter."""
+    source = _ensure_source(input_path)
+    target = _prepare_target(output_path, overwrite=overwrite)
+    filter_arg = (
+        "silenceremove=start_periods=1:"
+        f"start_duration={min_silence_duration}:"
+        f"start_threshold={threshold}:"
+        "stop_periods=-1:"
+        f"stop_duration={min_silence_duration}:"
+        f"stop_threshold={threshold}"
+    )
+    _run_ffmpeg(
+        ["-i", str(source), "-af", filter_arg, str(target)],
+        overwrite=overwrite,
+    )
+    return target
+
+
+def extract_audio(
+    input_path: str | Path,
+    output_path: str | Path,
+    *,
+    codec: str | None = None,
+    sample_rate: int | None = None,
+    channels: int | None = None,
+    overwrite: bool = True,
+) -> Path:
+    """Extract an audio track from a media file."""
+    source = _ensure_source(input_path)
+    target = _prepare_target(output_path, overwrite=overwrite)
+    command = ["-i", str(source), "-vn"]
+    if codec is not None:
+        command.extend(["-acodec", codec])
+    if channels is not None:
+        command.extend(["-ac", str(channels)])
+    if sample_rate is not None:
+        command.extend(["-ar", str(sample_rate)])
+    command.append(str(target))
+    _run_ffmpeg(command, overwrite=overwrite)
+    return target
+
+
+def transcode_video(
+    input_path: str | Path,
+    output_path: str | Path,
+    *,
+    video_codec: str = "libx264",
+    audio_codec: str | None = None,
+    overwrite: bool = True,
+) -> Path:
+    """Transcode a video file to a new container/codec."""
+    source = _ensure_source(input_path)
+    target = _prepare_target(output_path, overwrite=overwrite)
+    command = ["-i", str(source), "-c:v", video_codec]
+    if audio_codec is not None:
+        command.extend(["-c:a", audio_codec])
+    command.append(str(target))
+    _run_ffmpeg(command, overwrite=overwrite)
+    return target
+
+
+def extract_frames(
+    input_path: str | Path,
+    output_pattern: str | Path,
+    *,
+    fps: float = 1.0,
+    overwrite: bool = True,
+) -> Path:
+    """Extract frames from a video using a caller-supplied output pattern."""
+    source = _ensure_source(input_path)
+    target = _coerce_path(output_pattern)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    _run_ffmpeg(
+        ["-i", str(source), "-vf", f"fps={fps}", str(target)],
+        overwrite=overwrite,
+    )
+    return target
+
+
+def detect_silence(
+    input_path: str | Path,
+    *,
+    noise_db: int = -45,
+    duration_seconds: float = 0.2,
+) -> list[dict[str, float]]:
+    """Return parsed silence segments from FFmpeg's ``silencedetect`` output."""
+    result = get_default_manager().detect_silence(
+        input_path,
+        noise_db=noise_db,
+        duration_seconds=duration_seconds,
+    )
+    if not result.ok:
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip())
+
+    starts = [
+        float(match.group(1))
+        for match in re.finditer(r"silence_start:\s*([0-9.]+)", result.stderr)
+    ]
+    ends = [
+        (float(match.group(1)), float(match.group(2)))
+        for match in re.finditer(
+            r"silence_end:\s*([0-9.]+)\s*\|\s*silence_duration:\s*([0-9.]+)",
+            result.stderr,
+        )
+    ]
+    segments: list[dict[str, float]] = []
+    for index, (end, segment_duration) in enumerate(ends):
+        start = (
+            starts[index] if index < len(starts) else max(end - segment_duration, 0.0)
+        )
+        segments.append(
+            {
+                "start": start,
+                "end": end,
+                "duration": segment_duration,
+            }
+        )
+    return segments
 
 
 def prepare_audio_for_transcription(
@@ -622,251 +807,3 @@ __all__ = [
     "resample_audio",
     "transcode_video",
 ]
-
-
-def convert_audio(
-    source: str | Path,
-    target: str | Path,
-    *,
-    bitrate: str | None = None,
-    sample_rate: int | None = None,
-    channels: int | None = None,
-    overwrite: bool = True,
-) -> Path:
-    """Convert audio to a new container or codec using the default manager."""
-
-    src = _ensure_source(source)
-    dst = _coerce_path(target)
-    dst.parent.mkdir(parents=True, exist_ok=True)
-    manager = get_default_manager()
-    ffmpeg = manager.require_ffmpeg()
-    command = [str(ffmpeg), "-y" if overwrite else "-n", "-i", str(src)]
-    if channels is not None:
-        command.extend(["-ac", str(channels)])
-    if sample_rate is not None:
-        command.extend(["-ar", str(sample_rate)])
-    if bitrate is not None:
-        command.extend(["-b:a", str(bitrate)])
-    command.append(str(dst))
-    result = manager.run(command)
-    _raise_for_failure(result, f"audio conversion failed for {src}")
-    return dst
-
-
-def extract_audio(
-    source: str | Path,
-    target: str | Path,
-    *,
-    codec: str | None = None,
-    sample_rate: int | None = 16000,
-    channels: int | None = 1,
-    overwrite: bool = True,
-) -> Path:
-    """Extract audio from a media file using the default manager."""
-
-    src = _ensure_source(source)
-    dst = _coerce_path(target)
-    dst.parent.mkdir(parents=True, exist_ok=True)
-    manager = get_default_manager()
-    ffmpeg = manager.require_ffmpeg()
-    command = [str(ffmpeg), "-y" if overwrite else "-n", "-i", str(src), "-vn"]
-    if codec is not None:
-        command.extend(["-acodec", codec])
-    if channels is not None:
-        command.extend(["-ac", str(channels)])
-    if sample_rate is not None:
-        command.extend(["-ar", str(sample_rate)])
-    command.append(str(dst))
-    result = manager.run(command)
-    _raise_for_failure(result, f"audio extraction failed for {src}")
-    return dst
-
-
-def transcode_video(
-    source: str | Path,
-    target: str | Path,
-    *,
-    video_codec: str = "libx264",
-    audio_codec: str | None = None,
-    overwrite: bool = True,
-) -> Path:
-    """Transcode video to a new container or codec using the default manager."""
-
-    src = _ensure_source(source)
-    dst = _coerce_path(target)
-    dst.parent.mkdir(parents=True, exist_ok=True)
-    manager = get_default_manager()
-    ffmpeg = manager.require_ffmpeg()
-    command = [
-        str(ffmpeg),
-        "-y" if overwrite else "-n",
-        "-i",
-        str(src),
-        "-c:v",
-        video_codec,
-    ]
-    if audio_codec is not None:
-        command.extend(["-c:a", audio_codec])
-    command.append(str(dst))
-    result = manager.run(command)
-    _raise_for_failure(result, f"video transcode failed for {src}")
-    return dst
-
-
-def resample_audio(
-    source: str | Path,
-    target: str | Path,
-    *,
-    channels: int | None = None,
-    sample_rate: int | None = None,
-    overwrite: bool = True,
-) -> Path:
-    """Resample audio to the requested channel count or sample rate."""
-
-    manager = get_default_manager()
-    result = manager.transform_audio(
-        input_path=source,
-        output_path=target,
-        options=AudioTransformOptions(sample_rate=sample_rate, channels=channels),
-        overwrite=overwrite,
-    )
-    _raise_for_failure(result, f"audio resample failed for {source}")
-    return _coerce_path(target)
-
-
-def normalize_audio(
-    source: str | Path,
-    target: str | Path,
-    *,
-    overwrite: bool = True,
-) -> Path:
-    """Normalize audio loudness for downstream processing."""
-
-    manager = get_default_manager()
-    result = manager.transform_audio(
-        input_path=source,
-        output_path=target,
-        options=AudioTransformOptions(loudnorm=True),
-        overwrite=overwrite,
-    )
-    _raise_for_failure(result, f"audio normalization failed for {source}")
-    return _coerce_path(target)
-
-
-def remove_silence(
-    source: str | Path,
-    target: str | Path,
-    *,
-    threshold: str = "-30dB",
-    min_silence_duration: float = 0.5,
-    overwrite: bool = True,
-) -> Path:
-    """Trim silence from an audio file using FFmpeg's silenceremove filter."""
-
-    src = _ensure_source(source)
-    dst = _coerce_path(target)
-    dst.parent.mkdir(parents=True, exist_ok=True)
-    filter_arg = (
-        "silenceremove="
-        f"start_periods=1:start_duration={min_silence_duration}:start_threshold={threshold}:"
-        f"stop_periods=-1:stop_duration={min_silence_duration}:stop_threshold={threshold}"
-    )
-    command = [
-        "-y" if overwrite else "-n",
-        "-i",
-        str(src),
-        "-af",
-        filter_arg,
-        str(dst),
-    ]
-    _run_ffmpeg(command)
-    return dst
-
-
-def extract_frames(
-    source: str | Path,
-    output_pattern: str | Path,
-    *,
-    fps: float = 1.0,
-) -> Path:
-    """Extract frames to ``output_pattern`` using a legacy-compatible wrapper."""
-
-    src = _ensure_source(source)
-    dst = _coerce_path(output_pattern)
-    dst.parent.mkdir(parents=True, exist_ok=True)
-    _run_ffmpeg(["-i", str(src), "-vf", f"fps={fps}", str(dst)])
-    return dst
-
-
-def extract_thumbnail(
-    source: str | Path,
-    target: str | Path,
-    *,
-    timestamp: float = 1.0,
-) -> Path:
-    """Extract a single thumbnail frame from a video source."""
-
-    src = _ensure_source(source)
-    dst = _coerce_path(target)
-    dst.parent.mkdir(parents=True, exist_ok=True)
-    _run_ffmpeg(["-ss", str(timestamp), "-i", str(src), "-frames:v", "1", str(dst)])
-    return dst
-
-
-def split_audio_chunks(
-    source: str | Path,
-    output_dir: str | Path,
-    *,
-    chunk_seconds: int = 300,
-    overwrite: bool = True,
-) -> Path:
-    """Split audio into fixed-length chunks and return the output directory."""
-
-    manager = get_default_manager()
-    result = manager.split_audio_chunks(
-        input_path=source,
-        output_dir=output_dir,
-        chunk_seconds=chunk_seconds,
-        overwrite=overwrite,
-    )
-    _raise_for_failure(result, f"audio chunking failed for {source}")
-    return _coerce_path(output_dir)
-
-
-def detect_silence(
-    source: str | Path,
-    noise_db: int = -45,
-    duration_seconds: float = 0.2,
-) -> list[dict[str, float]]:
-    """Detect silence ranges and return parsed segment boundaries."""
-
-    result = get_default_manager().detect_silence(
-        input_path=source,
-        noise_db=noise_db,
-        duration_seconds=duration_seconds,
-    )
-    _raise_for_failure(result, f"silence detection failed for {source}")
-    segments: list[dict[str, float]] = []
-    start: float | None = None
-    start_pattern = re.compile(r"silence_start:\s*([0-9.]+)")
-    end_pattern = re.compile(
-        r"silence_end:\s*([0-9.]+)\s*\|\s*silence_duration:\s*([0-9.]+)"
-    )
-    for line in result.stderr.splitlines():
-        start_match = start_pattern.search(line)
-        if start_match:
-            start = float(start_match.group(1))
-            continue
-        end_match = end_pattern.search(line)
-        if end_match:
-            end = float(end_match.group(1))
-            duration = float(end_match.group(2))
-            segments.append(
-                {
-                    "start": start if start is not None else max(0.0, end - duration),
-                    "end": end,
-                    "duration": duration,
-                }
-            )
-            start = None
-    return segments
