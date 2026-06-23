@@ -6,7 +6,7 @@
 import json
 from datetime import datetime
 
-from huey.os.license_gui import accept_license
+from huey.os.license_gui import accept_license, license_is_current
 
 
 def test_accept_license_updates_config(tmp_path):
@@ -47,3 +47,19 @@ def test_accept_license_creates_missing_config_file(tmp_path):
     updated = json.loads(config_path.read_text(encoding="utf-8"))
     assert updated["license.accepted"] is True
     assert updated["license.hash"] == "new-hash"
+
+
+def test_license_is_current_matches_saved_hash(tmp_path):
+    config_path = tmp_path / "gui_config.json"
+
+    accept_license(config_path, "same-hash")
+
+    assert license_is_current(config_path, "same-hash") is True
+
+
+def test_license_is_current_rejects_different_hash(tmp_path):
+    config_path = tmp_path / "gui_config.json"
+
+    accept_license(config_path, "old-hash")
+
+    assert license_is_current(config_path, "new-hash") is False

@@ -27,11 +27,22 @@ def accept_license(config_path: str | Path, license_hash: str) -> None:
         json.dump(config, handle, indent=2, sort_keys=True)
 
 
-def show_license_gui(config_path: str | Path = "config/pygpt_net/config.json") -> None:
+def license_is_current(config_path: str | Path, license_hash: str) -> bool:
+    """Delegate current-license checks to the maintained GUI implementation."""
+
+    legacy_module = import_module("huey.memory.PY.license_gui")
+    return legacy_module.license_is_current(config_path, license_hash)
+
+
+def show_license_gui(
+    config_path: str | Path = "config/pygpt_net/config.json",
+    *,
+    force_show: bool = False,
+) -> None:
     """Delegate to the maintained legacy GUI implementation when available."""
 
     legacy_module = import_module("huey.memory.PY.license_gui")
-    legacy_module.show_license_gui(config_path)
+    legacy_module.show_license_gui(config_path, force_show=force_show)
 
 
-__all__ = ["accept_license", "show_license_gui"]
+__all__ = ["accept_license", "license_is_current", "show_license_gui"]

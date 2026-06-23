@@ -38,6 +38,7 @@ from huey.gui import EventBus, EventType, build_default_state
 from huey.gui.process import build_gui_process_command, build_gui_process_env
 from huey.gui.theme import as_tk_palette
 from huey.gui_scaling import apply_scaling
+from huey.install_gui import launch_install_gui as launch_graphical_install
 from huey.license_gui import show_license_gui
 from huey.media.media_conversion import convert_media
 from huey.memory.PY.ai_tools_gui import run_ai_tools
@@ -310,6 +311,9 @@ class MainUI:
 
         file_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
         file_menu.add_command(label="Install", command=self.install)
+        file_menu.add_command(
+            label="Graphical Installer", command=self.launch_install_gui
+        )
         file_menu.add_command(label="Run", command=self.run)
         file_menu.add_command(label="Update", command=self.update)
         file_menu.add_command(label="Clear Log", command=self.clear_log)
@@ -501,6 +505,11 @@ class MainUI:
             [
                 LauncherAction(
                     "Install", "Prepare the local platform scripts.", self.install
+                ),
+                LauncherAction(
+                    "Graphical Installer",
+                    "Open the full installer workflow in a separate window.",
+                    self.launch_install_gui,
                 ),
                 LauncherAction("Run", "Launch the main runtime entrypoint.", self.run),
                 LauncherAction(
@@ -985,7 +994,7 @@ class MainUI:
         self.log_message("Opening license window...")
         self.surface_var.set("License")
         self.workflow_hint_var.set("Review the current license terms.")
-        show_license_gui()
+        show_license_gui(force_show=True)
         self._track_finished(source="license", status="license reviewed")
 
     def show_data_summary(self):
@@ -1051,6 +1060,20 @@ class MainUI:
             function_name="run_config_toggle_gui",
             source="config",
             fallback=run_config_toggle_gui,
+        )
+
+    def launch_install_gui(self):
+        """Open the graphical installer in a separate process."""
+
+        self.workflow_hint_var.set(
+            "The installer opens separately so you can review the license and target profile without leaving the control deck."
+        )
+        self._launch_child_process(
+            label="Graphical Installer",
+            module_name="huey.install_gui",
+            function_name="launch_install_gui",
+            source="installer",
+            fallback=launch_graphical_install,
         )
 
     def _run_container_func(self, func, action_label: str, source: str, *args):

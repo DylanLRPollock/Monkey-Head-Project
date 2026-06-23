@@ -18,12 +18,24 @@ from huey.gui.state import (
     build_default_state,
 )
 from huey.gui.theme import HueyTheme, as_qt_stylesheet, as_tk_palette, get_default_theme
+from huey.gui.tk import (
+    apply_root_chrome,
+    apply_ttk_chrome,
+    listbox_kwargs,
+    primary_button_kwargs,
+    text_surface_kwargs,
+    tk_palette,
+)
 
 __all__ = [
     "HueyTheme",
+    "apply_root_chrome",
+    "apply_ttk_chrome",
     "as_qt_stylesheet",
     "as_tk_palette",
     "get_default_theme",
+    "listbox_kwargs",
+    "primary_button_kwargs",
     "RepoStatus",
     "MigrationPhase",
     "ValidationCommand",
@@ -40,4 +52,6 @@ __all__ = [
     "MemoryState",
     "RepositoryState",
     "build_default_state",
+    "text_surface_kwargs",
+    "tk_palette",
 ]

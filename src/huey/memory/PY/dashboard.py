@@ -44,6 +44,16 @@ try:  # pragma: no cover - optional GUI dependencies
     )
 except Exception:  # pragma: no cover - GUI not available
     QApplication = None  # type: ignore[assignment]
+    QGridLayout = QHBoxLayout = QHeaderView = QInputDialog = QLabel = object  # type: ignore[assignment]
+    QMainWindow = QMessageBox = QProgressBar = QPushButton = object  # type: ignore[assignment]
+    QTableWidget = QTableWidgetItem = QTabWidget = object  # type: ignore[assignment]
+    QTreeWidget = QTreeWidgetItem = QVBoxLayout = QWidget = object  # type: ignore[assignment]
+    QTimer = object  # type: ignore[assignment]
+
+    class _QtUnavailable:
+        AlignLeft = 0
+
+    Qt = _QtUnavailable()  # type: ignore[assignment]
 
 try:  # pragma: no cover - psutil optional
     import psutil  # type: ignore

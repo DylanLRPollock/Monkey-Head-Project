@@ -29,9 +29,14 @@ except Exception:  # pragma: no cover - can't import GUI libs
     scrolledtext = None
     ttk = None
 
-from huey.gui.theme import as_tk_palette
-
-from .gui_scaling import apply_scaling
+from huey.gui.tk import (
+    apply_root_chrome,
+    apply_ttk_chrome,
+    listbox_kwargs,
+    primary_button_kwargs,
+    text_surface_kwargs,
+    tk_palette,
+)
 
 try:  # pragma: no cover - psutil optional dependency
     import psutil  # type: ignore
@@ -52,9 +57,11 @@ from .config_manager import ConfigManager
 
 logger = logging.getLogger(__name__)
 
-_PALETTE = as_tk_palette()
+_PALETTE = tk_palette()
 DARK_BG = _PALETTE["background"]
+PANEL_BG = _PALETTE["panel"]
 LIGHT_FG = _PALETTE["text"]
+MUTED_FG = _PALETTE["muted_text"]
 ACCENT_PURPLE = _PALETTE["accent"]
 
 
@@ -160,33 +167,63 @@ def run_ai_tools() -> None:
     uploads_dir = ensure_subdirectory("GUI", "uploads")
 
     root = tk.Tk()
-    apply_scaling(root, os.environ.get("SCREEN_MODE", "1080p"))
-    root.title("AI Tools Console")
-    root.configure(bg=DARK_BG)
-
-    style = ttk.Style(root)
-    style_errors: tuple[type[BaseException], ...] = (
-        RuntimeError,
-        AttributeError,
-        ValueError,
-        TypeError,
+    apply_root_chrome(
+        root,
+        title="HueyOS AI Console",
+        minsize=(920, 680),
+        screen_mode=os.environ.get("SCREEN_MODE", "1080p"),
     )
-    if tk is not None and hasattr(tk, "TclError"):
-        style_errors = (*style_errors, tk.TclError)
-    try:
-        style.theme_use("clam")
-    except style_errors as exc:
-        logger.debug("Unable to apply ttk theme 'clam': %s", exc)
-    style.configure("TNotebook", background=DARK_BG)
-    style.configure("TNotebook.Tab", background=ACCENT_PURPLE, foreground=LIGHT_FG)
-    style.map(
-        "TNotebook.Tab",
-        background=[("selected", DARK_BG)],
-        foreground=[("selected", LIGHT_FG)],
-    )
+    apply_ttk_chrome(root, ttk)
 
-    notebook = ttk.Notebook(root)
-    notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+    shell = tk.Frame(root, bg=DARK_BG)
+    shell.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+    header = tk.Frame(
+        shell,
+        bg=PANEL_BG,
+        highlightbackground=_PALETTE["border"],
+        highlightcolor=_PALETTE["border"],
+        highlightthickness=1,
+        bd=0,
+    )
+    header.pack(fill=tk.X, pady=(0, 10))
+    tk.Label(
+        header,
+        text="HueyOS AI Console",
+        bg=PANEL_BG,
+        fg=LIGHT_FG,
+        font=("Segoe UI", 18, "bold"),
+        anchor=tk.W,
+        justify=tk.LEFT,
+    ).pack(fill=tk.X, padx=18, pady=(16, 6))
+    tk.Label(
+        header,
+        text=(
+            "Work through processing, system, memory, and LLM tasks in one "
+            "themed operator window that matches the rest of the HueyOS flow."
+        ),
+        bg=PANEL_BG,
+        fg=MUTED_FG,
+        justify=tk.LEFT,
+        wraplength=780,
+    ).pack(fill=tk.X, padx=18, pady=(0, 8))
+    status_var = tk.StringVar(value="Ready")
+    tk.Label(
+        header,
+        textvariable=status_var,
+        bg=ACCENT_PURPLE,
+        fg=LIGHT_FG,
+        padx=12,
+        pady=6,
+        anchor=tk.W,
+        justify=tk.LEFT,
+    ).pack(anchor=tk.W, padx=18, pady=(0, 16))
+
+    notebook = ttk.Notebook(shell)
+    notebook.pack(fill=tk.BOTH, expand=True, padx=0, pady=0)
+
+    def set_status(text: str) -> None:
+        status_var.set(text)
 
     # ------------------------------------------------------------------
     # Processing tab
@@ -205,14 +242,14 @@ def run_ai_tools() -> None:
     def on_process() -> None:
         text = text_entry.get()
         result = proc.process_data(text)
+        set_status("Processed input text.")
         messagebox.showinfo("Processed", result)
 
     tk.Button(
         process_frame,
         text="Process",
         command=on_process,
-        bg=ACCENT_PURPLE,
-        fg=LIGHT_FG,
+        **primary_button_kwargs(),
     ).pack(pady=5, anchor=tk.E, padx=5)
 
     tk.Label(
@@ -231,17 +268,18 @@ def run_ai_tools() -> None:
         try:
             nums = [float(x.strip()) for x in raw.split(",") if x.strip()]
         except ValueError:
+            set_status("Failed to parse numeric input.")
             messagebox.showerror("Error", "Please enter valid numbers")
             return
         result = proc.compute_mean(nums) if nums else 0.0
+        set_status("Computed mean.")
         messagebox.showinfo("Mean", f"{result:0.4f}")
 
     tk.Button(
         process_frame,
         text="Compute Mean",
         command=on_mean,
-        bg=ACCENT_PURPLE,
-        fg=LIGHT_FG,
+        **primary_button_kwargs(),
     ).pack(pady=5, anchor=tk.E, padx=5)
 
     # ------------------------------------------------------------------
@@ -286,6 +324,7 @@ def run_ai_tools() -> None:
             mem_progress.configure(value=float(percent))
         except Exception:
             mem_progress.configure(value=0)
+        set_status("Refreshed system metrics.")
 
     ttk.Button(
         system_frame,
@@ -311,7 +350,10 @@ def run_ai_tools() -> None:
     ).pack(padx=10, pady=(10, 5), anchor=tk.W)
 
     uploads_list = tk.Listbox(
-        memory_frame, width=70, height=10, bg=DARK_BG, fg=LIGHT_FG
+        memory_frame,
+        width=70,
+        height=10,
+        **listbox_kwargs(),
     )
     uploads_list.pack(padx=10, pady=5, fill=tk.BOTH, expand=True)
 
@@ -335,13 +377,16 @@ def run_ai_tools() -> None:
             try:
                 shutil.copy2(src, destination)
             except Exception as exc:
+                set_status("Upload failed.")
                 messagebox.showerror("Upload failed", str(exc))
                 return
+        set_status("Uploaded files into memory.")
         messagebox.showinfo("Upload", "Files uploaded to memory")
         populate_uploads()
 
     def on_open_memory() -> None:
         path = get_memory_path(create=True)
+        set_status(f"Opened memory path reference: {path}")
         messagebox.showinfo("Memory Path", str(path))
 
     btn_frame = tk.Frame(memory_frame, bg=DARK_BG)
@@ -350,22 +395,19 @@ def run_ai_tools() -> None:
         btn_frame,
         text="Upload Files",
         command=on_upload,
-        bg=ACCENT_PURPLE,
-        fg=LIGHT_FG,
+        **primary_button_kwargs(),
     ).pack(side=tk.LEFT, padx=5)
     tk.Button(
         btn_frame,
         text="Open Memory Path",
         command=on_open_memory,
-        bg=ACCENT_PURPLE,
-        fg=LIGHT_FG,
+        **primary_button_kwargs(),
     ).pack(side=tk.LEFT, padx=5)
     tk.Button(
         btn_frame,
         text="Refresh",
         command=populate_uploads,
-        bg=ACCENT_PURPLE,
-        fg=LIGHT_FG,
+        **primary_button_kwargs(),
     ).pack(side=tk.LEFT, padx=5)
 
     populate_uploads()
@@ -406,19 +448,15 @@ def run_ai_tools() -> None:
     tk.Entry(
         llm_frame,
         textvariable=model_var,
-        bg=DARK_BG,
-        fg=LIGHT_FG,
-        insertbackground=LIGHT_FG,
+        **text_surface_kwargs(surface="panel_alt"),
     ).grid(row=0, column=3, padx=10, pady=5, sticky=tk.W)
 
     chat_display = scrolledtext.ScrolledText(
         llm_frame,
         width=80,
         height=15,
-        bg=DARK_BG,
-        fg=LIGHT_FG,
         state=tk.DISABLED,
-        insertbackground=LIGHT_FG,
+        **text_surface_kwargs(surface="panel_alt"),
     )
     chat_display.grid(row=1, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
 
@@ -432,9 +470,7 @@ def run_ai_tools() -> None:
     input_entry = tk.Entry(
         llm_frame,
         textvariable=input_var,
-        bg=DARK_BG,
-        fg=LIGHT_FG,
-        insertbackground=LIGHT_FG,
+        **text_surface_kwargs(surface="panel_alt"),
     )
     input_entry.grid(row=2, column=0, columnspan=3, padx=10, pady=5, sticky="ew")
     input_entry.bind("<Return>", lambda event: on_send())
@@ -465,6 +501,7 @@ def run_ai_tools() -> None:
         if not isinstance(settings, dict):
             settings = {}
         messages = list(conversation)
+        set_status("Sending prompt to provider...")
 
         def generate_response() -> None:
             try:
@@ -481,6 +518,7 @@ def run_ai_tools() -> None:
                 conversation.append({"role": "assistant", "content": response})
                 append_chat(provider.value, response)
                 send_button.configure(state=tk.NORMAL)
+                set_status(f"Received response from {provider.value}.")
 
             root.after(0, finish)
 
@@ -491,21 +529,20 @@ def run_ai_tools() -> None:
         chat_display.configure(state=tk.NORMAL)
         chat_display.delete("1.0", tk.END)
         chat_display.configure(state=tk.DISABLED)
+        set_status("Cleared LLM conversation.")
 
     send_button = tk.Button(
         llm_frame,
         text="Send",
         command=on_send,
-        bg=ACCENT_PURPLE,
-        fg=LIGHT_FG,
+        **primary_button_kwargs(),
     )
     send_button.grid(row=2, column=3, padx=10, pady=5, sticky=tk.E)
     tk.Button(
         llm_frame,
         text="Clear",
         command=on_clear,
-        bg=ACCENT_PURPLE,
-        fg=LIGHT_FG,
+        **primary_button_kwargs(),
     ).grid(row=3, column=3, padx=10, pady=(0, 10), sticky=tk.E)
 
     notebook.select(process_frame)
