@@ -16,4 +16,4 @@ def __getattr__(name: str) -> Any:
     return getattr(_impl, name)
 
 
-__doc__ = getattr(_impl, "__doc__")
+__doc__ = _impl.__doc__

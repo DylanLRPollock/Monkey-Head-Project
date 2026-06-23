@@ -422,7 +422,10 @@ class PresidentialCouncil:
                 fallback_reason = "Human override applied"
             else:
                 approved = False
-                fallback_reason = "Agents disagreed; defaulting to fail-safe rejection pending human review."
+                fallback_reason = (
+                    "Agents disagreed; defaulting to fail-safe rejection "
+                    "pending human review."
+                )
 
         rationale = self._compose_council_rationale(votes, fallback_reason)
         timestamp = max(spark_decision.timestamp, zap_decision.timestamp)
@@ -443,8 +446,10 @@ class PresidentialCouncil:
     ) -> str:
         fragments = []
         for agent, decision in votes.items():
+            decision_label = "approve" if decision.approved else "reject"
             fragments.append(
-                f"{agent} -> {'approve' if decision.approved else 'reject'} (confidence {decision.confidence:.2f})"
+                f"{agent} -> {decision_label} "
+                f"(confidence {decision.confidence:.2f})"
             )
         if fallback:
             fragments.append(f"Fallback: {fallback}")

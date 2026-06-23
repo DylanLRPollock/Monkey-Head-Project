@@ -58,7 +58,11 @@ def file_summary(path: str | Path, *, max_chars: int = 240) -> str:
             metadata = probe_media(target)
         except (OSError, RuntimeError, ValueError):
             return f"Media file: {target.name}"
-        duration = metadata.get("format", {}).get("duration", "unknown")
+        duration = (
+            metadata.duration_seconds
+            if metadata.duration_seconds is not None
+            else "unknown"
+        )
         return f"Media file ({target.name}) duration={duration}"
     return f"Binary file: {target.name}"
 

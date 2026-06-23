@@ -94,7 +94,7 @@ def ingest_audio(path: str | Path, *, store_copy: bool = True) -> dict[str, obje
     return {
         "kind": "audio",
         "path": str(stored_path),
-        "probe": probe_media(stored_path),
+        "probe": probe_media(stored_path).raw,
         "metadata": generate_metadata(stored_path),
     }
 
@@ -109,7 +109,7 @@ def ingest_video(path: str | Path, *, store_copy: bool = True) -> dict[str, obje
     return {
         "kind": "video",
         "path": str(stored_path),
-        "probe": probe_media(stored_path),
+        "probe": probe_media(stored_path).raw,
         "metadata": generate_metadata(stored_path),
     }
 

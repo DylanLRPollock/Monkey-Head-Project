@@ -244,7 +244,7 @@ class BatteryMonitor:
             output = subprocess.check_output(
                 [acpi_cmd, "-b"], text=True, stderr=subprocess.DEVNULL
             )
-        except (subprocess.CalledProcessError, OSError, FileNotFoundError) as e:
+        except (subprocess.CalledProcessError, OSError) as e:
             LOGGER.debug("acpi command failed: %s", e)
             return None
         if not output:

@@ -233,9 +233,13 @@ def main(argv: Optional[Iterable[str]] = None) -> None:
         print(size)
     if args.prune is not None:
         if not args.dry_run and not args.yes:
-            confirmation = input(
-                f"Delete files older than {args.prune} day(s) under '{mgr.base_dir}'? [y/N]: "
-            ).strip().lower()
+            confirmation = (
+                input(
+                    f"Delete files older than {args.prune} day(s) under '{mgr.base_dir}'? [y/N]: "
+                )
+                .strip()
+                .lower()
+            )
             if confirmation not in {"y", "yes"}:
                 print("Cancelled.")
                 return

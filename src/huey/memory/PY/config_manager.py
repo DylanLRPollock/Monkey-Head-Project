@@ -94,7 +94,10 @@ class ConfigManager:
         parser = configparser.ConfigParser()
         for key, value in self.config.items():
             if isinstance(value, dict):
-                parser[key] = {nested_key: str(nested_value) for nested_key, nested_value in value.items()}
+                parser[key] = {
+                    nested_key: str(nested_value)
+                    for nested_key, nested_value in value.items()
+                }
             else:
                 parser["DEFAULT"][str(key)] = str(value)
 
@@ -125,7 +128,7 @@ class ConfigManager:
 
         prefix = f"{section}."
         flattened = {
-            key[len(prefix):]: value
+            key[len(prefix) :]: value
             for key, value in self.config.items()
             if isinstance(key, str) and key.startswith(prefix)
         }

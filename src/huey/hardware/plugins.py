@@ -35,7 +35,7 @@ class SensorReading:
     provenance: Dict[str, Any] = field(default_factory=dict)
 
 
-class BasePlugin(ABC):
+class BasePlugin:
     """Common functionality shared between sensors and actuators."""
 
     plugin_name: str = ""
@@ -72,7 +72,7 @@ class BasePlugin(ABC):
         }
 
 
-class SensorPlugin(BasePlugin):
+class SensorPlugin(BasePlugin, ABC):
     """Base class for sensor plugins."""
 
     @abstractmethod
@@ -92,7 +92,7 @@ class SensorPlugin(BasePlugin):
         )
 
 
-class ActuatorPlugin(BasePlugin):
+class ActuatorPlugin(BasePlugin, ABC):
     """Base class for actuator plugins."""
 
     @abstractmethod

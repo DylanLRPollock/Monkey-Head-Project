@@ -49,7 +49,10 @@ def _compile_rules() -> tuple[Rule, ...]:
         Rule(
             "huey-core-active",
             re.compile(r"\\bHuey Core\\b"),
-            "'Huey Core' appears as a current-facing term; use Huey Body only in historical/provenance context.",
+            (
+                "'Huey Core' appears as a current-facing term; use Huey Body "
+                "only in historical/provenance context."
+            ),
         ),
         Rule(
             "windows-hueybody-path",
@@ -64,7 +67,8 @@ def _compile_rules() -> tuple[Rule, ...]:
         Rule(
             "huey-body-v1-runtime",
             re.compile(
-                r"\\bHuey Body\\b.*\\b(V1|runtime|compute|cognition|node)\\b|\\b(V1|runtime|compute|cognition|node)\\b.*\\bHuey Body\\b",
+                r"\\bHuey Body\\b.*\\b(V1|runtime|compute|cognition|node)\\b|"
+                r"\\b(V1|runtime|compute|cognition|node)\\b.*\\bHuey Body\\b",
                 re.IGNORECASE,
             ),
             "Do not present Huey Body as V1 compute/cognition/runtime node.",
@@ -143,7 +147,8 @@ def main() -> int:
         for lineno, line in enumerate(content.splitlines(), start=1):
             if _should_flag_pygpt(line):
                 violations.append(
-                    f"{path}:{lineno}: Use PyHuey as the active cockpit name; keep PyGPT for provenance only."
+                    f"{path}:{lineno}: Use PyHuey as the active cockpit name; "
+                    "keep PyGPT for provenance only."
                 )
 
             for rule in rules:

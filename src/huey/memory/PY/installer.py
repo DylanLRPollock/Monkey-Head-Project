@@ -150,7 +150,9 @@ WINDOWS_INSTALL = str(PROJECT_ROOT / "src" / "huey" / "memory" / "BAT" / "instal
 
 def update_submodules() -> None:
     """Ensure git submodules are initialized."""
-    sync_script = PROJECT_ROOT / "src" / "huey" / "memory" / "PY" / "sync_pygpt_structure.py"
+    sync_script = (
+        PROJECT_ROOT / "src" / "huey" / "memory" / "PY" / "sync_pygpt_structure.py"
+    )
     try:
         subprocess.run(
             ["git", "submodule", "update", "--init", "--recursive"], check=True
@@ -179,11 +181,15 @@ def run_installer(
         update_submodules()
         display_license()
         if system == "Linux":
-            subprocess.run(["bash", LINUX_INSTALL], check=True, env=env, cwd=PROJECT_ROOT)
+            subprocess.run(
+                ["bash", LINUX_INSTALL], check=True, env=env, cwd=PROJECT_ROOT
+            )
         elif system == "Darwin":
             subprocess.run(["bash", MAC_INSTALL], check=True, env=env, cwd=PROJECT_ROOT)
         elif system == "Windows":
-            subprocess.run(["cmd", "/c", WINDOWS_INSTALL], check=True, env=env, cwd=PROJECT_ROOT)
+            subprocess.run(
+                ["cmd", "/c", WINDOWS_INSTALL], check=True, env=env, cwd=PROJECT_ROOT
+            )
         else:
             print(f"Unsupported operating system: {system}")
             return 1

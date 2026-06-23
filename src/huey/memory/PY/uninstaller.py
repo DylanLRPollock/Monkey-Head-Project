@@ -22,7 +22,9 @@ LINUX_UNINSTALL = str(
     PROJECT_ROOT / "platform" / "installers" / "debian" / "Debian" / "uninstall-deb.sh"
 )
 MAC_UNINSTALL = os.path.join(SCRIPT_DIR, "setup", "macOS", "uninstall.sh")
-WINDOWS_UNINSTALL = str(PROJECT_ROOT / "src" / "huey" / "memory" / "BAT" / "uninstall.bat")
+WINDOWS_UNINSTALL = str(
+    PROJECT_ROOT / "src" / "huey" / "memory" / "BAT" / "uninstall.bat"
+)
 
 
 def _uninstall_command(system: str) -> list[str] | None:
@@ -77,6 +79,4 @@ if __name__ == "__main__":
         reply = input("Run the Monkey Head uninstaller? [y/N]: ").strip().lower()
         confirmed = reply in {"y", "yes"}
 
-    sys.exit(
-        run_uninstaller(dry_run=arguments.dry_run, confirmed=confirmed)
-    )
+    sys.exit(run_uninstaller(dry_run=arguments.dry_run, confirmed=confirmed))

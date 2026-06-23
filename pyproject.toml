@@ -64,11 +64,8 @@ ml = [
   "anthropic[bedrock,vertex]==0.100.0",
   "audioop-lts==0.2.2; python_version >= '3.13' and python_version < '3.14'",
   "faster-whisper==1.2.1",
-  "google-ai-generativelanguage==0.11.0",
   "google-genai==2.2.0",
-  "google-generativeai==0.8.6",
   "huggingface-hub==1.14.0",
-  "llama-cloud==2.4.1",
   "llama-cloud-services==0.6.94",
   "llama-index==0.14.21",
   "llama-index-core==0.14.21",
@@ -102,7 +99,6 @@ ml = [
   "llama-index-readers-microsoft-onedrive==0.5.0",
   "llama-index-readers-twitter==0.5.0",
   "llama-index-readers-web==0.6.0",
-  "llama-index-utils-huggingface==0.5.0",
   "llama-index-workflows==2.20.0",
   "llama-parse==0.6.94",
   "mistralai==2.4.5",
@@ -224,6 +220,9 @@ extend-ignore = [
 ]
 max-line-length = 88
 exclude = [
+  "archives",
   "src/huey/connectors/pyhuey",
   "src\\huey\\connectors\\pyhuey",
+  "src/huey/memory/PY",
+  "src\\huey\\memory\\PY",
 ]

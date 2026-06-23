@@ -106,7 +106,8 @@ def main() -> int:
 
     if violations:
         print(
-            "Stale platform string check failed. Move these references to approved legacy/archive paths:"
+            "Stale platform string check failed. "
+            "Move these references to approved legacy/archive paths:"
         )
         for violation in violations:
             print(f"- {violation}")

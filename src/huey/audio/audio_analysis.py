@@ -12,7 +12,7 @@ from huey.media.media_manager import detect_silence, probe_media
 
 def _audio_stream(source: str | Path) -> dict[str, object]:
     payload = probe_media(source)
-    for stream in payload.get("streams", []):
+    for stream in payload.streams:
         if stream.get("codec_type") == "audio":
             return dict(stream)
     return {}
@@ -22,16 +22,15 @@ def duration(source: str | Path) -> float:
     """Return audio duration in seconds."""
 
     payload = probe_media(source)
-    return float(payload.get("format", {}).get("duration", 0.0))
+    return float(payload.duration_seconds or 0.0)
 
 
 def bitrate(source: str | Path) -> int:
     """Return audio bitrate in bits per second."""
 
+    payload = probe_media(source)
     stream = _audio_stream(source)
-    raw_value = stream.get("bit_rate") or probe_media(source).get("format", {}).get(
-        "bit_rate", 0
-    )
+    raw_value = stream.get("bit_rate") or payload.bit_rate or 0
     return int(float(raw_value or 0))
 
 

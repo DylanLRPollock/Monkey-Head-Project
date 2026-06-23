@@ -20,7 +20,8 @@ extend-ignore = E203, E402, E501, W291, W293, W503
 # B950: soft maximum line length that works well with Black's 88-char style
 select = C, E, F, W, B, B950
 
-# Paths we do not want to lint (tooling, virtualenvs, build artifacts, caches)
+# Paths we do not want to lint (tooling, virtualenvs, build artifacts, caches,
+# and legacy implementation trees that are kept behind compatibility shims)
 exclude =
     .git,
     __pycache__,
@@ -33,7 +34,12 @@ exclude =
     .ruff_cache,
     .pytest_cache,
     .idea,
-    .vscode
+    .vscode,
+    archives,
+    src/huey/connectors/pyhuey,
+    src\huey\connectors\pyhuey,
+    src/huey/memory/PY,
+    src\huey\memory\PY
 
 # Per-file relaxations tuned for HueyOS layout
 per-file-ignores =

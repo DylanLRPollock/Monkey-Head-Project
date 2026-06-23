@@ -68,9 +68,13 @@ if __name__ == "__main__":
 
     try:
         if not args.dry_run and not args.yes:
-            confirmation = input(
-                f"Remove '*{args.extension}' files from '{args.directory}'? [y/N]: "
-            ).strip().lower()
+            confirmation = (
+                input(
+                    f"Remove '*{args.extension}' files from '{args.directory}'? [y/N]: "
+                )
+                .strip()
+                .lower()
+            )
             if confirmation not in {"y", "yes"}:
                 print("Cancelled.")
                 raise SystemExit(1)

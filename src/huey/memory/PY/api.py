@@ -25,8 +25,8 @@ except Exception:  # pragma: no cover - fall back to stdlib metrics
     psutil = None  # type: ignore[assignment]
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response, status
-from pydantic import BaseModel, Field
 from fastapi.responses import HTMLResponse, StreamingResponse
+from pydantic import BaseModel, Field
 
 from .env_validation import DEVELOPMENT_ENVS as _DEVELOPMENT_ENVS
 from .env_validation import configured_environment as _configured_environment

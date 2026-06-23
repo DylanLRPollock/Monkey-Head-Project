@@ -7,8 +7,8 @@ from huey.media import (
     FFmpegCommandResult,
     FFmpegMediaManager,
     check_ffmpeg_available,
+    media_manager,
 )
-from huey.media import media_manager
 
 
 def test_import_huey_media_succeeds() -> None:
@@ -17,7 +17,9 @@ def test_import_huey_media_succeeds() -> None:
     assert imported_media.FFmpegMediaManager is FFmpegMediaManager
 
 
-def test_constructor_does_not_fail_if_ffmpeg_missing(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_constructor_does_not_fail_if_ffmpeg_missing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.setattr(media_manager.shutil, "which", lambda _name: None)
 
     manager = FFmpegMediaManager()
