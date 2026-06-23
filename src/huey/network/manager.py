@@ -12,7 +12,6 @@ import logging
 import shutil
 import socket
 import subprocess
-import sys
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -23,13 +22,19 @@ try:  # pragma: no cover - optional dependency
 except Exception:  # pragma: no cover - degrade gracefully
     psutil = None  # type: ignore[assignment]
 
+from huey.os.core.platform_support import detect_host_platform
+
 
 LOGGER = logging.getLogger(__name__)
 
 
 WIRED_PREFIXES = ("eth", "enp", "eno", "ens", "em")
 WIFI_PREFIXES = ("wlan", "wlx", "wifi", "ath", "wl")
+WINDOWS_WIRED_PREFIXES = ("ethernet", "local area connection", "lan")
+WINDOWS_WIFI_PREFIXES = ("wi-fi", "wifi", "wlan", "wireless")
 LOOPBACK_INTERFACES = {"lo", "lo0"}
+MACOS_WIRED_PORT_MARKERS = ("ethernet", "thunderbolt bridge")
+MACOS_WIFI_PORT_MARKERS = ("wi-fi", "airport")
 
 
 InterfaceInfo = Dict[str, Any]
@@ -62,6 +67,7 @@ class NetworkManager:
         self.check_timeout = check_timeout
         self._last_status: Optional[NetworkStatus] = None
         self._interface_categories: Dict[str, str] = {}
+        self._macos_device_categories: Dict[str, str] = {}
 
     # ------------------------------------------------------------------
     def _interface_stats(self) -> Dict[str, InterfaceInfo]:
@@ -133,13 +139,74 @@ class NetworkManager:
             return float(value)
 
     def _interface_category(self, name: str) -> str:
+        host = detect_host_platform()
+        lowered = name.casefold()
         if name in LOOPBACK_INTERFACES:
             return "loopback"
-        if name.startswith(WIRED_PREFIXES):
+
+        if host.is_macos:
+            category = self._macos_interface_category(name)
+            if category:
+                return category
+        elif host.is_windows:
+            if lowered.startswith(WINDOWS_WIRED_PREFIXES):
+                return "wired"
+            if lowered.startswith(WINDOWS_WIFI_PREFIXES):
+                return "wifi"
+
+        if lowered.startswith(WIRED_PREFIXES + WINDOWS_WIRED_PREFIXES):
             return "wired"
-        if name.startswith(WIFI_PREFIXES):
+        if lowered.startswith(WIFI_PREFIXES + WINDOWS_WIFI_PREFIXES):
             return "wifi"
         return "other"
+
+    def _macos_interface_category(self, name: str) -> str | None:
+        if not self._macos_device_categories:
+            self._macos_device_categories = self._load_macos_device_categories()
+        return self._macos_device_categories.get(name)
+
+    def _load_macos_device_categories(self) -> Dict[str, str]:
+        if not shutil.which("networksetup"):
+            return {}
+
+        try:
+            result = subprocess.run(
+                ["networksetup", "-listallhardwareports"],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        except OSError:  # pragma: no cover - environment specific
+            LOGGER.debug("Unable to inspect macOS hardware ports", exc_info=True)
+            return {}
+
+        if result.returncode != 0:
+            return {}
+
+        categories: Dict[str, str] = {}
+        current_port = ""
+        for raw_line in result.stdout.splitlines():
+            line = raw_line.strip()
+            if not line:
+                current_port = ""
+                continue
+            if line.startswith("Hardware Port:"):
+                current_port = line.partition(":")[2].strip().casefold()
+                continue
+            if not line.startswith("Device:"):
+                continue
+
+            device = line.partition(":")[2].strip()
+            if not device:
+                continue
+            if any(marker in current_port for marker in MACOS_WIFI_PORT_MARKERS):
+                categories[device] = "wifi"
+            elif any(marker in current_port for marker in MACOS_WIRED_PORT_MARKERS):
+                categories[device] = "wired"
+            else:
+                categories.setdefault(device, "other")
+
+        return categories
 
     def _preferred_interface(
         self, interfaces: Dict[str, InterfaceInfo]
@@ -256,28 +323,73 @@ class NetworkManager:
 
     def _bring_up_interface(self, interface: str) -> None:
         LOGGER.info("Attempting to prioritise interface %s", interface)
-        if shutil.which("nmcli"):
+        host = detect_host_platform()
+        if host.is_windows:
+            self._bring_up_windows_interface(interface)
+        elif host.is_macos:
+            self._bring_up_macos_interface(interface)
+        else:
+            self._bring_up_linux_interface(interface)
+
+    def _bring_up_linux_interface(self, interface: str) -> None:
+        if not shutil.which("nmcli"):
+            LOGGER.debug("No supported Linux network management tool available")
+            return
+        try:
+            subprocess.run(
+                ["nmcli", "device", "connect", interface],
+                check=False,
+                capture_output=True,
+            )
+        except Exception:  # pragma: no cover - environment specific
+            LOGGER.exception("Failed to invoke nmcli for interface %s", interface)
+
+    def _bring_up_macos_interface(self, interface: str) -> None:
+        if not shutil.which("networksetup"):
+            LOGGER.debug("No supported macOS network management tool available")
+            return
+        try:
+            subprocess.run(
+                ["networksetup", "-setairportpower", interface, "on"],
+                check=False,
+                capture_output=True,
+            )
+        except Exception:  # pragma: no cover
+            LOGGER.exception("Failed to invoke networksetup for interface %s", interface)
+
+    def _bring_up_windows_interface(self, interface: str) -> None:
+        powershell = shutil.which("pwsh") or shutil.which("powershell")
+        if powershell:
+            escaped_interface = interface.replace("'", "''")
             try:
                 subprocess.run(
-                    ["nmcli", "device", "connect", interface],
+                    [
+                        powershell,
+                        "-NoProfile",
+                        "-Command",
+                        f"Enable-NetAdapter -Name '{escaped_interface}' -Confirm:$false",
+                    ],
                     check=False,
                     capture_output=True,
                 )
             except Exception:  # pragma: no cover - environment specific
-                LOGGER.exception("Failed to invoke nmcli for interface %s", interface)
-        elif sys.platform.startswith("darwin") and shutil.which("networksetup"):
+                LOGGER.exception(
+                    "Failed to invoke PowerShell for interface %s", interface
+                )
+            return
+
+        if shutil.which("netsh"):
             try:
                 subprocess.run(
-                    ["networksetup", "-setairportpower", interface, "on"],
+                    ["netsh", "interface", "set", "interface", f"name={interface}", "admin=enabled"],
                     check=False,
                     capture_output=True,
                 )
-            except Exception:  # pragma: no cover
-                LOGGER.exception(
-                    "Failed to invoke networksetup for interface %s", interface
-                )
-        else:
-            LOGGER.debug("No supported network management tool available")
+            except Exception:  # pragma: no cover - environment specific
+                LOGGER.exception("Failed to invoke netsh for interface %s", interface)
+            return
+
+        LOGGER.debug("No supported Windows network management tool available")
 
     @property
     def last_status(self) -> Optional[NetworkStatus]:

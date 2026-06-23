@@ -29,15 +29,15 @@ def test_linux_supported_no_warning():
         patch("distro.codename", return_value="forky"),
         patch("huey.os.core.system_checks.logger") as log,
     ):
-        check_os_support()
+        assert check_os_support() is True
         log.warning.assert_not_called()
 
 
-def test_macos_old_warning():
+def test_macos_supported_no_warning():
     with (
         patch("platform.system", return_value="Darwin"),
-        patch("platform.mac_ver", return_value=("12.5", ("", "", ""), "")),
+        patch("platform.mac_ver", return_value=("13.5", ("", "", ""), "")),
         patch("huey.os.core.system_checks.logger") as log,
     ):
-        check_os_support()
-        log.warning.assert_called_once()
+        assert check_os_support() is True
+        log.warning.assert_not_called()

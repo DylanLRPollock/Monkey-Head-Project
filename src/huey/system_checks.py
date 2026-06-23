@@ -15,6 +15,8 @@ import shutil
 import sys
 from typing import Any
 
+from huey.os.core.platform_support import HostPlatform, detect_host_platform
+
 try:  # pragma: no cover - optional dependency on Linux only
     import distro  # type: ignore
 except Exception:  # pragma: no cover - handled gracefully in tests
@@ -32,6 +34,8 @@ PRODUCTION_KERNEL_ROLES = frozenset({"core", "pulse"})
 DEFAULT_RUNTIME_POLICY = "production"
 MIN_PYTHON_VERSION = (3, 13)
 MAX_PYTHON_VERSION = (3, 14)
+MIN_WINDOWS_RELEASE = 10
+MIN_MACOS_MAJOR = 12
 BASE_REQUIRED_TOOLS: tuple[str, ...] = (
     "git",
     "python3",
@@ -65,6 +69,20 @@ ROLE_REQUIRED_TOOLS: dict[str, tuple[str, ...]] = {
         "pavucontrol",
     ),
 }
+
+WINDOWS_REQUIRED_TOOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("git", ("git",)),
+    ("python", ("python", "py")),
+    ("powershell", ("pwsh", "powershell")),
+)
+
+MACOS_REQUIRED_TOOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("git", ("git",)),
+    ("python3", ("python3",)),
+    ("bash", ("bash",)),
+    ("pmset", ("pmset",)),
+    ("networksetup", ("networksetup",)),
+)
 
 __all__ = [
     "logger",
@@ -150,28 +168,53 @@ def _detect_linux_distribution() -> tuple[str, str]:
     return dist_id, codename
 
 
-def check_os_support() -> bool:
+def _leading_version_number(value: str) -> int | None:
+    """Extract the first integer version component from a platform string."""
+
+    match = re.search(r"\d+", value)
+    if not match:
+        return None
+    return int(match.group(0))
+
+
+def _check_windows_support(host: HostPlatform) -> bool:
+    release = host.release or host.version
+    major = _leading_version_number(host.release) or _leading_version_number(host.version)
+    if major is None or major < MIN_WINDOWS_RELEASE:
+        logger.warning(
+            "Unsupported Windows version detected: %s. HueyOS requires Windows %s or newer.",
+            release or "unknown",
+            MIN_WINDOWS_RELEASE,
+        )
+        return False
+    return True
+
+
+def _check_macos_support(host: HostPlatform) -> bool:
+    version = platform.mac_ver()[0] or host.release or host.version
+    major = _leading_version_number(version)
+    if major is None or major < MIN_MACOS_MAJOR:
+        logger.warning(
+            "Unsupported macOS version detected: %s. HueyOS requires macOS %s or newer.",
+            version or "unknown",
+            MIN_MACOS_MAJOR,
+        )
+        return False
+    return True
+
+
+def check_os_support(host: HostPlatform | None = None) -> bool:
     """Verify the host operating system matches the supported matrix."""
 
-    system = platform.system()
-    if system == "Windows":
-        release = platform.release()
-        logger.warning(
-            "Unsupported Windows version detected: %s. HueyOS currently targets Debian Forky.",
-            release or "unknown",
-        )
-        return False
+    host = host or detect_host_platform()
+    if host.is_windows:
+        return _check_windows_support(host)
 
-    if system == "Darwin":
-        version = platform.mac_ver()[0] or "unknown"
-        logger.warning(
-            "Unsupported macOS version detected: %s. HueyOS currently targets Debian Forky.",
-            version,
-        )
-        return False
+    if host.is_macos:
+        return _check_macos_support(host)
 
-    if system != "Linux":
-        logger.warning("Unsupported operating system detected: %s", system or "unknown")
+    if not host.is_linux:
+        logger.warning("Unsupported operating system detected: %s", host.system or "unknown")
         return False
 
     dist_id, codename = _detect_linux_distribution()
@@ -185,6 +228,35 @@ def check_os_support() -> bool:
         )
 
     return supported
+
+
+def _platform_runtime_policy(
+    host: HostPlatform,
+    *,
+    os_supported: bool,
+) -> dict[str, Any]:
+    """Return platform support metadata for non-Linux hosts."""
+
+    errors = [] if os_supported else [f"{host.display_name} runtime support check failed."]
+    return {
+        "release": host.release or host.version,
+        "version": host.version or host.release,
+        "version_prefix": (),
+        "family": host.family,
+        "detected_family": host.family,
+        "family_role_present": False,
+        "detected_role": "",
+        "role": "",
+        "role_valid": True,
+        "is_lab_kernel": False,
+        "is_release_candidate": False,
+        "production_supported": os_supported,
+        "lab_supported": os_supported,
+        "runtime_policy": DEFAULT_RUNTIME_POLICY,
+        "runtime_allowed": os_supported,
+        "errors": errors,
+        "platform_specific": True,
+    }
 
 
 def _extract_kernel_version(raw_release: str) -> str:
@@ -446,14 +518,33 @@ def _required_tools_for_role(role: str) -> tuple[str, ...]:
     return tuple(ordered_tools)
 
 
-def _check_required_tools(role: str = "") -> dict[str, bool]:
+def _required_tool_candidates(
+    host: HostPlatform,
+    role: str,
+) -> tuple[tuple[str, tuple[str, ...]], ...]:
+    if host.is_windows:
+        return WINDOWS_REQUIRED_TOOLS
+    if host.is_macos:
+        return MACOS_REQUIRED_TOOLS
+    return tuple((tool, (tool,)) for tool in _required_tools_for_role(role))
+
+
+def _check_required_tools(
+    role: str = "",
+    host: HostPlatform | None = None,
+) -> dict[str, bool]:
     """Return a mapping of required tool names to their availability."""
 
+    host = host or detect_host_platform()
     results: dict[str, bool] = {}
-    for tool in _required_tools_for_role(role):
-        available = shutil.which(tool) is not None
+    for tool, candidates in _required_tool_candidates(host, role):
+        available = any(shutil.which(candidate) is not None for candidate in candidates)
         if not available:
-            logger.warning("Required executable '%s' not found on PATH", tool)
+            logger.warning(
+                "Required executable '%s' not found on PATH (checked: %s)",
+                tool,
+                ", ".join(candidates),
+            )
         results[tool] = available
     return results
 
@@ -463,14 +554,22 @@ def system_check() -> dict[str, Any]:
 
     logger.info("Performing system checks...")
     results: dict[str, Any] = {}
+    host = detect_host_platform()
 
-    results["os_supported"] = check_os_support()
-    kernel_policy = check_kernel_policy()
+    results["os_supported"] = check_os_support(host)
+    kernel_policy = (
+        check_kernel_policy()
+        if host.is_linux
+        else _platform_runtime_policy(host, os_supported=results["os_supported"])
+    )
     results["kernel_supported"] = bool(kernel_policy["production_supported"])
     results["kernel_policy"] = kernel_policy
     results["python_supported"] = check_python_version()
 
-    tool_results = _check_required_tools(str(kernel_policy.get("detected_role", "")))
+    tool_results = _check_required_tools(
+        str(kernel_policy.get("detected_role", "")),
+        host=host,
+    )
     for name, status in tool_results.items():
         results[f"{name}_available"] = status
     results["tools_available"] = all(tool_results.values()) if tool_results else True

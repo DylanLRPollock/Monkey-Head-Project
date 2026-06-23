@@ -12,7 +12,39 @@ from types import SimpleNamespace
 
 import pytest
 
+from huey.os.core.platform_support import HostPlatform
 from huey.os import system_checks
+
+
+def _host(*, family: str, system: str) -> HostPlatform:
+    display_name = {"windows": "Windows", "macos": "macOS", "linux": "Linux"}.get(
+        family, system
+    )
+    return HostPlatform(
+        family=family,  # type: ignore[arg-type]
+        system=system,
+        release="",
+        version="",
+        machine="x86_64",
+        sys_platform=family,
+        display_name=display_name,
+        is_windows=family == "windows",
+        is_macos=family == "macos",
+        is_linux=family == "linux",
+        is_unknown=family == "unknown",
+        is_wsl=False,
+    )
+
+
+def test_check_os_support_accepts_supported_windows_release(monkeypatch, caplog):
+    monkeypatch.setattr(system_checks.platform, "system", lambda: "Windows")
+    monkeypatch.setattr(system_checks.platform, "release", lambda: "10")
+
+    with caplog.at_level(logging.WARNING):
+        supported = system_checks.check_os_support()
+
+    assert supported is True
+    assert "Unsupported Windows version" not in caplog.text
 
 
 def test_check_os_support_warns_for_legacy_windows(monkeypatch, caplog):
@@ -20,9 +52,25 @@ def test_check_os_support_warns_for_legacy_windows(monkeypatch, caplog):
     monkeypatch.setattr(system_checks.platform, "release", lambda: "6.1")
 
     with caplog.at_level(logging.WARNING):
-        system_checks.check_os_support()
+        supported = system_checks.check_os_support()
 
+    assert supported is False
     assert "Unsupported Windows version" in caplog.text
+
+
+def test_check_os_support_accepts_supported_macos_version(monkeypatch, caplog):
+    monkeypatch.setattr(system_checks.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(
+        system_checks.platform,
+        "mac_ver",
+        lambda: ("13.5", ("", "", ""), ""),
+    )
+
+    with caplog.at_level(logging.WARNING):
+        supported = system_checks.check_os_support()
+
+    assert supported is True
+    assert "Unsupported macOS version" not in caplog.text
 
 
 def test_check_os_support_warns_for_non_debian_linux(monkeypatch, caplog):
@@ -266,9 +314,14 @@ def test_check_kernel_policy_disallows_rc_build_for_production_mode(monkeypatch)
 
 
 def test_system_check_collects_expected_results(monkeypatch):
-    def fake_os_check():
+    def fake_os_check(_host=None):
         return True
 
+    monkeypatch.setattr(
+        system_checks,
+        "detect_host_platform",
+        lambda: _host(family="linux", system="Linux"),
+    )
     monkeypatch.setattr(system_checks, "check_os_support", fake_os_check)
     monkeypatch.setattr(system_checks, "check_python_version", lambda: True)
     monkeypatch.setattr(
@@ -295,6 +348,36 @@ def test_system_check_collects_expected_results(monkeypatch):
     assert results["kernel_policy"]["lab_supported"] is True
     assert results["git_available"] is True
     assert results["python3_available"] is True
+
+
+def test_system_check_uses_windows_tool_requirements(monkeypatch):
+    monkeypatch.setattr(
+        system_checks,
+        "detect_host_platform",
+        lambda: _host(family="windows", system="Windows"),
+    )
+    monkeypatch.setattr(system_checks, "check_os_support", lambda _host=None: True)
+    monkeypatch.setattr(system_checks, "check_python_version", lambda: True)
+    monkeypatch.setattr(
+        system_checks,
+        "check_kernel_policy",
+        lambda: pytest.fail("Windows system checks should not use Linux kernel policy"),
+    )
+    monkeypatch.setattr(
+        system_checks.shutil,
+        "which",
+        lambda tool: f"C:/Tools/{tool}.exe"
+        if tool in {"git", "python", "pwsh"}
+        else None,
+    )
+
+    results = system_checks.system_check()
+
+    assert results["os_supported"] is True
+    assert results["kernel_supported"] is True
+    assert results["git_available"] is True
+    assert results["python_available"] is True
+    assert results["powershell_available"] is True
 
 
 def test_required_tools_for_pulse_role_includes_pavucontrol() -> None:

@@ -9,7 +9,6 @@ from collections import defaultdict
 import json
 import logging
 import os
-import platform
 import subprocess
 from pathlib import Path
 from typing import Any, Callable, Dict
@@ -72,13 +71,16 @@ from huey.function_registry import (
     ensure_registered_functions,
     invoke_function,
 )
+from huey.os.core.platform_support import (
+    build_platform_script_command,
+    detect_host_platform,
+    find_project_root,
+    resolve_platform_script_paths,
+)
 
 
 def _project_root() -> Path:
-    for parent in Path(__file__).resolve().parents:
-        if (parent / "pyproject.toml").exists():
-            return parent
-    return Path(__file__).resolve().parents[5]
+    return find_project_root(Path(__file__).resolve())
 
 
 class MonkeyManager(BaseTool):
@@ -94,35 +96,17 @@ class MonkeyManager(BaseTool):
         ensure_registered_functions()
 
     def _setup_paths(self) -> None:
-        root = _project_root()
-        installers = root / "platform" / "installers"
-        memory_dir = root / "src" / "huey" / "memory"
-        system = platform.system()
-        if system == "Linux":
-            debian_installers = installers / "debian" / "Debian"
-            self.install_path = debian_installers / "install-deb.sh"
-            self.update_path = debian_installers / "update-deb.sh"
-            self.run_path = memory_dir / "SH" / "run.sh"
-        elif system == "Darwin":
-            mac_installers = installers / "macos" / "macOS"
-            self.install_path = mac_installers / "install-mac.sh"
-            self.update_path = mac_installers / "update-mac.sh"
-            self.run_path = memory_dir / "SH" / "run.sh"
-        elif system == "Windows":
-            windows_installers = installers / "windows" / "Windows"
-            self.install_path = windows_installers / "install-win.bat"
-            self.update_path = windows_installers / "update-win.bat"
-            self.run_path = memory_dir / "BAT" / "run.bat"
+        paths = resolve_platform_script_paths(_project_root())
+        self.install_path = paths.install
+        self.update_path = paths.update
+        self.run_path = paths.run
 
     def _run_script(self, script: Path | None) -> None:
         if script is None or not script.exists():
             LOGGER.error("Script not found: %s", script)
             return
         try:
-            if script.suffix == ".bat":
-                cmd = ["cmd", "/c", str(script)]
-            else:
-                cmd = ["bash", str(script)]
+            cmd = build_platform_script_command(script)
             result = subprocess.run(cmd, check=False)
             if result.returncode != 0:
                 LOGGER.error(
@@ -179,8 +163,10 @@ class MonkeyManager(BaseTool):
     def path_status(self) -> Dict[str, object]:
         """Return resolved project and launcher paths for the current platform."""
 
+        host = detect_host_platform()
         return {
-            "platform": platform.system(),
+            "platform": host.display_name,
+            "platform_family": host.family,
             "project_root": str(_project_root()),
             "install": self._json_ready_path(self.install_path),
             "update": self._json_ready_path(self.update_path),

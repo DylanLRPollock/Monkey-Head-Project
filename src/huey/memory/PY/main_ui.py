@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import logging
 import os
-import platform
 import subprocess
 import sys
 import threading
@@ -54,6 +53,11 @@ from huey.media.media_conversion import convert_media
 from huey.memory.PY.ai_tools_gui import run_ai_tools
 from huey.memory.PY.dashboard import launch_dashboard
 from huey.memory.PY.preload_data import preload_all
+from huey.os.core.platform_support import (
+    detect_host_platform,
+    find_project_root,
+    resolve_platform_script_paths,
+)
 from huey.services.container_management import (
     build_docker_image,
     cleanup_images,
@@ -100,7 +104,7 @@ class MainUI:
             raise RuntimeError("tkinter is not available")
 
         self.root = root
-        self.project_root = Path(__file__).resolve().parents[4]
+        self.project_root = find_project_root(Path(__file__).resolve())
         self.gui_actions = default_gui_actions()
         self.gui_action_map = action_lookup(self.gui_actions)
         self.gui_sections = default_gui_sections()
@@ -123,7 +127,7 @@ class MainUI:
         self.quick_access_matches = list(self.gui_actions)
         self.activity_var = tk.StringVar(value="Waiting for the first action.")
         self.repository_var = tk.StringVar(value="DylanLRPollock/Monkey-Head-Project")
-        self.platform_var = tk.StringVar(value=platform.system())
+        self.platform_var = tk.StringVar(value=detect_host_platform().display_name)
         self.memory_var = tk.StringVar(value=self.state.memory.root_path)
         self.install_path_var = tk.StringVar(value="Detecting...")
         self.update_path_var = tk.StringVar(value="Detecting...")
@@ -293,28 +297,10 @@ class MainUI:
     def setup_paths(self):
         """Determine installer paths based on the current platform."""
 
-        installers = self.project_root / "platform" / "installers"
-        memory_dir = self.project_root / "src" / "huey" / "memory"
-        system = platform.system()
-        if system == "Linux":
-            debian_installers = installers / "debian" / "Debian"
-            self.install_path = debian_installers / "install-deb.sh"
-            self.update_path = debian_installers / "update-deb.sh"
-            self.run_path = memory_dir / "SH" / "run.sh"
-        elif system == "Darwin":
-            mac_installers = installers / "macos" / "macOS"
-            self.install_path = mac_installers / "install-mac.sh"
-            self.update_path = mac_installers / "update-mac.sh"
-            self.run_path = memory_dir / "SH" / "run.sh"
-        elif system == "Windows":
-            windows_installers = installers / "windows" / "Windows"
-            self.install_path = windows_installers / "install-win.bat"
-            self.update_path = windows_installers / "update-win.bat"
-            self.run_path = memory_dir / "BAT" / "run.bat"
-        else:
-            self.install_path = None
-            self.update_path = None
-            self.run_path = None
+        paths = resolve_platform_script_paths(self.project_root)
+        self.install_path = paths.install
+        self.update_path = paths.update
+        self.run_path = paths.run
         self._refresh_path_vars()
 
     def _refresh_path_vars(self) -> None:
@@ -1019,7 +1005,7 @@ class MainUI:
     def _refresh_overview(self) -> None:
         runtime_status = self.state.runtime.orchestration_status or "standby"
         self.memory_var.set(self.state.memory.root_path)
-        self.platform_var.set(platform.system())
+        self.platform_var.set(detect_host_platform().display_name)
         history = self.event_bus.history()
         if not history:
             self.activity_var.set("Waiting for the first action.")

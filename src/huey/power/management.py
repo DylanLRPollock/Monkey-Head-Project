@@ -12,7 +12,6 @@ import logging
 import re
 import shutil
 import subprocess
-import sys
 import time
 from collections import defaultdict
 from dataclasses import dataclass
@@ -23,6 +22,8 @@ try:  # pragma: no cover - optional dependency
     import psutil  # type: ignore
 except ImportError:  # pragma: no cover - degrade gracefully
     psutil = None  # type: ignore[assignment]
+
+from huey.os.core.platform_support import detect_host_platform
 
 
 LOGGER = logging.getLogger(__name__)
@@ -324,8 +325,13 @@ class BatteryMonitor:
         self, action: str, base_metadata: Dict[str, Any]
     ) -> PowerEvent:
         timestamp = time.time()
+        host = detect_host_platform()
         command = self._resolve_command(action)
-        metadata: Dict[str, Any] = {"action": action, "platform": sys.platform}
+        metadata: Dict[str, Any] = {
+            "action": action,
+            "platform": host.display_name,
+            "platform_family": host.family,
+        }
         metadata.update(base_metadata)
         if command:
             metadata["command"] = command
@@ -343,11 +349,15 @@ class BatteryMonitor:
 
     def _resolve_command(self, action: str) -> Optional[List[str]]:
         action = action.lower()
-        if sys.platform.startswith("win"):
+        host = detect_host_platform()
+        if host.is_windows:
             return self._windows_command(action)
-        if sys.platform.startswith("darwin"):
+        if host.is_macos:
             return self._darwin_command(action)
-        return self._linux_command(action)
+        if host.is_linux:
+            return self._linux_command(action)
+        LOGGER.warning("No power action implementation is available for %s", host.system)
+        return None
 
     def _linux_command(self, action: str) -> Optional[List[str]]:
         if action == "shutdown":
@@ -384,7 +394,7 @@ class BatteryMonitor:
         if action == "sleep":
             return ["rundll32.exe", "powrprof.dll,SetSuspendState", "0", "1", "0"]
         if action == "hibernate":
-            return ["rundll32.exe", "powrprof.dll,SetSuspendState", "Hibernate"]
+            return ["shutdown", "/h"]
         return None
 
     @property

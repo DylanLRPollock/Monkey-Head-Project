@@ -12,7 +12,10 @@ _HUEY_CORE_DIR = _PACKAGE_DIR.parents[1] / "core"
 __path__ = [str(path) for path in (_PACKAGE_DIR, _HUEY_CORE_DIR) if path.is_dir()]
 
 _base = import_module("huey.core")
-__all__ = sorted(set(getattr(_base, "__all__", ())) | {"resilience", "task_scheduler"})
+__all__ = sorted(
+    set(getattr(_base, "__all__", ()))
+    | {"platform_support", "resilience", "task_scheduler"}
+)
 
 
 def __getattr__(name: str) -> Any:

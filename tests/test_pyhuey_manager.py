@@ -54,6 +54,9 @@ def test_manager_gui_payload_groups_actions_and_paths():
 
     assert payload["title"] == "Monkey Manager"
     assert payload["paths"]["project_root"].endswith("Monkey-Head-Project")
+    assert payload["paths"]["install"]["exists"] is True
+    assert payload["paths"]["update"]["exists"] is True
+    assert payload["paths"]["run"]["exists"] is True
     assert payload["integration"]["custom_function_count"] >= 4
     assert {"custom_functions", "docker", "integration", "kubernetes"} <= groups
 

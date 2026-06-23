@@ -13,17 +13,21 @@
 # ==================================================
 import argparse
 import os
-import platform
 import subprocess
 import sys
 from pathlib import Path
 
+from huey.os.core.platform_support import (
+    build_platform_script_command,
+    find_project_root,
+    resolve_platform_script_paths,
+)
 from huey.os.core.system_checks import ensure_admin
 from huey.os.license_cli import show_license_cli
 from huey.os.license_gui import show_license_gui
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = Path(__file__).resolve().parents[4]
+PROJECT_ROOT = find_project_root(Path(__file__).resolve())
 
 # Hardware selection options for manual installation
 HARDWARE_OPTIONS = [
@@ -140,14 +144,6 @@ def display_license() -> None:
     except Exception:
         show_license_cli()
 
-
-LINUX_INSTALL = str(
-    PROJECT_ROOT / "platform" / "installers" / "debian" / "Debian" / "install-deb.sh"
-)
-MAC_INSTALL = os.path.join(SCRIPT_DIR, "setup", "macOS", "install.sh")
-WINDOWS_INSTALL = str(PROJECT_ROOT / "src" / "huey" / "memory" / "BAT" / "install.bat")
-
-
 def update_submodules() -> None:
     """Ensure git submodules are initialized."""
     sync_script = (
@@ -166,7 +162,6 @@ def update_submodules() -> None:
 def run_installer(
     hardware: str | None = None, software: list[str] | None = None
 ) -> int:
-    system = platform.system()
     if hardware is None:
         hardware = select_hardware()
     if software is None:
@@ -176,23 +171,25 @@ def run_installer(
     env = os.environ.copy()
     env["MHP_HARDWARE"] = hardware
     env["MHP_SOFTWARE"] = software_choice
+    paths = resolve_platform_script_paths(PROJECT_ROOT)
+    script_path = paths.install
+    if script_path is None:
+        print(f"Unsupported operating system: {paths.host.system}")
+        return 1
+    if not script_path.exists():
+        print(f"Installer script not found: {script_path}")
+        return 1
+
     try:
         ensure_admin_privileges()
         update_submodules()
         display_license()
-        if system == "Linux":
-            subprocess.run(
-                ["bash", LINUX_INSTALL], check=True, env=env, cwd=PROJECT_ROOT
-            )
-        elif system == "Darwin":
-            subprocess.run(["bash", MAC_INSTALL], check=True, env=env, cwd=PROJECT_ROOT)
-        elif system == "Windows":
-            subprocess.run(
-                ["cmd", "/c", WINDOWS_INSTALL], check=True, env=env, cwd=PROJECT_ROOT
-            )
-        else:
-            print(f"Unsupported operating system: {system}")
-            return 1
+        subprocess.run(
+            build_platform_script_command(script_path),
+            check=True,
+            env=env,
+            cwd=PROJECT_ROOT,
+        )
     except subprocess.CalledProcessError as exc:
         print(f"Installer failed with return code {exc.returncode}")
         return exc.returncode

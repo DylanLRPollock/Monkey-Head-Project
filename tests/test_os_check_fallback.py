@@ -18,5 +18,5 @@ def test_linux_fallback_no_warning():
         ),
         patch("huey.os.core.system_checks.logger") as log,
     ):
-        check_os_support()
+        assert check_os_support() is True
         log.warning.assert_not_called()

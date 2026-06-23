@@ -4,79 +4,50 @@
 from __future__ import annotations
 
 import argparse
-import platform
-import shutil
 import subprocess
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-SETUP_ROOT = REPO_ROOT / "setup"
+from huey.os.core.platform_support import (
+    build_platform_script_command,
+    detect_host_platform,
+    find_project_root,
+    normalize_platform_family,
+    resolve_platform_script_paths,
+)
+
+REPO_ROOT = find_project_root(Path(__file__).resolve())
 
 
-def _read_os_release() -> dict[str, str]:
-    os_release = {}
-    os_release_path = Path("/etc/os-release")
-    if not os_release_path.exists():
-        return os_release
-    for line in os_release_path.read_text(encoding="utf-8").splitlines():
-        if not line or "=" not in line:
-            continue
-        key, value = line.split("=", 1)
-        os_release[key.strip()] = value.strip().strip('"')
-    return os_release
+def _normalize_target(target: str) -> str:
+    if target.strip().casefold() == "debian":
+        return "linux"
+    return normalize_platform_family(target)
 
 
 def detect_target() -> str:
-    system = platform.system().lower()
-    if system == "windows":
-        return "windows"
-    if system == "darwin":
-        return "macos"
-    if system == "linux":
-        os_release = _read_os_release()
-        os_id = os_release.get("ID", "").lower()
-        id_like = os_release.get("ID_LIKE", "").lower()
-        if os_id == "debian" or "debian" in id_like:
-            return "debian"
-        return "linux"
-    return "unknown"
+    return detect_host_platform().family
 
 
 def select_script(target: str) -> Path:
-    if target == "windows":
-        return SETUP_ROOT / "Windows" / "install-win.ps1"
-    if target == "macos":
-        return SETUP_ROOT / "macOS" / "install-mac.sh"
-    if target == "debian":
-        return SETUP_ROOT / "Debian" / "install-deb.sh"
-    raise RuntimeError(f"Unsupported OS target: {target}")
+    paths = resolve_platform_script_paths(REPO_ROOT, target=_normalize_target(target))
+    if paths.install is None:
+        raise RuntimeError(f"Unsupported OS target: {target}")
+    return paths.install
 
 
 def build_command(target: str, script_path: Path, passthrough: list[str]) -> list[str]:
-    if target == "windows":
-        powershell = shutil.which("pwsh") or shutil.which("powershell")
-        if script_path.suffix.lower() == ".ps1" and powershell:
-            return [
-                powershell,
-                "-ExecutionPolicy",
-                "Bypass",
-                "-File",
-                str(script_path),
-                *passthrough,
-            ]
-        bat_script = SETUP_ROOT / "Windows" / "install-win.bat"
-        return ["cmd", "/c", str(bat_script), *passthrough]
-    return ["bash", str(script_path), *passthrough]
+    del target
+    return build_platform_script_command(script_path, passthrough)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Run the platform-specific HueyOS installer from setup/."
+        description="Run the platform-specific HueyOS installer from the repository."
     )
     parser.add_argument(
         "--target",
-        choices=["debian", "macos", "windows"],
+        choices=["linux", "debian", "macos", "windows"],
         help="Override detected OS target.",
     )
     parser.add_argument(
@@ -87,9 +58,10 @@ def main() -> int:
     args = parser.parse_args()
 
     target = args.target or detect_target()
-    if target in {"linux", "unknown"}:
+    normalized_target = _normalize_target(target)
+    if normalized_target == "unknown":
         print(
-            "Unsupported OS. Supported targets are Debian, macOS, and Windows. "
+            "Unsupported OS. Supported targets are Linux, macOS, and Windows. "
             "Use --target to override if appropriate.",
             file=sys.stderr,
         )
@@ -104,8 +76,8 @@ def main() -> int:
     if passthrough and passthrough[0] == "--":
         passthrough = passthrough[1:]
 
-    command = build_command(target, script_path, passthrough)
-    print(f"Detected target: {target}")
+    command = build_command(normalized_target, script_path, passthrough)
+    print(f"Detected target: {normalized_target}")
     print(f"Running installer: {' '.join(command)}")
 
     try:

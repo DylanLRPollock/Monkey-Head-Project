@@ -9,40 +9,30 @@
 from __future__ import annotations
 
 import argparse
-import os
-import platform
 import subprocess
 import sys
 from pathlib import Path
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = Path(__file__).resolve().parents[4]
-
-LINUX_UNINSTALL = str(
-    PROJECT_ROOT / "platform" / "installers" / "debian" / "Debian" / "uninstall-deb.sh"
-)
-MAC_UNINSTALL = os.path.join(SCRIPT_DIR, "setup", "macOS", "uninstall.sh")
-WINDOWS_UNINSTALL = str(
-    PROJECT_ROOT / "src" / "huey" / "memory" / "BAT" / "uninstall.bat"
+from huey.os.core.platform_support import (
+    build_platform_script_command,
+    find_project_root,
+    resolve_platform_script_paths,
 )
 
-
-def _uninstall_command(system: str) -> list[str] | None:
-    if system == "Linux":
-        return ["bash", LINUX_UNINSTALL]
-    if system == "Darwin":
-        return ["bash", MAC_UNINSTALL]
-    if system == "Windows":
-        return ["cmd", "/c", WINDOWS_UNINSTALL]
-    return None
+PROJECT_ROOT = find_project_root(Path(__file__).resolve())
 
 
 def run_uninstaller(*, dry_run: bool = False, confirmed: bool = True) -> int:
-    system = platform.system()
-    command = _uninstall_command(system)
-    if command is None:
-        print(f"Unsupported operating system: {system}")
+    paths = resolve_platform_script_paths(PROJECT_ROOT)
+    if paths.uninstall is None:
+        host = paths.host
+        print(f"Unsupported operating system: {host.system}")
         return 1
+    if not paths.uninstall.exists():
+        print(f"Uninstaller script not found: {paths.uninstall}")
+        return 1
+
+    command = build_platform_script_command(paths.uninstall)
 
     if dry_run:
         print(f"[dry-run] {' '.join(command)}")
