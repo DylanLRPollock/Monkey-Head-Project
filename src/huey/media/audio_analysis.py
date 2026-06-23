@@ -94,6 +94,48 @@ def analyze_audio(
     )
 
 
+def duration(source: str | Path) -> float:
+    """Return audio duration in seconds."""
+
+    return float(analyze_audio(source).duration_seconds or 0.0)
+
+
+def bitrate(source: str | Path) -> int:
+    """Return audio bitrate in bits per second."""
+
+    return int(analyze_audio(source).bit_rate or 0)
+
+
+def sample_rate(source: str | Path) -> int:
+    """Return audio sample rate in hertz."""
+
+    return int(analyze_audio(source).sample_rate_hz or 0)
+
+
+def channels(source: str | Path) -> int:
+    """Return the number of audio channels."""
+
+    return int(analyze_audio(source).channels or 0)
+
+
+def peak_level(source: str | Path) -> float:
+    """Return the detected peak level in dB."""
+
+    return float(analyze_audio(source).max_volume_db or 0.0)
+
+
+def rms_level(source: str | Path) -> float:
+    """Return the mean/RMS volume in dB."""
+
+    return float(analyze_audio(source).mean_volume_db or 0.0)
+
+
+def silence_map(source: str | Path) -> list[dict[str, float | None]]:
+    """Return silence segments detected in the audio."""
+
+    return analyze_audio(source).silence_regions
+
+
 def _match_float(pattern: re.Pattern[str], text: str) -> float | None:
     match = pattern.search(text)
     return float(match.group("value")) if match else None
@@ -106,4 +148,14 @@ def _optional_int(value: object) -> int | None:
         return None
 
 
-__all__ = ["AudioAnalysis", "analyze_audio"]
+__all__ = [
+    "AudioAnalysis",
+    "analyze_audio",
+    "bitrate",
+    "channels",
+    "duration",
+    "peak_level",
+    "rms_level",
+    "sample_rate",
+    "silence_map",
+]
