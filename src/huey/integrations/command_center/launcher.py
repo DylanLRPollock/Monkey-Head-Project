@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from huey.gui.models import dataclass_list_to_dicts
+from huey.gui.surfaces import default_gui_surfaces
+
 LAUNCHER_VERSION = "0.2.0"
 LAUNCHER_ASSET_DIR = (
     Path("src") / "huey" / "platform" / "installers" / "windows" / "launcher"
@@ -41,6 +44,7 @@ def get_launcher_support() -> dict[str, object]:
     """Describe the safe Windows launcher bundled with the repository."""
 
     project_root = _project_root()
+    surfaces = dataclass_list_to_dicts(list(default_gui_surfaces()))
     return {
         "name": "HueyOS Launcher Setup",
         "version": LAUNCHER_VERSION,
@@ -48,6 +52,13 @@ def get_launcher_support() -> dict[str, object]:
         "mode": "safe-bootstrap",
         "launch_target": "HueyOS Command Center",
         "launch_entry_point": "huey.apps.command_center.cli --open",
+        "desktop_shell": {
+            "name": "HueyOS Control Deck",
+            "entry_point": "huey.run --manager-ui",
+            "surface_count": len(surfaces),
+            "surfaces": surfaces,
+        },
+        "surfaces": surfaces,
         "asset_dir": LAUNCHER_ASSET_DIR.as_posix(),
         "assets": {
             "executable": _asset_details(project_root, LAUNCHER_EXECUTABLE),

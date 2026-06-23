@@ -51,6 +51,8 @@ def assert_launcher_support() -> None:
     assert payload["mode"] == "safe-bootstrap"
     assert payload["assets"]["executable"]["present"] is True
     assert payload["assets"]["source"]["present"] is True
+    assert payload["desktop_shell"]["entry_point"] == "huey.run --manager-ui"
+    assert any(surface["id"] == "license" for surface in payload["surfaces"])
     assert "No Git mutation" in payload["safety_guarantees"]
 
 

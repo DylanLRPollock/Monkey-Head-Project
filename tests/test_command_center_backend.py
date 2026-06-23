@@ -37,6 +37,11 @@ def test_create_app_exposes_launcher_route():
     assert launcher["mode"] == "safe-bootstrap"
     assert launcher["assets"]["executable"]["present"] is True
     assert launcher["assets"]["source"]["present"] is True
+    assert launcher["desktop_shell"]["entry_point"] == "huey.run --manager-ui"
+    assert launcher["desktop_shell"]["surface_count"] >= 1
+    assert any(
+        surface["id"] == "license" for surface in launcher["desktop_shell"]["surfaces"]
+    )
     assert any(
         command["option"] == "--doctor" for command in launcher["supported_commands"]
     )
@@ -57,6 +62,9 @@ def test_state_payload_includes_launcher_metadata():
 
     assert payload["launcher"]["launch_target"] == "HueyOS Command Center"
     assert "No Git mutation" in payload["launcher"]["safety_guarantees"]
+    assert any(
+        surface["id"] == "command-center" for surface in payload["launcher"]["surfaces"]
+    )
 
 
 def test_backend_does_not_expose_command_execution_route():

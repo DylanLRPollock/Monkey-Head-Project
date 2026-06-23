@@ -15,6 +15,7 @@ main = _run.main
 run_module = _run.run_module
 minimal_run = _run.minimal_run
 run_sys_code = _run.run_sys_code
+launch_manager_ui = _run.launch_manager_ui
 launch_install_gui = _run.launch_install_gui
 launch_gui = _run.launch_gui
 list_custom_functions = _run.list_custom_functions
@@ -27,6 +28,7 @@ __all__ = [
     "run_module",
     "minimal_run",
     "run_sys_code",
+    "launch_manager_ui",
     "launch_install_gui",
     "launch_gui",
     "list_custom_functions",

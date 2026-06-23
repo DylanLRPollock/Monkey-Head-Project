@@ -33,9 +33,17 @@ except ImportError:  # pragma: no cover - can't import GUI libs
     simpledialog = None
     ttk = None
 
+from huey.apps.command_center.cli import open_command_center
 from huey.config_toggle_gui import run_config_toggle_gui
 from huey.gui import EventBus, EventType, build_default_state
 from huey.gui.process import build_gui_process_command, build_gui_process_env
+from huey.gui.surfaces import (
+    GuiActionSection,
+    default_gui_actions,
+    default_gui_sections,
+    default_gui_surfaces,
+    section_actions,
+)
 from huey.gui.theme import as_tk_palette
 from huey.gui_scaling import apply_scaling
 from huey.install_gui import launch_install_gui as launch_graphical_install
@@ -91,13 +99,19 @@ class MainUI:
 
         self.root = root
         self.project_root = Path(__file__).resolve().parents[4]
+        self.gui_actions = default_gui_actions()
+        self.gui_sections = default_gui_sections()
+        self.gui_surfaces = default_gui_surfaces(self.gui_actions)
         self.state = build_default_state()
         self.event_bus = EventBus()
         self.background_image = None
         self.background_label = None
         self.surface_var = tk.StringVar(value="Launch Pad")
         self.workflow_hint_var = tk.StringVar(
-            value="Start with Install or Update, then move into AI or runtime tools."
+            value=(
+                "Move from setup into the connected windows, dialogs, and browser "
+                "surfaces without leaving the same control deck."
+            )
         )
         self.activity_var = tk.StringVar(value="Waiting for the first action.")
         self.repository_var = tk.StringVar(value="DylanLRPollock/Monkey-Head-Project")
@@ -322,6 +336,9 @@ class MainUI:
         menu_bar.add_cascade(label="Launcher", menu=file_menu)
 
         surfaces_menu = tk.Menu(menu_bar, tearoff=0, bg=DARK_BG, fg=LIGHT_FG)
+        surfaces_menu.add_command(
+            label="Command Center", command=self.launch_command_center
+        )
         surfaces_menu.add_command(label="Simple Chat", command=self.launch_simple_chat)
         surfaces_menu.add_command(label="AI Console", command=self.launch_ai_tools)
         surfaces_menu.add_command(label="Dashboard", command=self.launch_dashboard)
@@ -384,7 +401,7 @@ class MainUI:
         subtitle = tk.Label(
             card,
             text=(
-                "Guide the full launcher flow from setup to AI tools to runtime "
+                "Guide setup, connected windows, browser surfaces, and runtime "
                 "operations without freezing the main window."
             ),
             bg=PANEL_BG,
@@ -395,7 +412,7 @@ class MainUI:
         subtitle.pack(anchor=tk.W, padx=18)
         badge = tk.Label(
             card,
-            text="Install -> Run -> Explore -> Operate",
+            text="Install -> Connect -> Explore -> Operate",
             bg=ACCENT_PURPLE,
             fg=LIGHT_FG,
             padx=12,
@@ -419,7 +436,7 @@ class MainUI:
             ),
             (
                 "3. Explore",
-                "Open the chat, AI console, or dashboard as separate windows.",
+                "Open the Command Center, chat, AI console, dashboard, and popups from one unified shell.",
             ),
             (
                 "4. Operate",
@@ -452,6 +469,56 @@ class MainUI:
             justify=tk.LEFT,
             wraplength=_WRAP_SIDEBAR,
         ).pack(fill=tk.X, padx=18, pady=(6, 16))
+
+        surfaces_card = self._make_card(parent)
+        self._add_card_heading(
+            surfaces_card,
+            "Connected surfaces",
+            "Every maintained GUI window, popup, and browser surface is listed here so the unified shell can stay the single front door.",
+            wraplength=_WRAP_SIDEBAR,
+        )
+        mode_labels = {
+            "browser": "Browser",
+            "dialog": "Popup",
+            "window": "Window",
+        }
+        for action in self.gui_surfaces:
+            row = tk.Frame(
+                surfaces_card,
+                bg=PANEL_ALT_BG,
+                highlightbackground=BORDER,
+                highlightcolor=BORDER,
+                highlightthickness=1,
+                bd=0,
+            )
+            row.pack(fill=tk.X, padx=18, pady=(0, 8))
+            copy = tk.Frame(row, bg=PANEL_ALT_BG)
+            copy.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(12, 0), pady=10)
+            tk.Label(
+                copy,
+                text=action.label,
+                bg=PANEL_ALT_BG,
+                fg=LIGHT_FG,
+                font=("Segoe UI", 10, "bold"),
+                anchor=tk.W,
+            ).pack(fill=tk.X)
+            tk.Label(
+                copy,
+                text=action.description,
+                bg=PANEL_ALT_BG,
+                fg=MUTED_FG,
+                justify=tk.LEFT,
+                anchor=tk.W,
+                wraplength=_WRAP_SIDEBAR - 60,
+            ).pack(fill=tk.X, pady=(4, 0))
+            tk.Label(
+                row,
+                text=mode_labels.get(action.launch_mode, action.launch_mode.title()),
+                bg=ACCENT_PURPLE,
+                fg=LIGHT_FG,
+                padx=8,
+                pady=4,
+            ).pack(side=tk.RIGHT, padx=12)
 
         system_card = self._make_card(parent)
         self._add_card_heading(
@@ -490,152 +557,19 @@ class MainUI:
             notebook.bind("<<NotebookTabChanged>>", self._on_tab_changed)
         self.surface_notebook = notebook
 
-        launch_tab = tk.Frame(notebook, bg=DARK_BG)
-        ai_tab = tk.Frame(notebook, bg=DARK_BG)
-        ops_tab = tk.Frame(notebook, bg=DARK_BG)
-
-        notebook.add(launch_tab, text="Launch Pad")
-        notebook.add(ai_tab, text="AI & Memory")
-        notebook.add(ops_tab, text="Runtime Ops")
-
-        self._build_action_card(
-            launch_tab,
-            "Core lifecycle",
-            "Get the machine ready, launch the program, or reset the visible log without leaving the same control deck.",
-            [
-                LauncherAction(
-                    "Install", "Prepare the local platform scripts.", self.install
-                ),
-                LauncherAction(
-                    "Graphical Installer",
-                    "Open the full installer workflow in a separate window.",
-                    self.launch_install_gui,
-                ),
-                LauncherAction("Run", "Launch the main runtime entrypoint.", self.run),
-                LauncherAction(
-                    "Update", "Refresh the local install helpers.", self.update
-                ),
-                LauncherAction(
-                    "Clear Log",
-                    "Reset the command log for the next task.",
-                    self.clear_log,
-                ),
-            ],
-        )
-        self._build_action_card(
-            launch_tab,
-            "Readiness and policy",
-            "Keep the project data summary and configuration surfaces one click away.",
-            [
-                LauncherAction(
-                    "Data Summary",
-                    "Count bundled prompts and memory files.",
-                    self.show_data_summary,
-                ),
-                LauncherAction(
-                    "License", "Open the current license agreement.", self.show_license
-                ),
-                LauncherAction(
-                    "Config Toggles",
-                    "Adjust common runtime toggles in a separate window.",
-                    self.show_config_toggles,
-                ),
-            ],
-        )
-
-        self._build_action_card(
-            ai_tab,
-            "Operator surfaces",
-            "Open focused tools as separate windows so the control deck stays responsive while you work elsewhere.",
-            [
-                LauncherAction(
-                    "Simple Chat",
-                    "Open the lightweight chat demonstration.",
-                    self.launch_simple_chat,
-                ),
-                LauncherAction(
-                    "AI Console",
-                    "Launch the notebook-style AI tools console.",
-                    self.launch_ai_tools,
-                ),
-                LauncherAction(
-                    "Dashboard",
-                    "Open the operations dashboard in its own process.",
-                    self.launch_dashboard,
-                ),
-            ],
-        )
-        self._build_action_card(
-            ai_tab,
-            "Media and memory helpers",
-            "Prepare assets and inspect the bundled project data without breaking your current flow.",
-            [
-                LauncherAction(
-                    "Convert Media",
-                    "Convert a source media file to another format.",
-                    self.convert_media_prompt,
-                ),
-                LauncherAction(
-                    "Data Summary",
-                    "Refresh prompt and memory-file counts.",
-                    self.show_data_summary,
-                ),
-            ],
-        )
-
-        self._build_action_card(
-            ops_tab,
-            "Container runtime",
-            "Manage the container stack from the same launcher instead of switching between shell windows.",
-            [
-                LauncherAction(
-                    "Build Image", "Build the Docker image.", self.build_image
-                ),
-                LauncherAction(
-                    "Start Containers",
-                    "Start the container stack.",
-                    self.start_containers,
-                ),
-                LauncherAction(
-                    "Stop Containers", "Stop running containers.", self.stop_containers
-                ),
-                LauncherAction(
-                    "Manage Volumes",
-                    "Open the volume management action.",
-                    self.manage_volumes,
-                ),
-                LauncherAction(
-                    "Manage Networks",
-                    "Open the network management action.",
-                    self.manage_networks,
-                ),
-            ],
-        )
-        self._build_action_card(
-            ops_tab,
-            "Kubernetes",
-            "Deploy, scale, inspect logs, and clean up cluster resources from one consistent flow.",
-            [
-                LauncherAction(
-                    "Deploy", "Apply the Kubernetes resources.", self.deploy_kubernetes
-                ),
-                LauncherAction(
-                    "Scale Deployment",
-                    "Change the deployment replica count.",
-                    self.scale_deployment_prompt,
-                ),
-                LauncherAction(
-                    "Get Pod Logs",
-                    "Read the logs for a selected pod.",
-                    self.get_pod_logs_prompt,
-                ),
-                LauncherAction(
-                    "Cleanup",
-                    "Remove deployed Kubernetes resources.",
-                    self.cleanup_kubernetes,
-                ),
-            ],
-        )
+        tab_frames: dict[str, tk.Frame] = {}
+        for section in self.gui_sections:
+            frame = tab_frames.get(section.tab_id)
+            if frame is None:
+                frame = tk.Frame(notebook, bg=DARK_BG)
+                notebook.add(frame, text=section.tab_title)
+                tab_frames[section.tab_id] = frame
+            self._build_action_card(
+                frame,
+                section.title,
+                section.description,
+                self._launcher_actions_for(section),
+            )
 
         log_card = self._make_card(parent)
         self._add_card_heading(
@@ -813,6 +747,49 @@ class MainUI:
                 padx=14,
                 pady=6,
             ).pack(side=tk.RIGHT, padx=12, pady=12)
+
+    def _launcher_actions_for(self, section: GuiActionSection) -> list[LauncherAction]:
+        handlers = self._action_handlers()
+        actions: list[LauncherAction] = []
+        for action in section_actions(section, self.gui_actions):
+            handler = handlers.get(action.id)
+            if handler is None:
+                logger.warning("No handler registered for GUI action %s", action.id)
+                continue
+            actions.append(
+                LauncherAction(
+                    label=action.label,
+                    description=action.description,
+                    command=handler,
+                )
+            )
+        return actions
+
+    def _action_handlers(self) -> dict[str, Callable[[], None]]:
+        return {
+            "install": self.install,
+            "graphical-installer": self.launch_install_gui,
+            "run": self.run,
+            "update": self.update,
+            "clear-log": self.clear_log,
+            "command-center": self.launch_command_center,
+            "data-summary": self.show_data_summary,
+            "license": self.show_license,
+            "config-toggles": self.show_config_toggles,
+            "simple-chat": self.launch_simple_chat,
+            "ai-console": self.launch_ai_tools,
+            "dashboard": self.launch_dashboard,
+            "convert-media": self.convert_media_prompt,
+            "build-image": self.build_image,
+            "start-containers": self.start_containers,
+            "stop-containers": self.stop_containers,
+            "manage-volumes": self.manage_volumes,
+            "manage-networks": self.manage_networks,
+            "deploy-kubernetes": self.deploy_kubernetes,
+            "scale-deployment": self.scale_deployment_prompt,
+            "get-pod-logs": self.get_pod_logs_prompt,
+            "cleanup-kubernetes": self.cleanup_kubernetes,
+        }
 
     def _focus_action(
         self, label: str, detail: str, callback: Callable[[], None]
@@ -1060,6 +1037,20 @@ class MainUI:
             function_name="run_config_toggle_gui",
             source="config",
             fallback=run_config_toggle_gui,
+        )
+
+    def launch_command_center(self):
+        """Open the browser-based Command Center without leaving the desktop shell."""
+
+        self.workflow_hint_var.set(
+            "The Command Center opens in your browser while the control deck stays available for every other connected window."
+        )
+        self._launch_child_process(
+            label="Command Center",
+            module_name="huey.apps.command_center.cli",
+            function_name="open_command_center",
+            source="command-center",
+            fallback=open_command_center,
         )
 
     def launch_install_gui(self):

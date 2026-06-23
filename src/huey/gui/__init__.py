@@ -26,6 +26,15 @@ from huey.gui.tk import (
     text_surface_kwargs,
     tk_palette,
 )
+from huey.gui.surfaces import (
+    GuiAction,
+    GuiActionSection,
+    action_lookup,
+    default_gui_actions,
+    default_gui_sections,
+    default_gui_surfaces,
+    section_actions,
+)
 
 __all__ = [
     "HueyTheme",
@@ -54,4 +63,11 @@ __all__ = [
     "build_default_state",
     "text_surface_kwargs",
     "tk_palette",
+    "GuiAction",
+    "GuiActionSection",
+    "action_lookup",
+    "default_gui_actions",
+    "default_gui_sections",
+    "default_gui_surfaces",
+    "section_actions",
 ]

@@ -59,3 +59,21 @@ def test_launch_install_gui_uses_child_process() -> None:
         fallback=main_ui.launch_graphical_install,
     )
     assert "installer opens separately" in workflow_state["value"].lower()
+
+
+def test_launch_command_center_uses_browser_child_process() -> None:
+    ui = MainUI.__new__(MainUI)
+    workflow_var, workflow_state = _make_var()
+    ui.workflow_hint_var = workflow_var
+
+    with patch.object(MainUI, "_launch_child_process") as launcher:
+        MainUI.launch_command_center(ui)
+
+    launcher.assert_called_once_with(
+        label="Command Center",
+        module_name="huey.apps.command_center.cli",
+        function_name="open_command_center",
+        source="command-center",
+        fallback=main_ui.open_command_center,
+    )
+    assert "browser" in workflow_state["value"].lower()

@@ -14,7 +14,14 @@ from warnings import deprecated
 
 from .memory.PY import cli as _cli
 
-__all__ = ["main", "parse_arguments", "run_cli", "huey_main", "run_command_center"]
+__all__ = [
+    "main",
+    "parse_arguments",
+    "run_cli",
+    "huey_main",
+    "run_command_center",
+    "run_gui",
+]
 
 type Argv = Iterable[str] | None
 
@@ -57,6 +64,16 @@ def run_command_center(argv: list[str] | None = None) -> int:
     return command_center_main(argv)
 
 
+def run_gui(argv: list[str] | None = None) -> int:
+    """Launch the unified HueyOS desktop shell."""
+
+    del argv
+    from huey.run import launch_manager_ui
+
+    launch_manager_ui()
+    return 0
+
+
 @deprecated(
     "huey.cli.run_cli() is a legacy compatibility wrapper; use huey.cli.main() "
     "instead.",
@@ -73,6 +90,8 @@ def main(argv: Argv = None) -> int:
     """Route the Command Center subcommand before falling back to the main CLI."""
 
     args = list(argv) if argv is not None else sys.argv[1:]
-    if args and args[0] in {"command-center", "command_center", "gui"}:
+    if args and args[0] in {"command-center", "command_center"}:
         return run_command_center(args[1:])
+    if args and args[0] == "gui":
+        return run_gui(args[1:])
     return _cli.main(args)
