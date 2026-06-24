@@ -11,11 +11,12 @@ import argparse
 import importlib
 import json
 import os
-import shlex
 import subprocess
 import sys
 from pathlib import Path
 from typing import Callable
+
+from huey.os.core.platform_support import split_command_line
 
 from .function_registry import describe_functions, invoke_function
 from .pygpt_integration import prepare_pygpt, pyhuey_status
@@ -33,7 +34,7 @@ def minimal_run() -> None:
 def run_sys_code(cmd: str) -> None:
     """Execute ``cmd`` without invoking a shell and stream stdout/stderr."""
 
-    command = shlex.split(cmd, posix=os.name != "nt")
+    command = split_command_line(cmd)
     if not command:
         raise ValueError("No command provided.")
     result = subprocess.run(

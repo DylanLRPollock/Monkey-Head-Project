@@ -165,8 +165,10 @@ class MonkeyManager(BaseTool):
 
         host = detect_host_platform()
         return {
-            "platform": host.display_name,
+            "platform": host.runtime_display_name,
             "platform_family": host.family,
+            "installer_target": host.installer_target,
+            "is_wsl": host.is_wsl,
             "project_root": str(_project_root()),
             "install": self._json_ready_path(self.install_path),
             "update": self._json_ready_path(self.update_path),

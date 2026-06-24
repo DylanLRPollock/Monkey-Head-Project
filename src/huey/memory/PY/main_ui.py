@@ -54,6 +54,7 @@ from huey.memory.PY.ai_tools_gui import run_ai_tools
 from huey.memory.PY.dashboard import launch_dashboard
 from huey.memory.PY.preload_data import preload_all
 from huey.os.core.platform_support import (
+    build_platform_script_command,
     detect_host_platform,
     find_project_root,
     resolve_platform_script_paths,
@@ -127,7 +128,9 @@ class MainUI:
         self.quick_access_matches = list(self.gui_actions)
         self.activity_var = tk.StringVar(value="Waiting for the first action.")
         self.repository_var = tk.StringVar(value="DylanLRPollock/Monkey-Head-Project")
-        self.platform_var = tk.StringVar(value=detect_host_platform().display_name)
+        self.platform_var = tk.StringVar(
+            value=detect_host_platform().runtime_display_name
+        )
         self.memory_var = tk.StringVar(value=self.state.memory.root_path)
         self.install_path_var = tk.StringVar(value="Detecting...")
         self.update_path_var = tk.StringVar(value="Detecting...")
@@ -1005,7 +1008,7 @@ class MainUI:
     def _refresh_overview(self) -> None:
         runtime_status = self.state.runtime.orchestration_status or "standby"
         self.memory_var.set(self.state.memory.root_path)
-        self.platform_var.set(detect_host_platform().display_name)
+        self.platform_var.set(detect_host_platform().runtime_display_name)
         history = self.event_bus.history()
         if not history:
             self.activity_var.set("Waiting for the first action.")
@@ -1084,10 +1087,7 @@ class MainUI:
             self._set_status("Status: Ready")
             return
         try:
-            if str(script_path).endswith(".bat"):
-                cmd = ["cmd", "/c", str(script_path)]
-            else:
-                cmd = ["bash", str(script_path)]
+            cmd = build_platform_script_command(Path(script_path))
             process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,

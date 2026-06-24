@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import shlex
 from collections.abc import Iterable
 from importlib import import_module
 
+from huey.os.core.platform_support import split_command_line
 from huey.os.config_manager import ConfigManager
 
 from .main import build_parser
@@ -18,7 +18,7 @@ class CLI:
         self.config_manager = ConfigManager(config_path)
 
     def _execute(self, command_line: str) -> bool:
-        parts = shlex.split(command_line)
+        parts = split_command_line(command_line)
         if not parts:
             return True
 

@@ -13,11 +13,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from huey.os.core.platform_support import (
-    build_platform_script_command,
-    find_project_root,
-    resolve_platform_script_paths,
-)
+from huey.os.core.platform_support import find_project_root, resolve_platform_script_paths
 
 PROJECT_ROOT = find_project_root(Path(__file__).resolve())
 
@@ -32,7 +28,7 @@ def run_uninstaller(*, dry_run: bool = False, confirmed: bool = True) -> int:
         print(f"Uninstaller script not found: {paths.uninstall}")
         return 1
 
-    command = build_platform_script_command(paths.uninstall)
+    command = paths.command_for("uninstall") or [str(paths.uninstall)]
 
     if dry_run:
         print(f"[dry-run] {' '.join(command)}")

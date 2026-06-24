@@ -8,22 +8,22 @@
 from __future__ import annotations
 
 import logging
-import os
 import platform
 import re
 import shutil
 import sys
 from typing import Any
 
-from huey.os.core.platform_support import HostPlatform, detect_host_platform
-
-try:  # pragma: no cover - optional dependency on Linux only
-    import distro  # type: ignore
-except Exception:  # pragma: no cover - handled gracefully in tests
-    distro = None  # type: ignore[assignment]
+from huey.os.core.platform_support import (
+    HostPlatform,
+    detect_host_platform,
+    distro as platform_distro,
+    require_admin_privileges,
+)
 
 
 logger = logging.getLogger(__name__)
+distro = platform_distro
 
 SUPPORTED_DISTRO_ID = "debian"
 SUPPORTED_DISTRO_CODENAME = "forky"
@@ -103,26 +103,11 @@ __all__ = [
 def ensure_admin() -> None:
     """Raise :class:`PermissionError` when administrator privileges are missing."""
 
-    if hasattr(os, "geteuid"):
-        if os.geteuid() != 0:
-            message = "Please run this script as root or with sudo."
-            logger.error(message)
-            raise PermissionError(message)
-        return
-
-    if os.name == "nt":  # pragma: no cover - Windows specific
-        try:
-            import ctypes
-
-            if not ctypes.windll.shell32.IsUserAnAdmin():  # type: ignore[attr-defined]
-                message = "Administrator privileges are required to continue."
-                logger.error(message)
-                raise PermissionError(message)
-        except Exception:  # pragma: no cover - defensive fallback
-            logger.debug(
-                "Unable to determine administrator privileges on Windows.",
-                exc_info=True,
-            )
+    try:
+        require_admin_privileges()
+    except PermissionError as exc:
+        logger.error(str(exc))
+        raise
 
 
 def log_error(description: str) -> None:
@@ -141,31 +126,11 @@ def check_error(command: object, description: str) -> None:
         raise RuntimeError(message)
 
 
-def _detect_linux_distribution() -> tuple[str, str]:
+def _detect_linux_distribution(host: HostPlatform | None = None) -> tuple[str, str]:
     """Return a tuple of ``(distribution_id, codename)`` for Linux hosts."""
 
-    dist_id = ""
-    codename = ""
-
-    if distro is not None:
-        try:
-            dist_id = str(distro.id() or "").strip().lower()
-            codename = str(distro.codename() or "").strip().lower()
-        except Exception:  # pragma: no cover - distro implementation details
-            dist_id = ""
-            codename = ""
-
-    if not dist_id:
-        release_info = {}
-        if hasattr(platform, "freedesktop_os_release"):
-            try:  # pragma: no cover - platform API may be unavailable
-                release_info = platform.freedesktop_os_release()  # type: ignore[assignment]
-            except Exception:
-                release_info = {}
-        dist_id = str(release_info.get("ID", "")).strip().lower()
-        codename = str(release_info.get("VERSION_CODENAME", "")).strip().lower()
-
-    return dist_id, codename
+    host = host or detect_host_platform()
+    return host.distribution_id, host.distribution_codename
 
 
 def _leading_version_number(value: str) -> int | None:
@@ -217,7 +182,7 @@ def check_os_support(host: HostPlatform | None = None) -> bool:
         logger.warning("Unsupported operating system detected: %s", host.system or "unknown")
         return False
 
-    dist_id, codename = _detect_linux_distribution()
+    dist_id, codename = _detect_linux_distribution(host)
     supported = dist_id == SUPPORTED_DISTRO_ID and codename == SUPPORTED_DISTRO_CODENAME
 
     if not supported:
@@ -237,7 +202,11 @@ def _platform_runtime_policy(
 ) -> dict[str, Any]:
     """Return platform support metadata for non-Linux hosts."""
 
-    errors = [] if os_supported else [f"{host.display_name} runtime support check failed."]
+    errors = (
+        []
+        if os_supported
+        else [f"{host.runtime_display_name} runtime support check failed."]
+    )
     return {
         "release": host.release or host.version,
         "version": host.version or host.release,

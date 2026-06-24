@@ -54,6 +54,7 @@ def test_manager_gui_payload_groups_actions_and_paths():
 
     assert payload["title"] == "Monkey Manager"
     assert payload["paths"]["project_root"].endswith("Monkey-Head-Project")
+    assert payload["paths"]["installer_target"] in {"windows", "macos", "debian", "linux"}
     assert payload["paths"]["install"]["exists"] is True
     assert payload["paths"]["update"]["exists"] is True
     assert payload["paths"]["run"]["exists"] is True

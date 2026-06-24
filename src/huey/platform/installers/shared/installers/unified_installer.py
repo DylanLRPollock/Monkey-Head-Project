@@ -9,10 +9,9 @@ import sys
 from pathlib import Path
 
 from huey.os.core.platform_support import (
-    build_platform_script_command,
     detect_host_platform,
     find_project_root,
-    normalize_platform_family,
+    normalize_installer_target,
     resolve_platform_script_paths,
 )
 
@@ -20,25 +19,27 @@ REPO_ROOT = find_project_root(Path(__file__).resolve())
 
 
 def _normalize_target(target: str) -> str:
-    if target.strip().casefold() == "debian":
-        return "linux"
-    return normalize_platform_family(target)
+    return normalize_installer_target(target)
 
 
 def detect_target() -> str:
-    return detect_host_platform().family
+    return detect_host_platform().installer_target
 
 
-def select_script(target: str) -> Path:
+def _resolve_paths(target: str):
     paths = resolve_platform_script_paths(REPO_ROOT, target=_normalize_target(target))
     if paths.install is None:
         raise RuntimeError(f"Unsupported OS target: {target}")
-    return paths.install
+    return paths
 
 
-def build_command(target: str, script_path: Path, passthrough: list[str]) -> list[str]:
-    del target
-    return build_platform_script_command(script_path, passthrough)
+def select_script(target: str) -> Path:
+    return _resolve_paths(target).install or Path()
+
+
+def build_command(target: str, passthrough: list[str]) -> list[str]:
+    paths = _resolve_paths(target)
+    return paths.command_for("install", passthrough) or [str(paths.install)]
 
 
 def main() -> int:
@@ -76,7 +77,7 @@ def main() -> int:
     if passthrough and passthrough[0] == "--":
         passthrough = passthrough[1:]
 
-    command = build_command(normalized_target, script_path, passthrough)
+    command = build_command(target, passthrough)
     print(f"Detected target: {normalized_target}")
     print(f"Running installer: {' '.join(command)}")
 

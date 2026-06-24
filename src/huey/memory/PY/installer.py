@@ -18,11 +18,10 @@ import sys
 from pathlib import Path
 
 from huey.os.core.platform_support import (
-    build_platform_script_command,
     find_project_root,
+    require_admin_privileges,
     resolve_platform_script_paths,
 )
-from huey.os.core.system_checks import ensure_admin
 from huey.os.license_cli import show_license_cli
 from huey.os.license_gui import show_license_gui
 
@@ -124,17 +123,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def ensure_admin_privileges() -> None:
     """Verify the script is running with administrator rights."""
-    if os.name == "nt":
-        try:
-            import ctypes
 
-            if not ctypes.windll.shell32.IsUserAnAdmin():
-                raise PermissionError
-        except Exception:
-            print("Administrator privileges required.")
-            raise PermissionError("Please run as Administrator")
-    else:
-        ensure_admin()
+    try:
+        require_admin_privileges(
+            windows_message="Please run as Administrator",
+        )
+    except PermissionError:
+        print("Administrator privileges required.")
+        raise
 
 
 def display_license() -> None:
@@ -143,6 +139,7 @@ def display_license() -> None:
         show_license_gui()
     except Exception:
         show_license_cli()
+
 
 def update_submodules() -> None:
     """Ensure git submodules are initialized."""
@@ -185,7 +182,7 @@ def run_installer(
         update_submodules()
         display_license()
         subprocess.run(
-            build_platform_script_command(script_path),
+            paths.command_for("install") or [str(script_path)],
             check=True,
             env=env,
             cwd=PROJECT_ROOT,

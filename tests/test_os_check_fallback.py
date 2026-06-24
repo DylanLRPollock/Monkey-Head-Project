@@ -11,7 +11,7 @@ from huey.os.core.system_checks import check_os_support
 def test_linux_fallback_no_warning():
     with (
         patch("platform.system", return_value="Linux"),
-        patch("huey.os.core.system_checks.distro", None),
+        patch("huey.os.core.platform_support.distro", None),
         patch(
             "platform.freedesktop_os_release",
             return_value={"ID": "debian", "VERSION_CODENAME": "forky"},

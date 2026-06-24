@@ -16,15 +16,25 @@ from huey.os.core.platform_support import HostPlatform
 from huey.os import system_checks
 
 
-def _host(*, family: str, system: str) -> HostPlatform:
+def _host(
+    *,
+    family: str,
+    system: str,
+    release: str = "",
+    version: str = "",
+    distribution_id: str = "",
+    distribution_codename: str = "",
+    distribution_like: tuple[str, ...] = (),
+    is_wsl: bool = False,
+) -> HostPlatform:
     display_name = {"windows": "Windows", "macos": "macOS", "linux": "Linux"}.get(
         family, system
     )
     return HostPlatform(
         family=family,  # type: ignore[arg-type]
         system=system,
-        release="",
-        version="",
+        release=release,
+        version=version,
         machine="x86_64",
         sys_platform=family,
         display_name=display_name,
@@ -32,13 +42,19 @@ def _host(*, family: str, system: str) -> HostPlatform:
         is_macos=family == "macos",
         is_linux=family == "linux",
         is_unknown=family == "unknown",
-        is_wsl=False,
+        is_wsl=is_wsl,
+        distribution_id=distribution_id,
+        distribution_codename=distribution_codename,
+        distribution_like=distribution_like,
     )
 
 
 def test_check_os_support_accepts_supported_windows_release(monkeypatch, caplog):
-    monkeypatch.setattr(system_checks.platform, "system", lambda: "Windows")
-    monkeypatch.setattr(system_checks.platform, "release", lambda: "10")
+    monkeypatch.setattr(
+        system_checks,
+        "detect_host_platform",
+        lambda: _host(family="windows", system="Windows", release="10"),
+    )
 
     with caplog.at_level(logging.WARNING):
         supported = system_checks.check_os_support()
@@ -48,8 +64,11 @@ def test_check_os_support_accepts_supported_windows_release(monkeypatch, caplog)
 
 
 def test_check_os_support_warns_for_legacy_windows(monkeypatch, caplog):
-    monkeypatch.setattr(system_checks.platform, "system", lambda: "Windows")
-    monkeypatch.setattr(system_checks.platform, "release", lambda: "6.1")
+    monkeypatch.setattr(
+        system_checks,
+        "detect_host_platform",
+        lambda: _host(family="windows", system="Windows", release="6.1"),
+    )
 
     with caplog.at_level(logging.WARNING):
         supported = system_checks.check_os_support()
@@ -59,7 +78,11 @@ def test_check_os_support_warns_for_legacy_windows(monkeypatch, caplog):
 
 
 def test_check_os_support_accepts_supported_macos_version(monkeypatch, caplog):
-    monkeypatch.setattr(system_checks.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(
+        system_checks,
+        "detect_host_platform",
+        lambda: _host(family="macos", system="Darwin"),
+    )
     monkeypatch.setattr(
         system_checks.platform,
         "mac_ver",
@@ -72,20 +95,17 @@ def test_check_os_support_accepts_supported_macos_version(monkeypatch, caplog):
     assert supported is True
     assert "Unsupported macOS version" not in caplog.text
 
-
 def test_check_os_support_warns_for_non_debian_linux(monkeypatch, caplog):
-    class FakeDistro:
-        @staticmethod
-        def id():
-            return "ubuntu"
-
-        @staticmethod
-        def codename():
-            return "noble"
-
-    monkeypatch.setattr(system_checks.platform, "system", lambda: "Linux")
-    monkeypatch.setattr(system_checks, "distro", FakeDistro())
-    monkeypatch.setattr(system_checks.platform, "freedesktop_os_release", lambda: {})
+    monkeypatch.setattr(
+        system_checks,
+        "detect_host_platform",
+        lambda: _host(
+            family="linux",
+            system="Linux",
+            distribution_id="ubuntu",
+            distribution_codename="noble",
+        ),
+    )
 
     with caplog.at_level(logging.WARNING):
         system_checks.check_os_support()
