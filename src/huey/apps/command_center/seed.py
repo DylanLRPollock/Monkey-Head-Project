@@ -23,11 +23,30 @@ def build_seed_data(project_root: Path) -> dict[str, Any]:
         "project_root": str(project_root),
         "v1_proof_path": [
             "known MP3 fixture",
+            "ffprobe source inspection",
             "FFmpeg/local audio preparation",
             "local transcription",
             "mock-first response bridge",
             "structured log",
         ],
+        "v1_audio_pipeline": {
+            "input": "controlled MP3 fixture",
+            "processing_steps": [
+                "ffprobe source inspection",
+                "ffmpeg mono 16 kHz WAV conversion",
+                "loudness normalization",
+                "local transcription",
+                "response bridge",
+                "structured log",
+            ],
+            "tools": [
+                "ffprobe",
+                "ffmpeg",
+                "faster-whisper",
+                "ResponseBridge",
+                "StructuredRunLog",
+            ],
+        },
         "deferred_by_default": [
             "live microphone capture",
             "wake word",

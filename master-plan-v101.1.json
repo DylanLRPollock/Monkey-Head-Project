@@ -293,14 +293,15 @@
       "active_labtech_node": "iMac 5K 2017 for archive, editing, SSH ingress, and operator control",
       "paused_huey_side_node": "Huey Body, formerly Huey Core",
       "current_phase": "Huey Brain V1 single-node implementation",
-      "current_proof_loop": "controlled MP3 fixture -> local transcription -> cognition bridge -> structured log"
+      "current_proof_loop": "controlled MP3 fixture -> source probe/audio preparation -> local transcription -> cognition bridge -> structured log"
     },
     "active_v1_path": [
       "Dylan prepares or selects controlled MP3 fixtures through LabTech.",
       "LabTech transfers or queues fixtures into Huey Brain through the approved ingress path.",
-      "Huey Brain performs local transcription.",
+      "Huey Brain probes the source file and prepares a mono 16 kHz transcription WAV plus audit manifest.",
+      "Huey Brain performs local transcription on the prepared audio.",
       "Huey Brain routes transcript to configured cognition provider or explicit local experiment.",
-      "Huey Brain writes a structured log containing source, transcript, response, model/provider, timing, and run metadata."
+      "Huey Brain writes a structured log containing source, prepared artifact, transcript, response, model/provider, timing, and run metadata."
     ],
     "v2_plus_path": [
       "Live microphone ingress after file-based fixtures are stable.",
@@ -322,6 +323,7 @@
       "  -> iMac 5K 2017 / SSH / archive / fixture prep",
       "      -> Huey Brain: Lenovo Legion Go",
       "          -> fixture ingestion",
+      "          -> ffprobe / ffmpeg preparation",
       "          -> faster-whisper transcription",
       "          -> API-backed or explicitly selected local cognition",
       "          -> structured log",
@@ -331,7 +333,7 @@
       "active_execution_boundary": "Huey Brain on Lenovo Legion Go only.",
       "external_boundary": "LabTech enters by SSH and archives/observes but does not become Huey.",
       "embodiment_boundary": "Huey Body is real hardware and V2+ embodiment, not V1 compute, cognition, or actuation.",
-      "proof_boundary": "V1 is complete only through a repeatable controlled MP3 fixture -> local transcription -> cognition bridge -> structured log loop."
+      "proof_boundary": "V1 is complete only through a repeatable controlled MP3 fixture -> source probe/audio preparation -> local transcription -> cognition bridge -> structured log loop."
     }
   },
   "scope_registry": {
@@ -341,6 +343,7 @@
       "Huey Brain": "Lenovo Legion Go, Debian/GNOME environment, SSH-accessible, V1 runtime boundary.",
       "LabTech iMac": "External operator/archive/SSH ingress station.",
       "Controlled MP3 fixtures": "Known test audio used to evaluate deterministic transcription and response logging.",
+      "FFmpeg and ffprobe wrappers": "Active V1 tool layer for source inspection, prepared-WAV creation, and audio-prep audit metadata.",
       "faster-whisper": "Primary local transcription implementation candidate for V1.",
       "API cognition bridge": "Acceptable V1 reasoning/response bridge, explicitly not final sovereignty.",
       "Structured logging": "Canonical V1 memory artifact.",
@@ -397,7 +400,7 @@
     ],
     "major_future_target": "The 80 GB local identity proof and later embodied lawful action remain future milestones. They do not define V1 success.",
     "state_document_rule": "V101.0 is the current machine-facing truth unless superseded by a newer explicit master plan. README/website should be updated after V101.0 is accepted.",
-    "current_proof_loop": "controlled MP3 fixture -> local faster-whisper transcription -> cognition bridge -> structured log"
+    "current_proof_loop": "controlled MP3 fixture -> source probe/audio preparation -> local faster-whisper transcription -> cognition bridge -> structured log"
   },
   "canon_mapping": {
     "masterplan": "V101.1 is the current machine-facing release. It carries forward the Huey Brain V1 scope-lock doctrine and adds the PyHuey Windows cockpit branch as active tooling, not sovereignty.",
@@ -428,7 +431,7 @@
         "Preferred PyHuey source path is integrations/pyhuey.",
         "Preferred Windows platform path is platform/windows/huey.",
         "Windows/PyHuey is cockpit/tooling/build runtime and not Huey Brain sovereignty.",
-        "The V1 proof loop remains controlled MP3 fixture -> local transcription -> cognition bridge -> structured log."
+        "The V1 proof loop remains controlled MP3 fixture -> source probe/audio preparation -> local transcription -> cognition bridge -> structured log."
       ],
       "observed_gap": "v101.1 updates the v101.0 README/master plan basis with PyHuey naming, Windows Huey path normalization, and Python 3.13 cockpit build proof."
     },
@@ -967,12 +970,65 @@
         "multi-sentence or longer sample"
       ],
       "reason": "Deterministic fixtures remove microphone variability and allow regression testing.",
-      "retention": "Keep V1 fixtures as test assets. Do not delete them as if they were transient live recordings."
+      "retention": "Keep V1 fixtures as test assets. Do not delete them as if they were transient live recordings.",
+      "wrapper_compatibility": "The preparation wrapper may accept other known local audio formats for staging or benchmark work, but canonical V1 regression assets remain the controlled MP3 fixture suite."
     },
+    "entry_surfaces": {
+      "manual_cli": "Allowed for bring-up, explicit single-run debugging, and controlled operator checks.",
+      "deterministic_queue": "Preferred steady-state mode after manual bring-up stabilizes because it preserves ordering and repeatability.",
+      "pyhuey_tool_wrapper": "Allowed as a LabTech/cockpit wrapper around fixed scripts for safe probe/preparation work, not as a new runtime authority."
+    },
+    "processing_stages": [
+      {
+        "stage": "source_probe",
+        "tool": "ffprobe",
+        "input": "controlled fixture file",
+        "output": "container, duration, bitrate, and stream metadata",
+        "reason": "Verify the intended file before preparation and transcription."
+      },
+      {
+        "stage": "audio_preparation",
+        "tool": "ffmpeg",
+        "input": "controlled fixture file",
+        "output": "mono 16 kHz prepared WAV plus audit manifest",
+        "reason": "Standardize the transcription input without mutating the original fixture."
+      },
+      {
+        "stage": "local_transcription",
+        "tool": "faster-whisper or equivalent local Whisper-compatible engine",
+        "input": "prepared WAV",
+        "output": "transcript text plus model/runtime metadata",
+        "reason": "Convert audio to text on Huey Brain."
+      },
+      {
+        "stage": "cognition_bridge",
+        "tool": "configured response provider",
+        "input": "transcript text",
+        "output": "response or explicit error",
+        "reason": "Keep interpretation and response separate from transcription."
+      },
+      {
+        "stage": "structured_record",
+        "tool": "structured JSON/JSONL log and optional shadow-mode HIMS trace",
+        "input": "source linkage, prepared artifact, transcript, response, runtime metadata",
+        "output": "auditable run record",
+        "reason": "Preserve continuity, replayability, and failure visibility."
+      }
+    ],
     "v1_output": {
+      "prepared_audio": "Derived mono 16 kHz WAV retained as a run artifact when useful.",
+      "preparation_manifest": "Structured metadata describing source, stages, tools, and output contract.",
       "transcript": "Stored as text and included in structured log.",
       "response": "Stored after cognition processing.",
       "logs": "Structured JSON or JSONL record with source linkage."
+    },
+    "tooling": {
+      "ffprobe": "Input inspection and audit metadata.",
+      "ffmpeg": "Fixture conversion, resampling, and loudness normalization.",
+      "faster_whisper": "Primary local transcription engine candidate.",
+      "response_bridge": "Configured provider or local experiment route for transcript interpretation.",
+      "structured_run_log": "Primary audit artifact for every run.",
+      "shadow_hims": "Optional trace-only mirror that does not replace the simple V1 pipeline."
     },
     "model_policy": {
       "primary_engine": "faster-whisper",
@@ -2020,7 +2076,7 @@
   },
   "threshold_tests_and_milestones": {
     "current_focus": {
-      "goal": "Complete Huey Brain V1 on Lenovo Legion Go: controlled MP3 fixtures -> local transcription -> cognition bridge -> structured log."
+      "goal": "Complete Huey Brain V1 on Lenovo Legion Go: controlled MP3 fixtures -> source probe/audio preparation -> local transcription -> cognition bridge -> structured log."
     },
     "v1_brain_proof": {
       "milestone_name": "Legion Go Deterministic Cognitive Loop",
@@ -2323,7 +2379,7 @@
       "Established SSH as the unified V1 ingress transport while explicitly stating that SSH is not the system itself.",
       "Locked the dual-key concept: lab_general for access class and device-specific keys for hardware identity.",
       "Moved PyGPT-net out of V1 and into deferred aperture/debugging status.",
-      "Defined V1 as deterministic MP3 fixture -> local transcription -> API-backed response -> structured log.",
+      "Defined V1 as deterministic MP3 fixture -> source probe/audio preparation -> local transcription -> API-backed response -> structured log.",
       "Clarified that Whisper/faster-whisper transcribes only and does not perform interpretation or routing.",
       "Established audio as input rather than memory, with transcripts/logs as canonical retained records.",
       "Deferred live microphone, wake word, Huey Body actuation, HIMS runtime, and multi-agent governance beyond V1.",
@@ -2352,14 +2408,14 @@
       "Updated canon mapping to state README v100.9 is aligned.",
       "Added repository_and_site_surface section documenting GitHub README state, website archive source, and the root master-plan fetch gap.",
       "Added V1 reference file-tree guidance for /opt/hueyos without claiming HIMS runtime.",
-      "Preserved V100.9 active scope: Legion Go-only V1, stock hardware, controlled MP3 fixtures, faster-whisper, cognition bridge, structured logs."
+      "Preserved V100.9 active scope: Legion Go-only V1, stock hardware, controlled MP3 fixtures, ffmpeg/ffprobe prep wrappers, faster-whisper, cognition bridge, structured logs."
     ],
     "v100.9_from_v100.9_0": [
       "Renamed the current public machine-facing master plan to master-plan-v100.9.json.",
       "Promoted README/site labeling to v100.9.",
       "Corrected remaining public v100.9/v100.9 file references in current docs/download surfaces.",
       "Preserved v100.9 as lineage rather than deleting its architectural meaning.",
-      "Kept the V1 scope lock unchanged: stock Legion Go, controlled MP3 fixtures, local transcription, cognition bridge, structured logging."
+      "Kept the V1 scope lock unchanged: stock Legion Go, controlled MP3 fixtures, source probe/audio preparation, local transcription, cognition bridge, structured logging."
     ],
     "v101_0_from_v100_9": [
       "Promoted the master plan to V101.0 and set schema_version to 101.0.",

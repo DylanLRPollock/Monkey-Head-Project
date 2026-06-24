@@ -44,7 +44,7 @@
 | **Canonical book front matter** | `src/huey/memory/TXT/00 - TOC_&_Glossary.txt` |
 | **Current phase** | Huey Brain V1 implementation |
 | **V1 execution boundary** | Lenovo Legion Go / Huey Brain only |
-| **Current proof loop** | controlled MP3 fixture → local transcription → cognition bridge → structured log |
+| **Current proof loop** | controlled MP3 fixture → source probe / audio prep → local transcription → cognition bridge → structured log |
 | **V1 hardware policy** | stock/unmodified Legion Go; observe thermals, do not alter enclosure |
 | **V1 audio policy** | predetermined MP3 fixture suite; no live microphone |
 | **Supported Python** | Python 3.13.x only |
@@ -110,7 +110,7 @@ flowchart LR
     IMAC -->|OpenSSH over local network| BRAIN
     BRIEF -. same ingress protocol later .-> BRAIN
 
-    BRAIN --> V1[Huey Brain V1\ncontrolled MP3 fixture → transcription\ncognition bridge → structured log]
+    BRAIN --> V1[Huey Brain V1\ncontrolled MP3 fixture → source probe / audio prep\nlocal transcription → cognition bridge → structured log]
 
     BRAIN -. V2+ Ethernet .-> BODY
     BRAIN -. later .-> HIMS
@@ -168,7 +168,7 @@ The **Monkey-Head-Project** is the umbrella initiative.
 
 **The Farm** is the planned future pooled-compute expansion body.
 
-Huey Brain V1 is not presented here as the finished republic. Its role is to prove that a stable input → transcription → interpretation/response → log loop can run in the real world before the larger system is scaled outward.
+Huey Brain V1 is not presented here as the finished republic. Its role is to prove that a stable input → source prep → transcription → interpretation/response → log loop can run in the real world before the larger system is scaled outward.
 
 ---
 
@@ -305,7 +305,7 @@ V32.0 rule:
 
 V1 is:
 
-> **Take a known controlled MP3 fixture, transcribe it locally on Huey Brain, route the resulting text to a cognition layer, receive a coherent response, and preserve a structured log.**
+> **Take a known controlled MP3 fixture, inspect and prepare it locally on Huey Brain, transcribe it locally, route the resulting text to a cognition layer, receive a coherent response, and preserve a structured log.**
 
 It is intentionally deterministic.
 
@@ -336,6 +336,26 @@ V1 should use a small, controlled fixture set, such as:
 
 The fixture files are not disposable live recordings. They are test assets and should remain versioned or otherwise preserved for repeatability.
 
+### Audio pipeline stages
+
+| Stage | Input | Output | Primary tools |
+|---|---|---|---|
+| **1. Fixture selection** | Controlled MP3 regression asset | Known source file for one run | LabTech, SSH, CLI or queue |
+| **2. Source probe** | Fixture file | Format/duration/stream metadata | `ffprobe`, `scripts/probe_media.py` |
+| **3. Audio preparation** | Fixture file | Mono 16 kHz transcription WAV plus manifest metadata | `ffmpeg`, `scripts/prepare_audio_for_transcription.py` |
+| **4. Local transcription** | Prepared WAV | Transcript text plus model/runtime metadata | `faster-whisper` or equivalent Whisper-compatible backend |
+| **5. Cognition bridge** | Transcript text | Response payload or explicit error | Configured provider route / response bridge |
+| **6. Structured record** | Source + prepared artifact + transcript + response | JSON/JSONL audit log and optional shadow trace | Structured run log, shadow-mode HIMS |
+
+### Input surfaces and control modes
+
+| Surface | Current role |
+|---|---|
+| **Manual CLI** | Preferred for bring-up, spot checks, and explicit single-fixture runs |
+| **Deterministic queue/watch-folder** | Preferred steady-state direction for repeatable fixture batches |
+| **PyHuey tool wrapper** | Safe LabTech/cockpit wrapper around the fixed probe/preparation scripts |
+| **Live microphone** | Explicitly deferred until the fixture path is boringly repeatable |
+
 ### V1 pipeline
 
 ```mermaid
@@ -344,6 +364,7 @@ sequenceDiagram
     participant I as iMac SSH session
     participant B as Huey Brain / Legion Go
     participant Q as Fixture queue or CLI trigger
+    participant P as Probe + prep
     participant W as faster-whisper
     participant C as Cognition bridge
     participant L as Structured log
@@ -351,11 +372,13 @@ sequenceDiagram
     D->>I: Prepare or trigger V1 test
     I->>B: Enter Huey Brain over SSH
     B->>Q: Select controlled MP3 fixture
-    Q->>W: Transcribe audio locally
+    Q->>P: Probe + prepare audio locally
+    P-->>B: Prepared WAV + manifest
+    B->>W: Transcribe prepared audio locally
     W-->>B: Transcript text
     B->>C: Send transcript for response
     C-->>B: Model response or explicit error
-    B->>L: Save transcript + response + metadata
+    B->>L: Save source + prep + transcript + response + metadata
     B-->>I: Print run summary
 ```
 
@@ -365,7 +388,7 @@ V1 is complete when:
 
 - iMac can consistently SSH into Huey Brain,
 - Huey Brain remains the sole Huey-side execution boundary,
-- controlled MP3 fixtures can be processed,
+- controlled MP3 fixtures can be probed, prepared, and processed,
 - faster-whisper or equivalent produces usable transcripts,
 - the transcript can be routed to the chosen cognition bridge,
 - the response is returned cleanly or an explicit error is logged,
@@ -914,9 +937,13 @@ iMac → WSL Debian → OpenSSH → Huey Brain
 | Windows Terminal Preview | iMac terminal surface |
 | WSL Debian | Linux-side ingress environment on iMac |
 | Python 3.13.x | Day-to-day scripting/runtime baseline |
-| FFmpeg | Audio conversion and fixture handling |
+| ffprobe | Source-media inspection before prep/transcription |
+| FFmpeg | Audio conversion, normalization, and fixture handling |
+| `scripts/probe_media.py` | Fixed probe wrapper for safe metadata inspection |
+| `scripts/prepare_audio_for_transcription.py` | Fixed audio-preparation wrapper that emits prepared-WAV + manifest metadata |
 | faster-whisper / Whisper | Local transcription testing |
 | API model provider | Primary V1 response quality and consistency bridge |
+| Structured run log / shadow HIMS | Auditable trace for each proof-loop run |
 | Git | Version control and project state |
 | HueyOS Launcher Setup (Windows) | Safe local bootstrap for Command Center setup, repo binding, and doctor checks |
 | lm-sensors / system tools | Thermals and status visibility |
@@ -1055,6 +1082,12 @@ python3.13 -m pytest -q
 huey system-check --json
 ```
 
+- **Audio-preparation wrapper command:**
+
+```bash
+python scripts/prepare_audio_for_transcription.py path/to/fixture.mp3 --json
+```
+
 - **API launch command:**
 
 ```bash
@@ -1076,7 +1109,8 @@ huey v1-run --mock path/to/fixture.mp3 --log-dir runs
 Boundary notes:
 
 - Huey Brain V1 remains the controlled fixture loop only: MP3 fixture
-  → transcription stage → cognition bridge → structured run log.
+  → source probe / audio prep → transcription stage → cognition bridge
+  → structured run log.
 - `huey v1-run` currently requires `--mock` unless explicit real providers
   are wired; this prevents overclaiming live hardware proof.
 - PyHuey stays optional cockpit/tooling (`infra/docker/pyhuey`) and is not

@@ -36,7 +36,10 @@ def list_tool_specs(group: str | None = None) -> list[HueyToolSpec]:
             id="speech_prepare_audio",
             name="Prepare audio for transcription",
             group="speech",
-            description="Prepare an audio file using the Huey speech pipeline wrapper.",
+            description=(
+                "Prepare an audio file using the Huey speech pipeline wrapper and "
+                "emit structured pipeline metadata."
+            ),
             command_name="huey_prepare_audio",
             implemented=True,
             safe_by_default=True,

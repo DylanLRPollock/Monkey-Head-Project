@@ -48,7 +48,10 @@ def build_manifest() -> dict[str, Any]:
         ToolSpec(
             name="prepare_audio_for_transcription",
             command=["python", "scripts/prepare_audio_for_transcription.py"],
-            description="Prepare a known local audio fixture for transcription.",
+            description=(
+                "Prepare a known local audio fixture for transcription and return "
+                "structured pipeline metadata."
+            ),
             read_only=False,
         ),
     ]

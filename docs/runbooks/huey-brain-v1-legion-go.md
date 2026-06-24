@@ -4,7 +4,7 @@
 
 - This runbook is for **Huey Brain V1** on the **Lenovo Legion Go** boundary only.
 - V1 proof loop target in this repository is:
-  **controlled MP3 fixture → local transcription stub/mock path → cognition bridge stub/mock path → structured log**.
+  **controlled MP3 fixture → source probe / audio prep → local transcription stub/mock path → cognition bridge stub/mock path → structured log**.
 - This runbook does **not** enable or claim live microphone ingestion, wake-word, or Huey Body integration.
 
 ## Target OS note (Debian / Forky)
@@ -86,6 +86,28 @@ For single-run mock smoke tests, create a placeholder MP3 fixture path:
 ```bash
 touch fixtures/v1/incoming/mock_fixture.mp3
 ```
+
+### Audio preparation wrapper
+
+This fixed wrapper is the current safe way to inspect and prepare a fixture
+before transcription:
+
+```bash
+python scripts/prepare_audio_for_transcription.py fixtures/v1/incoming/mock_fixture.mp3 --json
+```
+
+Useful flags:
+
+- `--output`
+- `--output-dir`
+- `--manifest`
+- `--overwrite`
+
+Expected result:
+
+- emits a prepared mono 16 kHz WAV path
+- returns structured manifest JSON including input, stages, and tool metadata
+- keeps the original fixture intact
 
 ## 6) Mock V1 run command (implemented path)
 

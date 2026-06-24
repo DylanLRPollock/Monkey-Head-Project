@@ -75,9 +75,14 @@ The bridge calls the fixed wrapper:
 Optional flags:
 
 - `--output`
+- `--output-dir`
+- `--manifest`
 - `--overwrite`
 
 Overwrite is blocked by default at the plugin safety layer.
+
+JSON output includes the prepared output path plus a structured manifest with
+input, processing steps, toolchain, and output-contract metadata.
 
 ## Intentionally blocked
 

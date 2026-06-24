@@ -17,6 +17,16 @@ from huey.media.media_manifest import MediaArtifact, MediaManifest
 from huey.utils.paths import ensure_subdirectory
 
 TRANSCRIPTION_SAMPLE_RATE = 16000
+V1_CANONICAL_AUDIO_INPUT = "controlled MP3 fixture"
+SUPPORTED_TRANSCRIPTION_INPUT_SUFFIXES = (
+    ".aac",
+    ".flac",
+    ".m4a",
+    ".mp3",
+    ".ogg",
+    ".opus",
+    ".wav",
+)
 
 
 def normalize_volume(source: str | Path, target: str | Path) -> Path:
@@ -73,6 +83,110 @@ def _default_output_path(source: str | Path, suffix: str) -> Path:
     prepared_dir = ensure_subdirectory("AUDIO", "prepared")
     src = _ensure_source(source)
     return prepared_dir / f"{src.stem}.{suffix}.wav"
+
+
+def _preparation_tools() -> list[dict[str, object]]:
+    return [
+        {
+            "name": "ffprobe",
+            "role": "Inspect source-media metadata before conversion.",
+            "stage_ids": ["probe_source_media"],
+        },
+        {
+            "name": "ffmpeg",
+            "role": (
+                "Convert source audio into a mono 16 kHz WAV and normalize "
+                "loudness for downstream speech models."
+            ),
+            "stage_ids": ["convert_to_mono_16khz_wav", "normalize_loudness"],
+        },
+    ]
+
+
+def _preparation_steps(
+    source_path: Path,
+    intermediate_path: Path,
+    target_path: Path,
+) -> list[dict[str, object]]:
+    return [
+        {
+            "id": "probe_source_media",
+            "name": "Probe source media",
+            "tool": "ffprobe",
+            "input": str(source_path),
+            "output": "probe metadata",
+        },
+        {
+            "id": "convert_to_mono_16khz_wav",
+            "name": "Convert source to mono 16 kHz WAV",
+            "tool": "ffmpeg",
+            "input": str(source_path),
+            "output": str(intermediate_path),
+            "channels": 1,
+            "sample_rate_hz": TRANSCRIPTION_SAMPLE_RATE,
+        },
+        {
+            "id": "normalize_loudness",
+            "name": "Normalize loudness for transcription",
+            "tool": "ffmpeg",
+            "input": str(intermediate_path),
+            "output": str(target_path),
+            "filter": "loudnorm=I=-16:TP=-1.5:LRA=11",
+        },
+    ]
+
+
+def describe_audio_preparation_pipeline(
+    source: str | Path,
+    output_path: str | Path,
+    *,
+    intermediate_path: str | Path | None = None,
+) -> dict[str, object]:
+    """Describe the V1 audio-preparation contract in a JSON-safe structure."""
+
+    source_path = _ensure_source(source)
+    target_path = _coerce_path(output_path)
+    resolved_intermediate = (
+        _coerce_path(intermediate_path)
+        if intermediate_path is not None
+        else target_path.with_name(f"{target_path.stem}.converted.wav")
+    )
+    source_suffix = source_path.suffix.lower()
+    return {
+        "schema": "huey.audio.preparation.v1",
+        "boundary": "Huey Brain V1 fixture-first audio ingress",
+        "input": {
+            "path": str(source_path),
+            "name": source_path.name,
+            "suffix": source_suffix,
+            "canonical_v1_input": V1_CANONICAL_AUDIO_INPUT,
+            "fixture_alignment": (
+                "canonical" if source_suffix == ".mp3" else "compatible_noncanonical"
+            ),
+            "accepted_suffixes": list(SUPPORTED_TRANSCRIPTION_INPUT_SUFFIXES),
+        },
+        "processing": {
+            "preserves_source": True,
+            "steps": _preparation_steps(
+                source_path,
+                resolved_intermediate,
+                target_path,
+            ),
+        },
+        "output": {
+            "path": str(target_path),
+            "container": "wav",
+            "channels": 1,
+            "sample_rate_hz": TRANSCRIPTION_SAMPLE_RATE,
+            "normalization": "loudnorm=I=-16:TP=-1.5:LRA=11",
+        },
+        "tools": _preparation_tools(),
+        "deferred": [
+            "live microphone capture",
+            "wake-word/passive listening",
+            "Huey Body audio ingress",
+        ],
+    }
 
 
 def generate_transcription_ready_file(
@@ -142,6 +256,11 @@ def prepare_audio_for_transcription(
         if intermediate_path.exists():
             intermediate_path.unlink()
 
+    pipeline = describe_audio_preparation_pipeline(
+        source_path,
+        target_path,
+        intermediate_path=intermediate_path,
+    )
     return MediaManifest(
         source_path=str(source_path),
         operation="prepare_audio_for_transcription",
@@ -153,12 +272,17 @@ def prepare_audio_for_transcription(
                 role="transcription_wav",
                 metadata={
                     "channels": 1,
+                    "container": "wav",
+                    "normalization": "loudnorm=I=-16:TP=-1.5:LRA=11",
                     "sample_rate_hz": TRANSCRIPTION_SAMPLE_RATE,
                 },
             )
         ],
         commands=[_command_list(convert_result), _command_list(normalize_result)],
-        metadata={"preserves_source": True},
+        metadata={
+            "pipeline": pipeline,
+            "preserves_source": True,
+        },
     )
 
 
@@ -176,6 +300,7 @@ __all__ = [
     "convert_to_16khz",
     "convert_to_mono",
     "denoise_audio",
+    "describe_audio_preparation_pipeline",
     "generate_transcription_ready_file",
     "normalize_volume",
     "prepare_audio_for_transcription",
