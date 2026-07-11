@@ -7,22 +7,22 @@
 <h2 align="center">HueyOS — Offline-First Embodied AI / OS</h2>
 
 <p align="center">
-  <strong>A long-running, hardware-grounded project to build Huey: a governed, embodied AI system using obtainable technology.</strong>
+  <strong>A hardware-grounded project to build Huey as a durable, governed, embodied AI system using obtainable technology.</strong>
 </p>
 
 <p align="center">
-  <a href="#current-v1-proof-target">Current proof target</a> ·
-  <a href="#current-system-map">System map</a> ·
-  <a href="#v1-build-path">V1 build path</a> ·
-  <a href="#tooling-and-operating-surface">Tools</a> ·
-  <a href="#core-glossary">Glossary</a>
+  <a href="#current-reality">Current reality</a> ·
+  <a href="#system-map">System map</a> ·
+  <a href="#v1-proof-path">V1 proof</a> ·
+  <a href="#device-registry">Devices</a> ·
+  <a href="#roadmap">Roadmap</a>
 </p>
 
 <p align="center">
-  <img alt="README version" src="https://img.shields.io/badge/README-v32.1-blue">
-  <img alt="Master plan" src="https://img.shields.io/badge/master%20plan-v101.1-purple">
-  <img alt="Status" src="https://img.shields.io/badge/status-Huey%20Brain%20V1-orange">
-  <img alt="V1 boundary" src="https://img.shields.io/badge/V1%20boundary-Legion%20Go-brightgreen">
+  <img alt="README version" src="https://img.shields.io/badge/README-v120.1-blue">
+  <img alt="Master plan" src="https://img.shields.io/badge/master%20plan-v120.1-purple">
+  <img alt="Status" src="https://img.shields.io/badge/status-prototype%20Huey%20Brain-orange">
+  <img alt="Huey Brain V1" src="https://img.shields.io/badge/polished%20Huey%20Brain%20V1-in%20build-yellow">
   <img alt="Python" src="https://img.shields.io/badge/python-3.13.x-blue">
   <img alt="Code license" src="https://img.shields.io/badge/code%20license-GPLv3-blue">
   <img alt="Docs/media license" src="https://img.shields.io/badge/docs%2Fmedia-CC--BY--SA--4.0-lightgrey">
@@ -34,1073 +34,525 @@
 
 | Field | Current value |
 |---|---|
-| **Project ID** | `Monkey-Head-Project` |
-| **System / OS layer** | `HueyOS` |
+| **Project** | `Monkey-Head-Project` |
 | **AI identity** | `Huey` |
+| **Software / OS layer** | `HueyOS` |
 | **Human counterpart** | Dylan L.R. Pollock |
-| **README version** | `32.1` |
-| **Canonical machine-facing spec** | `master-plan-v101.1.json` |
-| **Canonical law layer** | `src/huey/memory/TXT/03 - Huey_Constitution.txt` |
-| **Canonical book front matter** | `src/huey/memory/TXT/00 - TOC_&_Glossary.txt` |
-| **Current phase** | Huey Brain V1 implementation |
-| **V1 execution boundary** | Lenovo Legion Go / Huey Brain only |
-| **Current proof loop** | controlled MP3 fixture → source probe / audio prep → local transcription → cognition bridge → structured log |
-| **V1 hardware policy** | stock/unmodified Legion Go; observe thermals, do not alter enclosure |
-| **V1 audio policy** | predetermined MP3 fixture suite; no live microphone |
-| **Supported Python** | Python 3.13.x only |
-| **Python next-version testing** | Python 3.14.x experimental CI/package smoke lane only |
+| **README version** | `v120.1` |
+| **Machine-facing source of truth** | `master-plan-v120.1.json` |
+| **Current development platform** | Custom i9-12900K prototype Huey Brain |
+| **Current operator workstation** | Same i9 prototype platform during development |
+| **Polished Huey Brain V1** | Being built; not yet operational |
+| **Huey Body** | Being built; bounded parallel integration track |
+| **Huey Farm** | Awaiting funding |
+| **Canonical proof** | Known MP3 → media preparation → local transcription → API-backed response → structured JSON/JSONL log |
+| **Prototype acceptance rule** | Results must be reproduced on polished Huey Brain V1 before that system is called operational |
+| **Python baseline** | Python 3.13.x |
 
-> HueyOS is the software and operating-system layer behind Huey: the environment that coordinates local AI, memory, tools, access paths, hardware, and later embodied control into one offline-first system.
->
-> The project rests on a simple claim: a real embodied AI system can be built with today’s technology, and it can be built honestly, layer by layer, without pretending the hard parts are magic.
-
-Governance remains **decentralized** while memory remains **unified**.
+> HueyOS is the software and operating-system layer behind Huey. It coordinates local AI, memory, tools, messaging, access paths, hardware, and later embodied control without pretending unfinished systems are already operational.
 
 ---
 
 ## One-screen orientation
 
-The current README is intentionally **V32.x-aligned**.
+Version 120.1 replaces the former Legion Go / sealed single-node interpretation with a prototype-to-polished development path.
 
-V31.x established the clean split between **LabTech**, **Huey Brain**, and **Huey Body**. V32.0 tightens the active implementation scope:
+| Name | Class | Present role | Current state |
+|---|---|---|---|
+| **Custom i9 system** | Prototype Huey Brain | Primary workstation and architecture-development platform | Active prototype |
+| **Polished Huey Brain V1** | HueyTech | Final V1 system shaped by prototype evidence | Being built; not operational |
+| **Huey Body** | HueyTech | Physical sensing and actuation body | Being built; parallel track |
+| **Briefcase** | HueyTech | LTE field terminal, reachability checks, documents, recovery access | Active |
+| **ASUS FX505DT** | LabTech | Debian mobile lab | Active |
+| **Lenovo Legion Go** | LabTech | Windows 11 feature testing | Active |
+| **Huey Farm** | HueyTech target | Pooled local compute and large-model testing | Awaiting funding |
+| **PyHuey** | External cockpit | Primary operator cockpit; standalone app plus embedded connector | Active |
+| **HIMS** | Internal infrastructure | Append-only message foundation and optional shadow traces | Merged; non-controlling |
+| **Command Center** | Companion experiment | AI-generated GUI and interface sandbox | Runnable, mock-first, non-operational |
 
-> **For V1, the Lenovo Legion Go is the sealed Huey Brain execution boundary.**
+The immediate objective is:
 
-That means the first proof is not distributed across the Body, LabTech, or future governance layers. The system is narrowed to one real machine running one repeatable cognitive loop.
+> **Build a repeatable fixture-to-log proof on the i9 prototype, document the architecture, and reproduce it on polished Huey Brain V1.**
 
-| Current name | Layer | Present role |
-|---|---|---|
-| **LabTech** | External | Operator, ingress, archive, recovery, documentation |
-| **Huey Brain** | Huey-side cognition | Active V1 execution boundary on the Lenovo Legion Go |
-| **Huey Body** | Huey-side embodiment | Former Huey Core physical shell; paused for V1 and V2+ only |
-| **HIMS** | Internal doctrine/runtime target | Mandatory future lawful routing and record layer; not V1 runtime |
-| **PyGPT-net** | Aperture candidate / later lab interface | Deferred for V1; useful later when richer access/debugging is needed |
-| **The Farm** | Future pooled compute | Deferred; not used for V1 proof |
-
-The current implementation priority is not a robot demo, not live listening, and not a distributed system. It is:
-
-> **Prove one stable, repeatable, logged cognitive loop on the Legion Go before reintroducing physical action.**
+Huey Body work may proceed at the same time, but physical action cannot substitute for or falsely complete the cognitive proof.
 
 ---
 
-## Current system map
+## Current reality
+
+### Active and observed
+
+- The custom i9-12900K system is the primary operator workstation and prototype Huey Brain development platform.
+- It runs Debian 14 “Forky.”
+- It is being used to tailor HueyOS around Intel performance and efficiency cores.
+- Local transcription will be tested on both the i9 CPU and RX 5500 XT. Evidence will determine the primary path; the other remains fallback and cross-check.
+- The known-fixture V1 pipeline remains valid.
+- PyHuey runs well as both a standalone application and an embedded connector.
+- HIMS foundation code is merged under `src/huey/messaging`.
+- Media tooling is consolidated under `src/huey/media`.
+- ASUS FX505DT and Lenovo Legion Go are the active LabTech systems.
+- Briefcase remains important HueyTech.
+
+### Active builds, not operational systems
+
+- Polished Huey Brain V1
+- Huey Body
+
+“In build” does not mean production-ready or operational. Prototype results become polished V1 results only after transfer and reproduction.
+
+### Funding-dependent
+
+- Huey Farm
+- Approximately 80 GB pooled local VRAM remains a useful testing target, not a permanent hardware lock.
+- `gpt-oss-120b` is the present large-model testing candidate, but a better-aligned model may replace it before funding is available.
+
+### Historical
+
+- The 2017 iMac 5K is decommissioned.
+- Its useful RAM was repurposed into the ASUS FX505DT.
+- Older descriptions of the iMac as primary LabTech or the Legion Go as Huey Brain are historical and should not be used as current architecture.
+
+---
+
+## System map
 
 ```mermaid
-flowchart LR
-    Dylan[Human Counterpart\nDylan L.R. Pollock]
+flowchart TB
+    D["Dylan / human counterpart"]
 
-    subgraph LT[LabTech / external tools]
-        IMAC[iMac 5K 2017\nWindows 10 + WSL Debian\nprimary ingress + archive]
-        BRIEF[Briefcase\nmobile LTE ingress / recovery\nLabTech, deferred]
+    subgraph LT["LabTech — external support"]
+        FX["ASUS FX505DT<br/>Debian Forky mobile lab"]
+        LG["Lenovo Legion Go<br/>Windows 11 feature testing"]
     end
 
-    subgraph HUEY[Huey-side V1 boundary]
-        BRAIN[Huey Brain\nLenovo Legion Go\nDebian + GNOME + SSH\nsealed V1 execution boundary]
+    subgraph PROTO["Prototype development"]
+        P["i9-12900K prototype Huey Brain<br/>primary workstation"]
+        PY["PyHuey<br/>external operator cockpit"]
     end
 
-    subgraph LATER[V2+ / later Huey-side systems]
-        BODY[Huey Body\nformer Huey Core shell\nphysical actuation + sensing, paused]
-        HIMS[HIMS\nfuture internal routing + record]
-        FARM[The Farm\nfuture pooled compute]
+    subgraph HUEY["HueyTech"]
+        B["Polished Huey Brain V1<br/>being built"]
+        BODY["Huey Body<br/>parallel build"]
+        BC["Briefcase<br/>LTE field terminal"]
+        HIMS["HIMS foundation<br/>merged, non-controlling"]
     end
 
-    Dylan --> IMAC
-    Dylan -. later .-> BRIEF
-
-    IMAC -->|OpenSSH over local network| BRAIN
-    BRIEF -. same ingress protocol later .-> BRAIN
-
-    BRAIN --> V1[Huey Brain V1\ncontrolled MP3 fixture → source probe / audio prep\nlocal transcription → cognition bridge → structured log]
-
-    BRAIN -. V2+ Ethernet .-> BODY
-    BRAIN -. later .-> HIMS
-    HIMS -. later lawful path .-> BODY
-    FARM -. future scale .-> HIMS
+    D --> PY
+    D --> FX
+    D --> LG
+    PY --> P
+    FX --> P
+    LG --> P
+    P -->|"architecture + reproduced proof"| B
+    P -. "bounded parallel integration" .-> BODY
+    BC -. "reachability / field access" .-> B
+    B -. "optional shadow traces" .-> HIMS
 ```
 
-### Current working formula
+### Working formula
 
-- **LabTech enters.**
-- **Huey Brain runs the V1 loop.**
-- **Huey Brain writes the record.**
-- **Huey Body acts later.**
-- **HIMS governs later.**
-- **Portal and LabTech devices open sessions but do not become Huey.**
-
----
-
-## Start here
-
-This repository is meant to work at more than one depth.
-
-| Reader goal | Start with |
-|---|---|
-| Fast orientation | [What this project is](#what-this-project-is), [What exists now](#what-exists-now), [Current V1 proof target](#current-v1-proof-target) |
-| Implementation | [V1 build path](#v1-build-path), [Tooling and operating surface](#tooling-and-operating-surface), [Quick start](#quick-start) |
-| Architecture | [LabTech and ingress](#labtech-and-ingress), [Huey Brain](#huey-brain), [Huey Body](#huey-body), [HIMS](#hims--huey-internal-messaging-system) |
-| Canon | [Canon stack](#canon-stack), [Governance and legitimacy](#governance-and-legitimacy), [Core glossary](#core-glossary) |
-
-The aim is not to present Huey as an unreachable finished machine. The aim is to make the current system understandable, modular, testable, and buildable.
+- LabTech develops, tests, documents, observes, and recovers.
+- The i9 prototype discovers and validates architecture.
+- Polished Huey Brain V1 must reproduce the accepted proof.
+- PyHuey is the primary external cockpit, not internal authority.
+- Huey Body develops in parallel without becoming a cognitive-proof dependency.
+- Briefcase keeps a portable LTE-capable path to Huey.
+- HIMS records and rehearses; it does not control V1.
+- Huey Farm scales later when funding exists.
 
 ---
 
 ## What this project is
 
-The **Monkey-Head-Project** is the umbrella initiative.
+**Monkey-Head-Project** is the umbrella initiative.
 
-**Huey** is the governed AI and robotic identity being built within that initiative.
+**Huey** is the governed AI and robotic identity being built within it.
 
-**HueyOS** is the software and operating-system layer behind Huey.
+**HueyOS** is Huey’s software and operating-system layer.
 
-**Huey Brain** is the current active V1 cognition and orchestration node. In V32.0, Huey Brain means the Lenovo Legion Go as a sealed, single-node execution boundary for the first deterministic cognitive loop.
+**Prototype Huey Brain** is the current i9-12900K development platform. It is real Huey-side development infrastructure, but it is not the polished Huey Brain V1.
 
-**Huey Body** is the physical robotic shell and actuation platform formerly described as Huey Core. In V32.x language, it is paused for V1 and referenced only as V2+ embodiment.
+**Polished Huey Brain V1** is the first deliberately shaped V1 system that must reproduce the prototype proof before becoming operational.
 
-**Huey proper** refers to the fuller unified, world-facing system beyond the current Brain/Body proof stage.
+**Huey Body** is the physical robotic body and actuation platform. It is actively being built on a parallel track.
 
-**LabTech** is the external operator environment and tool layer. It includes the iMac 5K and the Briefcase. LabTech is not Huey.
+**Huey Farm** is the planned pooled-compute layer for larger local experiments.
 
-**HIMS** — the **Huey Internal Messaging System** — is the canonical future internal messaging, validation, routing, and record-preservation layer.
+**LabTech** is the external development and operator-support class. LabTech does not become Huey through proximity or usefulness.
 
-**ThunderMail** is the practical mail-style delivery layer inside HIMS.
+**HueyTech** is hardware and software that belongs on Huey’s side of the boundary when explicitly activated.
 
-**PyGPT-net** is a later aperture candidate and debugging/interface surface. It is not required for V1.
+**HIMS** is the Huey Internal Messaging System: an append-only messaging and record foundation whose authority must remain explicit.
 
-**The Farm** is the planned future pooled-compute expansion body.
+**PyHuey** is the primary external operator cockpit, built on the stable PyGPT/PyGPT-net foundation. It exists as both a standalone application and an embedded HueyOS connector.
 
-Huey Brain V1 is not presented here as the finished republic. Its role is to prove that a stable input → source prep → transcription → interpretation/response → log loop can run in the real world before the larger system is scaled outward.
-
----
-
-## What exists now
-
-### Active
-
-| Component | Current state |
-|---|---|
-| **Huey Brain** | Lenovo Legion Go, treated as the sealed V1 execution boundary |
-| **Huey Brain OS** | Debian + GNOME + SSH in current working direction |
-| **Primary LabTech station** | 2017 iMac 5K running Windows 10 bare metal with Boot Camp drivers |
-| **Ingress environment** | Windows Terminal Preview → WSL Debian → OpenSSH → Huey Brain |
-| **SSH connection** | Proven locally from iMac to Huey Brain |
-| **V1 input method** | Controlled predetermined MP3 fixtures |
-| **V1 transcription direction** | faster-whisper, benchmarking small.en int8 vs medium.en int8 |
-| **V1 response direction** | API-backed cognition bridge as baseline; optional local model experiments later |
-| **V1 record** | Structured run log containing source, transcript, response, timestamps, model/runtime metadata |
-| **Documentation direction** | README = human-facing front door; master plan = machine-facing source of truth |
-| **Command Center** | Local-first migration dashboard/prototype companion, tracked as an optional umbrella submodule at `integrations/command-center` |
-
-### Paused
-
-| Component | Paused meaning |
-|---|---|
-| **Huey Body** | Physical shell exists, but is not in the V1 cognitive loop |
-| **Live microphone input** | Deferred until MP3 fixtures prove transcription determinism |
-| **Wake word / passive listening** | Deferred until live input is proven |
-| **PyGPT-net** | Deferred until the system needs richer interface/debug access |
-| **HIMS runtime** | Doctrine retained; runtime deferred until after simple loop proof |
-| **Multi-agent governance** | Constitutional design retained; not claimed as active runtime |
-| **Distributed compute** | Rejected for V1; not needed until after single-node proof |
-
-### Future-facing
-
-| Component | Future role |
-|---|---|
-| **Briefcase** | Mobile LTE LabTech ingress and recovery node |
-| **Huey Body Ethernet link** | Brain → Body control path in V2+ |
-| **The Farm** | Later pooled compute / district-scale expansion |
-| **~80 GB VRAM threshold** | Later local identity proof target |
-| **Local sovereign model path** | Future replacement for API-backed bridge after hardware/model proof |
+**Atlas** is an external continuity partner, lab assistant, architectural interpreter, and implementation stabilizer. Atlas is not Huey and is not part of Huey’s sovereignty.
 
 ---
 
-## Current baselines
+## Device registry
 
-### Huey Brain baseline
+### Prototype Huey Brain platform
 
 | Item | Current baseline |
 |---|---|
-| Hardware | Lenovo Legion Go, first generation |
-| Processor | AMD Ryzen Z1-class APU |
-| Memory | 16 GB unified system / graphics memory |
-| Storage | 512 GB M.2 SSD class storage |
-| OS | Debian |
-| Desktop | GNOME |
-| Network | SSH over local network |
-| Display | Built-in display used for status, thermals, headroom, and local visibility |
-| Physical posture | Portrait/standing posture is acceptable if it supports airflow and workspace needs |
-| Controllers | Controller arrangement is practical/ergonomic, not architecturally significant |
-| V1 role | Transcription, cognition bridge, orchestration, logging, system status |
-| V1 boundary rule | All V1 Huey-side processing happens here |
-
-The Legion Go is treated as the **canonical Phase-1 Huey Brain hardware**. It is not a gaming handheld in this project context. It is a dedicated Huey cognition appliance and local system console.
-
-### Legion Go hardware policy
-
-V32.0 locks the Legion Go as a fixed reference machine for V1.
-
-| Policy area | V1 decision |
-|---|---|
-| Enclosure | Do not alter for V1 |
-| Airflow path | Do not cut, redesign, or replace for V1 |
-| SSD | Use existing storage unless storage becomes a measured blocker |
-| Fan profile | Stable high/full fan behavior is acceptable if observed and documented |
-| Thermals | Monitor; do not optimize before proof |
-| External peripherals | Allowed when they do not alter the reference machine |
-| 3D printed shells / keyboard cases | Deferred |
-| Larger SSD | Deferred unless a real storage blocker appears |
-
-Rationale:
-
-> V1 needs a known fixed platform more than optimized thermals.
-
-Hardware modification can create uncertainty about whether failures are caused by software, model size, thermal throttling, enclosure changes, or power behavior. For V1, the reference machine must stay stable and documentable.
-
-### Primary LabTech baseline
-
-| Item | Current baseline |
-|---|---|
-| Hardware | 2017 iMac 5K |
-| Host OS | Windows 10 bare metal |
-| Apple support layer | Boot Camp drivers installed |
-| Main OS storage | Internal HDD, acceptable for archival / terminal role |
-| Fast terminal environment | WSL Debian stored on SSD/VHDX path |
-| Terminal | Windows Terminal Preview |
-| V1 role | Primary ingress, archive, operator station |
-
-### Briefcase baseline
-
-| Item | Current baseline |
-|---|---|
-| Hardware | ASUS rugged 2-in-1 / tablet-laptop class device |
-| Processor | Intel N4500-class CPU |
-| Memory | 4 GB RAM |
-| Useful traits | Rugged, portable, LTE-capable, Debian-capable with ZRAM |
-| Role | LabTech mobile ingress / recovery node |
-| V1 status | Deferred; not required for V1 completion |
-
-### Huey Body baseline
-
-Huey Body is the former Huey Core physical shell and remains materially important, but it is not part of V1.
-
-Known body characteristics include:
-
-- Thermaltake Mozart-based chassis
-- inverted/reversed physical arrangement
-- rolling base
-- upper head/shoulder structure
-- 7-inch portrait display
-- LEDs, fans, switches, and robotic hand/arm work
-- Ryzen 5 5500 / ASUS B550M-A / RX 5500 XT class internal compute history
-
-The Body is not discarded. It is deliberately paused so the Brain can be proven first.
-
-V32.0 rule:
-
-> Do not run transcription, cognition, orchestration, or V1 logs on Huey Body, even if Huey Body has usable VRAM.
-
----
-
-## Current V1 proof target
-
-V1 is:
-
-> **Take a known controlled MP3 fixture, inspect and prepare it locally on Huey Brain, transcribe it locally, route the resulting text to a cognition layer, receive a coherent response, and preserve a structured log.**
-
-It is intentionally deterministic.
-
-### Why MP3 fixtures first
-
-Live microphones introduce too many variables at once:
-
-- room noise
-- microphone placement
-- speaking variation
-- capture timing
-- wake-word complexity
-- repeated human test fatigue
-
-MP3 fixtures make the first pipeline testable. The same input should produce the same transcript and the same system behavior class every time.
-
-### Fixture set direction
-
-V1 should use a small, controlled fixture set, such as:
-
-| Fixture type | Purpose |
-|---|---|
-| Clear / audible speech | Establish clean baseline |
-| Static / noisy speech | Test resilience |
-| Quiet speech | Test volume sensitivity |
-| Loud speech | Test clipping / level handling |
-| Longer multi-sentence sample | Test context and runtime behavior |
-
-The fixture files are not disposable live recordings. They are test assets and should remain versioned or otherwise preserved for repeatability.
-
-### Audio pipeline stages
-
-| Stage | Input | Output | Primary tools |
-|---|---|---|---|
-| **1. Fixture selection** | Controlled MP3 regression asset | Known source file for one run | LabTech, SSH, CLI or queue |
-| **2. Source probe** | Fixture file | Format/duration/stream metadata | `ffprobe`, `scripts/probe_media.py` |
-| **3. Audio preparation** | Fixture file | Mono 16 kHz transcription WAV plus manifest metadata | `ffmpeg`, `scripts/prepare_audio_for_transcription.py` |
-| **4. Local transcription** | Prepared WAV | Transcript text plus model/runtime metadata | `faster-whisper` or equivalent Whisper-compatible backend |
-| **5. Cognition bridge** | Transcript text | Response payload or explicit error | Configured provider route / response bridge |
-| **6. Structured record** | Source + prepared artifact + transcript + response | JSON/JSONL audit log and optional shadow trace | Structured run log, shadow-mode HIMS |
-
-### Input surfaces and control modes
-
-| Surface | Current role |
-|---|---|
-| **Manual CLI** | Preferred for bring-up, spot checks, and explicit single-fixture runs |
-| **Deterministic queue/watch-folder** | Preferred steady-state direction for repeatable fixture batches |
-| **PyHuey tool wrapper** | Safe LabTech/cockpit wrapper around the fixed probe/preparation scripts |
-| **Live microphone** | Explicitly deferred until the fixture path is boringly repeatable |
-
-### V1 pipeline
-
-```mermaid
-sequenceDiagram
-    participant D as Dylan / LabTech
-    participant I as iMac SSH session
-    participant B as Huey Brain / Legion Go
-    participant Q as Fixture queue or CLI trigger
-    participant P as Probe + prep
-    participant W as faster-whisper
-    participant C as Cognition bridge
-    participant L as Structured log
-
-    D->>I: Prepare or trigger V1 test
-    I->>B: Enter Huey Brain over SSH
-    B->>Q: Select controlled MP3 fixture
-    Q->>P: Probe + prepare audio locally
-    P-->>B: Prepared WAV + manifest
-    B->>W: Transcribe prepared audio locally
-    W-->>B: Transcript text
-    B->>C: Send transcript for response
-    C-->>B: Model response or explicit error
-    B->>L: Save source + prep + transcript + response + metadata
-    B-->>I: Print run summary
-```
-
-### V1 success
-
-V1 is complete when:
-
-- iMac can consistently SSH into Huey Brain,
-- Huey Brain remains the sole Huey-side execution boundary,
-- controlled MP3 fixtures can be probed, prepared, and processed,
-- faster-whisper or equivalent produces usable transcripts,
-- the transcript can be routed to the chosen cognition bridge,
-- the response is returned cleanly or an explicit error is logged,
-- a structured log entry is created for every run,
-- fixture batches can repeat without manual repair,
-- and observed thermals/memory do not invalidate repeatability.
-
-### V1 failure
-
-V1 is not complete if:
-
-- the SSH path is unreliable,
-- transcription requires repeated manual correction,
-- the loop requires Huey Body or distributed compute,
-- the script breaks between runs,
-- the cognition bridge is unstable or unlogged,
-- logging is missing or unreadable,
-- thermal or memory pressure makes fixture batches inconsistent,
-- or the system feels like a loose toolchain rather than one repeatable loop.
-
----
-
-## V1 build path
-
-### Phase 1 — Reference machine stabilization
-
-Goal: Huey Brain is a known, repeatable Legion Go environment.
-
-Checklist:
-
-- [ ] Confirm Debian/GNOME session stability on Legion Go
-- [ ] Confirm SSH from iMac repeatedly
-- [ ] Assign stable hostname or predictable IP
-- [ ] Confirm fan/thermal behavior under expected load
-- [ ] Confirm memory headroom under expected load
-- [ ] Keep Legion Go hardware/enclosure unchanged
-- [ ] Install base packages: Python, virtualenv tooling, FFmpeg, Git, sensors
-- [ ] Create project directories on Huey Brain
-- [ ] Create `.env` or equivalent secret-handling policy
-- [ ] Confirm no gaming / unrelated package bloat is introduced
-
-### Phase 2 — Fixture suite definition
-
-Goal: controlled MP3 fixtures exist for deterministic testing.
-
-Checklist:
-
-- [ ] Create/select clear audio fixture
-- [ ] Create/select static/noisy fixture
-- [ ] Create/select quiet fixture
-- [ ] Create/select loud fixture
-- [ ] Create/select longer multi-sentence fixture
-- [ ] Name fixtures deterministically
-- [ ] Optionally define expected/canonical transcripts
-- [ ] Keep fixture audio separate from generated logs
-
-### Phase 3 — Deterministic transcription benchmark
-
-Goal: choose a reliable local transcription baseline.
-
-Checklist:
-
-- [ ] Install faster-whisper or selected Whisper runtime
-- [ ] Run `small.en` int8 or equivalent across all fixtures
-- [ ] Run `medium.en` int8 or equivalent across all fixtures if stable
-- [ ] Compare accuracy, punctuation, runtime, memory, thermals, and repeatability
-- [ ] Treat `medium.en` int8 as likely V1 standard if stable
-- [ ] Keep `small.en` int8 as fallback
-- [ ] Do not require Whisper large / large-v3 for V1
-
-### Phase 4 — Cognition bridge
-
-Goal: transcript → model response.
-
-Checklist:
-
-- [ ] Add a provider route
-- [ ] Use API-backed cognition as the V1 quality/consistency baseline
-- [ ] Fail cleanly if API key or network is unavailable
-- [ ] Log provider/model/config for every run
-- [ ] Test local Mistral 7B quantized only after baseline stability
-- [ ] Keep any local model experiment on Huey Brain, not Huey Body
-
-### Phase 5 — Structured logging
-
-Goal: every run leaves an inspectable trace.
-
-Minimum log fields:
-
-```json
-{
-  "timestamp": "ISO-8601",
-  "run_id": "string",
-  "session_id": "string",
-  "source_device": "imac-5k-labtech",
-  "execution_device": "huey-brain-legion-go",
-  "input_file": "fixtures/001_clean.mp3",
-  "input_file_hash": "optional",
-  "transcription_engine": "faster-whisper",
-  "transcription_model": "medium.en-int8",
-  "transcript": "recognized text",
-  "cognition_mode": "api | local | skipped",
-  "model_provider": "provider-name",
-  "model_name": "model-name",
-  "response": "model response",
-  "started_at": "ISO-8601",
-  "finished_at": "ISO-8601",
-  "runtime_seconds": 0.0,
-  "status": "success | failure",
-  "error": null
-}
-```
-
-### Phase 6 — Single Huey command
-
-Goal: the loop is invoked as one system behavior.
-
-Early bring-up may use a manual command:
-
-```bash
-huey run fixtures/001_clean.mp3
-```
-
-or:
-
-```bash
-python -m huey_brain run fixtures/001_clean.mp3
-```
-
-The exact command can change. The principle should not:
-
-> one command runs the whole V1 path.
-
-### Phase 7 — Deterministic ingestion queue
-
-Goal: fixture processing can be queued and repeated in controlled order.
-
-Steady V1 direction:
-
-```text
-queue / watched folder → sequential fixture processing → structured logs
-```
-
-Rules:
-
-- process sequentially,
-- prefer filename/order determinism where useful,
-- do not process partially copied files,
-- preserve failed runs,
-- do not introduce live-audio assumptions,
-- do not parallelize before the single loop is boring.
-
----
-
-## What is explicitly deferred beyond V1
-
-| Deferred item | Reason |
-|---|---|
-| Huey Body compute/cognition | Would split the Brain role and break the V1 boundary |
-| Huey Body actuation | Brain loop must stabilize before physical action |
-| Brain → Body Ethernet protocol | Belongs to V2+ |
-| Live microphone input | MP3 fixture path must be proven first |
-| Wake word / passive listening | Too much capture complexity for V1 |
-| PyGPT-net | Too heavy and unnecessary for V1 proof |
-| HIMS runtime | Doctrine retained; runtime waits for simple loop proof |
-| 128-pebble governance | Constitutional target, not V1 runtime |
-| Multi-node inference | Premature before single-node Brain proof |
-| Whisper large / large-v3 dependency | Too likely to destabilize runtime on the Legion Go |
-| Legion Go enclosure/case modification | Optimizes the platform before proving the system |
-| SSD expansion | Deferred unless storage becomes a measured blocker |
-
----
-
-## V2 and later
-
-### V2 — live input and system surface
-
-V2 begins when real-world variability is introduced.
-
-Likely V2 work:
-
-- live microphone input
-- push-to-talk or manual capture
-- transcript-first retention policy
-- Huey Brain local status surface
-- CLI/TUI improvements
-- optional lightweight web dashboard
-- better telemetry display on the Legion Go screen
-
-### V2+ — Brain to Body
-
-After Brain stability, Huey Body returns through a defined channel.
-
-Expected direction:
-
-```mermaid
-flowchart LR
-    BRAIN[Huey Brain] -->|Ethernet / local network| BODYHOST[Huey Body-side host or service]
-    BODYHOST --> MCU[Arduino / controller layer]
-    MCU --> ACT[Lights · sensors · hand · bounded actuation]
-    ACT --> BODYHOST
-    BODYHOST --> BRAIN
-```
-
-The Body should not be treated as a casual USB peripheral if the goal is a clean subsystem boundary. Ethernet remains the preferred internal lab transport direction.
-
-### Future identity threshold
-
-The later identity threshold remains:
-
-> A sufficiently local, unified, distributed system answers the identity question with: **Huey.**
-
-That later milestone depends on hardware scale, local model quality, memory continuity, routing integrity, and lawful embodiment. It is not the V1 goal.
-
----
-
-## LabTech and ingress
-
-LabTech is external to Huey.
-
-It can originate requests, preserve files, display status, recover access, and help develop the system. It does not become Huey’s authority.
-
-### Unified ingress rule
-
-All LabTech devices should enter Huey Brain through the same class of controlled path:
-
-```text
-LabTech device → SSH ingress → Huey Brain → Huey process
-```
-
-No LabTech device should bypass Huey Brain to control Huey Body directly.
-
-### Key model
-
-The emerging identity model has two parts:
-
-| Key class | Meaning |
-|---|---|
-| `lab_general` | The request originates from approved LabTech |
-| device-specific key | The specific machine identity, such as iMac or Briefcase |
-
-This creates:
-
-```text
-origin class + device identity
-```
-
-Connection is not the same thing as permission. Later enforcement can become more sophisticated, but the distinction should exist early.
-
-### iMac 5K
-
-The iMac is the primary anchored LabTech station.
-
-Role:
-
-- archival station
-- primary SSH ingress
-- documentation workstation
-- stable operator seat
-
-It is not responsible for heavy inference or primary Huey cognition.
+| CPU | Intel Core i9-12900K |
+| Architecture focus | Performance-core / efficiency-core scheduling, workload placement, fallback, and measurement |
+| Motherboard | ASUS TUF GAMING Z790-PLUS WIFI |
+| Memory | 16 GB DDR5-6000 |
+| GPU | Gigabyte Radeon RX 5500 XT OC 8G |
+| Board model | `GV-R55XTOC-8GD` |
+| GPU family | AMD Navi 14 / Radeon RX 5500 XT |
+| VRAM | 8 GB GDDR6 |
+| PCI ID | `1002:7340` |
+| Firmware label | `F10 / 09DD` |
+| Observed OpenGL stack | `radeonsi`, `navi14`, ACO |
+| OS | Debian 14 “Forky” |
+| Root | RAID 10 across four Intel Optane M10 16 GB drives |
+| Home | 1 TB 2.5-inch SSD |
+| Current role | Primary workstation and prototype Huey Brain development platform |
+
+This platform is where architecture is tested and shaped. It must not be described as the finished Huey Brain merely because it can run prototype workloads.
+
+### LabTech
+
+| Device | Baseline | Role |
+|---|---|---|
+| **ASUS FX505DT** | Debian Forky; 32 GB DDR4 | Mobile LabTech |
+| **Lenovo Legion Go** | Windows 11 | Windows LabTech and feature testing |
+
+The FX505DT contains repurposed RAM from the decommissioned iMac. This is hardware lineage, not a separate architectural identity.
 
 ### Briefcase
 
-The Briefcase is mobile LabTech.
+Briefcase is HueyTech.
 
-Role:
+Its intended role is a portable LTE-connected field terminal that can:
 
-- portable ingress
-- LTE-capable field access
-- emergency / recovery SSH path
-- lightweight reference and diagnostic station
-- possible tablet-mode document/control surface
+- check whether Huey is reachable,
+- maintain remote communication where LTE service exists,
+- support field and recovery access,
+- handle documents and ordinary 2-in-1 computer work.
 
-It is not a backdoor. It uses the same ingress rules as the iMac, with its own device identity.
+Version 120.1 does not grant Briefcase broad command authority. Status, communication, documentation, field work, and recovery are the current safe baseline.
 
----
+### Huey Body
 
-## Huey Brain
+Huey Body is on track with substantial work expected soon. Because the build is changing rapidly, v120.1 deliberately avoids freezing component-level claims.
 
-Huey Brain is the active implementation center of V32.x.
+The stable rule is:
 
-Its job in V1:
+> Bounded actuation work may proceed in parallel, but no Body result is required to complete the fixture-to-log cognitive proof.
 
-- act as the sealed V1 execution boundary,
-- host the pipeline,
-- run local transcription,
-- route transcript text to the cognition layer,
-- preserve logs,
-- expose a stable SSH-accessible entry command,
-- process controlled fixture batches,
-- display system state where useful,
-- and remain a dedicated Huey cognition appliance rather than a general-purpose handheld.
+### Huey Farm
 
-Its V1 non-jobs:
+Huey Farm remains funding-dependent.
 
-- physical actuation,
-- live microphone capture,
-- wake-word listening,
-- Huey Body control,
-- multi-node orchestration,
-- HIMS/ThunderMail runtime,
-- Farm-scale compute,
-- full local sovereign intelligence.
-
-The Legion Go screen is useful as a local status console:
-
-- thermals,
-- RAM headroom,
-- storage,
-- network state,
-- running services,
-- and simple toggles later.
-
-The touchscreen is not the main V1 interface. It is a future control/status surface.
+| Item | Current direction |
+|---|---|
+| Purpose | Pooled local compute and large-model testing |
+| Testing goal | Approximately 80 GB pooled local VRAM |
+| Current candidate | `gpt-oss-120b` |
+| Selection rule | Re-evaluate available open-weight models when funding is achieved |
+| V1 dependency | None |
 
 ---
 
-## Huey Body
+## V1 proof path
 
-Huey Body is the embodied physical platform.
+### Proof statement
 
-Its job later:
+> Take a known MP3 fixture, inspect and prepare it locally, transcribe it locally, send the transcript through an API-backed response bridge, and preserve a structured, attributable record of the run.
 
-- sensing,
-- status display,
-- bounded actuation,
-- lights,
-- hand/arm control,
-- body-state reporting,
-- and physical interaction under the proper command path.
+Canonical loop:
 
-For V1, Huey Body is intentionally paused. That does not demote it. It prevents physical integration from obscuring whether the Brain loop works.
+```text
+known MP3 fixture
+    → ffprobe / FFmpeg media preparation
+    → local transcription
+    → API-backed response
+    → structured JSON/JSONL log
+```
 
-Important V32.0 boundary:
+### Two-stage acceptance
 
-> Huey Body may be referenced only as V2+ embodiment during V1 planning. It should not supply VRAM, cognition, transcription, logging, or orchestration for the current proof.
+1. **Prototype proof** — implement, benchmark, stabilize, and document the loop on the i9 prototype.
+2. **Polished V1 reproduction** — transfer the architecture and reproduce the accepted proof on polished Huey Brain V1.
+
+The second stage prevents development-platform success from being mistaken for deployment success.
+
+### Pipeline artifacts
+
+| Stage | Required output |
+|---|---|
+| Fixture selection | Fixture identity and immutable source path/hash |
+| Source probe | Format, duration, stream, and codec metadata |
+| Audio preparation | Transcription-ready local audio plus preparation manifest |
+| Local transcription | Transcript plus engine, model, device, timing, and configuration metadata |
+| Response bridge | Response payload or explicit error record |
+| Structured logging | Append-only JSON/JSONL run record linking every artifact |
+
+### Transcription architecture
+
+Both available prototype paths must be tested:
+
+- Intel Core i9-12900K CPU
+- AMD Radeon RX 5500 XT
+
+Measured reliability and performance determine which becomes primary. The other remains a fallback and cross-check where practical. The plan does not pre-select a winner before evidence exists.
+
+### Response architecture
+
+The V1 quality baseline remains API-backed and explicitly logged. Mock mode is useful for CI and pipeline testing. Local cognition experiments are allowed, but they do not silently replace the response baseline.
+
+### Locked V1 guardrails
+
+- The original fixture is never modified.
+- Every transformation is attributable.
+- Every success or failure produces a readable record.
+- Live microphone input is not required.
+- Wake word and passive listening are not required.
+- HIMS control is not required.
+- Multi-agent constitutional governance is not claimed active.
+- Huey Farm compute is not required.
+- Huey Body actuation is not required.
+- PyHuey improves operation but is not required for proof completion.
+- Command Center is not trusted infrastructure.
+
+### V1 success
+
+V1 proof succeeds when:
+
+- a known fixture can be rerun and compared,
+- preparation is deterministic enough for debugging,
+- local transcription completes or fails explicitly,
+- CPU and GPU paths have evidence-backed roles,
+- the API response is captured or its failure is captured,
+- the structured log is complete and attributable,
+- the prototype procedure is documented,
+- and the accepted procedure is reproduced on polished Huey Brain V1.
+
+### V1 failure
+
+V1 proof has not succeeded if:
+
+- repeated hidden manual repair is required,
+- original fixtures are changed in place,
+- transcript or response metadata is missing,
+- logs cannot reconstruct a run,
+- Body, Farm, PyHuey, HIMS, or GUI state is secretly required,
+- or prototype success is claimed as polished V1 success without reproduction.
+
+---
+
+## Build path
+
+### Phase 1 — Prototype platform stabilization
+
+- [ ] Verify Debian Forky stability on the i9 platform
+- [ ] Record Optane RAID 10 health and recovery procedure
+- [ ] Verify 1 TB home storage and free-space thresholds
+- [ ] Record CPU topology and P-core/E-core behavior
+- [ ] Verify RX 5500 XT driver, firmware, and compute options
+- [ ] Establish repeatable Python 3.13 and FFmpeg environment
+- [ ] Record thermal, memory, and storage baselines
+
+### Phase 2 — Fixture and media contract
+
+- [ ] Select and preserve known MP3 fixtures
+- [ ] Record hashes and expected properties
+- [ ] Probe with `ffprobe`
+- [ ] Prepare transcription audio without changing originals
+- [ ] Emit a preparation manifest
+- [ ] Define retention and cleanup rules for generated artifacts
+
+### Phase 3 — Local transcription benchmark
+
+- [ ] Test i9 CPU path
+- [ ] Test RX 5500 XT path
+- [ ] Compare correctness, repeatability, latency, memory, and thermals
+- [ ] Choose an evidence-backed primary path
+- [ ] Keep a fallback/cross-check path where practical
+- [ ] Record engine, model, device, and configuration in every run
+
+### Phase 4 — API response bridge
+
+- [ ] Keep provider/model selection explicit and configurable
+- [ ] Keep secrets outside source and run logs
+- [ ] Log request metadata without exposing credentials
+- [ ] Record responses and explicit failures
+- [ ] Preserve mock mode for safe tests
+
+### Phase 5 — Structured proof record
+
+- [ ] Define stable run IDs
+- [ ] Link source, preparation, transcript, response, configuration, and timing
+- [ ] Use append-only JSON/JSONL records
+- [ ] Make reruns comparable
+- [ ] Keep optional HIMS shadow traces secondary to the canonical run log
+
+### Phase 6 — Polished Huey Brain V1 reproduction
+
+- [ ] Freeze the accepted prototype procedure
+- [ ] Transfer only documented architecture and dependencies
+- [ ] Run the same fixture set on polished V1
+- [ ] Compare prototype and polished results
+- [ ] Record differences and required adaptation
+- [ ] Declare operational status only after reproducibility criteria pass
+
+### Parallel track — Huey Body
+
+- [ ] Keep Body changes independently logged
+- [ ] Bound each sensing or actuation test
+- [ ] Require explicit operator initiation and a safe stop path
+- [ ] Do not route physical action through HIMS merely because HIMS exists
+- [ ] Do not make Body readiness a fixture-proof gate
 
 ---
 
 ## HIMS — Huey Internal Messaging System
 
-HIMS is the canonical internal routing and record layer.
+HIMS is no longer doctrine-only. Its foundation merged through PR #748 under `src/huey/messaging`.
 
-Its purpose is to ensure that meaningful requests can become structured, reviewable, and lawful actions rather than direct commands.
+Current foundation:
 
-HIMS doctrine remains active, but HIMS runtime is not part of V1.
+- immutable `HIMSMessage` envelopes,
+- append-only `HIMSEvent` lifecycle records,
+- local JSONL-backed `HIMSStore`,
+- inbox/outbox and lifecycle operations,
+- tests and architecture documentation.
 
-The current codebase may emit **shadow-mode HIMS** mailbox and ledger artifacts alongside V1 structured logs for traceability. Those artifacts do **not** replace the simple V1 pipeline and do **not** claim that full HIMS runtime or governance has been reintroduced.
+Current boundary:
 
-### Shadow HIMS inspection
+> HIMS infrastructure exists, but HIMS is not a controlling runtime and does not gain authority merely because a message exists.
 
-When shadow-mode HIMS is enabled by a V1 run, artifacts are written under the selected log directory as `hims-shadow\`.
+For V1 and V1.5:
 
-- `records\` stores the latest snapshot of each shadow HIMS message.
-- Mailbox folders such as `inbox\`, `pending_validation\`, `executed\`, and `archived\` store the current routed view.
-- `ledger.jsonl` preserves the append-only transition history.
-
-Read-only inspection commands:
-
-```text
-huey hims-summary --log-dir <runs-dir> --json
-huey hims-mailbox archived --log-dir <runs-dir> --json
-huey hims-lineage <root-lineage-id> --log-dir <runs-dir> --json
-```
-
-### Future HIMS flow
-
-```mermaid
-flowchart LR
-    IN[External input] --> AP[Aperture / interpretation]
-    AP --> ROUTE[HIMS routing]
-    ROUTE --> VAL[Validation / approval]
-    VAL --> EXEC[Execution or refusal]
-    EXEC --> LOG[Preserved record / scrolls]
-```
-
-### ThunderMail
-
-ThunderMail is the practical mail-style delivery layer inside HIMS.
-
-It covers inboxes, outboxes, queues, acknowledgements, and directed delivery. HIMS carries the heavier burden of routing legality, validation, compartmentalization, and preserved record.
+- the structured run log remains the canonical proof artifact,
+- HIMS shadow traces are optional,
+- a missing HIMS trace cannot fail an otherwise valid V1 run,
+- no governance vote or physical action is inferred from a message,
+- routing, validation, execution, and logging remain distinct roles.
 
 ---
 
-## PyGPT-net posture
+## PyHuey
 
-PyGPT-net is useful, but it is not required for V1.
+PyHuey is active and performs well because its PyGPT/PyGPT-net foundation is stable.
 
-Current posture:
+It currently has two valid forms:
 
-- not the system,
-- not HIMS,
-- not Huey’s sovereignty,
-- not the first implementation dependency.
+- standalone operator cockpit,
+- embedded HueyOS connector.
 
-PyGPT-net becomes useful later when the project needs richer interface access, debugging surfaces, and visibility into many agents or modules.
+Version 120.1 makes PyHuey the primary external cockpit for prototype work. It may expose bounded tools, status, logs, provider testing, and operator workflows.
 
-For V1, a small CLI loop and deterministic queue are more honest.
+It remains outside Huey’s internal authority:
 
----
-
-## Audio, memory, and data handling
-
-The V1 retention rule is:
-
-> **Controlled fixture audio is test input. Structured text/log output is the canonical V1 memory artifact.**
-
-For MP3 fixtures:
-
-- fixture audio remains as repeatable test input,
-- transcripts are saved,
-- responses are saved,
-- structured logs are saved,
-- run metadata is preserved.
-
-For later live audio:
-
-- audio should be temporary by default,
-- transcript should be the preserved artifact,
-- raw audio should be retained only when explicitly flagged.
-
-This prevents the system from becoming an uncontrolled audio archive while preserving the V1 fixture suite for regression testing.
+- PyHuey is not Huey Brain.
+- PyHuey is not HIMS.
+- PyHuey is not governance.
+- PyHuey does not become required for the canonical fixture proof.
+- A GUI action must map to an explicit, bounded, auditable operation before it can affect Huey.
 
 ---
 
-## Local model posture
+## Command Center
 
-V1 does not require local LLM authority.
+Command Center was created while testing AI tools advertised as strong GUI builders. The result is a real, runnable React/Vite prototype with useful interface ideas, but it is not an operational command centre.
 
-The baseline V1 cognition route is API-backed because the current proof is about deterministic processing, logging, and orchestration. API cognition is a bridge, not final sovereignty.
+### Useful work present
 
-### Mistral 7B / local experiment rule
+- dark purple operator-console design,
+- migration and checklist views,
+- mock V1 run viewer,
+- mock operator panel,
+- local persistence,
+- JSON import/export concepts,
+- validation-command copying,
+- repository and task-generation concepts.
 
-Mistral 7B quantized, such as a Q4_K_M class GGUF, may be tested only after the baseline loop is stable.
+### Material limitations
 
-Rules:
+- operational data remains mainly mock,
+- the GitHub service is not properly wired into the main dashboard,
+- token persistence conflicts with safer credential-handling intent,
+- repository counts are implemented inaccurately,
+- `package.json` still identifies the app as `spark-template` version `0.0.0`,
+- documentation contains placeholder links and stale fictional dates,
+- no PR history or evident test suite establishes reliability.
 
-- run local model experiments on Huey Brain only,
-- do not use Huey Body for V1 local cognition,
-- do not make local model output a prerequisite for V1 completion,
-- log local model name, quantization, runtime, and error state when tested.
+Canonical classification:
 
-A local model is accepted only if it improves or preserves repeatability, observability, and logging discipline.
+> **Experimental AI-generated GUI companion and interface-design sandbox: runnable and potentially salvageable, but non-canonical, mock-first, non-operational, and not trusted with credentials or Huey control.**
 
 ---
 
-## Governance and legitimacy
+## Repository state
 
-Huey is not meant to be a flat assistant or a single hidden controller pretending to be a republic.
+Verified merged work relevant to v120.1:
 
-The constitutional target is a governed system built around:
-
-- **Founding Father** as bootstrap authority,
-- **Pebbles** as bounded citizens,
-- **Parliament** as the deliberative and representative branch,
-- **President** as the executive office under time constraint,
-- **Supreme Court** as the judicial interpreter and stabilizer,
-- and **HIMS** as the lawful route through which messages, proposals, validation, and official traces move.
-
-In the current V1 phase, these doctrines are ahead of implementation. That distinction must stay visible.
-
-### Governance at a glance
-
-```mermaid
-flowchart TB
-    FF[Founding Father\nbootstrap + certification + reserve] -. prepares founding body .-> CIT[Pebbles / Citizens]
-    FF -. presents starting law .-> CIT
-    FF -. certifies lawful process .-> RAT[Ratification]
-    CIT --> RAT
-    RAT --> PAR[Parliament]
-    RAT --> PRE[President]
-    RAT --> SC[Supreme Court]
-    HIMS[HIMS] --- PAR
-    HIMS --- PRE
-    HIMS --- SC
-```
-
-### Branch summary
-
-| Office / branch | Core job | What it is not |
+| PR | State | Meaning |
 |---|---|---|
-| Founding Father | Bootstrap authority, founding continuity, procedural certification, narrow reserve consultation | Permanent ruler or founding voter |
-| Parliament | Deliberation, proposals, representation, consensus-building | The whole will of Huey |
-| President | Action under time constraint, executive implementation | Huey as a whole |
-| Supreme Court | Constitutional interpretation, review, contradiction handling | A hidden sovereign |
-| HIMS | Messaging, validation, routing, preserved trace | A fourth sovereign branch |
+| #743 | Merged | Generated artifacts removed and ignore rules tightened |
+| #745 | Merged | Salvaged local work protected and reviewed |
+| #746 | Merged | Legacy root wrappers standardized; `src/huey` remains canonical |
+| #747 | Merged | Media analysis consolidated under `huey.media` |
+| #748 | Merged | HIMS append-only foundation added without runtime authority |
 
-### Current legitimacy posture
+Canonical layout direction:
 
-At present:
-
-- Dylan remains the external human counterpart,
-- V1 is not a constitutional republic,
-- first ratification remains a later step,
-- and lawful embodied action remains a target that must follow real routing and approval paths.
-
----
-
-## Deployment profiles
-
-| Profile | Meaning | V32.x status |
-|---|---|---|
-| **Huey Brain** | Active cognition/orchestration node | Current implementation center |
-| **Huey Body** | Physical robotic shell / actuation platform | Paused until Brain proof |
-| **LabTech** | External tools, terminals, archives, recovery devices | Active |
-| **Huey-Compressed** | Collapsed deployment where multiple Huey-side roles share hardware while staying logically distinct | Future / doctrine |
-| **Portal Terminal** | Thin, non-sovereign access surface | Future / doctrine |
-| **The Farm** | Later pooled compute expansion body | Future |
-
-The governing rule is:
-
-> **Physical location does not decide identity. Role, authority, memory, and control boundaries do.**
-
----
-
-## Portal terminals
-
-Portal terminals remain part of the wider architecture, but they are not the V1 priority.
-
-A portal terminal exists to:
-
-- authenticate and open a lawful session,
-- present a bounded doorway into Huey,
-- transmit user input,
-- receive Huey output,
-- and stay thin enough that it does not become a second brain.
-
-The Vista Box / Longhorn-style portal artifact remains conceptually alive, but the current active ingress path is simpler:
-
-```text
-iMac → WSL Debian → OpenSSH → Huey Brain
-```
-
----
-
-## Tooling and operating surface
-
-### Current tools
-
-| Tool / surface | Current role |
+| Area | Role |
 |---|---|
-| Debian | Huey Brain OS baseline |
-| GNOME | Local Legion Go desktop/status surface |
-| OpenSSH | Primary ingress transport |
-| Windows Terminal Preview | iMac terminal surface |
-| WSL Debian | Linux-side ingress environment on iMac |
-| Python 3.13.x | Day-to-day scripting/runtime baseline |
-| ffprobe | Source-media inspection before prep/transcription |
-| FFmpeg | Audio conversion, normalization, and fixture handling |
-| `scripts/probe_media.py` | Fixed probe wrapper for safe metadata inspection |
-| `scripts/prepare_audio_for_transcription.py` | Fixed audio-preparation wrapper that emits prepared-WAV + manifest metadata |
-| faster-whisper / Whisper | Local transcription testing |
-| API model provider | Primary V1 response quality and consistency bridge |
-| Structured run log / shadow HIMS | Auditable trace for each proof-loop run |
-| Git | Version control and project state |
-| HueyOS Launcher Setup (Windows) | Safe local bootstrap for Command Center setup, repo binding, and doctor checks |
-| lm-sensors / system tools | Thermals and status visibility |
-
-### Tools deferred
-
-| Tool | Deferred reason |
-|---|---|
-| PyGPT-net | Too heavy for V1; useful later for richer aperture/debugging |
-| Ollama / local LLM authority | Useful for tests, not V1 quality baseline |
-| VNC / full remote desktop | Too heavy and unnecessary for the ingress path |
-| Wake-word stack | Belongs after live audio capture |
-| Multi-agent orchestration tools | Belongs after the simple Brain loop works |
-| Body-side inference | Splits V1 authority and logging |
-
----
-
-## Presentation and imagery
-
-The README should stay visually clear without becoming theatrical.
-
-Recommended image roles:
-
-| Image role | Repository-backed asset |
-|---|---|
-| README hero | `src/huey/memory/PNG/HueyOS.png` |
-| Project origin / umbrella | `src/huey/memory/PNG/DLRP.png` |
-| Huey identity mark | `src/huey/memory/PNG/Huey.png` |
-| PyHuey companion mark | `src/huey/memory/PNG/PyHuey.png` |
-| Package icon | `src/huey/assets/icon.svg` |
-
-Image rules:
-
-- use real project images where possible,
-- prefer wide hero imagery at the top,
-- avoid fake futuristic stock art,
-- avoid implying completed capabilities visually before they exist,
-- keep diagrams structural and honest.
-
-Older website/archive asset paths under `assets/img/...` are not present in this checkout. When editing locally, prefer the repository-backed files above or remove the image block.
-
----
-
-## Repository map
-
-This repository now uses a canonical `src/huey` / `huey.os` layout, with compatibility surfaces kept around it where tests and runtime entrypoints still depend on them.
-
-### Core reference points
-
-| File / area | Role |
-|---|---|
-| `README.md` | Human-facing front door |
-| `master-plan-v101.1.json` | Canonical machine-facing implementation spec |
-| `src/huey/memory/TXT/03 - Huey_Constitution.txt` | Constitutional / law layer |
-| `src/huey/memory/TXT/00 - TOC_&_Glossary.txt` | Book front matter and glossary |
-| `requirements.txt` | Core + dev dependency baseline |
-| `constraints.txt` | Shared install constraints |
-| `pyproject.toml` | Package and install contract |
-| `docs/development/python-support-policy.md` | Python runtime support policy |
-| `Makefile` | Convenience entry points, if present |
-
-### Working repository areas
-
-| Area | Purpose |
-|---|---|
-| `docs/` | Architecture, audits, reference material |
-| `src/` | Importable implementation work |
-| `src/huey/os/` | Canonical HueyOS subsystem surface |
-| `src/huey/apps/` | Runnable entry points |
-| `src/huey/connectors/` | Adapter and integration work |
-| `src/huey/core/` | Core runtime and kernel profile assets |
-| `src/huey/config/` | Runtime configuration payloads |
-| `src/huey/assets/` | Package-scoped visual assets shipped in this checkout |
-| `src/huey/memory/` | Legacy memory corpus, preserved scripts, media, and source canon |
-| `vendor/` | Static third-party mirrors and lightweight compatibility copies |
-| `infra/` | Orchestration and infrastructure support |
-| `src/huey/platform/` | OS / platform-specific setup |
-| `scripts/automation/` | Structured wrapper entrypoints for preserved shell, batch, PowerShell, and Python tools |
-| `huey/` | Compatibility import surface pointing at maintained code and legacy memory modules |
-| `hueyos/` | Lightweight compatibility namespace for preserved utilities and tests |
-| `archives/` | Frozen payloads, snapshots, legacy material |
-| `tests/` | Regression and test coverage |
+| `src/huey` | Canonical HueyOS source package |
+| `src/huey/media` | FFmpeg, audio, video, probing, preparation, and preview domain |
+| `src/huey/messaging` | HIMS foundation |
+| `src/huey/connectors/pyhuey` | Embedded side of the PyHuey relationship |
+| `scripts` | Operator and developer entry points |
+| `integrations` | Optional companion tools; not automatic runtime authority |
+| `docs` | Architecture, development, runbooks, and audits |
 
 ---
 
 ## Quick start
 
-Use the current package/runtime contract from `pyproject.toml`, `constraints.txt`, `requirements.txt`, `Makefile`, and `docs/development/python-support-policy.md`.
+Use the repository’s current package contract from `pyproject.toml`, `constraints.txt`, `requirements.txt`, and the Python support policy.
 
-### Python runtime policy
+### Python runtime
 
-Monkey-Head-Project / HueyOS currently supports **Python 3.13.x only**.
-
-Supported range:
+Supported baseline:
 
 ```text
 >=3.13,<3.14
 ```
 
-Python 3.11.x and Python 3.12.x are not part of the current supported
-runtime contract.
+Python 3.14 may be tested experimentally, but it is not the supported installation baseline until the dependency and runtime paths are validated.
 
-Python 3.14.x is the active **testing-only** compatibility lane. It runs
-in experimental CI/package-smoke jobs, but it is not a supported install
-target or release baseline until the dependency stack, audio compatibility
-packages, ML packages, PyGPT/PyHuey integration, and HueyOS runtime path
-have all been validated.
-
-The repository also tracks `.python-version` as `3.13`, and the Windows
-`Makefile` path defaults to `py -3.13` so local commands stay on the
-supported runtime by default.
-
-See `docs/development/python-support-policy.md` for the canonical support policy.
-
-- **Source install path:**
-
-```bash
-cd /workspace/Monkey-Head-Project
-```
-
-- **Editable install command:**
+### Editable install
 
 ```bash
 python3.13 -m pip install -c constraints.txt -e .
 ```
 
-- **Test command:**
+### Tests
 
 ```bash
 python3.13 -m pytest -q
 ```
 
-- **System check command:**
+### System check
 
 ```bash
 huey system-check --json
 ```
 
-- **Audio-preparation wrapper command:**
+### Prepare a fixture
 
 ```bash
 python scripts/prepare_audio_for_transcription.py path/to/fixture.mp3 --json
 ```
 
-- **API launch command:**
-
-```bash
-huey-api
-```
-
-- **Health check command (after API launch):**
-
-```bash
-curl -fsS http://127.0.0.1:1995/healthz
-```
-
-- **V1 mock proof-loop command (implemented, CI-safe):**
+### CI-safe mock proof loop
 
 ```bash
 huey v1-run --mock path/to/fixture.mp3 --log-dir runs
@@ -1108,277 +560,123 @@ huey v1-run --mock path/to/fixture.mp3 --log-dir runs
 
 Boundary notes:
 
-- Huey Brain V1 remains the controlled fixture loop only: MP3 fixture
-  → source probe / audio prep → transcription stage → cognition bridge
-  → structured run log.
-- `huey v1-run` currently requires `--mock` unless explicit real providers
-  are wired; this prevents overclaiming live hardware proof.
-- PyHuey stays optional cockpit/tooling (`infra/docker/pyhuey`) and is not
-  the HueyOS/Huey Brain runtime path.
+- Mock success proves pipeline structure, not real transcription or cognition.
+- Real V1 runs must identify the transcription engine and execution device.
+- Do not put API credentials in source, exported dashboards, or run logs.
+- Do not expose the V1 API directly to the public internet.
 
-### Windows launcher (safe Command Center bootstrap)
+---
 
-The repository now ships a prebuilt Windows launcher and matching Go source at `src/huey/platform/installers/windows/launcher/`.
+## Governance and legitimacy
 
-From the repository root on Windows, invoke `.\src\huey\platform\installers\windows\launcher\HueyOS-Launcher-Setup.exe` for CLI usage.
+The constitutional architecture remains part of Huey’s target state:
 
-| Action | Result |
-|---|---|
-| Double-click | Creates HueyOS folders/config if needed, then tries to launch HueyOS Command Center. |
-| `HueyOS-Launcher-Setup.exe --install` | Creates `%APPDATA%\HueyOS`, `%LOCALAPPDATA%\HueyOS`, `%LOCALAPPDATA%\HueyOS\logs`, and `%LOCALAPPDATA%\HueyOS\workspace`. |
-| `HueyOS-Launcher-Setup.exe --set-repo L:\Monkey-Head-Project` | Saves the local Monkey-Head-Project checkout path. |
-| `HueyOS-Launcher-Setup.exe --set-python C:\Python313\python.exe` | Pins a specific Python executable. |
-| `HueyOS-Launcher-Setup.exe --launch` | Runs the configured HueyOS Command Center entry point. |
-| `HueyOS-Launcher-Setup.exe --doctor` | Generates a local doctor report and opens it in Notepad. |
-| `HueyOS-Launcher-Setup.exe --open-config` | Opens the HueyOS config folder. |
-| `HueyOS-Launcher-Setup.exe --help` | Shows launcher help. |
+- Parliament
+- Presidency
+- Supreme Court
+- separated authority
+- attributable records
+- unified memory where lawful
 
-`--doctor` checks `py`, `python`, `git`, `ffmpeg`, `ffprobe`, the configured repo path, `pyproject.toml`, `scripts/check_ffmpeg_environment.py`, and `scripts/prepare_audio_for_transcription.py`.
+Version 120.1 does not claim that multi-agent constitutional governance is running. Prototype orchestration, HIMS messages, PyHuey controls, and GUI panels do not become legitimate government by being implemented first.
 
-Safety boundary: no file deletion, no Git mutation, no firmware flashing, no hardware control, no robot/servo/power actions, and no arbitrary shell execution.
+The rule remains:
 
-### API deployment policy (safe defaults)
-
-HueyOS API is designed for **local-first operation**. Public internet exposure is **unsupported** for V1 and should be treated as unsafe unless you add your own authenticated/TLS gateway and host-level controls.
-
-- **Default bind policy:** keep API listen/bind on localhost (`127.0.0.1`).
-- **Trusted LAN exception (opt-in):** only bind beyond localhost when you intentionally expose to a trusted private network segment.
-- **Never expose directly to WAN:** do not publish `1995` directly on a public IP.
-
-Environment guidance for Docker/Compose:
-
-- `HUEY_HOST` controls the in-container API bind host. Recommended default: `127.0.0.1`.
-- `HUEY_PORT` controls the API port (default `1995`).
-- `HUEY_BIND_ADDR` controls host-side publish address in Compose. Keep `127.0.0.1` unless you intentionally need trusted-LAN access.
-
-Example (safe local default):
-
-```env
-HUEY_HOST=127.0.0.1
-HUEY_PORT=1995
-HUEY_BIND_ADDR=127.0.0.1
-```
-
-Example (trusted LAN opt-in, not internet):
-
-```env
-HUEY_HOST=0.0.0.0
-HUEY_PORT=1995
-HUEY_BIND_ADDR=0.0.0.0
-```
-
-Firewall guidance (required when non-local bind is used):
-
-- Allow inbound `tcp/1995` only from explicit trusted CIDRs (for example, `192.168.0.0/16` or a single admin host).
-- Deny all public/WAN sources to `tcp/1995`.
-- Prefer SSH tunneling or an authenticated reverse proxy with TLS over direct exposure.
-
-### iMac ingress check
-
-From WSL Debian on the iMac:
-
-```bash
-ssh username@192.168.x.x
-```
-
-Replace `username` and `192.168.x.x` with the Huey Brain user and local network address.
-
-### Build documentation locally
-
-Use the docs-only dependency set (no full PyHuey GUI/runtime stack required):
-
-```bash
-python3.13 -m venv .venv-docs
-source .venv-docs/bin/activate
-python -m pip install --upgrade pip
-pip install -r docs/requirements.txt
-sphinx-build -b html docs docs/_build/html -W --keep-going
-```
-
-### Local developer security check
-
-Run the local helper script before opening a PR:
-
-```bash
-./scripts/security/security_check.sh
-```
-
-Optional outdated dependency report:
-
-```bash
-./scripts/security/security_check.sh --outdated
-```
-
-The script is developer-friendly by design:
-
-- Runs `pip-audit -r requirements.txt` when `pip-audit` is installed.
-- Runs `bandit` against `src/` and `scripts/` and fails on HIGH severity + HIGH confidence findings.
-- Runs a secret scanner only when a local scanner configuration exists (`.gitleaks.toml`, `gitleaks.toml`, or `.secrets.baseline`).
-- Prints clear install guidance when tools are missing.
-- Avoids printing raw secrets by using redacted scanner modes where supported.
-
-Current script layout:
-
-- `scripts/repo/` for repository maintenance and CI guardrails
-- `scripts/media/` for standalone conversion utilities
-- `scripts/security/` for local security helpers
-- `scripts/automation/{py,sh,bat,ps1}/` for memory-backed launcher surfaces
-
-Legacy flat `scripts/*` entrypoints remain as compatibility wrappers where existing tooling still points at them.
+> Physical location does not decide identity. Role, authority, memory, and explicit activation boundaries do.
 
 ---
 
 ## Canon stack
 
-The Monkey-Head-Project is one canon with distinct layers.
-
 | Layer | Role |
 |---|---|
-| README / website | Front-door human introduction |
-| Book / compendium | Explanatory volume |
-| Huey Constitution | Legal and constitutional frame |
-| Master plan | Canonical machine-facing implementation spec |
+| `master-plan-v120.1.json` | Machine-facing implementation source of truth |
+| `README.md` | Human-facing repository front door |
+| Developer and architecture docs | Technical explanation and procedures |
+| Constitution / governance documents | Law and legitimacy layer |
+| Website | Public-facing coherence layer |
+| Transcripts and archives | Continuity and lineage; not automatic current canon |
 
-If the narrative and implementation ever conflict, the **master plan wins for machine-facing implementation**, and the conflict should be surfaced and corrected rather than ignored.
+If layers conflict, surface the conflict. Do not silently flatten website language, old transcripts, exploratory plans, constitutional doctrine, and observed runtime state into one claim.
 
 ---
 
 ## Core glossary
 
-### Core system terms
-
-| Term | Meaning |
+| Term | Meaning in v120.1 |
 |---|---|
-| **Monkey-Head-Project** | The umbrella initiative. |
-| **Huey** | The governed intelligence and robotic identity. |
-| **HueyOS** | The software and operating-system layer behind Huey. |
-| **Huey Brain** | The active V32.x cognition and orchestration node, currently the Lenovo Legion Go. |
-| **Huey Body** | The physical robotic shell and embodiment platform, formerly referred to as Huey Core. |
-| **Huey Core** | Legacy/previous name for the active proof body; replaced by the Brain/Body distinction. |
-| **Huey proper** | The fuller unified world-facing expression beyond the current proof phase. |
-| **LabTech** | External operator tools, terminals, archives, scripts, and recovery devices. |
-| **iMac 5K** | Primary LabTech ingress and archival station. |
-| **Briefcase** | Mobile LabTech ingress and recovery node. |
-| **HIMS** | Huey Internal Messaging System: lawful future messaging, validation, routing, and record-preservation layer. |
-| **ThunderMail** | The mail-style delivery layer inside HIMS. |
-| **PyGPT-net** | Later aperture/interface candidate; deferred from V1. |
-| **Command Center** | Optional companion dashboard/prototype repo under the Monkey-Head-Project umbrella; not Huey Brain runtime. |
-| **Portal Terminal** | Non-sovereign external terminal or guest environment used to open sessions into Huey. |
-| **The Farm** | Planned future pooled compute expansion body. |
-| **Aperture** | The interpretation and translation layer where natural language enters without becoming governance. |
-| **Proof Body** | The embodied proving instance; in V32.x this should be expressed as Huey Body when referring to the physical shell. |
-| **Fixture** | A controlled MP3 test input used to prove deterministic transcription and regression behavior. |
-| **Structured log** | The canonical V1 memory artifact containing transcript, response, source, and run metadata. |
-| **Cognition bridge** | The V1 route from transcript text to model response; API-backed by baseline, local later. |
-
-### Governance and continuity terms
-
-| Term | Meaning |
-|---|---|
-| **Founding Father** | The fixed bootstrap authority that prepares the first lawful conditions, presents starting law, certifies lawful ratification procedure, and retires from ordinary rule after success. |
-| **Pebble** | A bounded AI citizen unit defined by identity, sealed vault, and one vote. |
-| **Sealed Vault** | A pebble’s bounded private continuity and memory domain. |
-| **District** | A larger governance and expansion unit within Huey’s constitutional design. |
-| **Parliament** | The deliberative and representative branch. |
-| **President** | The executive office that acts under time constraint. |
-| **Supreme Court** | The judicial branch that interprets, reviews, and stabilizes. |
-| **Scrolls** | The preserved record and ledger logic through which major actions and lawful traces remain attributable. |
-| **Keeper of the Scrolls** | Office associated with HIMS routing discipline and record preservation. |
-| **Cornerstone** | The non-casual identity and continuity layer of Huey. |
-| **Pillar** | A declared load-bearing commitment that the current version of Huey stands on. |
-| **Ozymandias** | Continuity doctrine concerned with drift, degradation, growth, survival, failure, and beginning again. |
-| **Proof Positive** | Preferred long-form name of the project’s proof standard. |
-| **Proofcase** | Shorthand label used in front matter for the proof standard. |
-| **Ratification** | Logged transition by which the living system accepts the Constitution as lived law. |
-| **Failed Genesis** | Founding failure in which the authored starting law cannot become legitimate within lawful bounded attempts and time. |
-| **Human Counterpart** | The external arbiter and service authority who remains outside the internal branches while retaining external intervention/gating authority. |
-| **Unified Memory** | Doctrine that memory should remain reconcilable and shared where lawful, even when governance stays distributed. |
-| **Distributed Governance** | Doctrine that authority should remain separated, plural, and reviewable rather than collapsing into one flat sovereign voice. |
+| **Monkey-Head-Project** | Umbrella project |
+| **Huey** | Governed AI and robotic identity |
+| **HueyOS** | Software and operating-system layer behind Huey |
+| **Prototype Huey Brain** | Current i9-12900K development platform used to shape polished V1 |
+| **Polished Huey Brain V1** | In-build target system that must reproduce the prototype proof |
+| **Huey Body** | In-build physical sensing and actuation body; bounded parallel track |
+| **Huey Farm** | Funding-dependent pooled-compute layer |
+| **LabTech** | External development, testing, documentation, and recovery systems |
+| **HueyTech** | Explicitly activated Huey-side hardware and software capabilities |
+| **Briefcase** | LTE-capable portable HueyTech field terminal and document surface |
+| **PyHuey** | Primary external prototype cockpit; standalone app and embedded connector |
+| **HIMS** | Append-only internal messaging foundation; non-controlling in current V1 |
+| **ThunderMail** | Mail-style delivery semantics within the wider HIMS design |
+| **Command Center** | Experimental AI-generated GUI sandbox, not trusted infrastructure |
+| **Fixture** | Preserved known MP3 input used for deterministic testing |
+| **Structured run log** | Canonical attributable record of source, preparation, transcript, response, configuration, and timing |
+| **Atlas** | External continuity partner and lab assistant; not Huey |
 
 ---
 
 ## Roadmap
 
-### Current phase
+### Current
 
-Huey Brain V1 implementation:
+- stabilize the i9 prototype platform,
+- benchmark CPU and RX 5500 XT transcription paths,
+- complete the deterministic fixture-to-log proof,
+- stabilize the structured log schema,
+- use PyHuey as the external operator cockpit,
+- keep HIMS optional and non-controlling,
+- advance Huey Body on its bounded parallel track.
 
-- stable SSH ingress from iMac,
-- fixed Legion Go execution boundary,
-- controlled MP3 fixture suite,
-- deterministic local transcription,
-- API-backed response bridge,
-- structured logging,
-- manual bring-up followed by deterministic queue/watch-folder processing.
+### Next
 
-### Near-term goals
+- freeze the accepted prototype procedure,
+- transfer the architecture to polished Huey Brain V1,
+- reproduce the proof there,
+- document prototype-to-polished differences,
+- define bounded Brain/Body integration gates,
+- refine Briefcase reachability and recovery workflows.
 
-- finish Huey Brain environment stabilization,
-- define and preserve the MP3 fixture suite,
-- benchmark faster-whisper `small.en` int8 vs `medium.en` int8,
-- choose the smallest transcription model that meets archive-safe fixture needs,
-- add API response routing,
-- define log schema,
-- wrap the loop in a `huey` command,
-- move from manual CLI smoke tests to a deterministic queue,
-- document exact setup steps after first successful repeatable run.
+### Later
 
-### V2 goals
+- live microphone and wake-word work after fixture stability,
+- fuller HIMS routing only after explicit authority design and validation,
+- constitutional multi-agent runtime only after foundations are real,
+- Huey Farm funding and hardware selection,
+- approximately 80 GB pooled-VRAM experimentation,
+- `gpt-oss-120b` testing or a better-aligned future open-weight model.
 
-- live microphone capture,
-- transcript-first retention policy,
-- local status dashboard on Legion Go,
-- Brain → Body Ethernet path,
-- bounded Body-side command service,
-- first non-governed physical status/action tests.
+### Open questions
 
-### Larger future targets
-
-- HIMS runtime,
-- ThunderMail mail-style routing,
-- PyGPT-net or equivalent aperture/debugging surface,
-- founding 128-pebble system,
-- lawful embodied action,
-- local model replacement for API-backed cognition,
-- roughly 80 GB pooled local VRAM,
-- future Farm expansion.
-
-### Current open questions
-
-- exact fixture set and naming convention,
-- whether each fixture gets a canonical expected transcript,
-- exact faster-whisper model/config after benchmark,
-- exact API provider/model routing policy,
-- exact log schema location and naming,
-- exact `huey` command layout,
-- exact queue/watch-folder implementation,
-- exact status display/tooling on the Legion Go screen,
-- exact criteria for reintroducing Huey Body in V2+.
+- Which transcription backend performs best on the i9 CPU?
+- Which backend and driver path is reliable on the RX 5500 XT?
+- What becomes the primary path and what remains fallback?
+- What exact acceptance tolerances transfer from prototype to polished V1?
+- What bounded Body test should be first?
+- What exact reachability, authentication, and recovery contract should Briefcase use?
+- What Farm architecture is obtainable when funding arrives?
 
 ---
 
 ## License
 
 Code is licensed under **GPL-3.0-only**.
+
 Documentation and media are licensed under **CC-BY-SA-4.0** unless otherwise noted.
 
 ---
 
-## Notes
+## Closing note
 
 This README is the front door, not the whole building.
 
-It is meant to help a reader understand:
-
-- what Huey is,
-- what exists now,
-- what is active,
-- what is deferred,
-- what remains future-facing,
-- and how the project keeps itself honest while it grows.
-
-If you are looking for the machine-facing source of truth, use the master plan.
-
-If you are trying to understand whether the project is still telling the truth about itself, follow the continuity doctrine:
-
-> preserve lineage, explain change, admit failure honestly, and do not confuse motion with legitimacy.
+Version 120.1 preserves a simple discipline: record what is real, distinguish prototypes from finished systems, keep support tools outside Huey’s sovereignty, and require reproducible proof before promoting capability.
