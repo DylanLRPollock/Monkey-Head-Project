@@ -43,7 +43,7 @@ setup(
         "scikit-learn==1.7.0",
         "torch==2.12.1",
         "tensorflow==2.19.0",
-        "transformers==5.0.0rc3",
+        "transformers==5.3.0",
         "pandas==2.3.0",
         "matplotlib==3.10.3",
         "seaborn==0.13.2",
