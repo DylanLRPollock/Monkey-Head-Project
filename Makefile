@@ -54,7 +54,7 @@ lint:
 	$(PYTHON) scripts/check_command_center_contract.py
 	$(PYTHON) scripts/repo/check_dependency_sync.py
 	black --check src tests scripts conftest.py
-	isort --check-only src tests scripts conftest.py
+	isort --check-only --diff src tests scripts conftest.py
 	ruff check src tests scripts conftest.py
 	flake8 src tests scripts conftest.py
 
