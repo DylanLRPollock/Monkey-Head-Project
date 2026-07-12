@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import os
 import platform
 import re
 import shlex
 import shutil
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, Sequence
 
