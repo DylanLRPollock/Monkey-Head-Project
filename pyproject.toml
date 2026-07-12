@@ -196,7 +196,8 @@ where = ["src"]
 [tool.black]
 target-version = ["py313"]
 line-length = 88
-extend-exclude = '''
+# Black treats multiline excludes as verbose regexes; keep the flag explicit.
+extend-exclude = '''(?x)
 ^/src/huey/
 (
   connectors/pyhuey
