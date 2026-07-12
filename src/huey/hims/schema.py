@@ -146,7 +146,9 @@ class HIMSMessage:
                 else None
             ),
             reply_to=(
-                str(payload["reply_to"]) if payload.get("reply_to") is not None else None
+                str(payload["reply_to"])
+                if payload.get("reply_to") is not None
+                else None
             ),
         )
 
