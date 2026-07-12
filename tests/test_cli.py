@@ -296,7 +296,9 @@ def test_v1_run_queue_mock_processes_sorted_and_handles_failures(
     assert run_records[1]["exit_status"] == "success"
     assert run_records[2]["exit_status"] == "error"
     assert run_records[2]["error_message_if_any"] == "mock fixture failure"
-    shadow_records = sorted((Path(output["hims_shadow_dir"]) / "records").glob("*.json"))
+    shadow_records = sorted(
+        (Path(output["hims_shadow_dir"]) / "records").glob("*.json")
+    )
     assert len(shadow_records) == 12
 
 
@@ -306,9 +308,7 @@ def test_hims_summary_command_reports_shadow_state(tmp_path: Path, capsys):
     shadow = ShadowHIMS(tmp_path / "hims-shadow")
     shadow.emit_run_record(_build_shadow_run_record(fixture))
 
-    exit_code = cli.main(
-        ["hims-summary", "--shadow-root", str(shadow.root), "--json"]
-    )
+    exit_code = cli.main(["hims-summary", "--shadow-root", str(shadow.root), "--json"])
 
     assert exit_code == 0
     payload = json.loads(capsys.readouterr().out)
