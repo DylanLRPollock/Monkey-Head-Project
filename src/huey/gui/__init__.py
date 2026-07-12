@@ -17,15 +17,6 @@ from huey.gui.state import (
     RuntimeState,
     build_default_state,
 )
-from huey.gui.theme import HueyTheme, as_qt_stylesheet, as_tk_palette, get_default_theme
-from huey.gui.tk import (
-    apply_root_chrome,
-    apply_ttk_chrome,
-    listbox_kwargs,
-    primary_button_kwargs,
-    text_surface_kwargs,
-    tk_palette,
-)
 from huey.gui.surfaces import (
     GuiAction,
     GuiActionSection,
@@ -35,6 +26,15 @@ from huey.gui.surfaces import (
     default_gui_surfaces,
     search_gui_actions,
     section_actions,
+)
+from huey.gui.theme import HueyTheme, as_qt_stylesheet, as_tk_palette, get_default_theme
+from huey.gui.tk import (
+    apply_root_chrome,
+    apply_ttk_chrome,
+    listbox_kwargs,
+    primary_button_kwargs,
+    text_surface_kwargs,
+    tk_palette,
 )
 
 __all__ = [
