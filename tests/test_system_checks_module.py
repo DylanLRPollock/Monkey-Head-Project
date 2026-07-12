@@ -12,8 +12,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from huey.os.core.platform_support import HostPlatform
 from huey.os import system_checks
+from huey.os.core.platform_support import HostPlatform
 
 
 def _host(
