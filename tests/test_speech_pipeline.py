@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from huey.media.media_manifest import MediaProbe
 from huey.media.media_manager import CommandResult
+from huey.media.media_manifest import MediaProbe
 from huey.media.speech_pipeline import prepare_audio_for_transcription
 
 
