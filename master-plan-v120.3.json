@@ -1,0 +1,411 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "project": "Monkey-Head-Project",
+  "ai_identity": "Huey",
+  "version": "v120.3",
+  "schema_version": 120.3,
+  "schema_contract_version": "master_plan_schema_v120.3",
+  "document_kind": "machine_facing_master_plan",
+  "status_date": "2026-07-12",
+  "created_by": "Dylan L.R. Pollock with Atlas continuity support",
+  "supersedes": "master-plan-v120.2.json",
+  "status": "proposed_in_pr",
+  "description": "Master Plan v120.3 reorganizes the active direction around Huey Brain, Huey Body, and Huey Farm; establishes PyHuey as the primary GUI and a core runtime component; adopts hueyos as the target canonical Python namespace; keeps V1 definition open until a genuinely useful system is demonstrated; and introduces explicit limits for fidelity, logging, testing, procurement, migration, and canon authority.",
+  "source_basis": {
+    "primary_previous_master_plan": "master-plan-v120.2.json",
+    "forward_path_record": "docs/architecture/v120.3-forward-path-decision-record.md",
+    "current_session_date": "2026-07-12",
+    "explicit_decisions": [
+      "The project is organized around Huey Brain, Huey Body, and Huey Farm.",
+      "PyHuey GUI is the primary interface and a core runtime component intended for extensive use.",
+      "The target canonical Python namespace is hueyos; useful huey and legacy material is to be rewritten and merged deliberately.",
+      "The main Monkey-Head-Project repository remains canonical and may absorb coherent external components.",
+      "Project releases continue to use internal version numbering.",
+      "Structured records should preserve all useful operational information while excluding secrets.",
+      "Transcription is judged by fidelity and will use categories or tiers.",
+      "Testing includes unit tests, mocked integration tests in CI, fixture fidelity evaluation, manual live end-to-end tests, and detailed failure-path tests.",
+      "The architecture assumes large-model use normally and medium-model use only in uncommon constrained or specialized cases.",
+      "Hardware architecture is based around Intel Core i9-class systems from 12th generation or newer.",
+      "Market-available components are preferred; inexpensive Chinese hardware and supply channels may be used when category-specific standards are met.",
+      "Huey Body is under active rework.",
+      "Only Dylan L.R. Pollock may lock project canon."
+    ],
+    "source_priority": [
+      "Dylan's explicit current-session decisions",
+      "newest accepted machine-facing master plan",
+      "merged repository and implementation state",
+      "README and technical documentation",
+      "older plans, transcripts, and archives as lineage"
+    ],
+    "inheritance_policy": "Carry forward v120.2 implementation evidence and lineage unless v120.3 explicitly changes the direction. Do not present target-state decisions as already implemented."
+  },
+  "truth_model": {
+    "current_reality": "Observed hardware, merged code, working commands, and directly verified behavior.",
+    "accepted_direction": "Architecture Dylan has selected for implementation, even when migration is incomplete.",
+    "provisional_choice": "A working selection that remains replaceable through evidence.",
+    "unresolved": "A decision intentionally left open pending additional detail or testing.",
+    "target_state": "A longer-term capability whose implementation depends on resources, maturity, or later validation.",
+    "historical_lineage": "Earlier systems and decisions retained for continuity without overriding current direction."
+  },
+  "canon": {
+    "authority": "Dylan L.R. Pollock",
+    "rule": "No agent, tool, contributor, generated document, branch, or pull request may independently lock canon.",
+    "acceptance_mechanisms": [
+      "Dylan explicitly states acceptance",
+      "Dylan intentionally merges a designated canonical update"
+    ],
+    "machine_facing_source": "master-plan-v120.3.json after acceptance",
+    "human_facing_source": "README.md aligned to v120.3",
+    "conflict_rule": "Current explicit decisions override older documentation; implementation reality must still be labelled separately from accepted direction."
+  },
+  "three_part_architecture": {
+    "decision": "Organize the system around Huey Brain, Huey Body, and Huey Farm.",
+    "huey_brain": {
+      "role": "Identity-bearing cognition and orchestration centre.",
+      "responsibilities": [
+        "PyHuey operator interaction",
+        "cognition and model selection",
+        "workflow orchestration",
+        "memory access and state coordination",
+        "structured evidence and audit records",
+        "coordination with Body and Farm"
+      ],
+      "current_platform": {
+        "status": "active_prototype",
+        "system": "Custom Intel Core i9-12900K workstation",
+        "purpose": "Primary operator workstation, architecture test bed, and proof platform",
+        "note": "The exact boundary between the current prototype and a polished Huey Brain remains open."
+      },
+      "target_hardware_rule": "Brain architecture is based around Intel Core i9-class processors from 12th generation or newer."
+    },
+    "huey_body": {
+      "role": "Physical embodiment and environmental interface.",
+      "responsibilities": [
+        "sensing",
+        "actuation",
+        "movement",
+        "power and cooling integration",
+        "physical safety",
+        "recoverable interaction with the environment"
+      ],
+      "status": "active_rework",
+      "current_boundary": "The exact mechanical, electrical, sensor, power, and runtime scope will be documented as the rework is clarified.",
+      "integration_rule": "Brain and Body integration requires explicit interfaces, operator-visible state, safe-stop behavior, and recovery procedures."
+    },
+    "huey_farm": {
+      "role": "Scalable compute, model, storage, and support infrastructure.",
+      "responsibilities": [
+        "large-model hosting",
+        "pooled accelerator capacity",
+        "shared storage and artifacts",
+        "compute expansion",
+        "backup and recovery support where explicitly assigned"
+      ],
+      "status": "target_state_funding_dependent",
+      "planning_scale": "Approximately 80 GB pooled local VRAM remains a planning reference, not a locked procurement specification.",
+      "procurement_rule": "Refresh model, accelerator, power, cooling, software, and cost comparisons when funding makes acquisition actionable."
+    },
+    "unresolved_boundaries": [
+      "Whether Huey identity spans all three parts or is embodied authoritatively by Brain",
+      "Where canonical memory, models, logs, and state reside",
+      "Communication and authentication protocols",
+      "Disconnected and degraded operation",
+      "Farm authority versus service-only behavior",
+      "Whether HueyOS is installed across all three parts or orchestrates them primarily from Brain"
+    ]
+  },
+  "pyhuey": {
+    "accepted_role": "Primary GUI and core runtime component",
+    "use_expectation": "Extensive normal operation rather than optional demonstration use",
+    "current_reality": [
+      "PyHuey exists as a standalone application and an embedded connector path.",
+      "The current Monkey-Head-Project implementation still contains external-cockpit wording and incomplete integration assumptions from v120.2."
+    ],
+    "direction": [
+      "Move primary operator workflows into PyHuey.",
+      "Expose fixed, attributable, reviewable HueyOS capabilities through PyHuey.",
+      "Retain a recovery-capable CLI for diagnostics, automation, and operation when the GUI is unavailable.",
+      "Avoid duplicating PyHuey with Command Center unless Command Center develops a distinct validated role."
+    ],
+    "acceptance_evidence": [
+      "Reliable launch and shutdown",
+      "Observable workflow state",
+      "Secret-safe provider configuration",
+      "Detailed structured logs",
+      "Recoverable errors",
+      "Tests for core operator workflows"
+    ]
+  },
+  "namespace_and_repository": {
+    "canonical_repository": "DylanLRPollock/Monkey-Head-Project",
+    "repository_rule": "The main repository remains canonical and may merge coherent external scripts, programs, and components.",
+    "current_python_namespace": "huey",
+    "target_python_namespace": "hueyos",
+    "migration_status": "accepted_direction_not_complete",
+    "migration_rules": [
+      "Inventory every active huey package and import path before moving it.",
+      "Choose one destination for each capability; do not preserve competing canonical implementations.",
+      "Rewrite and integrate useful legacy code rather than copying it unchanged.",
+      "Use compatibility shims only when required and give each shim an explicit retirement condition.",
+      "Update tests, scripts, entry points, docs, packaging metadata, and PyHuey connectors together.",
+      "Do not claim the hueyos migration is complete until imports, commands, tests, and documentation agree."
+    ],
+    "pull_request_policy": {
+      "size": "large_medium_or_small",
+      "selection_rule": "Use the largest coherent scope that remains understandable and reviewable.",
+      "required_content": [
+        "purpose",
+        "boundaries",
+        "validation",
+        "known risks",
+        "unresolved follow-up"
+      ]
+    }
+  },
+  "hardware_direction": {
+    "architecture_baseline": "Intel Core i9-class, 12th generation or newer",
+    "scope": "Primary Brain-class architecture; support nodes do not automatically require the same class.",
+    "model_assumption": {
+      "normal": "large models",
+      "rare": "medium models for constrained, fallback, or specialized use",
+      "unresolved": [
+        "parameter ranges",
+        "quantization policy",
+        "minimum context size",
+        "latency targets",
+        "local versus API placement",
+        "minimum accelerator memory"
+      ]
+    },
+    "procurement": {
+      "market_rule": "Prefer parts and systems available through ordinary market channels.",
+      "cost_rule": "Chinese manufacturers and marketplaces may be relied upon for inexpensive components when practical.",
+      "category_checks": [
+        "electrical and physical safety",
+        "reliability",
+        "documentation",
+        "repairability",
+        "replacement availability",
+        "driver and software support",
+        "data handling and network trust",
+        "total delivered cost"
+      ],
+      "two_of_three_rule": {
+        "status": "unresolved",
+        "note": "Dylan indicated a two-out-of-three approach but the three criteria or authorities still require definition."
+      }
+    }
+  },
+  "v1_position": {
+    "status": "definition_open",
+    "decision": "Do not lock V1 prematurely. Define it from a system that proves genuinely useful operation under the Monkey-Head-Project umbrella.",
+    "minimum_characteristics": [
+      "useful",
+      "demonstrable",
+      "repeatable enough for its declared purpose",
+      "attributable through structured evidence",
+      "clearly part of the Monkey-Head-Project"
+    ],
+    "foundation_proof": {
+      "path": "known MP3 fixture -> media preparation -> local transcription -> API-backed response -> structured log",
+      "status": "active_foundation_proof",
+      "interpretation": "This remains valuable and should be completed, but v120.3 does not automatically declare it to be the whole of V1."
+    },
+    "open_questions": [
+      "Which recurring problem V1 solves",
+      "Who uses it and how often",
+      "Whether V1 is Brain-only or requires Body or Farm participation",
+      "What repetition and reliability thresholds earn the declaration",
+      "Whether the foundation proof is V1, a prerequisite, or one subsystem proof"
+    ]
+  },
+  "transcription_and_fidelity": {
+    "working_engine": "faster-whisper",
+    "engine_status": "provisional_until_evidence_selects_or_replaces_it",
+    "selection_open": [
+      "model",
+      "compute type",
+      "CPU path",
+      "accelerator path",
+      "fallback behavior"
+    ],
+    "primary_quality_rule": "Judge transcription by fidelity, not by successful process completion alone.",
+    "tier_framework": {
+      "status": "framework_accepted_thresholds_open",
+      "dimensions": [
+        "missing content",
+        "hallucinated content",
+        "wording preservation",
+        "names and technical terms",
+        "chronology",
+        "speaker order",
+        "semantic meaning",
+        "archival suitability",
+        "manual or reference-backed verification"
+      ],
+      "provisional_categories": [
+        "failed",
+        "recognizable",
+        "usable",
+        "high_fidelity",
+        "verified_archival"
+      ],
+      "rule": "Category names may be retained or replaced after Dylan supplies the intended tier details; numeric thresholds are not locked in v120.3."
+    }
+  },
+  "cognition_provider": {
+    "status": "fit_based_selection",
+    "rule": "Use the API or local provider that best fits the task and architecture; do not bind the system prematurely to one provider.",
+    "selection_criteria": [
+      "capability",
+      "quality",
+      "cost",
+      "privacy",
+      "availability",
+      "context size",
+      "latency",
+      "replaceability",
+      "local sovereignty path"
+    ]
+  },
+  "logging": {
+    "rule": "Preserve all useful operational information while excluding secrets and unnecessary private data.",
+    "required_fields": [
+      "run identifier",
+      "UTC timestamps",
+      "initiating interface and operator action",
+      "input identity and checksum where applicable",
+      "stage transitions",
+      "models and providers",
+      "configuration and relevant environment",
+      "hardware and device path",
+      "timing and resource observations",
+      "outputs and artifact references",
+      "warnings",
+      "errors and stack context",
+      "recovery actions",
+      "software version and commit",
+      "final status"
+    ],
+    "prohibited_fields": [
+      "API keys",
+      "tokens",
+      "passwords",
+      "private keys",
+      "authentication headers",
+      "unredacted secret-bearing configuration"
+    ],
+    "failure_rule": "A failed run should still leave the most complete attributable record possible."
+  },
+  "testing": {
+    "baseline": [
+      "unit tests",
+      "mocked integration tests in CI",
+      "fixture-based fidelity evaluation",
+      "manual live end-to-end tests",
+      "explicit failure-path tests"
+    ],
+    "failure_detail": "Tests should expose stage, input, environment, expected behavior, observed behavior, error context, and recovery result where applicable.",
+    "release_rule": "Documentation-only alignment may merge without runtime tests; implementation claims require checks appropriate to the changed capability."
+  },
+  "implementation_limits": [
+    "Maintain one active canonical implementation per capability wherever practical.",
+    "Mark experimental systems clearly and isolate them from normal authority.",
+    "Preserve lineage without presenting obsolete code as operational.",
+    "Rewrite and merge legacy code deliberately rather than importing it unchanged.",
+    "Keep exhaustive logs secret-safe.",
+    "Do not introduce unexplained hardware dependencies.",
+    "Require explicit interfaces, safe-stop, and recovery for Body-facing work.",
+    "Require authenticated and observable interfaces between Brain, Body, and Farm.",
+    "Keep current reality separate from accepted direction and target state.",
+    "Do not finalize V1 until usefulness and participation are defined."
+  ],
+  "active_labtech": [
+    {
+      "name": "ASUS FX505DT",
+      "classification": "LabTech",
+      "baseline": "Debian 14 Forky; 32 GB DDR4",
+      "role": "Mobile lab, development, transcription experimentation, and support"
+    },
+    {
+      "name": "Lenovo Legion Go",
+      "classification": "LabTech",
+      "baseline": "Windows 11",
+      "role": "Windows feature and compatibility testing"
+    },
+    {
+      "name": "Briefcase",
+      "classification": "HueyTech",
+      "role": "LTE-capable field terminal for reachability, documentation, diagnostics, and recovery",
+      "authority": "Limited until authentication, audit, failure handling, and revocation are proven"
+    }
+  ],
+  "hims": {
+    "current_reality": "The append-only HIMS foundation exists under src/huey/messaging.",
+    "current_role": "Foundation-stage messages, events, local records, and optional tracing.",
+    "authority_status": "not_controlling_runtime",
+    "future_rule": "Routing, execution, refusal, recovery, and governance authority require separate explicit validation."
+  },
+  "command_center": {
+    "status": "experimental_interface_sandbox",
+    "rule": "May contribute validated interface concepts, but must not duplicate PyHuey or receive credentials and control authority without a distinct tested role."
+  },
+  "documentation_layers": {
+    "master_plan": "Machine-facing canon, reasoning, boundaries, and status.",
+    "readme": "Professional human-facing orientation and current route.",
+    "technical_docs": "Implementation detail, setup, architecture, runbooks, and audits.",
+    "governance": "Constitution, legitimacy, offices, and lawful authority.",
+    "website": "Public-facing coherence layer.",
+    "archives": "Lineage and continuity records that do not automatically override current decisions."
+  },
+  "work_program": {
+    "immediate": [
+      "Complete v120.3 documentation synchronization.",
+      "Inventory the huey to hueyos namespace migration.",
+      "Define the present Huey Body rework scope.",
+      "Complete the fixture-to-log foundation proof through PyHuey with CLI recovery.",
+      "Define fidelity tiers with measurable acceptance evidence.",
+      "Define Brain, Body, and Farm interfaces and trust boundaries."
+    ],
+    "next": [
+      "Migrate capabilities into hueyos in coherent PRs.",
+      "Stabilize PyHuey core workflows and logging.",
+      "Choose transcription and cognition paths from measured evidence.",
+      "Define the two-of-three hardware decision method.",
+      "Determine the useful recurring function that anchors V1."
+    ],
+    "later": [
+      "Expand live input and embodied interaction after foundation interfaces are stable.",
+      "Procure and validate Farm capacity when funding and evidence align.",
+      "Advance HIMS and constitutional governance authority through separate validated stages."
+    ]
+  },
+  "unresolved_decisions": [
+    "Final V1 definition",
+    "Exact Brain, Body, and Farm authority boundaries",
+    "Identity distribution across the three parts",
+    "Memory and canonical-state placement",
+    "Communication and authentication contracts",
+    "Current versus polished Brain boundary",
+    "Exact Body rework scope",
+    "Fidelity tier names and thresholds",
+    "Transcription model and compute path",
+    "Cognition provider and model",
+    "Large-model operational definition",
+    "Two-of-three hardware decision rule",
+    "Maximum acceptable external-service dependency",
+    "Capabilities classified as active, limited, experimental, paused, or deferred"
+  ],
+  "change_log_v120_3": [
+    "Reframed the architecture around Brain, Body, and Farm.",
+    "Promoted PyHuey from external cockpit language to primary GUI and core runtime direction.",
+    "Selected hueyos as the target namespace while preserving the truth that src/huey remains current implementation.",
+    "Changed V1 from a prematurely fixed fixture proof to a usefulness-led declaration that remains open.",
+    "Retained the fixture-to-log path as an active foundation proof.",
+    "Added large-model-first and i9 12th-generation-or-newer architecture direction.",
+    "Added market and Chinese procurement posture with category-specific safeguards.",
+    "Reopened Huey Body as an active rework with bounded safety and integration requirements.",
+    "Expanded logging, testing, fidelity, PR-scope, and canon-authority rules.",
+    "Separated accepted direction from current implementation and unresolved decisions."
+  ]
+}
