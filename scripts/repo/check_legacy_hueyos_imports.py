@@ -26,6 +26,7 @@ ALLOWED_PATHS: set[str] = {
     "src/huey/hardware/plugins.py",
     "tests/test_hueyos_namespace.py",
     "tests/test_layout_canonicalization.py",
+    "tests/test_v120_asset_audit.py",
     "scripts/repo/check_legacy_hueyos_imports.py",
     "docs/architecture/huey-layout.md",
 }
