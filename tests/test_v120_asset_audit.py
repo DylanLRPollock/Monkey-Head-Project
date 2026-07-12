@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 from scripts.repo.audit_v120_assets import (
     build_report,
@@ -11,6 +12,7 @@ from scripts.repo.audit_v120_assets import (
     render_markdown,
 )
 from scripts.repo.check_canon_terms import _compile_rules
+from scripts.repo.check_legacy_hueyos_imports import is_allowed_text_reference
 from scripts.repo.check_repo_drift import DriftRule, should_check_rule
 
 
@@ -104,3 +106,12 @@ def test_asset_audit_can_name_review_paths_without_failing_drift() -> None:
     )
     assert not should_check_rule(audit_path, integration_rule)
     assert should_check_rule(audit_path, other_rule)
+
+
+def test_legacy_namespace_allowance_is_exact_and_audit_only() -> None:
+    audit_path = Path("scripts/repo/audit_v120_assets.py")
+    assert is_allowed_text_reference(audit_path, '    "src/hueyos/",')
+    assert not is_allowed_text_reference(audit_path, "import hueyos")
+    assert not is_allowed_text_reference(
+        Path("scripts/new_runtime.py"), '"src/hueyos/",'
+    )
