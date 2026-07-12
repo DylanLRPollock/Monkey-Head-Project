@@ -25,7 +25,6 @@ except ImportError:  # pragma: no cover - degrade gracefully
 
 from huey.os.core.platform_support import detect_host_platform
 
-
 LOGGER = logging.getLogger(__name__)
 
 
@@ -356,7 +355,9 @@ class BatteryMonitor:
             return self._darwin_command(action)
         if host.is_linux:
             return self._linux_command(action)
-        LOGGER.warning("No power action implementation is available for %s", host.system)
+        LOGGER.warning(
+            "No power action implementation is available for %s", host.system
+        )
         return None
 
     def _linux_command(self, action: str) -> Optional[List[str]]:

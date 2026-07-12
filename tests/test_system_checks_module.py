@@ -12,8 +12,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from huey.os.core.platform_support import HostPlatform
 from huey.os import system_checks
+from huey.os.core.platform_support import HostPlatform
 
 
 def _host(
@@ -94,6 +94,7 @@ def test_check_os_support_accepts_supported_macos_version(monkeypatch, caplog):
 
     assert supported is True
     assert "Unsupported macOS version" not in caplog.text
+
 
 def test_check_os_support_warns_for_non_debian_linux(monkeypatch, caplog):
     monkeypatch.setattr(
@@ -386,9 +387,9 @@ def test_system_check_uses_windows_tool_requirements(monkeypatch):
     monkeypatch.setattr(
         system_checks.shutil,
         "which",
-        lambda tool: f"C:/Tools/{tool}.exe"
-        if tool in {"git", "python", "pwsh"}
-        else None,
+        lambda tool: (
+            f"C:/Tools/{tool}.exe" if tool in {"git", "python", "pwsh"} else None
+        ),
     )
 
     results = system_checks.system_check()

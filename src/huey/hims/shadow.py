@@ -106,11 +106,17 @@ class ShadowHIMS:
             "message_count": len(messages),
             "message_ids": [str(record["message_id"]) for record in messages],
             "statuses": dict(
-                sorted(Counter(str(record.get("status", "")) for record in messages).items())
+                sorted(
+                    Counter(
+                        str(record.get("status", "")) for record in messages
+                    ).items()
+                )
             ),
             "intent_types": dict(
                 sorted(
-                    Counter(str(record.get("intent_type", "")) for record in messages).items()
+                    Counter(
+                        str(record.get("intent_type", "")) for record in messages
+                    ).items()
                 )
             ),
             "ledger_entries": ledger_entries,
@@ -163,7 +169,10 @@ class ShadowHIMS:
             if intent_value and intent_value not in lineage_summary["intent_types"]:
                 lineage_summary["intent_types"].append(intent_value)
             status_value = str(record.get("status", "")).strip()
-            if status_value and status_value not in lineage_summary["terminal_statuses"]:
+            if (
+                status_value
+                and status_value not in lineage_summary["terminal_statuses"]
+            ):
                 lineage_summary["terminal_statuses"].append(status_value)
             updated_at = str(record.get("updated_at", ""))
             if updated_at >= str(lineage_summary["last_updated_at"]):
@@ -314,7 +323,10 @@ class ShadowHIMS:
         )
         packet_snapshot = self.mail.post(
             packet,
-            metadata={"shadow_mode": True, "lineage_stage": "external_interface_packet"},
+            metadata={
+                "shadow_mode": True,
+                "lineage_stage": "external_interface_packet",
+            },
         )
         self.mail.transition(
             packet.message_id,

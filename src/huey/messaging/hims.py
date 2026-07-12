@@ -219,7 +219,9 @@ class HIMSStore:
     def list_messages(self) -> list[HIMSMessage]:
         """Return every message in append order."""
 
-        return [HIMSMessage.from_dict(row) for row in self._read_jsonl(self.messages_path)]
+        return [
+            HIMSMessage.from_dict(row) for row in self._read_jsonl(self.messages_path)
+        ]
 
     def get_message(self, message_id: str) -> HIMSMessage | None:
         """Return one message by id, or ``None`` when absent."""
@@ -229,13 +231,19 @@ class HIMSStore:
                 return message
         return None
 
-    def inbox(self, recipient: str, *, include_archived: bool = False) -> list[HIMSMessage]:
+    def inbox(
+        self, recipient: str, *, include_archived: bool = False
+    ) -> list[HIMSMessage]:
         """Return messages addressed to ``recipient``."""
 
         messages = [m for m in self.list_messages() if m.recipient == recipient]
         if include_archived:
             return messages
-        return [m for m in messages if self.status_for(m.message_id) != MessageStatus.ARCHIVED]
+        return [
+            m
+            for m in messages
+            if self.status_for(m.message_id) != MessageStatus.ARCHIVED
+        ]
 
     def outbox(self, sender: str) -> list[HIMSMessage]:
         """Return messages sent by ``sender``."""

@@ -17,10 +17,11 @@ from typing import Any
 from huey.os.core.platform_support import (
     HostPlatform,
     detect_host_platform,
-    distro as platform_distro,
+)
+from huey.os.core.platform_support import distro as platform_distro
+from huey.os.core.platform_support import (
     require_admin_privileges,
 )
-
 
 logger = logging.getLogger(__name__)
 distro = platform_distro
@@ -144,7 +145,9 @@ def _leading_version_number(value: str) -> int | None:
 
 def _check_windows_support(host: HostPlatform) -> bool:
     release = host.release or host.version
-    major = _leading_version_number(host.release) or _leading_version_number(host.version)
+    major = _leading_version_number(host.release) or _leading_version_number(
+        host.version
+    )
     if major is None or major < MIN_WINDOWS_RELEASE:
         logger.warning(
             "Unsupported Windows version detected: %s. HueyOS requires Windows %s or newer.",
@@ -179,7 +182,9 @@ def check_os_support(host: HostPlatform | None = None) -> bool:
         return _check_macos_support(host)
 
     if not host.is_linux:
-        logger.warning("Unsupported operating system detected: %s", host.system or "unknown")
+        logger.warning(
+            "Unsupported operating system detected: %s", host.system or "unknown"
+        )
         return False
 
     dist_id, codename = _detect_linux_distribution(host)

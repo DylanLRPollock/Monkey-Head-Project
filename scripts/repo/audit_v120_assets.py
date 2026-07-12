@@ -83,21 +83,43 @@ _MASTER_PLAN_VERSION = re.compile(
 
 def tracked_paths() -> list[str]:
     """Return NUL-safe tracked paths from the current Git worktree."""
-    output = subprocess.check_output(["git", "ls-files", "-z"])
-    return sorted(path for path in output.decode("utf-8").split("\0") if path)
+    output = subprocess.check_output(
+        ["git", "ls-files", "-z"],
+        text=True,
+        encoding="utf-8",
+        errors="surrogateescape",
+    )
+    return sorted(path for path in output.split("\0") if path)
 
 
 def read_inventory(path: str) -> list[str]:
     """Read a newline-delimited inventory snapshot."""
-    with open(path, encoding="utf-8") as handle:
+    with open(path, encoding="utf-8", errors="surrogateescape") as handle:
         return sorted(line.strip().strip('"') for line in handle if line.strip())
+
+
+def normalize_repository_path(path: str) -> str:
+    """Return one stable POSIX-style representation of a repository path."""
+    normalized = path.replace("\\", "/")
+    while normalized.startswith("./"):
+        normalized = normalized[2:]
+    return normalized
+
+
+def normalize_repository_paths(paths: Iterable[str]) -> list[str]:
+    """Normalize and deduplicate paths while preserving deterministic order."""
+    return sorted(
+        {
+            normalized
+            for path in paths
+            if (normalized := normalize_repository_path(path))
+        }
+    )
 
 
 def classify_path(path: str) -> tuple[str, str]:
     """Classify one repository-relative path using first-match policy order."""
-    normalized = path.replace("\\", "/")
-    if normalized.startswith("./"):
-        normalized = normalized[2:]
+    normalized = normalize_repository_path(path)
     for rule in RULES:
         if any(normalized.startswith(prefix) for prefix in rule.prefixes):
             return rule.category, rule.reason
@@ -110,7 +132,7 @@ def classify_path(path: str) -> tuple[str, str]:
 def find_version_drift(paths: Iterable[str]) -> list[str]:
     """Find current-facing master plans whose filename is not the canonical version."""
     findings: list[str] = []
-    for path in paths:
+    for path in normalize_repository_paths(paths):
         category, _ = classify_path(path)
         if category in {"archive_only", "generated_or_release_payload", "vendored"}:
             continue
@@ -123,7 +145,7 @@ def find_version_drift(paths: Iterable[str]) -> list[str]:
 def duplicate_basenames(paths: Iterable[str]) -> dict[str, list[str]]:
     """Return duplicate basenames across active and review-required surfaces."""
     grouped: dict[str, list[str]] = defaultdict(list)
-    for path in paths:
+    for path in normalize_repository_paths(paths):
         category, _ = classify_path(path)
         if category not in {"active", "review_required", "experimental"}:
             continue
@@ -137,15 +159,20 @@ def duplicate_basenames(paths: Iterable[str]) -> dict[str, list[str]]:
 
 def build_report(paths: Sequence[str]) -> dict[str, object]:
     """Build a deterministic, JSON-serializable v120.2 repository report."""
-    categories = Counter(classify_path(path)[0] for path in paths)
-    missing = [path for path in REQUIRED_CANONICAL_FILES if path not in paths]
-    duplicates = duplicate_basenames(paths)
+    normalized_paths = normalize_repository_paths(paths)
+    categories = Counter(classify_path(path)[0] for path in normalized_paths)
+    missing = [
+        path for path in REQUIRED_CANONICAL_FILES if path not in normalized_paths
+    ]
+    duplicates = duplicate_basenames(normalized_paths)
     return {
         "policy_version": POLICY_VERSION,
-        "tracked_path_count": len(paths),
+        "tracked_path_count": len(normalized_paths),
         "category_counts": dict(sorted(categories.items())),
         "missing_canonical_files": missing,
-        "current_facing_master_plan_version_drift": find_version_drift(paths),
+        "current_facing_master_plan_version_drift": find_version_drift(
+            normalized_paths
+        ),
         "duplicate_basename_groups": duplicates,
         "duplicate_basename_group_count": len(duplicates),
         "rules": [asdict(rule) for rule in RULES],
@@ -202,9 +229,7 @@ def main() -> int:
         "--inventory",
         help="Read paths from an existing newline-delimited inventory instead of Git.",
     )
-    parser.add_argument(
-        "--format", choices=("json", "markdown"), default="markdown"
-    )
+    parser.add_argument("--format", choices=("json", "markdown"), default="markdown")
     parser.add_argument(
         "--fail-on-canon-drift",
         action="store_true",

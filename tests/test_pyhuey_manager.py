@@ -54,7 +54,12 @@ def test_manager_gui_payload_groups_actions_and_paths():
 
     assert payload["title"] == "Monkey Manager"
     assert payload["paths"]["project_root"].endswith("Monkey-Head-Project")
-    assert payload["paths"]["installer_target"] in {"windows", "macos", "debian", "linux"}
+    assert payload["paths"]["installer_target"] in {
+        "windows",
+        "macos",
+        "debian",
+        "linux",
+    }
     assert payload["paths"]["install"]["exists"] is True
     assert payload["paths"]["update"]["exists"] is True
     assert payload["paths"]["run"]["exists"] is True
@@ -90,7 +95,9 @@ def test_adapter_status_includes_gui_state():
         status = launch_pyhuey(tools=[MonkeyManager()])
         assert status["running"] is True
         assert status["gui_state"]["tool_count"] == 1
-        assert status["gui_state"]["tools"][0]["gui_payload"]["title"] == "Monkey Manager"
+        assert (
+            status["gui_state"]["tools"][0]["gui_payload"]["title"] == "Monkey Manager"
+        )
     finally:
         shutdown_pyhuey()
 

@@ -50,6 +50,15 @@ NON_CURRENT_FACING_NAMES: tuple[str, ...] = (
     "scripts/repo/check_repo_drift.py",
 )
 
+# Policy and audit tools must be able to name the legacy paths they detect.
+# Keep these exemptions rule-specific so the files remain subject to all other
+# current-facing drift checks.
+RULE_REFERENCE_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
+    {
+        ("scripts/repo/audit_v120_assets.py", "integrations-pygpt-path"),
+    }
+)
+
 
 def _is_pyhuey_canonical() -> bool:
     return os.path.isdir("src/huey/connectors/pyhuey")
@@ -145,6 +154,8 @@ def is_current_facing(path: str) -> bool:
 
 def should_check_rule(path: str, rule: DriftRule) -> bool:
     if not is_current_facing(path):
+        return False
+    if (path, rule.name) in RULE_REFERENCE_ALLOWLIST:
         return False
     if rule.name == "docker-primary-pygpt":
         return os.path.basename(path) == "Dockerfile"

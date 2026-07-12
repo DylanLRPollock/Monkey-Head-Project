@@ -85,9 +85,11 @@ def test_network_manager_windows_uses_powershell(monkeypatch) -> None:
     )
     monkeypatch.setattr(
         "huey.network.manager.shutil.which",
-        lambda tool: "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
-        if tool == "powershell"
-        else None,
+        lambda tool: (
+            "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
+            if tool == "powershell"
+            else None
+        ),
     )
     monkeypatch.setattr(
         "huey.network.manager.subprocess.run",

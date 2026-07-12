@@ -55,7 +55,8 @@ def test_normalize_platform_family_recognizes_common_aliases(
     expected: str,
 ) -> None:
     assert (
-        platform_support.normalize_platform_family(system, sys_platform_name) == expected
+        platform_support.normalize_platform_family(system, sys_platform_name)
+        == expected
     )
 
 
@@ -136,9 +137,9 @@ def test_build_platform_script_command_prefers_powershell(monkeypatch) -> None:
     monkeypatch.setattr(
         platform_support.shutil,
         "which",
-        lambda tool: "C:/Program Files/PowerShell/7/pwsh.exe"
-        if tool == "pwsh"
-        else None,
+        lambda tool: (
+            "C:/Program Files/PowerShell/7/pwsh.exe" if tool == "pwsh" else None
+        ),
     )
 
     command = platform_support.build_platform_script_command(

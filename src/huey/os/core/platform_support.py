@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import os
 import platform
 import re
 import shlex
 import shutil
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, Sequence
 
@@ -342,7 +342,11 @@ def resolve_platform_script_paths(
     """Resolve installer, updater, uninstaller, and run-script paths by platform."""
 
     root = find_project_root(project_root)
-    host = _host_platform_from_target(target) if target is not None else detect_host_platform()
+    host = (
+        _host_platform_from_target(target)
+        if target is not None
+        else detect_host_platform()
+    )
 
     installers_root = root / "src" / "huey" / "platform" / "installers"
     memory_root = root / "src" / "huey" / "memory"
@@ -410,7 +414,14 @@ def build_platform_script_command(
         batch_fallback = script_path.with_suffix(".bat")
         if batch_fallback.exists():
             return ["cmd", "/c", str(batch_fallback), *extra_args]
-        return ["powershell", "-ExecutionPolicy", "Bypass", "-File", str(script_path), *extra_args]
+        return [
+            "powershell",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(script_path),
+            *extra_args,
+        ]
     if suffix == ".bat":
         return ["cmd", "/c", str(script_path), *extra_args]
     if suffix == ".sh":

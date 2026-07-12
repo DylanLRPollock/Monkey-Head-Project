@@ -71,9 +71,7 @@ def _resolve_output_path(
         if value
     ]
     if len(selected) > 1:
-        raise ValueError(
-            "Choose only one of destination, --output, or --output-dir."
-        )
+        raise ValueError("Choose only one of destination, --output, or --output-dir.")
     if output:
         return Path(output).expanduser().resolve()
     if output_dir:
