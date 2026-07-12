@@ -24,7 +24,6 @@ except Exception:  # pragma: no cover - degrade gracefully
 
 from huey.os.core.platform_support import detect_host_platform
 
-
 LOGGER = logging.getLogger(__name__)
 
 
@@ -355,7 +354,9 @@ class NetworkManager:
                 capture_output=True,
             )
         except Exception:  # pragma: no cover
-            LOGGER.exception("Failed to invoke networksetup for interface %s", interface)
+            LOGGER.exception(
+                "Failed to invoke networksetup for interface %s", interface
+            )
 
     def _bring_up_windows_interface(self, interface: str) -> None:
         powershell = shutil.which("pwsh") or shutil.which("powershell")
@@ -381,7 +382,14 @@ class NetworkManager:
         if shutil.which("netsh"):
             try:
                 subprocess.run(
-                    ["netsh", "interface", "set", "interface", f"name={interface}", "admin=enabled"],
+                    [
+                        "netsh",
+                        "interface",
+                        "set",
+                        "interface",
+                        f"name={interface}",
+                        "admin=enabled",
+                    ],
                     check=False,
                     capture_output=True,
                 )
