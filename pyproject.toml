@@ -197,8 +197,11 @@ where = ["src"]
 target-version = ["py313"]
 line-length = 88
 extend-exclude = '''
-/src/huey/connectors/pyhuey/
-/src/huey/memory/PY/
+^/src/huey/
+(
+  connectors/pyhuey
+  | memory/PY
+)/
 '''
 
 [tool.isort]
