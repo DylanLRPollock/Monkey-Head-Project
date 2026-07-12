@@ -5,8 +5,8 @@ from __future__ import annotations
 from collections.abc import Iterable
 from importlib import import_module
 
-from huey.os.core.platform_support import split_command_line
 from huey.os.config_manager import ConfigManager
+from huey.os.core.platform_support import split_command_line
 
 from .main import build_parser
 
