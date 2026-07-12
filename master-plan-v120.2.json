@@ -1,0 +1,978 @@
+{
+  "$schema": "https://dlrp.ca/schemas/monkey-head-project/master-plan-v120.2.schema.json",
+  "project": "Monkey-Head-Project",
+  "ai_identity": "Huey",
+  "version": "v120.2",
+  "schema_version": 120.2,
+  "schema_contract_version": "master_plan_schema_v120.2",
+  "document_kind": "machine_facing_master_plan",
+  "status_date": "2026-07-11",
+  "generated_at_utc": "2026-07-11T20:35:02Z",
+  "created_by": "Dylan L.R. Pollock with Atlas continuity support",
+  "supersedes": "master-plan-v120.1.json",
+  "description": "Master Plan v120.2 preserves the v120.1 architecture and makes its reasoning explicit. It presents the prototype-to-polished Huey Brain path, fixture-first proof, hybrid transcription strategy, parallel Huey Body work, LabTech/HueyTech separation, Briefcase field role, HIMS foundation, PyHuey cockpit, Command Center sandbox, and funding-dependent Huey Farm as deliberate decisions with defined consequences and evidence-based review triggers.",
+  "source_basis": {
+    "primary_previous_master_plan": "master-plan-v120.1.json",
+    "previous_schema_version": 120.1,
+    "previous_status_date": "2026-07-11",
+    "current_session_evidence": [
+      "Generated-artifact cleanup merged into main via PR #743.",
+      "Salvaged local work was protected and later merged via PR #745, reducing the broad WIP surface to eight changed files before merge.",
+      "Legacy root compatibility wrappers were removed via PR #746, leaving canonical implementations under src/huey/memory/PY and src/huey/media.",
+      "Media-tool consolidation merged through PR #747, centralizing audio analysis under huey.media while retaining huey.audio compatibility.",
+      "HIMS foundation merged through PR #748 with src/huey/messaging, HIMSMessage, HIMSEvent, HIMSStore, tests, and architecture documentation; it is not wired as a controlling runtime.",
+      "The 2017 iMac 5K was decommissioned; reusable RAM was moved into the ASUS FX505DT.",
+      "The custom i9-12900K system is the active prototype Huey Brain development platform and current primary operator workstation, not the polished Huey Brain V1.",
+      "The Lenovo Legion Go is Windows 11 LabTech for feature testing; the ASUS FX505DT is Debian Forky mobile LabTech.",
+      "Briefcase is HueyTech: an LTE-capable portable field terminal intended to maintain reachability/liveness checks and support document work.",
+      "PyHuey is active both as a standalone application and embedded connector, and is the primary external prototype cockpit.",
+      "Command Center repository inspection established its current role as a runnable, mock-first GUI experiment whose useful interface concepts can be evaluated independently of operational systems."
+    ],
+    "inheritance_policy": "Carry forward the accepted v120.1 architecture. Version 120.2 expands rationale, improves professional tone, and clarifies consequences without reopening settled scope.",
+    "source_priority": [
+      "newest accepted machine-facing master plan",
+      "current-session explicit decisions",
+      "merged repository state",
+      "merged implementation state",
+      "README and website as human-facing surfaces",
+      "older Atlas transcripts and archived docs as lineage/history"
+    ]
+  },
+  "compiled_from_versions": [
+    "v0.1 (huey_master_plan_v0.1.json)",
+    "v2.0-final (master-plan-v2-final.json)",
+    "v3.0-draft (master-plan-v3.json)",
+    "v4.0-doc (master_plan_v4.docx)",
+    "v5.0-draft (master-plan-v5.json)",
+    "v7.0-skeleton (master-plan-v7-skeleton.json)",
+    "v7.0-full (master-plan-v7.json)",
+    "v8.0 + legacy constitution bundle",
+    "v10.0 unified master plan",
+    "v11.0 + v11.5 governance expansion",
+    "v12.0 tri-branch governance",
+    "v12.5 tri-branch + term limits + elections",
+    "v13.0 (master-plan-v13.json)",
+    "v14.0 WIP (master-plan-v14.txt)",
+    "v15.0 (master-plan-v15.json)",
+    "v16.0 (master-plan-v16.aligned.json)",
+    "v17.0 verbal alignment session (2026-01-27)",
+    "v18.0 verbal + documentation alignment session (2026-03-24)",
+    "v18.5 consistency reconciliation release (2026-03-24)",
+    "v19.0 embodied architecture + proof-of-concept alignment session (2026-03-24)",
+    "v20.0 README/masterplan editorial alignment session (2026-03-24)",
+    "v21.0 operational nervous-system alignment session (2026-03-25)",
+    "v22.0 canon-structure + pebble/vault + unified-organism clarification session (2026-03-26)",
+    "v23.0 boot-path + acoustic-identity clarification session (2026-03-27)",
+    "v24.0 README/front-door alignment session (2026-04-01)",
+    "v25.0 control-layer simplification + master-plan update session (2026-04-01)",
+    "v25.1 README/master-plan sync session (2026-04-02)",
+    "v26.0 aperture, trust-model, and mail-system alignment session (2026-04-10)",
+    "v26.1 HIMS formalization + canonical cleanup session (2026-04-10)",
+    "v26.2 README/master-plan structural polish session (2026-04-10)",
+    "v27.0 governance, office-registry, and continuity alignment session (2026-04-11)",
+    "v28.0 book, constitutional, and terminology normalization session (2026-04-11)",
+    "v29.0 portal-terminal / Vista box / unified portal session (2026-04-11)",
+    "v29.1 cleanup, flow normalization, and canon-sync session (2026-04-11)",
+    "v29.2 Vista Box BIOS-level bring-up and portal-hardware validation session (2026-04-11)",
+    "v29.3 portal terminology + Longhorn 4074 + Huey-Compressed clarification session (2026-04-11)",
+    "v30.0 founding-ratification / Failed Genesis formalization session (2026-04-14)",
+    "v30.1 post-v30 canon-inclusion and cleanup pass (2026-04-14)",
+    "v30.2 structural expansion and implementation-guidance pass (2026-04-14)",
+    "v31.0 LabTech / Huey Brain / Huey Body / deterministic audio-ingress alignment session (2026-05-02)",
+    "v100.9 Legion Go / Huey Brain V1 scope lock session (2026-05-03)",
+    "v100.9 completion pass from Atlas-10, README v100.9, Dylan profile, and local/site archives (2026-05-05)",
+    "v101.0 Atlas-12 continuity + compact prompt + Realtime/Windows/site-release alignment session (2026-05-09)",
+    "v101.1 PyHuey cockpit alignment session (2026-05-09)",
+    "v120.0 current-session master-plan refresh: repo cleanup, media consolidation, HIMS foundation, LabTech/HueyTech registry, V1/V1.5 proof realignment (2026-06-24)",
+    "v120.1 hardware-role correction and prototype-to-polished Huey Brain realignment (2026-07-11)",
+    "v120.2 assertive rationale and professional-clarity expansion (2026-07-11)"
+  ],
+  "schema_contract": {
+    "purpose": "Define the expected shape of v120.x master-plan JSON files.",
+    "required_top_level_keys": [
+      "project",
+      "ai_identity",
+      "version",
+      "schema_version",
+      "status_date",
+      "source_basis",
+      "current_reality",
+      "decision_framework",
+      "architectural_reasoning",
+      "scope_registry",
+      "device_registry",
+      "repository_state",
+      "v1_plan",
+      "v1_5_augmented_proof",
+      "hims",
+      "readme_followup_notes",
+      "change_log_v120_2"
+    ],
+    "status_values": [
+      "active",
+      "active_lab_observed",
+      "merged_not_fully_validated",
+      "draft_pr",
+      "paused",
+      "deferred",
+      "planned",
+      "target_state",
+      "historical",
+      "archived",
+      "temporary_use",
+      "active_prototype",
+      "active_build_not_operational",
+      "experimental_prototype",
+      "funding_dependent",
+      "decommissioned"
+    ],
+    "device_classes": [
+      "LabTech",
+      "HueyTech",
+      "TemporaryUse",
+      "Portal",
+      "Archive",
+      "DeferredHueySide",
+      "PrototypeHueyBrain"
+    ],
+    "scope_categories": [
+      "active",
+      "allowed_v1",
+      "v1_5_augmented",
+      "paused",
+      "deferred",
+      "target_state",
+      "protected_boundaries"
+    ],
+    "hims_contract": {
+      "message_model": "Messages are immutable envelopes; status changes are separate append-only events.",
+      "storage_model": "Local JSONL first, with optional SQLite indexes later.",
+      "runtime_rule": "A HIMS package may exist before HIMS becomes a controlling runtime layer. Runtime wiring must be explicit."
+    },
+    "json_style": {
+      "timestamps": "UTC ISO-8601 with Z suffix where generated by tools",
+      "paths": "Repository paths use forward slashes; local Windows paths may appear only as lab-observed context.",
+      "truth_separation": "Separate current reality, lab-observed work, active direction, target-state doctrine, and historical lineage."
+    }
+  },
+  "canon_mapping": {
+    "master_plan": "master-plan-v120.2.json",
+    "masterplan_role": "machine-facing source of truth after Dylan accepts this file",
+    "readme_role": "human-facing repository front door aligned to the same v120.2 release",
+    "website_role": "public-facing coherence layer; should reflect accepted labels but not expose private lab details",
+    "docs_role": "developer, architecture, runbook, and audit layers",
+    "transcripts_role": "continuity/history records, not automatic current canon",
+    "conflict_policy": "Treat older claims that make the Legion Go the Huey Brain, the iMac active LabTech, HIMS a controlling runtime, Command Center operational infrastructure, live audio a V1 requirement, or distributed compute part of V1 as historical. Huey Body actuation is reopened only as a bounded parallel track and remains outside fixture-to-log completion criteria."
+  },
+  "decision_framework": {
+    "purpose": "Make architectural reasoning understandable, testable, and durable without turning explanation into apology.",
+    "decision_pattern": [
+      "decision",
+      "reasoning",
+      "operational_consequence",
+      "evidence_standard",
+      "review_trigger"
+    ],
+    "writing_standard": [
+      "State the chosen direction first.",
+      "Explain how the choice advances the project rather than defending it against every alternative.",
+      "Name the practical consequence so implementation teams know what changes.",
+      "Define the evidence that supports the decision.",
+      "Define the condition that would justify review without implying that every settled choice remains provisional."
+    ],
+    "truth_layers": {
+      "current_reality": "What exists and is directly observed now.",
+      "active_direction": "What the project is deliberately building or validating next.",
+      "accepted_architecture": "A chosen structure that guides implementation until evidence justifies review.",
+      "target_state": "A longer-term objective whose implementation depends on resources, maturity, or future validation.",
+      "historical_lineage": "Earlier systems and decisions retained to explain how the current architecture emerged."
+    },
+    "tone_rule": "Use calm, direct, evidence-led language. Boundaries are expressed as design properties and operating rules, not as defensive disclaimers."
+  },
+  "architectural_reasoning": {
+    "prototype_to_polished_huey_brain": {
+      "decision": "Develop and validate Huey Brain V1 architecture on the custom i9-12900K prototype, then reproduce the accepted proof on a polished Huey Brain V1 system.",
+      "reasoning": [
+        "The prototype provides a real platform for learning before the final system is frozen.",
+        "A separate polished stage turns successful experiments into reproducible system capability.",
+        "The transfer step exposes assumptions that work only on a development machine and forces those assumptions into documentation.",
+        "This structure allows rapid iteration now while protecting the meaning of a finished V1 declaration."
+      ],
+      "operational_consequence": "Prototype results guide architecture; polished V1 status is earned through repeatable transfer and validation.",
+      "evidence_standard": "A preserved fixture set, documented dependencies, attributable run records, and comparable results across prototype and polished hardware.",
+      "review_trigger": "Review the two-stage model only if the final hardware becomes identical to the prototype in role, configuration, and lifecycle, or if transfer testing proves unnecessary through repeated evidence."
+    },
+    "i9_dual_role": {
+      "decision": "Use the i9 prototype as both the current primary operator workstation and the active prototype Huey Brain development platform.",
+      "reasoning": [
+        "The system is the strongest available development platform and is already positioned for direct observation and iteration.",
+        "Concentrating early work reduces synchronization overhead while the architecture is still being discovered.",
+        "Its Intel hybrid-core design provides a useful basis for testing workload placement across performance and efficiency cores.",
+        "The explicit dual role preserves the final Huey Brain boundary while supporting efficient prototype work."
+      ],
+      "operational_consequence": "Development and operation share one prototype during this phase, with configuration and run metadata preserving the distinction between workstation activity and Huey proof activity.",
+      "evidence_standard": "Recorded CPU topology, resource use, process placement, thermals, storage health, and proof-run configuration.",
+      "review_trigger": "Separate the roles when operator workloads interfere with proof repeatability, when polished V1 hardware is ready, or when security and availability requirements demand isolation."
+    },
+    "fixture_first_proof": {
+      "decision": "Use known MP3 fixtures as the canonical V1 input.",
+      "reasoning": [
+        "A preserved input makes transcription and orchestration results comparable across runs.",
+        "Stable fixtures isolate software, model, device, and configuration changes from microphone and room variability.",
+        "Repeatable media preparation creates a reliable debugging boundary before live capture is introduced.",
+        "The fixture becomes a durable regression asset that can travel from prototype to polished V1."
+      ],
+      "operational_consequence": "V1 success is evaluated against controlled inputs and attributable artifacts; live audio becomes a later integration layer rather than an early source of uncertainty.",
+      "evidence_standard": "Immutable source files or hashes, preparation manifests, transcript metadata, response records, and structured run logs.",
+      "review_trigger": "Introduce live microphone work after the fixture path is consistently reproducible and the additional capture variables can be measured independently."
+    },
+    "hybrid_local_transcription": {
+      "decision": "Benchmark local transcription on both the i9-12900K CPU and Radeon RX 5500 XT, then assign primary, fallback, and cross-check roles from measured results.",
+      "reasoning": [
+        "The CPU offers broad software compatibility and predictable availability.",
+        "The GPU may provide useful acceleration if its driver and backend path proves reliable.",
+        "Testing both prevents architecture from being selected by assumption or peak specifications alone.",
+        "A fallback path improves resilience, while cross-checking helps identify device-specific transcription drift."
+      ],
+      "operational_consequence": "Every benchmark records device, engine, model, configuration, latency, resource use, and output quality before a preferred path is declared.",
+      "evidence_standard": "Repeated runs across the same fixture set with correctness, latency, memory, thermals, failure rate, and setup complexity compared.",
+      "review_trigger": "Re-evaluate when drivers, transcription backends, model requirements, or polished V1 hardware materially change."
+    },
+    "api_backed_response_baseline": {
+      "decision": "Use an API-backed response bridge as the V1 quality baseline while preserving mock and local experimental modes.",
+      "reasoning": [
+        "The API path provides a dependable response reference while local compute remains constrained.",
+        "Separating transcription proof from local-model procurement keeps the first loop achievable.",
+        "Mock mode supports deterministic CI and failure-path testing.",
+        "Local experiments remain available for future sovereignty work without weakening the current proof contract."
+      ],
+      "operational_consequence": "Provider, model, request metadata, response, timing, and errors are logged explicitly while credentials remain outside source and run artifacts.",
+      "evidence_standard": "Repeatable request/response records, explicit configuration, secret-safe logs, and clear mock/API/local mode labels.",
+      "review_trigger": "Promote a local response model when available hardware and model quality meet the same reliability and traceability standard."
+    },
+    "body_parallel_track": {
+      "decision": "Advance Huey Body construction and bounded actuation tests in parallel with the cognitive proof.",
+      "reasoning": [
+        "Physical progress can continue without waiting for every cognitive layer to mature.",
+        "A parallel track preserves momentum while keeping failures attributable to either cognition or embodiment.",
+        "Bounded experiments create real mechanical and control evidence without making the fixture proof dependent on changing hardware.",
+        "The tracks can converge through explicit integration gates once both sides have stable interfaces."
+      ],
+      "operational_consequence": "Body tests use defined scope, operator initiation, a safe stop path, and independent records; cognitive V1 completion remains based on the fixture-to-log contract.",
+      "evidence_standard": "Documented test intent, hardware state, command boundary, observed result, failure behavior, and recovery path.",
+      "review_trigger": "Promote Body integration into formal completion criteria only after Brain and Body interfaces are stable and repeated integration tests show that the combined requirement improves the proof."
+    },
+    "labtech_hueytech_separation": {
+      "decision": "Classify external development systems as LabTech and explicitly activated Huey-side systems as HueyTech.",
+      "reasoning": [
+        "The distinction keeps development convenience separate from system identity and authority.",
+        "A device can support Huey extensively without becoming part of Huey itself.",
+        "Explicit classification makes ingress, recovery, logging, and control boundaries easier to audit.",
+        "The model preserves hardware flexibility because roles can change through deliberate promotion rather than implication."
+      ],
+      "operational_consequence": "ASUS FX505DT and Lenovo Legion Go remain LabTech; the prototype, polished Brain, Body, Briefcase, HueyOS, media, and HIMS components carry explicit Huey-side classifications and statuses.",
+      "evidence_standard": "A documented role, authority boundary, operating status, and promotion decision for each device or service.",
+      "review_trigger": "Reclassify a system when its enduring role, authority, and lifecycle move across the external/Huey boundary."
+    },
+    "briefcase_field_role": {
+      "decision": "Use Briefcase as portable LTE-connected HueyTech for reachability, communication, documents, field work, and recovery access.",
+      "reasoning": [
+        "LTE provides a path to check Huey beyond the local network.",
+        "The 2-in-1 form supports documentation and practical field operation in one device.",
+        "A dedicated field role gives remote access a clear home instead of distributing it across ad hoc devices.",
+        "Beginning with status and recovery functions establishes value before broader authority is considered."
+      ],
+      "operational_consequence": "Briefcase development prioritizes dependable reachability, authenticated communication, documentation, and recovery workflows.",
+      "evidence_standard": "Successful remote health checks, documented authentication, connection-loss behavior, audit records, and recovery exercises.",
+      "review_trigger": "Expand authority only after authentication, audit, failure handling, and revocation are proven under field conditions."
+    },
+    "hims_foundation_before_authority": {
+      "decision": "Build HIMS first as merged append-only messaging infrastructure and introduce routing authority in explicit later stages.",
+      "reasoning": [
+        "Immutable envelopes and append-only events create an attributable communication record.",
+        "Infrastructure can be tested before it is trusted with control decisions.",
+        "Separating message existence from execution authority prevents accidental coupling.",
+        "Optional shadow traces let the project rehearse future routing around a working proof loop."
+      ],
+      "operational_consequence": "The structured V1 log remains canonical; HIMS may mirror events without becoming a required dependency or action gate.",
+      "evidence_standard": "Schema validation, append-only behavior, replayable events, stable correlation IDs, and optional trace operation that leaves V1 success unchanged.",
+      "review_trigger": "Advance HIMS authority only after routing policy, validation roles, execution gates, refusal behavior, and recovery have independent tests."
+    },
+    "pyhuey_primary_cockpit": {
+      "decision": "Use PyHuey as the primary external operator cockpit in both standalone and embedded-connector forms.",
+      "reasoning": [
+        "The PyGPT/PyGPT-net foundation is stable and already provides a mature interaction surface.",
+        "Reusing a working cockpit concentrates project effort on Huey-specific integration rather than rebuilding general interface machinery.",
+        "Standalone and embedded forms support both independent operation and bounded integration.",
+        "Keeping the cockpit external preserves a clear distinction between interface, messaging, governance, and cognition."
+      ],
+      "operational_consequence": "PyHuey receives bounded tools, status, logs, and provider workflows through explicit adapters while the proof remains runnable without the GUI.",
+      "evidence_standard": "Stable launches, defined tool manifests, attributable actions, safe failure behavior, and successful CLI fallback.",
+      "review_trigger": "Review cockpit architecture when PyHuey limits essential workflows, its upstream foundation becomes unsuitable, or a more maintainable project-aligned interface proves superior."
+    },
+    "command_center_sandbox": {
+      "decision": "Retain Command Center as an experimental GUI companion and interface-design sandbox.",
+      "reasoning": [
+        "The repository contains useful visual patterns, local persistence concepts, and prototype operator views.",
+        "Its mock-first implementation makes it suitable for exploring presentation without placing operational systems at risk.",
+        "Keeping it experimental allows valuable ideas to be salvaged selectively.",
+        "Operational promotion requires deliberate product identity, integration, testing, and credential architecture rather than incremental assumption."
+      ],
+      "operational_consequence": "Command Center remains isolated from credentials and Huey control; useful components may be reviewed and migrated into supported surfaces.",
+      "evidence_standard": "Accurate package identity, current documentation, tested data adapters, secure credential handling, correct repository metrics, and a maintained test suite.",
+      "review_trigger": "Consider promotion after the repository meets the evidence standard and demonstrates a unique role not already served by PyHuey."
+    },
+    "huey_farm_funding_gate": {
+      "decision": "Keep Huey Farm as a funding-dependent target with approximately 80 GB pooled local VRAM as a testing goal and gpt-oss-120b as a provisional candidate.",
+      "reasoning": [
+        "Large open-weight model experiments require substantially more memory and power than current V1 proof work.",
+        "A funding gate keeps immediate architecture focused on obtainable hardware and current proof needs.",
+        "The 80 GB target provides a concrete planning scale without freezing a final card layout.",
+        "Provisional model selection preserves flexibility as open-weight models and hardware economics change."
+      ],
+      "operational_consequence": "Farm procurement waits for funding and a fresh model/hardware comparison; V1 remains independent of Farm capacity.",
+      "evidence_standard": "Current model requirements, benchmark relevance, total acquisition cost, power and cooling feasibility, software support, and upgrade path.",
+      "review_trigger": "Re-specify the Farm when funding becomes realistic or a model/hardware combination materially changes the best attainable architecture."
+    },
+    "documentation_layering": {
+      "decision": "Keep the README, master plan, technical docs, governance documents, website, and archives as distinct documentation layers.",
+      "reasoning": [
+        "Each audience needs a different level of detail and authority.",
+        "Layering prevents operational facts, public explanation, legal doctrine, and historical continuity from being mistaken for one another.",
+        "The master plan can preserve detailed reasoning while the README remains understandable.",
+        "Separate layers allow one surface to evolve without silently rewriting the purpose of another."
+      ],
+      "operational_consequence": "The master plan holds machine-facing decisions and full rationale; the README provides orientation and concise reasoning; implementation details live in runbooks and audits; governance changes require their own process.",
+      "evidence_standard": "Consistent terminology, explicit cross-references, current version labels, and documented conflict resolution.",
+      "review_trigger": "Adjust the layer boundaries when readers consistently cannot find the right detail or when duplication creates measurable canon drift."
+    }
+  },
+  "current_reality": {
+    "summary": "The project is developing the fixture-to-log proof on a custom i9-12900K prototype Huey Brain platform and will reproduce the accepted architecture on polished Huey Brain V1. Huey Brain V1 and Huey Body are under active development with operational validation pending. LabTech supports development and feature testing. Briefcase provides portable HueyTech capability. HIMS supplies merged append-only infrastructure at the foundation stage. Huey Body advances through a bounded parallel track, and Huey Farm proceeds when funding supports a fresh hardware and model decision.",
+    "active_proof_loop": "known MP3 fixture -> FFmpeg/media preparation -> local transcription -> response bridge -> structured JSON/JSONL log",
+    "current_phase": "Prototype Huey Brain development, fixture-to-log proof validation, polished Huey Brain V1 build, and parallel Huey Body work",
+    "active_truths": [
+      "The custom i9-12900K system is the active prototype/development platform and current primary operator workstation; it informs but is not identical to the polished Huey Brain V1.",
+      "Polished Huey Brain V1 and Huey Body are active builds with operational validation pending.",
+      "The fixture-to-log proof is developed and validated on the prototype, then must be reproduced on polished Huey Brain V1.",
+      "Huey Body actuation advances through a bounded parallel track while cognitive-proof completion remains defined by the fixture-to-log contract.",
+      "LabTech develops, tests, documents, observes, archives, and recovers; HueyTech carries explicitly activated Huey-side capability.",
+      "HueyTech includes explicitly classified Huey-side builds, portable systems, software, and infrastructure; each capability retains its own operational status and authority boundary.",
+      "Temporary-use devices and external tools remain assistive surfaces governed by explicit project boundaries.",
+      "HIMS doctrine and append-only foundation are merged infrastructure at the message and event-record stage; routing and execution authority require later validation.",
+      "PyHuey is the primary external prototype cockpit in both standalone and embedded-connector forms; the canonical proof retains a CLI-capable path.",
+      "Command Center is an experimental AI-generated GUI sandbox whose reusable ideas remain isolated from credentials and Huey control."
+    ],
+    "current_scope_boundaries": [
+      "V1 input remains the preserved fixture set; live microphone and wake-word work follow fixture stability.",
+      "Fixture-to-log completion remains independent of Huey Body actuation.",
+      "HIMS remains at foundation and optional-shadow-trace stages while routing authority is developed separately.",
+      "Constitutional multi-agent governance remains target-state architecture pending a validated runtime foundation.",
+      "Huey Farm capacity remains a later funded expansion and is outside V1 completion.",
+      "Polished Huey Brain V1 and Huey Body receive operational status through explicit validation."
+    ]
+  },
+  "device_registry": {
+    "purpose": "Separate external LabTech, prototype Huey Brain work, active HueyTech builds, portable HueyTech, funding-dependent infrastructure, and historical devices.",
+    "LabTech": {
+      "definition": "External operator-side systems dedicated to development, testing, documentation, ingress, observation, archives, and recovery.",
+      "active_devices": {
+        "ASUS_FX505DT": {
+          "status": "active_lab_observed",
+          "role": "mobile LabTech system",
+          "os": "Debian 14 Forky",
+          "memory": "32 GB DDR4",
+          "lineage_note": "Reusable RAM from the decommissioned 2017 iMac was transferred into this laptop.",
+          "canonical_boundary": "External development and mobile lab work under the LabTech role."
+        },
+        "Lenovo_Legion_Go": {
+          "status": "active_lab_observed",
+          "role": "Windows 11 LabTech and feature-testing system",
+          "os": "Windows 11",
+          "canonical_boundary": "External Windows compatibility and feature testing; no longer Huey Brain."
+        }
+      }
+    },
+    "PrototypeHueyBrain": {
+      "definition": "A real Huey-side development platform used to discover, benchmark, and stabilize the architecture that will be transferred to polished Huey Brain V1.",
+      "active_platform": {
+        "Custom_i9_12900K_Prototype": {
+          "status": "active_prototype",
+          "roles": [
+            "current primary operator workstation",
+            "prototype Huey Brain development platform",
+            "fixture-to-log implementation and validation platform",
+            "Intel performance-core and efficiency-core architecture test bed"
+          ],
+          "stage_distinction": "prototype development platform; polished Huey Brain V1 status follows transfer and reproducibility testing",
+          "hardware": {
+            "cpu": "Intel Core i9-12900K",
+            "motherboard": "ASUS TUF GAMING Z790-PLUS WIFI",
+            "memory": "16 GB DDR5-6000",
+            "gpu": {
+              "model": "Gigabyte Radeon RX 5500 XT OC 8G",
+              "board_model": "GV-R55XTOC-8GD",
+              "gpu_family": "AMD Navi 14 / Radeon RX 5500 XT",
+              "vram": "8 GB GDDR6",
+              "pci_id": "1002:7340",
+              "firmware_label": "F10 / 09DD",
+              "observed_driver_stack": "radeonsi, navi14, ACO"
+            },
+            "root_storage": "RAID 10 across four Intel Optane M10 16 GB drives",
+            "home_storage": "1 TB 2.5-inch SSD"
+          },
+          "os": "Debian 14 Forky",
+          "transcription_direction": "Benchmark local transcription on both the i9-12900K CPU and RX 5500 XT; select the primary path from evidence and retain the other as fallback and cross-check.",
+          "transfer_rule": "A result proven here becomes polished Huey Brain V1 capability only after it is reproduced on the final V1 system."
+        }
+      }
+    },
+    "HueyTech": {
+      "definition": "Huey-side hardware and software capabilities that are being built, operated, or prepared as part of Huey itself.",
+      "active_builds_and_systems": {
+        "Polished_Huey_Brain_V1": {
+          "status": "active_build_not_operational",
+          "role": "polished Huey Brain V1 target shaped by the i9 prototype",
+          "acceptance_rule": "Must reproduce the deterministic proof established on the prototype before it is described as operational."
+        },
+        "Huey_Body": {
+          "status": "active_build_not_operational",
+          "role": "physical robotic body, sensing, and actuation platform",
+          "current_note": "Active work is imminent and details are changing quickly; v120.2 preserves stable role and test boundaries while component details mature.",
+          "v1_rule": "Bounded actuation experiments may proceed as a parallel track, but cognitive proof success cannot depend on Body availability or action."
+        },
+        "Briefcase": {
+          "status": "active",
+          "role": "portable LTE-connected HueyTech field terminal and 2-in-1 document/work surface",
+          "connectivity_intent": "Maintain the ability to reach or ping Huey from remote locations where LTE service is available.",
+          "initial_boundary": "The first capability set covers status checks, communication, documents, field work, and recovery access. Broader command functions require their own authenticated and auditable promotion."
+        },
+        "HueyOS_src_huey_package": {
+          "status": "active",
+          "role": "canonical source package and software layer for HueyOS runtime modules",
+          "current_layout_direction": "Use src/huey as source of truth; keep compatibility surfaces explicit and limited."
+        },
+        "Media_FFmpeg_subsystem": {
+          "status": "active",
+          "role": "source probing, audio preparation, media analysis, previews, and transcription-ready artifacts",
+          "canonical_path": "src/huey/media"
+        },
+        "HIMS_foundation": {
+          "status": "merged_not_fully_validated",
+          "role": "merged append-only internal messaging foundation under src/huey/messaging",
+          "runtime_rule": "The current foundation supplies messages and append-only events. Routing and execution authority advance through later explicit stages, while V1 remains independently executable."
+        }
+      },
+      "funding_dependent": {
+        "Huey_Farm": {
+          "status": "funding_dependent",
+          "role": "future pooled local compute and large-model testing infrastructure",
+          "current_testing_goal": "Approximately 80 GB pooled local VRAM",
+          "candidate_model": "gpt-oss-120b",
+          "model_rule": "Use gpt-oss-120b as the present planning candidate and run a fresh project-alignment review when funding makes procurement actionable.",
+          "v1_rule": "Not required for prototype or polished Huey Brain V1 proof completion."
+        }
+      }
+    },
+    "software_and_companion_surfaces": {
+      "PyHuey": {
+        "status": "active",
+        "role": "primary external operator cockpit for prototype work, available as both a stable standalone application and embedded HueyOS connector",
+        "lineage": "Built on the stable PyGPT/PyGPT-net foundation.",
+        "canonical_boundary": "External cockpit and connector with bounded tools and attributable actions; cognition, messaging authority, governance, and proof completion retain their own interfaces."
+      },
+      "Command_Center": {
+        "status": "experimental_prototype",
+        "role": "AI-generated GUI companion, migration dashboard experiment, and interface-design sandbox",
+        "observed_strengths": [
+          "runnable React/Vite interface",
+          "local persistence and import/export concepts",
+          "mock proof-run and operator-panel views",
+          "useful visual and interaction ideas"
+        ],
+        "observed_limits": [
+          "operational data remains primarily mock",
+          "GitHub service is not properly integrated into the main dashboard",
+          "browser-persisted token handling conflicts with safer documentation intent",
+          "repository count implementation is inaccurate",
+          "package identity remains spark-template version 0.0.0",
+          "documentation includes placeholder links and stale fictional dates",
+          "no PR history or evident test suite"
+        ],
+        "canonical_boundary": "Retain as a mock-first design sandbox isolated from credentials and Huey control; promote components only through reviewed, tested integrations."
+      }
+    },
+    "historical_devices": {
+      "iMac_5K_2017": {
+        "status": "decommissioned",
+        "former_role": "LabTech workstation and ingress/archive surface",
+        "current_note": "Decommissioned; reusable RAM was repurposed into the ASUS FX505DT.",
+        "canon_rule": "Retain only as hardware lineage, not current architecture."
+      }
+    },
+    "external_support_tools": {
+      "GitHub_Copilot_Spark_and_other_AI_GUI_tools": {
+        "status": "temporary_use",
+        "role": "assistive coding, prototyping, and GUI-generation tools",
+        "boundary": "Outputs enter the project through review and remain attributable to external assistive tooling."
+      },
+      "Atlas": {
+        "status": "temporary_use",
+        "role": "external continuity partner, lab assistant, architectural interpreter, and implementation stabilizer",
+        "boundary": "Atlas remains an external continuity and implementation partner outside Huey’s internal identity and authority."
+      }
+    }
+  },
+  "scope_registry": {
+    "current_focus": "Develop and validate a consistently reproducible V1 proof on the i9 prototype, reproduce it on polished Huey Brain V1, and advance Huey Body actuation through a bounded parallel track.",
+    "active": [
+      "i9 prototype Huey Brain architecture and proof development",
+      "polished Huey Brain V1 active build",
+      "prototype-to-polished reproducibility boundary",
+      "controlled MP3 fixtures",
+      "FFmpeg/media preparation",
+      "local transcription benchmarking on i9-12900K CPU and RX 5500 XT",
+      "response bridge scaffold",
+      "structured JSON/JSONL logging",
+      "LabTech development and feature testing",
+      "media-tool consolidation under src/huey/media",
+      "merged HIMS append-only foundation",
+      "bounded Huey Body parallel build and actuation experiments",
+      "PyHuey as primary external prototype cockpit"
+    ],
+    "allowed_v1": [
+      "manual CLI bring-up",
+      "deterministic queue or watch-folder after manual path stabilizes",
+      "API-backed cognition bridge with explicit logging",
+      "local transcription model benchmarking",
+      "optional local cognition experiments only after baseline stability"
+    ],
+    "v1_5_augmented": [
+      "optional HIMS shadow trace of V1 pipeline events",
+      "manual export to Command Center only as experimental GUI evaluation",
+      "PyHuey tool manifest visibility",
+      "media preview artifacts such as waveform/spectrogram/thumbnail",
+      "HIMS CLI and inbox/outbox inspection without controlling the V1 loop"
+    ],
+    "paused": [
+      "unbounded or proof-critical Huey Body actuation",
+      "production Brain-to-Body command authority",
+      "full HIMS/ThunderMail runtime",
+      "multi-agent governance runtime"
+    ],
+    "deferred": [
+      "live microphone",
+      "wake word",
+      "passive listening",
+      "Huey Farm / distributed compute pending funding",
+      "full local sovereign model proof",
+      "hardware enclosure modification"
+    ],
+    "protected_v1_boundaries": [
+      "V1 compute remains on the prototype-to-polished Brain path; Body capacity serves the parallel embodiment track.",
+      "PyHuey remains the external cockpit while Huey Brain retains cognition and orchestration responsibility.",
+      "LabTech remains external support and HueyTech remains explicitly classified Huey-side capability.",
+      "HIMS authority advances through declared stages after the foundation and shadow-trace phases.",
+      "Live audio begins after fixture-path stability.",
+      "Polished Huey Brain V1 status follows successful reproduction of accepted prototype results.",
+      "Command Center remains isolated from credentials and Huey control during its sandbox phase."
+    ]
+  },
+  "repository_state": {
+    "purpose": "Record current implementation posture without using README as the primary machine-facing source.",
+    "mainline_recent_changes": [
+      {
+        "pr": 743,
+        "title": "chore: remove generated artifacts and tighten gitignore",
+        "status": "merged",
+        "meaning": "Generated junk and docs build output were removed; .gitignore tightened."
+      },
+      {
+        "pr": 745,
+        "title": "wip: review salvaged local work",
+        "status": "merged_after_review",
+        "meaning": "Local salvage branch was protected and reduced before merge."
+      },
+      {
+        "pr": 746,
+        "title": "chore: standardize legacy root wrappers",
+        "status": "merged",
+        "meaning": "Duplicate root wrappers were removed; src/huey remains canonical."
+      },
+      {
+        "pr": 747,
+        "title": "refactor: consolidate media tools under huey.media",
+        "status": "merged",
+        "meaning": "Audio analysis is consolidated under huey.media with a compatibility adapter."
+      },
+      {
+        "pr": 748,
+        "title": "feat: add HIMS messaging foundation",
+        "status": "merged",
+        "meaning": "Append-only HIMS foundation is present under src/huey/messaging but is not runtime-wired as an authority."
+      }
+    ],
+    "open_or_draft_work": [],
+    "companion_repository_observation": {
+      "command_center": "Experimental AI-generated React/Vite GUI sandbox; runnable and mock-first, with operational promotion reserved for a separately tested integration phase.",
+      "pyhuey": "Active standalone cockpit project plus embedded connector direction."
+    },
+    "current_layout_target": {
+      "src/huey": "canonical HueyOS source package",
+      "src/huey/media": "canonical FFmpeg/media/audio/video domain",
+      "src/huey/messaging": "HIMS foundation domain",
+      "src/huey/connectors/pyhuey": "embedded side of the active PyHuey cockpit/connector relationship",
+      "scripts": "operator/developer CLI entry points",
+      "integrations": "companion dashboards/apps such as Command Center",
+      "docs": "architecture, development, runbooks, audits"
+    }
+  },
+  "v1_plan": {
+    "name": "Huey Brain V1 — deterministic fixture-to-log proof",
+    "status": "active",
+    "goal": "Run one known MP3 fixture or fixture batch through media preparation, local transcription, API-backed response, and structured logging on the i9 prototype with every intervention explicit and attributable, then reproduce the accepted proof on polished Huey Brain V1.",
+    "execution_stages": {
+      "stage_1_prototype": "Implement, benchmark, stabilize, and document the proof on the custom i9-12900K prototype.",
+      "stage_2_polished_v1": "Transfer the architecture and reproduce the accepted proof on polished Huey Brain V1 before calling that system operational."
+    },
+    "canonical_loop": [
+      {
+        "step": 1,
+        "name": "fixture_selection",
+        "input": "known MP3 fixture",
+        "output": "fixture id and source path",
+        "tools": [
+          "fixture registry or manual CLI during bring-up"
+        ]
+      },
+      {
+        "step": 2,
+        "name": "media_probe_and_prepare",
+        "input": "source fixture",
+        "output": "mono 16 kHz transcription-ready WAV plus preparation manifest",
+        "tools": [
+          "ffprobe",
+          "ffmpeg",
+          "huey.media"
+        ]
+      },
+      {
+        "step": 3,
+        "name": "local_transcription",
+        "input": "prepared WAV",
+        "output": "transcript plus transcription metadata",
+        "tools": [
+          "local transcription engine benchmarked on i9-12900K CPU and RX 5500 XT"
+        ]
+      },
+      {
+        "step": 4,
+        "name": "response_bridge",
+        "input": "transcript text",
+        "output": "response or explicit error record",
+        "tools": [
+          "API-backed response bridge as baseline; mock mode for testing; local cognition experiments remain optional"
+        ]
+      },
+      {
+        "step": 5,
+        "name": "structured_run_log",
+        "input": "source/prepared/transcript/response/timing/config metadata",
+        "output": "append-only JSONL run record",
+        "tools": [
+          "structured_run_log",
+          "V1 run manifest"
+        ]
+      }
+    ],
+    "success_conditions": [
+      "Same fixture can be rerun and compared.",
+      "Original fixture remains unmodified.",
+      "Prepared audio and manifest are deterministic enough for debugging.",
+      "Transcript and response are captured or failure is explicit.",
+      "Structured JSONL log is complete and attributable.",
+      "CPU and GPU transcription paths are measured; one may become primary while the other remains fallback and cross-check.",
+      "The proof is reproduced on polished Huey Brain V1 before that system is described as operational.",
+      "Completion remains independent of live capture, Body actuation, governance runtime, HIMS authority, and Farm capacity."
+    ],
+    "minimum_artifacts": [
+      "source fixture",
+      "prepared audio file",
+      "preparation manifest",
+      "transcript record",
+      "response record",
+      "structured run log"
+    ],
+    "implementation_priorities": [
+      "Finish media manager, validator, speech pipeline, and fixture registry.",
+      "Keep response bridge mock/API/local modes explicit.",
+      "Make structured log schema stable before expanding UI.",
+      "Advance HIMS authority after the simple path is consistently reproducible and independently measurable.",
+      "Keep prototype validation results distinct from polished Huey Brain V1 acceptance results.",
+      "Keep Huey Body actuation bounded and parallel so it cannot block or falsely complete the cognitive proof."
+    ]
+  },
+  "v1_5_augmented_proof": {
+    "name": "Huey Brain V1.5 — controlled proof augmentation",
+    "status": "planned_after_v1_skeleton",
+    "purpose": "Add visibility, traceability, and internal-message rehearsal around the same V1 fixture loop while live audio, HIMS authority, and governance continue through their own maturity gates.",
+    "scope_statement": "V1.5 adds optional HIMS shadow messages, PyHuey tool manifests, and media preview artifacts. Bounded Body work continues on its parallel track, and cognitive-proof completion remains defined by the fixture-to-log contract.",
+    "adds_to_v1": [
+      "HIMS shadow message for each V1 pipeline stage.",
+      "HIMS event journal linking queued, delivered, read, archived, or stage-complete state.",
+      "optional manual Command Center import/export experiments using non-sensitive data only.",
+      "PyHuey-safe tool manifest for media, V1 proof, and HIMS inspection commands.",
+      "waveform/spectrogram/thumbnail preview artifacts where useful.",
+      "operator-facing summary of run history without exposing secrets."
+    ],
+    "does_not_add": [
+      "live microphone",
+      "wake word",
+      "Body actuation as a dependency of cognitive proof completion",
+      "unbounded servo or motor command authority",
+      "full ThunderMail runtime",
+      "constitutional votes",
+      "multi-agent decision authority",
+      "distributed compute"
+    ],
+    "augmented_loop": [
+      "V1 loop runs normally.",
+      "Each stage may emit a foundation-stage HIMS trace message.",
+      "Structured V1 log remains canonical proof artifact.",
+      "HIMS trace provides replay and future routing rehearsal.",
+      "PyHuey may expose bounded cockpit visibility; Command Center remains an optional mock-first sandbox."
+    ],
+    "completion_signal": "A fixture batch produces normal V1 logs plus coherent HIMS shadow traces and dashboard/tool-manifest visibility, with no additional runtime authority granted to HIMS or GUI layers.",
+    "risk_controls": [
+      "The canonical V1 success result remains complete when optional HIMS tracing is unavailable.",
+      "GUI operations map to declared tools rather than arbitrary shell execution.",
+      "PyHuey exposes fixed, reviewed tools with attributable results.",
+      "Command Center remains isolated from credentials and Huey control until a separately reviewed promotion satisfies its evidence standard."
+    ]
+  },
+  "hims": {
+    "name": "Huey Internal Messaging System",
+    "short_name": "HIMS",
+    "status": "doctrine_active_foundation_merged_runtime_not_control_layer",
+    "current_implementation_posture": {
+      "package_path": "src/huey/messaging",
+      "foundation_pr": "PR #748 merged",
+      "initial_classes": [
+        "HIMSMessage",
+        "HIMSEvent",
+        "HIMSStore",
+        "MessagePriority",
+        "MessageStatus"
+      ],
+      "default_store": ".huey/hims/messages.jsonl and .huey/hims/events.jsonl",
+      "important_boundary": "The HIMS package can exist before HIMS becomes a controlling runtime. V1 remains simple pipeline plus structured log."
+    },
+    "core_idea": "HIMS is the internal message, route, validation, and record layer that lets Huey subsystems communicate without direct memory sharing or hidden authority collapse.",
+    "why_it_exists": [
+      "To make requests, proposals, reports, alerts, refusals, and execution records visible and replayable.",
+      "To separate sender, router, validator, executor, and logger roles.",
+      "To prevent GUI, portal, LabTech, or agent layers from becoming hidden authorities.",
+      "To provide future lawful routing from input to decision to action without bypassing review."
+    ],
+    "thundermail_relation": {
+      "ThunderMail": "mail-style delivery semantics inside HIMS: inboxes, outboxes, acknowledgements, routing, and queues",
+      "HIMS": "larger trust, validation, routing, compartmentalization, and preserved-record doctrine",
+      "rule": "ThunderMail is delivery behavior; HIMS is the governing internal message system."
+    },
+    "current_data_model": {
+      "HIMSMessage": {
+        "fields": [
+          "message_id",
+          "sender",
+          "recipient",
+          "channel",
+          "subject",
+          "body",
+          "priority",
+          "created_at",
+          "correlation_id",
+          "parent_message_id",
+          "tags",
+          "metadata"
+        ],
+        "rule": "Messages are immutable once appended."
+      },
+      "HIMSEvent": {
+        "fields": [
+          "event_id",
+          "message_id",
+          "event_type",
+          "actor",
+          "created_at",
+          "metadata"
+        ],
+        "statuses": [
+          "queued",
+          "delivered",
+          "read",
+          "archived"
+        ],
+        "rule": "State changes are separate append-only events."
+      },
+      "HIMSStore": {
+        "role": "local JSONL store with send, inbox, outbox, channel, mark_delivered, mark_read, archive, events_for, status_for",
+        "rule": "Previous records remain immutable; lifecycle changes are appended as new events."
+      }
+    },
+    "expansion_plan": [
+      {
+        "phase": "HIMS-0",
+        "name": "Doctrine and schema boundary",
+        "status": "active",
+        "deliverables": [
+          "master plan doctrine",
+          "message classes",
+          "trust classes",
+          "routing boundaries"
+        ]
+      },
+      {
+        "phase": "HIMS-1",
+        "name": "Local append-only foundation",
+        "status": "merged_not_fully_validated",
+        "deliverables": [
+          "src/huey/messaging",
+          "JSONL message/event journals",
+          "unit tests",
+          "architecture doc"
+        ]
+      },
+      {
+        "phase": "HIMS-2",
+        "name": "CLI and operator inspection",
+        "status": "planned",
+        "deliverables": [
+          "scripts/hims/send.py",
+          "scripts/hims/inbox.py",
+          "scripts/hims/tail.py",
+          "scripts/hims/validate.py"
+        ]
+      },
+      {
+        "phase": "HIMS-3",
+        "name": "V1.5 shadow trace",
+        "status": "planned",
+        "deliverables": [
+          "foundation-stage trace messages for fixture stages",
+          "cross-links between run logs and HIMS messages"
+        ]
+      },
+      {
+        "phase": "HIMS-4",
+        "name": "PyHuey visibility and optional dashboard export",
+        "status": "planned",
+        "deliverables": [
+          "bounded read-only inbox/outbox summaries in PyHuey",
+          "tool manifest exposure",
+          "optional non-sensitive export for experimental dashboards"
+        ]
+      },
+      {
+        "phase": "HIMS-5",
+        "name": "Router and delivery services",
+        "status": "deferred",
+        "deliverables": [
+          "postmaster role",
+          "routing policies",
+          "delivery receipts",
+          "trust-class checks"
+        ]
+      },
+      {
+        "phase": "HIMS-6",
+        "name": "Governance and action gating",
+        "status": "target_state",
+        "deliverables": [
+          "proposal routing",
+          "validation records",
+          "execution/refusal chain",
+          "signed receipts"
+        ]
+      }
+    ],
+    "trust_classes_v120_2": {
+      "0_ephemeral": "Short-lived coordination notices.",
+      "1_routine_internal": "Ordinary subsystem messages.",
+      "2_operator_visible": "Messages intended for bounded operator/PyHuey visibility.",
+      "3_private_or_role_restricted": "Bounded agent, role, or office traffic not globally visible.",
+      "4_official_record": "Messages that become official project/runtime state records.",
+      "5_safety_critical": "Thermal, power, storage, motion, recovery, or preservation traffic."
+    },
+    "v1_boundary": [
+      "HIMS may operate as a foundation library while V1 remains independently executable.",
+      "The V1 structured run log remains the canonical proof artifact.",
+      "Citizen mailboxes, governance votes, and action authority advance through later declared phases.",
+      "V1.5 may mirror stage traces to HIMS as shadow messages."
+    ],
+    "safety_rules": [
+      "Message existence and execution authority remain separate properties.",
+      "Routers preserve authorship rather than inheriting it.",
+      "Validators assess requests while executors retain separately granted responsibility.",
+      "GUI- and LabTech-originated messages use bounded, attributable channels.",
+      "Physical action requires an explicitly authorized, bounded, and auditable execution path."
+    ]
+  },
+  "readme_followup_notes": {
+    "purpose": "Record the README editorial and visual alignment completed in the same v120.2 release.",
+    "completed_readme_updates": [
+      "Aligned README and master plan version labels to v120.2.",
+      "Reframed the architecture in assertive, evidence-led language.",
+      "Added a concise Why this architecture section that explains the load-bearing decisions.",
+      "Retained detailed technical specifications in the master plan while keeping the README readable.",
+      "Added purposeful Mermaid system and proof-flow diagrams.",
+      "Used restrained badges, project imagery, tables, spacing, and typographic hierarchy for a clean GitHub-native presentation.",
+      "Consolidated repeated guardrails into clear operating boundaries."
+    ],
+    "separate_followup_layers": [
+      "Website alignment follows acceptance through the public-facing documentation process.",
+      "Constitution and governance changes follow their own law and legitimacy process."
+    ]
+  },
+  "notes_for_future_ai": [
+    "Use v120.2 as the current machine-facing truth only after Dylan accepts this file.",
+    "Represent HIMS as foundation-stage infrastructure and advance authority only through its declared phases.",
+    "Keep V1.5 augmentation focused on visibility and traceability while live audio, HIMS authority, and governance retain separate maturity gates.",
+    "Advance Huey Body actuation through the bounded parallel track while cognitive-proof completion remains fixture-to-log based.",
+    "Distinguish LabTech, PrototypeHueyBrain, active-build HueyTech, portable HueyTech, funding-dependent Huey Farm, and historical devices.",
+    "PyHuey is the primary external prototype cockpit and embedded connector with bounded, attributable tools.",
+    "Command Center remains an experimental GUI sandbox isolated from credentials and Huey control.",
+    "Media code belongs under src/huey/media; use compatibility adapters sparingly and intentionally.",
+    "The simple V1 fixture-to-log proof remains the load-bearing path."
+  ],
+  "change_log_v120_1": [
+    "Advanced the master plan and README to the shared v120.1 release.",
+    "Removed a non-existent laptop nickname and corrected the active device registry.",
+    "Recorded the 2017 iMac as decommissioned and its reusable RAM as transferred to the ASUS FX505DT.",
+    "Reclassified Lenovo Legion Go as Windows 11 LabTech and feature testing.",
+    "Recorded ASUS FX505DT as Debian Forky mobile LabTech with 32 GB DDR4.",
+    "Defined the custom i9-12900K system as the active prototype Huey Brain development platform and primary operator workstation, not polished Huey Brain V1.",
+    "Added the prototype hardware baseline: ASUS TUF GAMING Z790-PLUS WIFI, 16 GB DDR5-6000, RX 5500 XT 8 GB, Optane RAID 10 root, and 1 TB SSD home.",
+    "Separated proof development on the prototype from required reproduction on polished Huey Brain V1.",
+    "Reopened Huey Body actuation only as a bounded parallel track outside cognitive-proof completion criteria.",
+    "Classified Briefcase as LTE-connected portable HueyTech for reachability, communication, documents, field work, and recovery access.",
+    "Retained Huey Farm as funding-dependent with an approximately 80 GB pooled-VRAM test goal and gpt-oss-120b as a provisional candidate.",
+    "Updated PR #747 and PR #748 from draft to merged repository state.",
+    "Updated HIMS to merged append-only infrastructure without controlling authority.",
+    "Promoted PyHuey to the primary external prototype cockpit in both standalone and embedded-connector forms.",
+    "Classified Command Center as a runnable but non-canonical AI-generated GUI sandbox after direct repository inspection.",
+    "Preserved the known MP3 to media preparation to local transcription to API-backed response to structured log proof path with additional fallback, reproducibility, and authority guardrails."
+  ],
+  "change_log_v120_2": [
+    "Preserved all accepted v120.1 architecture and device classifications.",
+    "Added a formal decision framework built around decision, reasoning, operational consequence, evidence standard, and review trigger.",
+    "Expanded the reasoning for the prototype-to-polished Brain path and the i9 system’s temporary dual role.",
+    "Expanded the reasoning for fixture-first proof, hybrid CPU/GPU transcription, and the API-backed response baseline.",
+    "Expanded the reasoning for parallel Huey Body work, LabTech/HueyTech separation, and Briefcase field capability.",
+    "Expanded the reasoning for HIMS foundation staging, PyHuey cockpit selection, Command Center sandbox status, and Huey Farm’s funding gate.",
+    "Added documentation-layer reasoning so README, master plan, technical docs, governance, website, and archives retain distinct purposes.",
+    "Replaced defensive or conversational wording with calm, assertive, evidence-led language.",
+    "Defined review triggers so settled decisions remain stable while still responding to material evidence.",
+    "Specified a clean GitHub-native README style using project imagery, restrained badges, purposeful diagrams, compact tables, spacing, and strong hierarchy."
+  ],
+  "acceptance_note": "If Dylan accepts this release, publish it as master-plan-v120.2.json alongside README v120.2. The release clarifies and expands the accepted architecture; website, governance, constitution, implementation runbooks, and volatile Huey Body component details continue through their own documentation layers."
+}
