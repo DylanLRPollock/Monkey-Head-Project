@@ -15,9 +15,9 @@ import sys
 from typing import Any
 
 from huey.os.core.platform_support import (
-    HostPlatform,
     detect_host_platform,
     distro as platform_distro,
+    HostPlatform,
     require_admin_privileges,
 )
 
