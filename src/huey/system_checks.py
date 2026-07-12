@@ -16,8 +16,8 @@ from typing import Any
 
 from huey.os.core.platform_support import (
     detect_host_platform,
-    distro as platform_distro,
     HostPlatform,
+    distro as platform_distro,
     require_admin_privileges,
 )
 
