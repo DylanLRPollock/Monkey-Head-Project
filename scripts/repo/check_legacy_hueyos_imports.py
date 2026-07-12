@@ -30,6 +30,12 @@ ALLOWED_PATHS: set[str] = {
     "docs/architecture/huey-layout.md",
 }
 
+# Audit policy must be able to name the compatibility namespace it measures.
+# Keep this exact-line allowance narrower than exempting the whole audit file.
+ALLOWED_TEXT_REFERENCES: set[tuple[str, str]] = {
+    ("scripts/repo/audit_v120_assets.py", '"src/hueyos/",'),
+}
+
 ACTIVE_PATH_PREFIXES: tuple[str, ...] = (
     "src/",
     "tests/",
@@ -91,6 +97,11 @@ def should_scan(path: Path) -> bool:
     }
 
 
+def is_allowed_text_reference(path: Path, line: str) -> bool:
+    """Return whether one exact policy reference is intentionally allowed."""
+    return (path.as_posix(), line.strip()) in ALLOWED_TEXT_REFERENCES
+
+
 def main() -> int:
     violations: list[str] = []
 
@@ -106,6 +117,8 @@ def main() -> int:
             continue
 
         for line_number, line in enumerate(text.splitlines(), start=1):
+            if is_allowed_text_reference(path, line):
+                continue
             for pattern in PATTERNS:
                 if pattern.search(line):
                     violations.append(
