@@ -48,7 +48,7 @@ def _compile_rules() -> tuple[Rule, ...]:
     return (
         Rule(
             "huey-core-active",
-            re.compile(r"\\bHuey Core\\b"),
+            re.compile(r"\bHuey Core\b"),
             (
                 "'Huey Core' appears as a current-facing term; use Huey Body "
                 "only in historical/provenance context."
@@ -56,27 +56,40 @@ def _compile_rules() -> tuple[Rule, ...]:
         ),
         Rule(
             "windows-hueybody-path",
-            re.compile(r"\\bplatform/windows/hueybody\\b", re.IGNORECASE),
+            re.compile(r"\bplatform/windows/hueybody\b", re.IGNORECASE),
             "Use src/huey/platform/windows/huey for cockpit/build path references.",
         ),
         Rule(
             "live-microphone-v1",
-            re.compile(r"\\blive\\s+microphone\\b", re.IGNORECASE),
+            re.compile(r"\blive\s+microphone\b", re.IGNORECASE),
             "Do not present live microphone as active V1 feature.",
         ),
         Rule(
             "huey-body-v1-runtime",
             re.compile(
-                r"\\bHuey Body\\b.*\\b(V1|runtime|compute|cognition|node)\\b|"
-                r"\\b(V1|runtime|compute|cognition|node)\\b.*\\bHuey Body\\b",
+                r"\bHuey Body\b.*\b(V1|runtime|compute|cognition|node)\b|"
+                r"\b(V1|runtime|compute|cognition|node)\b.*\bHuey Body\b",
                 re.IGNORECASE,
             ),
             "Do not present Huey Body as V1 compute/cognition/runtime node.",
         ),
         Rule(
             "hims-active-runtime",
-            re.compile(r"\\bHIMS\\b", re.IGNORECASE),
+            re.compile(r"\bHIMS\b", re.IGNORECASE),
             "Do not present HIMS as an active runtime.",
+        ),
+        Rule(
+            "glab-nonexistent-system",
+            re.compile(r"\bGlab\b", re.IGNORECASE),
+            "Remove 'Glab'; no system or project component has this name.",
+        ),
+        Rule(
+            "vague-hueybrain-node-label",
+            re.compile(r"\bactive Huey\s*Brain V1 execution node\b", re.IGNORECASE),
+            (
+                "Replace the vague node label with the concrete v120.2 role: "
+                "primary operator workstation and prototype Huey Brain platform."
+            ),
         ),
     )
 
@@ -122,9 +135,9 @@ def _has_provenance_marker(line: str) -> bool:
 
 
 def _should_flag_pygpt(line: str) -> bool:
-    if not re.search(r"\\bPyGPT\\b", line):
+    if not re.search(r"\bPyGPT\b", line):
         return False
-    if re.search(r"\\bPyHuey\\b", line):
+    if re.search(r"\bPyHuey\b", line):
         return False
     if _has_provenance_marker(line):
         return False
