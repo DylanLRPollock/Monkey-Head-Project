@@ -198,17 +198,24 @@ target-version = ["py313"]
 line-length = 88
 extend-exclude = '''
 /src/huey/connectors/pyhuey/
+/src/huey/memory/PY/
 '''
 
 [tool.isort]
 profile = "black"
 line_length = 88
-skip_glob = ["src/huey/connectors/pyhuey/**"]
+skip_glob = [
+  "src/huey/connectors/pyhuey/**",
+  "src/huey/memory/PY/**",
+]
 
 [tool.ruff]
 target-version = "py313"
 line-length = 88
-extend-exclude = ["src/huey/connectors/pyhuey"]
+extend-exclude = [
+  "src/huey/connectors/pyhuey",
+  "src/huey/memory/PY",
+]
 
 [tool.ruff.lint]
 ignore = ["E402"]
