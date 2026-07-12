@@ -229,9 +229,7 @@ def main() -> int:
         "--inventory",
         help="Read paths from an existing newline-delimited inventory instead of Git.",
     )
-    parser.add_argument(
-        "--format", choices=("json", "markdown"), default="markdown"
-    )
+    parser.add_argument("--format", choices=("json", "markdown"), default="markdown")
     parser.add_argument(
         "--fail-on-canon-drift",
         action="store_true",
