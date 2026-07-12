@@ -109,7 +109,9 @@ def validate_hims_transition(previous: HIMSMessage, current: HIMSMessage) -> Non
     if previous.status == current.status:
         raise ValueError("transition must change the message status")
 
-    allowed = _ALLOWED_TRANSITIONS.get(previous.intent_type, {}).get(previous.status, set())
+    allowed = _ALLOWED_TRANSITIONS.get(previous.intent_type, {}).get(
+        previous.status, set()
+    )
     if current.status not in allowed:
         raise ValueError(
             f"invalid transition for {previous.intent_type}: "
