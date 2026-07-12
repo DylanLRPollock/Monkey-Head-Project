@@ -12,7 +12,10 @@ from scripts.repo.audit_v120_assets import (
     render_markdown,
 )
 from scripts.repo.check_canon_terms import _compile_rules
-from scripts.repo.check_legacy_hueyos_imports import is_allowed_text_reference
+from scripts.repo.check_legacy_hueyos_imports import (
+    is_allowed_text_reference,
+    should_scan,
+)
 from scripts.repo.check_repo_drift import DriftRule, should_check_rule
 
 
@@ -115,3 +118,4 @@ def test_legacy_namespace_allowance_is_exact_and_audit_only() -> None:
     assert not is_allowed_text_reference(
         Path("scripts/new_runtime.py"), '"src/hueyos/",'
     )
+    assert not should_scan(Path("tests/test_v120_asset_audit.py"))
