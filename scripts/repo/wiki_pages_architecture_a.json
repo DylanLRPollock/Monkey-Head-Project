@@ -1,0 +1,117 @@
+{
+  "Architecture": {
+    "title": "Architecture",
+    "category": "Architecture",
+    "classification": "Accepted-direction candidate with current implementation boundaries",
+    "summary": "Presents Huey as one embodied node, with Brain and Body local, controllers and LabTech external, and Farm or collective layers optional.",
+    "body": "```mermaid\nflowchart TB\n    HUMAN[\"Dylan - present human authority\"]\n    PROJECT[\"Monkey-Head-Project - umbrella\"]\n    subgraph NODE[\"Huey - one governed embodied node\"]\n        BRAIN[\"Brain - cognition and orchestration\"]\n        BODY[\"Body - physical interface and safety\"]\n        OS[\"HueyOS - modular runtime and OS layer\"]\n        EVIDENCE[\"Logs, tests, artifacts, recovery records\"]\n        OPERATOR[\"Operator-visible state and safe-stop\"]\n    end\n    CONTROLLER[\"HueyNexusController\"]\n    LAB[\"LabTech\"]\n    FARM[\"Optional Huey Farm\"]\n    FUTURE[\"Future valid Huey nodes\"]\n    HUMAN --> PROJECT --> NODE\n    CONTROLLER -. bounded requests and status .-> NODE\n    LAB -. build, inspect, recover .-> NODE\n    FARM -. optional services .-> NODE\n    PROJECT -. later coordination .-> FUTURE\n```\n\n## Node-local responsibilities\n\n- cognition and workflow orchestration;\n- access to approved memory and configuration;\n- sensing and interaction boundaries;\n- physical safety and safe-stop behavior;\n- local compute, storage, and runtime;\n- operator-visible state;\n- attributable evidence and recovery.\n\n## External systems\n\nNexus controllers, LabTech machines, public websites, API providers, and optional Farm services remain external. They may communicate with or support Huey without carrying Huey's identity or canonical memory.\n\n## Expansion rule\n\nAdditional nodes, shared compute, exact or augmented bifurcation, and collective governance belong above the validity of one node. The project should not rely on future coordination to conceal an incomplete local system.",
+    "sources": [
+      "readme",
+      "standardization",
+      "migration",
+      "oversight"
+    ]
+  },
+  "Runtime-and-V1": {
+    "title": "Runtime and V1",
+    "category": "Architecture",
+    "classification": "Current active proof path",
+    "summary": "Defines the narrow proof currently being built and the criteria that prevent a successful script from being mistaken for a complete Huey release.",
+    "body": "## Active proof path\n\n```mermaid\nflowchart LR\n    FIXTURE[\"Known MP3 fixture\"] --> PROBE[\"Probe and prepare\"]\n    PROBE --> TRANSCRIBE[\"Local transcription\"]\n    TRANSCRIBE --> RESPOND[\"API-backed response\"]\n    RESPOND --> LOG[\"Structured log\"]\n    LOG --> REVIEW[\"Operator review\"]\n```\n\n## Why this proof matters\n\nThe path exercises media handling, local inference, provider integration, configuration, failure handling, evidence, and operator review without depending on unresolved live audio or physical-control work.\n\n## V1 declaration criteria\n\nA V1 claim should require:\n\n- a recurring and useful purpose;\n- a known input and documented procedure;\n- repeatable success within declared limits;\n- fidelity assessment rather than only exit-code success;\n- complete structured evidence, including failures;\n- documented setup and recovery;\n- clear operator interaction;\n- no hidden dependency on Farm, Body actuation, or target-state governance.\n\n## Current software boundary\n\n- Python requirement: `>=3.13,<3.14`.\n- Distribution name: `hueyos`.\n- Runtime import namespace: `huey`.\n- Repository-wide namespace synchronization: incomplete.\n- PyHuey: primary GUI direction, not required to fabricate proof completion.\n\nThe controller transaction proof is a separate integration path and does not automatically redefine V1.",
+    "sources": [
+      "readme",
+      "master_v1203",
+      "pyproject",
+      "oversight"
+    ]
+  },
+  "Huey-Node": {
+    "title": "The Huey node",
+    "category": "Architecture",
+    "classification": "Accepted-direction candidate",
+    "summary": "Defines the minimum qualities of one valid Huey unit and distinguishes local validity from optional external infrastructure.",
+    "body": "A **Huey node** is one physically individual, governed AI unit capable of useful standalone operation within its declared scope.\n\n## Minimum validity properties\n\n1. **Coherence** — Brain, Body boundaries, runtime, evidence, and operator state describe one unit rather than unrelated machines.\n2. **Usefulness** — the node solves a recurring problem or performs a repeatable function.\n3. **Attribution** — inputs, stages, outputs, failures, software versions, and operator actions can be traced.\n4. **Safety** — refusal, stop, shutdown, recovery, and authority boundaries are explicit.\n5. **Recoverability** — the node can be restored from approved code, configuration, images, and records.\n6. **Standalone validity** — Farm access, a controller, cloud service, or collective membership is not required merely to remain Huey.\n\n## Current proof relationship\n\nThe present fixture-to-log V1 proof is Brain-centered. Huey Body remains real hardware but is paused for this proof. That does not erase the embodied direction; it prevents unfinished actuation from blocking a useful, bounded software demonstration.\n\n## Non-equivalences\n\nA Brain host, Body shell, PyHuey interface, Nexus controller, LabTech computer, Farm server, archive, or model is not independently the whole Huey node.",
+    "sources": [
+      "readme",
+      "standardization",
+      "migration",
+      "master_v201"
+    ]
+  },
+  "HIMS": {
+    "title": "HIMS",
+    "category": "Architecture",
+    "classification": "Messaging foundation and bounded controller direction; incomplete runtime",
+    "summary": "Explains the Huey Internal Messaging System as transport and record infrastructure without granting delivery automatic authority.",
+    "body": "**HIMS — Huey Internal Messaging System** — is the intended structured messaging and record pathway between bounded components and external controller clients.\n\nRepository foundations exist under `src/huey/messaging` and `src/huey/hims`, including schema, ledger, routing, storage, and related work. This proves a foundation, not a complete authenticated controller service.\n\n## Intended controller functions\n\n- device registration and provisioning;\n- device-specific authentication;\n- command and request submission;\n- acknowledgements and responses;\n- operational alerts and structured status;\n- reconnection and delivery tracking;\n- audit logging;\n- key rotation, revocation, replacement, and version reporting.\n\n## Authority rule\n\n```mermaid\nflowchart LR\n    MESSAGE[\"Delivered message\"] --> AUTHN[\"Authenticate origin\"]\n    AUTHN --> VALIDATE[\"Validate schema and freshness\"]\n    VALIDATE --> AUTHZ[\"Authorize requested action\"]\n    AUTHZ --> CONFIRM[\"Operator confirmation when required\"]\n    CONFIRM --> EXECUTE[\"Bounded execution\"]\n    EXECUTE --> RECORD[\"Observed result and log\"]\n```\n\nA successful delivery does not grant physical execution, identity, governance, or canonical authority.",
+    "sources": [
+      "readme",
+      "controller",
+      "security",
+      "master_v1203"
+    ]
+  },
+  "Compute-Architecture": {
+    "title": "Compute architecture",
+    "category": "Architecture",
+    "classification": "Current proof plus provisional node-local expansion",
+    "summary": "Separates the active Legion Go proof host, candidate V4 kernel, CPU-first duties, accelerator planning, and optional Farm services.",
+    "body": "## Present compute\n\nThe Lenovo Legion Go running Debian is the current V1 orchestration node. Its job is to make the fixture-to-log path useful, repeatable, observable, and recoverable.\n\n## Practical first assignments\n\nCPU-first duties remain appropriate for:\n\n- media probing and preparation;\n- transcription where the selected engine supports it;\n- orchestration and provider calls;\n- structured logging;\n- I/O, diagnostics, recovery, and support processes.\n\n## Node-local accelerator direction\n\nMultiple GPUs inside one physical node remain local compute, not a collective. Any large-model plan must identify how models and tensors are actually partitioned: layer placement, tensor parallelism, pipeline parallelism, expert routing, or separate workload assignment.\n\nDo not describe the sum of several cards as one transparent VRAM pool. State physical capacity, usable capacity per process, interconnect limits, framework support, and measured behavior.\n\n## Farm boundary\n\nFarm compute may later host models, storage, backups, or batch work. It remains optional. The node must identify what fails, degrades, or remains available when Farm services are absent.",
+    "sources": [
+      "readme",
+      "migration",
+      "oversight",
+      "master_v1203"
+    ]
+  },
+  "Brain-Body-and-Farm": {
+    "title": "Brain, Body, and Farm",
+    "category": "Architecture",
+    "classification": "Current role separation",
+    "summary": "Clarifies the node-local Brain and Body domains and the optional, external Farm layer.",
+    "body": "| Domain | Role | Current relationship to V1 |\n|---|---|---|\n| **Huey Brain** | Cognition, transcription orchestration, response, memory access, evidence, operator state | Active on the Lenovo Legion Go |\n| **Huey Body** | Physical sensing, interaction, actuation, power, thermal, mechanical, and safety functions | Real hardware, paused for V1 |\n| **Huey Farm** | Optional shared compute, storage, backups, model hosting, or later collective services | Not required and not operational as a collective substrate |\n\n## Brain rule\n\nBrain is a node-local functional domain. It is not a permanent excuse to leave the physical system fragmented across unrelated hosts, and it is not automatically the whole identity.\n\n## Body rule\n\nBody work must remain evidence-led. Physical commands require authentication, validation, authorization, interlocks, confirmation where appropriate, supervised execution, safe-stop, and retained records.\n\n## Farm rule\n\nFarm is a service layer. It must not silently become the place where identity, authority, or essential continuity resides. A node should degrade clearly when Farm services are unavailable rather than becoming undefined.",
+    "sources": [
+      "readme",
+      "migration",
+      "oversight",
+      "security"
+    ]
+  },
+  "Huey-Body": {
+    "title": "Huey Body",
+    "category": "Architecture",
+    "classification": "Current physical reality; V1 actuation deferred",
+    "summary": "Describes the real robotic shell, its paused role in the current proof, the V4 direction, and the safety evidence required before physical operation.",
+    "body": "**Huey Body is real hardware. It was formerly called Huey Core and is currently paused for the V1 proof.**\n\nPausing actuation does not abandon embodiment. It separates a useful software proof from unfinished mechanical, electrical, thermal, sensor, and safety integration.\n\n## Body domains\n\n- shell, structure, mounts, and service access;\n- sensors and environmental input;\n- speakers, displays, lights, and interaction surfaces;\n- motors, movement, and other actuators;\n- power distribution, charging, battery, and shutdown;\n- thermal management;\n- hardware interlocks, emergency stop, refusal, and recovery;\n- attributable observation of physical results.\n\n## Reactivation gate\n\nBody actuation should return only with a bounded command, authenticated origin, schema and range validation, current-state checks, authorization, operator confirmation where required, power and motion limits, safe-stop, observed result, and a complete record.\n\nThe active physical-cohesion program is [[Huey-V4]]. The current V1 proof may complete before V4 is operational.",
+    "sources": [
+      "readme",
+      "oversight",
+      "security",
+      "migration"
+    ]
+  },
+  "Collective-and-Bifurcation": {
+    "title": "Collective and bifurcation",
+    "category": "Architecture",
+    "classification": "Target-state architecture",
+    "summary": "Places future multi-node coordination and exact or augmented bifurcation above the validity of one node.",
+    "body": "## Collective\n\nThe Monkey-Head-Project may later coordinate multiple valid Huey nodes. That collective is not presently operational. A shared network, common repository, or pool of accelerators does not by itself create a legitimate collective.\n\n## Bifurcation concepts\n\n| Concept | Intended meaning | Current status |\n|---|---|---|\n| **Exact bifurcation** | Controlled lineage event preserving a defined base state as faithfully as possible | Provisional concept |\n| **Augmented bifurcation** | Controlled divergent or specialized lineage event | Provisional concept |\n\nNeither process automatically determines identity, personhood, citizenship, authority, or governance rights.\n\n## Prerequisites\n\n- one valid local node;\n- defined canonical state and export boundary;\n- provenance and checksums;\n- identity and key management;\n- explicit human authorization;\n- rollback and revocation;\n- conflict and divergence handling;\n- governance rules that preserve node boundaries.",
+    "sources": [
+      "migration",
+      "oversight",
+      "standardization"
+    ]
+  },
+  "Agent-Citizen-Roles": {
+    "title": "Agent and citizen roles",
+    "category": "Architecture",
+    "classification": "Historical and target-state concepts; inactive",
+    "summary": "Preserves Spark, Zap, citizen, district, and related role lineage without presenting them as the current V1 runtime.",
+    "body": "The 2025 wiki described **Spark**, **Zap**, and a large citizen populace as though they formed an active two-GPU governmental runtime. That presentation is not current.\n\n| Concept | Preserved meaning | Current status |\n|---|---|---|\n| **Spark** | Creative or exploratory role lineage | Inactive / not part of active V1 |\n| **Zap** | Evaluative or constraint-enforcement role lineage | Inactive / not part of active V1 |\n| **Citizens** | Narrow-scope agent or civic-unit concept | Target-state doctrine |\n| **Districts** | Organizational grouping concept | Target-state doctrine |\n| **Offices** | Governance authority roles | No active technical or sovereign authority |\n\nFuture agents may perform bounded tasks, but role names do not grant authority. Each tool or agent requires an explicit scope, inputs, outputs, permissions, evidence, revocation path, and human oversight.",
+    "sources": [
+      "migration",
+      "oversight",
+      "master_v1203"
+    ]
+  }
+}

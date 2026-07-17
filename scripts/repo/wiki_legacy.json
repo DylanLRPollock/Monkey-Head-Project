@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "status_date": "2026-07-17",
+  "framework": "v201.x review / Pre-Release #4",
+  "legacy_pages": {
+    "AMD-GPU-Tuning": {
+      "target": "Hardware-Lineage",
+      "classification": "Historical lineage",
+      "note": "The old page was tied to the 2025 AMD/iMac topology. Revalidate any platform-specific tuning against current hardware, kernel, firmware, and rollback requirements."
+    },
+    "Action-Plan-Oct-31-2025": {
+      "target": "Historical-2025-Wiki",
+      "classification": "Historical lineage",
+      "note": "The October 31, 2025 action plan is closed historical context, not a current execution checklist."
+    },
+    "Ansible-Inventory": {
+      "target": "LabTech",
+      "classification": "Compatibility alias",
+      "note": "No old Portal/Core/Legacy inventory is current by default. Build a new inventory from observed hosts and bounded roles."
+    },
+    "Huey-Key-Live-USB": {
+      "target": "Backups-and-Snapshots",
+      "classification": "Historical/provisional concept",
+      "note": "A recovery USB remains a useful concept, but the former partition plan and preloaded-key assumptions are not current accepted instructions."
+    },
+    "Kernel-617x-Guide": {
+      "target": "Historical-2025-Wiki",
+      "classification": "Historical lineage",
+      "note": "The Linux 6.17 build guide was date-bound 2025 material. Use current upstream, Debian, hardware, security, and rollback evidence."
+    },
+    "LLM-Setup-AMD-or-CPU": {
+      "target": "Models-and-External-Services",
+      "classification": "Compatibility alias",
+      "note": "AMD Vulkan and CPU examples are optional platform experiments, not the current project-wide model architecture."
+    },
+    "Makefile-Tasks": {
+      "target": "Build-Guides",
+      "classification": "Compatibility alias",
+      "note": "Use repository-declared commands and current automation rather than the former four-target example Makefile."
+    },
+    "Memory-Schema-v2": {
+      "target": "Memory-and-Data-Model",
+      "classification": "Historical lineage",
+      "note": "The old SQLite DDL is a design artifact, not the accepted canonical memory schema."
+    },
+    "Ollama-and-Models-Manifest": {
+      "target": "Models-and-External-Services",
+      "classification": "Compatibility alias",
+      "note": "Ollama and model manifests remain optional tools. Current model choice is task- and evidence-dependent."
+    },
+    "Portal-Polish-iMac5K": {
+      "target": "Hardware-Lineage",
+      "classification": "Historical lineage",
+      "note": "The iMac-specific Xorg, backlight, audio, and boot instructions belong to the 2025 Portal deployment and require full revalidation."
+    },
+    "Storage-Hub-RAID": {
+      "target": "Hardware-Lineage",
+      "classification": "Historical lineage",
+      "note": "The old Supermicro storage topology remains lineage. Current backup or storage roles must be re-established by observed hardware and restore tests."
+    },
+    "Systemd-Units": {
+      "target": "Build-Guides",
+      "classification": "Compatibility alias",
+      "note": "Service units must match the current package, user, paths, permissions, secrets, and recovery model; the old home-directory example is not canonical."
+    }
+  },
+  "expected_2025_page_names": [
+    "AMD-GPU-Tuning",
+    "Action-Plan-Oct-31-2025",
+    "Agent-Citizen-Roles",
+    "Ansible-Inventory",
+    "Architecture",
+    "Backups-and-Snapshots",
+    "Build-Guides",
+    "Contributing",
+    "Dev-Environment",
+    "Getting-Started",
+    "Glossary",
+    "Governance-Clauses-Registry",
+    "Governance-and-Constitution",
+    "Hardware",
+    "Home",
+    "Huey-Key-Live-USB",
+    "Kernel-617x-Guide",
+    "LLM-Setup-AMD-or-CPU",
+    "Makefile-Tasks",
+    "Memory-Schema-v2",
+    "Memory-and-Data-Model",
+    "Networking-Topologies",
+    "Networking-and-Services",
+    "Ollama-and-Models-Manifest",
+    "Portal-Polish-iMac5K",
+    "Publishing-Kit",
+    "Release-Process",
+    "Remote-Access-VNC-SSH",
+    "Roadmap-and-Pre-Releases",
+    "SSH-and-Keys",
+    "Security-and-Operations",
+    "Software-Stack",
+    "Storage-Hub-RAID",
+    "Style-Guide",
+    "Systemd-Units",
+    "Testing-and-Validation",
+    "Troubleshooting-and-FAQ"
+  ],
+  "sidebar_groups": [
+    [
+      "Orientation",
+      [
+        "Home",
+        "Getting-Started",
+        "Project-Position",
+        "Pre-Release-4",
+        "Current-Status",
+        "Truth-Classes",
+        "Source-Authority-and-Documentation"
+      ]
+    ],
+    [
+      "Architecture",
+      [
+        "Architecture",
+        "Huey-Node",
+        "Brain-Body-and-Farm",
+        "Huey-Brain",
+        "Huey-Body",
+        "Huey-V4",
+        "Compute-Architecture",
+        "Runtime-and-V1",
+        "PyHuey",
+        "HIMS",
+        "HIMS-Protocol-and-Authority",
+        "Memory-and-Data-Model",
+        "Logging-and-Evidence",
+        "Safety-and-Human-Oversight",
+        "Governance-and-Constitution",
+        "Agent-Citizen-Roles",
+        "Governance-Clauses-Registry",
+        "Collective-and-Bifurcation"
+      ]
+    ],
+    [
+      "Hardware and controllers",
+      [
+        "Hardware",
+        "HueyNexusController",
+        "Nexus-5-Hammerhead",
+        "Nexus-7-Family",
+        "Controller-OS-and-Interface",
+        "Controller-Security-and-Recovery",
+        "Controller-Battery-and-Repair",
+        "LabTech",
+        "Hardware-Acceptance-and-Evidence",
+        "Hardware-Lineage"
+      ]
+    ],
+    [
+      "Development and operations",
+      [
+        "Dev-Environment",
+        "Software-Stack",
+        "Repository-Map",
+        "Build-Guides",
+        "CLI-and-Operator-Interfaces",
+        "Models-and-External-Services",
+        "Networking-and-Services",
+        "Networking-Topologies",
+        "Remote-Access-VNC-SSH",
+        "SSH-and-Keys",
+        "Security-and-Operations",
+        "Backups-and-Snapshots",
+        "Testing-and-Validation",
+        "Troubleshooting-and-FAQ"
+      ]
+    ],
+    [
+      "Project stewardship",
+      [
+        "Contributing",
+        "Style-Guide",
+        "Release-Process",
+        "Publishing-Kit",
+        "Licensing-and-Provenance",
+        "Privacy-and-Publication-Boundaries",
+        "Open-Decisions-and-Risks",
+        "Decision-and-Acceptance-Register"
+      ]
+    ],
+    [
+      "History and lineage",
+      [
+        "Roadmap-and-Pre-Releases",
+        "Project-Timeline",
+        "v120.x-Predecessor",
+        "v200.x-Website-Standard",
+        "v201.x-Standardization",
+        "Wiki-Migration-Map",
+        "Historical-2025-Wiki",
+        "Glossary",
+        "Page-Index"
+      ]
+    ]
+  ]
+}
