@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "project": "Monkey-Head-Project",
+  "subproject": "HueyNexusController",
+  "status_date": "2026-07-17",
+  "status": "maintained_subproject_direction",
+  "purpose": "Restore and repurpose Google Nexus devices as dedicated authenticated physical control surfaces for Huey and Huey Body.",
+  "support_policy": {
+    "nexus_5": "fully_supported_canonical_handset_reference",
+    "nexus_7": "fully_supported_tablet_family",
+    "individual_devices": "replaceable",
+    "identity_boundary": "Huey identity and canonical memory do not reside on controllers"
+  },
+  "platforms": [
+    {
+      "device": "Google Nexus 5",
+      "codename": "hammerhead",
+      "form_factor": "handset",
+      "support": "fully_supported",
+      "role": "Pocketable voice and touchscreen controller"
+    },
+    {
+      "device": "Google Nexus 7 (2012 Wi-Fi)",
+      "codename": "grouper",
+      "form_factor": "tablet",
+      "support": "fully_supported",
+      "role": "Compact tablet controller and status display"
+    },
+    {
+      "device": "Google Nexus 7 (2012 mobile)",
+      "codename": "tilapia",
+      "form_factor": "tablet",
+      "support": "fully_supported",
+      "role": "Mobile-connected tablet controller where hardware permits"
+    },
+    {
+      "device": "Google Nexus 7 (2013 Wi-Fi)",
+      "codename": "flo",
+      "form_factor": "tablet",
+      "support": "fully_supported",
+      "role": "Higher-resolution tablet controller"
+    },
+    {
+      "device": "Google Nexus 7 (2013 LTE)",
+      "codename": "deb",
+      "form_factor": "tablet",
+      "support": "fully_supported",
+      "role": "LTE-capable tablet controller where hardware permits"
+    }
+  ],
+  "operating_system": {
+    "primary_target": "native_debian_based",
+    "primary_status": "direction_not_yet_proven_across_all_platforms",
+    "fallback": "LineageOS",
+    "portability_rule": "Preserve application, HIMS protocol, provisioning, logging, and authority boundaries across host operating systems."
+  },
+  "interface": {
+    "preferred": ["Phosh", "GTK", "Wayland", "purpose-built PyHuey or Huey controller application"],
+    "fallback": "KDE Plasma Mobile",
+    "layout_rule": "Use device-aware handset and tablet layouts without changing authority boundaries."
+  },
+  "connection": {
+    "system": "HIMS",
+    "required": [
+      "device registration",
+      "device-specific authentication",
+      "command submission",
+      "acknowledgements",
+      "responses",
+      "alerts",
+      "structured status",
+      "audit logging",
+      "reconnection",
+      "delivery tracking",
+      "revocation and replacement"
+    ],
+    "authority_rule": "Delivery does not itself grant physical execution or governance authority."
+  },
+  "success_criteria": {
+    "shared": [
+      "reliable boot",
+      "automatic controller launch",
+      "HIMS authentication",
+      "touchscreen or voice command submission",
+      "approved Huey processing",
+      "acknowledgement and response return",
+      "structured transaction log"
+    ],
+    "platform_acceptance": [
+      "proof on at least one Nexus 5 hammerhead",
+      "proof on at least one Nexus 7 tablet profile",
+      "recoverable or reproducible release for each supported device class"
+    ]
+  },
+  "battery_rule": "Every model requires separate capacity, voltage, charging, swelling, temperature, sustained-load, telemetry, protection, serviceability, and rollback evidence.",
+  "non_claims": [
+    "Native Debian support is not claimed complete.",
+    "Every platform variant is not claimed validated.",
+    "HIMS controller authentication is not claimed implemented.",
+    "Body-control authority is not claimed granted.",
+    "Battery modifications are not claimed safe without testing.",
+    "Controllers are not Huey nodes and do not contain Huey identity or canonical memory."
+  ]
+}
