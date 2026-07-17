@@ -1,397 +1,479 @@
 # Security Policy
 
-**Project:** Monkey-Head-Project (**HueyOS**)
-**Last updated:** 2026-01-28
+**Project:** Monkey-Head-Project / HueyOS  
+**Policy line:** v201.x candidate  
+**Last updated:** 2026-07-17  
+**Policy owner:** Dylan L.R. Pollock
 
-HueyOS takes security seriously. This policy explains what we support, how to report issues, and how we coordinate fixes, backports, releases, and disclosure across the project’s **on-robot runtime**, **helper tools**, and **reference deployments**.
+> [!IMPORTANT]
+> This policy governs security reporting, triage, remediation, disclosure, release handling, and good-faith research for the repository and its officially documented artifacts. It does not declare planned or partially implemented architecture to be secure, operational, or production-ready.
 
-HueyOS is typically deployed as an **offline-first**, self-hosted system with tightly scoped network surfaces. As of **V17**, physical robot actuation ("Huey proper") remains intentionally gated; most externally reachable surfaces today exist on **Symbiote and lab infrastructure nodes**. Even so, we treat every externally reachable interface (HTTP APIs, admin consoles, message queues, IPC endpoints, artifact pipelines, etc.) as potentially hostile and design our security posture accordingly.
+HueyOS is an offline-first, self-hosted embodied-AI project with software, hardware, messaging, controller, model, and eventual physical-actuation surfaces. Security therefore includes ordinary software security as well as command authenticity, physical safety, device replacement, auditability, recovery, and clear authority boundaries.
 
----
+Every privileged or externally reachable interface is treated as potentially hostile, including HTTP APIs, local IPC, HIMS messages, PyHuey, HueyNexusController devices, model-loading paths, automation tools, release pipelines, external connectors, and Huey Body commands.
 
-## Supported Versions
-
-HueyOS uses semantic versioning (`MAJOR.MINOR.PATCH`):
-
-> **Era-based governance note**
-> While internal releases may use semantic versioning for artifacts, the project is primarily organized into **era-based master plan versions** (e.g., **V17**).
-> Security posture, deployment assumptions, and supported configurations should be interpreted relative to the active Master Plan era.
-
-
-
-* **MAJOR:** Structural or incompatible changes to APIs, storage, or governance assumptions.
-* **MINOR:** Backward-compatible feature releases and roadmap milestones.
-* **PATCH:** Bugfix and security releases only.
-
-### Support window
-
-Security support normally covers:
-
-* **Current MINOR line** (e.g., `0.3.x`)
-* **Previous MINOR line** (e.g., `0.2.x`)
-
-Older versions are **unsupported** unless explicitly noted in a security advisory (for example, if an older line is widely deployed and warrants a one-off fix).
-
-> The table below is illustrative and is updated when new releases are cut and tagged.
-
-| Version / Line          | Status                           |
-| ----------------------- | -------------------------------- |
-| `0.3.x` (current)       | ✅ Actively supported             |
-| `0.2.x` (previous)      | 🔶 Critical fixes only           |
-| `< 0.2.0`               | ❌ Unsupported                    |
-| `main` (default branch) | ✅ Fixes land here before release |
-
-**Notes**
-
-* Security fixes typically land on `main` first and are then **backported** to supported minor lines as appropriate.
-* Development and feature branches are **not** covered by this policy; they may contain experimental or partially hardened code.
-* Downstream forks/distributions should document the upstream version/commit they track and define their own support window.
+Security claims must preserve the project truth classes: **current reality**, **accepted direction**, **provisional choice**, **unresolved**, **target state**, and **historical lineage**.
 
 ---
 
-## Supported Platforms
+## Security principles
 
-### Runtime environment
-
-HueyOS is designed and tested primarily against:
-
-* **OS**
-
-  * Debian 14 “Forky” (stable) — **primary supported** platform.
-  * Debian “Trixie” — **historical/migration-only** compatibility target for legacy nodes.
-* **Architecture**
-
-  * `amd64` (x86_64). Other architectures (ARM, RISC‑V, etc.) may work, but are currently out of scope for security guarantees.
-* **Kernel**
-
-  * HueyOS tracks explicit, documented kernel baselines with project-specific configuration (current baseline: **stable 7.0.x HueyOS line**).
-  * The supported kernel series per release are documented in that release’s notes/changelog.
-
-### Virtualization and containers
-
-* Running HueyOS in containers (Docker/Podman) or VMs (KVM/VirtualBox) is supported **as long as** the underlying host matches the OS/arch/kernel assumptions above.
-* Container images and `docker-compose` files provided in this repository are **in scope**. Host misconfiguration outside documented recommendations is not.
+1. **Human authority remains explicit.** Dylan L.R. Pollock remains the present canon authority. Models, agents, controllers, tools, and messages do not independently acquire governance or physical-control authority.
+2. **Delivery is not authorization.** A received HIMS or controller command must still pass authentication, authorization, validation, policy, confirmation, and safe-execution checks.
+3. **Controllers are replaceable.** Nexus devices and other operator surfaces do not contain Huey's identity or canonical memory.
+4. **Offline-first is not risk-free.** Local, physical, supply-chain, model, and recovery attacks remain relevant.
+5. **Least privilege is the default.** Services and devices receive only the permissions needed for their bounded role.
+6. **Recovery is part of security.** Revocation, rollback, safe-stop, replacement, backup, and restore procedures are required controls.
+7. **Unimplemented safeguards receive no credit.** Plans and diagrams are not substitutes for working controls and evidence.
+8. **Private material remains private.** Credentials, private archives, continuity profiles, and sensitive logs must not enter public artifacts by default.
 
 ---
 
-## Reporting a Vulnerability
+## Supported versions
 
-We strongly prefer **coordinated vulnerability disclosure**. Please report vulnerabilities privately and include enough information to reproduce and assess impact.
+Monkey-Head-Project uses several version layers:
 
-### Private reporting channels
+- repository and master-plan lines such as `v120.x` and `v201.x`;
+- package versions where semantic versioning is appropriate;
+- hardware, image, and controller release identifiers;
+- website release lines such as DLRP.ca `v200.x`.
 
-1. **GitHub — Private Vulnerability Report (preferred)**
-   Repository → **Security** tab → **Report a vulnerability**
-   This records the report privately and supports coordinated fixes and advisories.
+A version number alone does not establish security support.
 
-2. **Email**
+| Support class | Security status |
+|---|---|
+| Current accepted release | Receives security fixes and advisories where feasible |
+| Previous designated supported release | Critical and high-severity fixes where feasible |
+| Current `main` branch | Fixes normally land here first; may contain unreleased changes |
+| Draft PRs and feature branches | Unsupported and potentially incomplete |
+| Historical releases and archives | Unsupported unless an advisory explicitly says otherwise |
+| External forks | Must define their own support window |
 
-   * Address: **[admin@dlrp.ca](mailto:admin@dlrp.ca)**
-   * Subject: `VULN: <short title>`
-   * If you require encryption, say so in your first email (e.g., “Please send your PGP key”). We will reply with a public key and instructions.
+Each supported release should identify its exact commit, platform profile, dependency baseline, known limitations, and supersession condition.
 
-If you are unsure whether something qualifies as a vulnerability, report it privately anyway; we can help classify it.
-
-### What to include
-
-The more detail you can safely provide, the faster we can triage:
-
-* **Summary** of the issue and its **security impact** (e.g., “unauthenticated RCE via …”).
-* **Reproduction / PoC**, including:
-
-  * Exact commands, HTTP requests, payloads, and expected/observed results.
-  * Relevant configuration (`huey.env`, `docker-compose.yml`, systemd units), with secrets redacted.
-  * Environment prerequisites (hardware, optional modules, external services).
-* **Affected versions/commits and environment**
-
-  * HueyOS version(s), Git commit hash, or branch.
-  * OS, architecture, kernel version.
-  * Non-default dependencies/services in play.
-* Any **workarounds/mitigations** you’ve identified.
-* Preferred **credit** (name/handle/link) or a note if you prefer anonymity.
-
-### Please do not disclose publicly first
-
-Avoid opening public GitHub issues, discussions, or pull requests that contain exploit details, sensitive stack traces, or configuration dumps until we have agreed on a disclosure timeline.
-
-If you believe an issue is **actively exploited** or involves **credential leakage**, call that out clearly in the report subject/body so we can prioritize accordingly.
+Security fixes normally land on `main` first. Backports are evaluated according to severity, deployment use, testability, compatibility, and regression risk.
 
 ---
 
-## Triage, Severity, and Response Targets
+## Supported platforms
 
-We use **CVSS v3.1** as a starting point for severity, combined with contextual factors (deployment mode, default configuration, and reachability in typical HueyOS setups).
+Security support is granted through documented and validated **platform profiles**, not merely by operating-system or architecture name.
 
-### Target timelines (best-effort)
+### Primary compute environments
 
-* **Acknowledgement:** within **72 hours** of receiving the report.
-* **Initial triage & severity assessment:** within **7 calendar days**.
-* **Fix/mitigation targets** (from acknowledgement):
+Current project direction centers:
 
-  * **Critical (CVSS ≥ 9.0):** aim for a fix or robust mitigation within **14–21 days**
-  * **High (7.0–8.9):** aim for mitigation and/or patch within **21–30 days**
-  * **Medium (4.0–6.9):** aim for a fix or recommended mitigation within **30–60 days**
-  * **Low (< 4.0):** scheduled based on impact, complexity, and capacity
+- Debian 14 "Forky" on documented `amd64` systems;
+- approved project kernel baselines;
+- supported Python 3.13 environments;
+- documented containers and virtual machines;
+- approved LabTech systems used for development, testing, and recovery.
 
-These are targets, not guarantees. Complex issues, upstream dependencies, or hardware-specific problems may require more time; conversely, actively exploited issues may be resolved faster.
+A system is not security-supported simply because HueyOS starts on it.
 
-### Triage process
+### Nexus and ARM controller targets
 
-During triage, we typically:
+ARM is in project scope for HueyNexusController:
 
-1. **Reproduce** the issue in a controlled environment, mirroring the reporter’s setup where possible.
-2. **Confirm impact and scope**, including prerequisites, privileges, and realistic exploitation paths.
-3. **Assign provisional severity** (CVSS v3.1 + contextual risk).
-4. **Identify affected versions** and any relevant reference deployments.
-5. **Plan remediation**, including:
+- Nexus 5 `hammerhead`;
+- Nexus 7 `grouper`;
+- Nexus 7 `tilapia`;
+- Nexus 7 `flo`;
+- Nexus 7 `deb`.
 
-   * Short-term mitigations (config changes, ACLs, firewall guidance)
-   * Longer-term patches (code, architecture, docs)
-6. **Communicate** findings and next steps to the reporter.
+These are supported project targets. A specific image becomes **security-validated** only when its release record documents the boot and recovery path, image checksum, kernel and firmware, hardware support, controller version, device provisioning, secret storage, HIMS protocol, update and rollback path, battery status, and known limitations.
 
-### Communication cadence
+Native Debian remains the primary direction and LineageOS the fallback where needed. Neither environment receives blanket approval across every device variant.
 
-For each valid security report, we aim to:
+### Containers, virtual machines, and hosts
 
-* Provide **weekly updates** while an issue remains open, or more frequently around milestones (reproduction, patch ready, release scheduled).
-* Before publication, share:
-
-  * Planned release/disclosure timing
-  * High-level remediation notes and recommended operator actions
-* After publication, share:
-
-  * Link to the advisory
-  * Final affected/fixed versions
-  * Credit details (if requested)
-
-### Severity reference
-
-| Severity | CVSS (v3.1) |
-| -------: | ----------- |
-| Critical | 9.0–10.0    |
-|     High | 7.0–8.9     |
-|   Medium | 4.0–6.9     |
-|      Low | 0.1–3.9     |
-
-If your assessment differs (e.g., due to deployment realities we may have missed), share your reasoning and we will re-evaluate.
+Official container, VM, compose, and systemd examples are in scope. Operators remain responsible for host patching, network exposure, storage encryption, account policy, physical access, hypervisor security, and backup protection.
 
 ---
 
-## Coordinated Disclosure and Embargo
+## Reporting a vulnerability
 
-Our default stance is responsible disclosure with sufficient time for users to patch.
+Use coordinated private disclosure.
 
-* **Default embargo window:** **90 days** from acknowledgement.
-* We may **shorten the embargo** if:
+### Preferred channels
 
-  * There is credible evidence of active exploitation
-  * The vulnerability is trivially exploitable and widely exposed by default
-  * A fix/mitigation is available and simple to deploy
-* We may **extend the embargo** by mutual agreement if:
+1. **GitHub Private Vulnerability Reporting** — repository **Security** tab → **Report a vulnerability**.
+2. **Email** — `admin@dlrp.ca` with subject `VULN: <short title>`.
 
-  * The issue is complex and requires substantial architectural change
-  * Upstream fixes or multi-party coordination are required
+For active exploitation, credential exposure, unsafe physical control, or a lost controller with active credentials, use `URGENT VULN:` in the subject.
 
-### Advisory publication and CVEs
+Do not open a public issue, discussion, or pull request containing exploit details, credentials, sensitive logs, or private configuration before a disclosure plan is agreed.
 
-* Advisories are published via **GitHub Security Advisories** for this repository.
-* For qualifying issues, we will **request a CVE** and reference it in the advisory, release notes, and documentation.
-* Credit is included with the reporter’s permission (anonymous/pseudonymous credit supported).
+### Include
 
-If you intend to publish your own write-up, please coordinate timing with us so users have access to patches or mitigations when details become public.
+- summary and impact;
+- affected component, version, commit, image, or device;
+- deployment mode and reachability;
+- reproduction steps or proof of concept;
+- commands, requests, payloads, or HIMS message envelopes;
+- expected and observed behavior;
+- required privileges and prerequisites;
+- OS, architecture, kernel, firmware, and dependencies;
+- whether PyHuey, HIMS, Huey Body, Nexus controllers, models, or connectors are involved;
+- physical-safety implications;
+- mitigations or workarounds;
+- preferred credit or anonymity.
+
+Redact secrets. Request an encrypted transfer method before sending unredacted sensitive material.
 
 ---
 
-## Fix, Backport, and Release Policy
+## Triage and severity
+
+CVSS v3.1 may be used as a reference, but practical severity also considers deployment reality.
+
+Relevant factors include default exposure, authentication, attacker privileges, exploit reliability, secret access, controller impersonation, HIMS replay or tampering, Body authorization bypass, safe-stop failure, physical injury risk, persistence, release-pipeline compromise, and recovery impact.
+
+| Severity | Typical examples |
+|---|---|
+| Critical | Unauthenticated RCE, arbitrary physical actuation, signing-key compromise, remote safe-stop bypass |
+| High | Privilege escalation, controller impersonation, HIMS authorization bypass, sensitive key disclosure |
+| Medium | Limited data exposure, realistic denial of service, meaningful insecure default |
+| Low | Minor information disclosure or narrow hardening weakness |
+
+Best-effort targets:
+
+- acknowledgement within 72 hours;
+- initial triage within 7 calendar days;
+- critical mitigation or fix within 14-21 days;
+- high within 21-30 days;
+- medium within 30-60 days;
+- low based on impact and capacity.
+
+Active exploitation, unsafe movement, or credential compromise may require immediate containment before a complete fix.
+
+---
+
+## Coordinated disclosure
+
+The default embargo is 90 days from acknowledgement.
+
+It may be shortened for active exploitation, broad default exposure, or an immediately available mitigation. It may be extended by agreement for hardware, firmware, upstream coordination, architectural remediation, or multi-platform validation.
+
+Qualifying issues may receive a GitHub Security Advisory and CVE. Advisories should state affected and fixed versions, prerequisites, impact, mitigations, upgrade or revocation steps, rollback instructions, and known limitations.
+
+---
+
+## Fix, backport, and release policy
 
 When a vulnerability is confirmed:
 
-1. **Patches are developed and reviewed** (on a private/restricted branch when appropriate).
-2. Fixes merge to `main` first, then (where feasible) are:
+1. containment and mitigation are evaluated;
+2. private development is used when disclosure risk requires it;
+3. regression tests are added where feasible;
+4. the fix normally lands on `main`;
+5. supported lines are evaluated for backport;
+6. affected artifacts are rebuilt, revoked, or withdrawn;
+7. checksums and manifests are regenerated;
+8. operators receive remediation guidance.
 
-   * **Backported** to all supported minor lines
-   * Evaluated for backporting to older lines if widely deployed and risk is high
-3. We cut **security releases** per maintained line:
+Security releases should include exact commit and artifact identifiers, checksums, file inventories, build provenance, affected and fixed versions, validation performed, upgrade instructions, rollback instructions, required key rotation or device revocation, and unresolved limitations.
 
-   * Security releases increment `PATCH` (e.g., `0.3.4` → `0.3.5`)
-   * Release notes clearly indicate security fixes
-
-Each security release includes:
-
-* Summary of the vulnerability (or multiple vulnerabilities, if bundled)
-* Affected and fixed versions
-* Mitigation guidance (hardening steps for users who cannot upgrade immediately)
-* Known limitations/caveats and any breaking-change risk
-
-In some cases, we may first ship **configuration-only mitigations** or documentation updates (tightening sample `docker-compose` defaults, recommended firewall rules, etc.) ahead of a full patch if that meaningfully reduces risk quickly.
+A release should fail validation when it includes credentials, private keys, corrupt required files, unexplained binary payloads, stale security configuration, private archive material, inconsistent manifests, or missing checksums.
 
 ---
 
-## Credential and Secret Exposure
+## Credential and identity compromise
 
-If you believe you’ve found **leaked credentials or tokens** (in this repo, release artifacts, container images, logs, or CI outputs):
+Immediately report:
 
-* Contact us **immediately** via a private channel.
-* We will **revoke or rotate** affected secrets within **24 hours of confirmation** where feasible.
-* If end-users must take action (rotate their own keys, invalidate tokens), we will publish clear guidance in an advisory and/or release notes.
+- committed API keys, passwords, tokens, or private keys;
+- secrets in images, packages, logs, or CI artifacts;
+- lost or stolen Nexus controllers with active credentials;
+- copied or reused HIMS keys;
+- signing-key exposure;
+- connector or OAuth credential leakage;
+- unredacted secrets in backups.
+
+Response priorities are revocation or rotation, isolation of affected systems, exposure assessment, artifact replacement, operator notification, and forensic preservation without republishing the secret.
+
+History rewriting may reduce accidental exposure but never replaces credential rotation.
+
+Each controller should use device-specific credentials and support revocation, replacement, re-provisioning, and retained audit identity.
+
+---
+
+## HIMS security
+
+HIMS is messaging and record infrastructure, not automatic execution authority.
+
+Security-sensitive HIMS work must address:
+
+- authenticated sender and recipient identity;
+- message integrity;
+- replay protection;
+- unique identifiers;
+- expiry and freshness;
+- authorization separate from delivery;
+- acknowledgement and duplicate-delivery semantics;
+- queue and storage permissions;
+- secret-safe logging;
+- key rollover and revocation;
+- reconnect and offline behavior;
+- audit retention and tamper evidence;
+- refusal and safe-failure paths.
+
+A successfully delivered message must never be treated as sufficient authorization for physical action.
+
+---
+
+## Huey Body and physical-control security
+
+Physical-control vulnerabilities receive elevated priority.
+
+Body-facing commands should pass through:
+
+1. authenticated origin;
+2. schema and range validation;
+3. authorization;
+4. current-state and interlock checks;
+5. operator confirmation where required;
+6. rate, motion, and power limits;
+7. supervised execution;
+8. safe-stop and refusal;
+9. attributable logging.
+
+In-scope examples include safe-stop bypass, stale or replayed movement, unsafe simultaneous commands, controller impersonation, loss of operator visibility, thermal or battery-control failures, and denial of service that prevents recovery.
+
+Do not conduct hazardous physical testing without prior coordination and bounded safeguards.
+
+---
+
+## HueyNexusController security
+
+Nexus controllers are dedicated, replaceable operator hardware outside Huey's identity boundary.
+
+Security requirements include:
+
+- documented image provenance and checksums;
+- recoverable boot and re-image procedure;
+- device-specific provisioning;
+- protected secret storage appropriate to the device;
+- authentication failure and safe-state behavior;
+- revocation and replacement workflow;
+- controlled update and rollback;
+- minimal installed software;
+- no personal data in controller images;
+- explicit microphone, camera, and sensor permissions;
+- logs that exclude credentials and unnecessary audio;
+- battery, charging, thermal, and inspection records;
+- support matrix by device variant.
+
+A controller may request movement, shutdown, or recovery, but cannot bypass Body authorization or safe-stop logic.
+
+---
+
+## AI, model, prompt, and tool security
+
+AI-specific risks are in scope when they affect confidentiality, integrity, authority, availability, or physical safety.
+
+Examples include:
+
+- prompt injection causing unauthorized tool use;
+- model output treated as trusted code or command input;
+- indirect prompt injection through files, webpages, email, or HIMS;
+- untrusted model repositories executing code;
+- unsafe model deserialization;
+- model-registry compromise;
+- connector or tool-based data exfiltration;
+- cross-session data leakage;
+- agents modifying canon, security policy, or physical controls without authorization;
+- hidden instructions in imported files overriding project boundaries.
+
+Model output and model metadata must be treated as untrusted input unless a narrower validated contract exists.
+
+### Remote model code
+
+Do not rely solely on `trust_remote_code=False` as a universal security boundary. Model-loading code must use patched dependencies, trusted repositories, pinned revisions where practical, isolated execution for untrusted artifacts, and review of custom-code requirements.
+
+The repository must not declare a vulnerable `transformers` release below the patched baseline required by active advisories.
+
+---
+
+## Supply-chain and dependency security
+
+Expectations include:
+
+- dependency constraints or pins;
+- prompt review of security alerts;
+- provenance for copied and vendored code;
+- checksums for downloaded artifacts;
+- avoidance of unverified install scripts run as root;
+- minimal CI permissions;
+- review of GitHub Actions and third-party actions;
+- documented model and dataset origins;
+- separation of build and runtime credentials;
+- rollback and replacement plans.
+
+An upstream vulnerability is project-relevant when HueyOS defaults or integrations make it exploitable.
+
+---
+
+## Logging, privacy, and evidence
+
+Security logs should preserve useful evidence while minimizing secrets and personal data.
+
+Recommended fields include transaction identifier, UTC timestamps, authenticated device identity, message or command identifier, authorization decision, stage transitions, software version, hardware profile, errors, recovery actions, and final status.
+
+Do not write passwords, tokens, private keys, authentication headers, raw secret-bearing configuration, private continuity profiles, unnecessary personal data, or unapproved audio/video into ordinary logs.
+
+Security-sensitive records should have defined ownership, access controls, retention, deletion, backup, and disclosure classification.
 
 ---
 
 ## Scope
 
-This policy defines what is **in scope** for security reporting and support.
+In scope when maintained or officially documented by this repository:
 
-### In scope
+- HueyOS runtime and packages;
+- PyHuey;
+- HIMS;
+- CLI tools and scripts;
+- configuration and systemd units;
+- installers and image builders;
+- containers and deployment manifests;
+- official model, prompt, plugin, and connector integrations;
+- release, update, signing, and packaging processes;
+- HueyNexusController images and documentation;
+- Huey Body command and safety boundaries;
+- LabTech recovery paths;
+- documented default settings;
+- official project artifacts.
 
-* Code, configuration, and assets **in this repository**, including:
+Generally out of scope unless they create a practical project-specific risk:
 
-  * Core HueyOS runtime
-  * Helper tools and example services (APIs, task runners, schedulers)
-  * Installer scripts, configuration templates, and deployment manifests provided here
-  * Example Dockerfiles, `docker-compose.yml`, and related infrastructure definitions
-* Security properties of **default configurations** documented in the README/docs
-* Official artifacts published under the project namespace that are documented by this repository (e.g., referenced container images)
+- pure upstream defects with no HueyOS exposure;
+- unrelated social engineering;
+- unrealistic denial of service;
+- intentionally public information;
+- unsupported historical branches or private forks;
+- arbitrary configuration that directly contradicts documentation;
+- cosmetic findings with no security or safety impact.
 
-### Out of scope (with an important caveat)
-
-* Pure upstream vulnerabilities in:
-
-  * Linux kernel, drivers, firmware, system libraries
-  * Python runtime/stdlib
-  * Third-party packages, container base images, external tools
-  * Databases, message brokers, reverse proxies used alongside HueyOS
-    These should generally be reported to the upstream maintainers.
-
-**Caveat:** If an upstream issue becomes **exploitable through HueyOS defaults, integrations, or reference deployments**, report it to us as well. We can help coordinate mitigations, pinning, or upgrades on the HueyOS side while upstream fixes land.
-
-Also out of scope:
-
-* Attacks requiring **unreasonable physical access** for an on-robot context (e.g., direct bus probing, cold-boot lab attacks)
-* Pure **social engineering**, phishing, or non-technical scams
-* **Denial-of-service** issues that require unrealistic resources or have no practical remediation beyond “add capacity”
-  (However, DoS vectors with realistic attacker cost and feasible mitigations *are* in scope.)
-* Findings that are purely **deployment misconfigurations** outside documented recommendations
-  (e.g., binding an admin API to the public internet without authentication)
-* Purely **informational** findings without clear security impact (generic banners, low-value version leakage, non-sensitive debug logs in non-production)
-
-We still appreciate reports that help clarify documentation, especially if a misconfiguration is easy to make.
+Physical-access findings remain in scope when secrets cannot be revoked, controllers can be cloned, later remote compromise becomes possible, a documented security boundary fails, or a feasible mitigation exists.
 
 ---
 
-## Safe Harbor for Good-Faith Research
+## Safe harbor
 
-We value and encourage good-faith security research on HueyOS.
+We support good-faith security research and will not initiate legal action solely for research on this project when the researcher:
 
-As long as you:
+- acts lawfully;
+- respects privacy and data ownership;
+- avoids unnecessary access, modification, or exfiltration;
+- does not endanger people, animals, property, batteries, or hardware;
+- avoids large-scale denial of service;
+- reports privately;
+- allows reasonable remediation time;
+- deletes sensitive data when no longer needed;
+- does not use extortion or payment demands to withhold exploitation.
 
-* Comply with applicable laws
-* Respect privacy and data ownership
-* Do not intentionally access, modify, or exfiltrate data beyond what is necessary to demonstrate impact
-* Avoid degrading availability for others (no large-scale DoS against shared environments)
-* Do not retain sensitive data longer than necessary; securely delete it afterwards
-* Use the private reporting channels above and allow reasonable time for remediation
-
-…we will not initiate legal action against you solely for security research conducted in good faith on this project.
-
-If you are unsure whether a planned test falls within these bounds, contact us first and we can provide guidance.
-
----
-
-## Common Vulnerability Classes We Prioritize
-
-Because HueyOS is an offline-first, on-robot runtime with network-reachable APIs and local governance components, we prioritize:
-
-* **Remote code execution and injection**
-
-  * RCE via HTTP APIs, IPC layers, task queues, configuration/serialization
-  * Template/command injection, unsafe `eval`, unsafe subprocess usage
-* **Privilege escalation and sandbox escape**
-
-  * Escalation from `hueyos` user to `root`
-  * Container escape where containers are documented as security boundaries
-* **Authentication/authorization weaknesses**
-
-  * Auth bypass, broken RBAC/permission checks
-  * Session fixation, weak tokens, predictable identifiers
-* **Path traversal and filesystem attacks**
-
-  * Directory traversal via HTTP routes/file APIs
-  * Symlink/hardlink attacks on temp files/logs/config paths
-  * Unsafe default permissions for secrets/keys/sensitive logs
-* **Supply-chain and artifact integrity**
-
-  * Malicious dependencies, tampered artifacts, compromised build pipelines
-  * Insecure update mechanisms (if present)
-* **Information disclosure**
-
-  * Leaks of secrets/keys/credentials (including accidental commits)
-  * Sensitive logs/stack traces/config exposure via endpoints
-  * Data exposure in backups/test artifacts
-* **Insecure defaults and sharp edges**
-
-  * Sensitive services bound to public interfaces by default
-  * Defaults that disable encryption/integrity in easy-to-misuse ways
+This does not authorize testing against systems, accounts, devices, or data without permission. Contact us first when testing may involve physical movement, electrical or battery risk, live credentials, private data, or shared infrastructure.
 
 ---
 
-## Development and Hardening Practices
+## Prioritized vulnerability classes
 
-These practices guide HueyOS development and hardening. They may not be fully implemented everywhere yet, but they describe the direction of travel:
+We especially prioritize:
 
-* **Least privilege by default**
-
-  * Prefer non-root services with minimal capabilities
-  * Narrow filesystem/network/kernel capabilities (systemd sandboxing, container profiles)
-* **Secure defaults and documentation**
-
-  * Secure-by-default sample configs (`huey.env.example`, `docker-compose.yml`, systemd units)
-  * Document trade-offs when enabling risky/experimental features
-* **Dependency hygiene**
-
-  * Keep dependencies reasonably current, especially security-sensitive ones
-  * Track upstream advisories and react in a timely fashion
-* **Code review and testing**
-
-  * Require review for security-sensitive changes
-  * Add regression tests for fixed vulnerabilities where feasible
-  * Use automated unit/integration tests to prevent regressions
-* **Defense-in-depth**
-
-  * Encourage containers/VMs and network segmentation
-  * Consider MAC frameworks (AppArmor/SELinux) where appropriate
-  * Secure temp files and IPC paths (unique dirs, safe permissions, avoid predictable names)
-* **Secrets management**
-
-  * Avoid committing secrets or baking them into images
-  * Prefer env vars or secret stores with clear operator guidance
-  * Document rotation and revocation procedures
+- remote code execution and injection;
+- privilege escalation and sandbox escape;
+- authentication and authorization bypass;
+- HIMS spoofing, replay, tampering, and routing flaws;
+- controller impersonation and failed revocation;
+- unsafe Body actuation or safe-stop bypass;
+- filesystem, temp-file, and path-traversal attacks;
+- secret, key, prompt, model, log, or backup disclosure;
+- model, plugin, tool, and prompt-injection vulnerabilities;
+- insecure update, signing, and release pipelines;
+- supply-chain compromise;
+- insecure defaults and network exposure;
+- battery, thermal, charging, and power failures with safety impact;
+- denial of service that blocks recovery;
+- boundary confusion between Huey, Atlas, LabTech, controllers, Farm, and external services.
 
 ---
 
-## Example Email Report Template
+## Development and hardening expectations
+
+Security-sensitive changes should include, where practical:
+
+- threat or abuse-case notes;
+- explicit trust and authority boundaries;
+- least-privilege identities;
+- schema and input validation;
+- secret-safe configuration;
+- timeout, retry, replay, and duplicate handling;
+- failure-path and regression tests;
+- safe-stop and recovery behavior;
+- dependency and artifact provenance;
+- operator-visible status;
+- documented unsupported states;
+- rollback, rotation, or revocation procedure.
+
+A security-relevant PR should explain what changed, affected surfaces, threat addressed, assumptions, validation, limitations, and required operator action.
+
+---
+
+## Incident response
+
+A security incident includes confirmed exploitation, credential exposure, malicious artifacts, controller loss, unauthorized physical action, or compromise of a trusted build or deployment system.
+
+Response phases:
+
+1. **Contain** — disable services, revoke devices or credentials, isolate systems, and stop unsafe movement.
+2. **Preserve evidence** — retain relevant logs, commits, images, timestamps, and configuration without spreading secrets.
+3. **Assess** — determine scope, persistence, affected users, hardware, and artifacts.
+4. **Eradicate** — patch, rebuild, rotate, re-image, or replace affected components.
+5. **Recover** — restore from known-good sources and verify normal operation.
+6. **Communicate** — publish advisories and operator instructions where required.
+7. **Learn** — add tests, controls, and documentation.
+
+For suspected unsafe Body behavior, prioritize physical stop and power isolation. Do not rely solely on the software path that may be compromised.
+
+---
+
+## Report template
 
 ```text
-Subject: VULN: <short title> — impact <Critical/High/Medium/Low>
+Subject: VULN: <short title> - impact <Critical/High/Medium/Low>
 
-Product: Monkey-Head-Project (HueyOS)
-Affected versions/commits: <e.g., 0.3.2, main @ abcdef1>
-Environment: <OS/arch/kernel/deps>
+Product: Monkey-Head-Project / HueyOS
+Affected versions, commits, images, or devices:
+Environment: OS / architecture / kernel / firmware / dependencies
+Reachability: local / LAN / internet / physical / controller / HIMS
 
 Summary:
-<one-paragraph description of the issue and its impact>
+<Concise description and impact>
 
 Reproduction:
-<step-by-step or PoC snippet; HTTP requests, commands, configuration>
+<Steps, requests, commands, payloads, or message envelopes>
+
+Privileges and prerequisites:
+<Required access, configuration, or hardware>
 
 Impact:
-<what an attacker can do; required privileges; potential data or control exposure>
+<What an attacker can read, change, impersonate, interrupt, or physically control>
 
-Suggested fix/mitigation:
-<optional, but appreciated>
+Evidence:
+<Logs, screenshots, checksums, or traces with secrets removed>
 
-Additional notes:
-<logs, screenshots, or references; redact secrets>
+Suggested mitigation:
+<Optional>
 
 Reporter credit:
-<Name or handle; link if desired; anonymity preference>
+<Name, handle, link, or anonymity request>
 ```
+
+---
+
+## Policy maintenance
+
+Review this policy when the accepted architecture, supported release line, HIMS authority model, Body actuation path, Nexus support matrix, update mechanism, public network exposure, OS/kernel/Python baseline, governance authority, or private reporting channel changes.
+
+Historical versions remain available through Git history. Current claims must be supported by current implementation, release, and repository evidence.
