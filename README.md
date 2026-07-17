@@ -11,6 +11,4 @@
 </p>
 
 <p align="center">
-  <a href="#current-position">Current position</a> ·
-  <a href="#node-first-architecture">Architecture</a> ·
-  <a href="#huey-v4
+  <a href="#what-this-project-is">Overview
