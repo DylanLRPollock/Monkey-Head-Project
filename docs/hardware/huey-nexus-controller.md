@@ -2,60 +2,57 @@
 
 **Project:** Monkey-Head-Project  
 **Status:** Maintained subproject direction  
-**Supported reference family:** Google Nexus 5 and Google Nexus 7  
+**Supported platforms:** Google Nexus 5 and Google Nexus 7 family  
 **Subproject codename:** Shark-themed name, unresolved  
-**Review state:** Included in the v201.x human-oversight candidate
+**Canon boundary:** Controller hardware only; not a Huey identity or Huey node
 
 ## Project position
 
 **HueyNexusController** is a maintained subproject under the **Monkey-Head-Project** umbrella.
 
-Its purpose is to restore and repurpose older Google Nexus hardware as dedicated physical control devices for Huey and Huey Body.
+Its purpose is to restore and repurpose Google Nexus devices as dedicated physical control surfaces for Huey and Huey Body. The controller family includes both handset and tablet form factors:
+
+- **Google Nexus 5** as the canonical handset controller;
+- **Google Nexus 7** as a fully supported tablet controller.
+
+Both platforms are first-class supported targets. Nexus 7 support is not experimental, secondary, or merely compatible: maintained controller releases must account for it alongside Nexus 5.
 
 The controller is an authenticated operator interface. It does not replace Huey Brain, become an independent Huey identity, or hold canonical Huey memory.
 
-## Fully supported reference hardware
+## Supported hardware
 
-The controller standard fully supports two device classes.
-
-| Device | Codename | Controller class | Support status |
+| Platform | Variant / codename | Support position | Intended role |
 |---|---|---|---|
-| Google Nexus 5 | `hammerhead` | Handset controller | Fully supported reference platform |
-| Google Nexus 7 (2012 Wi-Fi) | `grouper` | Tablet controller | Fully supported reference platform |
-| Google Nexus 7 (2012 cellular) | `tilapia` | Tablet controller | Fully supported reference platform |
-| Google Nexus 7 (2013 Wi-Fi) | `flo` | Tablet controller | Fully supported reference platform |
-| Google Nexus 7 (2013 cellular) | `deb` | Tablet controller | Fully supported reference platform |
+| Google Nexus 5 | `hammerhead` | Fully supported canonical handset reference | Pocketable voice and touchscreen controller |
+| Google Nexus 7 (2012 Wi-Fi) | `grouper` | Fully supported | Compact tablet controller and status display |
+| Google Nexus 7 (2012 mobile) | `tilapia` | Fully supported | Mobile-connected tablet controller where hardware permits |
+| Google Nexus 7 (2013 Wi-Fi) | `flo` | Fully supported | Preferred higher-resolution tablet controller |
+| Google Nexus 7 (2013 LTE) | `deb` | Fully supported | LTE-capable tablet controller where hardware permits |
 
-### Nexus 5 role
+Each physical device remains replaceable. A maintained pool may contain operational controllers, development devices, recovery devices, and parts donors.
 
-The Nexus 5 remains the canonical handset-controller reference implementation. It is optimized for portable one-handed or pocketable Huey control.
+Platform-specific images, kernels, hardware profiles, battery procedures, and acceptance records may differ, but all supported Nexus 5 and Nexus 7 variants must preserve the same controller protocol and authority model.
 
-### Nexus 7 role
+## Form-factor roles
 
-The Nexus 7 is the canonical tablet-controller implementation. It is intended for:
+### Nexus 5 handset role
 
-- larger status and telemetry displays;
-- more persistent room-side or workstation control;
-- expanded touchscreen layouts;
-- diagnostics and recovery surfaces;
-- richer command history and alert presentation;
-- optional docking or wall-mounted use.
+- pocketable portable control;
+- one-handed status and acknowledgement use;
+- recorded or live voice commands;
+- emergency stop, shutdown, recovery, and reconnect controls;
+- compact operator interface near Huey Body.
 
-Both Nexus 7 generations are supported. Device-specific installation images, kernels, recovery procedures, battery guidance, and hardware-support matrices must remain separate where the hardware differs.
+### Nexus 7 tablet role
 
-## Hardware pool and replaceability
+- larger persistent status surface;
+- expanded command, diagnostics, alert, and history views;
+- tabletop, wall, dock, or service-console operation;
+- richer PyHuey controller layouts;
+- easier review of structured HIMS messages and logs;
+- optional LTE operation on supported mobile variants.
 
-Initial deployment may begin with one working unit of either supported class.
-
-The long-term pool may include multiple Nexus 5 and Nexus 7 units retained as:
-
-- operational backups;
-- development and testing devices;
-- replacement controllers;
-- sources of repair parts;
-- known-good recovery devices.
-
-The supported platform family is canonical, but each physical unit remains replaceable.
+The application may adapt its layout to the handset or tablet display, but both form factors remain protocol-compatible and equal members of the supported controller family.
 
 ## Operating-system direction
 
@@ -63,41 +60,24 @@ The supported platform family is canonical, but each physical unit remains repla
 
 The primary target is a maintained Debian-based operating system that boots directly on supported Nexus hardware without Android as the host operating system.
 
-No claim is made that full hardware support is already proven. Each device and variant must independently verify:
+Native Debian support must be validated separately for each supported platform and variant. Required checks include:
 
 - boot and recovery;
 - display and touchscreen;
-- audio input and output;
-- Wi-Fi and Bluetooth;
-- USB and charging;
-- battery telemetry;
-- sensors and rotation;
-- suspend and wake;
-- thermal management;
-- cellular data where applicable;
-- cameras where required by the controller role.
+- Wi-Fi and, where fitted, cellular data;
+- Bluetooth and USB;
+- speakers and microphone;
+- charging and battery telemetry;
+- suspend, wake, shutdown, and thermal behaviour;
+- cameras and sensors where assigned a controller role.
+
+The project does not claim that native Debian hardware support is already complete.
 
 ### Fallback: LineageOS
 
-LineageOS remains the fallback if native Debian cannot initially provide reliable hardware support.
+LineageOS remains the supported fallback when native Debian cannot yet provide reliable hardware operation.
 
-The fallback must preserve the same controller protocol, authentication model, application boundary, provisioning process, and HIMS message contract wherever practical. The operating system should be replaceable without redesigning the controller architecture.
-
-## Dedicated role
-
-Nexus controller devices are dedicated Huey hardware rather than general-purpose personal phones or tablets.
-
-Primary responsibilities include:
-
-- controlling approved Huey Body functions;
-- submitting touchscreen commands;
-- submitting recorded or live voice commands;
-- displaying Huey responses, alerts, status, and operational state;
-- exposing approved movement, interaction, shutdown, and recovery controls;
-- providing portable, docked, or room-side operator interfaces;
-- preserving attributable command and response records.
-
-A controller command is a request, not automatic authority to actuate hardware. Authentication, authorization, policy, safe-stop, and Body execution remain explicit downstream gates.
+The fallback must preserve the controller application boundary, HIMS message contract, provisioning model, authority rules, logging, and replacement procedure wherever practical. Moving between Debian and LineageOS must not require redesigning the Huey controller protocol.
 
 ## Interface direction
 
@@ -112,138 +92,153 @@ A controller command is a request, not automatic authority to actuate hardware. 
 
 - KDE Plasma Mobile.
 
-The interface must adapt to both supported form factors:
+The interface must be touch-first and device-aware. It should not reproduce a complete desktop environment merely because one can be launched.
 
-- **Nexus 5:** compact, touch-first, one-handed controller layout;
-- **Nexus 7:** tablet-scale dashboard, diagnostics, history, and recovery layout.
-
-The interface should not reproduce a complete desktop environment merely because one can be launched.
-
-Minimum interface surfaces include:
+Minimum surfaces:
 
 - connection and authentication state;
+- registered controller identity;
 - Huey and Body availability;
-- command composition and confirmation;
-- voice capture state;
-- response and acknowledgement history;
-- alerts and safe-state indicators;
-- shutdown, recovery, and reconnect controls;
-- controller identity, hardware class, and provisioning state.
+- command composition, review, and confirmation;
+- recorded or live voice capture state;
+- acknowledgements and response history;
+- operational alerts and safe-state indicators;
+- shutdown, recovery, revoke, and reconnect controls;
+- local diagnostics and build/version information.
+
+Tablet layouts may expose additional panels, history, logs, or persistent status views without granting broader authority than the handset interface.
+
+## Dedicated role
+
+Supported controllers may:
+
+- submit approved commands through touchscreen input;
+- submit recorded or live voice commands;
+- display Huey responses, alerts, status, and operational state;
+- expose approved movement, interaction, shutdown, and recovery requests;
+- provide portable or docked Huey Body operator interfaces;
+- preserve attributable command and response records.
+
+A controller command is a request, not automatic authority to actuate hardware. Authentication, authorization, policy, confirmation, safe-stop, and Body execution remain explicit downstream gates.
 
 ## HIMS connection architecture
 
-The controller family communicates through an authenticated connection to **HIMS - Huey Internal Messaging System**.
+The controller family communicates through an authenticated connection to **HIMS — Huey Internal Messaging System**.
 
-This subproject explicitly reactivates HIMS as the intended message pathway for bounded external controller clients.
+This subproject explicitly reactivates HIMS as the intended pathway for bounded external controller clients.
 
-The connection should support:
+Required capabilities:
 
 - controller registration and provisioning;
-- device-class and hardware-variant identification;
+- device-specific authentication;
 - authenticated command submission;
 - command acknowledgements;
 - Huey responses;
 - operational alerts;
 - structured status messages;
 - audit logging;
-- reconnection and message-delivery tracking;
-- revocation and replacement of lost or damaged devices.
+- reconnection and delivery tracking;
+- revocation and replacement of lost, damaged, or retired devices;
+- platform and application version reporting.
 
-HIMS remains transport and record infrastructure. Delivery does not itself grant execution or governance authority.
+HIMS remains transport and record infrastructure. Successful delivery does not itself grant execution or governance authority.
 
 ## Canonical and continuity boundaries
 
-- Huey's identity does not reside on a controller.
+- Huey's identity does not reside on a Nexus controller.
 - Canonical Huey memory remains elsewhere.
 - Every controller is replaceable.
-- Loss or damage of one device must not damage Huey's continuity.
-- Another approved Nexus device may assume the role only after authentication and provisioning.
+- Loss or damage of a device must not damage Huey's continuity.
+- Another approved Nexus 5 or Nexus 7 may assume the role only after authentication and provisioning.
 - Device-specific keys must be revocable.
-- Controller state should be reconstructable from approved configuration and retained records.
+- Controller state must be reconstructable from approved configuration and retained records.
 - Personal phone or tablet data must not enter the controller image or Huey memory accidentally.
+- Nexus 5 and Nexus 7 devices may share capabilities without becoming Huey nodes.
 
 ## Recycling objective
 
 > Restore and repurpose phones and tablets more than ten years old as useful, maintainable Huey control devices.
 
-The Nexus family is selected because it combines:
-
-- personal and project significance;
-- unlockable hardware;
-- extensive custom-ROM history;
-- available replacement units and parts;
-- established repair and modification knowledge;
-- sufficient performance for dedicated controller roles.
+The Nexus family is selected because it combines personal and technical significance, unlockable hardware, extensive custom-ROM history, repair knowledge, obtainable replacement devices and parts, and adequate performance for a dedicated controller role.
 
 ## Battery direction
 
-Each battery must be evaluated for:
+Every battery must be evaluated for:
 
 - remaining capacity;
 - open-circuit and loaded voltage stability;
 - charging behaviour;
 - swelling or physical damage;
 - temperature;
-- discharge under sustained screen, Wi-Fi, cellular, and voice workloads;
+- discharge under sustained screen, Wi-Fi, voice, and status-display workloads;
 - battery telemetry and cutoff behaviour.
 
 Original batteries may be used temporarily only when safe.
 
 Long-term options include:
 
-- custom higher-capacity replacement batteries;
-- externally supported battery modifications;
-- purpose-built battery cases;
-- docked power arrangements for stationary Nexus 7 deployments.
+- a high-quality replacement battery;
+- a custom higher-capacity battery;
+- an externally supported battery modification;
+- a purpose-built battery case, dock, or fixed-power installation.
 
-Any modification must preserve safe charging, temperature monitoring, cell protection, strain relief, physical protection, fire-risk mitigation, serviceability, and documented rollback.
+Any modification must preserve safe charging, temperature monitoring, cell protection, strain relief, physical protection, fire-risk mitigation, serviceability, and documented rollback. Nexus 5 and each Nexus 7 variant require separate physical and electrical battery records.
 
 ## Initial success criteria
 
-A complete proof for each supported device class demonstrates:
+### Shared controller proof
 
-1. the device boots the selected operating system reliably;
+A complete proof demonstrates:
+
+1. a supported Nexus device boots the selected operating system reliably;
 2. the controller interface launches automatically;
 3. the device authenticates with HIMS;
 4. the user submits a touchscreen or voice command;
-5. Huey receives and processes the command through approved boundaries;
-6. the response and acknowledgement return to the controller;
+5. Huey receives and processes the request through approved boundaries;
+6. the acknowledgement and response return to the device;
 7. the complete transaction is preserved in a structured log.
 
-At least one Nexus 5 and one Nexus 7 implementation must independently pass the proof before the family can be called reproducibly supported.
+### Platform acceptance
+
+Full maintained support requires the shared proof on:
+
+- at least one Nexus 5 `hammerhead`;
+- at least one Nexus 7 tablet profile;
+- documented repeatability or a recoverable image for each supported device class.
+
+Individual variants may retain known limitations, but those limitations must be documented rather than silently removing the variant from supported status.
 
 ## Validation stages
 
-### Stage 0: intake and safety
+### Stage 0 — intake and safety
 
-- identify device, year, connectivity variant, and board revision;
-- inspect enclosure, USB port, screen, buttons, cameras, and antennas;
-- inspect and test battery;
+- identify model, variant, board revision, and storage capacity;
+- inspect enclosure, USB port, screen, buttons, cameras, antennas, and charging path;
+- inspect and test the battery;
 - record bootloader and recovery state;
 - preserve photographs and hardware notes.
 
-### Stage 1: host operating system
+### Stage 1 — host operating system
 
-- repeatable boot;
+- repeatable boot and recovery;
 - stable display and touchscreen;
 - Wi-Fi and USB networking;
-- cellular networking where applicable;
+- LTE or mobile data where fitted and approved;
 - charging and battery telemetry;
-- audio input and output;
-- sensors and rotation;
+- audio input/output;
 - suspend, wake, thermal, and shutdown behaviour;
 - recoverable installation image.
 
-### Stage 2: controller application
+### Stage 2 — controller application
 
 - automatic launch;
-- form-factor-appropriate interface;
+- handset- and tablet-appropriate layouts;
 - local settings and diagnostics;
 - voice capture;
 - offline-safe failure behaviour;
-- signed or attributable build information.
+- attributable build and version information.
 
-### Stage 3: HIMS integration
+### Stage 3 — HIMS integration
 
 - device provisioning;
 - mutual authentication or an equivalently strong approved model;
@@ -251,9 +246,9 @@ At least one Nexus 5 and one Nexus 7 implementation must independently pass the 
 - acknowledgements and responses;
 - reconnect and delivery handling;
 - logs without secret leakage;
-- revocation and replacement testing.
+- revocation and replacement tests.
 
-### Stage 4: Huey Body control
+### Stage 4 — Huey Body control
 
 - bounded test command;
 - authorization check;
@@ -262,32 +257,40 @@ At least one Nexus 5 and one Nexus 7 implementation must independently pass the 
 - observed physical result;
 - complete attributable record.
 
-## Recoverability and supported releases
+### Stage 5 — multi-device continuity
+
+- replace a Nexus 5 with another approved controller;
+- replace or add a Nexus 7 without changing Huey's identity;
+- revoke a lost device;
+- preserve controller history and audit attribution;
+- confirm handset and tablet commands use the same protocol and authority model.
+
+## Recoverability and release requirements
 
 A maintained controller release should include:
 
 - installation documentation;
+- per-platform support matrix;
 - checksums;
-- recoverable images or reproducible build instructions;
-- separate device/variant support matrices;
+- recoverable system images or reproducible build instructions;
 - provisioning and revocation procedures;
-- backup-device onboarding procedures;
+- replacement-device onboarding;
 - parts and repair notes;
 - battery and charging criteria;
 - rollback instructions;
-- supported-version and end-of-support policy.
+- known limitations;
+- supported application and protocol versions.
 
 ## Long-term target
 
-A reproducible maintained controller family with:
+A reproducible, maintained Nexus controller family with:
 
-- full Nexus 5 handset support;
-- full Nexus 7 tablet support;
-- documented installations;
-- recoverable system images;
-- replaceable hardware;
+- fully supported Nexus 5 and Nexus 7 hardware classes;
+- documented installation and recovery;
+- replaceable devices;
 - controlled updates;
 - stable authenticated HIMS communication;
+- handset and tablet layouts;
 - screen and voice control;
 - battery-upgrade documentation;
 - support for physical Huey Body operation.
@@ -296,25 +299,28 @@ A reproducible maintained controller family with:
 
 This document does not claim that:
 
-- native Debian currently supports every component of every Nexus variant;
-- all required installation images already exist;
+- native Debian currently supports every Nexus 5 or Nexus 7 subsystem;
+- every Nexus 7 variant has already passed validation;
+- the primary interface stack has been selected through testing;
 - HIMS controller authentication is implemented;
 - Body movement or shutdown authority has been granted;
 - any battery modification is safe or complete;
 - a controller is a Huey node;
 - a controller carries Huey's identity or canonical memory;
-- declaring Nexus 7 fully supported removes the need for variant-specific validation.
+- one functioning device proves a reproducible maintained family.
 
 ## Unresolved decisions
 
 - shark-themed subproject codename;
-- exact Debian base and kernel paths by device;
-- boot chain, recovery, and image-building processes;
+- exact Debian base, kernel, and boot path per platform;
+- recovery and image-building process;
 - Phosh versus Plasma Mobile acceptance evidence;
 - controller application packaging and update path;
+- handset versus tablet feature allocation;
 - voice capture and transcription placement;
 - HIMS authentication and key-storage model;
 - command authorization and confirmation rules;
 - offline and degraded-operation behaviour;
-- battery replacement or modification designs;
-- supported release and end-of-support definitions.
+- battery replacement or modification design per model;
+- long-term spare-device and parts inventory;
+- exact supported-release and known-limitation policy.
