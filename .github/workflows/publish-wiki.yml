@@ -1,13 +1,23 @@
-name: Publish GitHub Wiki
+name: Validate and Publish GitHub Wiki
 
 on:
+  pull_request:
+    paths:
+      - "scripts/repo/build_wiki.py"
+      - "scripts/repo/wiki_*.json"
+      - "scripts/repo/publish_wiki.sh"
+      - "tests/test_wiki_generator.py"
+      - ".github/workflows/publish-wiki.yml"
+      - "docs/wiki-overhaul-v201.md"
   workflow_dispatch:
   push:
     branches:
       - main
     paths:
       - "scripts/repo/build_wiki.py"
+      - "scripts/repo/wiki_*.json"
       - "scripts/repo/publish_wiki.sh"
+      - "tests/test_wiki_generator.py"
       - ".github/workflows/publish-wiki.yml"
       - "docs/wiki-overhaul-v201.md"
 
@@ -15,20 +25,40 @@ permissions:
   contents: write
 
 concurrency:
-  group: publish-github-wiki
+  group: publish-github-wiki-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  validate-and-publish:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Generate and validate wiki
-        run: python3 scripts/repo/build_wiki.py build/wiki
+      - name: Generate and strictly validate wiki
+        run: |
+          python3 scripts/repo/build_wiki.py build/wiki
+          python3 scripts/repo/build_wiki.py build/wiki --check
 
-      - name: Publish wiki
+      - name: Run wiki generator tests
+        run: python3 -m pytest -q tests/test_wiki_generator.py
+
+      - name: Upload generated wiki for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-v201-wiki
+          path: build/wiki
+          if-no-files-found: error
+
+  publish:
+    if: github.event_name != 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Publish validated wiki
         env:
           WIKI_TOKEN: ${{ secrets.WIKI_DEPLOY_TOKEN || github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}

@@ -1,0 +1,82 @@
+{
+  "Hardware": {
+    "title": "Hardware",
+    "category": "Hardware and controllers",
+    "classification": "Current lab reality plus evidence-gated direction",
+    "summary": "Provides the current hardware map without reviving the fixed 2025 Portal/Core/Storage topology as present reality.",
+    "body": "## Current hardware map\n\n| System | Role | Classification |\n|---|---|---|\n| **Lenovo Legion Go running Debian** | Active Huey Brain V1 orchestration node | Current lab reality |\n| **Huey Body** | Physical robotic shell, formerly Huey Core | Current physical reality; paused for V1 |\n| **2017 iMac 5K** | External operator and development tooling | LabTech |\n| **Briefcase** | External portable operator/recovery tooling | LabTech |\n| **Nexus 5 and Nexus 7 devices** | Replaceable dedicated operator controllers | Maintained targets; validation incomplete |\n| **i9 / ASUS TUF / Optane system** | Intended future V4 compute-kernel direction | Requires inventory and integration evidence |\n| **Four node-local accelerators** | Candidate future compute posture | Provisional |\n\n## Hardware truth rule\n\nA device is not part of the active Huey node merely because it exists in the lab or appears in an old diagram. Current status requires exact identification, observed condition, assigned role, power and thermal evidence, installation or connection state, test results, and recovery information.\n\n## Safe intake\n\nRecord model, revision, serial or inventory identity, photographs, storage, firmware, bootloader, battery, power supply, ports, known damage, starting state, and anything that must be backed up before modification.",
+    "sources": ["readme", "migration", "oversight", "controller"]
+  },
+  "HueyNexusController": {
+    "title": "HueyNexusController",
+    "category": "Hardware and controllers",
+    "classification": "Maintained project target family; validation incomplete",
+    "summary": "Defines the Nexus 5 and complete Nexus 7 family as dedicated, replaceable operator hardware outside Huey's identity boundary.",
+    "body": "HueyNexusController restores and repurposes Google Nexus devices as dedicated physical control surfaces for Huey and Huey Body.\n\n| Platform | Codename | Intended role |\n|---|---|---|\n| Google Nexus 5 | `hammerhead` | Canonical pocket-sized handset controller |\n| Nexus 7 (2012 Wi-Fi) | `grouper` | Compact tablet controller and status display |\n| Nexus 7 (2012 mobile) | `tilapia` | Mobile-connected tablet controller where hardware permits |\n| Nexus 7 (2013 Wi-Fi) | `flo` | Higher-resolution tablet controller |\n| Nexus 7 (2013 LTE) | `deb` | LTE-capable tablet controller where hardware permits |\n\n“Supported” means formally maintained project targets. It does not mean every kernel path, modem, microphone, camera, sensor, charger, battery procedure, image, or controller feature has passed validation.\n\n## Shared controller model\n\n- dedicated rather than personal-use images;\n- touchscreen and voice request surfaces;\n- authenticated HIMS transport target;\n- identical authority model across handset and tablet layouts;\n- device-specific credentials and revocation;\n- replaceable hardware that does not carry Huey's identity or canonical memory;\n- recoverable images, controlled updates, rollback, repair, and known limitations.\n\nA controller command is a request. It does not bypass authorization, confirmation, safe-stop, or Body execution gates.",
+    "sources": ["controller", "controller_json", "security", "readme"]
+  },
+  "Nexus-5-Hammerhead": {
+    "title": "Nexus 5 — hammerhead",
+    "category": "Hardware and controllers",
+    "classification": "Canonical handset target; implementation evidence pending",
+    "summary": "Documents the pocketable controller role, validation needs, recovery expectations, and non-claims for the Nexus 5.",
+    "body": "The Google Nexus 5 `hammerhead` is the canonical handset reference for HueyNexusController.\n\n## Intended role\n\n- pocketable one-handed status and acknowledgement;\n- touchscreen command composition and review;\n- recorded or live voice request capture where validated;\n- reconnect, revoke, shutdown, recovery, and emergency request surfaces;\n- portable operation near Huey Body.\n\n## Acceptance evidence\n\nA maintained image needs a documented bootloader and recovery path, checksums, repeatable installation, display and touch, Wi-Fi, USB, audio, charging and battery telemetry, suspend/wake/shutdown, thermal behavior, controller application launch, provisioning, HIMS authentication, revocation, and known limitations.\n\n## Non-claims\n\nThe project does not presently claim complete native Debian hardware support, production-ready HIMS authentication, safe battery modification, or granted Body-control authority on `hammerhead`.",
+    "sources": ["controller", "controller_json", "security"]
+  },
+  "Nexus-7-Family": {
+    "title": "Nexus 7 family",
+    "category": "Hardware and controllers",
+    "classification": "Maintained tablet targets; per-variant validation pending",
+    "summary": "Separates the four Nexus 7 variants while keeping one controller protocol and authority model.",
+    "body": "| Variant | Codename | Form factor and role |\n|---|---|---|\n| 2012 Wi-Fi | `grouper` | Compact tablet status and controller surface |\n| 2012 mobile | `tilapia` | Mobile-connected tablet where modem support permits |\n| 2013 Wi-Fi | `flo` | Preferred higher-resolution tablet interface |\n| 2013 LTE | `deb` | LTE-capable tablet where hardware and carrier conditions permit |\n\n## Tablet advantages\n\n- persistent status, alerts, and history;\n- larger diagnostic and service views;\n- docked, wall-mounted, or tabletop use;\n- richer PyHuey/controller layouts;\n- easier review of structured HIMS messages and logs.\n\n## Per-variant rule\n\nImages, kernels, boot paths, cellular support, batteries, cameras, sensors, and repair procedures differ. Each variant needs its own profile and known-limitation record even when the application protocol remains shared.\n\nTablet layouts must not receive broader authority merely because they display more information.",
+    "sources": ["controller", "controller_json", "security"]
+  },
+  "Controller-OS-and-Interface": {
+    "title": "Controller OS and interface",
+    "category": "Hardware and controllers",
+    "classification": "Primary and fallback direction; not fully validated",
+    "summary": "Explains the native Debian research target, LineageOS fallback, touch-first interface, and portability rules across supported Nexus devices.",
+    "body": "## Host operating system\n\n| Layer | Direction |\n|---|---|\n| **Primary research target** | Native Debian-based system booting directly on supported Nexus hardware |\n| **Practical fallback** | LineageOS when native Linux cannot provide reliable hardware support |\n| **Preferred UI** | Phosh, GTK, Wayland, and a purpose-built PyHuey/Huey controller application |\n| **Fallback UI** | KDE Plasma Mobile |\n\nThe controller protocol, provisioning, authority, logging, and replacement model should remain stable even if the host operating system changes.\n\n## Minimum interface surfaces\n\n- connection and authentication state;\n- registered device identity;\n- Huey and Body availability;\n- command composition, review, and confirmation;\n- voice-capture state where enabled;\n- acknowledgements and final responses;\n- alerts, refusal, and safe-state indicators;\n- revoke, reconnect, shutdown, and recovery controls;\n- local diagnostics, hardware profile, and build/version information.\n\nThe interface should be touch-first and device-aware rather than a complete desktop squeezed onto a small screen.",
+    "sources": ["controller", "controller_json", "security"]
+  },
+  "Controller-Security-and-Recovery": {
+    "title": "Controller security and recovery",
+    "category": "Hardware and controllers",
+    "classification": "Required control model; implementation incomplete",
+    "summary": "Defines image provenance, device identity, key handling, updates, revocation, replacement, safe failure, and recovery for Nexus controllers.",
+    "body": "## Security requirements\n\n- documented image provenance and checksums;\n- minimal installed software;\n- device-specific provisioning and credentials;\n- protected secret storage appropriate to the platform;\n- explicit microphone, camera, sensor, and network permissions;\n- authentication-failure and offline-safe behavior;\n- replay resistance and fresh-message checks;\n- controlled update and rollback;\n- revocation and replacement of lost or damaged devices;\n- logs without credentials or unnecessary audio;\n- no personal phone or tablet data in the controller image.\n\n## Replacement proof\n\nA credible controller family must demonstrate that one approved device can be revoked and another provisioned without changing Huey's identity or losing audit attribution.\n\n## Recovery package\n\nEach release should identify the supported device, image checksum, bootloader/recovery prerequisites, installation steps, known limitations, provisioning process, rollback, data wipe, credential revocation, spare-device onboarding, and support end condition.",
+    "sources": ["controller", "security", "controller_json"]
+  },
+  "Controller-Battery-and-Repair": {
+    "title": "Controller battery, repair, and spares",
+    "category": "Hardware and controllers",
+    "classification": "Safety-gated direction",
+    "summary": "Defines the evidence required before reusing or modifying decade-old Nexus batteries and the records needed for a maintainable spare-device pool.",
+    "body": "Every controller battery requires model-specific evaluation. Age alone does not determine safety, and successful boot does not prove acceptable battery behavior.\n\n## Inspect and measure\n\n- swelling, puncture, corrosion, odor, heat, and enclosure deformation;\n- open-circuit and loaded voltage stability;\n- charge acceptance and cutoff behavior;\n- temperature during charge and sustained screen/network/audio load;\n- remaining capacity and unexpected shutdown;\n- telemetry accuracy;\n- connector, cable, adhesive, strain-relief, and physical-protection condition.\n\n## Modification rule\n\nA custom or larger battery is not acceptable merely because it fits. Charging, cell protection, temperature monitoring, current limits, mechanical protection, fire-risk mitigation, serviceability, and rollback must be documented and tested.\n\n## Spare pool\n\nOperational, development, recovery, backup, and parts-donor devices should be labeled separately. Preserve exact variant, condition, installed image, keys/revocation state, battery record, known-good parts, and last validation date.",
+    "sources": ["controller", "security"]
+  },
+  "LabTech": {
+    "title": "LabTech",
+    "category": "Hardware and controllers",
+    "classification": "Current external support layer",
+    "summary": "Defines the operator, development, recovery, and maintenance systems that support Huey without becoming Huey.",
+    "body": "**LabTech is external operator tooling.** Current named systems include the **2017 iMac 5K** and **Briefcase**.\n\n## Permitted roles\n\n- repository editing and review;\n- building packages, images, and documentation;\n- inspecting logs and artifacts;\n- recovery media and controller reprovisioning;\n- hardware documentation and diagnostics;\n- backups and restore testing;\n- bounded operator access to Huey.\n\n## Boundary rules\n\nLabTech systems do not carry Huey's identity merely because they operate the project. Their permissions should be bounded, attributable, revocable where possible, and separated from canonical memory or physical-control authority.\n\nA LabTech machine may temporarily host a tool or build process without becoming part of the local node architecture. Diagrams should show this as a support relationship, not identity transfer.",
+    "sources": ["readme", "migration", "oversight", "security"]
+  },
+  "Hardware-Acceptance-and-Evidence": {
+    "title": "Hardware acceptance and evidence",
+    "category": "Hardware and controllers",
+    "classification": "Current project standard",
+    "summary": "Provides a reusable staged acceptance model for Body, controller, compute, power, storage, and LabTech hardware.",
+    "body": "## Stage 0 — intake and safety\n\nIdentify exact model and revision; photograph condition; inspect enclosure, connectors, battery, power supply, cooling, and damage; record firmware, bootloader, storage, and starting state.\n\n## Stage 1 — basic operation and recovery\n\nEstablish repeatable boot, shutdown, recovery media, backups, display/input, storage health, networking, charging or power behavior, and thermal observations.\n\n## Stage 2 — assigned role\n\nInstall only the software needed for the declared role. Confirm automatic start where required, local diagnostics, version identity, permission boundaries, and failure behavior.\n\n## Stage 3 — integration\n\nTest protocol, authentication, interfaces, error handling, reconnect, logging, and rollback without granting broader authority than the role requires.\n\n## Stage 4 — consequential operation\n\nFor physical control, add authorization, interlocks, confirmation, limits, safe-stop, supervised execution, observed result, and retained evidence.\n\n## Stage 5 — repeatability and replacement\n\nReproduce installation, replace a device, restore from backup or image, revoke old credentials, and confirm that continuity survives hardware loss.",
+    "sources": ["controller", "security", "oversight"]
+  },
+  "Hardware-Lineage": {
+    "title": "Hardware lineage",
+    "category": "Hardware and controllers",
+    "classification": "Historical context; not current topology",
+    "summary": "Preserves earlier Portal, Core, Storage Hub, AMD, and custom-kernel work without allowing old diagrams to override present roles.",
+    "body": "The 2025 wiki described a fixed topology built around **Huey-Portal**, **Huey-Core**, **Huey-Legacy**, **Huey-Hub**, and **Storage Hub**, with an AMD-first software stack and a planned October 2025 kernel transition.\n\nThat material remains valuable for repair notes, experiments, drivers, topology ideas, and project history. It is not the current architecture by default.\n\n## Current disposition\n\n| Legacy subject | Present treatment |\n|---|---|\n| iMac 5K Portal instructions | Hardware lineage; the iMac now belongs under LabTech unless a newer explicit role is accepted |\n| BD795I-SE/ITX Core topology | Historical experiment; do not present as stable current compute without revalidation |\n| AMD GPU tuning | Platform-specific lineage, not project-wide architecture |\n| Storage Hub / RAID | Historical infrastructure concept; current backup/storage role must be re-established by evidence |\n| custom kernel 6.17 plan | Date-bound 2025 release context |\n| hard-coded private network topology | Example lineage, not current configuration |\n\nPreserve exact reports and photographs. Update status instead of deleting history or pretending the old system remains operational.",
+    "sources": ["migration", "wiki_audit", "standardization"]
+  }
+}

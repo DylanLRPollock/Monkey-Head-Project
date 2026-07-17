@@ -1,0 +1,113 @@
+{
+  "HIMS-Protocol-and-Authority": {
+    "title": "HIMS protocol and authority",
+    "category": "Architecture",
+    "classification": "Target protocol requirements; implementation incomplete",
+    "summary": "Defines the minimum security, delivery, authorization, audit, and failure semantics expected before HIMS can carry consequential controller requests.",
+    "body": "## Minimum envelope fields\n\nA production-intent HIMS message should identify the protocol version, message identifier, transaction identifier, sender, intended recipient, UTC creation time, expiry or freshness information, message type, payload schema, requested capability, and integrity/authentication material.\n\n## Required semantics\n\n- authenticated sender and recipient identity;\n- message integrity and replay resistance;\n- unique identifiers and duplicate-delivery handling;\n- version negotiation and rejection of incompatible envelopes;\n- explicit acknowledgement and final-result distinction;\n- authorization separate from transport success;\n- least-privilege capability assignment;\n- secret-safe audit logging;\n- offline queue and reconnect behavior;\n- key rollover, revocation, and replacement;\n- refusal and safe-failure paths.\n\n## Consequential request sequence\n\n1. receive without executing;\n2. authenticate the device and message;\n3. validate schema, bounds, state, and freshness;\n4. authorize the requested capability;\n5. obtain human confirmation where policy requires it;\n6. execute through the bounded Body or system interface;\n7. observe and record the result;\n8. return acknowledgement and final status separately.\n\nThe exact cryptographic, key-storage, transport, and queue implementation remains unresolved until tested across supported controller profiles.",
+    "sources": [
+      "controller",
+      "security",
+      "oversight"
+    ]
+  },
+  "Memory-and-Data-Model": {
+    "title": "Memory and data model",
+    "category": "Architecture",
+    "classification": "Current evidence-first direction; canonical memory placement unresolved",
+    "summary": "Separates structured run evidence, HIMS records, configuration, artifacts, and future canonical memory rather than calling every stored file Huey's memory.",
+    "body": "## Current useful data classes\n\n| Class | Purpose |\n|---|---|\n| **Run record** | Identifies one V1 or integration execution and its stages |\n| **Input artifact** | Known media, checksum, provenance, and preparation details |\n| **Transcript** | Local transcription output and fidelity assessment |\n| **Response artifact** | Provider request/response metadata with secrets excluded |\n| **Event** | Attributable state transition, decision, warning, or failure |\n| **Configuration snapshot** | Relevant non-secret configuration and versions |\n| **Hardware profile** | Exact device, revision, firmware, battery, and observed state |\n| **Controller identity** | Provisioned device identity, status, and revocation history |\n| **Release manifest** | Files, checksums, versions, provenance, and validation |\n\n## Current boundary\n\nStructured logs and HIMS ledger/storage work exist. The exact location, schema, retention, signing, and authority of canonical Huey memory remain unresolved. A convenient SQLite table or copied archive must not be promoted to canonical memory merely because it exists.\n\n## Historical schema warning\n\nThe 2025 `Memory-Schema-v2` wiki page is lineage, not an accepted current schema. Useful ideas such as immutable events, artifact hashes, and snapshots may be retained only through explicit current design and migration work.",
+    "sources": [
+      "master_v1203",
+      "standardization",
+      "security",
+      "migration"
+    ]
+  },
+  "Huey-V4": {
+    "title": "Huey V4",
+    "category": "Architecture",
+    "classification": "Active physical direction; incomplete",
+    "summary": "Explains the V4 physical-cohesion program, its proposed lineage, compute direction, validation gates, and separation from the present V1 proof.",
+    "body": "**Huey V4 is the active physical-cohesion direction, not a completed robot.**\n\n| Element | Current treatment |\n|---|---|\n| **V3** | Proposed physical base for V4, subject to confirmation |\n| **V2** | Donor lineage or material where inventory supports it |\n| **Existing i9 / ASUS TUF / Optane system** | Intended future local compute kernel after backup, inventory, fit, power, cooling, and rollback validation |\n| **Huey Body** | Real hardware under the embodiment program; paused for current V1 |\n| **Legion Go Brain** | Current V1 orchestration host; not automatically the final V4 kernel |\n\n## Required integration evidence\n\n- exact component and revision inventory;\n- photographs and starting-state record;\n- storage backup and rollback;\n- mechanical fit and cable retention;\n- service access;\n- power and thermal budget;\n- safe shutdown and recovery;\n- runtime tests under representative load;\n- operator-visible status;\n- clear distinction between installed, operational, validated, and complete.\n\n## Compute candidate\n\nFour node-local accelerators remain a working direction. `3 x Tesla V100 32 GB + 1 utility GPU` is provisional until acquisition, exact variants, PCIe topology, retention, power, cooling, and measured workloads are known. Aggregate memory is not transparent unified VRAM.",
+    "sources": [
+      "readme",
+      "standardization",
+      "migration",
+      "oversight"
+    ]
+  },
+  "PyHuey": {
+    "title": "PyHuey",
+    "category": "Architecture",
+    "classification": "Primary GUI and core-runtime direction; integration incomplete",
+    "summary": "Defines PyHuey's intended operator role, CLI fallback, evidence requirements, provenance boundary, and separation from the full Huey node.",
+    "body": "PyHuey is the proposed primary GUI and a core-runtime direction. It should expose approved HueyOS capabilities through a clear, observable operator surface while retaining command-line paths for diagnostics, automation, and recovery.\n\n## Expected operator qualities\n\n- reliable launch and shutdown;\n- visible workflow stage and status;\n- explicit provider and device state;\n- review before consequential commands;\n- structured response and error history;\n- secret-safe configuration;\n- recoverable failure behavior;\n- clear version and build identity.\n\n## Boundaries\n\nPyHuey is not the whole Huey node, does not hold sovereignty, and must not silently acquire physical-control authority. A GUI action becomes a request that still passes validation, authorization, confirmation, safety, and execution gates.\n\n## Provenance\n\nPyHuey/PyGPT-derived integration paths retain separate provenance and licensing obligations. Forked or vendored material must preserve upstream notices and must not be presented as first-party Huey Brain implementation without review.\n\n## V1 relationship\n\nThe active V1 proof may be exercised through a CLI while PyHuey matures. That is a recovery and implementation boundary, not a demotion of the GUI direction.",
+    "sources": [
+      "readme",
+      "master_v1203",
+      "provenance",
+      "pyproject"
+    ]
+  },
+  "Logging-and-Evidence": {
+    "title": "Logging and evidence",
+    "category": "Architecture",
+    "classification": "Current V1 requirement and project-wide standard",
+    "summary": "Defines what a useful structured record should retain, what it must exclude, and how failed runs remain attributable.",
+    "body": "## Recommended run fields\n\n- run and transaction identifiers;\n- UTC start and end timestamps;\n- initiating interface and operator action;\n- input identity, size, type, and checksum where applicable;\n- stage transitions and timing;\n- transcription engine, model, compute path, and settings;\n- provider or local-model identifier and relevant non-secret parameters;\n- software version, commit, and environment;\n- hardware and device path;\n- outputs and artifact references;\n- warnings, errors, stack context, and recovery actions;\n- final status and fidelity or acceptance result.\n\n## Prohibited ordinary log content\n\nDo not store API keys, passwords, tokens, private keys, authentication headers, raw secret-bearing configuration, private continuity profiles, or unnecessary personal audio/video.\n\n## Failure rule\n\nA failed run should leave the most complete safe record possible. Failure evidence is part of system truth; deleting it to make demonstrations appear successful damages reproducibility.\n\n## Evidence strength\n\nA statement becomes stronger when the procedure, exact input, environment, versions, observed output, logs, checksums, human reviewer, and rollback are all retained together.",
+    "sources": [
+      "master_v1203",
+      "security",
+      "standardization"
+    ]
+  },
+  "Safety-and-Human-Oversight": {
+    "title": "Safety and human oversight",
+    "category": "Architecture",
+    "classification": "Current authority and required control boundary",
+    "summary": "Defines present human authority, consequential-action gates, safe-stop expectations, and why agents or delivered messages do not acquire physical power by implication.",
+    "body": "Dylan L.R. Pollock remains the present human and canon authority. Models, agents, controllers, tools, and messages operate within delegated technical scopes; they do not independently obtain governance or physical-control authority.\n\n## Consequential-action gates\n\n1. authenticated origin;\n2. valid and fresh request;\n3. schema, range, and current-state checks;\n4. capability authorization;\n5. human confirmation where required;\n6. power, rate, motion, and thermal limits;\n7. supervised execution;\n8. safe-stop and refusal path;\n9. observable result;\n10. attributable record and recovery.\n\n## Current V1 safety posture\n\nThe proof uses a known fixture and does not require live microphone capture or Body actuation. This is a deliberate reduction of uncontrolled input and physical risk.\n\n## Human review gate\n\nThe v201.x checklist covers ontology, V4 facts, compute claims, V1, PyHuey, HIMS, controllers, public/private boundaries, governance, and release discipline. A checked item accepts wording and classification; it is not a claim that implementation has already occurred.",
+    "sources": [
+      "oversight",
+      "security",
+      "standardization"
+    ]
+  },
+  "Governance-and-Constitution": {
+    "title": "Governance and constitution",
+    "category": "Architecture",
+    "classification": "Preserved doctrine and target state; not operational government",
+    "summary": "Keeps constitutional lineage visible while clearly separating it from present human authority and the active V1 proof.",
+    "body": "The Monkey-Head-Project preserves constitutional and governance concepts, but they are not presently an operational autonomous government.\n\n## Current authority\n\n- Dylan remains the human and canon authority.\n- No model, agent, citizen, district, office, controller, or message holds active sovereign authority.\n- Atlas remains external to Huey's identity and sovereignty.\n- LabTech remains external support infrastructure.\n\n## Target-state principles worth preserving\n\n- decisions should be attributable;\n- rules should be inspectable and versioned;\n- authority should be bounded and revocable;\n- memory and evidence should not be silently rewritten;\n- physical safety should override speculative autonomy;\n- collective coordination should preserve node boundaries.\n\n## Activation requirement\n\nAny future governance system requires an accepted constitutional text, defined offices and scopes, identity and membership rules, voting or decision semantics, conflict resolution, technical enforcement, audit evidence, failure handling, and an explicit human-authorized activation event.",
+    "sources": [
+      "oversight",
+      "migration",
+      "master_v1203"
+    ]
+  },
+  "Huey-Brain": {
+    "title": "Huey Brain",
+    "category": "Architecture",
+    "classification": "Current lab reality with accepted direction",
+    "summary": "Documents the active V1 orchestration node and the boundaries between current proof work and later embodied integration.",
+    "body": "## Current platform\n\nThe active V1 Huey Brain is a **Lenovo Legion Go running Debian**. It is the present orchestration node for the fixture-driven proof path.\n\n## Current V1 responsibilities\n\n- identify and probe the known MP3 fixture;\n- prepare audio without silently changing content;\n- run local transcription;\n- submit the transcript to the selected API-backed response path;\n- preserve stage transitions, configuration, errors, outputs, and final status in a structured log;\n- expose enough state for an operator to determine what happened.\n\n## Deliberate exclusions\n\nThe current proof does not require a live microphone, wake word, Body movement, Farm access, multi-agent government, or a Nexus controller. Those can become later integrations only after the bounded proof is stable and useful.\n\n## Direction beyond the proof\n\nBrain functions are intended to integrate into one physically coherent Huey node. The Legion Go's current role is operational evidence, not a declaration that every future Brain function must remain on that device.",
+    "sources": [
+      "readme",
+      "master_v1203",
+      "standardization"
+    ]
+  },
+  "Governance-Clauses-Registry": {
+    "title": "Governance clauses registry",
+    "category": "Architecture",
+    "classification": "Target-state design concept; no active registry claimed",
+    "summary": "Defines what a future clause registry would need while preventing an old example YAML file from being mistaken for enacted law.",
+    "body": "A future clause registry could provide stable identifiers, version history, content hashes, effective dates, supersession links, authority, scope, and implementation references for accepted governance rules.\n\n## Minimum record\n\n- stable clause identifier;\n- title and exact text;\n- status: proposed, accepted, superseded, repealed, or historical;\n- authorizing human or process;\n- effective date and version;\n- content hash;\n- implementation and test references;\n- conflicts and supersession;\n- rollback or emergency suspension rule.\n\n## Current boundary\n\nThe example `CL-0001` and `CL-0100` records in the 2025 wiki were illustrative. They are not automatically enacted clauses. No registry should be called constitutional law until its authority and activation are explicitly accepted.",
+    "sources": [
+      "oversight",
+      "migration",
+      "master_v1203"
+    ]
+  }
+}
