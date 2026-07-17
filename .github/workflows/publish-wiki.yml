@@ -1,0 +1,36 @@
+name: Publish GitHub Wiki
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/repo/build_wiki.py"
+      - "scripts/repo/publish_wiki.sh"
+      - ".github/workflows/publish-wiki.yml"
+      - "docs/wiki-overhaul-v201.md"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-github-wiki
+  cancel-in-progress: false
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Generate and validate wiki
+        run: python3 scripts/repo/build_wiki.py build/wiki
+
+      - name: Publish wiki
+        env:
+          WIKI_TOKEN: ${{ secrets.WIKI_DEPLOY_TOKEN || github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_ACTOR: ${{ github.actor }}
+        run: scripts/repo/publish_wiki.sh
