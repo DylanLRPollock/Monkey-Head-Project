@@ -41,7 +41,7 @@ setup(
         "numpy==2.3.0",
         "scipy==1.15.3",
         "scikit-learn==1.7.0",
-        "torch==2.12.1",
+        "torch==2.13.0",
         "tensorflow==2.19.0",
         "transformers==5.13.1",
         "pandas==2.3.0",
