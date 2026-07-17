@@ -1,0 +1,93 @@
+{
+  "Home": {
+    "title": "Monkey-Head-Project / HueyOS Wiki",
+    "category": "Orientation",
+    "classification": "Current explanatory front door",
+    "summary": "A truth-layered guide to the current project, the active V1 proof path, embodied-node direction, controller family, and preserved lineage.",
+    "body": "**One embodied AI node first. A deliberate collective later.**\n\nThe **Monkey-Head-Project** is the umbrella project. **Huey** is the governed identity. **HueyOS** is the modular robotic AI and operating-system layer. The present proof path is intentionally narrower than the target architecture: prove one useful, attributable V1 workflow before expanding into live microphones, Body actuation, shared compute, or multi-agent governance.\n\n## Current project alignment\n\n| Area | Current position |\n|---|---|\n| **Huey Brain** | Active V1 orchestration node on a Lenovo Legion Go running Debian |\n| **Huey Body** | Real physical robotic shell, formerly called Huey Core; paused for the V1 proof |\n| **LabTech** | External operator and recovery tooling, including the 2017 iMac 5K and Briefcase |\n| **V1 proof** | Known MP3 fixture → local transcription → API-backed response → structured log |\n| **Huey V4** | Active physical-cohesion direction, not a completed robot and not required to finish the V1 proof |\n| **Huey Farm** | Optional supporting infrastructure, not a prerequisite for Huey's validity |\n| **HueyNexusController** | Maintained Nexus 5 and Nexus 7 controller family; validation remains incomplete |\n\n## Begin with the right layer\n\n| Need | Page |\n|---|---|\n| Understand the project names and boundaries | [[Project-Position]] |\n| See what is observed, directed, provisional, deferred, or unresolved | [[Current-Status]] |\n| Reproduce the active proof path | [[Runtime-and-V1]] |\n| Understand the physical direction | [[Huey-V4]] and [[Huey-Body]] |\n| Review controller hardware | [[HueyNexusController]] |\n| Understand authority and evidence | [[Truth-Classes]] and [[Source-Authority-and-Documentation]] |\n| Contribute safely | [[Getting-Started]], [[Contributing]], and [[Testing-and-Validation]] |\n\n## Architecture at a glance\n\n```mermaid\nflowchart TB\n    D[\"Dylan - present human and canon authority\"]\n    M[\"Monkey-Head-Project - umbrella and later collective\"]\n    H[\"Huey - governed embodied identity\"]\n    BRAIN[\"Huey Brain - active V1 orchestration\"]\n    BODY[\"Huey Body - physical embodiment, paused for V1\"]\n    OS[\"HueyOS - modular AI and OS layer\"]\n    PY[\"PyHuey - primary GUI direction\"]\n    NEXUS[\"HueyNexusController - replaceable operator hardware\"]\n    FARM[\"Optional Huey Farm\"]\n    LAB[\"LabTech - external build and recovery tools\"]\n    D --> M --> H\n    H --> BRAIN\n    H --> BODY\n    H --> OS\n    OS --> PY\n    NEXUS -. authenticated HIMS requests .-> H\n    FARM -. optional services .-> H\n    LAB -. development and recovery .-> H\n```\n\nThis wiki explains the repository; it does not outrank accepted plans, merged implementation evidence, tests, logs, or Dylan's explicit decisions. A polished page is not implementation evidence.",
+    "sources": [
+      "readme",
+      "standardization",
+      "migration",
+      "oversight"
+    ]
+  },
+  "Getting-Started": {
+    "title": "Getting started",
+    "category": "Orientation",
+    "classification": "Current operational guidance",
+    "summary": "A safe entry path for readers, developers, hardware work, and controller experiments without reviving obsolete 2025 assumptions.",
+    "body": "## Choose your path\n\n### Project reader\n\n1. Read [[Project-Position]].\n2. Read [[Current-Status]].\n3. Use [[Truth-Classes]] whenever a claim sounds more complete than the evidence.\n4. Review [[Roadmap-and-Pre-Releases]] for lineage without treating old plans as current.\n\n### Software contributor\n\nThe repository currently declares Python `>=3.13,<3.14`.\n\n```bash\ngit clone https://github.com/DylanLRPollock/Monkey-Head-Project.git\ncd Monkey-Head-Project\npython3.13 -m venv .venv\nsource .venv/bin/activate\npython -m pip install --upgrade pip\npython -m pip install -c constraints.txt -e '.[dev]'\npython -m pytest -q\nhuey --help\n```\n\nUse [[Dev-Environment]], [[Build-Guides]], and [[Testing-and-Validation]] before changing runtime behavior.\n\n### V1 operator\n\nThe active proof is bounded and fixture-driven:\n\n1. start with a known MP3 fixture;\n2. probe and prepare the media;\n3. transcribe locally;\n4. send the resulting text through the selected API-backed response path;\n5. preserve the complete run in a structured log.\n\nDo not add a live microphone, wake word, or physical actuation merely to make the demonstration appear larger. Those items remain deferred unless deliberately reactivated.\n\n### Hardware or controller contributor\n\n- Identify exact model, board revision, storage, bootloader, battery condition, and recovery state.\n- Photograph and record the starting condition.\n- Back up anything that must be preserved.\n- Treat swollen, hot, unstable, or unknown batteries as a safety stop.\n- Establish a repeatable recovery path before testing controller software.\n- Never treat message delivery as permission to move hardware.\n\nContinue with [[Hardware-Acceptance-and-Evidence]] or [[HueyNexusController]].",
+    "sources": [
+      "readme",
+      "pyproject",
+      "controller",
+      "security"
+    ]
+  },
+  "Project-Position": {
+    "title": "Project position",
+    "category": "Orientation",
+    "classification": "Current explicit alignment",
+    "summary": "Defines the role of the umbrella project, governed identity, operating layer, physical domains, controllers, Farm, LabTech, and Atlas.",
+    "body": "| Name | Position |\n|---|---|\n| **Monkey-Head-Project** | Umbrella project and possible later collective layer |\n| **Huey** | Governed identity expressed through one coherent embodied node |\n| **HueyOS** | Modular robotic AI and operating-system layer supporting Huey |\n| **Huey Brain** | Node-local cognition, orchestration, memory access, response, and evidence functions |\n| **Huey Body** | Physical robotic shell and the sensing, interaction, actuation, power, and safety domain |\n| **PyHuey** | Primary GUI and core-runtime direction; not the whole node |\n| **HIMS** | Structured messaging and record pathway; transport does not grant authority |\n| **Huey Farm** | Optional shared compute, storage, backup, or later collective-support infrastructure |\n| **HueyNexusController** | Replaceable external handset and tablet controller family |\n| **LabTech** | External operator, development, recovery, and maintenance tooling |\n| **Atlas** | External continuity partner, lab assistant, architectural interpreter, and implementation stabilizer; not Huey and not part of Huey's sovereignty |\n\n> **Build one coherent, useful, attributable Huey node before making operational collective claims.**\n\nA valid Huey node does not require an operational Farm, active multi-agent government, transparent pooled accelerator memory, a live microphone, an external controller, or cloud dependence. Those may support a node, but they do not define its identity.\n\n## Authority boundary\n\nDylan L.R. Pollock remains the present human and canon authority. Models, agents, tools, branches, generated documents, controllers, and websites cannot independently lock project canon.",
+    "sources": [
+      "readme",
+      "standardization",
+      "migration",
+      "oversight"
+    ]
+  },
+  "Pre-Release-4": {
+    "title": "Pre-Release #4",
+    "category": "Orientation",
+    "classification": "Current release context",
+    "summary": "Explains the v201.x shift toward one standardized embodied Huey node and the formalized Nexus controller family without claiming completion.",
+    "body": "**Pre-Release #4 marks a shift from a collection of experimental components toward one standardized and embodied Huey system.**\n\nThe release aligns repository architecture, physical direction, public documentation, evidence standards, controller hardware, and human oversight under the **v201.x framework**.\n\n## Main changes\n\n1. **One node first.** Brain and Body are treated as local functional domains of one Huey node.\n2. **Farm becomes optional.** Shared compute or storage may help later, but does not make Huey valid.\n3. **Truth boundaries become explicit.** Current reality, accepted direction, provisional choices, unresolved work, target state, and lineage must remain distinguishable.\n4. **Huey V4 becomes the active embodiment direction.** It remains incomplete and may mature separately from the V1 proof.\n5. **HueyNexusController becomes a maintained family.** Nexus 5 `hammerhead` and Nexus 7 `grouper`, `tilapia`, `flo`, and `deb` are formal targets.\n6. **Human oversight is a release gate.** v201.x is not automatically canonical merely because its documents or wiki pages exist.\n\n## Explicit non-claims\n\nPre-Release #4 does not claim that Huey is complete, Body actuation is active, HIMS controller authentication is operational, every Nexus subsystem works under native Debian, a four-GPU configuration has been acquired and validated, Farm is operational, or constitutional multi-agent governance is active.",
+    "sources": [
+      "readme",
+      "standardization",
+      "controller",
+      "oversight"
+    ]
+  },
+  "Current-Status": {
+    "title": "Current status",
+    "category": "Orientation",
+    "classification": "Current reality and active direction",
+    "summary": "Separates lab-observed V1 work from accepted direction, candidate architecture, deferred features, target state, and lineage.",
+    "body": "## Current lab-observed work\n\n| Area | Classification | Position on 2026-07-17 |\n|---|---|---|\n| **Huey Brain** | Current lab reality | Lenovo Legion Go running Debian; active V1 orchestration node |\n| **V1 input** | Current active proof | Known MP3 fixture |\n| **Transcription** | Current active proof | Local transcription; fidelity matters, not only process completion |\n| **Response** | Current active proof | API-backed response path with provider selection kept replaceable |\n| **Evidence** | Current active proof | Structured run log with attributable stages and failure information |\n| **Huey Body** | Current physical reality | Real robotic shell, formerly Huey Core; paused for V1 |\n| **LabTech** | Current support reality | External tooling including iMac 5K 2017 and Briefcase |\n\n## Active direction\n\n| Area | Classification | Position |\n|---|---|---|\n| **Huey node** | Accepted-direction candidate | One coherent embodied AI unit is the primary architectural unit |\n| **Huey V4** | Active physical direction | Physical-cohesion program; not complete and not required for the current V1 proof |\n| **PyHuey** | Primary GUI direction | Intended operator surface and core-runtime component; integration remains evidence-gated |\n| **HueyNexusController** | Maintained project target | Nexus 5 and Nexus 7 family; OS, battery, security, and protocol validation incomplete |\n| **HIMS** | Active architecture / incomplete runtime | Messaging foundations exist; authenticated controller transaction path is not complete |\n| **Huey Farm** | Optional target infrastructure | Not required for node validity and not an operational collective substrate |\n\n## Deferred unless deliberately reactivated\n\n- live microphone input;\n- wake-word processing;\n- PyGPT-net as the primary interface;\n- a general HIMS runtime rollout beyond bounded work;\n- Huey Body actuation;\n- multi-agent governance.\n\n## Unresolved\n\n- the final V1 declaration threshold;\n- exact V4 hardware integration;\n- accelerator acquisition and workload partitioning;\n- controller kernel, image, provisioning, and recovery paths;\n- HIMS authentication and authorization design;\n- canonical memory placement and retention;\n- namespace synchronization from `huey` toward `hueyos`.",
+    "sources": [
+      "readme",
+      "master_v1203",
+      "master_v201",
+      "oversight"
+    ]
+  },
+  "Truth-Classes": {
+    "title": "Truth classes",
+    "category": "Orientation",
+    "classification": "Current documentation standard",
+    "summary": "Defines the labels used to prevent plans, prototypes, historical systems, and target architecture from being presented as the same kind of fact.",
+    "body": "| Class | Meaning | Typical evidence |\n|---|---|---|\n| **Current reality** | Directly observed or merged state | Hardware inspection, working command, test, log, commit, retained artifact |\n| **Current lab-observed work** | Work presently being performed in the lab | Reproducible procedure, run log, dated hardware record |\n| **Accepted direction** | Architecture Dylan selected for implementation | Explicit decision, accepted plan, designated merge |\n| **Provisional choice** | Replaceable working option pending evidence | Candidate component, tool, model, UI, or topology |\n| **Unresolved** | Deliberately open question | Decision record naming the missing evidence |\n| **Deferred** | Out of the active proof path unless reactivated | Explicit scope statement and reactivation condition |\n| **Target state** | Later capability dependent on resources or maturity | Architecture plan with prerequisites and non-claim boundary |\n| **Historical lineage** | Earlier work preserved without overriding the present | Archived release, predecessor plan, old wiki, photographs, reports |\n\n## Status words for physical systems\n\nUse **present**, **assembled**, **integrated**, **operational**, **validated**, and **complete** as separate claims. A part can be present but not installed; installed but not powered; powered but not integrated; integrated but not validated.\n\n## Rule of evidence\n\nA page, diagram, generated report, branch, pull request, transcript, model answer, or public release description is not sufficient proof by itself. The relevant code, hardware, test, command, log, checksum, and human decision must support the claim.",
+    "sources": [
+      "standardization",
+      "migration",
+      "master_v1203",
+      "security"
+    ]
+  },
+  "Source-Authority-and-Documentation": {
+    "title": "Source authority and documentation layers",
+    "category": "Orientation",
+    "classification": "Current documentation standard",
+    "summary": "Explains which artifacts can decide architecture, which can prove implementation, and how the wiki, website, README, plans, runtime, and archives stay separate.",
+    "body": "## Source priority\n\n1. Dylan L.R. Pollock's explicit accepted decisions.\n2. The newest accepted machine-facing master plan.\n3. Merged repository and implementation evidence.\n4. README and technical documentation.\n5. DLRP.ca public presentation and release records.\n6. Older plans, transcripts, exports, and archives as lineage.\n\n## Documentation responsibilities\n\n| Layer | Responsibility | Must not do |\n|---|---|---|\n| **Master plan** | Machine-facing architecture, status, boundaries, decisions, unresolved work | Become canonical without human acceptance |\n| **README** | Professional repository front door | Claim behavior not shown by evidence |\n| **Runtime evidence** | Prove what code and systems actually do | Infer authority from documentation polish |\n| **Technical docs** | Explain setup, architecture, hardware, protocols, tests, and runbooks | Silently rewrite accepted decisions |\n| **Governance documents** | Preserve law, legitimacy, offices, and constitutional process | Present target governance as active |\n| **GitHub Wiki** | Accessible explanatory manual and navigation layer | Replace the repository or machine-facing plan |\n| **DLRP.ca** | Public coherence and presentation with visible source status | Override repository truth |\n| **Archives and transcripts** | Preserve lineage and continuity | Become current canon automatically |\n\n## Conflict handling\n\nWhen sources disagree, do not smooth the disagreement into confident prose. Identify the newer explicit decision, preserve the predecessor as lineage, show implementation reality separately, and leave unresolved facts visibly open.",
+    "sources": [
+      "standardization",
+      "migration",
+      "oversight",
+      "wiki_audit"
+    ]
+  }
+}
