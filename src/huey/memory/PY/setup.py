@@ -9,7 +9,7 @@
 # GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
 # License:   https://opensource.org/license/gpl-3-0
 # Overseen By:   Dylan L.R. Pollock
-# Updated: 06.11.2025
+# Updated: 07.17.2026
 # ==================================================
 import os
 
@@ -43,7 +43,7 @@ setup(
         "scikit-learn==1.7.0",
         "torch==2.12.1",
         "tensorflow==2.19.0",
-        "transformers==5.3.0",
+        "transformers==5.13.1",
         "pandas==2.3.0",
         "matplotlib==3.10.3",
         "seaborn==0.13.2",
