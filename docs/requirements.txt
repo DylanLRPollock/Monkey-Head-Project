@@ -1,2 +1,2 @@
 Sphinx>=6.2,<10
-myst-parser>=0.18,<5
+myst-parser>=5.1.0,<6
