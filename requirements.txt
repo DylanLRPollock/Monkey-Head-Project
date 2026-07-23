@@ -74,5 +74,5 @@ types-requests==2.33.0.20260712
 uv==0.11.28
 
 # --- Packaging / installer tools ---
-setuptools==82.0.1
+setuptools==83.0.0
 wheel==0.47.0
