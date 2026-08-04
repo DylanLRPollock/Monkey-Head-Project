@@ -36,7 +36,7 @@ setup(
     install_requires=[
         "requests==2.33.0",
         "httpx==0.28.1",
-        "aiohttp==3.14.1",
+        "aiohttp==3.14.3",
         "websockets==15.0.1",
         "numpy==2.3.0",
         "scipy==1.15.3",
