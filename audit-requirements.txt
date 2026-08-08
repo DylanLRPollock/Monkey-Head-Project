@@ -237,7 +237,7 @@ grpc-google-iam-v1==0.14.4
 grpcio==1.82.1
 grpcio-status==1.82.1
 h11==0.16.0
-h2==4.3.0
+h2==4.4.1
 hf-xet==1.5.1 ; platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'
 hpack==4.2.0
 html2text==2025.4.15
