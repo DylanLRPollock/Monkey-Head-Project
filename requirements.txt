@@ -32,7 +32,7 @@ aiosqlite==0.22.1
 anyio==4.14.2
 attrs==26.1.0
 certifi==2026.6.17
-cryptography==49.0.0
+cryptography==50.0.0
 evdev==1.9.3; sys_platform == 'linux'
 fastapi==0.139.0
 orjson==3.11.9
@@ -74,5 +74,5 @@ types-requests==2.33.0.20260712
 uv==0.11.28
 
 # --- Packaging / installer tools ---
-setuptools==83.0.0
+setuptools==84.0.0
 wheel==0.47.0
