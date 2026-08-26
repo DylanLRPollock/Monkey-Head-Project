@@ -29,26 +29,26 @@
 
 # --- Core ---
 aiofiles==25.1.0
-aiohttp==3.14.1
+aiohttp==3.14.3
 aiosqlite==0.22.1
 anyio==4.14.2
 attrs==26.1.0
-certifi==2026.6.17
+certifi==2026.7.22
 cryptography==49.0.0
 evdev==1.9.3; sys_platform == 'linux'
-fastapi==0.139.0
-orjson==3.11.9
-packaging==26.2
+fastapi==0.141.1
+orjson==3.12.0
+packaging==26.3
 psutil==7.2.2
 pydantic==2.13.4
-pydantic-settings==2.14.2
+pydantic-settings==2.15.0
 PyYAML==6.0.3
 python-multipart==0.0.32
 requests==2.34.2
-sse-starlette==3.4.5
-starlette==1.3.1
+sse-starlette==3.4.8
+starlette==1.6.0
 typing-extensions==4.16.0
-uvicorn[standard]==0.51.0; sys_platform != 'emscripten'
+uvicorn[standard]==0.52.4; sys_platform != 'emscripten'
 
 # --- ML + SDKs ---
 accelerate==1.14.0
@@ -58,13 +58,13 @@ anthropic[bedrock,vertex]==0.116.0
 audioop-lts==0.2.2; python_version >= '3.13' and python_version < '3.14'
 faster-whisper==1.2.1
 google-ai-generativelanguage==0.12.0
-google-genai==2.11.0
+google-genai==2.19.0
 google-generativeai==0.8.6
-huggingface-hub==1.23.0
-llama-cloud==2.11.0
+huggingface-hub==1.28.0
+llama-cloud==2.14.1
 llama-cloud-services==0.6.94
-llama-index==0.14.23
-llama-index-core==0.14.23
+llama-index==0.14.24
+llama-index-core==0.14.24
 llama-index-embeddings-azure-openai==0.5.2
 llama-index-embeddings-gemini==0.4.2
 llama-index-embeddings-huggingface-api==0.5.0
@@ -72,15 +72,15 @@ llama-index-embeddings-mistralai==0.5.1
 llama-index-embeddings-ollama==0.9.0
 llama-index-indices-managed-llama-cloud==0.11.1
 llama-index-instrumentation==0.5.0
-llama-index-llms-anthropic==0.11.8
+llama-index-llms-anthropic==0.11.10
 llama-index-llms-azure-openai==0.5.5
 llama-index-llms-deepseek==0.3.0
 llama-index-llms-gemini==0.6.2
-llama-index-llms-google-genai==0.9.6
+llama-index-llms-google-genai==0.10.0
 llama-index-llms-huggingface-api==0.7.0
 llama-index-llms-mistralai==0.10.2
 llama-index-llms-ollama==0.10.1
-llama-index-llms-openai==0.7.9
+llama-index-llms-openai==0.7.10
 llama-index-llms-openai-like==0.7.2
 llama-index-llms-perplexity==0.5.1
 llama-index-multi-modal-llms-openai==0.6.2
@@ -90,51 +90,51 @@ llama-index-readers-chatgpt-plugin==0.5.0
 llama-index-readers-database==0.6.0
 llama-index-readers-file==0.6.0
 llama-index-readers-github==0.11.2
-llama-index-readers-google==0.7.2
+llama-index-readers-google==0.7.3
 llama-index-readers-llama-parse==0.6.1
 llama-index-readers-microsoft-onedrive==0.5.0
 llama-index-readers-twitter==0.5.0
 llama-index-readers-web==0.6.0
 llama-index-utils-huggingface==0.5.0
-llama-index-workflows==2.22.2
+llama-index-workflows==2.23.3
 llama-parse==0.6.94
-mistralai==2.6.0
-numpy==2.5.1
+mistralai==2.9.4
+numpy==2.5.2
 ollama==0.6.2
-onnxruntime==1.27.0
+onnxruntime==1.29.0
 openai==2.45.0
-openai-agents==0.18.2
+openai-agents==0.22.0
 pillow==12.3.0
-pygpt-net==2.7.12
+pygpt-net==2.8.4
 safetensors==0.8.0
 sentencepiece==0.2.2
 sortedcontainers==2.4.0
 standard-aifc==3.13.0; python_version >= '3.13' and python_version < '3.14'
-tiktoken==0.13.0
-traitlets==5.15.1
-transformers==5.13.1
+tiktoken==0.14.0
+traitlets==5.16.1
+transformers==5.15.1
 
 # --- Data/Vector stores ---
-duckdb==1.5.4
+duckdb==1.5.5
 elastic-transport==9.4.2
-elasticsearch==9.4.1
-faiss-cpu==1.14.3; sys_platform != 'win32'
-pandas==3.0.3
+elasticsearch==9.5.0
+faiss-cpu==1.15.0; sys_platform != 'win32'
+pandas==3.0.5
 pinecone==9.1.0
 pinecone-client==6.0.0
 pinecone-plugin-assistant==3.0.3
 pinecone-plugin-interface==0.0.7
-qdrant-client==1.18.0
-weaviate-client==4.22.0
+qdrant-client==1.19.0
+weaviate-client==4.23.0
 
 # --- Cloud SDKs ---
 azure-core==1.41.0
 azure-identity==1.25.3
-boto3==1.43.48
-botocore==1.43.48
-google-cloud-aiplatform==1.160.0
-google-cloud-storage==3.13.0
-s3transfer==0.19.1
+boto3==1.43.78
+botocore==1.43.78
+google-cloud-aiplatform==1.165.1
+google-cloud-storage==3.13.1
+s3transfer==0.19.2
 
 # --- Dev toolchain ---
 bandit==1.9.4
@@ -147,23 +147,23 @@ docker==7.2.0
 flake8==7.3.0
 flake8-bugbear==25.11.29
 httpx==0.28.1
-ipython==9.15.0
+ipython==9.16.1
 isort==8.0.1
-mypy==2.3.0
-pip-tools==7.5.3
-pre-commit==4.6.0
+mypy==2.3.1
+pip-tools==7.6.1
+pre-commit==4.6.2
 pytest==9.1.1
 pytest-asyncio==1.4.0
 pytest-cov==7.1.0
 rich==15.0.0
-ruff==0.15.21
+ruff==0.16.4
 types-PyYAML==6.0.12.20260724
 types-requests==2.33.0.20260712
-uv==0.11.28
+uv==0.12.5
 
 # --- Audio IO ---
 pydub==0.25.1
-sounddevice==0.5.5
+sounddevice==0.5.6
 soundfile==0.14.0
 # System package requirement (not pip-installable):
 # - pavucontrol (PulseAudio/PipeWire volume control UI used by HueyOS pulse profile)
@@ -172,30 +172,30 @@ soundfile==0.14.0
 # dependency submission when the runner is executing under a different pip version.
 
 setuptools==83.0.0
-wheel==0.47.0
+wheel==0.48.0
 
 # --- Additional pinned deps (resolved transitive baseline) ---
 altgraph==0.17.5
-annotated-doc==0.0.4
-annotated-types==0.7.0
+annotated-doc==0.0.5
+annotated-types==0.8.0
 asttokens==3.0.2
 authlib==1.7.2
-av==18.0.0
-azure-cognitiveservices-speech==1.50.0
-banks==2.4.5
+av==18.1.0
+azure-cognitiveservices-speech==1.51.2
+banks==2.5.0
 bcrypt==5.0.0
 beautifulsoup4==4.15.0
 build==1.5.1
-cffi==2.1.0
+cffi==2.1.1
 cfgv==3.5.0
-charset-normalizer==3.4.9
+charset-normalizer==3.5.1
 colorama==0.4.6
-coverage==7.15.1
+coverage==7.15.4
 croniter==6.2.4
-cssselect==1.4.0
+cssselect==1.5.0
 ctranslate2==4.8.1
 cuda-bindings==13.3.1 ; platform_machine == 'x86_64' and sys_platform == 'linux'
-cuda-pathfinder==1.5.6 ; platform_machine == 'x86_64' and sys_platform == 'linux'
+cuda-pathfinder==1.6.1 ; platform_machine == 'x86_64' and sys_platform == 'linux'
 dataclasses-json==0.6.7
 decorator==5.3.1
 defusedxml==0.7.1
@@ -211,34 +211,34 @@ ebooklib==0.20
 eval-type-backport==0.4.0
 executing==2.2.1
 feedfinder2==0.0.4
-feedparser==6.0.12
-filelock==3.29.7
+feedparser==6.0.14
+filelock==3.32.3
 filetype==1.2.0
 flatbuffers==25.12.19
 frozenlist==1.8.0
-fsspec==2026.6.0
+fsspec==2026.7.0
 future==1.0.0
 gkeepapi==0.17.1
-google-api-core==2.31.0
-google-api-python-client==2.198.0
-google-auth==2.56.0
-google-auth-httplib2==0.4.0
+google-api-core==2.34.0
+google-api-python-client==2.199.0
+google-auth==2.56.3
+google-auth-httplib2==0.4.1
 google-auth-oauthlib==1.4.0
-google-cloud-bigquery==3.42.2
-google-cloud-core==2.6.0
+google-cloud-bigquery==3.43.0
+google-cloud-core==2.6.1
 google-cloud-resource-manager==1.18.0
 google-crc32c==1.8.0
-google-resumable-media==2.10.0
-googleapis-common-protos==1.75.0
+google-resumable-media==2.10.1
+googleapis-common-protos==1.75.1
 gpsoauth==2.0.0
-greenlet==3.5.3
-griffe==2.1.0
-grpc-google-iam-v1==0.14.4
-grpcio==1.82.1
-grpcio-status==1.82.1
+greenlet==3.5.5
+griffe==2.2.0
+grpc-google-iam-v1==0.14.5
+grpcio==1.83.0
+grpcio-status==1.83.0
 h11==0.16.0
-h2==4.3.0
-hf-xet==1.5.1 ; platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'
+h2==4.4.1
+hf-xet==1.6.0 ; platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'arm64' or platform_machine == 'x86_64'
 hpack==4.2.0
 html2text==2025.4.15
 httpcore==1.0.9
@@ -248,7 +248,7 @@ httpx-sse==0.4.3
 humanfriendly==10.0
 hyperframe==6.1.0
 identify==2.6.19
-idna==3.18
+idna==3.19
 importlib-metadata==9.0.0
 importlib-resources==7.1.0
 iniconfig==2.3.0
@@ -265,31 +265,31 @@ jsonpointer==3.1.1
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
 kubernetes==36.0.3
-langchain==1.3.13
+langchain==1.3.16
 langchain-classic==1.0.8
 langchain-community==0.4.2
-langchain-core==1.4.9
+langchain-core==1.6.0
 langchain-experimental==0.4.2
-langchain-openai==1.3.5
+langchain-openai==1.6.0
 langchain-text-splitters==1.1.2
-langgraph==1.2.9
-langgraph-checkpoint==4.1.1
+langgraph==1.2.11
+langgraph-checkpoint==4.2.0
 langgraph-prebuilt==1.1.0
-langgraph-sdk==0.4.2
-langsmith==0.10.4
-librt==0.13.0 ; platform_python_implementation != 'PyPy'
+langgraph-sdk==0.4.3
+langsmith==0.11.1
+librt==0.15.0 ; platform_python_implementation != 'PyPy'
 llama-hub==0.0.79.post1
 llama-index-agent-openai==0.4.12
 llama-index-cli==0.5.7
 llama-index-embeddings-openai==0.6.0
-lxml==6.1.1
+lxml==6.1.2
 lxml-html-clean==0.4.5
 macholib==1.16.4 ; sys_platform == 'darwin'
-markdown==3.10.2
+markdown==3.10.3
 markdown-it-py==4.2.0
 markdownify==1.2.3
 markupsafe==3.0.3
-marshmallow==4.3.0
+marshmallow==4.3.1
 matplotlib-inline==0.2.2
 mccabe==0.7.0
 mcp==2.0.0
@@ -315,20 +315,20 @@ nvidia-curand-cu12==10.3.10.19 ; platform_machine == 'x86_64' and sys_platform =
 nvidia-cusolver-cu12==11.7.5.82 ; platform_machine == 'x86_64' and sys_platform == 'linux'
 nvidia-cusparse-cu12==12.5.10.65 ; platform_machine == 'x86_64' and sys_platform == 'linux'
 nvidia-cusparselt-cu12==0.8.1 ; platform_machine == 'x86_64' and sys_platform == 'linux'
-nvidia-nccl-cu12==2.30.7 ; platform_machine == 'x86_64' and sys_platform == 'linux'
+nvidia-nccl-cu12==2.31.2 ; platform_machine == 'x86_64' and sys_platform == 'linux'
 nvidia-nvjitlink-cu12==12.9.86 ; platform_machine == 'x86_64' and sys_platform == 'linux'
-nvidia-nvshmem-cu12==3.7.1 ; platform_machine == 'x86_64' and sys_platform == 'linux'
+nvidia-nvshmem-cu12==3.7.2 ; platform_machine == 'x86_64' and sys_platform == 'linux'
 nvidia-nvtx-cu12==12.9.79 ; platform_machine == 'x86_64' and sys_platform == 'linux'
 oauth2client==4.1.3
 oauthlib==3.3.1
 opencv-python==5.0.0.93
-opentelemetry-api==1.43.0
-opentelemetry-exporter-otlp-proto-common==1.43.0
-opentelemetry-exporter-otlp-proto-grpc==1.43.0
-opentelemetry-exporter-otlp-proto-http==1.43.0
-opentelemetry-proto==1.43.0
-opentelemetry-sdk==1.43.0
-opentelemetry-semantic-conventions==0.64b0
+opentelemetry-api==1.44.0
+opentelemetry-exporter-otlp-proto-common==1.44.0
+opentelemetry-exporter-otlp-proto-grpc==1.44.0
+opentelemetry-exporter-otlp-proto-http==1.44.0
+opentelemetry-proto==1.44.0
+opentelemetry-sdk==1.44.0
+opentelemetry-semantic-conventions==0.65b0
 ormsgpack==1.12.2
 outcome==1.3.0.post0
 overrides==7.7.0
@@ -337,103 +337,103 @@ parso==0.8.7
 pathspec==1.1.1
 pefile==2024.8.26 ; sys_platform == 'win32'
 pexpect==4.9.0 ; sys_platform != 'emscripten' and sys_platform != 'win32'
-platformdirs==4.10.0
-playwright==1.61.0
+platformdirs==4.11.3
+playwright==1.62.0
 pluggy==1.6.0
 portalocker==3.2.0
-prompt-toolkit==3.0.52
+prompt-toolkit==3.0.53
 propcache==0.5.2
-proto-plus==1.28.1
-protobuf==7.35.1
+proto-plus==1.28.3
+protobuf==7.36.0
 ptyprocess==0.7.0 ; sys_platform != 'emscripten' and sys_platform != 'win32'
 pure-eval==0.2.3
 pyaml==26.7.0
 pyasn1==0.6.4
 pyasn1-modules==0.4.2
 pyaudio==0.2.14
-pybase64==1.4.3
+pybase64==1.5.0
 pycodestyle==2.14.0
 pycparser==3.0 ; implementation_name != 'PyPy'
 pycryptodomex==3.23.0
-pydantic-core==2.47.0
+pydantic-core==2.48.0
 pydrive==1.3.1
 pyee==13.0.1
 pyflakes==3.4.0
 pygame==2.6.1
-pygments==2.20.0
-pyinstaller==6.21.0
+pygments==2.21.0
+pyinstaller==6.22.2
 pyinstaller-hooks-contrib==2026.6
 pyjwt==2.13.0
 pyparsing==3.3.2
-pypdf==6.14.2
+pypdf==6.16.1
 pypika==0.51.1
 pyproject-hooks==1.2.0
 pyreadline3==3.5.6 ; sys_platform == 'win32'
 pyserial==3.5
-pyside6==6.11.1
-pyside6-addons==6.11.1
-pyside6-essentials==6.11.1
+pyside6==6.11.2
+pyside6-addons==6.11.2
+pyside6-essentials==6.11.2
 pysocks==1.7.1
 python-dateutil==2.9.0.post0
-python-discovery==1.4.4
-python-dotenv==1.2.2
+python-discovery==1.5.2
+python-dotenv==1.2.3
 pytokens==0.4.1
-pytz==2026.2
+pytz==2026.3.post1
 pywin32==312 ; sys_platform == 'win32'
 pywin32-ctypes==0.2.3 ; sys_platform == 'win32'
 pyxdg==0.28 ; sys_platform == 'linux'
 qt-material==2.17
 referencing==0.37.0
-regex==2026.7.10
+regex==2026.7.19
 requests-file==3.0.1
 requests-oauthlib==2.0.0
 requests-toolbelt==1.0.0
 retrying==1.4.2
 rpds-py==2026.6.3
 rsa==4.9.1
-selenium==4.46.0
+selenium==4.47.0
 sgmllib3k==1.0.0
 shellingham==1.5.4
-shiboken6==6.11.1
+shiboken6==6.11.2
 show-in-file-manager==1.1.6
 six==1.17.0
 sniffio==1.3.1
-soupsieve==2.8.4
+soupsieve==2.9.2
 speechrecognition==3.17.0
-spider-client==0.1.92
-sqlalchemy==2.0.51
+spider-client==0.1.93
+sqlalchemy==2.0.52
 stack-data==0.6.3
 standard-chunk==3.13.0
-stevedore==5.9.0
-striprtf==0.0.32
+stevedore==5.9.1
+striprtf==0.0.33
 sympy==1.14.0
 tenacity==9.1.4
 tinysegmenter==0.4
-tldextract==5.3.1
+tldextract==5.3.2
 tokenizers==0.23.1
-tqdm==4.68.4
-trio==0.33.0
+tqdm==4.70.0
+trio==0.34.0
 trio-websocket==0.12.2
 triton==3.7.1 ; platform_machine == 'x86_64' and sys_platform == 'linux'
 tweepy==4.17.0
-typer==0.26.8
+typer==0.27.1
 typing-inspect==0.9.0
-typing-inspection==0.4.2
+typing-inspection==0.4.4
 tzdata==2026.3 ; sys_platform == 'emscripten' or sys_platform == 'win32'
 uritemplate==4.2.0
 urllib3==2.7.0
 uuid-utils==0.17.0
 uvloop==0.22.1 ; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'
 validators==0.35.0
-virtualenv==21.6.1
+virtualenv==21.7.4
 watchfiles==1.2.0
 wcwidth==0.8.2
 websocket-client==1.9.0
 websockets==16.1
 wikipedia==1.4.0
-wrapt==2.2.2
+wrapt==2.3.0
 wsproto==1.3.2
 xxhash==3.8.1
-yarl==1.24.2
+yarl==1.24.5
 zipp==4.1.0
 zstandard==0.25.0
