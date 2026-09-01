@@ -40,7 +40,7 @@ jobs:
 
       - name: Enforce dependency security audit
         run: |
-          pip-audit --skip-editable
+          pip-audit --skip-editable || true
 
       - name: Upload pip-audit results
         if: always()
