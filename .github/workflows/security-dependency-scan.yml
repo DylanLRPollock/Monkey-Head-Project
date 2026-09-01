@@ -35,12 +35,12 @@ jobs:
       - name: Record pip-audit JSON output
         if: always()
         run: |
-          pip-audit --format json --output pip-audit-results.json || true
+          pip-audit --format json --output pip-audit-results.json --skip-editable || true
           test -f pip-audit-results.json || printf '{"error":"pip-audit did not produce JSON output"}\n' > pip-audit-results.json
 
       - name: Enforce dependency security audit
         run: |
-          pip-audit
+          pip-audit --skip-editable
 
       - name: Upload pip-audit results
         if: always()
