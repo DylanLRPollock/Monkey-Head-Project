@@ -13,7 +13,7 @@
 #   3.13.x only (>=3.13,<3.14); Python 3.14.x is testing-only
 
 # --- Packaging / installer toolchain ---
-pip==26.1.2
+pip==26.2
 setuptools==84.0.0
 wheel==0.47.0
 uv==0.11.28
