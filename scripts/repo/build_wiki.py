@@ -114,7 +114,7 @@ def render(name, spec):
     return f"""# {spec['title']}
 
 > [!IMPORTANT]
-> **Status date:** {DATE} · **Framework:** {FRAMEWORK} · **Classification:** {spec['classification']} · **Authority:** explanatory wiki; accepted plans, merged implementation evidence, tests, l[...]
+> **Status date:** {DATE} · **Framework:** {FRAMEWORK} · **Classification:** {spec['classification']} · **Authority:** explanatory wiki; accepted plans, merged implementation evidence, tests, [...]
 
 **Summary:** {spec['summary']}
 
@@ -185,7 +185,9 @@ Continue to [[{target}]]. See [[Historical-2025-Wiki]] and [[Wiki-Migration-Map]
         "status_date": DATE,
         "framework": FRAMEWORK,
         "current_pages": len(expected),
-        "compatibility_pages": len([p for p in output.glob("*.md") if p.stem not in expected and not p.name.startswith(...)]),
+        "compatibility_pages": len(
+            [p for p in output.glob("*.md") if p.stem not in expected and not p.name.startswith("_")]
+        ),
     }
     (output / "wiki-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     (output / "SHA256SUMS").write_text(
