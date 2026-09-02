@@ -35,7 +35,7 @@ anyio==4.14.2
 attrs==26.1.0
 certifi==2026.6.17
 cryptography==50.0.0
-evdev==1.9.3; sys_platform == 'linux'
+evdev==2.0.0; sys_platform == 'linux'
 fastapi==0.139.0
 orjson==3.11.9
 packaging==26.2
@@ -132,7 +132,7 @@ azure-core==1.41.0
 azure-identity==1.25.3
 boto3==1.43.48
 botocore==1.43.48
-google-cloud-aiplatform==1.160.0
+google-cloud-aiplatform==2.0.1
 google-cloud-storage==3.13.0
 s3transfer==0.19.1
 
@@ -148,7 +148,7 @@ flake8==7.3.0
 flake8-bugbear==25.11.29
 httpx==0.28.1
 ipython==9.15.0
-isort==8.0.1
+isort==9.0.1
 mypy==2.3.0
 pip-tools==7.5.3
 pre-commit==4.6.0
