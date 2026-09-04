@@ -2,32 +2,34 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "project": "Monkey-Head-Project",
   "ai_identity": "Huey",
-  "version": "v120.3",
-  "schema_version": 120.3,
-  "schema_contract_version": "master_plan_schema_v120.3",
+  "version": "v121.0",
+  "schema_version": 121.0,
+  "schema_contract_version": "master_plan_schema_v121.0",
   "document_kind": "machine_facing_master_plan",
-  "status_date": "2026-07-12",
+  "status_date": "2026-09-03",
   "created_by": "Dylan L.R. Pollock with Atlas continuity support",
-  "supersedes": "master-plan-v120.2.json",
-  "status": "proposed_in_pr",
-  "description": "Master Plan v120.3 reorganizes the active direction around Huey Brain, Huey Body, and Huey Farm; establishes PyHuey as the primary GUI and a core runtime component; adopts hueyos as the target canonical Python namespace; keeps V1 definition open until a genuinely useful system is demonstrated; and introduces explicit limits for fidelity, logging, testing, procurement, migration, and canon authority.",
+  "supersedes": "master-plan-v120.3.json",
+  "status": "active",
+  "description": "Master Plan v121.0 advances the physical and computational architecture, establishing a 96 GB pooled VRAM target via three Nvidia Tesla V100 32 GB GPUs, a deliberate dual-PSU power configuration, and a fail-safe liquid cooling containment system. It allocates PCIe bandwidth for 10 Gbps lab networking, defines the requirement for a basic display-output GPU, and documents the transition of Huey Body from modular component fabrication into unified physical assembly. It preserves and carries forward all rigorous operational, testing, logging, and namespace boundaries established in v120.3.",
   "source_basis": {
-    "primary_previous_master_plan": "master-plan-v120.2.json",
-    "forward_path_record": "docs/architecture/v120.3-forward-path-decision-record.md",
-    "current_session_date": "2026-07-12",
+    "primary_previous_master_plan": "master-plan-v120.3.json",
+    "forward_path_record": "docs/architecture/v121.0-hardware-and-assembly-record.md",
+    "current_session_date": "2026-09-03",
     "explicit_decisions": [
       "The project is organized around Huey Brain, Huey Body, and Huey Farm.",
       "PyHuey GUI is the primary interface and a core runtime component intended for extensive use.",
       "The target canonical Python namespace is hueyos; useful huey and legacy material is to be rewritten and merged deliberately.",
-      "The main Monkey-Head-Project repository remains canonical and may absorb coherent external components.",
-      "Project releases continue to use internal version numbering.",
+      "Three Nvidia Tesla V100 32 GB GPUs will be pooled to provide 96 GB of VRAM, balancing large-model requirements (~80 GB) with local audio transcription and agentic overhead (~16 GB).",
+      "A separate, basic discrete graphics card is required to handle display output and CPU boot tasks since the V100 accelerators are headless.",
+      "One PCIe slot is reserved for a 10 Gbps networking card to handle internal lab communication.",
+      "Power delivery will utilize two linked, high-capacity PSUs for modularity and deliberate load bearing.",
+      "The custom liquid cooling loop utilizes car-grade coolant, a sealed bucket within a garbage bin physical containment system, and a battery backup to maintain pump and fan operation during a power failure.",
+      "Huey Body is undergoing final structural assembly, requiring all painting, clear coating, and structural integrity to be rock-solid prior to technological integration.",
+      "Huey's role in gaming focuses on strategic analysis and optimal route generation (key/button press logic) rather than direct live gameplay rendering.",
       "Structured records should preserve all useful operational information while excluding secrets.",
       "Transcription is judged by fidelity and will use categories or tiers.",
       "Testing includes unit tests, mocked integration tests in CI, fixture fidelity evaluation, manual live end-to-end tests, and detailed failure-path tests.",
-      "The architecture assumes large-model use normally and medium-model use only in uncommon constrained or specialized cases.",
-      "Hardware architecture is based around Intel Core i9-class systems from 12th generation or newer.",
       "Market-available components are preferred; inexpensive Chinese hardware and supply channels may be used when category-specific standards are met.",
-      "Huey Body is under active rework.",
       "Only Dylan L.R. Pollock may lock project canon."
     ],
     "source_priority": [
@@ -37,7 +39,7 @@
       "README and technical documentation",
       "older plans, transcripts, and archives as lineage"
     ],
-    "inheritance_policy": "Carry forward v120.2 implementation evidence and lineage unless v120.3 explicitly changes the direction. Do not present target-state decisions as already implemented."
+    "inheritance_policy": "Carry forward v120.3 implementation evidence and lineage unless v121.0 explicitly changes the direction. Do not present target-state decisions as already implemented."
   },
   "truth_model": {
     "current_reality": "Observed hardware, merged code, working commands, and directly verified behavior.",
@@ -54,8 +56,8 @@
       "Dylan explicitly states acceptance",
       "Dylan intentionally merges a designated canonical update"
     ],
-    "machine_facing_source": "master-plan-v120.3.json after acceptance",
-    "human_facing_source": "README.md aligned to v120.3",
+    "machine_facing_source": "master-plan-v121.0.json after acceptance",
+    "human_facing_source": "README.md aligned to v121.0",
     "conflict_rule": "Current explicit decisions override older documentation; implementation reality must still be labelled separately from accepted direction."
   },
   "three_part_architecture": {
@@ -88,8 +90,8 @@
         "physical safety",
         "recoverable interaction with the environment"
       ],
-      "status": "active_rework",
-      "current_boundary": "The exact mechanical, electrical, sensor, power, and runtime scope will be documented as the rework is clarified.",
+      "status": "active_unified_assembly",
+      "current_boundary": "Modular components (head, hands, body) are being unified into a single physical form. Structural integrity, painting, and clear coating are being finalized before the liquid cooling system and computational tech are attached.",
       "integration_rule": "Brain and Body integration requires explicit interfaces, operator-visible state, safe-stop behavior, and recovery procedures."
     },
     "huey_farm": {
@@ -101,9 +103,11 @@
         "compute expansion",
         "backup and recovery support where explicitly assigned"
       ],
-      "status": "target_state_funding_dependent",
-      "planning_scale": "Approximately 80 GB pooled local VRAM remains a planning reference, not a locked procurement specification.",
-      "procurement_rule": "Refresh model, accelerator, power, cooling, software, and cost comparisons when funding makes acquisition actionable."
+      "status": "active_procurement_and_design",
+      "planning_scale": "96 GB pooled local VRAM across three Nvidia Tesla V100 32 GB GPUs to comfortably host 80 GB open-source models while leaving headroom.",
+      "networking": "10 Gbps dedicated internal PCIe network interface for lab communication.",
+      "power_delivery": "Deliberate dual-PSU architecture built from high-quality modular units linked together for stable load bearing.",
+      "procurement_rule": "Refresh model, accelerator, power, cooling, software, and cost comparisons as procurement advances."
     },
     "unresolved_boundaries": [
       "Whether Huey identity spans all three parts or is embodied authoritatively by Brain",
@@ -114,8 +118,55 @@
       "Whether HueyOS is installed across all three parts or orchestrates them primarily from Brain"
     ]
   },
+  "hardware_direction": {
+    "architecture_baseline": "Intel Core i9-class, 12th generation or newer",
+    "motherboard_pcie_allocation": {
+      "total_slots": 5,
+      "slot_1": "Basic discrete GPU (stopgap or finalized) for display output and system I/O",
+      "slot_2": "10 Gbps Network Interface Card",
+      "slot_3": "Nvidia Tesla V100 32 GB",
+      "slot_4": "Nvidia Tesla V100 32 GB (via extender if necessary)",
+      "slot_5": "Nvidia Tesla V100 32 GB (via extender if necessary)"
+    },
+    "cooling_and_safety": {
+      "liquid_loop": "Custom car-grade coolant loop.",
+      "containment": "Sealed bucket within a garbage bin physical containment vessel to prevent liquid damage from leaks.",
+      "fail_safe": "Battery backup specifically dedicated to powering the pump and fans to safely dissipate heat if primary power is lost mid-task."
+    },
+    "model_assumption": {
+      "normal": "large models (120B/128B OSS) operating on pooled VRAM",
+      "rare": "medium models for constrained, fallback, or specialized use",
+      "unresolved": [
+        "parameter ranges",
+        "quantization policy",
+        "minimum context size",
+        "latency targets",
+        "local versus API placement",
+        "minimum accelerator memory"
+      ]
+    },
+    "procurement": {
+      "market_rule": "Prefer parts and systems available through ordinary market channels.",
+      "cost_rule": "Chinese manufacturers and marketplaces may be relied upon for inexpensive components when practical.",
+      "category_checks": [
+        "electrical and physical safety",
+        "reliability",
+        "documentation",
+        "repairability",
+        "replacement availability",
+        "driver and software support",
+        "data handling and network trust",
+        "total delivered cost"
+      ],
+      "two_of_three_rule": {
+        "status": "unresolved",
+        "note": "Dylan indicated a two-out-of-three approach but the three criteria or authorities still require definition."
+      }
+    }
+  },
   "pyhuey": {
     "accepted_role": "Primary GUI and core runtime component",
+    "python_environment": "Python 3.13",
     "use_expectation": "Extensive normal operation rather than optional demonstration use",
     "current_reality": [
       "PyHuey exists as a standalone application and an embedded connector path.",
@@ -162,40 +213,6 @@
       ]
     }
   },
-  "hardware_direction": {
-    "architecture_baseline": "Intel Core i9-class, 12th generation or newer",
-    "scope": "Primary Brain-class architecture; support nodes do not automatically require the same class.",
-    "model_assumption": {
-      "normal": "large models",
-      "rare": "medium models for constrained, fallback, or specialized use",
-      "unresolved": [
-        "parameter ranges",
-        "quantization policy",
-        "minimum context size",
-        "latency targets",
-        "local versus API placement",
-        "minimum accelerator memory"
-      ]
-    },
-    "procurement": {
-      "market_rule": "Prefer parts and systems available through ordinary market channels.",
-      "cost_rule": "Chinese manufacturers and marketplaces may be relied upon for inexpensive components when practical.",
-      "category_checks": [
-        "electrical and physical safety",
-        "reliability",
-        "documentation",
-        "repairability",
-        "replacement availability",
-        "driver and software support",
-        "data handling and network trust",
-        "total delivered cost"
-      ],
-      "two_of_three_rule": {
-        "status": "unresolved",
-        "note": "Dylan indicated a two-out-of-three approach but the three criteria or authorities still require definition."
-      }
-    }
-  },
   "v1_position": {
     "status": "definition_open",
     "decision": "Do not lock V1 prematurely. Define it from a system that proves genuinely useful operation under the Monkey-Head-Project umbrella.",
@@ -209,7 +226,7 @@
     "foundation_proof": {
       "path": "known MP3 fixture -> media preparation -> local transcription -> API-backed response -> structured log",
       "status": "active_foundation_proof",
-      "interpretation": "This remains valuable and should be completed, but v120.3 does not automatically declare it to be the whole of V1."
+      "interpretation": "This remains valuable and should be completed, but does not automatically declare it to be the whole of V1."
     },
     "open_questions": [
       "Which recurring problem V1 solves",
@@ -221,7 +238,10 @@
   },
   "transcription_and_fidelity": {
     "working_engine": "faster-whisper",
+    "target_model": "Medium model (requiring ~2-4 GB VRAM)",
     "engine_status": "provisional_until_evidence_selects_or_replaces_it",
+    "execution_isolation": "VRAM is pooled dynamically to prevent rigid blocking; transcription and agentic tasks will be scheduled efficiently within HueyOS to avoid conflicts.",
+    "primary_quality_rule": "Judge transcription by fidelity, not by successful process completion alone.",
     "selection_open": [
       "model",
       "compute type",
@@ -229,7 +249,6 @@
       "accelerator path",
       "fallback behavior"
     ],
-    "primary_quality_rule": "Judge transcription by fidelity, not by successful process completion alone.",
     "tier_framework": {
       "status": "framework_accepted_thresholds_open",
       "dimensions": [
@@ -250,7 +269,7 @@
         "high_fidelity",
         "verified_archival"
       ],
-      "rule": "Category names may be retained or replaced after Dylan supplies the intended tier details; numeric thresholds are not locked in v120.3."
+      "rule": "Category names may be retained or replaced after Dylan supplies the intended tier details; numeric thresholds are not locked."
     }
   },
   "cognition_provider": {
@@ -360,23 +379,23 @@
   },
   "work_program": {
     "immediate": [
-      "Complete v120.3 documentation synchronization.",
-      "Inventory the huey to hueyos namespace migration.",
-      "Define the present Huey Body rework scope.",
+      "Finalize the physical paint, clear-coating, and unified assembly of Huey Body.",
+      "Integrate the liquid cooling system and fail-safe battery with the unified body.",
+      "Install the discrete stopgap GPU for basic display I/O to validate the Linux environment.",
       "Complete the fixture-to-log foundation proof through PyHuey with CLI recovery.",
-      "Define fidelity tiers with measurable acceptance evidence.",
-      "Define Brain, Body, and Farm interfaces and trust boundaries."
+      "Complete documentation synchronization for v121.0.",
+      "Define fidelity tiers with measurable acceptance evidence."
     ],
     "next": [
-      "Migrate capabilities into hueyos in coherent PRs.",
+      "Integrate the three Nvidia Tesla V100 32 GB cards and the 10 Gbps network card.",
+      "Implement the dual-PSU power delivery system.",
+      "Migrate capabilities into hueyos namespace in coherent PRs.",
       "Stabilize PyHuey core workflows and logging.",
       "Choose transcription and cognition paths from measured evidence.",
-      "Define the two-of-three hardware decision method.",
-      "Determine the useful recurring function that anchors V1."
+      "Define the two-of-three hardware decision method."
     ],
     "later": [
       "Expand live input and embodied interaction after foundation interfaces are stable.",
-      "Procure and validate Farm capacity when funding and evidence align.",
       "Advance HIMS and constitutional governance authority through separate validated stages."
     ]
   },
@@ -392,7 +411,7 @@
     "Transcription model and compute path",
     "Cognition provider and model",
     "Large-model operational definition",
-    "Two-of-three hardware decision rule",
+    "Two-of-three hardware decision rule details",
     "Maximum acceptable external-service dependency",
     "Capabilities classified as active, limited, experimental, paused, or deferred"
   ],
@@ -407,5 +426,15 @@
     "Reopened Huey Body as an active rework with bounded safety and integration requirements.",
     "Expanded logging, testing, fidelity, PR-scope, and canon-authority rules.",
     "Separated accepted direction from current implementation and unresolved decisions."
+  ],
+  "change_log_v121_0": [
+    "Advanced master plan version to v121.0.",
+    "Locked compute accelerator architecture to three Nvidia Tesla V100 32 GB GPUs for 96 GB total pooled VRAM.",
+    "Allocated motherboard PCIe slots to support the three accelerators, one basic display GPU, and one 10 Gbps NIC.",
+    "Established a dual-PSU power architecture for load distribution and modularity.",
+    "Formalized the liquid cooling containment system (sealed bucket in garbage bin) and the dedicated battery fail-safe for pump and fan operation.",
+    "Transitioned Huey Body status from modular prototyping to final unified physical assembly and finishing.",
+    "Defined Huey's gaming role as strategic analysis and route generation, excluding live rendering.",
+    "Updated PyHuey runtime requirement to Python 3.13."
   ]
 }
