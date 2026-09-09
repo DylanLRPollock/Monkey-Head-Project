@@ -38,7 +38,7 @@ pytest==9.1.1
 pytest-cov==7.1.0
 ruff==0.15.21
 black==26.5.1
-isort==8.0.1
+isort==9.0.1
 mypy==2.3.0
 pre-commit==4.6.0
 bandit==1.9.4

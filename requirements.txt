@@ -33,7 +33,7 @@ anyio==4.14.2
 attrs==26.1.0
 certifi==2026.6.17
 cryptography==50.0.0
-evdev==1.9.3; sys_platform == 'linux'
+evdev==2.0.0; sys_platform == 'linux'
 fastapi==0.139.0
 orjson==3.11.9
 packaging==26.2
@@ -60,7 +60,7 @@ flake8==7.3.0
 flake8-bugbear==25.11.29
 httpx==0.28.1
 ipython==9.15.0
-isort==8.0.1
+isort==9.0.1
 mypy==2.3.0
 pip-tools==7.5.3
 pre-commit==4.6.0
