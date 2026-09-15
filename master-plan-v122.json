@@ -10,7 +10,7 @@
   "created_by": "Dylan L.R. Pollock with Atlas continuity support",
   "supersedes": "master-plan-v121.0.json",
   "status": "active",
-  "description": "Master Plan v122.0 formalizes the physical assembly, color finish, storage, and compute baseline for the Monkey-Head-Project. It details the Huey V4 shell assembly merging the V3 physical base with V2 donor parts, establishing a metallic silver primary finish with deep rich purple accents across spray-painted plastic and sanded/primed wood surfaces. It specifies primary project storage as two 10 TB hard drives in a RAID 1 redundant array alongside lab stocks of 16 GB M.2 SSDs. It locks the Huey Brain core workstation hardware to an ASUS TUF Gaming Z790-Plus WiFi motherboard paired with an Intel Core i9-12900K processor, and explicitly confirms that the Lenovo Legion Go remains strictly dedicated LabTech, excluded from core Huey runtime execution.",
+  "description": "Master Plan v122.0 formalizes the physical assembly, surface color finish, storage architecture, and compute baseline for the Monkey-Head-Project. It details the Huey V4 shell assembly merging the V3 physical base with V2 donor parts, establishing a metallic silver primary finish with deep rich purple accents across spray-painted plastic and sanded/primed wood surfaces. It specifies primary project storage as two 10 TB hard drives in a RAID 1 redundant array alongside lab stocks of 16 GB M.2 SSDs. It locks the Huey Brain core workstation hardware to an ASUS TUF Gaming Z790-Plus WiFi motherboard paired with an Intel Core i9-12900K processor, and explicitly confirms that the Lenovo Legion Go remains strictly dedicated LabTech, excluded from core Huey runtime execution.",
   "source_basis": {
     "primary_previous_master_plan": "master-plan-v121.0.json",
     "forward_path_record": "docs/architecture/v122.0-hardware-and-assembly-record.md",
@@ -27,415 +27,415 @@
       "Three Nvidia Tesla V100 32 GB GPUs will be pooled to provide 96 GB of VRAM for large-model hosting, transcription, and agentic workflows.",
       "A separate basic discrete GPU provides display output and system boot graphics.",
       "Power delivery relies on two linked, high-capacity PSUs for load distribution.",
-      "Liquid cooling loop utilizes car-grade coolant, a sealed bucket within a garbage bin secondary containment vessel, and a battery backup dedicated to pump and fan operation.",
-      "Only Dylan L.R. Pollock may lock project canon."
+      "Liquid cooling loop utilizes car-grade coolant, a sealed bucket within a garbage bin secondary containment vessel, and a battery backup dedicated to pump and fan operation[cite: 1, 4].",
+      "Only Dylan L.R. Pollock may lock project canon[cite: 1, 4]."
     ],
     "source_priority": [
-      "Dylan's explicit current-session decisions",
-      "newest accepted machine-facing master plan",
-      "merged repository and implementation state",
-      "README and technical documentation",
-      "older plans, transcripts, and archives as lineage"
+      "Dylan's explicit current-session decisions[cite: 1, 4]",
+      "newest accepted machine-facing master plan[cite: 1, 4]",
+      "merged repository and implementation state[cite: 1, 4]",
+      "README and technical documentation[cite: 1, 4]",
+      "older plans, transcripts, and archives as lineage[cite: 1, 4]"
     ],
-    "inheritance_policy": "Carry forward v121.0 implementation evidence and lineage unless v122.0 explicitly changes the direction. Do not present target-state decisions as already implemented."
+    "inheritance_policy": "Carry forward v121.0 implementation evidence and lineage unless v122.0 explicitly changes the direction[cite: 1, 4]. Do not present target-state decisions as already implemented[cite: 1, 4]."
   },
   "truth_model": {
-    "current_reality": "Observed hardware, merged code, working commands, and directly verified behavior.",
-    "accepted_direction": "Architecture Dylan has selected for implementation, even when migration is incomplete.",
-    "provisional_choice": "A working selection that remains replaceable through evidence.",
-    "unresolved": "A decision intentionally left open pending additional detail or testing.",
-    "target_state": "A longer-term capability whose implementation depends on resources, maturity, or later validation.",
-    "historical_lineage": "Earlier systems and decisions retained for continuity without overriding current direction."
+    "current_reality": "Observed hardware, merged code, working commands, and directly verified behavior[cite: 1, 4].",
+    "accepted_direction": "Architecture Dylan has selected for implementation, even when migration is incomplete[cite: 1, 4].",
+    "provisional_choice": "A working selection that remains replaceable through evidence[cite: 1, 4].",
+    "unresolved": "A decision intentionally left open pending additional detail or testing[cite: 1, 4].",
+    "target_state": "A longer-term capability whose implementation depends on resources, maturity, or later validation[cite: 1, 4].",
+    "historical_lineage": "Earlier systems and decisions retained for continuity without overriding current direction[cite: 1, 4]."
   },
   "canon": {
     "authority": "Dylan L.R. Pollock",
-    "rule": "No agent, tool, contributor, generated document, branch, or pull request may independently lock canon.",
+    "rule": "No agent, tool, contributor, generated document, branch, or pull request may independently lock canon[cite: 1, 4].",
     "acceptance_mechanisms": [
-      "Dylan explicitly states acceptance",
-      "Dylan intentionally merges a designated canonical update"
+      "Dylan explicitly states acceptance[cite: 1, 4]",
+      "Dylan intentionally merges a designated canonical update[cite: 1, 4]"
     ],
     "machine_facing_source": "master-plan-v122.0.json after acceptance",
     "human_facing_source": "README.md aligned to v122.0",
-    "conflict_rule": "Current explicit decisions override older documentation; implementation reality must still be labelled separately from accepted direction."
+    "conflict_rule": "Current explicit decisions override older documentation; implementation reality must still be labelled separately from accepted direction[cite: 1, 4]."
   },
   "three_part_architecture": {
-    "decision": "Organize the system around Huey Brain, Huey Body, and Huey Farm.",
+    "decision": "Organize the system around Huey Brain, Huey Body, and Huey Farm[cite: 1, 4].",
     "huey_brain": {
-      "role": "Identity-bearing cognition and orchestration centre.",
+      "role": "Identity-bearing cognition and orchestration centre[cite: 1, 4].",
       "responsibilities": [
-        "PyHuey operator interaction",
-        "cognition and model selection",
-        "workflow orchestration",
-        "memory access and state coordination",
-        "structured evidence and audit records",
-        "coordination with Body and Farm"
+        "PyHuey operator interaction[cite: 1, 4]",
+        "cognition and model selection[cite: 1, 4]",
+        "workflow orchestration[cite: 1, 4]",
+        "memory access and state coordination[cite: 1, 4]",
+        "structured evidence and audit records[cite: 1, 4]",
+        "coordination with Body and Farm[cite: 1, 4]"
       ],
       "current_platform": {
         "status": "active_workstation_build",
-        "system": "ASUS TUF Gaming Z790-Plus WiFi motherboard with Intel Core i9-12900K processor",
-        "purpose": "Primary workstation, orchestration hub, and execution platform for Huey Brain",
-        "storage": "Two 10 TB hard drives in RAID 1 array for redundant project data storage; stock 16 GB M.2 SSDs"
+        "system": "ASUS TUF Gaming Z790-Plus WiFi motherboard with Intel Core i9-12900K processor[cite: 1, 4]",
+        "purpose": "Primary workstation, orchestration hub, and execution platform for Huey Brain[cite: 1, 4]",
+        "storage": "Two 10 TB hard drives in RAID 1 array for redundant project data storage; stock 16 GB M.2 SSDs[cite: 1, 4]"
       },
-      "target_hardware_rule": "Brain architecture is based around Intel Core i9-class processors from 12th generation or newer."
+      "target_hardware_rule": "Brain architecture is based around Intel Core i9-class processors from 12th generation or newer[cite: 1, 4]."
     },
     "huey_body": {
-      "role": "Physical embodiment and environmental interface.",
+      "role": "Physical embodiment and environmental interface[cite: 1, 4].",
       "responsibilities": [
-        "sensing",
-        "actuation",
-        "movement",
-        "power and cooling integration",
-        "physical safety",
-        "recoverable interaction with the environment"
+        "sensing[cite: 1, 4]",
+        "actuation[cite: 1, 4]",
+        "movement[cite: 1, 4]",
+        "power and cooling integration[cite: 1, 4]",
+        "physical safety[cite: 1, 4]",
+        "recoverable interaction with the environment[cite: 1, 4]"
       ],
       "status": "active_v4_assembly_and_finishing",
-      "current_boundary": "V4 physical shell assembly merges the V3 physical base with V2 donor material. Surface preparation involves sanding and priming wooden elements, applying metallic silver primary spray paint with deep rich purple offset accents across plastic and wood, while retaining native/black finishes on exposed metal structural parts prior to liquid loop and compute mounting.",
-      "integration_rule": "Brain and Body integration requires explicit interfaces, operator-visible state, safe-stop behavior, and recovery procedures."
+      "current_boundary": "V4 physical shell assembly merges the V3 physical base with V2 donor material[cite: 1, 4]. Surface preparation involves sanding and priming wooden elements, applying metallic silver primary spray paint with deep rich purple offset accents across plastic and wood, while retaining native/black finishes on exposed metal structural parts prior to liquid loop and compute mounting[cite: 1, 4].",
+      "integration_rule": "Brain and Body integration requires explicit interfaces, operator-visible state, safe-stop behavior, and recovery procedures[cite: 1, 4]."
     },
     "huey_farm": {
-      "role": "Scalable compute, model, storage, and support infrastructure.",
+      "role": "Scalable compute, model, storage, and support infrastructure[cite: 1, 4].",
       "responsibilities": [
-        "large-model hosting",
-        "pooled accelerator capacity",
-        "shared storage and artifacts",
-        "compute expansion",
-        "backup and recovery support where explicitly assigned"
+        "large-model hosting[cite: 1, 4]",
+        "pooled accelerator capacity[cite: 1, 4]",
+        "shared storage and artifacts[cite: 1, 4]",
+        "compute expansion[cite: 1, 4]",
+        "backup and recovery support where explicitly assigned[cite: 1, 4]"
       ],
       "status": "active_procurement_and_design",
-      "planning_scale": "96 GB pooled local VRAM across three Nvidia Tesla V100 32 GB GPUs to comfortably host 80 GB open-source models while leaving headroom for transcription and agent overhead.",
-      "networking": "10 Gbps dedicated internal PCIe network interface for lab communication.",
-      "power_delivery": "Deliberate dual-PSU architecture built from high-quality modular units linked together for stable load bearing.",
-      "procurement_rule": "Refresh model, accelerator, power, cooling, software, and cost comparisons as procurement advances."
+      "planning_scale": "96 GB pooled local VRAM across three Nvidia Tesla V100 32 GB GPUs to comfortably host 80 GB open-source models while leaving headroom for transcription and agent overhead[cite: 1, 4].",
+      "networking": "10 Gbps dedicated internal PCIe network interface for lab communication[cite: 1, 4].",
+      "power_delivery": "Deliberate dual-PSU architecture built from high-quality modular units linked together for stable load bearing[cite: 1, 4].",
+      "procurement_rule": "Refresh model, accelerator, power, cooling, software, and cost comparisons as procurement advances[cite: 1, 4]."
     },
     "unresolved_boundaries": [
-      "Whether Huey identity spans all three parts or is embodied authoritatively by Brain",
-      "Where canonical memory, models, logs, and state reside",
-      "Communication and authentication protocols",
-      "Disconnected and degraded operation",
-      "Farm authority versus service-only behavior",
-      "Whether HueyOS is installed across all three parts or orchestrates them primarily from Brain"
+      "Whether Huey identity spans all three parts or is embodied authoritatively by Brain[cite: 1, 4]",
+      "Where canonical memory, models, logs, and state reside[cite: 1, 4]",
+      "Communication and authentication protocols[cite: 1, 4]",
+      "Disconnected and degraded operation[cite: 1, 4]",
+      "Farm authority versus service-only behavior[cite: 1, 4]",
+      "Whether HueyOS is installed across all three parts or orchestrates them primarily from Brain[cite: 1, 4]"
     ]
   },
   "hardware_direction": {
-    "architecture_baseline": "Intel Core i9-12900K on ASUS TUF Gaming Z790-Plus WiFi",
+    "architecture_baseline": "Intel Core i9-12900K on ASUS TUF Gaming Z790-Plus WiFi[cite: 1, 4]",
     "storage_architecture": {
-      "primary_pool": "Two 10 TB 3.5-inch hard drives configured in RAID 1 array for redundant long-term project storage.",
-      "auxiliary_storage": "Stock 16 GB M.2 SSDs for modular boot, swap, or buffer tasks.",
-      "reserve": "2.5-inch SATA SSDs retained in reserve pending specific task allocation."
+      "primary_pool": "Two 10 TB 3.5-inch hard drives configured in RAID 1 array for redundant long-term project storage[cite: 1, 4].",
+      "auxiliary_storage": "Stock 16 GB M.2 SSDs for modular boot, swap, or buffer tasks[cite: 1, 4].",
+      "reserve": "2.5-inch SATA SSDs retained in reserve pending specific task allocation[cite: 1, 4]."
     },
     "motherboard_pcie_allocation": {
       "total_slots": 5,
-      "slot_1": "Basic discrete GPU for system display output and I/O boot tasks",
-      "slot_2": "10 Gbps Network Interface Card",
-      "slot_3": "Nvidia Tesla V100 32 GB accelerator",
-      "slot_4": "Nvidia Tesla V100 32 GB accelerator (via PCIe extender)",
-      "slot_5": "Nvidia Tesla V100 32 GB accelerator (via PCIe extender)"
+      "slot_1": "Basic discrete GPU for system display output and I/O boot tasks[cite: 1, 4]",
+      "slot_2": "10 Gbps Network Interface Card[cite: 1, 4]",
+      "slot_3": "Nvidia Tesla V100 32 GB accelerator[cite: 1, 4]",
+      "slot_4": "Nvidia Tesla V100 32 GB accelerator (via PCIe extender)[cite: 1, 4]",
+      "slot_5": "Nvidia Tesla V100 32 GB accelerator (via PCIe extender)[cite: 1, 4]"
     },
     "cooling_and_safety": {
-      "liquid_loop": "Custom car-grade coolant loop.",
-      "containment": "Sealed bucket within a garbage bin physical containment vessel to prevent liquid damage from leaks.",
-      "fail_safe": "Dedicated battery backup powering pump and fans to safely dissipate heat if primary power fails during operation."
+      "liquid_loop": "Custom car-grade coolant loop[cite: 1, 4].",
+      "containment": "Sealed bucket within a garbage bin physical containment vessel to prevent liquid damage from leaks[cite: 1, 4].",
+      "fail_safe": "Dedicated battery backup powering pump and fans to safely dissipate heat if primary power fails during operation[cite: 1, 4]."
     },
     "model_assumption": {
-      "normal": "large models (120B/128B OSS) operating on pooled VRAM",
-      "rare": "medium models for constrained, fallback, or specialized use",
+      "normal": "large models (120B/128B OSS) operating on pooled VRAM[cite: 1, 4]",
+      "rare": "medium models for constrained, fallback, or specialized use[cite: 1, 4]",
       "unresolved": [
-        "parameter ranges",
-        "quantization policy",
-        "minimum context size",
-        "latency targets",
-        "local versus API placement",
-        "minimum accelerator memory"
+        "parameter ranges[cite: 1, 4]",
+        "quantization policy[cite: 1, 4]",
+        "minimum context size[cite: 1, 4]",
+        "latency targets[cite: 1, 4]",
+        "local versus API placement[cite: 1, 4]",
+        "minimum accelerator memory[cite: 1, 4]"
       ]
     },
     "procurement": {
-      "market_rule": "Prefer parts and systems available through ordinary market channels.",
-      "cost_rule": "Chinese manufacturers and marketplaces may be relied upon for inexpensive components when practical.",
+      "market_rule": "Prefer parts and systems available through ordinary market channels[cite: 1, 4].",
+      "cost_rule": "Chinese manufacturers and marketplaces may be relied upon for inexpensive components when practical[cite: 1, 4].",
       "category_checks": [
-        "electrical and physical safety",
-        "reliability",
-        "documentation",
-        "repairability",
-        "replacement availability",
-        "driver and software support",
-        "data handling and network trust",
-        "total delivered cost"
+        "electrical and physical safety[cite: 1, 4]",
+        "reliability[cite: 1, 4]",
+        "documentation[cite: 1, 4]",
+        "repairability[cite: 1, 4]",
+        "replacement availability[cite: 1, 4]",
+        "driver and software support[cite: 1, 4]",
+        "data handling and network trust[cite: 1, 4]",
+        "total delivered cost[cite: 1, 4]"
       ],
       "two_of_three_rule": {
         "status": "unresolved",
-        "note": "Dylan indicated a two-out-of-three approach but the three criteria or authorities still require definition."
+        "note": "Dylan indicated a two-out-of-three approach but the three criteria or authorities still require definition[cite: 1, 4]."
       }
     }
   },
   "pyhuey": {
-    "accepted_role": "Primary GUI and core runtime component",
-    "python_environment": "Python 3.13",
-    "use_expectation": "Extensive normal operation rather than optional demonstration use",
+    "accepted_role": "Primary GUI and core runtime component[cite: 1, 4]",
+    "python_environment": "Python 3.13[cite: 1, 4]",
+    "use_expectation": "Extensive normal operation rather than optional demonstration use[cite: 1, 4]",
     "current_reality": [
-      "PyHuey exists as a standalone application and an embedded connector path.",
-      "The current Monkey-Head-Project implementation still contains external-cockpit wording and incomplete integration assumptions from v120.2."
+      "PyHuey exists as a standalone application and an embedded connector path[cite: 1, 4].",
+      "The current Monkey-Head-Project implementation still contains external-cockpit wording and incomplete integration assumptions from v120.2[cite: 1, 4]."
     ],
     "direction": [
-      "Move primary operator workflows into PyHuey.",
-      "Expose fixed, attributable, reviewable HueyOS capabilities through PyHuey.",
-      "Retain a recovery-capable CLI for diagnostics, automation, and operation when the GUI is unavailable.",
-      "Avoid duplicating PyHuey with Command Center unless Command Center develops a distinct validated role."
+      "Move primary operator workflows into PyHuey[cite: 1, 4].",
+      "Expose fixed, attributable, reviewable HueyOS capabilities through PyHuey[cite: 1, 4].",
+      "Retain a recovery-capable CLI for diagnostics, automation, and operation when the GUI is unavailable[cite: 1, 4].",
+      "Avoid duplicating PyHuey with Command Center unless Command Center develops a distinct validated role[cite: 1, 4]."
     ],
     "acceptance_evidence": [
-      "Reliable launch and shutdown",
-      "Observable workflow state",
-      "Secret-safe provider configuration",
-      "Detailed structured logs",
-      "Recoverable errors",
-      "Tests for core operator workflows"
+      "Reliable launch and shutdown[cite: 1, 4]",
+      "Observable workflow state[cite: 1, 4]",
+      "Secret-safe provider configuration[cite: 1, 4]",
+      "Detailed structured logs[cite: 1, 4]",
+      "Recoverable errors[cite: 1, 4]",
+      "Tests for core operator workflows[cite: 1, 4]"
     ]
   },
   "namespace_and_repository": {
     "canonical_repository": "DylanLRPollock/Monkey-Head-Project",
-    "repository_rule": "The main repository remains canonical and may merge coherent external scripts, programs, and components.",
+    "repository_rule": "The main repository remains canonical and may merge coherent external scripts, programs, and components[cite: 1, 4].",
     "current_python_namespace": "huey",
     "target_python_namespace": "hueyos",
     "migration_status": "accepted_direction_not_complete",
     "migration_rules": [
-      "Inventory every active huey package and import path before moving it.",
-      "Choose one destination for each capability; do not preserve competing canonical implementations.",
-      "Rewrite and integrate useful legacy code rather than copying it unchanged.",
-      "Use compatibility shims only when required and give each shim an explicit retirement condition.",
-      "Update tests, scripts, entry points, docs, packaging metadata, and PyHuey connectors together.",
-      "Do not claim the hueyos migration is complete until imports, commands, tests, and documentation agree."
+      "Inventory every active huey package and import path before moving it[cite: 1, 4].",
+      "Choose one destination for each capability; do not preserve competing canonical implementations[cite: 1, 4].",
+      "Rewrite and integrate useful legacy code rather than copying it unchanged[cite: 1, 4].",
+      "Use compatibility shims only when required and give each shim an explicit retirement condition[cite: 1, 4].",
+      "Update tests, scripts, entry points, docs, packaging metadata, and PyHuey connectors together[cite: 1, 4].",
+      "Do not claim the hueyos migration is complete until imports, commands, tests, and documentation agree[cite: 1, 4]."
     ],
     "pull_request_policy": {
       "size": "large_medium_or_small",
-      "selection_rule": "Use the largest coherent scope that remains understandable and reviewable.",
+      "selection_rule": "Use the largest coherent scope that remains understandable and reviewable[cite: 1, 4].",
       "required_content": [
-        "purpose",
-        "boundaries",
-        "validation",
-        "known risks",
-        "unresolved follow-up"
+        "purpose[cite: 1, 4]",
+        "boundaries[cite: 1, 4]",
+        "validation[cite: 1, 4]",
+        "known risks[cite: 1, 4]",
+        "unresolved follow-up[cite: 1, 4]"
       ]
     }
   },
   "v1_position": {
     "status": "definition_open",
-    "decision": "Do not lock V1 prematurely. Define it from a system that proves genuinely useful operation under the Monkey-Head-Project umbrella.",
+    "decision": "Do not lock V1 prematurely. Define it from a system that proves genuinely useful operation under the Monkey-Head-Project umbrella[cite: 1, 4].",
     "minimum_characteristics": [
-      "useful",
-      "demonstrable",
-      "repeatable enough for its declared purpose",
-      "attributable through structured evidence",
-      "clearly part of the Monkey-Head-Project"
+      "useful[cite: 1, 4]",
+      "demonstrable[cite: 1, 4]",
+      "repeatable enough for its declared purpose[cite: 1, 4]",
+      "attributable through structured evidence[cite: 1, 4]",
+      "clearly part of the Monkey-Head-Project[cite: 1, 4]"
     ],
     "foundation_proof": {
-      "path": "known MP3 fixture -> media preparation -> local transcription -> API-backed response -> structured log",
+      "path": "known MP3 fixture -> media preparation -> local transcription -> API-backed response -> structured log[cite: 1, 4]",
       "status": "active_foundation_proof",
-      "interpretation": "This remains valuable and should be completed, but does not automatically declare it to be the whole of V1."
+      "interpretation": "This remains valuable and should be completed, but does not automatically declare it to be the whole of V1[cite: 1, 4]."
     },
     "open_questions": [
-      "Which recurring problem V1 solves",
-      "Who uses it and how often",
-      "Whether V1 is Brain-only or requires Body or Farm participation",
-      "What repetition and reliability thresholds earn the declaration",
-      "Whether the foundation proof is V1, a prerequisite, or one subsystem proof"
+      "Which recurring problem V1 solves[cite: 1, 4]",
+      "Who uses it and how often[cite: 1, 4]",
+      "Whether V1 is Brain-only or requires Body or Farm participation[cite: 1, 4]",
+      "What repetition and reliability thresholds earn the declaration[cite: 1, 4]",
+      "Whether the foundation proof is V1, a prerequisite, or one subsystem proof[cite: 1, 4]"
     ]
   },
   "transcription_and_fidelity": {
     "working_engine": "faster-whisper",
-    "target_model": "Medium model (requiring ~2-4 GB VRAM)",
+    "target_model": "Medium model (requiring ~2-4 GB VRAM)[cite: 1, 4]",
     "engine_status": "provisional_until_evidence_selects_or_replaces_it",
-    "execution_isolation": "VRAM is pooled dynamically to prevent rigid blocking; transcription and agentic tasks will be scheduled efficiently within HueyOS to avoid conflicts.",
-    "primary_quality_rule": "Judge transcription by fidelity, not by successful process completion alone.",
+    "execution_isolation": "VRAM is pooled dynamically to prevent rigid blocking; transcription and agentic tasks will be scheduled efficiently within HueyOS to avoid conflicts[cite: 1, 4].",
+    "primary_quality_rule": "Judge transcription by fidelity, not by successful process completion alone[cite: 1, 4].",
     "selection_open": [
-      "model",
-      "compute type",
-      "CPU path",
-      "accelerator path",
-      "fallback behavior"
+      "model[cite: 1, 4]",
+      "compute type[cite: 1, 4]",
+      "CPU path[cite: 1, 4]",
+      "accelerator path[cite: 1, 4]",
+      "fallback behavior[cite: 1, 4]"
     ],
     "tier_framework": {
       "status": "framework_accepted_thresholds_open",
       "dimensions": [
-        "missing content",
-        "hallucinated content",
-        "wording preservation",
-        "names and technical terms",
-        "chronology",
-        "speaker order",
-        "semantic meaning",
-        "archival suitability",
-        "manual or reference-backed verification"
+        "missing content[cite: 1, 4]",
+        "hallucinated content[cite: 1, 4]",
+        "wording preservation[cite: 1, 4]",
+        "names and technical terms[cite: 1, 4]",
+        "chronology[cite: 1, 4]",
+        "speaker order[cite: 1, 4]",
+        "semantic meaning[cite: 1, 4]",
+        "archival suitability[cite: 1, 4]",
+        "manual or reference-backed verification[cite: 1, 4]"
       ],
       "provisional_categories": [
-        "failed",
-        "recognizable",
-        "usable",
-        "high_fidelity",
-        "verified_archival"
+        "failed[cite: 1, 4]",
+        "recognizable[cite: 1, 4]",
+        "usable[cite: 1, 4]",
+        "high_fidelity[cite: 1, 4]",
+        "verified_archival[cite: 1, 4]"
       ],
-      "rule": "Category names may be retained or replaced after Dylan supplies the intended tier details; numeric thresholds are not locked."
+      "rule": "Category names may be retained or replaced after Dylan supplies the intended tier details; numeric thresholds are not locked[cite: 1, 4]."
     }
   },
   "cognition_provider": {
     "status": "fit_based_selection",
-    "rule": "Use the API or local provider that best fits the task and architecture; do not bind the system prematurely to one provider.",
+    "rule": "Use the API or local provider that best fits the task and architecture; do not bind the system prematurely to one provider[cite: 1, 4].",
     "selection_criteria": [
-      "capability",
-      "quality",
-      "cost",
-      "privacy",
-      "availability",
-      "context size",
-      "latency",
-      "replaceability",
-      "local sovereignty path"
+      "capability[cite: 1, 4]",
+      "quality[cite: 1, 4]",
+      "cost[cite: 1, 4]",
+      "privacy[cite: 1, 4]",
+      "availability[cite: 1, 4]",
+      "context size[cite: 1, 4]",
+      "latency[cite: 1, 4]",
+      "replaceability[cite: 1, 4]",
+      "local sovereignty path[cite: 1, 4]"
     ]
   },
   "logging": {
-    "rule": "Preserve all useful operational information while excluding secrets and unnecessary private data.",
+    "rule": "Preserve all useful operational information while excluding secrets and unnecessary private data[cite: 1, 4].",
     "required_fields": [
-      "run identifier",
-      "UTC timestamps",
-      "initiating interface and operator action",
-      "input identity and checksum where applicable",
-      "stage transitions",
-      "models and providers",
-      "configuration and relevant environment",
-      "hardware and device path",
-      "timing and resource observations",
-      "outputs and artifact references",
-      "warnings",
-      "errors and stack context",
-      "recovery actions",
-      "software version and commit",
-      "final status"
+      "run identifier[cite: 1, 4]",
+      "UTC timestamps[cite: 1, 4]",
+      "initiating interface and operator action[cite: 1, 4]",
+      "input identity and checksum where applicable[cite: 1, 4]",
+      "stage transitions[cite: 1, 4]",
+      "models and providers[cite: 1, 4]",
+      "configuration and relevant environment[cite: 1, 4]",
+      "hardware and device path[cite: 1, 4]",
+      "timing and resource observations[cite: 1, 4]",
+      "outputs and artifact references[cite: 1, 4]",
+      "warnings[cite: 1, 4]",
+      "errors and stack context[cite: 1, 4]",
+      "recovery actions[cite: 1, 4]",
+      "software version and commit[cite: 1, 4]",
+      "final status[cite: 1, 4]"
     ],
     "prohibited_fields": [
-      "API keys",
-      "tokens",
-      "passwords",
-      "private keys",
-      "authentication headers",
-      "unredacted secret-bearing configuration"
+      "API keys[cite: 1, 4]",
+      "tokens[cite: 1, 4]",
+      "passwords[cite: 1, 4]",
+      "private keys[cite: 1, 4]",
+      "authentication headers[cite: 1, 4]",
+      "unredacted secret-bearing configuration[cite: 1, 4]"
     ],
-    "failure_rule": "A failed run should still leave the most complete attributable record possible."
+    "failure_rule": "A failed run should still leave the most complete attributable record possible[cite: 1, 4]."
   },
   "testing": {
     "baseline": [
-      "unit tests",
-      "mocked integration tests in CI",
-      "fixture-based fidelity evaluation",
-      "manual live end-to-end tests",
-      "explicit failure-path tests"
+      "unit tests[cite: 1, 4]",
+      "mocked integration tests in CI[cite: 1, 4]",
+      "fixture-based fidelity evaluation[cite: 1, 4]",
+      "manual live end-to-end tests[cite: 1, 4]",
+      "explicit failure-path tests[cite: 1, 4]"
     ],
-    "failure_detail": "Tests should expose stage, input, environment, expected behavior, observed behavior, error context, and recovery result where applicable.",
-    "release_rule": "Documentation-only alignment may merge without runtime tests; implementation claims require checks appropriate to the changed capability."
+    "failure_detail": "Tests should expose stage, input, environment, expected behavior, observed behavior, error context, and recovery result where applicable[cite: 1, 4].",
+    "release_rule": "Documentation-only alignment may merge without runtime tests; implementation claims require checks appropriate to the changed capability[cite: 1, 4]."
   },
   "implementation_limits": [
-    "Maintain one active canonical implementation per capability wherever practical.",
-    "Mark experimental systems clearly and isolate them from normal authority.",
-    "Preserve lineage without presenting obsolete code as operational.",
-    "Rewrite and merge legacy code deliberately rather than importing it unchanged.",
-    "Keep exhaustive logs secret-safe.",
-    "Do not introduce unexplained hardware dependencies.",
-    "Require explicit interfaces, safe-stop, and recovery for Body-facing work.",
-    "Require authenticated and observable interfaces between Brain, Body, and Farm.",
-    "Keep current reality separate from accepted direction and target state.",
-    "Do not finalize V1 until usefulness and participation are defined."
+    "Maintain one active canonical implementation per capability wherever practical[cite: 1, 4].",
+    "Mark experimental systems clearly and isolate them from normal authority[cite: 1, 4].",
+    "Preserve lineage without presenting obsolete code as operational[cite: 1, 4].",
+    "Rewrite and merge legacy code deliberately rather than importing it unchanged[cite: 1, 4].",
+    "Keep exhaustive logs secret-safe[cite: 1, 4].",
+    "Do not introduce unexplained hardware dependencies[cite: 1, 4].",
+    "Require explicit interfaces, safe-stop, and recovery for Body-facing work[cite: 1, 4].",
+    "Require authenticated and observable interfaces between Brain, Body, and Farm[cite: 1, 4].",
+    "Keep current reality separate from accepted direction and target state[cite: 1, 4].",
+    "Do not finalize V1 until usefulness and participation are defined[cite: 1, 4]."
   ],
   "active_labtech": [
     {
       "name": "ASUS FX505DT",
       "classification": "LabTech",
       "baseline": "Debian 14 Forky; 32 GB DDR4",
-      "role": "Mobile lab, development, transcription experimentation, and support"
+      "role": "Mobile lab, development, transcription experimentation, and support[cite: 1, 4]"
     },
     {
       "name": "Lenovo Legion Go",
       "classification": "LabTech",
       "baseline": "Windows 11 / Debian Linux",
-      "role": "Dedicated LabTech support device for lab utilities and diagnostic testing; explicitly excluded from core Huey compute stack"
+      "role": "Dedicated LabTech support device for lab utilities and diagnostic testing; explicitly excluded from core Huey compute stack[cite: 1, 4]"
     },
     {
       "name": "Briefcase",
       "classification": "HueyTech",
-      "role": "LTE-capable field terminal for reachability, documentation, diagnostics, and recovery",
-      "authority": "Limited until authentication, audit, failure handling, and revocation are proven"
+      "role": "LTE-capable field terminal for reachability, documentation, diagnostics, and recovery[cite: 1, 4]",
+      "authority": "Limited until authentication, audit, failure handling, and revocation are proven[cite: 1, 4]"
     }
   ],
   "hims": {
-    "current_reality": "The append-only HIMS foundation exists under src/huey/messaging.",
-    "current_role": "Foundation-stage messages, events, local records, and optional tracing.",
+    "current_reality": "The append-only HIMS foundation exists under src/huey/messaging[cite: 1, 4].",
+    "current_role": "Foundation-stage messages, events, local records, and optional tracing[cite: 1, 4].",
     "authority_status": "not_controlling_runtime",
-    "future_rule": "Routing, execution, refusal, recovery, and governance authority require separate explicit validation."
+    "future_rule": "Routing, execution, refusal, recovery, and governance authority require separate explicit validation[cite: 1, 4]."
   },
   "command_center": {
     "status": "experimental_interface_sandbox",
-    "rule": "May contribute validated interface concepts, but must not duplicate PyHuey or receive credentials and control authority without a distinct tested role."
+    "rule": "May contribute validated interface concepts, but must not duplicate PyHuey or receive credentials and control authority without a distinct tested role[cite: 1, 4]."
   },
   "documentation_layers": {
-    "master_plan": "Machine-facing canon, reasoning, boundaries, and status.",
-    "readme": "Professional human-facing orientation and current route.",
-    "technical_docs": "Implementation detail, setup, architecture, runbooks, and audits.",
-    "governance": "Constitution, legitimacy, offices, and lawful authority.",
-    "website": "Public-facing coherence layer.",
-    "archives": "Lineage and continuity records that do not automatically override current decisions."
+    "master_plan": "Machine-facing canon, reasoning, boundaries, and status[cite: 1, 4].",
+    "readme": "Professional human-facing orientation and current route[cite: 1, 4].",
+    "technical_docs": "Implementation detail, setup, architecture, runbooks, and audits[cite: 1, 4].",
+    "governance": "Constitution, legitimacy, offices, and lawful authority[cite: 1, 4].",
+    "website": "Public-facing coherence layer[cite: 1, 4].",
+    "archives": "Lineage and continuity records that do not automatically override current decisions[cite: 1, 4]."
   },
   "work_program": {
     "immediate": [
-      "Complete spray painting (metallic silver primary, deep purple offset) and clear-coating on sanded/primed wood and plastic parts for Huey V4 shell assembly.",
-      "Unify V3 physical base with V2 donor parts into final physical structure.",
-      "Mount ASUS TUF Gaming Z790-Plus WiFi and Intel Core i9-12900K into the core assembly.",
-      "Configure dual 10 TB HDDs into RAID 1 array for primary storage.",
-      "Integrate liquid cooling loop and fail-safe battery backup with the unified body.",
-      "Install discrete stopgap GPU for display I/O to validate OS boot and diagnostics.",
-      "Synchronize repository README.md and documentation files to v122.0."
+      "Complete spray painting (metallic silver primary, deep purple offset) and clear-coating on sanded/primed wood and plastic parts for Huey V4 shell assembly[cite: 1, 4].",
+      "Unify V3 physical base with V2 donor parts into final physical structure[cite: 1, 4].",
+      "Mount ASUS TUF Gaming Z790-Plus WiFi and Intel Core i9-12900K into the core assembly[cite: 1, 4].",
+      "Configure dual 10 TB HDDs into RAID 1 array for primary storage[cite: 1, 4].",
+      "Integrate liquid cooling loop and fail-safe battery backup with the unified body[cite: 1, 4].",
+      "Install discrete stopgap GPU for display I/O to validate OS boot and diagnostics[cite: 1, 4].",
+      "Synchronize repository README.md and documentation files to v122.0[cite: 1, 4]."
     ],
     "next": [
-      "Integrate the three Nvidia Tesla V100 32 GB cards and the 10 Gbps network card via PCIe extenders.",
-      "Implement and test the dual-PSU load-bearing power delivery system.",
-      "Migrate Python capabilities into the hueyos namespace via structured pull requests.",
-      "Stabilize PyHuey workflows and execution logs under Python 3.13."
+      "Integrate the three Nvidia Tesla V100 32 GB cards and the 10 Gbps network card via PCIe extenders[cite: 1, 4].",
+      "Implement and test the dual-PSU load-bearing power delivery system[cite: 1, 4].",
+      "Migrate Python capabilities into the hueyos namespace via structured pull requests[cite: 1, 4].",
+      "Stabilize PyHuey workflows and execution logs under Python 3.13[cite: 1, 4]."
     ],
     "later": [
-      "Expand live environmental sensing and physical actuation after foundation interfaces are validated.",
-      "Advance HIMS and governance authority through separate validated stages."
+      "Expand live environmental sensing and physical actuation after foundation interfaces are validated[cite: 1, 4].",
+      "Advance HIMS and governance authority through separate validated stages[cite: 1, 4]."
     ]
   },
   "unresolved_decisions": [
-    "Final V1 definition",
-    "Exact Brain, Body, and Farm authority boundaries",
-    "Identity distribution across the three parts",
-    "Memory and canonical-state placement",
-    "Communication and authentication contracts",
-    "Fidelity tier names and thresholds",
-    "Transcription model and compute path",
-    "Cognition provider and model",
-    "Large-model operational definition",
-    "Two-of-three hardware decision rule details",
-    "Maximum acceptable external-service dependency",
-    "Capabilities classified as active, limited, experimental, paused, or deferred"
+    "Final V1 definition[cite: 1, 4]",
+    "Exact Brain, Body, and Farm authority boundaries[cite: 1, 4]",
+    "Identity distribution across the three parts[cite: 1, 4]",
+    "Memory and canonical-state placement[cite: 1, 4]",
+    "Communication and authentication contracts[cite: 1, 4]",
+    "Fidelity tier names and thresholds[cite: 1, 4]",
+    "Transcription model and compute path[cite: 1, 4]",
+    "Cognition provider and model[cite: 1, 4]",
+    "Large-model operational definition[cite: 1, 4]",
+    "Two-of-three hardware decision rule details[cite: 1, 4]",
+    "Maximum acceptable external-service dependency[cite: 1, 4]",
+    "Capabilities classified as active, limited, experimental, paused, or deferred[cite: 1, 4]"
   ],
   "change_log_v120_3": [
-    "Reframed the architecture around Brain, Body, and Farm.",
-    "Promoted PyHuey from external cockpit language to primary GUI and core runtime direction.",
-    "Selected hueyos as the target namespace while preserving the truth that src/huey remains current implementation.",
-    "Changed V1 from a prematurely fixed fixture proof to a usefulness-led declaration that remains open.",
-    "Retained the fixture-to-log path as an active foundation proof.",
-    "Added large-model-first and i9 12th-generation-or-newer architecture direction.",
-    "Added market and Chinese procurement posture with category-specific safeguards.",
-    "Reopened Huey Body as an active rework with bounded safety and integration requirements.",
-    "Expanded logging, testing, fidelity, PR-scope, and canon-authority rules.",
-    "Separated accepted direction from current implementation and unresolved decisions."
+    "Reframed the architecture around Brain, Body, and Farm[cite: 1, 4].",
+    "Promoted PyHuey from external cockpit language to primary GUI and core runtime direction[cite: 1, 4].",
+    "Selected hueyos as the target namespace while preserving the truth that src/huey remains current implementation[cite: 1, 4].",
+    "Changed V1 from a prematurely fixed fixture proof to a usefulness-led declaration that remains open[cite: 1, 4].",
+    "Retained the fixture-to-log path as an active foundation proof[cite: 1, 4].",
+    "Added large-model-first and i9 12th-generation-or-newer architecture direction[cite: 1, 4].",
+    "Added market and Chinese procurement posture with category-specific safeguards[cite: 1, 4].",
+    "Reopened Huey Body as an active rework with bounded safety and integration requirements[cite: 1, 4].",
+    "Expanded logging, testing, fidelity, PR-scope, and canon-authority rules[cite: 1, 4].",
+    "Separated accepted direction from current implementation and unresolved decisions[cite: 1, 4]."
   ],
   "change_log_v121_0": [
-    "Advanced master plan version to v121.0.",
-    "Locked compute accelerator architecture to three Nvidia Tesla V100 32 GB GPUs for 96 GB total pooled VRAM.",
-    "Allocated motherboard PCIe slots to support the three accelerators, one basic display GPU, and one 10 Gbps NIC.",
-    "Established a dual-PSU power architecture for load distribution and modularity.",
-    "Formalized the liquid cooling containment system (sealed bucket in garbage bin) and the dedicated battery fail-safe for pump and fan operation.",
-    "Transitioned Huey Body status from modular prototyping to final unified physical assembly and finishing.",
-    "Defined Huey's gaming role as strategic analysis and route generation, excluding live rendering.",
-    "Updated PyHuey runtime requirement to Python 3.13."
+    "Advanced master plan version to v121.0[cite: 1, 4].",
+    "Locked compute accelerator architecture to three Nvidia Tesla V100 32 GB GPUs for 96 GB total pooled VRAM[cite: 1, 4].",
+    "Allocated motherboard PCIe slots to support the three accelerators, one basic display GPU, and one 10 Gbps NIC[cite: 1, 4].",
+    "Established a dual-PSU power architecture for load distribution and modularity[cite: 1, 4].",
+    "Formalized the liquid cooling containment system (sealed bucket in garbage bin) and the dedicated battery fail-safe for pump and fan operation[cite: 1, 4].",
+    "Transitioned Huey Body status from modular prototyping to final unified physical assembly and finishing[cite: 1, 4].",
+    "Defined Huey's gaming role as strategic analysis and route generation, excluding live rendering[cite: 1, 4].",
+    "Updated PyHuey runtime requirement to Python 3.13[cite: 1, 4]."
   ],
   "change_log_v122_0": [
     "Advanced master plan version to v122.0.",
