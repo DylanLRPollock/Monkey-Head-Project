@@ -2,34 +2,32 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "project": "Monkey-Head-Project",
   "ai_identity": "Huey",
-  "version": "v121.0",
-  "schema_version": 121.0,
-  "schema_contract_version": "master_plan_schema_v121.0",
+  "version": "v122.0",
+  "schema_version": 122.0,
+  "schema_contract_version": "master_plan_schema_v122.0",
   "document_kind": "machine_facing_master_plan",
-  "status_date": "2026-09-03",
+  "status_date": "2026-09-15",
   "created_by": "Dylan L.R. Pollock with Atlas continuity support",
-  "supersedes": "master-plan-v120.3.json",
+  "supersedes": "master-plan-v121.0.json",
   "status": "active",
-  "description": "Master Plan v121.0 advances the physical and computational architecture, establishing a 96 GB pooled VRAM target via three Nvidia Tesla V100 32 GB GPUs, a deliberate dual-PSU power configuration, and a fail-safe liquid cooling containment system. It allocates PCIe bandwidth for 10 Gbps lab networking, defines the requirement for a basic display-output GPU, and documents the transition of Huey Body from modular component fabrication into unified physical assembly. It preserves and carries forward all rigorous operational, testing, logging, and namespace boundaries established in v120.3.",
+  "description": "Master Plan v122.0 formalizes the physical assembly, color finish, storage, and compute baseline for the Monkey-Head-Project. It details the Huey V4 shell assembly merging the V3 physical base with V2 donor parts, establishing a metallic silver primary finish with deep rich purple accents across spray-painted plastic and sanded/primed wood surfaces. It specifies primary project storage as two 10 TB hard drives in a RAID 1 redundant array alongside lab stocks of 16 GB M.2 SSDs. It locks the Huey Brain core workstation hardware to an ASUS TUF Gaming Z790-Plus WiFi motherboard paired with an Intel Core i9-12900K processor, and explicitly confirms that the Lenovo Legion Go remains strictly dedicated LabTech, excluded from core Huey runtime execution.",
   "source_basis": {
-    "primary_previous_master_plan": "master-plan-v120.3.json",
-    "forward_path_record": "docs/architecture/v121.0-hardware-and-assembly-record.md",
-    "current_session_date": "2026-09-03",
+    "primary_previous_master_plan": "master-plan-v121.0.json",
+    "forward_path_record": "docs/architecture/v122.0-hardware-and-assembly-record.md",
+    "current_session_date": "2026-09-15",
     "explicit_decisions": [
       "The project is organized around Huey Brain, Huey Body, and Huey Farm.",
-      "PyHuey GUI is the primary interface and a core runtime component intended for extensive use.",
+      "Huey V4 physical shell assembly merges the V3 physical base with V2 donor material.",
+      "V4 physical finish scheme: metallic silver primary color with deep rich purple offset accents applied via spray paint to plastic and sanded/primed wood surfaces; metal structural components remain in original black or native finish unless otherwise specified.",
+      "Primary project storage consists of two 10 TB hard drives configured in a RAID 1 array for data redundancy; 16 GB M.2 SSDs are available from lab stock for modular boot/swap needs; 2.5-inch SSDs remain unassigned reserve stock.",
+      "Huey Brain core workstation hardware is confirmed as an ASUS TUF Gaming Z790-Plus WiFi motherboard paired with an Intel 12th-Gen Core i9-12900K processor.",
+      "Lenovo Legion Go is explicitly classified as dedicated LabTech / support hardware, completely excluded from Huey Brain, Body, and Farm core runtime execution.",
+      "PyHuey GUI is the primary interface and a core runtime component intended for extensive use under Python 3.13.",
       "The target canonical Python namespace is hueyos; useful huey and legacy material is to be rewritten and merged deliberately.",
-      "Three Nvidia Tesla V100 32 GB GPUs will be pooled to provide 96 GB of VRAM, balancing large-model requirements (~80 GB) with local audio transcription and agentic overhead (~16 GB).",
-      "A separate, basic discrete graphics card is required to handle display output and CPU boot tasks since the V100 accelerators are headless.",
-      "One PCIe slot is reserved for a 10 Gbps networking card to handle internal lab communication.",
-      "Power delivery will utilize two linked, high-capacity PSUs for modularity and deliberate load bearing.",
-      "The custom liquid cooling loop utilizes car-grade coolant, a sealed bucket within a garbage bin physical containment system, and a battery backup to maintain pump and fan operation during a power failure.",
-      "Huey Body is undergoing final structural assembly, requiring all painting, clear coating, and structural integrity to be rock-solid prior to technological integration.",
-      "Huey's role in gaming focuses on strategic analysis and optimal route generation (key/button press logic) rather than direct live gameplay rendering.",
-      "Structured records should preserve all useful operational information while excluding secrets.",
-      "Transcription is judged by fidelity and will use categories or tiers.",
-      "Testing includes unit tests, mocked integration tests in CI, fixture fidelity evaluation, manual live end-to-end tests, and detailed failure-path tests.",
-      "Market-available components are preferred; inexpensive Chinese hardware and supply channels may be used when category-specific standards are met.",
+      "Three Nvidia Tesla V100 32 GB GPUs will be pooled to provide 96 GB of VRAM for large-model hosting, transcription, and agentic workflows.",
+      "A separate basic discrete GPU provides display output and system boot graphics.",
+      "Power delivery relies on two linked, high-capacity PSUs for load distribution.",
+      "Liquid cooling loop utilizes car-grade coolant, a sealed bucket within a garbage bin secondary containment vessel, and a battery backup dedicated to pump and fan operation.",
       "Only Dylan L.R. Pollock may lock project canon."
     ],
     "source_priority": [
@@ -39,7 +37,7 @@
       "README and technical documentation",
       "older plans, transcripts, and archives as lineage"
     ],
-    "inheritance_policy": "Carry forward v120.3 implementation evidence and lineage unless v121.0 explicitly changes the direction. Do not present target-state decisions as already implemented."
+    "inheritance_policy": "Carry forward v121.0 implementation evidence and lineage unless v122.0 explicitly changes the direction. Do not present target-state decisions as already implemented."
   },
   "truth_model": {
     "current_reality": "Observed hardware, merged code, working commands, and directly verified behavior.",
@@ -56,8 +54,8 @@
       "Dylan explicitly states acceptance",
       "Dylan intentionally merges a designated canonical update"
     ],
-    "machine_facing_source": "master-plan-v121.0.json after acceptance",
-    "human_facing_source": "README.md aligned to v121.0",
+    "machine_facing_source": "master-plan-v122.0.json after acceptance",
+    "human_facing_source": "README.md aligned to v122.0",
     "conflict_rule": "Current explicit decisions override older documentation; implementation reality must still be labelled separately from accepted direction."
   },
   "three_part_architecture": {
@@ -73,10 +71,10 @@
         "coordination with Body and Farm"
       ],
       "current_platform": {
-        "status": "active_prototype",
-        "system": "Custom Intel Core i9-12900K workstation",
-        "purpose": "Primary operator workstation, architecture test bed, and proof platform",
-        "note": "The exact boundary between the current prototype and a polished Huey Brain remains open."
+        "status": "active_workstation_build",
+        "system": "ASUS TUF Gaming Z790-Plus WiFi motherboard with Intel Core i9-12900K processor",
+        "purpose": "Primary workstation, orchestration hub, and execution platform for Huey Brain",
+        "storage": "Two 10 TB hard drives in RAID 1 array for redundant project data storage; stock 16 GB M.2 SSDs"
       },
       "target_hardware_rule": "Brain architecture is based around Intel Core i9-class processors from 12th generation or newer."
     },
@@ -90,8 +88,8 @@
         "physical safety",
         "recoverable interaction with the environment"
       ],
-      "status": "active_unified_assembly",
-      "current_boundary": "Modular components (head, hands, body) are being unified into a single physical form. Structural integrity, painting, and clear coating are being finalized before the liquid cooling system and computational tech are attached.",
+      "status": "active_v4_assembly_and_finishing",
+      "current_boundary": "V4 physical shell assembly merges the V3 physical base with V2 donor material. Surface preparation involves sanding and priming wooden elements, applying metallic silver primary spray paint with deep rich purple offset accents across plastic and wood, while retaining native/black finishes on exposed metal structural parts prior to liquid loop and compute mounting.",
       "integration_rule": "Brain and Body integration requires explicit interfaces, operator-visible state, safe-stop behavior, and recovery procedures."
     },
     "huey_farm": {
@@ -104,7 +102,7 @@
         "backup and recovery support where explicitly assigned"
       ],
       "status": "active_procurement_and_design",
-      "planning_scale": "96 GB pooled local VRAM across three Nvidia Tesla V100 32 GB GPUs to comfortably host 80 GB open-source models while leaving headroom.",
+      "planning_scale": "96 GB pooled local VRAM across three Nvidia Tesla V100 32 GB GPUs to comfortably host 80 GB open-source models while leaving headroom for transcription and agent overhead.",
       "networking": "10 Gbps dedicated internal PCIe network interface for lab communication.",
       "power_delivery": "Deliberate dual-PSU architecture built from high-quality modular units linked together for stable load bearing.",
       "procurement_rule": "Refresh model, accelerator, power, cooling, software, and cost comparisons as procurement advances."
@@ -119,19 +117,24 @@
     ]
   },
   "hardware_direction": {
-    "architecture_baseline": "Intel Core i9-class, 12th generation or newer",
+    "architecture_baseline": "Intel Core i9-12900K on ASUS TUF Gaming Z790-Plus WiFi",
+    "storage_architecture": {
+      "primary_pool": "Two 10 TB 3.5-inch hard drives configured in RAID 1 array for redundant long-term project storage.",
+      "auxiliary_storage": "Stock 16 GB M.2 SSDs for modular boot, swap, or buffer tasks.",
+      "reserve": "2.5-inch SATA SSDs retained in reserve pending specific task allocation."
+    },
     "motherboard_pcie_allocation": {
       "total_slots": 5,
-      "slot_1": "Basic discrete GPU (stopgap or finalized) for display output and system I/O",
+      "slot_1": "Basic discrete GPU for system display output and I/O boot tasks",
       "slot_2": "10 Gbps Network Interface Card",
-      "slot_3": "Nvidia Tesla V100 32 GB",
-      "slot_4": "Nvidia Tesla V100 32 GB (via extender if necessary)",
-      "slot_5": "Nvidia Tesla V100 32 GB (via extender if necessary)"
+      "slot_3": "Nvidia Tesla V100 32 GB accelerator",
+      "slot_4": "Nvidia Tesla V100 32 GB accelerator (via PCIe extender)",
+      "slot_5": "Nvidia Tesla V100 32 GB accelerator (via PCIe extender)"
     },
     "cooling_and_safety": {
       "liquid_loop": "Custom car-grade coolant loop.",
       "containment": "Sealed bucket within a garbage bin physical containment vessel to prevent liquid damage from leaks.",
-      "fail_safe": "Battery backup specifically dedicated to powering the pump and fans to safely dissipate heat if primary power is lost mid-task."
+      "fail_safe": "Dedicated battery backup powering pump and fans to safely dissipate heat if primary power fails during operation."
     },
     "model_assumption": {
       "normal": "large models (120B/128B OSS) operating on pooled VRAM",
@@ -349,8 +352,8 @@
     {
       "name": "Lenovo Legion Go",
       "classification": "LabTech",
-      "baseline": "Windows 11",
-      "role": "Windows feature and compatibility testing"
+      "baseline": "Windows 11 / Debian Linux",
+      "role": "Dedicated LabTech support device for lab utilities and diagnostic testing; explicitly excluded from core Huey compute stack"
     },
     {
       "name": "Briefcase",
@@ -379,24 +382,23 @@
   },
   "work_program": {
     "immediate": [
-      "Finalize the physical paint, clear-coating, and unified assembly of Huey Body.",
-      "Integrate the liquid cooling system and fail-safe battery with the unified body.",
-      "Install the discrete stopgap GPU for basic display I/O to validate the Linux environment.",
-      "Complete the fixture-to-log foundation proof through PyHuey with CLI recovery.",
-      "Complete documentation synchronization for v121.0.",
-      "Define fidelity tiers with measurable acceptance evidence."
+      "Complete spray painting (metallic silver primary, deep purple offset) and clear-coating on sanded/primed wood and plastic parts for Huey V4 shell assembly.",
+      "Unify V3 physical base with V2 donor parts into final physical structure.",
+      "Mount ASUS TUF Gaming Z790-Plus WiFi and Intel Core i9-12900K into the core assembly.",
+      "Configure dual 10 TB HDDs into RAID 1 array for primary storage.",
+      "Integrate liquid cooling loop and fail-safe battery backup with the unified body.",
+      "Install discrete stopgap GPU for display I/O to validate OS boot and diagnostics.",
+      "Synchronize repository README.md and documentation files to v122.0."
     ],
     "next": [
-      "Integrate the three Nvidia Tesla V100 32 GB cards and the 10 Gbps network card.",
-      "Implement the dual-PSU power delivery system.",
-      "Migrate capabilities into hueyos namespace in coherent PRs.",
-      "Stabilize PyHuey core workflows and logging.",
-      "Choose transcription and cognition paths from measured evidence.",
-      "Define the two-of-three hardware decision method."
+      "Integrate the three Nvidia Tesla V100 32 GB cards and the 10 Gbps network card via PCIe extenders.",
+      "Implement and test the dual-PSU load-bearing power delivery system.",
+      "Migrate Python capabilities into the hueyos namespace via structured pull requests.",
+      "Stabilize PyHuey workflows and execution logs under Python 3.13."
     ],
     "later": [
-      "Expand live input and embodied interaction after foundation interfaces are stable.",
-      "Advance HIMS and constitutional governance authority through separate validated stages."
+      "Expand live environmental sensing and physical actuation after foundation interfaces are validated.",
+      "Advance HIMS and governance authority through separate validated stages."
     ]
   },
   "unresolved_decisions": [
@@ -405,8 +407,6 @@
     "Identity distribution across the three parts",
     "Memory and canonical-state placement",
     "Communication and authentication contracts",
-    "Current versus polished Brain boundary",
-    "Exact Body rework scope",
     "Fidelity tier names and thresholds",
     "Transcription model and compute path",
     "Cognition provider and model",
@@ -436,5 +436,13 @@
     "Transitioned Huey Body status from modular prototyping to final unified physical assembly and finishing.",
     "Defined Huey's gaming role as strategic analysis and route generation, excluding live rendering.",
     "Updated PyHuey runtime requirement to Python 3.13."
+  ],
+  "change_log_v122_0": [
+    "Advanced master plan version to v122.0.",
+    "Formalized Huey V4 physical shell assembly merging V3 base with V2 donor material.",
+    "Defined physical finish specifications: metallic silver primary color, deep rich purple offset accents, applied via spray paint to plastic and sanded/primed wood; native black finish retained on structural metal.",
+    "Established primary project storage configuration: two 10 TB hard drives in RAID 1 array for redundant data protection, with 16 GB M.2 SSDs in lab stock.",
+    "Locked Huey Brain core workstation hardware to ASUS TUF Gaming Z790-Plus WiFi motherboard with Intel Core i9-12900K processor.",
+    "Explicitly categorized Lenovo Legion Go as dedicated LabTech support hardware, excluded from core Huey compute runtime."
   ]
 }
