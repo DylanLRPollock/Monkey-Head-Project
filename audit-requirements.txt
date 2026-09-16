@@ -35,7 +35,7 @@ anyio==4.15.1
 attrs==26.1.0
 certifi==2026.7.22
 cryptography==50.0.1
-evdev==1.9.3; sys_platform == 'linux'
+evdev==2.0.0; sys_platform == 'linux'
 fastapi==0.141.1
 orjson==3.12.0
 packaging==26.3
@@ -120,7 +120,7 @@ elastic-transport==9.4.2
 elasticsearch==9.5.1
 faiss-cpu==1.15.0; sys_platform != 'win32'
 pandas==3.0.5
-pinecone==9.1.0
+pinecone==10.0.0
 pinecone-client==6.0.0
 pinecone-plugin-assistant==3.0.3
 pinecone-plugin-interface==0.0.7
@@ -132,7 +132,7 @@ azure-core==1.41.0
 azure-identity==1.25.3
 boto3==1.43.93
 botocore==1.43.93
-google-cloud-aiplatform==1.160.0
+google-cloud-aiplatform==2.1.0
 google-cloud-storage==3.14.1
 s3transfer==0.19.2
 
@@ -145,10 +145,10 @@ coloredlogs==15.0.1
 debugpy==1.8.21
 docker==7.2.0
 flake8==7.3.0
-flake8-bugbear==25.11.29
+flake8-bugbear==26.9.9
 httpx==0.28.1
 ipython==9.17.1
-isort==8.0.1
+isort==9.0.1
 mypy==2.3.1
 pip-tools==7.6.1
 pre-commit==4.6.2
@@ -422,7 +422,7 @@ typing-inspection==0.4.4
 tzdata==2026.4 ; sys_platform == 'emscripten' or sys_platform == 'win32'
 uritemplate==4.2.0
 urllib3==2.7.0
-uuid-utils==0.17.0
+uuid-utils==1.0.0
 uvloop==0.22.1 ; platform_python_implementation != 'PyPy' and sys_platform != 'cygwin' and sys_platform != 'win32'
 validators==0.35.0
 virtualenv==21.7.9
