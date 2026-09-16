@@ -68,10 +68,10 @@ pytest==9.1.1
 pytest-asyncio==1.4.0
 pytest-cov==7.1.0
 rich==15.0.0
-ruff==0.16.6
+ruff==0.16.7
 types-PyYAML==6.0.12.20260724
 types-requests==2.33.0.20260712
-uv==0.12.10
+uv==0.12.13
 
 # --- Packaging / installer tools ---
 setuptools==84.0.0

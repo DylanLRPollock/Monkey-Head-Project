@@ -58,14 +58,14 @@ Issues = "https://github.com/DylanLRPollock/Monkey-Head-Project/issues"
 
 [project.optional-dependencies]
 ml = [
-  "accelerate==1.14.0",
+  "accelerate==1.15.0",
   "aiohappyeyeballs==2.7.1",
   "aiosignal==1.4.0",
-  "anthropic[bedrock,vertex]==1.4.0",
+  "anthropic[bedrock,vertex]==1.5.0",
   "audioop-lts==0.2.2; python_version >= '3.13' and python_version < '3.14'",
   "faster-whisper==1.2.1",
-  "google-genai==2.22.0",
-  "huggingface-hub==1.30.0",
+  "google-genai==2.23.0",
+  "huggingface-hub==1.31.0",
   "llama-cloud-services==0.6.94",
   "llama-index==0.14.24",
   "llama-index-core==0.14.24",
@@ -80,7 +80,7 @@ ml = [
   "llama-index-llms-azure-openai==0.6.0",
   "llama-index-llms-deepseek==0.4.1",
   "llama-index-llms-gemini==0.6.2",
-  "llama-index-llms-google-genai==0.11.1",
+  "llama-index-llms-google-genai==0.11.2",
   "llama-index-llms-huggingface-api==0.8.0",
   "llama-index-llms-mistralai==0.11.0",
   "llama-index-llms-ollama==0.11.0",
@@ -101,27 +101,27 @@ ml = [
   "llama-index-readers-web==0.7.0",
   "llama-index-workflows==2.23.3",
   "llama-parse==0.6.94",
-  "mistralai==2.9.4",
-  "numpy==2.5.2",
+  "mistralai==2.10.0",
+  "numpy==2.5.3",
   "ollama==0.6.2",
-  "onnxruntime==1.29.0",
-  "openai==3.8.0",
-  "openai-agents==0.22.0",
+  "onnxruntime==1.30.0",
+  "openai==3.13.0",
+  "openai-agents==0.22.2",
   "pillow==12.3.0",
-  "pygpt-net==2.8.9",
+  "pygpt-net==2.8.16",
   "safetensors==0.8.0",
   "sentencepiece==0.2.2",
   "sortedcontainers==2.4.0",
   "standard-aifc==3.13.0; python_version >= '3.13' and python_version < '3.14'",
   "tiktoken==0.14.0",
   "traitlets==5.16.1",
-  "transformers==5.16.1",
+  "transformers==5.17.0",
 ]
 
 data = [
   "duckdb==1.5.5",
   "elastic-transport==9.4.2",
-  "elasticsearch==9.5.0",
+  "elasticsearch==9.5.1",
   "faiss-cpu==1.15.0; sys_platform != 'win32'",
   "pandas==3.0.5",
   "pinecone==9.1.0",
@@ -129,16 +129,16 @@ data = [
   "pinecone-plugin-assistant==3.0.3",
   "pinecone-plugin-interface==0.0.7",
   "qdrant-client==1.19.0",
-  "weaviate-client==4.23.0",
+  "weaviate-client==4.23.1",
 ]
 
 cloud = [
   "azure-core==1.41.0",
   "azure-identity==1.25.3",
-  "boto3==1.43.89",
-  "botocore==1.43.89",
+  "boto3==1.43.93",
+  "botocore==1.43.93",
   "google-cloud-aiplatform==1.160.0",
-  "google-cloud-storage==3.13.1",
+  "google-cloud-storage==3.14.1",
   "s3transfer==0.19.2",
 ]
 
@@ -162,10 +162,10 @@ dev = [
   "pytest-asyncio==1.4.0",
   "pytest-cov==7.1.0",
   "rich==15.0.0",
-  "ruff==0.16.6",
+  "ruff==0.16.7",
   "types-PyYAML==6.0.12.20260724",
   "types-requests==2.33.0.20260712",
-  "uv==0.12.10",
+  "uv==0.12.13",
 ]
 
 audio = [

@@ -16,7 +16,7 @@
 pip==26.2.1
 setuptools==84.0.0
 wheel==0.48.0
-uv==0.12.10
+uv==0.12.13
 
 # --- Core API / runtime anchors ---
 fastapi==0.141.1
@@ -30,13 +30,13 @@ cryptography==50.0.1
 
 # --- Local model / orchestration anchors ---
 ollama==0.6.2
-pygpt-net==2.8.9
+pygpt-net==2.8.16
 faster-whisper==1.2.1
-transformers==5.16.1
+transformers==5.17.0
 # --- Developer / QA anchors ---
 pytest==9.1.1
 pytest-cov==7.1.0
-ruff==0.16.6
+ruff==0.16.7
 black==26.5.1
 isort==8.0.1
 mypy==2.3.1
