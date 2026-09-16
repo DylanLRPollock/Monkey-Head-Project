@@ -157,7 +157,7 @@ pytest-asyncio==1.4.0
 pytest-cov==7.1.0
 rich==15.0.0
 ruff==0.16.7
-types-PyYAML==6.0.12.20260724
+types-PyYAML==6.0.12.20260906
 types-requests==2.33.0.20260712
 uv==0.12.13
 
