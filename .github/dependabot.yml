@@ -1,6 +1,60 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Repository / Dependabot Configuration
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Dependabot opens PRs for dependency updates. It is the mechanism that
+# keeps the pins in `pyproject.toml`, the SHAs in `.github/workflows/`,
+# and the base images in `Dockerfile` from silently ageing out.
+#
+# Conventions:
+#   * One entry per ecosystem. Do not duplicate an ecosystem to split
+#     schedules -- use groups for that instead.
+#   * Every entry gets a `commit-message.prefix` matching the pattern
+#     `deps(<ecosystem>)` so the git log is greppable and the PR title
+#     triage is unambiguous.
+#   * Every entry declares `labels` so reviewers can filter. The labels
+#     must already exist in the repository; Dependabot does not create
+#     them. If a label is missing, Dependabot logs a warning and skips it.
+#   * Grouping follows a two-bucket rule: minor+patch updates are batched
+#     into a single PR, major updates each get their own PR. Major bumps
+#     are where the breaking changes and the security fixes live, and
+#     they should never be auto-merged without review.
+#   * Schedules are staggered by 10 minutes per ecosystem. This is
+#     courtesy, not correctness -- Dependabot's schedule is best-effort
+#     and the actual run time depends on queue depth.
+#
+# Timezone: America/Toronto, matching the default in `huey.env.example`.
+
 version: 2
+
 updates:
-  # Python packages managed via requirements*.txt / setup.cfg / pyproject.toml (setuptools)
+  # -------------------------------------------------------------------------
+  # Python
+  # -------------------------------------------------------------------------
+  # Reads `pyproject.toml` (PEP 621 `[project]` + `[project.optional-dependencies]`).
+  #
+  # IMPORTANT: Dependabot's pip ecosystem does NOT update `constraints.txt`.
+  # It reads it for resolution but leaves it alone. If `pyproject.toml`,
+  # `requirements*.txt`, and `constraints.txt` are kept in sync by
+  # `make check-deps-sync`, then every Dependabot PR will fail that check
+  # until `constraints.txt` is regenerated.
+  #
+  # Two ways to resolve this, pick one:
+  #   (a) Keep `pyproject.toml` as the single source of truth and regenerate
+  #       `requirements*.txt` and `constraints.txt` from it via pip-tools or
+  #       `uv pip compile`. Add a CI step that regenerates and fails if the
+  #       result differs. Dependabot's PR modifies only pyproject.toml, CI
+  #       regenerates the rest, and the PR lands clean.
+  #   (b) Turn off the `check-deps-sync` guardrail for Dependabot PRs and
+  #       accept that the constraint files lag behind by one merge cycle.
+  #
+  # Option (a) is strongly preferred. Option (b) is a footgun that ends with
+  # a production install using a version that was never tested.
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
@@ -10,17 +64,52 @@ updates:
       timezone: "America/Toronto"
     open-pull-requests-limit: 10
     commit-message:
+      # `include: "scope"` was removed: with a `deps(pip)` prefix it
+      # produces `deps(pip)(fastapi): ...`, which is redundant. The prefix
+      # alone already identifies the ecosystem, and the version bump in the
+      # message body identifies the package.
       prefix: "deps(pip)"
-      include: "scope"
+    labels:
+      - "dependencies"
+      # Uncomment after creating the label if it does not exist:
+      # - "python"
     groups:
-      python-minor-patch:
+      # Batch minor and patch bumps into one PR. These are the safe ones --
+      # they should be routine, reviewed quickly, and merged.
+      pip-minor-patch:
         patterns: ["*"]
         update-types: ["minor", "patch"]
-      python-major:
+      # Major bumps get their own PR. Review these against the upstream
+      # changelog before merging -- a major bump is where a renamed flag
+      # or a dropped Python version lands.
+      pip-major:
         patterns: ["*"]
         update-types: ["major"]
+    ignore:
+      # Template ignore rules. Uncomment and adjust as specific packages
+      # become painful to auto-bump.
+      #
+      # Pin a package that must stay on a specific major because a
+      # downstream consumer depends on the old API:
+      # - dependency-name: "starlette"
+      #   versions: ["1.x"]  # wait for the 2.x migration to complete first
+      #
+      # Pin a package whose release cadence does not match ours:
+      # - dependency-name: "llama-index"
+      #   update-types: ["version-update:semver-major"]
 
-  # Keep GitHub Actions up to date
+  # -------------------------------------------------------------------------
+  # GitHub Actions
+  # -------------------------------------------------------------------------
+  # Dependabot understands SHA-pinned actions and will:
+  #   1. bump the SHA to the new release
+  #   2. update the trailing `# vN` comment
+  #   3. link the upstream changelog in the PR body
+  #
+  # See `.github/actions-pins.md` for the pin registry and the verification
+  # procedure. Do NOT enable auto-merge for this ecosystem -- a compromised
+  # action release is exactly the scenario the pins exist to defend against,
+  # and auto-merge removes the human check.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -28,10 +117,81 @@ updates:
       day: "tuesday"
       time: "21:40"
       timezone: "America/Toronto"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     commit-message:
       prefix: "deps(actions)"
-      include: "scope"
+    labels:
+      - "dependencies"
+      # - "github-actions"
     groups:
-      gha-all:
+      # Split minor/patch from major. The original config batched everything
+      # into one `gha-all` group, which means a routine `setup-python` patch
+      # would ride along with a `checkout` major bump, and a CI failure would
+      # require bisecting within the group to find the cause.
+      gha-minor-patch:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
+      gha-major:
+        patterns: ["*"]
+        update-types: ["major"]
+
+  # -------------------------------------------------------------------------
+  # Node / integration front-ends
+  # -------------------------------------------------------------------------
+  # The `integrations/*` tree has its own `package.json` files (see
+  # `.gitignore`, which explicitly re-includes `package.json` and the lock
+  # files). Those are not tracked by the pip or actions entries above and
+  # need their own ecosystem entry.
+  #
+  # `directories` (plural) is used instead of `directory` so a single entry
+  # covers every integration. If your Dependabot schema version rejects
+  # `directories`, fall back to one entry per integration directory.
+  - package-ecosystem: "npm"
+    directories:
+      - "/integrations/*"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "21:50"
+      timezone: "America/Toronto"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(npm)"
+    labels:
+      - "dependencies"
+      # - "javascript"
+    groups:
+      npm-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+      npm-major:
+        patterns: ["*"]
+        update-types: ["major"]
+    ignore:
+      # Pin a package whose major bumps are known to break the integration
+      # build until someone does the migration work:
+      # - dependency-name: "vite"
+      #   update-types: ["version-update:semver-major"]
+
+  # -------------------------------------------------------------------------
+  # Docker base images
+  # -------------------------------------------------------------------------
+  # Covers `Dockerfile`, `Containerfile`, and `docker-compose*.yml` base
+  # image references. This is the entry that catches "our base image is
+  # running a two-year-old Debian" without anyone having to remember to
+  # check.
+  - package-ecosystem: "docker"
+    directories:
+      - "/"
+      - "/integrations/*"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "22:00"
+      timezone: "America/Toronto"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(docker)"
+    labels:
+      - "dependencies"
+      # - "docker"
