@@ -6,8 +6,6 @@
 
 <p align="center"><strong>Philosophy: "Breathing new life into old tech"</strong></p>
 
-<p align="center"><strong>One embodied AI node first. A deliberate collective later.</strong></p>
-
 <p align="center">
   <a href="#project-position">Position</a> ·
   <a href="#unified-v202">Unified V202</a> ·
