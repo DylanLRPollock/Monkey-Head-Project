@@ -1,89 +1,162 @@
-# Monkey Head Project
-# By: Dylan L.R. Pollock
-# www.dlrp.ca
-# HueyOS: .gitignore
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Repository / Ignore Rules
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Rules to know:
+#
+#   * A trailing `/` matches directories only; without it, files and
+#     directories both match.
+#   * `!` re-includes a path excluded by an earlier rule. Order matters --
+#     an exception must come *after* the broader rule it overrides.
+#   * Git does not descend into an ignored directory, so `dir/*` + `!dir/keep`
+#     works, but `dir/` + `!dir/keep` does not. Every negation below uses the
+#     `dir/*` + `!dir/file` shape for exactly this reason.
+#   * Prefer narrow patterns. A blanket `*.zip` would hide genuine release
+#     artifacts, so the archives section names specific local bundles instead.
+#
+# What is intentionally tracked and must NOT be ignored:
+#   * `.python-version` -- the canonical interpreter pin.
+#   * `integrations/*/package.json` (and lockfiles) -- integration manifests.
+#   * `*.env.example` / `*.env.template` / `*.env.sample` -- safe placeholders.
+#   * `.envrc` is ignored, but `direnv` allow-lists (`.envrc.local`) are not.
 
 # ---------------------------------------------------------------------------
 # Python
 # ---------------------------------------------------------------------------
 
+# Bytecode / compiled artifacts
 __pycache__/
 *.py[cod]
 *$py.class
 *.pyo
+*.pyd
 *.so
+*.a
+*.o
+*.obj
+*.lib
+*.exp
+
+# PEP 582 local package directory
 __pypackages__/
 
-# Keep the canonical repository Python pin in version control.
-
-# Virtual environments
+# Virtual environments. The `.venv313-ci/` name is kept explicitly because
+# a local CI mirror script creates it in-repo; the general patterns catch
+# the rest.
 .venv/
 .venv*/
-.venv313-ci/
 venv/
 env/
 ENV/
+.venv313-ci/
 
-# Packaging metadata
+# Packaging and build metadata
 build/
 dist/
 *.egg-info/
+*.egg
 pip-wheel-metadata/
+share/python-wheels/
 src/hueyos.egg-info/
+MANIFEST
 
-# ---------------------------------------------------------------------------
-# Dev / tool caches
-# ---------------------------------------------------------------------------
-
+# Test / coverage
 .pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.cache/
-.huggingface/
-.tox/
-.nox/
-.hypothesis/
-.pyre/
-
-# Coverage reports
 .coverage
 .coverage.*
 coverage.xml
 htmlcov/
+.tox/
+.nox/
+.hypothesis/
+pytestdebug.log
+
+# Type checkers and linters
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+.pyre/
+.pyflow/
+.ruff_cache/
+.pylint.d/
+
+# Miscellaneous Python tooling
+.ropeproject/
+.spyproject/
+.pybuilder/
+cython_debug/
+profile_default/
+ipython_config.py
+*.sage.py
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# ---------------------------------------------------------------------------
+# Dev / general caches
+# ---------------------------------------------------------------------------
+
+.cache/
+.pytest_cache/
+ruff_cache/
+.ruff_cache/
 
 # ---------------------------------------------------------------------------
 # Documentation build output
 # ---------------------------------------------------------------------------
 
 docs/_build/
+docs/_autosummary/
+site/
 
 # ---------------------------------------------------------------------------
 # Node / frontend / integration build artifacts
 # ---------------------------------------------------------------------------
 
 node_modules/
-dist/
+.pnpm-store/
+.yarn/
+.yarn-state.yml
+.parcel-cache/
+.vite/
+.svelte-kit/
+.next/
+.nuxt/
+.cache-loader/
 
 integrations/*/node_modules/
 integrations/*/dist/
+integrations/*/build/
 integrations/*/.tmp/
+integrations/*/.vite/
 integrations/*/.vite-temp/
 integrations/*/.cache/
+integrations/*/.parcel-cache/
+integrations/*/.next/
+integrations/*/.svelte-kit/
 
-# Keep package manifests trackable
+# Belt-and-braces: even if a broader `integrations/*` rule is added later,
+# the manifests must stay trackable.
 !integrations/*/package.json
 !integrations/*/package-lock.json
 !integrations/*/pnpm-lock.yaml
 !integrations/*/yarn.lock
+!integrations/*/tsconfig.json
+!integrations/*/vite.config.*
+!integrations/*/README.md
 
 # ---------------------------------------------------------------------------
 # Logs and runtime artifacts
 # ---------------------------------------------------------------------------
 
 *.log
-*.sqlite
-*.sqlite3
-
 logs/
 !logs/.gitkeep
 
@@ -92,6 +165,12 @@ src/huey/memory/LOG/*
 
 src/huey/memory/LOGS/*
 !src/huey/memory/LOGS/.gitkeep
+
+# SQLite databases are almost always local state.
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
 
 # ---------------------------------------------------------------------------
 # Project data / local memory outputs
@@ -107,7 +186,7 @@ memory/*
 !memory/RAW/.gitkeep
 
 # ---------------------------------------------------------------------------
-# Local env/config
+# Local env / config
 # ---------------------------------------------------------------------------
 
 .env
@@ -116,13 +195,18 @@ memory/*
 *.env.*
 huey.env
 
+# Keep placeholder templates in version control.
 !.env.example
 !*.env.example
 !*.env.template
 !*.env.sample
 !huey.env.example
 
-# Local/generated secret-bearing files
+# direnv (the allow-list is tracked, the per-user file is not)
+.direnv/
+.envrc
+
+# Local / generated config that ends up secret-bearing.
 config/pygpt_net/config.json
 
 # ---------------------------------------------------------------------------
@@ -142,14 +226,21 @@ local_secrets/
 *.api_key
 apikey.txt
 api_key.txt
+credentials.json
+service-account*.json
 
+# Private key material
 *.pem
 *.key
+*.p8
 *.p12
+*.pfx
 *.jks
 *.keystore
 id_rsa
 id_ed25519
+id_ecdsa
+id_dsa
 
 # ---------------------------------------------------------------------------
 # Security scan reports
@@ -161,6 +252,9 @@ safety-report*
 bandit-report*
 bandit-results*.json
 bandit-results*.zip
+gitleaks-report*
+semgrep-results*.json
+trivy-results*.json
 
 # ---------------------------------------------------------------------------
 # Local archive / inspection bundles
@@ -178,15 +272,39 @@ bandit-results*.zip
 # IDE / editor / OS noise
 # ---------------------------------------------------------------------------
 
+# --- Editors ---------------------------------------------------------------
 .vscode/
+!.vscode/settings.json.example
+!.vscode/extensions.json.example
 .idea/
-.spyproject/
-.ropeproject/
+*.iml
+*.ipr
+*.iws
+.fleet/
+.history/
+.vs/
 
+# --- Vim / Neovim ----------------------------------------------------------
 *~
 *.swp
 *.swo
+*.swn
+.netrwhist
 
+# --- Emacs -----------------------------------------------------------------
+*#
+.#*
+\#*\#
+
+# --- OS noise --------------------------------------------------------------
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
 Thumbs.db
+ehthumbs.db
 desktop.ini
+Desktop.ini
+$RECYCLE.BIN/
