@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "project": "Monkey-Head-Project",
+  "ai_identity": "Huey",
+  "version": "Unified V202",
+  "schema_version": 202.0,
+  "schema_contract_version": "master_plan_schema_v202",
+  "document_kind": "machine_facing_master_plan",
+  "status_date": "2026-09-16",
+  "created_by": "Dylan L.R. Pollock",
+  "supersedes": "master-plan-v122.0.json",
+  "status": "active",
+  "description": "Master Plan Unified V202 formalizes the physical assembly, robust power and compute architecture, and software baselines for the Monkey-Head-Project. It details the Huey V4 shell assembly utilizing a wood speaker-base, a metal Thermaltake Mozart midrange, and a wood top capped with an animatronic head and hand. The physical finish is a latex-based silver over primer. It establishes the compute core as an Intel Core i9-12900K on an ASUS TUF Gaming Z790-Plus WiFi motherboard, powered by dual Corsair RM1000x PSUs, housing four Nvidia Tesla V100 32GB GPUs for 128GB of VRAM. It strictly targets a Python 3.13 ecosystem with 3.12 side-carding support, and confirms the Lenovo Legion Go as dedicated LabTech.",
+  "source_basis": {
+    "primary_previous_master_plan": "master-plan-v122.0.json",
+    "current_session_date": "2026-09-16",
+    "explicit_decisions": [
+      "The project is organized around Huey Brain, Huey Body, and Huey Farm.",
+      "Huey V4 physical shell assembly merges the V3 physical base with V2 donor material.",
+      "V4 physical structure is three-tiered: a wood base salvaged from a speaker project (with robust wheels and speakers), a metal midrange utilizing the Thermaltake Mozart case, and a wood top.",
+      "V4 physical cap features the plastic animatronic monkey head and an attached animatronic hand for coding purposes.",
+      "V4 physical finish scheme: primer base followed by a latex-based silver color coat that dries with a rubber-like texture; clear coat has been abandoned.",
+      "Primary project storage consists of two 10 TB hard drives configured in a RAID 1 array for data redundancy.",
+      "Huey Brain core workstation hardware is confirmed as an ASUS TUF Gaming Z790-Plus WiFi motherboard paired with an Intel Core i9-12900K processor.",
+      "Lenovo Legion Go is strictly dedicated LabTech / support hardware, completely excluded from Huey Brain, Body, and Farm core runtime execution.",
+      "Four Nvidia Tesla V100 32 GB GPUs will be pooled to provide 128 GB of VRAM for large-model hosting (e.g., gpt-oss-120b).",
+      "A fifth discrete graphics card provides display output and system boot graphics.",
+      "PCIe risers are utilized to connect the accelerator cards to the motherboard.",
+      "Power delivery relies on dual Corsair RM1000x PSUs linked via an Add2PSU adapter.",
+      "Cooling relies on provisional air exchange for the shell transition; the external Canadian winter heat exchange is paused.",
+      "The target canonical Python namespace is hueyos, explicitly supporting Python 3.13, with Python 3.12 packages side-carded for PyGPT compatibility.",
+      "All references to third-party Atlas continuity support and the V1 MP3 fixture proof have been removed to preserve strict project canon.",
+      "Nexus controller implementations are strictly experimental, terminal-based, and subject to removal.",
+      "Only Dylan L.R. Pollock may lock project canon."
+    ],
+    "source_priority": [
+      "Dylan's explicit current-session decisions",
+      "newest accepted machine-facing master plan",
+      "merged repository and implementation state",
+      "README and technical documentation",
+      "older plans, transcripts, and archives as lineage"
+    ],
+    "inheritance_policy": "Carry forward previous implementation evidence and lineage unless Unified V202 explicitly changes the direction. Do not present target-state decisions as already implemented."
+  },
+  "truth_model": {
+    "current_reality": "Observed hardware, merged code, working commands, and directly verified behavior.",
+    "accepted_direction": "Architecture Dylan has selected for implementation, even when migration is incomplete.",
+    "provisional_choice": "A working selection that remains replaceable through evidence.",
+    "unresolved": "A decision intentionally left open pending additional detail or testing.",
+    "target_state": "A longer-term capability whose implementation depends on resources, maturity, or later validation.",
+    "historical_lineage": "Earlier systems and decisions retained for continuity without overriding current direction."
+  },
+  "canon": {
+    "authority": "Dylan L.R. Pollock",
+    "rule": "No agent, tool, contributor, generated document, branch, or pull request may independently lock canon.",
+    "acceptance_mechanisms": [
+      "Dylan explicitly states acceptance",
+      "Dylan intentionally merges a designated canonical update"
+    ],
+    "machine_facing_source": "master-plan-Unified-V202.json after acceptance",
+    "human_facing_source": "README.md aligned to Unified V202",
+    "conflict_rule": "Current explicit decisions override older documentation; implementation reality must still be labelled separately from accepted direction."
+  },
+  "three_part_architecture": {
+    "decision": "Organize the system around Huey Brain, Huey Body, and Huey Farm.",
+    "huey_brain": {
+      "role": "Identity-bearing cognition and orchestration centre.",
+      "responsibilities": [
+        "PyHuey operator interaction",
+        "cognition and model selection",
+        "workflow orchestration",
+        "memory access and state coordination",
+        "structured evidence and audit records",
+        "coordination with Body and Farm"
+      ],
+      "current_platform": {
+        "status": "active_workstation_build",
+        "system": "ASUS TUF Gaming Z790-Plus WiFi motherboard with Intel Core i9-12900K processor",
+        "housing": "Thermaltake Mozart case (midrange of V4 shell)",
+        "purpose": "Primary workstation, orchestration hub, and execution platform for Huey Brain",
+        "storage": "Two 10 TB hard drives in RAID 1 array for redundant project data storage"
+      }
+    },
+    "huey_body": {
+      "role": "Physical embodiment and environmental interface.",
+      "responsibilities": [
+        "sensing",
+        "actuation",
+        "movement",
+        "power and cooling integration",
+        "physical safety",
+        "recoverable interaction with the environment"
+      ],
+      "status": "active_v4_assembly_and_finishing",
+      "current_boundary": "V4 physical shell assembly is a three-tiered structure. The base is wood salvaged from a speaker project featuring robust wheels. The midrange is the metal Thermaltake Mozart case. The top is wood, capped with a plastic animatronic monkey head and an animatronic hand. The exterior finish is primer coated with a latex-based silver paint.",
+      "integration_rule": "Brain and Body integration requires explicit interfaces, operator-visible state, safe-stop behavior, and recovery procedures."
+    },
+    "huey_farm": {
+      "role": "Scalable compute, model, storage, and support infrastructure.",
+      "responsibilities": [
+        "large-model hosting",
+        "pooled accelerator capacity",
+        "shared storage and artifacts",
+        "compute expansion"
+      ],
+      "status": "active_procurement_and_design",
+      "planning_scale": "128 GB pooled local VRAM across four Nvidia Tesla V100 32 GB GPUs to comfortably host 120B/128B open-source models.",
+      "power_delivery": "Dual Corsair RM1000x PSUs linked via Add2PSU adapter for stable, high-capacity load distribution."
+    },
+    "unresolved_boundaries": [
+      "Whether Huey identity spans all three parts or is embodied authoritatively by Brain",
+      "Where canonical memory, models, logs, and state reside",
+      "Communication and authentication protocols",
+      "Disconnected and degraded operation"
+    ]
+  },
+  "hardware_direction": {
+    "architecture_baseline": "Intel Core i9-12900K on ASUS TUF Gaming Z790-Plus WiFi inside Thermaltake Mozart case",
+    "storage_architecture": {
+      "primary_pool": "Two 10 TB 3.5-inch hard drives configured in RAID 1 array for redundant long-term project storage."
+    },
+    "pcie_device_allocation": {
+      "total_devices": 5,
+      "device_1": "Basic discrete GPU for system display output and I/O boot tasks",
+      "device_2": "Nvidia Tesla V100 32 GB accelerator (via PCIe riser)",
+      "device_3": "Nvidia Tesla V100 32 GB accelerator (via PCIe riser)",
+      "device_4": "Nvidia Tesla V100 32 GB accelerator (via PCIe riser)",
+      "device_5": "Nvidia Tesla V100 32 GB accelerator (via PCIe riser)"
+    },
+    "cooling_and_safety": {
+      "transition_cooling": "Provisional air exchange to facilitate the rapid standing up of the physical shell.",
+      "target_cooling": "External heat exchange utilizing Canadian winters (currently paused pending physical shell completion)."
+    },
+    "model_assumption": {
+      "normal": "large models (120B/128B OSS) operating on 128 GB pooled VRAM"
+    }
+  },
+  "pyhuey_and_python": {
+    "accepted_role": "Primary GUI and core runtime component",
+    "pure_target_environment": "Python 3.13",
+    "compatibility_environment": "Python 3.12 packages side-carded to support PyGPT operations where necessary.",
+    "direction": [
+      "Move primary operator workflows into PyHuey.",
+      "Retain a recovery-capable CLI for diagnostics and automation."
+    ]
+  },
+  "namespace_and_repository": {
+    "canonical_repository": "DylanLRPollock/Monkey-Head-Project",
+    "target_python_namespace": "hueyos",
+    "migration_status": "accepted_direction_not_complete"
+  },
+  "cognition_provider": {
+    "status": "fit_based_selection",
+    "rule": "Use the API or local provider that best fits the task and architecture; do not bind the system prematurely to one provider.",
+    "selection_criteria": [
+      "capability",
+      "context size",
+      "latency",
+      "local sovereignty path"
+    ]
+  },
+  "logging": {
+    "rule": "Preserve all useful operational information while excluding secrets and unnecessary private data."
+  },
+  "active_labtech": [
+    {
+      "name": "ASUS FX505DT",
+      "classification": "LabTech",
+      "baseline": "Debian 14 Forky; 32 GB DDR4",
+      "role": "Mobile lab, development, transcription experimentation, and support"
+    },
+    {
+      "name": "Lenovo Legion Go",
+      "classification": "LabTech",
+      "baseline": "Windows 11 / Debian Linux",
+      "role": "Dedicated LabTech support device for lab utilities and diagnostic testing; explicitly excluded from core Huey compute stack"
+    }
+  ],
+  "experimental_subprojects": {
+    "huey_nexus_controller": {
+      "status": "experimental_and_provisional",
+      "devices": ["Google Nexus 5", "Google Nexus 7"],
+      "interaction_model": "Primarily terminal-based or SSH for initial implementation.",
+      "rule": "This is a sandbox concept subject to change or complete removal. It serves as food for thought and does not possess canonical authority."
+    }
+  },
+  "work_program": {
+    "immediate": [
+      "Complete latex-based silver spray painting over primer for Huey V4 shell.",
+      "Unify V3 speaker-project base with the Thermaltake Mozart midrange and wood top.",
+      "Mount ASUS TUF Gaming Z790-Plus WiFi and Intel Core i9-12900K into the core assembly.",
+      "Configure dual 10 TB HDDs into RAID 1 array for primary storage.",
+      "Establish provisional air exchange cooling to get the physical shell operational.",
+      "Install discrete stopgap GPU for display I/O to validate OS boot and diagnostics.",
+      "Synchronize repository README.md and documentation files to Unified V202."
+    ],
+    "next": [
+      "Integrate the four Nvidia Tesla V100 32 GB cards via PCIe risers.",
+      "Implement and test the dual Corsair RM1000x power delivery system linked via Add2PSU.",
+      "Stabilize PyHuey workflows under Python 3.13, establishing 3.12 side-carding for PyGPT as needed."
+    ]
+  },
+  "change_log_v202": [
+    "Advanced master plan to Unified V202.",
+    "Removed all references to Atlas continuity support.",
+    "Removed V1 definition and MP3 fixture proof entirely.",
+    "Defined V4 shell three-tiered structure: speaker-project wood base with wheels, Thermaltake Mozart metal midrange, wood top with plastic animatronic head and hand.",
+    "Updated paint specification to latex-based silver over primer, abandoning clear coat.",
+    "Updated GPU architecture to four Nvidia Tesla V100 32GB cards (128GB VRAM) connected via PCIe risers.",
+    "Defined power delivery as dual Corsair RM1000x PSUs linked via Add2PSU.",
+    "Paused external heat exchange in favor of provisional air exchange.",
+    "Explicitly supported Python 3.13 with 3.12 side-carding for PyGPT.",
+    "Added HueyNexusController as a heavily caveated experimental subproject."
+  ]
+}
