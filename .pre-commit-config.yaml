@@ -1,82 +1,257 @@
----
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Repository / Pre-commit Pipeline
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# This file is the single source of truth for what runs on every commit.
+# CI runs the same hooks via `pre-commit run --all-files`, so if a check
+# fires here it will also fire there -- fix locally, not in the CI log.
+#
+# Conventions:
+#   * Every `rev:` is a pinned tag, never a branch. Pre-commit won't fetch
+#     a mutable ref, and pinning keeps `pre-commit autoupdate` deterministic.
+#   * `language_version` is pinned to python3.13 for hooks that install their
+#     own tool. Hooks that ship as standalone binaries (actionlint, shellcheck)
+#     don't need it.
+#   * New hooks go in the category they belong to, not appended at the bottom.
+#     The file is scanned top-to-bottom by reviewers.
+#
+# Maintenance:
+#   * `pre-commit autoupdate` bumps the `rev:` lines. Run it deliberately,
+#     as its own commit, so any behaviour change in a linter is visible.
+#   * `pre-commit run --all-files` before opening a PR -- CI will run the
+#     same set and there's no reason to burn a pipeline run on a `black` nit.
+
 minimum_pre_commit_version: "3.7.0"
+
+# ---------------------------------------------------------------------------
+# Global settings
+# ---------------------------------------------------------------------------
 
 # Use the same Python baseline everywhere unless explicitly overridden.
 default_language_version:
   python: python3.13
 
-# Avoid running hooks on generated / tool-managed directories.
+# Run hooks on both commit and push. The push stage is where the slower
+# security scanners live so they don't tax every save-and-commit cycle.
+default_stages: [pre-commit, pre-push]
+
+# Don't stop at the first failure -- report everything the developer needs
+# to fix in one pass.
+fail_fast: false
+
+# Avoid running hooks on generated / tool-managed directories. Written as
+# a multiline regex for readability; `(?x)` enables verbose mode so the
+# pipe-separated alternatives can breathe.
 exclude: |
   (?x)^(
     \.git/
     | \.venv/
     | venv/
+    | env/
     | build/
     | dist/
     | \.mypy_cache/
+    | \.ruff_cache/
     | \.pytest_cache/
+    | \.tox/
+    | \.nox/
+    | \.hypothesis/
     | \.idea/
     | \.vscode/
     | node_modules/
+    | \.pnpm-store/
+    | \.yarn/
+    | integrations/.*/node_modules/
+    | integrations/.*/dist/
+    | src/huey/connectors/pyhuey/
   )
+
+# ---------------------------------------------------------------------------
+# Universal hygiene
+# ---------------------------------------------------------------------------
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: v5.0.0
     hooks:
-      # Whitespace and line endings
+      # --- Whitespace and line endings -----------------------------------
       - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
       - id: end-of-file-fixer
       - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: fix-byte-order-marker
 
-      # Basic safety checks
+      # --- File-shape safety ---------------------------------------------
       - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-symlinks
+      - id: destroyed-symlinks
+      - id: check-illegal-windows-names
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+
+      # --- Content safety -------------------------------------------------
       - id: debug-statements
       - id: detect-private-key
+      - id: name-tests-test
+        args: [--pytest-test-first]
 
-      # Config / data file validation
+      # --- Config / data file validation ---------------------------------
       - id: check-yaml
+        args: [--allow-multiple-documents]
       - id: check-json
       - id: check-toml
+      - id: check-xml
+      - id: check-ast
+      - id: check-builtin-literals
+      - id: check-docstring-first
 
-      # Keep very large blobs out of the repo (500 KiB per file)
+      # --- Repository hygiene ---------------------------------------------
       - id: check-added-large-files
-        args: ["--maxkb=500"]
+        args: [--maxkb=500, --enforce-all]
+      - id: no-commit-to-branch
+        args: [--branch=main, --branch=master]
+
+# ---------------------------------------------------------------------------
+# Python formatting
+# ---------------------------------------------------------------------------
 
   - repo: https://github.com/psf/black
-    rev: 26.3.1
+    rev: 25.1.0
     hooks:
       - id: black
         language_version: python3.13
 
   - repo: https://github.com/PyCQA/isort
-    rev: 8.0.1
+    rev: 6.0.1
     hooks:
       - id: isort
         language_version: python3.13
+        args: [--profile=black]
+
+# ---------------------------------------------------------------------------
+# Python linting and analysis
+# ---------------------------------------------------------------------------
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.12
+    rev: v0.9.10
     hooks:
+      # Ruff's own lint pass. Configuration lives in pyproject.toml.
       - id: ruff
+        language_version: python3.13
+        args: [--fix, --exit-non-zero-on-fix]
+      # Ruff's formatter, run as a backstop to Black. If both are enabled,
+      # prefer Ruff as the final formatter to avoid fighting.
+      - id: ruff-format
         language_version: python3.13
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.3.0
+    rev: 7.1.2
     hooks:
       - id: flake8
         language_version: python3.13
         additional_dependencies:
-          - flake8-bugbear==25.11.29
+          - flake8-bugbear==24.12.12
+          - flake8-comprehensions==3.16.0
+          - flake8-docstrings==1.7.0
+          - flake8-pytest-style==2.0.0
+
+# ---------------------------------------------------------------------------
+# Python security
+# ---------------------------------------------------------------------------
 
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.9.4
+    rev: 1.8.3
     hooks:
       - id: bandit
         language_version: python3.13
-        args: ["-ll"]
+        args: [-ll, -c, pyproject.toml]
+        exclude: ^tests/
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.0
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.8.0
+    hooks:
+      - id: pip-audit
+        language_version: python3.13
+        args: [--strict, --requirement, requirements-dev.txt]
+        stages: [pre-push]
+
+# ---------------------------------------------------------------------------
+# Shell / Docker / Infra
+# ---------------------------------------------------------------------------
+
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.10.0
+    hooks:
+      - id: shellcheck
+        args: [--severity=warning]
+
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.13.1-beta
+    hooks:
+      - id: hadolint-docker
+        args: [--failure-threshold, warning]
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.7
+    hooks:
+      - id: actionlint
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.36.0
+    hooks:
+      - id: yamllint
+        args: [--strict]
+
+# ---------------------------------------------------------------------------
+# Documentation
+# ---------------------------------------------------------------------------
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.48.0
+    rev: v0.44.0
     hooks:
       - id: markdownlint
+        args: [--config, .markdownlint.yaml, --fix]
+
+# ---------------------------------------------------------------------------
+# Local project hooks
+# ---------------------------------------------------------------------------
+
+  - repo: local
+    hooks:
+      # Guard against `print()` sneaking into library code. Tests and
+      # scripts are allowed to print.
+      - id: no-print-in-library
+        name: no print() in library code
+        entry: bash -c 'grep -rn "^\s*print(" src/huey --include="*.py" | grep -v "src/huey/cli/" && exit 1 || exit 0'
+        language: system
+        pass_filenames: false
+        types: [python]
+
+      # Ensure the Python version pin in .python-version matches the
+      # default_language_version at the top of this file.
+      - id: python-version-consistency
+        name: python version consistency
+        entry: bash -c 'test "$(cat .python-version)" = "3.13" || (echo ".python-version does not match pre-commit config (expected 3.13)" && exit 1)'
+        language: system
+        pass_filenames: false
+        files: ^\.python-version$
+
+      # Prevent accidental commits of the local CI mirror venv.
+      - id: no-venv313-ci-tracked
+        name: .venv313-ci must not be tracked
+        entry: bash -c 'git ls-files --error-unmatch .venv313-ci 2>/dev/null && (echo ".venv313-ci is tracked; remove it with git rm -r --cached .venv313-ci" && exit 1) || exit 0'
+        language: system
+        pass_filenames: false
+        always_run: true
