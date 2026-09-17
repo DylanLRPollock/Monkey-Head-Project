@@ -1,13 +1,44 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: HueyOS / Project Metadata & Tooling
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# This file is the single source of truth for:
+#   * Package identity, version, and dependencies (PEP 621 `[project]`).
+#   * Build backend selection (`[build-system]`).
+#   * Tool configuration for black, isort, ruff, pytest, coverage, mypy,
+#     and bandit.
+#
+# Conventions:
+#   * Runtime deps go in `[project].dependencies`. Anything optional goes in
+#     an extra. The default install is deliberately small for the on-robot
+#     footprint; the ML/data/cloud stacks are opt-in.
+#   * Pins are exact (`==`). `constraints.txt` is a mirror for `pip install
+#     -c`; `make check-deps-sync` verifies the two agree.
+#   * Tool config lives here unless the tool cannot read pyproject.toml.
+#     flake8 is the notable exception -- it reads `.flake8`, not
+#     `[tool.flake8]`, so a `[tool.flake8]` table here would be inert.
+#   * The vendored and legacy trees under `src/huey/connectors/pyhuey` and
+#     `src/huey/memory/PY` are excluded from every formatter and linter.
+#     If you add a new exclusion, add it to all of them in the same commit.
+
 [project]
 name = "hueyos"
 version = "0.2.0"
 description = "HueyOS: offline-first embodied AI / OS for Huey and the Monkey-Head-Project."
-requires-python = ">=3.13,<3.14"
 readme = "README.md"
+requires-python = ">=3.13,<3.14"
 authors = [
   { name = "Dylan L. R. Pollock" },
 ]
-license = { text = "GPL-3.0-only" }
+# PEP 639: SPDX expression + explicit license file. Replaces the deprecated
+# `license = { text = "..." }` table and the matching trove classifier.
+license = "GPL-3.0-only"
+license-files = ["LICENSE"]
 keywords = [
   "hueyos",
   "huey",
@@ -19,10 +50,14 @@ keywords = [
   "embodied-ai",
 ]
 classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.13",
-  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: System :: Operating System",
   "Operating System :: POSIX :: Linux",
 ]
 
@@ -55,6 +90,12 @@ dependencies = [
 Homepage = "https://www.dlrp.ca"
 Repository = "https://github.com/DylanLRPollock/Monkey-Head-Project"
 Issues = "https://github.com/DylanLRPollock/Monkey-Head-Project/issues"
+
+# ---------------------------------------------------------------------------
+# Optional dependency groups
+# ---------------------------------------------------------------------------
+# Extras are intentionally separate so `pip install -e .` stays small on
+# constrained hardware. `make install-dev` pulls `[dev]`; the rest are opt-in.
 
 [project.optional-dependencies]
 ml = [
@@ -174,11 +215,18 @@ audio = [
   "soundfile==0.14.0",
 ]
 
+# ---------------------------------------------------------------------------
+# Console entry points
+# ---------------------------------------------------------------------------
+
 [project.scripts]
 huey = "huey.cli:main"
-# HueyOS API console entrypoint.
 huey-api = "huey.api:main"
 huey-command-center = "huey.apps.command_center.cli:main"
+
+# ---------------------------------------------------------------------------
+# Build backend
+# ---------------------------------------------------------------------------
 
 [build-system]
 requires = [
@@ -192,16 +240,39 @@ package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
+# Vendored / legacy trees are intentionally not installed as importable
+# packages; they exist on disk for source inspection only.
+exclude = [
+  "tests*",
+  "huey.connectors.pyhuey*",
+  "huey.memory.PY*",
+]
+
+[tool.setuptools.package-data]
+# Ship the PEP 561 marker and any bundled config schemas alongside the code.
+huey = [
+  "py.typed",
+  "**/*.json",
+  "**/*.yaml",
+  "**/*.yml",
+  "**/*.toml",
+  "**/*.sql",
+]
+
+# ---------------------------------------------------------------------------
+# Formatting
+# ---------------------------------------------------------------------------
 
 [tool.black]
 target-version = ["py313"]
 line-length = 88
-# Black treats multiline excludes as verbose regexes; keep the flag explicit.
-extend-exclude = '''(?x)
-^/src/huey/
-(
-  connectors/pyhuey
-  | memory/PY
+# Black matches paths relative to the repo root, without a leading slash.
+# The previous `^/src/...` pattern was anchored to a slash that never
+# appears in Black's path strings, so it matched nothing.
+extend-exclude = '''
+(?x)^(
+    src/huey/connectors/pyhuey/
+  | src/huey/memory/PY/
 )/
 '''
 
@@ -213,6 +284,10 @@ skip_glob = [
   "src/huey/memory/PY/**",
 ]
 
+# ---------------------------------------------------------------------------
+# Linting (ruff)
+# ---------------------------------------------------------------------------
+
 [tool.ruff]
 target-version = "py313"
 line-length = 88
@@ -222,18 +297,134 @@ extend-exclude = [
 ]
 
 [tool.ruff.lint]
-ignore = ["E402"]
-
-[tool.flake8]
-extend-ignore = [
-  "E402",
-  "E501",
+# Rule families selected for this project. See:
+# https://docs.astral.sh/ruff/rules/
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # isort-compatible import sorting
+  "B",   # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "UP",  # pyupgrade (modernise syntax for py313)
+  "SIM", # flake8-simplify
+  "RUF", # ruff-specific
 ]
-max-line-length = 88
+ignore = [
+  "E501", # line length is enforced by the formatter
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Package __init__ files exist to re-export; F401 is the point.
+"src/huey/__init__.py" = ["F401"]
+# Root shim and CLI entry points manipulate sys.path before importing.
+"run.py" = ["E402"]
+"src/huey/cli/*.py" = ["E402"]
+# Tests are allowed to use asserts, magic numbers, and long lines.
+"tests/**" = ["S101", "PLR2004", "E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+docstring-code-format = true
+
+# ---------------------------------------------------------------------------
+# Testing (pytest)
+# ---------------------------------------------------------------------------
+# The `asyncio` marker is registered in `conftest.py` rather than here, so
+# the marker stays next to the hook that implements it.
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+  "-ra",
+  "--strict-markers",
+  "--strict-config",
+]
+filterwarnings = [
+  "error",
+  # Keep these as warnings until the upstream fix lands.
+  "default::DeprecationWarning:starlette.*",
+  "default::DeprecationWarning:pydantic.*",
+]
+
+# ---------------------------------------------------------------------------
+# Coverage
+# ---------------------------------------------------------------------------
+
+[tool.coverage.run]
+branch = true
+source = ["src/huey"]
+omit = [
+  "src/huey/connectors/pyhuey/*",
+  "src/huey/memory/PY/*",
+  "*/tests/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+fail_under = 80
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+  "if __name__ == .__main__.:",
+  "@(abc\\.)?abstractmethod",
+  "@overload",
+]
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+# ---------------------------------------------------------------------------
+# Type checking (mypy)
+# ---------------------------------------------------------------------------
+
+[tool.mypy]
+python_version = "3.13"
+# Keep the strictness ratchet on. If a module cannot meet these, add it to
+# `[[tool.mypy.overrides]]` with an explicit reason rather than weakening
+# the global config.
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_unreachable = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+strict_equality = true
+show_error_codes = true
+pretty = true
 exclude = [
-  "archives",
   "src/huey/connectors/pyhuey",
-  "src\\huey\\connectors\\pyhuey",
   "src/huey/memory/PY",
-  "src\\huey\\memory\\PY",
+]
+
+[[tool.mypy.overrides]]
+# Vendored tree; typing it is not worth the churn.
+module = ["huey.connectors.pyhuey.*"]
+ignore_errors = true
+
+# ---------------------------------------------------------------------------
+# Security (bandit)
+# ---------------------------------------------------------------------------
+# The pre-commit hook runs `bandit -c pyproject.toml`, so this table is what
+# actually drives the scan. Keep `exclude_dirs` in sync with the other tools.
+
+[tool.bandit]
+exclude_dirs = [
+  "tests",
+  "src/huey/connectors/pyhuey",
+  "src/huey/memory/PY",
+]
+skips = [
+  "B101", # assert_used: pytest relies on assert
 ]
