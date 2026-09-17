@@ -1,8 +1,5 @@
 # Monkey-Head-Project / HueyOS
-# Supported core + dev requirements baseline for repository installs, scans, and CI-adjacent tooling.
-# Target Python: 3.13.x only (>=3.13,<3.14); Python 3.14.x is testing-only.
-# V1 scope: Huey Brain / Legion Go controlled MP3 fixture -> transcription -> cognition bridge -> structured log.
-# Package/runtime contract: keep aligned with pyproject.toml, constraints.txt, README-v101.0.md, and master-plan-v101.0.json.
+# Repository requirements baseline — Python 3.13.x only (>=3.13,<3.14)
 #
 # Typical usage:
 #   python -m pip install --upgrade pip setuptools wheel
@@ -11,68 +8,418 @@
 #   python -m pip install -c constraints.txt -e ".[dev]"
 #
 # Notes:
-# - This file intentionally tracks the supported core + dev baseline that repository checks validate.
-# - Optional ml/data/cloud/audio stacks remain declared in pyproject extras and are installed separately.
-# - constraints.txt carries shared anchor pins used by editable installs and extras.
+# - Python 3.13.x only. Every line is marked == "3.13" so the file installs
+#   nothing under 3.10/3.11/3.12 or 3.14 — this is intentional to enforce
+#   the runtime contract. 3.14.x remains testing-only and out of scope here.
+# - Optional ml/data/cloud/audio stacks remain declared in pyproject extras
+#   and are installed separately.
+# - constraints.txt carries shared anchor pins used by editable installs.
 # - Platform-specific markers remain inline where needed.
-# - Keep the pip pin in constraints.txt only. Exact self-pins break pip-compile-based
-#   dependency submission when the runner is executing under a different pip version.
-# - pavucontrol remains a Debian/system package, not a pip dependency when the optional
-#   audio stack is installed.
-# - Patched wheel overlays (for example Redis vector-store compatibility) are optional and documented in docs/development/patched-wheels.md.
+# - pavucontrol remains a Debian/system package, not a pip dependency.
+# - Patched wheel overlays (e.g. Redis vector-store compatibility) are
+#   optional and documented in docs/development/patched-wheels.md.
+#
+# Backports obsoleted by the 3.13 standard library and removed from this file:
+#   async-timeout   -> use asyncio.timeout()
+#   exceptiongroup  -> use built-in ExceptionGroup / except* syntax
+#   tomli           -> use built-in tomllib
+#
+# Previously over-restricted packages restored here (they work fine on 3.13):
+#   aiolimiter, decorator, ffmpeg-python, jsonpatch, jsonpointer,
+#   langchain-core, langchain-protocol, langchain-text-splitters,
+#   langsmith, requests-toolbelt, uuid-utils, voyageai, xxhash, zstandard
 
 -c constraints.txt
 
-# HueyOS requirements
-
-# --- Core ---
-aiofiles==25.1.0
-aiohttp==3.14.3
-aiosqlite==0.22.1
-anyio==4.15.1
-attrs==26.1.0
-certifi==2026.7.22
-cryptography==50.0.1
-evdev==2.0.0; sys_platform == 'linux'
-fastapi==0.141.1
-orjson==3.12.0
-packaging==26.3
-psutil==7.2.2
-pydantic==2.13.5
-pydantic-settings==2.15.0
-PyYAML==6.0.3
-python-multipart==0.0.32
-requests==2.34.2
-sse-starlette==3.4.11
-starlette==1.6.0
-typing-extensions==4.16.0
-uvicorn[standard]==0.52.4; sys_platform != 'emscripten'
-
-# --- Dev toolchain ---
-bandit==1.9.4
-black==26.5.1
-chromedriver-autoinstaller==0.6.4
-click==8.5.0
-coloredlogs==15.0.1
-debugpy==1.8.21
-docker==7.2.0
-flake8==7.3.0
-flake8-bugbear==26.9.9
-httpx==0.28.1
-ipython==9.17.1
-isort==9.0.1
-mypy==2.3.1
-pip-tools==7.6.1
-pre-commit==4.6.2
-pytest==9.1.1
-pytest-asyncio==1.4.0
-pytest-cov==7.1.0
-rich==15.0.0
-ruff==0.16.7
-types-PyYAML==6.0.12.20260724
-types-requests==2.33.0.20260906
-uv==0.12.13
-
-# --- Packaging / installer tools ---
-setuptools==84.0.0
-wheel==0.48.0
+aiofiles==25.1.0 ; python_version == "3.13"
+aiohappyeyeballs==2.7.1 ; python_version == "3.13"
+aiohttp==3.14.3 ; python_version == "3.13"
+aiolimiter==1.2.1 ; python_version == "3.13"
+aiosignal==1.4.0 ; python_version == "3.13"
+aiosqlite==0.22.1 ; python_version == "3.13"
+annotated-doc==0.0.5 ; python_version == "3.13"
+annotated-types==0.8.0 ; python_version == "3.13"
+anthropic==0.75.0 ; python_version == "3.13"
+anyio==4.15.1 ; python_version == "3.13"
+appnope==0.1.4 ; python_version == "3.13" and platform_system == "Darwin"
+asttokens==3.0.2 ; python_version == "3.13"
+attrs==26.1.0 ; python_version == "3.13"
+audioop-lts==0.2.2 ; python_version == "3.13"
+automat==25.4.16 ; python_version == "3.13"
+azure-core==1.37.0 ; python_version == "3.13"
+azure-identity==1.25.3 ; python_version == "3.13"
+backoff==2.2.1 ; python_version == "3.13"
+bandit==1.9.4 ; python_version == "3.13"
+banks==2.5.0 ; python_version == "3.13"
+bcrypt==5.0.0 ; python_version == "3.13"
+beautifulsoup4==4.13.5 ; python_version == "3.13"
+black==26.5.1 ; python_version == "3.13"
+bleach==6.4.0 ; python_version == "3.13"
+boto3==1.43.69 ; python_version == "3.13"
+botocore==1.43.69 ; python_version == "3.13"
+brotli==1.2.0 ; python_version == "3.13" and platform_python_implementation == "CPython"
+brotlicffi==1.2.0.1 ; python_version == "3.13" and platform_python_implementation != "CPython"
+build==1.5.0 ; python_version == "3.13"
+certifi==2026.7.22 ; python_version == "3.13"
+cffi==2.1.1 ; python_version == "3.13"
+charset-normalizer==3.4.9 ; python_version == "3.13"
+chromadb==1.1.0 ; python_version == "3.13"
+chromedriver-autoinstaller==0.6.4 ; python_version == "3.13"
+click==8.5.0 ; python_version == "3.13"
+colorama==0.4.6 ; python_version == "3.13"
+coloredlogs==15.0.1 ; python_version == "3.13"
+comm==0.2.3 ; python_version == "3.13"
+constantly==23.10.4 ; python_version == "3.13"
+croniter==2.0.7 ; python_version == "3.13"
+cryptography==50.0.1 ; python_version == "3.13"
+cssselect==1.5.0 ; python_version == "3.13"
+dataclasses-json==0.6.7 ; python_version == "3.13"
+ddgs==9.14.4 ; python_version == "3.13"
+debugpy==1.8.21 ; python_version == "3.13"
+decorator==5.3.1 ; python_version == "3.13"
+defusedxml==0.7.1 ; python_version == "3.13"
+deprecated==1.3.1 ; python_version == "3.13"
+dirtyjson==1.0.8 ; python_version == "3.13"
+distro==1.9.0 ; python_version == "3.13"
+docker==7.2.0 ; python_version == "3.13"
+docstring-parser==0.18.0 ; python_version == "3.13"
+docx2txt==0.8 ; python_version == "3.13"
+durationpy==0.10 ; python_version == "3.13"
+ebooklib==0.18 ; python_version == "3.13"
+elastic-transport==8.19.0 ; python_version == "3.13"
+elasticsearch==8.19.3 ; python_version == "3.13"
+eval-type-backport==0.4.0 ; python_version == "3.13"
+evdev==2.0.0 ; python_version == "3.13" and sys_platform == "linux"
+executing==2.2.1 ; python_version == "3.13"
+fake-useragent==2.2.0 ; python_version == "3.13"
+fastapi==0.141.1 ; python_version == "3.13"
+fastjsonschema==2.22.1 ; python_version == "3.13"
+fastuuid==0.14.0 ; python_version == "3.13"
+feedfinder2==0.0.4 ; python_version == "3.13"
+feedparser-sgmllib==2.1.0 ; python_version == "3.13"
+feedparser==6.0.14 ; python_version == "3.13"
+ffmpeg-python==0.2.0 ; python_version == "3.13"
+filelock==3.32.2 ; python_version == "3.13"
+filetype==1.2.0 ; python_version == "3.13"
+firecrawl-py==4.35.0 ; python_version == "3.13"
+flake8==7.3.0 ; python_version == "3.13"
+flake8-bugbear==26.9.9 ; python_version == "3.13"
+flatbuffers==25.12.19 ; python_version == "3.13"
+frozenlist==1.8.0 ; python_version == "3.13"
+fsspec==2026.7.0 ; python_version == "3.13"
+future==1.0.0 ; python_version == "3.13"
+gkeepapi==0.15.1 ; python_version == "3.13"
+google-api-core==2.33.0 ; python_version == "3.13"
+google-api-python-client==2.187.0 ; python_version == "3.13"
+google-auth-httplib2==0.2.1 ; python_version == "3.13"
+google-auth-oauthlib==1.4.0 ; python_version == "3.13"
+google-auth==2.56.3 ; python_version == "3.13"
+google-genai==1.75.0 ; python_version == "3.13"
+googleapis-common-protos==1.75.0 ; python_version == "3.13"
+gpsoauth==2.0.0 ; python_version == "3.13"
+greenlet==3.5.5 ; python_version == "3.13"
+griffe==1.15.0 ; python_version == "3.13"
+grpcio==1.75.0 ; python_version == "3.13"
+h11==0.16.0 ; python_version == "3.13"
+h2==4.4.1 ; python_version == "3.13"
+hf-xet==1.6.0 ; python_version == "3.13" and (platform_machine == "x86_64" or platform_machine == "amd64" or platform_machine == "arm64" or platform_machine == "aarch64")
+hpack==4.2.0 ; python_version == "3.13"
+html2text==2024.2.26 ; python_version == "3.13"
+httpcore==1.0.9 ; python_version == "3.13"
+httplib2==0.32.0 ; python_version == "3.13"
+httptools==0.8.0 ; python_version == "3.13"
+httpx-socks==0.10.1 ; python_version == "3.13"
+httpx-sse==0.4.3 ; python_version == "3.13"
+httpx==0.28.1 ; python_version == "3.13"
+huggingface-hub==0.35.0 ; python_version == "3.13"
+humanfriendly==10.0 ; python_version == "3.13"
+hyperframe==6.1.0 ; python_version == "3.13"
+hyperlink==21.0.0 ; python_version == "3.13"
+idna==3.18 ; python_version == "3.13"
+importlib-metadata==8.9.0 ; python_version == "3.13"
+importlib-resources==7.1.0 ; python_version == "3.13"
+incremental==24.11.0 ; python_version == "3.13"
+iniconfig==2.3.0 ; python_version == "3.13"
+invoke==3.0.3 ; python_version == "3.13"
+ipykernel==6.31.0 ; python_version == "3.13"
+ipython-pygments-lexers==1.1.1 ; python_version == "3.13"
+ipython==9.17.1 ; python_version == "3.13"
+isort==9.0.1 ; python_version == "3.13"
+itemadapter==0.13.1 ; python_version == "3.13"
+itemloaders==1.4.0 ; python_version == "3.13"
+jedi==0.20.0 ; python_version == "3.13"
+jieba3k==0.35.1 ; python_version == "3.13"
+jinja2==3.1.6 ; python_version == "3.13"
+jiter==0.16.0 ; python_version == "3.13"
+jmespath==1.1.0 ; python_version == "3.13"
+joblib==1.5.3 ; python_version == "3.13"
+jsonpatch==1.33 ; python_version == "3.13"
+jsonpath-python==1.1.6 ; python_version == "3.13"
+jsonpointer==3.1.1 ; python_version == "3.13"
+jsonschema-specifications==2025.9.1 ; python_version == "3.13"
+jsonschema==4.26.0 ; python_version == "3.13"
+jupyter-client==8.9.1 ; python_version == "3.13"
+jupyter-core==5.9.1 ; python_version == "3.13"
+jupyterlab-pygments==0.3.0 ; python_version == "3.13"
+kubernetes==36.0.3 ; python_version == "3.13"
+langchain-core==1.5.4 ; python_version == "3.13"
+langchain-protocol==0.0.18 ; python_version == "3.13"
+langchain-text-splitters==1.1.2 ; python_version == "3.13"
+langsmith==0.10.18 ; python_version == "3.13"
+litellm==1.100.1 ; python_version == "3.13"
+llama-index-core==0.14.23 ; python_version == "3.13"
+llama-index-embeddings-azure-openai==0.5.2 ; python_version == "3.13"
+llama-index-embeddings-google-genai==0.6.0 ; python_version == "3.13"
+llama-index-embeddings-huggingface-api==0.6.0 ; python_version == "3.13"
+llama-index-embeddings-mistralai==0.6.0 ; python_version == "3.13"
+llama-index-embeddings-ollama==0.10.0 ; python_version == "3.13"
+llama-index-embeddings-openai-like==0.4.0 ; python_version == "3.13"
+llama-index-embeddings-openai==0.6.0 ; python_version == "3.13"
+llama-index-embeddings-voyageai==0.7.0 ; python_version == "3.13"
+llama-index-instrumentation==0.5.0 ; python_version == "3.13"
+llama-index-llms-anthropic==0.12.0 ; python_version == "3.13"
+llama-index-llms-azure-openai==0.5.5 ; python_version == "3.13"
+llama-index-llms-google-genai==0.11.1 ; python_version == "3.13"
+llama-index-llms-huggingface-api==0.8.0 ; python_version == "3.13"
+llama-index-llms-mistralai==0.11.0 ; python_version == "3.13"
+llama-index-llms-ollama==0.11.0 ; python_version == "3.13"
+llama-index-llms-openai-like==0.8.0 ; python_version == "3.13"
+llama-index-llms-openai==0.7.10 ; python_version == "3.13"
+llama-index-readers-chatgpt-plugin==0.4.1 ; python_version == "3.13"
+llama-index-readers-database==0.5.1 ; python_version == "3.13"
+llama-index-readers-file==0.5.4 ; python_version == "3.13"
+llama-index-readers-github==0.8.2 ; python_version == "3.13"
+llama-index-readers-google==0.7.3 ; python_version == "3.13"
+llama-index-readers-microsoft-onedrive==0.4.1 ; python_version == "3.13"
+llama-index-readers-twitter==0.4.1 ; python_version == "3.13"
+llama-index-readers-web==0.5.6 ; python_version == "3.13"
+llama-index-utils-huggingface==0.4.1 ; python_version == "3.13"
+llama-index-vector-stores-chroma==0.5.5 ; python_version == "3.13"
+llama-index-vector-stores-elasticsearch==0.5.1 ; python_version == "3.13"
+llama-index-vector-stores-pinecone==0.7.1 ; python_version == "3.13"
+llama-index-vector-stores-qdrant==0.8.8 ; python_version == "3.13"
+llama-index-vector-stores-redis==0.6.2 ; python_version == "3.13"
+llama-index-workflows==2.23.0 ; python_version == "3.13"
+llama-index==0.14.23 ; python_version == "3.13"
+lxml-html-clean==0.4.5 ; python_version == "3.13"
+lxml==6.1.1 ; python_version == "3.13"
+markdown-it-py==4.2.0 ; python_version == "3.13"
+markdown==3.10.3 ; python_version == "3.13"
+markdownify==1.2.3 ; python_version == "3.13"
+markupsafe==3.0.3 ; python_version == "3.13"
+marshmallow==3.26.2 ; python_version == "3.13"
+matplotlib-inline==0.2.2 ; python_version == "3.13"
+mcp==1.29.0 ; python_version == "3.13"
+mdurl==0.1.2 ; python_version == "3.13"
+mistralai==2.9.2 ; python_version == "3.13"
+mistune==3.3.4 ; python_version == "3.13"
+ml-dtypes==0.4.1 ; python_version == "3.13"
+mmh3==5.2.1 ; python_version == "3.13"
+mouseinfo==0.1.3 ; python_version == "3.13"
+mpmath==1.3.0 ; python_version == "3.13"
+msal-extensions==1.3.1 ; python_version == "3.13"
+msal==1.37.0 ; python_version == "3.13"
+mss==9.0.2 ; python_version == "3.13"
+multidict==6.7.1 ; python_version == "3.13"
+mypy==2.3.1 ; python_version == "3.13"
+mypy-extensions==1.1.0 ; python_version == "3.13"
+nbclient==0.11.0 ; python_version == "3.13"
+nbconvert==7.17.1 ; python_version == "3.13"
+nbformat==5.11.0 ; python_version == "3.13"
+nest-asyncio==1.6.0 ; python_version == "3.13"
+networkx==3.6.1 ; python_version == "3.13"
+newspaper3k==0.2.8 ; python_version == "3.13"
+nltk==3.10.2 ; python_version == "3.13"
+numpy==2.5.2 ; python_version == "3.13"
+oauth2client==4.1.3 ; python_version == "3.13"
+oauthlib==3.3.1 ; python_version == "3.13"
+ollama==0.6.2 ; python_version == "3.13"
+onnxruntime==1.22.1 ; python_version == "3.13"
+openai-agents==0.6.9 ; python_version == "3.13"
+openai==2.54.0 ; python_version == "3.13"
+opencv-python==4.11.0.86 ; python_version == "3.13"
+opentelemetry-api==1.44.0 ; python_version == "3.13"
+opentelemetry-exporter-otlp-proto-common==1.44.0 ; python_version == "3.13"
+opentelemetry-exporter-otlp-proto-grpc==1.44.0 ; python_version == "3.13"
+opentelemetry-proto==1.44.0 ; python_version == "3.13"
+opentelemetry-sdk==1.44.0 ; python_version == "3.13"
+opentelemetry-semantic-conventions==0.65b0 ; python_version == "3.13"
+orjson==3.12.0 ; python_version == "3.13"
+outcome==1.3.0.post0 ; python_version == "3.13"
+overrides==7.7.0 ; python_version == "3.13"
+oxylabs==3.0.0 ; python_version == "3.13"
+packaging==26.3 ; python_version == "3.13"
+pandas==2.2.3 ; python_version == "3.13"
+pandocfilters==1.5.1 ; python_version == "3.13"
+paramiko==4.0.0 ; python_version == "3.13"
+parsel==1.11.0 ; python_version == "3.13"
+parso==0.8.7 ; python_version == "3.13"
+pexpect==4.9.0 ; python_version == "3.13" and sys_platform != "win32" and sys_platform != "emscripten"
+pillow==12.3.0 ; python_version == "3.13"
+pinecone-plugin-interface==0.0.7 ; python_version == "3.13"
+pinecone==7.0.1 ; python_version == "3.13"
+pip-tools==7.6.1 ; python_version == "3.13"
+platformdirs==4.11.2 ; python_version == "3.13"
+playwright==1.62.0 ; python_version == "3.13"
+pluggy==1.6.0 ; python_version == "3.13"
+portalocker==3.2.0 ; python_version == "3.13"
+posthog==5.4.0 ; python_version == "3.13"
+pre-commit==4.6.2 ; python_version == "3.13"
+primp==1.3.1 ; python_version == "3.13"
+prompt-toolkit==3.0.53 ; python_version == "3.13"
+propcache==0.5.2 ; python_version == "3.13"
+protego==0.6.2 ; python_version == "3.13"
+proto-plus==1.28.2 ; python_version == "3.13"
+protobuf==5.29.6 ; python_version == "3.13"
+psutil==7.2.2 ; python_version == "3.13"
+ptyprocess==0.7.0 ; python_version == "3.13" and sys_platform != "win32" and sys_platform != "emscripten"
+pure-eval==0.2.3 ; python_version == "3.13"
+pyaes==1.6.1 ; python_version == "3.13"
+pyasn1-modules==0.4.2 ; python_version == "3.13"
+pyasn1==0.6.4 ; python_version == "3.13"
+pyaudio==0.2.14 ; python_version == "3.13"
+pyautogui==0.9.54 ; python_version == "3.13"
+pybase64==1.5.0 ; python_version == "3.13"
+pycparser==3.0 ; python_version == "3.13" and implementation_name != "PyPy"
+pycryptodomex==3.23.0 ; python_version == "3.13"
+pydantic-core==2.46.4 ; python_version == "3.13"
+pydantic-settings==2.15.0 ; python_version == "3.13"
+pydantic==2.13.5 ; python_version == "3.13"
+pydispatcher==2.0.7 ; python_version == "3.13" and platform_python_implementation == "CPython"
+pydrive==1.3.1 ; python_version == "3.13"
+pydub==0.25.1 ; python_version == "3.13"
+pyee==13.0.1 ; python_version == "3.13"
+pygame==2.6.1 ; python_version == "3.13"
+pygetwindow==0.0.9 ; python_version == "3.13"
+pygments==2.19.2 ; python_version == "3.13"
+pyjwt==2.13.0 ; python_version == "3.13"
+pymsgbox==2.0.1 ; python_version == "3.13"
+pynacl==1.6.2 ; python_version == "3.13"
+pynput==1.8.2 ; python_version == "3.13"
+pyobjc-core==12.2.2 ; python_version == "3.13" and (platform_system == "Darwin" or sys_platform == "darwin")
+pyobjc-framework-applicationservices==12.2.2 ; python_version == "3.13" and sys_platform == "darwin"
+pyobjc-framework-cocoa==12.2.2 ; python_version == "3.13" and (platform_system == "Darwin" or sys_platform == "darwin")
+pyobjc-framework-coretext==12.2.2 ; python_version == "3.13" and sys_platform == "darwin"
+pyobjc-framework-quartz==12.2.2 ; python_version == "3.13" and (platform_system == "Darwin" or sys_platform == "darwin")
+pyopenssl==26.4.0 ; python_version == "3.13"
+pyparsing==3.3.2 ; python_version == "3.13"
+pypdf==6.15.0 ; python_version == "3.13"
+pyperclip==1.11.0 ; python_version == "3.13"
+pypika==0.51.1 ; python_version == "3.13"
+pyproject-hooks==1.2.0 ; python_version == "3.13"
+pypydispatcher==2.1.2 ; python_version == "3.13" and platform_python_implementation == "PyPy"
+pyreadline3==3.5.6 ; python_version == "3.13" and sys_platform == "win32"
+pyrect==0.2.0 ; python_version == "3.13"
+pyscreeze==1.0.1 ; python_version == "3.13"
+pyserial==3.5 ; python_version == "3.13"
+pyside6-addons==6.9.1 ; python_version == "3.13"
+pyside6-essentials==6.9.1 ; python_version == "3.13"
+pyside6==6.9.1 ; python_version == "3.13"
+pysocks==1.7.1 ; python_version == "3.13"
+pytest==9.1.1 ; python_version == "3.13"
+pytest-asyncio==1.4.0 ; python_version == "3.13"
+pytest-cov==7.1.0 ; python_version == "3.13"
+python-dateutil==2.9.0.post0 ; python_version == "3.13"
+python-dotenv==1.2.2 ; python_version == "3.13"
+python-markdown-math==0.8 ; python_version == "3.13"
+python-multipart==0.0.32 ; python_version == "3.13"
+python-socks==3.0.0 ; python_version == "3.13"
+python-ulid==3.2.1 ; python_version == "3.13"
+python-xlib==0.33 ; python_version == "3.13" and sys_platform == "linux"
+python3-xlib==0.15 ; python_version == "3.13" and platform_system == "Linux"
+pytweening==1.2.0 ; python_version == "3.13"
+pytz==2026.3.post1 ; python_version == "3.13"
+pywin32==312 ; python_version == "3.13" and (sys_platform == "win32" or platform_system == "Windows")
+pyxdg==0.28 ; python_version == "3.13" and platform_system == "Linux"
+pyyaml==6.0.3 ; python_version == "3.13"
+pyzmq==27.1.0 ; python_version == "3.13"
+qasync==0.27.1 ; python_version == "3.13"
+qdrant-client==1.15.1 ; python_version == "3.13"
+qt-material==2.17 ; python_version == "3.13"
+queuelib==1.9.0 ; python_version == "3.13"
+redis==5.3.1 ; python_version == "3.13"
+redisvl==0.4.1 ; python_version == "3.13"
+referencing==0.37.0 ; python_version == "3.13"
+regex==2026.7.19 ; python_version == "3.13"
+requests-file==3.0.1 ; python_version == "3.13"
+requests-oauthlib==2.0.0 ; python_version == "3.13"
+requests-toolbelt==1.0.0 ; python_version == "3.13"
+requests==2.34.2 ; python_version == "3.13"
+rich==15.0.0 ; python_version == "3.13"
+rpds-py==2026.6.3 ; python_version == "3.13"
+rsa==4.9.1 ; python_version == "3.13"
+rubicon-objc==0.5.6 ; python_version == "3.13" and platform_system == "Darwin"
+ruff==0.16.7 ; python_version == "3.13"
+s3transfer==0.19.2 ; python_version == "3.13"
+safetensors==0.8.0 ; python_version == "3.13"
+scrapy==2.17.0 ; python_version == "3.13"
+selenium==4.39.0 ; python_version == "3.13"
+service-identity==26.1.0 ; python_version == "3.13"
+setuptools==84.0.0 ; python_version == "3.13"
+shellingham==1.5.4 ; python_version == "3.13"
+shiboken6==6.9.1 ; python_version == "3.13"
+show-in-file-manager==1.1.6 ; python_version == "3.13"
+six==1.17.0 ; python_version == "3.13"
+sniffio==1.3.1 ; python_version == "3.13"
+socksio==1.0.0 ; python_version == "3.13"
+sortedcontainers==2.4.0 ; python_version == "3.13"
+soupsieve==2.9.2 ; python_version == "3.13"
+speechrecognition==3.17.0 ; python_version == "3.13"
+spider-client==0.0.27 ; python_version == "3.13"
+sqlalchemy==2.0.43 ; python_version == "3.13"
+sse-starlette==3.4.11 ; python_version == "3.13"
+stack-data==0.6.3 ; python_version == "3.13"
+standard-aifc==3.13.0 ; python_version == "3.13"
+standard-chunk==3.13.0 ; python_version == "3.13"
+starlette==1.6.0 ; python_version == "3.13"
+striprtf==0.0.26 ; python_version == "3.13"
+sympy==1.14.0 ; python_version == "3.13"
+tabulate==0.9.0 ; python_version == "3.13"
+telethon==1.44.0 ; python_version == "3.13"
+tenacity==9.1.4 ; python_version == "3.13"
+tiktoken==0.11.0 ; python_version == "3.13"
+tinycss2==1.5.1 ; python_version == "3.13"
+tinysegmenter==0.3 ; python_version == "3.13"
+tinytag==2.3.0 ; python_version == "3.13"
+tldextract==5.3.2 ; python_version == "3.13"
+tokenizers==0.22.2 ; python_version == "3.13"
+tornado==6.5.8 ; python_version == "3.13"
+tqdm==4.70.0 ; python_version == "3.13"
+traitlets==5.16.1 ; python_version == "3.13"
+transformers==4.56.2 ; python_version == "3.13"
+trio-websocket==0.12.2 ; python_version == "3.13"
+trio==0.34.0 ; python_version == "3.13"
+tweepy==4.17.0 ; python_version == "3.13"
+twelvelabs==1.2.9 ; python_version == "3.13"
+twisted==26.4.0 ; python_version == "3.13"
+typer==0.27.1 ; python_version == "3.13"
+types-PyYAML==6.0.12.20260724 ; python_version == "3.13"
+types-requests==2.33.0.20260906 ; python_version == "3.13"
+typing-extensions==4.16.0 ; python_version == "3.13"
+typing-inspect==0.9.0 ; python_version == "3.13"
+typing-inspection==0.4.3 ; python_version == "3.13"
+tzdata==2026.3 ; python_version == "3.13"
+uritemplate==4.2.0 ; python_version == "3.13"
+urllib3==2.7.0 ; python_version == "3.13"
+uuid-utils==0.17.0 ; python_version == "3.13"
+uv==0.12.13 ; python_version == "3.13"
+uvicorn[standard]==0.52.4 ; python_version == "3.13" and sys_platform != "emscripten"
+uvloop==0.22.1 ; python_version == "3.13" and platform_python_implementation != "PyPy" and sys_platform != "win32" and sys_platform != "cygwin"
+voyageai==0.3.7 ; python_version == "3.13"
+w3lib==2.4.1 ; python_version == "3.13"
+watchfiles==1.2.0 ; python_version == "3.13"
+wcwidth==0.8.2 ; python_version == "3.13"
+webencodings==0.5.1 ; python_version == "3.13"
+websocket-client==1.9.0 ; python_version == "3.13"
+websockets==15.0.1 ; python_version == "3.13"
+wheel==0.48.0 ; python_version == "3.13"
+wikipedia==1.4.0 ; python_version == "3.13"
+wrapt==2.3.0 ; python_version == "3.13"
+wsproto==1.3.2 ; python_version == "3.13"
+xai-sdk==1.17.0 ; python_version == "3.13"
+xxhash==3.8.1 ; python_version == "3.13"
+yarl==1.24.5 ; python_version == "3.13"
+youtube-transcript-api==0.6.3 ; python_version == "3.13"
+zipp==4.1.0 ; python_version == "3.13"
+zope-interface==8.5 ; python_version == "3.13"
+zstandard==0.25.0 ; python_version == "3.13"

@@ -1,18 +1,32 @@
 # Monkey-Head-Project / HueyOS
 # Global constraints for reproducible installs.
 #
-# This file is consumed by requirements.txt via:
+# Consumed by requirements.txt via:
 #   -c constraints.txt
 #
 # Intent:
-# - keep build tooling and anchor runtime packages aligned across editable installs and extras
-# - stay minimal; requirements.txt remains the authoritative full pin set
-# - preserve flexibility for platform-specific packages by leaving most markers in requirements.txt
+# - Keep build tooling and anchor runtime packages aligned across editable
+#   installs and extras.
+# - Stay minimal; requirements.txt remains the authoritative full pin set.
+# - Every pin in this file MUST match the corresponding pin in
+#   requirements.txt — pip treats constraints as additive, so a mismatch
+#   causes a resolver conflict (not a silent override).
+# - Package markers stay in requirements.txt; this file carries plain pins
+#   for shared anchors only.
 #
 # Target Python:
 #   3.13.x only (>=3.13,<3.14); Python 3.14.x is testing-only
+#
+# Extras-only anchors (pygpt-net, faster-whisper, transformers) are pinned
+# here so editable installs and optional extras resolve to the same versions
+# the repo tests against. They are intentionally NOT listed in the core
+# requirements.txt because they belong to the ml/local-model extras declared
+# in pyproject.toml.
 
 # --- Packaging / installer toolchain ---
+# pip pin lives here only. Exact self-pins in requirements.txt break
+# pip-compile-based dependency submission when the runner uses a different
+# pip version.
 pip==26.2.1
 setuptools==84.0.0
 wheel==0.48.0
@@ -28,11 +42,15 @@ orjson==3.12.0
 aiosqlite==0.22.1
 cryptography==50.0.1
 
-# --- Local model / orchestration anchors ---
+# --- Local model / orchestration anchors (extras) ---
 ollama==0.6.2
 pygpt-net==2.8.16
 faster-whisper==1.2.1
-transformers==5.17.0
+# NOTE: transformers was previously pinned to 5.17.0 here, which conflicts
+# with requirements.txt (4.56.2). Because constraints are additive, that
+# mismatch causes a hard resolver conflict. Aligned to requirements.txt.
+transformers==4.56.2
+
 # --- Developer / QA anchors ---
 pytest==9.1.1
 pytest-cov==7.1.0
