@@ -1,4 +1,27 @@
-# Root config for the repository
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Editor / Whitespace Contract
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Root config for the repository.
+#
+# This file is the single source of truth for indentation, line endings,
+# character sets, and trailing-whitespace policy. It applies to everyone who
+# opens the tree in an EditorConfig-aware editor, which is most of them.
+#
+# Guidance:
+#   * Prefer the narrowest glob that solves the problem. Broad `[*]` rules
+#     should stay minimal so specific sections can override cleanly.
+#   * Every section below intentionally overrides `[*]`; do not "simplify"
+#     by deleting the specific keys.
+#   * If a tool ships its own formatter (gofmt, rustfmt, prettier, black),
+#     match the formatter's choice here rather than fighting it.
+# ---------------------------------------------------------------------------
+
 root = true
 
 ########################################
@@ -18,16 +41,21 @@ max_line_length = 88
 ########################################
 # Documentation and prose
 ########################################
-# Markdown: keep two-space hard breaks. Do not strip trailing spaces.
-[*.md]
+# Markdown / MDX: keep two-space hard breaks. Do not strip trailing spaces.
+[*.{md,markdown,mdx}]
 trim_trailing_whitespace = false
 
 # reStructuredText and AsciiDoc
-[*.{rst,adoc}]
+[*.{rst,rest,adoc,asciidoc}]
+indent_style = space
 indent_size = 4
 trim_trailing_whitespace = false
 
-# Diffs and patches: preserve whitespace exactly
+# Plain text: preserve everything.
+[*.txt]
+trim_trailing_whitespace = false
+
+# Diffs and patches: preserve whitespace exactly. No final newline.
 [*.{patch,diff}]
 trim_trailing_whitespace = false
 insert_final_newline = false
@@ -40,103 +68,199 @@ insert_final_newline = false
 indent_style = space
 indent_size = 2
 
-# JSON and JSONC (VS Code settings, ESLint, etc.) and TOML (pyproject)
-[*.{json,jsonc,toml}]
+# JSON and JSON-family
+[*.{json,jsonc,json5,jsonl,ndjson,webmanifest,geojson}]
 indent_style = space
 indent_size = 2
 
-# INI-style configs (setup.cfg, .editorconfig fragments, systemd)
-[*.{ini,properties,cfg,conf,service,timer,link}]
+# TOML (pyproject, Cargo, rustfmt, etc.)
+[*.toml]
 indent_style = space
 indent_size = 2
 
-# dotenv / env files
+# INI-style configs (setup.cfg, .editorconfig fragments, systemd units)
+[*.{ini,properties,cfg,conf,service,socket,timer,target,link,mount,path}]
+indent_style = space
+indent_size = 2
+
+# dotenv / env files. Note: `.env` and `.env.local` need separate globs.
 [*.env]
 indent_style = space
 indent_size = 2
 end_of_line = lf
 insert_final_newline = true
 
+[.env*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+
+# Lock files are machine-generated; do not touch whitespace.
+[*.{lock,lockb}]
+insert_final_newline = true
+trim_trailing_whitespace = false
+
 ########################################
 # Programming languages
 ########################################
-# Python
-[*.py]
+# --- Python ---------------------------------------------------------------
+# `pyi` are stubs, `pyw` are Windows launchers, `pyx`/`pxd` are Cython.
+[*.{py,pyi,pyw,pyx,pxd,pxi}]
+indent_style = space
+indent_size = 4
+max_line_length = 88
+
+# --- Shell ----------------------------------------------------------------
+# POSIX shells, bash, zsh, ksh, fish, and Nushell all use 4-space in this repo.
+[*.{sh,bash,zsh,ksh,fish,nu}]
 indent_style = space
 indent_size = 4
 
-# Shell scripts
-[*.{sh,bash,zsh}]
+# --- C / C++ --------------------------------------------------------------
+[*.{c,cc,cpp,cxx,h,hh,hpp,hxx,inl,ipp,tpp}]
 indent_style = space
 indent_size = 4
 
-# C/C++
-[*.{c,cc,cpp,h,hpp}]
-indent_style = space
-indent_size = 4
-
-# Rust
+# --- Rust -----------------------------------------------------------------
 [*.rs]
 indent_style = space
 indent_size = 4
 
-# Go (gofmt uses tabs)
-[*.go]
+# --- Go (gofmt uses tabs) -------------------------------------------------
+[*.{go,mod,sum,work}]
 indent_style = tab
 tab_width = 8
 
-# JavaScript / TypeScript
-[*.{js,jsx,ts,tsx,mjs,cjs}]
+# --- JavaScript / TypeScript ---------------------------------------------
+[*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}]
 indent_style = space
 indent_size = 2
 
-# HTML / XML / CSS / SCSS / Less
-[*.{html,htm,xml,xsd,xslt,css,scss,less}]
+# --- Web component frameworks --------------------------------------------
+[*.{vue,svelte,astro}]
 indent_style = space
 indent_size = 2
 
-# SQL
-[*.sql]
+# --- HTML / XML / CSS family ---------------------------------------------
+[*.{html,htm,xhtml,xml,xsd,xslt,xsl,css,scss,sass,less,styl}]
 indent_style = space
 indent_size = 2
 
-# Protocol Buffers
-[*.proto]
+# --- SQL ------------------------------------------------------------------
+[*.{sql,psql,plsql}]
 indent_style = space
 indent_size = 2
 
-# Terraform
-[*.tf]
+# --- Protocol Buffers and gRPC -------------------------------------------
+[*.{proto,proto3}]
 indent_style = space
 indent_size = 2
 
-# Nix
+# --- Terraform / HCL / OpenTofu ------------------------------------------
+[*.{tf,tfvars,hcl,nomad}]
+indent_style = space
+indent_size = 2
+
+# --- Nix ------------------------------------------------------------------
 [*.nix]
 indent_style = space
 indent_size = 2
 
+# --- Ruby -----------------------------------------------------------------
+[*.{rb,rake,gemspec,ru}]
+indent_style = space
+indent_size = 2
+
+# --- PHP ------------------------------------------------------------------
+[*.{php,phtml,php3,php4,php5,phps}]
+indent_style = space
+indent_size = 4
+
+# --- JVM languages --------------------------------------------------------
+[*.{java,kt,kts,scala,sc,groovy,gradle}]
+indent_style = space
+indent_size = 4
+
+# --- C# / F# / VB.NET -----------------------------------------------------
+[*.{cs,csx,fs,fsx,fsi,vb}]
+indent_style = space
+indent_size = 4
+
+# --- Swift / Objective-C --------------------------------------------------
+[*.{swift,m,mm}]
+indent_style = space
+indent_size = 4
+
+# --- Dart -----------------------------------------------------------------
+[*.dart]
+indent_style = space
+indent_size = 2
+
+# --- Lua ------------------------------------------------------------------
+[*.lua]
+indent_style = space
+indent_size = 2
+
+# --- Perl -----------------------------------------------------------------
+[*.{pl,pm,t,pod}]
+indent_style = space
+indent_size = 4
+
+# --- R --------------------------------------------------------------------
+[*.{r,R,rmd,Rmd}]
+indent_style = space
+indent_size = 2
+
+# --- Julia ----------------------------------------------------------------
+[*.jl]
+indent_style = space
+indent_size = 4
+
+# --- Elixir / Erlang ------------------------------------------------------
+[*.{ex,exs,eex,heex,leex,erl,hrl}]
+indent_style = space
+indent_size = 2
+
+# --- Haskell --------------------------------------------------------------
+[*.{hs,lhs,cabal}]
+indent_style = space
+indent_size = 2
+
+# --- Clojure / ClojureScript / EDN ---------------------------------------
+[*.{clj,cljs,cljc,edn}]
+indent_style = space
+indent_size = 2
+
+# --- Vim script -----------------------------------------------------------
+[*.vim]
+indent_style = space
+indent_size = 2
+
+# --- Assembly -------------------------------------------------------------
+[*.{asm,s,S}]
+indent_style = space
+indent_size = 4
+
 ########################################
 # Build and tooling
 ########################################
-# Makefiles: tabs required
-[Makefile]
+# Makefiles: tabs required.
+[{Makefile,GNUmakefile,makefile,*.mk,*.make}]
 indent_style = tab
-
-# Other make fragments
-[*.{mk,make}]
-indent_style = tab
+tab_width = 8
 
 # CMake
 [{CMakeLists.txt,*.cmake}]
 indent_style = space
 indent_size = 2
 
-# Dockerfiles
-[{Dockerfile,**/Dockerfile,*.[Dd]ockerfile}]
+# Dockerfiles (multiple common spellings).
+[{Dockerfile,**/Dockerfile,*.Dockerfile,*.dockerfile,Containerfile,**/Containerfile}]
 indent_style = space
 indent_size = 2
 
-# Git attributes/ignores (keep simple)
+# Git config and ignore files.
 [.gitattributes]
 indent_style = space
 indent_size = 2
@@ -145,27 +269,58 @@ indent_size = 2
 indent_style = space
 indent_size = 2
 
+[.gitmodules]
+indent_style = space
+indent_size = 2
+
+[.gitconfig]
+indent_style = space
+indent_size = 2
+
+# Package-manager and CI dotfiles.
+[{.npmrc,.nvmrc,.yarnrc,.pnpmfile.cjs,.dockerignore,.prettierignore,.eslintignore,.stylelintrc,.babelrc,.browserslistrc}]
+indent_style = space
+indent_size = 2
+
+# Pre-commit, coverage, and tox configs.
+[{.pre-commit-config.yaml,.coveragerc,tox.ini,.flake8}]
+indent_style = space
+indent_size = 2
+
 ########################################
 # OS-specific scripts
 ########################################
-# Windows batch files: CRLF is safer on Windows
+# Windows batch files: CRLF is safer on Windows.
 [*.{bat,cmd}]
 end_of_line = crlf
 charset = utf-8
 insert_final_newline = true
 trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
 
-# PowerShell (CRLF avoids some host issues)
-[*.ps1]
+# PowerShell (CRLF avoids some host issues).
+[*.{ps1,psm1,psd1}]
 end_of_line = crlf
 charset = utf-8
 indent_style = space
-indent_size = 2
+indent_size = 4
 
 ########################################
 # Project meta
 ########################################
-# This file itself and similar dotfiles
-[.{editorconfig,*rc,prettierrc,eslintrc}]
+# Files with no extension that still want a specific style.
+[{LICENSE,LICENCE,COPYING,NOTICE,AUTHORS,CONTRIBUTORS,CHANGELOG,CHANGES,HISTORY}]
+indent_style = space
+indent_size = 4
+
+# Requirement files (no extension or .in/.txt suffix).
+[{requirements.txt,requirements-*.txt,requirements/*.txt,constraints.txt}]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+# This file itself and similar dotfiles.
+[.{editorconfig,*rc,prettierrc,eslintrc,stylelintrc,babelrc}]
 indent_style = space
 indent_size = 2
