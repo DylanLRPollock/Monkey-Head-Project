@@ -1,45 +1,16 @@
-#!/usr/bin/env python3
-# Monkey Head Project
-# By: Dylan L.R. Pollock
-# www.dlrp.ca
-# HueyOS: Check Inter Program Connectivity module (huey/memory/PY)
+"""Compatibility wrapper for :mod:`scripts.repo.check_inter_program_connectivity`."""
 
-# ==================================================
-# This file is a part of the 'Monkey Head Project'
-# Website:   https://dlrp.ca
-# GitHub:  https://github.com/DylanLRPollock/Monkey-Head-Project
-# License:   https://opensource.org/license/gpl-3-0
-# Overseen By:   Dylan L.R. Pollock
-# Updated:   06.12.2025
-# ==================================================
-"""Verify that hueyos and pygpt_net modules import successfully."""
+from __future__ import annotations
 
-import importlib
 import sys
+from pathlib import Path
 
-try:
-    from .pygpt_integration import prepare_pygpt
-except ImportError:  # pragma: no cover - direct script execution
-    from pygpt_integration import prepare_pygpt  # type: ignore
+_ROOT = Path(__file__).resolve().parents[1]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
-
-def check_inter_program_connectivity() -> bool:
-    """Return ``True`` if required packages can be imported."""
-    try:
-        importlib.import_module("huey.os")
-    except Exception:
-        return False
-
-    return prepare_pygpt()
-
-
-def main() -> None:
-    if check_inter_program_connectivity():
-        print("Inter-program connectivity verified")
-        sys.exit(0)
-    print("Inter-program connectivity failed", file=sys.stderr)
-    sys.exit(1)
-
+from scripts.repo.check_inter_program_connectivity import *  # noqa: F401,F403
+from scripts.repo.check_inter_program_connectivity import main
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

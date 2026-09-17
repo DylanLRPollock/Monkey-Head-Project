@@ -1,46 +1,42 @@
-#!/usr/bin/env python3
-"""CLI wrapper for HueyOS FFmpeg environment validation."""
+"""Fixed wrapper for Huey FFmpeg environment validation."""
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+from pathlib import Path
 
-from huey.media.ffmpeg_validator import validate_ffmpeg_environment
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SRC_PATH = REPO_ROOT / "src"
+if str(SRC_PATH) not in sys.path:
+    sys.path.insert(0, str(SRC_PATH))
+
+from huey.media.ffmpeg_validator import validate_media_environment
 
 
 def build_parser() -> argparse.ArgumentParser:
-    """Build the command-line parser."""
-    parser = argparse.ArgumentParser(
-        description="Check FFmpeg readiness for HueyOS V1 media preparation."
-    )
+    parser = argparse.ArgumentParser(description="Validate FFmpeg availability")
+    parser.add_argument("--json", action="store_true", help="Emit JSON output")
     parser.add_argument(
-        "--ffmpeg-bin", default="ffmpeg", help="FFmpeg binary name or path."
-    )
-    parser.add_argument(
-        "--ffprobe-bin", default="ffprobe", help="ffprobe binary name or path."
-    )
-    parser.add_argument(
-        "--json", action="store_true", help="Print machine-readable JSON."
+        "--strict",
+        action="store_true",
+        help="Return a non-zero exit code when FFmpeg is unavailable",
     )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Run the FFmpeg readiness check."""
     args = build_parser().parse_args(argv)
-    report = validate_ffmpeg_environment(
-        ffmpeg_bin=args.ffmpeg_bin, ffprobe_bin=args.ffprobe_bin
-    )
+    payload = validate_media_environment()
     if args.json:
-        print(report.to_json())
+        print(json.dumps(payload, sort_keys=True))
     else:
-        status = "ready" if report.v1_ready else "not ready"
-        print(f"FFmpeg environment: {status}")
-        for note in report.notes:
-            print(f"- {note}")
-    return 0 if report.v1_ready else 2
+        print(payload)
+    if args.strict and not payload.get("ready"):
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())
