@@ -1,15 +1,104 @@
-# CODEOWNERS — Monkey‑Head‑Project (HueyOS)
-# Docs: https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
-# Order matters: the last matching pattern wins.
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Repository / Code Ownership
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# CODEOWNERS assigns reviewers to pull requests based on file paths.
+#
+# How it works:
+#   * The LAST matching pattern wins. Put specific paths after the
+#     catch-all `*` rule -- not before it. This is the opposite of
+#     .gitignore, where the first match wins.
+#   * This file must live on the repository's default branch to take
+#     effect. Editing it on a feature branch has no immediate impact.
+#   * Every listed owner must have write access to the repository, or
+#     the entry is silently ignored for review-request purposes.
+#   * CODEOWNERS requests reviews. It does NOT block merges unless a
+#     branch protection rule or ruleset requires "Require review from
+#     Code Owners" to pass.
+#
+# Format reference:
+#   https://docs.github.com/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Conventions:
+#   * Patterns are POSIX-style, matched against paths from the repo root.
+#     A leading `/` anchors to the root; a trailing `/` matches a directory
+#     and everything under it.
+#   * `*` in the middle of a segment matches within that segment; `**`
+#     matches across segments.
+#   * Keep one owner per section while the project has a single maintainer.
+#     The explicit entries are here so the intent survives if that changes.
+#   * Do not remove an entry because it duplicates the default. If the
+#     default owner ever changes, the explicit entries are what preserve
+#     review coverage on the paths that matter.
 
-# Default: everything falls to Dylan unless overridden below.
+# ---------------------------------------------------------------------------
+# Default
+# ---------------------------------------------------------------------------
+# Everything not matched by a more specific rule below falls to the
+# maintainer. This is the catch-all and must stay first.
+
 *                       @DylanLRPollock
 
-# Targeted ownership (more specific paths below)
-/src/huey/api.py        @DylanLRPollock
-/docs/                  @DylanLRPollock
+# ---------------------------------------------------------------------------
+# Security-critical paths
+# ---------------------------------------------------------------------------
+# These files define the project's security posture or hold secrets-
+# adjacent configuration. Reviews here should consider the prompts in
+# `.github/pull_request_template.md` under "Security considerations".
 
-# Optional extras you may want (uncomment as needed)
-# /.github/              @DylanLRPollock      # workflows, issue templates, etc.
-# **/*.md                @DylanLRPollock      # all Markdown across the repo
-# /scripts/              @DylanLRPollock      # dev/ops scripts
+# CI/CD workflows and the action pin registry.
+/.github/workflows/     @DylanLRPollock
+/.github/dependabot.yml @DylanLRPollock
+
+# CODEOWNERS itself -- a change here can silently reassign review
+# responsibility, so it warrants the same scrutiny as a workflow change.
+/.github/CODEOWNERS     @DylanLRPollock
+
+# Auth, API surface, and the token-handling entry point.
+/src/huey/api.py        @DylanLRPollock
+/src/hueyos/api/        @DylanLRPollock
+
+# Secret-adjacent example and schema files.
+/huey.env.example       @DylanLRPollock
+
+# Security baseline and the guardrail scripts that enforce it.
+/bandit-baseline.json   @DylanLRPollock
+
+# ---------------------------------------------------------------------------
+# Build and dependency config
+# ---------------------------------------------------------------------------
+# Changes to these files alter what gets installed on the robot and what
+# the dependency-sync guardrail compares. They should never land without
+# a passing `make check-deps-sync`.
+
+/pyproject.toml         @DylanLRPollock
+/constraints.txt        @DylanLRPollock
+/requirements*.txt      @DylanLRPollock
+
+# ---------------------------------------------------------------------------
+# Repository guardrails
+# ---------------------------------------------------------------------------
+# The scripts run by `make lint`. A weakened guardrail is a silent
+# quality regression, so changes here get the same review as source.
+
+/scripts/               @DylanLRPollock
+
+# Root-level tooling config that governs formatting and linting across
+# the whole tree.
+/.pre-commit-config.yaml @DylanLRPollock
+/.editorconfig          @DylanLRPollock
+/.flake8                @DylanLRPollock
+
+# ---------------------------------------------------------------------------
+# Documentation
+# ---------------------------------------------------------------------------
+# Docs are user-facing behaviour; they get the same review weight as
+# source. `.md` files anywhere in the tree are covered by the default
+# rule above; this entry pins the primary docs tree explicitly.
+
+/docs/                  @DylanLRPollock
