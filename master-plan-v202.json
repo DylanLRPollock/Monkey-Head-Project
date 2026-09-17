@@ -1,10 +1,10 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "document_schema": "master_plan_schema_v202",
+  "schema_version": 202.0,
+  "schema_contract_version": "master_plan_schema_v202",
   "project": "Monkey-Head-Project",
   "ai_identity": "Huey",
   "version": "Unified V202",
-  "schema_version": 202.0,
-  "schema_contract_version": "master_plan_schema_v202",
   "document_kind": "machine_facing_master_plan",
   "status_date": "2026-09-16",
   "created_by": "Dylan L.R. Pollock",
@@ -42,14 +42,32 @@
     ],
     "inheritance_policy": "Carry forward previous implementation evidence and lineage unless Unified V202 explicitly changes the direction. Do not present target-state decisions as already implemented."
   },
-  "truth_model": {
-    "current_reality": "Observed hardware, merged code, working commands, and directly verified behavior.",
-    "accepted_direction": "Architecture Dylan has selected for implementation, even when migration is incomplete.",
-    "provisional_choice": "A working selection that remains replaceable through evidence.",
-    "unresolved": "A decision intentionally left open pending additional detail or testing.",
-    "target_state": "A longer-term capability whose implementation depends on resources, maturity, or later validation.",
-    "historical_lineage": "Earlier systems and decisions retained for continuity without overriding current direction."
-  },
+  "truth_model": [
+    {
+      "state": "current_reality",
+      "definition": "Observed hardware, merged code, working commands, and directly verified behavior."
+    },
+    {
+      "state": "accepted_direction",
+      "definition": "Architecture Dylan has selected for implementation, even when migration is incomplete."
+    },
+    {
+      "state": "provisional_choice",
+      "definition": "A working selection that remains replaceable through evidence."
+    },
+    {
+      "state": "unresolved",
+      "definition": "A decision intentionally left open pending additional detail or testing."
+    },
+    {
+      "state": "target_state",
+      "definition": "A longer-term capability whose implementation depends on resources, maturity, or later validation."
+    },
+    {
+      "state": "historical_lineage",
+      "definition": "Earlier systems and decisions retained for continuity without overriding current direction."
+    }
+  ],
   "canon": {
     "authority": "Dylan L.R. Pollock",
     "rule": "No agent, tool, contributor, generated document, branch, or pull request may independently lock canon.",
@@ -108,10 +126,10 @@
       "power_delivery": "Dual Corsair RM1000x PSUs linked via Add2PSU adapter for stable, high-capacity load distribution."
     },
     "unresolved_boundaries": [
-      "Whether Huey identity spans all three parts or is embodied authoritatively by Brain",
-      "Where canonical memory, models, logs, and state reside",
       "Communication and authentication protocols",
-      "Disconnected and degraded operation"
+      "Disconnected and degraded operation",
+      "Where canonical memory, models, logs, and state reside",
+      "Whether Huey identity spans all three parts or is embodied authoritatively by Brain"
     ]
   },
   "hardware_direction": {
@@ -121,11 +139,38 @@
     },
     "pcie_device_allocation": {
       "total_devices": 5,
-      "device_1": "Basic discrete GPU for system display output and I/O boot tasks",
-      "device_2": "Nvidia Tesla V100 32 GB accelerator (via PCIe riser)",
-      "device_3": "Nvidia Tesla V100 32 GB accelerator (via PCIe riser)",
-      "device_4": "Nvidia Tesla V100 32 GB accelerator (via PCIe riser)",
-      "device_5": "Nvidia Tesla V100 32 GB accelerator (via PCIe riser)"
+      "devices": [
+        {
+          "id": 1,
+          "type": "basic_discrete_gpu",
+          "role": "system_display_output_and_io_boot_tasks",
+          "connection": "motherboard"
+        },
+        {
+          "id": 2,
+          "type": "nvidia_tesla_v100_32gb",
+          "role": "accelerator",
+          "connection": "pcie_riser"
+        },
+        {
+          "id": 3,
+          "type": "nvidia_tesla_v100_32gb",
+          "role": "accelerator",
+          "connection": "pcie_riser"
+        },
+        {
+          "id": 4,
+          "type": "nvidia_tesla_v100_32gb",
+          "role": "accelerator",
+          "connection": "pcie_riser"
+        },
+        {
+          "id": 5,
+          "type": "nvidia_tesla_v100_32gb",
+          "role": "accelerator",
+          "connection": "pcie_riser"
+        }
+      ]
     },
     "cooling_and_safety": {
       "transition_cooling": "Provisional air exchange to facilitate the rapid standing up of the physical shell.",
@@ -179,7 +224,10 @@
   "experimental_subprojects": {
     "huey_nexus_controller": {
       "status": "experimental_and_provisional",
-      "devices": ["Google Nexus 5", "Google Nexus 7"],
+      "devices": [
+        "Google Nexus 5",
+        "Google Nexus 7"
+      ],
       "interaction_model": "Primarily terminal-based or SSH for initial implementation.",
       "rule": "This is a sandbox concept subject to change or complete removal. It serves as food for thought and does not possess canonical authority."
     }
