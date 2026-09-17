@@ -4,8 +4,6 @@
   <img src="src/huey/memory/PNG/HueyOS.png" alt="HueyOS - Monkey-Head-Project" width="80%">
 </p>
 
-<h2 align="center">HueyOS</h2>
-
 <p align="center"><strong>Philosophy: "Breathing new life into old tech"</strong></p>
 
 <p align="center"><strong>One embodied AI node first. A deliberate collective later.</strong></p>
