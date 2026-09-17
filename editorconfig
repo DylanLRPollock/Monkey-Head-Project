@@ -1,21 +1,217 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Editor / Whitespace Contract
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# EditorConfig is a contract, not a formatter. It tells an editor what
+# indentation and line endings to *offer* the contributor; it does not
+# reformat on save and it does not run in CI. The real enforcement of these
+# settings happens via the pre-commit hooks (trailing-whitespace,
+# end-of-file-fixer, mixed-line-ending) and via Black / Ruff for Python.
+#
+# This file and the .pre-commit-config.yaml should stay in agreement:
+#   * `indent_size = 4` for Python matches Black's default.
+#   * `end_of_line = lf` matches `mixed-line-ending --fix=lf`.
+#   * `insert_final_newline = true` matches `end-of-file-fixer`.
+#   * `trim_trailing_whitespace = true` matches `trailing-whitespace`,
+#     except for Markdown, where the hook is configured to preserve it.
+#
+# Sections apply top-to-bottom and later rules win, so `[*.md]` below
+# deliberately overrides the broader `[*]` and `[*.{...}]` blocks.
+
 root = true
 
+########################################
+# Global defaults
+########################################
 [*]
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
-
-[*.py]
 indent_style = space
 indent_size = 4
 
-[*.{yml,yaml,toml,json,md}]
+# Advisory. Not a core EditorConfig key, but respected by many IDEs/linters.
+# Kept in sync with Black and .flake8.
+max_line_length = 88
+
+########################################
+# Documentation and prose
+########################################
+# Markdown: keep two-space hard breaks. Must come *after* the broad
+# extension list below so it overrides it.
+[*.{md,markdown,mdx}]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false
+
+# reStructuredText and AsciiDoc
+[*.{rst,rest,adoc,asciidoc}]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = false
+
+# Diffs and patches: preserve whitespace exactly, no final newline.
+[*.{patch,diff}]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+########################################
+# Data and config formats
+########################################
+# YAML, TOML, JSON, and JSON-family files.
+[*.{yml,yaml,toml,json,jsonc,json5,jsonl,ndjson,webmanifest}]
 indent_style = space
 indent_size = 2
 
-[*.md]
+# INI-style configs (setup.cfg, systemd units, .editorconfig fragments).
+[*.{ini,properties,cfg,conf,service,socket,timer,target,mount,path}]
+indent_style = space
+indent_size = 2
+
+# dotenv files. The `*.env` glob alone misses `.env.local` and friends.
+[*.env]
+indent_style = space
+indent_size = 2
+
+[.env*]
+indent_style = space
+indent_size = 2
+
+# Lock files are machine-generated; never reformat them.
+[*.{lock,lockb}]
 trim_trailing_whitespace = false
 
-[Makefile]
+########################################
+# Programming languages
+########################################
+# Python (source, stubs, Windows launchers, Cython).
+[*.{py,pyi,pyw,pyx,pxd,pxi}]
+indent_style = space
+indent_size = 4
+max_line_length = 88
+
+# Shell
+[*.{sh,bash,zsh,ksh,fish,nu}]
+indent_style = space
+indent_size = 4
+
+# C / C++ (used by native connectors)
+[*.{c,cc,cpp,cxx,h,hh,hpp,hxx,inl,ipp,tpp}]
+indent_style = space
+indent_size = 4
+
+# Rust
+[*.rs]
+indent_style = space
+indent_size = 4
+
+# Go (gofmt uses tabs)
+[*.{go,mod,sum,work}]
 indent_style = tab
+tab_width = 8
+
+# JavaScript / TypeScript (integrations and front-end tooling)
+[*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}]
+indent_style = space
+indent_size = 2
+
+# Web component frameworks
+[*.{vue,svelte,astro}]
+indent_style = space
+indent_size = 2
+
+# HTML / XML / CSS family
+[*.{html,htm,xhtml,xml,xsd,xslt,xsl,css,scss,sass,less,styl}]
+indent_style = space
+indent_size = 2
+
+# SQL
+[*.{sql,psql,plsql}]
+indent_style = space
+indent_size = 2
+
+# Protocol Buffers
+[*.{proto,proto3}]
+indent_style = space
+indent_size = 2
+
+# Infrastructure-as-code
+[*.{tf,tfvars,hcl,nomad}]
+indent_style = space
+indent_size = 2
+
+[*.nix]
+indent_style = space
+indent_size = 2
+
+########################################
+# Build and tooling
+########################################
+# Makefiles: tabs required. Covers all common spellings and fragments.
+[{Makefile,GNUmakefile,makefile,*.mk,*.make}]
+indent_style = tab
+tab_width = 8
+
+# CMake
+[{CMakeLists.txt,*.cmake}]
+indent_style = space
+indent_size = 2
+
+# Dockerfiles and Containerfiles (Podman/Buildah spelling).
+[{Dockerfile,**/Dockerfile,*.Dockerfile,*.dockerfile,Containerfile,**/Containerfile}]
+indent_style = space
+indent_size = 2
+
+# Git metadata files.
+[{.gitattributes,.gitignore,.gitmodules,.gitconfig}]
+indent_style = space
+indent_size = 2
+
+# Package-manager, lint, and CI dotfiles.
+[{.npmrc,.nvmrc,.yarnrc,.dockerignore,.prettierignore,.eslintignore,.stylelintrc,.babelrc,.browserslistrc}]
+indent_style = space
+indent_size = 2
+
+# Pre-commit, coverage, tox, and flake8 configs.
+[{.pre-commit-config.yaml,.coveragerc,tox.ini,.flake8,.markdownlint.yaml}]
+indent_style = space
+indent_size = 2
+
+########################################
+# OS-specific scripts
+########################################
+# Windows batch files: CRLF is safer on Windows.
+[*.{bat,cmd}]
+end_of_line = crlf
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# PowerShell (CRLF avoids some host issues).
+[*.{ps1,psm1,psd1}]
+end_of_line = crlf
+charset = utf-8
+indent_style = space
+indent_size = 4
+
+########################################
+# Project meta
+########################################
+# This file itself and other rc-style dotfiles.
+[.{editorconfig,*rc,prettierrc,eslintrc,stylelintrc,babelrc}]
+indent_style = space
+indent_size = 2
+
+# Requirement files (extensionless or .txt/.in suffix).
+[{requirements.txt,requirements-*.txt,requirements/*.txt,constraints.txt}]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
