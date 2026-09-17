@@ -115,7 +115,7 @@ ml = [
   "standard-aifc==3.13.0; python_version >= '3.13' and python_version < '3.14'",
   "tiktoken==0.14.0",
   "traitlets==5.16.1",
-  "transformers==5.17.0",
+  "transformers==5.10.1",
 ]
 
 data = [

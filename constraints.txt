@@ -49,7 +49,7 @@ faster-whisper==1.2.1
 # NOTE: transformers was previously pinned to 5.17.0 here, which conflicts
 # with requirements.txt (4.56.2). Because constraints are additive, that
 # mismatch causes a hard resolver conflict. Aligned to requirements.txt.
-transformers==4.56.2
+transformers==5.10.1
 
 # --- Developer / QA anchors ---
 pytest==9.1.1
