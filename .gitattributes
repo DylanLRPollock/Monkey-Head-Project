@@ -1,117 +1,326 @@
-# Monkey Head Project
-# By: Dylan L.R. Pollock
-# www.dlrp.ca
-# HueyOS: .gitattributes
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Repository / Git Attributes
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# .gitattributes controls three things for this repository:
+#
+#   1. Line-ending normalization -- what gets stored in the object database
+#      (always LF) versus what gets checked out into the working tree.
+#   2. Diff behaviour -- which files Git should treat as opaque blobs so that
+#      generated artifacts don't drown real changes in review.
+#   3. GitHub Linguist hints -- language stats, generated/vendored flags, and
+#      what counts as documentation.
+#
+# Rules apply top-to-bottom and later rules win for the same attribute, so
+# keep the sections in order: defaults first, exceptions after.
+#
+# Reference: https://git-scm.com/docs/gitattributes
 
 ###############################################################################
 # Core text handling / line endings
 ###############################################################################
 
-# Normalize line endings for all text; store LF in the repo.
-# This overrides platform defaults so Windows checkouts also see LF.
+# Default policy: let Git auto-detect text vs. binary, and store text as LF.
+# `eol=lf` forces LF in the working tree even on Windows checkouts, so the
+# bytes a contributor sees match what CI sees. Per-type rules below either
+# reaffirm this or carve out deliberate CRLF exceptions.
 * text=auto eol=lf
 
-# Explicit text types that must always be LF
-*.sh          text eol=lf
-*.bash        text eol=lf
-*.py          text eol=lf
-*.yml         text eol=lf
-*.yaml        text eol=lf
-*.toml        text eol=lf
-*.md          text eol=lf
-*.env         text eol=lf
-*.cfg         text eol=lf
-*.ini         text eol=lf
-*.txt         text eol=lf
-*.json        text eol=lf
-*.csv         text eol=lf
-*.tsv         text eol=lf
+# --- Scripts and source -----------------------------------------------------
+*.sh            text eol=lf
+*.bash          text eol=lf
+*.zsh           text eol=lf
+*.ksh           text eol=lf
+*.fish          text eol=lf
+*.py            text eol=lf
+*.pyi           text eol=lf
+*.pyw           text eol=lf
+*.pyx           text eol=lf
+*.pxd           text eol=lf
+*.rs            text eol=lf
+*.go            text eol=lf
+*.js            text eol=lf
+*.jsx           text eol=lf
+*.mjs           text eol=lf
+*.cjs           text eol=lf
+*.ts            text eol=lf
+*.tsx           text eol=lf
+*.rb            text eol=lf
+*.php           text eol=lf
+*.java          text eol=lf
+*.kt            text eol=lf
+*.kts           text eol=lf
+*.scala         text eol=lf
+*.cs            text eol=lf
+*.swift         text eol=lf
+*.dart          text eol=lf
+*.lua           text eol=lf
+*.pl            text eol=lf
+*.pm            text eol=lf
+*.r             text eol=lf
+*.R             text eol=lf
+*.jl            text eol=lf
+*.ex            text eol=lf
+*.exs           text eol=lf
+*.erl           text eol=lf
+*.hrl           text eol=lf
+*.hs            text eol=lf
+*.clj           text eol=lf
+*.cljs          text eol=lf
+*.vim           text eol=lf
+*.c             text eol=lf
+*.h             text eol=lf
+*.cc            text eol=lf
+*.cpp           text eol=lf
+*.hpp           text eol=lf
+*.asm           text eol=lf
+*.s             text eol=lf
 
-# Project / infra files
-.gitattributes text eol=lf
-.gitignore     text eol=lf
-Dockerfile     text eol=lf
+# --- Config and markup -----------------------------------------------------
+*.yml           text eol=lf
+*.yaml          text eol=lf
+*.toml          text eol=lf
+*.json          text eol=lf
+*.jsonc         text eol=lf
+*.json5         text eol=lf
+*.ini           text eol=lf
+*.cfg           text eol=lf
+*.conf          text eol=lf
+*.properties    text eol=lf
+*.env           text eol=lf
+.env*           text eol=lf
+*.xml           text eol=lf
+*.xsd           text eol=lf
+*.xslt          text eol=lf
+*.html          text eol=lf
+*.htm           text eol=lf
+*.css           text eol=lf
+*.scss          text eol=lf
+*.sass          text eol=lf
+*.less          text eol=lf
+*.sql           text eol=lf
+*.proto         text eol=lf
+*.tf            text eol=lf
+*.tfvars        text eol=lf
+*.hcl           text eol=lf
+*.nix           text eol=lf
+*.mk            text eol=lf
+*.cmake         text eol=lf
+CMakeLists.txt  text eol=lf
+Makefile        text eol=lf
+GNUmakefile     text eol=lf
+makefile        text eol=lf
+
+# --- Data and documentation -------------------------------------------------
+*.md            text eol=lf
+*.markdown      text eol=lf
+*.rst           text eol=lf
+*.adoc          text eol=lf
+*.txt           text eol=lf
+*.csv           text eol=lf
+*.tsv           text eol=lf
+*.diff          text eol=lf
+*.patch         text eol=lf
+
+# --- Project dotfiles -------------------------------------------------------
+.gitattributes  text eol=lf
+.gitignore      text eol=lf
+.gitmodules     text eol=lf
+.editorconfig   text eol=lf
+Dockerfile      text eol=lf
+Containerfile   text eol=lf
+*.dockerfile    text eol=lf
 docker-compose*.yml text eol=lf
 
-###############################################################################
-# Binary assets (no end-of-line normalization, no text diffs)
-###############################################################################
+# --- CRLF exceptions -------------------------------------------------------
+# Windows-only scripts. Batch and PowerShell hosts behave better with CRLF
+# and these files are only ever edited on Windows anyway. Stored as LF.
+*.bat           text eol=crlf
+*.cmd           text eol=crlf
+*.ps1           text eol=crlf
+*.psm1          text eol=crlf
+*.psd1          text eol=crlf
 
-# Images
-*.png  binary
-*.jpg  binary
-*.jpeg binary
-*.gif  binary
-*.ico  binary
-*.bmp  binary
-*.tif  binary
-*.tiff binary
-
-# Documents/media
-*.pdf  binary
-*.mp4  binary
-*.mov  binary
-*.mkv  binary
-*.webm binary
-*.wav  binary
-*.mp3  binary
-*.flac binary
-*.ogg  binary
-
-# Archives / compressed artifacts
-*.zip  binary
-*.tar  binary
-*.gz   binary
-*.bz2  binary
-*.xz   binary
-*.7z   binary
-*.rar  binary
-*.iso  binary
-
-# Fonts and other opaque binary formats
-*.exe   binary
-*.ttf   binary
-*.otf   binary
-*.woff  binary
-*.woff2 binary
-*.eot   binary
+# .NET project files (Visual Studio prefers CRLF for these).
+*.sln           text eol=crlf
+*.csproj        text eol=crlf
+*.vbproj        text eol=crlf
+*.fsproj        text eol=crlf
 
 ###############################################################################
-# Generated / minified / lock files – avoid noisy diffs
+# Binary assets (no EOL normalization, no text diffs, no merge)
 ###############################################################################
 
-# Minified front-end bundles
-*.min.js  -diff
-*.min.css -diff
+# --- Images ----------------------------------------------------------------
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.bmp    binary
+*.tif    binary
+*.tiff   binary
+*.webp   binary
+*.avif   binary
+*.heic   binary
+*.heif   binary
+*.psd    binary
+*.ai     binary
+*.sketch binary
+*.fig    binary
+*.eps    binary
+*.svgz   binary
 
-# Lock files (npm, pip, etc.) – treat as opaque blobs in diffs
-*.lock    -diff
+# --- Documents and media ---------------------------------------------------
+*.pdf    binary
+*.mp4    binary
+*.mov    binary
+*.mkv    binary
+*.webm   binary
+*.avi    binary
+*.wav    binary
+*.mp3    binary
+*.m4a    binary
+*.flac   binary
+*.ogg    binary
+
+# --- Archives and compressed artifacts -------------------------------------
+*.zip    binary
+*.tar    binary
+*.gz     binary
+*.tgz    binary
+*.bz2    binary
+*.xz     binary
+*.zst    binary
+*.7z     binary
+*.rar    binary
+*.iso    binary
+*.dmg    binary
+*.cab    binary
+*.jar    binary
+*.war    binary
+*.whl    binary
+
+# --- Compiled objects and platform binaries --------------------------------
+*.exe    binary
+*.msi    binary
+*.dll    binary
+*.so     binary
+*.dylib  binary
+*.o      binary
+*.a      binary
+*.lib    binary
+*.obj    binary
+*.class  binary
+*.pyc    binary
+*.pyo    binary
+*.pyd    binary
+*.wasm   binary
+*.bin    binary
+*.dat    binary
+
+# --- Datasets and serialized state -----------------------------------------
+*.db       binary
+*.sqlite   binary
+*.sqlite3  binary
+*.parquet  binary
+*.avro     binary
+*.arrow    binary
+*.npy      binary
+*.npz      binary
+*.pkl      binary
+*.pickle   binary
+*.h5       binary
+*.hdf5     binary
+
+# --- Security and certificates ---------------------------------------------
+*.pem    binary
+*.der    binary
+*.p12    binary
+*.pfx    binary
+*.gpg    binary
+
+# --- Fonts -----------------------------------------------------------------
+*.ttf    binary
+*.otf    binary
+*.woff   binary
+*.woff2  binary
+*.eot    binary
 
 ###############################################################################
-# Documentation / metadata / generated runtime data
+# Generated / minified / lock files -- avoid noisy diffs
 ###############################################################################
 
-# All documentation treated as documentation for GitHub Linguist
-docs/** linguist-documentation=true
+# --- Minified front-end bundles --------------------------------------------
+*.min.js    -diff linguist-generated=true
+*.min.css   -diff linguist-generated=true
+*.min.mjs   -diff linguist-generated=true
+*.min.json  -diff linguist-generated=true
+*.map       -diff linguist-generated=true
 
-# Memory and runtime data (if ever committed) are treated as generated
-memory/** linguist-generated=true
+# --- Lock files ------------------------------------------------------------
+# `-diff` treats these as opaque in review; `linguist-generated=true` keeps
+# them out of language statistics. `bun.lockb` is genuinely binary.
+package-lock.json    -diff linguist-generated=true
+npm-shrinkwrap.json  -diff linguist-generated=true
+yarn.lock            -diff linguist-generated=true
+pnpm-lock.yaml       -diff linguist-generated=true
+bun.lock             -diff linguist-generated=true
+bun.lockb            binary linguist-generated=true
+Pipfile.lock         -diff linguist-generated=true
+poetry.lock          -diff linguist-generated=true
+uv.lock              -diff linguist-generated=true
+pdm.lock             -diff linguist-generated=true
+Cargo.lock           -diff linguist-generated=true
+go.sum               -diff linguist-generated=true
+composer.lock        -diff linguist-generated=true
+Gemfile.lock         -diff linguist-generated=true
+mix.lock             -diff linguist-generated=true
+flake.lock           -diff linguist-generated=true
+*.lock               -diff linguist-generated=true
 
 ###############################################################################
-# Vendored or third-party code (submodules, mirrors, etc.)
+# GitHub Linguist hints
 ###############################################################################
 
-# PyHuey packaged connector code and umbrella companion submodules are treated as
-# vendored code so they do not skew language stats.
-src/huey/connectors/pyhuey/** linguist-vendored=true
+# Documentation trees and top-level prose.
+docs/**             linguist-documentation=true
+*.md                linguist-documentation=true
+
+# Runtime/memory data is generated, even when committed for fixtures.
+memory/**           linguist-generated=true
+
+# Vendored or third-party code -- excluded from language stats.
+src/huey/connectors/pyhuey/**  linguist-vendored=true
 integrations/command-center/** linguist-vendored=true
+vendor/**                      linguist-vendored=true
+third_party/**                 linguist-vendored=true
+third-party/**                 linguist-vendored=true
 
 ###############################################################################
 # Export-ignore for release tarballs
 ###############################################################################
 
-# Exclude CI, tests, docs, and dev-only scripts from `git archive` exports.
-.github/      export-ignore
-tests/        export-ignore
-docs/         export-ignore
-scripts/dev/  export-ignore
+# Exclude CI, tests, docs, and dev-only files from `git archive` exports so
+# users installing from a release tarball get the package, not the workshop.
+.github/                 export-ignore
+tests/                   export-ignore
+test/                    export-ignore
+docs/                    export-ignore
+scripts/dev/             export-ignore
+scripts/benchmarks/      export-ignore
+.editorconfig            export-ignore
+.flake8                  export-ignore
+.gitattributes           export-ignore
+.gitignore               export-ignore
+.gitmodules              export-ignore
+.pre-commit-config.yaml  export-ignore
+.readthedocs.yaml        export-ignore
+.mypy.ini                export-ignore
+.pytest.ini              export-ignore
+conftest.py              export-ignore
