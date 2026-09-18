@@ -1,0 +1,181 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Community / Label Definitions
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Maps file paths to PR labels. Consumed by
+# `.github/workflows/labeler.yml`.
+#
+# Format (actions/labeler v5):
+#
+#   <label-name>:
+#     - <glob>              # a file or directory path, or a glob
+#     - changed-files:
+#       - any-glob-to-any-file: <glob>
+#       - all-globs-to-all-files: [<glob>, <glob>]
+#       - any-glob-to-all-files: <glob>
+#       - all-globs-to-any-file: [<glob>, <glob>]
+#
+# The short form (`- <glob>`) is equivalent to
+# `changed-files: [{ any-glob-to-any-file: <glob> }]`.
+#
+# Rules:
+#
+#   * Every label name here must exist in the repository. Missing
+#     labels are skipped with a warning, not an error.
+#
+#   * A PR can match multiple labels. There is no priority order;
+#     all matching labels are applied.
+#
+#   * Globs are matched against paths from the repository root. A
+#     leading `/` is not required (the action normalises), but is
+#     accepted for clarity.
+#
+#   * `sync-labels: true` in the workflow means a label is removed
+#     when the PR no longer matches its pattern. Do not add a
+#     label to a PR by hand if it is also defined here.
+#
+# Adding a label:
+#
+#   1. Create the label in Settings -> Labels (or `gh label create`).
+#   2. Add the pattern to this file.
+#   3. Open a test PR touching a matching file and confirm the label
+#      is applied. Missing labels fail silently in the workflow log.
+
+# ---------------------------------------------------------------------------
+# Area labels -- where the change lives
+# ---------------------------------------------------------------------------
+
+# Python source for the runtime and CLI.
+python:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/huey/**'
+      - 'src/hueyos/**'
+
+# The API surface -- FastAPI routers, auth, request/response models.
+# Security-sensitive; pairs with the "security" label below.
+api:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/huey/api.py'
+      - 'src/hueyos/api/**'
+
+# The command-line interface.
+cli:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/huey/cli.py'
+      - 'src/huey/cli/**'
+      - 'src/hueyos/cli/**'
+
+# Hardware drivers, network management, power management -- anything
+# that talks to the robot.
+hardware:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/huey/hardware/**'
+      - 'src/huey/network/**'
+      - 'src/huey/power/**'
+
+# Persistent memory and storage subsystems.
+memory:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/huey/memory/**'
+      - 'src/huey/honeycomb*'
+
+# ---------------------------------------------------------------------------
+# Concern labels -- what kind of work this is
+# ---------------------------------------------------------------------------
+
+# CI workflows and their supporting files.
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+      - '.pre-commit-config.yaml'
+
+# Dependency files. Any change here affects what gets installed on
+# the robot, so it warrants the "dependencies" label regardless of
+# which toolchain the file belongs to.
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'pyproject.toml'
+      - 'constraints.txt'
+      - 'requirements*.txt'
+      - '**/package.json'
+      - '**/package-lock.json'
+      - '**/pnpm-lock.yaml'
+      - '**/yarn.lock'
+
+# Packaging and build configuration -- the files that determine what
+# ends up in the sdist and wheel.
+packaging:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'pyproject.toml'
+      - 'setup.py'
+      - 'setup.cfg'
+      - 'MANIFEST.in'
+
+# Tests. Includes both the top-level suite and any nested tests.
+tests:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'tests/**'
+      - '**/test_*.py'
+      - '**/*_test.py'
+      - 'conftest.py'
+
+# Documentation. Markdown, reStructuredText, Sphinx sources, and the
+# wiki generator inputs.
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'docs/**'
+      - '*.md'
+      - 'scripts/repo/build_wiki.py'
+      - 'scripts/repo/wiki_*.json'
+
+# ---------------------------------------------------------------------------
+# Sensitivity labels -- high-consequence surfaces
+# ---------------------------------------------------------------------------
+
+# Security-relevant changes. Any of: the auth layer, the security
+# workflows, the accepted-findings baselines, or the pre-commit
+# config that enforces them.
+#
+# This is deliberately a broad pattern. A reviewer seeing "security"
+# on a PR knows to read the diff with the prompts in
+# `.github/pull_request_template.md` in mind.
+security:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'SECURITY.md'
+      - '.security/**'
+      - '.github/workflows/security-*.yml'
+      - '.github/workflows/codeql.yml'
+      - '.github/workflows/dependency-review.yml'
+      - 'src/huey/api.py'
+      - 'src/hueyos/api/auth.py'
+      - 'src/hueyos/api/**'
+
+# Breaking-change candidates. Changing any of these files has a
+# higher-than-average chance of affecting downstream consumers, so
+# reviewers know to look for the "Breaking changes" section of the
+# PR description.
+breaking-change-candidate:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/huey/__init__.py'
+      - 'src/hueyos/__init__.py'
+      - 'src/huey/cli.py'
+      - 'src/hueyos/cli/main.py'
+      - 'pyproject.toml'
