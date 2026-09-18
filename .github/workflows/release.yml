@@ -1,0 +1,453 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / Release
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Publishes a tagged release to PyPI and creates a GitHub release
+# with the built artifacts attached.
+#
+# Trigger:
+#
+#   * Pushing a tag matching `v*` (e.g. `git tag v0.2.0 && git push
+#     --tags`) triggers a full release.
+#
+#   * `workflow_dispatch` runs a rehearsal by default. Set
+#     `dry_run: false` to publish from a manual trigger (used for
+#     re-releases and for fixing a release that failed partway).
+#
+# Authentication:
+#
+#   PyPI publishing uses Trusted Publishing (OIDC), not an API token.
+#   No long-lived secret is stored in the repository. Instead, the
+#   `publish` job requests a short-lived OIDC token that PyPI
+#   validates against a pre-registered publisher configuration.
+#
+#   ONE-TIME SETUP on PyPI (https://pypi.org/manage/account/publishing/):
+#
+#     Owner:        DylanLRPollock
+#     Repository:   Monkey-Head-Project
+#     Workflow:     release.yml
+#     Environment:  pypi
+#
+#   If any of those three values are wrong, the OIDC exchange fails
+#   with a 403 from PyPI and the publish step reports an opaque auth
+#   error. Verify them before tagging.
+#
+# Version consistency:
+#
+#   The workflow fails before publishing if the tag does not match
+#   `version` in `pyproject.toml`. This is the single most common
+#   release mistake -- the tag says `v0.2.1` but the wheel metadata
+#   says `0.2.0` -- and it produces a release that cannot be fixed
+#   without deleting the tag and starting over.
+#
+# Failed releases:
+#
+#   PyPI does not allow re-uploading a version that already exists.
+#   If the publish step fails after PyPI accepted the upload (e.g.
+#   the GitHub release step fails), re-running this workflow will
+#   fail at the pre-check on PyPI. In that case:
+#
+#     1. Create the GitHub release manually from the tag.
+#     2. Bump the version and cut a new tag for any source changes.
+#
+#   The pre-check exists to fail fast rather than after a build, but
+#   it also means a partial release needs manual cleanup.
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (no leading v), e.g. 0.2.0'
+        required: true
+        type: string
+      dry_run:
+        description: 'Build and verify only. Do not publish.'
+        required: false
+        type: boolean
+        default: true
+
+# Workflow-level default. Jobs elevate as needed below -- job-level
+# permissions replace, not merge.
+permissions:
+  contents: read
+
+# Do not cancel an in-flight release. A publish interrupted mid-way
+# can leave PyPI and the GitHub release in inconsistent states that
+# have to be reconciled by hand.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_ROOT_USER_ACTION: ignore
+  PYTHONUNBUFFERED: "1"
+  PACKAGE_NAME: hueyos
+
+jobs:
+  # -------------------------------------------------------------------------
+  # Build and verify
+  # -------------------------------------------------------------------------
+  # Runs on every trigger, including dry runs. Produces the artifacts
+  # the publish job needs, and fails fast on any condition that would
+  # make a publish unsafe (version mismatch, version already on PyPI,
+  # broken wheel contents).
+  build-and-verify:
+    name: Build + verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history so `gh release create --generate-notes` can
+          # build a changelog from commits since the previous tag.
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
+
+      - name: Determine release version
+        id: version
+        env:
+          # Passed via env rather than interpolated into the script
+          # so a value containing shell metacharacters cannot break
+          # the version extraction.
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          if [ "$EVENT_NAME" = "push" ]; then
+            # GITHUB_REF is `refs/tags/v0.2.0` on a tag push.
+            tag="${GITHUB_REF#refs/tags/}"
+            version="${tag#v}"
+          else
+            version="$DISPATCH_VERSION"
+            if [ -z "$version" ]; then
+              echo "::error::No version supplied."
+              echo "::error::workflow_dispatch requires a 'version' input."
+              exit 1
+            fi
+          fi
+
+          # Reject anything that is not a bare version number. This
+          # catches `v0.2.0`, `0.2.0-rc1`, whitespace, and typos
+          # before they reach the tag-matching check below.
+          if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9.]+)?$'; then
+            echo "::error::Invalid version format: '$version'"
+            echo "::error::Expected PEP 440 form, e.g. 0.2.0 or 0.2.0rc1."
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Resolved version: $version"
+
+      - name: Verify version matches pyproject.toml
+        env:
+          EXPECTED: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          declared=$(python - <<'PY'
+          import tomllib
+          with open("pyproject.toml", "rb") as f:
+              data = tomllib.load(f)
+          print(data["project"]["version"])
+          PY
+          )
+          echo "Tag/input version:   $EXPECTED"
+          echo "pyproject.toml:      $declared"
+          if [ "$EXPECTED" != "$declared" ]; then
+            echo "::error::Version mismatch."
+            echo "::error::The tag or dispatch input says '$EXPECTED',"
+            echo "::error::but pyproject.toml declares '$declared'."
+            echo "::error::"
+            echo "::error::Either bump pyproject.toml, or delete and"
+            echo "::error::re-create the tag, before re-running."
+            exit 1
+          fi
+
+      - name: Check version is not already on PyPI
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          PACKAGE: ${{ env.PACKAGE_NAME }}
+        run: |
+          set -euo pipefail
+          python - "$PACKAGE" "$VERSION" <<'PY'
+          import json
+          import sys
+          import urllib.error
+          import urllib.request
+
+          pkg, version = sys.argv[1], sys.argv[2]
+          url = f"https://pypi.org/pypi/{pkg}/json"
+          try:
+              with urllib.request.urlopen(url, timeout=10) as resp:
+                  data = json.load(resp)
+          except urllib.error.HTTPError as exc:
+              if exc.code == 404:
+                  print(f"{pkg} is not yet on PyPI; proceeding.")
+                  sys.exit(0)
+              raise
+
+          if version in data.get("releases", {}):
+              print(
+                  f"::error::Version {version} of {pkg} already exists on PyPI.",
+                  file=sys.stderr,
+              )
+              print(
+                  "::error::PyPI does not allow re-uploading a version.",
+                  file=sys.stderr,
+              )
+              print(
+                  "::error::Bump pyproject.toml to a new version and re-tag.",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          print(f"Version {version} of {pkg} is not yet published; proceeding.")
+          PY
+
+      - name: Install build tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'build==1.2.2'
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Verify wheel contents
+        # Confirms the metadata's package-data declarations actually
+        # produced files. A missing `py.typed` builds without error and
+        # silently loses type information for every downstream consumer.
+        run: |
+          set -euo pipefail
+          echo "--- wheel contents ---"
+          python -m zipfile -l dist/*.whl
+          echo "--- assertions ---"
+          python -m zipfile -l dist/*.whl | grep -q 'huey/py.typed' \
+            || { echo "FAIL: huey/py.typed missing from wheel"; exit 1; }
+          python -m zipfile -l dist/*.whl | grep -q 'huey/__init__.py' \
+            || { echo "FAIL: huey/__init__.py missing from wheel"; exit 1; }
+
+      - name: Verify wheel metadata version
+        # `python -m build` reads the version from pyproject.toml, so
+        # the wheel metadata should match. This step catches the case
+        # where a build backend silently substitutes a different value
+        # (e.g. via setuptools_scm or a stale cached wheel).
+        env:
+          EXPECTED: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          wheel=$(ls dist/*.whl | head -n1)
+          declared=$(python - "$wheel" <<'PY'
+          import email
+          import sys
+          import zipfile
+          with zipfile.ZipFile(sys.argv[1]) as zf:
+              meta = next(n for n in zf.namelist() if n.endswith("METADATA"))
+              msg = email.message_from_bytes(zf.read(meta))
+          print(msg["Version"])
+          PY
+          )
+          echo "Wheel metadata version: $declared"
+          echo "Expected version:       $EXPECTED"
+          if [ "$declared" != "$EXPECTED" ]; then
+            echo "::error::Wheel metadata version does not match the tag."
+            exit 1
+          fi
+
+      - name: Generate SHA256 checksums
+        run: |
+          cd dist
+          sha256sum ./* > SHA256SUMS
+          echo "--- SHA256SUMS ---"
+          cat SHA256SUMS
+
+      # --- Wheel install smoke -------------------------------------------
+      - name: Create fresh venv for wheel
+        run: python -m venv .release-venv-wheel
+
+      - name: Install built wheel in fresh environment
+        shell: bash
+        run: |
+          source .release-venv-wheel/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install dist/*.whl
+
+      - name: Import smoke checks (wheel)
+        shell: bash
+        run: |
+          source .release-venv-wheel/bin/activate
+          python -c "import huey"
+          python -c "import hueyos"
+          python -c "import huey.api"
+
+      - name: Console script smoke checks (wheel)
+        shell: bash
+        run: |
+          source .release-venv-wheel/bin/activate
+          timeout 30s huey --help
+          timeout 30s huey-api --help
+          timeout 30s huey-command-center --help
+
+      # --- Sdist install smoke -------------------------------------------
+      - name: Create fresh venv for sdist
+        run: python -m venv .release-venv-sdist
+
+      - name: Install built sdist in fresh environment
+        shell: bash
+        run: |
+          source .release-venv-sdist/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install dist/*.tar.gz
+
+      - name: Import smoke checks (sdist)
+        shell: bash
+        run: |
+          source .release-venv-sdist/bin/activate
+          python -c "import huey"
+          python -c "import hueyos"
+          python -c "import huey.api"
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: release-dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 30
+
+  # -------------------------------------------------------------------------
+  # Publish
+  # -------------------------------------------------------------------------
+  # Skipped on a dry run. Requires the `pypi` environment, which is
+  # where the Trusted Publisher configuration is registered on PyPI.
+  publish:
+    name: Publish to PyPI + GitHub release
+    runs-on: ubuntu-latest
+    needs: build-and-verify
+    if: >-
+      github.event_name == 'push' ||
+      (github.event_name == 'workflow_dispatch' && inputs.dry_run == false)
+    timeout-minutes: 15
+    environment:
+      name: pypi
+      url: https://pypi.org/p/${{ env.PACKAGE_NAME }}
+    permissions:
+      # Required for OIDC trusted publishing to PyPI. The action
+      # exchanges this token for a short-lived upload credential.
+      id-token: write
+      # Required to create the GitHub release and attach assets.
+      contents: write
+    steps:
+      - name: Download release artifacts
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: release-dist
+          path: dist/
+
+      - name: Publish to PyPI
+        # Trusted publishing: no password, no token. The action reads
+        # the OIDC token issued because of `id-token: write` above and
+        # exchanges it with PyPI for an upload credential.
+        #
+        # `attestations: true` produces a signed provenance record
+        # (SLSA level 3) that PyPI publishes alongside the package.
+        # Consumers can verify the artifact came from this repository
+        # and this workflow.
+        uses: pypa/gh-action-pypi-publish@1bb664cc2ddedbbfdde43d4ac135d5836b7bf40f # v1.11.0
+        with:
+          attestations: true
+          # The dist/ directory was extracted by the previous step;
+          # tell the action where to look rather than assuming.
+          packages-dir: dist/
+
+      - name: Verify publication on PyPI
+        # PyPI's JSON API is eventually consistent -- it can take a few
+        # seconds for a newly uploaded version to appear. Poll for up
+        # to 60 seconds before failing.
+        env:
+          PACKAGE: ${{ env.PACKAGE_NAME }}
+          VERSION: ${{ needs.build-and-verify.outputs.version }}
+        run: |
+          set -euo pipefail
+          python - "$PACKAGE" "$VERSION" <<'PY'
+          import json
+          import sys
+          import time
+          import urllib.error
+          import urllib.request
+
+          pkg, version = sys.argv[1], sys.argv[2]
+          url = f"https://pypi.org/pypi/{pkg}/{version}/json"
+          deadline = time.monotonic() + 60
+
+          while time.monotonic() < deadline:
+              try:
+                  with urllib.request.urlopen(url, timeout=10) as resp:
+                      json.load(resp)
+                  print(f"Confirmed: {pkg} {version} is live on PyPI.")
+                  sys.exit(0)
+              except urllib.error.HTTPError as exc:
+                  if exc.code != 404:
+                      raise
+                  time.sleep(5)
+
+          print(
+              f"::error::{pkg} {version} not visible on PyPI after 60s.",
+              file=sys.stderr,
+          )
+          print(
+              "::error::The upload may have succeeded but the index is lagging;",
+              file=sys.stderr,
+          )
+          print(
+              "::error::check https://pypi.org/project/{pkg}/ before retrying.",
+              file=sys.stderr,
+          )
+          sys.exit(1)
+          PY
+
+      - name: Create GitHub release
+        # `gh release create` is used instead of a third-party action
+        # so there is one fewer pin to maintain. The `gh` CLI ships on
+        # every GitHub-hosted runner.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build-and-verify.outputs.version }}
+        run: |
+          set -euo pipefail
+          tag="v${VERSION}"
+          # `--verify-tag` fails if the tag does not exist on the
+          # remote, which would indicate a manual dispatch that was
+          # never paired with a `git push --tags`.
+          #
+          # `--generate-notes` uses the commit history since the
+          # previous tag to build the changelog body.
+          gh release create "$tag" \
+            --title "$tag" \
+            --generate-notes \
+            --verify-tag \
+            dist/*

@@ -53,7 +53,6 @@ on:
   push:
     branches:
       - main
-      - develop
   pull_request:
   schedule:
     # Mondays at 07:00 UTC, offset from the artifact scan at 06:30 so

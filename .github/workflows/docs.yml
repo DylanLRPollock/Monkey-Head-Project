@@ -48,9 +48,9 @@ name: Docs
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
   workflow_dispatch:
 
 # Least-privilege token. The build only reads the repo and writes an

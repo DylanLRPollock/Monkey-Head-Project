@@ -69,7 +69,6 @@ on:
   push:
     branches:
       - main
-      - develop
   pull_request:
   schedule:
     # Mondays at 06:00 UTC. Staggered from the artifact scan (06:30)

@@ -1,0 +1,401 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / GitHub Actions Cache Cleanup
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Prunes stale entries from the GitHub Actions cache and publishes a
+# report of what was found, what was deleted, and what remains.
+#
+# Why this exists:
+#
+#   GitHub evicts caches LRU when the repository's 10 GB cache limit
+#   is hit. That is a reactive policy: the first cache to be evicted
+#   is the least-recently-accessed one, which may be a cache the
+#   `setup-python` step is about to want on the next push to main.
+#
+#   This workflow takes the proactive position instead. It removes
+#   caches that are:
+#
+#     1. Older than `max_age_days` (default 7, matching GitHub's own
+#        default retention).
+#     2. Attached to a branch that no longer exists on the remote.
+#
+#   Both categories are caches that cannot be usefully restored: they
+#   reference state nothing is going to ask for.
+#
+# Trigger policy:
+#
+#   `schedule` -- runs weekly and applies deletions. The intended
+#     cadence for routine housekeeping.
+#
+#   `workflow_dispatch` -- defaults to `dry_run: true`. The first
+#     invocation after adding this workflow will report only. Run it
+#     again with `dry_run: false` once the report looks right.
+#
+# Report:
+#
+#   The markdown report is published to the workflow run summary
+#   (`$GITHUB_STEP_SUMMARY`) so it is visible without downloading an
+#   artifact, and uploaded as an artifact for retention. The raw JSON
+#   from the GitHub API is included in the artifact for inspection.
+#
+# Permissions:
+#
+#   `contents: read` -- checkout only.
+#   `actions: write` -- required to call the cache deletion API. This
+#     is a real elevation; the workflow has the ability to delete any
+#     cache in the repository. It cannot modify source, issues, or
+#     releases, but the elevation is worth noting.
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+
+name: Cache Cleanup
+
+on:
+  schedule:
+    # Sundays at 03:17 UTC. Off-hours, and before the Monday work week
+    # so the cache is in a known state when the first PR lands.
+    - cron: '17 3 * * 0'
+  workflow_dispatch:
+    inputs:
+      max_age_days:
+        description: 'Delete caches not accessed in this many days'
+        required: false
+        default: '7'
+        type: string
+      dry_run:
+        description: 'Report only; do not delete caches'
+        required: false
+        type: boolean
+        default: true
+
+# Least-privilege token, elevated only where needed. `actions: write`
+# is required by the cache deletion endpoint; nothing here needs
+# `contents: write` or any other scope.
+permissions:
+  contents: read
+  actions: write
+
+# Never run two cleanups at once. Unlike the other workflows, there is
+# no reason to cancel an in-flight run -- deletions are cheap and the
+# report is what matters. Queueing is correct.
+concurrency:
+  group: cache-cleanup
+  cancel-in-progress: false
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_ROOT_USER_ACTION: ignore
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  cleanup:
+    name: Prune stale caches
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v6
+        with:
+          python-version: "3.13"
+
+      - name: Collect cache and branch inventory
+        # `gh api --paginate --slurp` combines every page of a
+        # paginated response into a single JSON array. The caches
+        # endpoint returns `{total_count, actions_caches: [...]}` per
+        # page; the branches endpoint returns `[...]` per page. The
+        # Python step below normalises both shapes.
+        #
+        # `sort=last_accessed_at&direction=asc` puts the oldest caches
+        # first, so if the API truncates for any reason, the truncation
+        # is against the newest entries -- exactly the ones we want to
+        # keep. (It does not truncate in practice; the sort is
+        # defensive.)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p .cache-report
+          gh api \
+            "/repos/${GH_REPO}/actions/caches?per_page=100&sort=last_accessed_at&direction=asc" \
+            --paginate --slurp > .cache-report/caches.json
+          gh api \
+            "/repos/${GH_REPO}/branches?per_page=100" \
+            --paginate --slurp > .cache-report/branches.json
+          echo "Cache data:  $(wc -c < .cache-report/caches.json) bytes"
+          echo "Branch data: $(wc -c < .cache-report/branches.json) bytes"
+
+      - name: Analyze and prune
+        # The analysis is written first, then the deletions are
+        # applied. This ordering means the report always exists, even
+        # if a deletion fails partway through the loop.
+        #
+        # `DRY_RUN_INPUT` is only populated for `workflow_dispatch`.
+        # The schedule trigger is treated as a live run.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          MAX_AGE_DAYS: ${{ inputs.max_age_days || '7' }}
+          EVENT_NAME: ${{ github.event_name }}
+          DRY_RUN_INPUT: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import datetime
+          import json
+          import os
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          REPO = os.environ["GH_REPO"]
+          MAX_AGE_DAYS = int(os.environ["MAX_AGE_DAYS"])
+          EVENT_NAME = os.environ["EVENT_NAME"]
+          DRY_RUN_INPUT = (os.environ.get("DRY_RUN_INPUT") or "").lower()
+
+          # Schedule runs prune. Manual dispatch defaults to dry run
+          # unless the operator explicitly sets dry_run=false.
+          dry_run = EVENT_NAME != "schedule" and DRY_RUN_INPUT != "false"
+
+          report_dir = Path(".cache-report")
+
+          # --- Parse the raw API output ------------------------------------
+
+          def load_json(path):
+              try:
+                  return json.loads(path.read_text(encoding="utf-8"))
+              except FileNotFoundError:
+                  sys.exit(f"error: {path} not found -- collection step failed")
+              except json.JSONDecodeError as exc:
+                  sys.exit(f"error: {path} is not valid JSON: {exc}")
+
+          def flatten_caches(data):
+              """Normalise the shapes gh api can produce."""
+              if data is None:
+                  return []
+              if isinstance(data, list):
+                  out = []
+                  for page in data:
+                      out.extend(flatten_caches(page))
+                  return out
+              if isinstance(data, dict):
+                  return list(data.get("actions_caches", []))
+              return []
+
+          def flatten_branches(data):
+              """Return a set of branch names from any gh api shape."""
+              names = set()
+              def walk(node):
+                  if node is None:
+                      return
+                  if isinstance(node, list):
+                      for item in node:
+                          walk(item)
+                      return
+                  if isinstance(node, dict):
+                      if "name" in node and isinstance(node["name"], str):
+                          names.add(node["name"])
+                      # Some shapes nest under a key
+                      for value in node.values():
+                          if isinstance(value, (list, dict)):
+                              walk(value)
+              walk(data)
+              return names
+
+          caches = flatten_caches(load_json(report_dir / "caches.json"))
+          branches = flatten_branches(load_json(report_dir / "branches.json"))
+
+          # --- Classify ----------------------------------------------------
+
+          now = datetime.datetime.now(datetime.timezone.utc)
+          cutoff = now - datetime.timedelta(days=MAX_AGE_DAYS)
+
+          def parse_iso(s):
+              if not s:
+                  return None
+              return datetime.datetime.fromisoformat(s.replace("Z", "+00:00"))
+
+          def deletion_reason(cache):
+              last = parse_iso(cache.get("last_accessed_at") or cache.get("created_at"))
+              if last is not None and last < cutoff:
+                  days = (now - last).days
+                  return f"unused for {days} days"
+
+              ref = cache.get("ref", "")
+              prefix = "refs/heads/"
+              if ref.startswith(prefix):
+                  branch = ref[len(prefix):]
+                  if branch not in branches:
+                      return f"branch '{branch}' no longer exists"
+
+              return None
+
+          to_delete = []
+          kept = []
+          for c in caches:
+              reason = deletion_reason(c)
+              (to_delete if reason else kept).append((c, reason) if reason else c)
+
+          total_bytes = sum(c.get("size_in_bytes", 0) for c in caches)
+          delete_bytes = sum(c.get("size_in_bytes", 0) for c, _ in to_delete)
+          kept_bytes = sum(c.get("size_in_bytes", 0) for c in kept)
+
+          def human(n):
+              f = float(n)
+              for unit in ("B", "KiB", "MiB", "GiB", "TiB"):
+                  if f < 1024 or unit == "TiB":
+                      return f"{f:.1f} {unit}"
+                  f /= 1024
+
+          # --- Write the report -------------------------------------------
+
+          lines = [
+              "# GitHub Actions Cache Cleanup Report",
+              "",
+              f"- Repository: `{REPO}`",
+              f"- Trigger: `{EVENT_NAME}`",
+              f"- Mode: **{'dry-run (no deletions applied)' if dry_run else 'live (deletions applied)'}**",
+              f"- Max age: {MAX_AGE_DAYS} days",
+              f"- Generated: `{now.isoformat()}`",
+              "",
+              "## Summary",
+              "",
+              "| Metric | Count | Size |",
+              "| --- | ---: | ---: |",
+              f"| Total caches | {len(caches)} | {human(total_bytes)} |",
+              f"| Eligible for deletion | {len(to_delete)} | {human(delete_bytes)} |",
+              f"| Retained | {len(kept)} | {human(kept_bytes)} |",
+              "",
+          ]
+
+          if to_delete:
+              lines += [
+                  "## Caches selected for deletion",
+                  "",
+                  "| Size | Ref | Key (truncated) | Reason |",
+                  "| ---: | --- | --- | --- |",
+              ]
+              for c, reason in sorted(
+                  to_delete, key=lambda x: -x[0].get("size_in_bytes", 0)
+              )[:100]:
+                  lines.append(
+                      f"| {human(c.get('size_in_bytes', 0))} "
+                      f"| `{c.get('ref', '')}` "
+                      f"| `{(c.get('key') or '')[:60]}` "
+                      f"| {reason} |"
+                  )
+              lines.append("")
+              if len(to_delete) > 100:
+                  lines.append(
+                      f"_(showing the 100 largest of {len(to_delete)} entries)_"
+                  )
+                  lines.append("")
+          else:
+              lines += ["No caches met the deletion criteria.", ""]
+
+          if kept:
+              lines += [
+                  "## Largest retained caches",
+                  "",
+                  "| Size | Last accessed | Ref | Key (truncated) |",
+                  "| ---: | --- | --- | --- |",
+              ]
+              for c in sorted(kept, key=lambda x: -x.get("size_in_bytes", 0))[:10]:
+                  lines.append(
+                      f"| {human(c.get('size_in_bytes', 0))} "
+                      f"| {c.get('last_accessed_at', 'unknown')} "
+                      f"| `{c.get('ref', '')}` "
+                      f"| `{(c.get('key') or '')[:60]}` |"
+                  )
+              lines.append("")
+
+          report = "\n".join(lines)
+          (report_dir / "report.md").write_text(report, encoding="utf-8")
+          print(report)
+          print()
+
+          # --- Apply ------------------------------------------------------
+
+          if dry_run:
+              print(f"DRY RUN: would delete {len(to_delete)} caches "
+                    f"({human(delete_bytes)}).")
+              print("Re-run with dry_run=false to apply.")
+              sys.exit(0)
+
+          if not to_delete:
+              print("Nothing to delete.")
+              sys.exit(0)
+
+          print(f"Deleting {len(to_delete)} caches...")
+          deleted = 0
+          failed = 0
+          for cache, reason in to_delete:
+              cache_id = cache.get("id")
+              if cache_id is None:
+                  failed += 1
+                  print(f"  SKIP: no id in cache entry ({reason})", file=sys.stderr)
+                  continue
+              try:
+                  subprocess.run(
+                      [
+                          "gh", "api", "-X", "DELETE",
+                          f"/repos/{REPO}/actions/caches/{cache_id}",
+                      ],
+                      check=True,
+                      capture_output=True,
+                      text=True,
+                  )
+                  deleted += 1
+                  print(f"  deleted {cache_id} ({reason})")
+              except subprocess.CalledProcessError as exc:
+                  failed += 1
+                  stderr = (exc.stderr or "").strip() or str(exc)
+                  print(f"  FAILED  {cache_id}: {stderr}", file=sys.stderr)
+
+          print()
+          print(f"Deleted {deleted} caches; {failed} failed.")
+          if failed:
+              sys.exit(1)
+          PY
+
+      - name: Publish job summary
+        # The report is rendered on the workflow run page. This is more
+        # useful than an artifact for routine runs -- the operator sees
+        # the result without downloading anything.
+        if: always()
+        run: |
+          if [ -f .cache-report/report.md ]; then
+            cat .cache-report/report.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## Cache cleanup report not produced" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "The analysis step failed before writing a report." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload cache report
+        # `if: always()` so the report is available even when the
+        # prune step is red -- that is exactly the case where the
+        # operator wants to see what happened.
+        #
+        # `if-no-files-found: warn` because a completely absent report
+        # means the collection step failed, which is already a visible
+        # error in the job log. Failing the upload too would add a
+        # second, misleading error.
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: cache-cleanup-report
+          path: .cache-report/
+          if-no-files-found: warn
+          retention-days: 30

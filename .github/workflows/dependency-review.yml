@@ -1,0 +1,144 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / Dependency Review
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Blocks pull requests that introduce dependencies with known
+# vulnerabilities or incompatible licenses.
+#
+# This workflow complements `security-dependency-scan.yml` (pip-audit):
+#
+#   pip-audit runs *after* a dependency is installed and asks "is the
+#   current dependency set vulnerable?" It cannot tell you *which PR*
+#   introduced the vulnerability.
+#
+#   Dependency Review runs *on the PR* and asks "does the diff introduce
+#   a dependency with a known CVE or a license this project cannot
+#   accept?" It is the pre-merge gate.
+#
+# Both are needed. pip-audit catches CVEs published against dependencies
+# already in the tree; Dependency Review catches a PR that adds a new
+# vulnerable or incompatible dependency in the first place.
+#
+# Severity threshold:
+#
+#   `fail-on-severity: high` fails the PR on HIGH or CRITICAL findings
+#   in the introduced dependency. This matches the `-ll` threshold used
+#   by Bandit and the `--ignore-vuln` policy in the pip-audit workflow.
+#   MODERATE and LOW findings are reported in the PR comment but do not
+#   block.
+#
+# License policy:
+#
+#   This project is GPL-3.0-only. `deny-licenses` lists the licenses
+#   that are incompatible with GPL-3.0 when combined in the same work.
+#   The list is not exhaustive -- it covers the common ones that appear
+#   in Python and JavaScript dependency trees. Add to it as needed.
+#
+#   `allow-licenses` and `deny-licenses` are mutually exclusive. The
+#   deny-list is used here because it is shorter and more maintainable
+#   than enumerating every acceptable license.
+#
+# Required settings:
+#
+#   This workflow must be configured as a *required* status check in
+#   branch protection (or a repository ruleset) for the blocking
+#   behaviour to take effect. Without that, the check runs and reports,
+#   but a PR can still be merged.
+#
+#   Requires GitHub Advanced Security for private repositories. Free
+#   for public repositories.
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+
+name: Dependency Review
+
+on:
+  pull_request:
+    # Only run when a dependency manifest changes. This avoids running
+    # on every PR (including docs-only changes) while still catching
+    # every PR that could affect the dependency graph.
+    #
+    # If `pyproject.toml` is the only manifest (which it is for this
+    # project), the list can stay short. Add entries if lock files or
+    # nested manifests are introduced later.
+    paths:
+      - "pyproject.toml"
+      - "setup.py"
+      - "setup.cfg"
+      - "constraints.txt"
+      - "requirements*.txt"
+      - "**/package.json"
+      - "**/package-lock.json"
+      - "**/pnpm-lock.yaml"
+      - "**/yarn.lock"
+
+# Least-privilege token. `contents: read` is required for the action
+# to read the dependency manifests. `pull-requests: write` is required
+# only because `comment-summary-in-pr: always` posts a summary comment
+# on the PR -- without that option, `pull-requests` could stay `read`.
+permissions:
+  contents: read
+  pull-requests: write
+
+# Cancel superseded runs on the same PR. A re-push invalidates the
+# previous review; the new commit is what matters.
+concurrency:
+  group: dependency-review-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-review:
+    name: Dependency review
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
+        with:
+          # Fail on HIGH or CRITICAL severity vulnerabilities introduced
+          # by this PR. MODERATE and LOW are reported in the comment
+          # but do not block.
+          fail-on-severity: high
+
+          # Licenses incompatible with GPL-3.0-only. The action fails if
+          # any introduced dependency carries one of these.
+          #
+          # SPDX identifiers, comma-separated. See:
+          #   https://spdx.org/licenses/
+          #
+          # This list covers the common copyleft and proprietary
+          # licenses that conflict with GPL-3.0 in a combined work.
+          deny-licenses: >-
+            AGPL-3.0-only,
+            AGPL-3.0-or-later,
+            SSPL-1.0,
+            BUSL-1.1,
+            Elastic-2.0,
+            Commons-Clause,
+            JSON,
+            Proprietary,
+            UNLICENSED
+
+          # Post a summary comment on the PR showing what was checked
+          # and what (if anything) failed. This is what makes the check
+          # actionable without opening the workflow log.
+          #
+          # Requires `pull-requests: write` on the job (see above).
+          comment-summary-in-pr: always
+
+          # Wait for dependency submission to complete before scanning.
+          # GitHub's dependency graph API can lag behind a push; this
+          # option retries the API call for up to five minutes rather
+          # than failing with a snapshot-not-ready error.
+          retry-on-snapshot-warnings: true

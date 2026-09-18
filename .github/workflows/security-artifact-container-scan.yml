@@ -51,7 +51,6 @@ on:
   push:
     branches:
       - main
-      - develop
   pull_request:
   schedule:
     # Mondays at 06:30 UTC. Off-hours in every timezone the project

@@ -1,0 +1,277 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Community / First-Interaction Greeting
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Posts a greeting on the first issue or pull request opened by a
+# contributor who has not opened one before.
+#
+# Why this is a local implementation and not `actions/first-interaction`:
+#
+#   The standard action for this job is `actions/first-interaction`,
+#   which GitHub has archived. It still works, but it receives no
+#   updates and no security patches. Pinning to it (as this
+#   repository's policy requires) means pinning to a SHA that will
+#   never move, which is exactly the maintenance smell the pin
+#   registry was written to avoid.
+#
+#   The logic is small enough to inline: check whether the author has
+#   any prior issues or PRs, and if not, post a comment. `gh` is
+#   preinstalled on every GitHub-hosted runner, so no action is needed.
+#
+# Trigger safety:
+#
+#   `pull_request_target` is used instead of `pull_request` because a
+#   PR opened from a fork gets a read-only GITHUB_TOKEN under the
+#   `pull_request` trigger, which means the greeting cannot be posted.
+#   `pull_request_target` runs the workflow from the *base* branch and
+#   grants write permissions, but it is also the trigger that has
+#   caused the most security incidents on GitHub -- because most
+#   workflows that use it check out the PR's head, which means the
+#   PR author's code runs with the base repository's token.
+#
+#   This workflow does NOT check out anything. It reads the event
+#   payload, queries the GitHub API, and posts a comment. No code
+#   from the PR is fetched or executed. That is what makes
+#   `pull_request_target` safe here, and it must remain true for any
+#   future change to this file.
+#
+# Greeting messages:
+#
+#   The two messages live in the workflow-level `env:` block. Edit
+#   them there; the Python below just substitutes the author name and
+#   posts the result.
+#
+#   The messages reference `SECURITY.md` and the PR template. Confirm
+#   both exist and say what the messages imply before merging --
+#   pointing a first-time contributor at a file that does not exist
+#   is worse than saying nothing.
+#
+# Re-run safety:
+#
+#   The posted greeting includes a hidden HTML marker comment. Before
+#   posting, the workflow checks the existing comments for that
+#   marker and skips if it is present. Re-running the job (for
+#   example after a transient API failure) will not double-post.
+#
+# Maintenance:
+#
+#   No third-party actions are used. `gh` is preinstalled on the
+#   runner. If a future change introduces an action, pin it to a
+#   full commit SHA with a trailing `# vN` comment and add it to
+#   `.github/actions-pins.md`.
+
+name: Greetings
+
+on:
+  issues:
+    types: [ opened ]
+  pull_request_target:
+    types: [ opened ]
+
+# Least-privilege token, elevated only for the comment endpoints.
+# `contents: read` is included for consistency with the other
+# workflows even though nothing here reads repository contents.
+# `issues: write` and `pull-requests: write` are required to post
+# comments on the two item types.
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+# One greeting per item. If the same item somehow triggers twice
+# (a retry, a manual re-run), the marker check makes the second
+# invocation a no-op. `cancel-in-progress: false` because a greeting
+# is cheap and cancelling one mid-post is not worth the risk of a
+# partial comment.
+concurrency:
+  group: greetings-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
+env:
+  # ---------------------------------------------------------------------------
+  # Message templates
+  # ---------------------------------------------------------------------------
+  # `{author}` is substituted with the contributor's login (without
+  # the leading `@`). The `@` is added in the template so the mention
+  # resolves correctly.
+  #
+  # Edit these freely -- they are the whole point of the workflow.
+  # Keep them short. A first-time contributor who opens an issue and
+  # receives three paragraphs of process is less likely to come back
+  # than one who receives two lines and a link.
+
+  ISSUE_GREETING: |
+    👋 Welcome, @{author} — thanks for opening your first issue here.
+
+    A few things that might help:
+
+    - Issues are triaged on a best-effort basis; there is no SLA.
+    - Bug reports are most useful with a minimal reproduction.
+    - For security-sensitive reports, please **do not** open a public
+      issue — see `SECURITY.md` for the private disclosure process.
+
+    Thanks for taking the time to file this.
+
+  PR_GREETING: |
+    👋 Welcome, @{author} — thanks for your first pull request here.
+
+    A couple of things to check before a maintainer picks it up:
+
+    - `make lint` and `make test` pass locally.
+    - The PR description follows `.github/pull_request_template.md`.
+    - If this touches the API, auth, or CI, the "Security
+      considerations" section is filled in.
+
+    CI runs automatically. If a check fails and the cause is not
+    obvious, leave a comment and we'll take a look.
+
+jobs:
+  greet:
+    name: Greet first-time contributor
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Post greeting if this is the author's first interaction
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          ISSUE_TEMPLATE: ${{ env.ISSUE_GREETING }}
+          PR_TEMPLATE: ${{ env.PR_GREETING }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          import sys
+          import urllib.parse
+
+          REPO = os.environ["GH_REPO"]
+          EVENT_NAME = os.environ["EVENT_NAME"]
+          ISSUE_TEMPLATE = os.environ["ISSUE_TEMPLATE"]
+          PR_TEMPLATE = os.environ["PR_TEMPLATE"]
+
+          # Hidden marker included in every greeting. Its presence in
+          # the existing comments means we already greeted this item.
+          MARKER = "<!-- hueyos-first-interaction -->"
+
+
+          def gh(*args: str) -> str:
+              """Run a gh command and return stdout, raising on failure."""
+              result = subprocess.run(
+                  ["gh", *args],
+                  capture_output=True,
+                  text=True,
+                  check=True,
+              )
+              return result.stdout
+
+
+          def flatten(data):
+              """Flatten gh's --paginate --slurp nested-array output."""
+              if data is None:
+                  return []
+              if isinstance(data, list):
+                  out = []
+                  for item in data:
+                      out.extend(flatten(item))
+                  return out
+              return [data]
+
+
+          # --- Read the event payload -----------------------------------
+
+          with open(os.environ["GITHUB_EVENT_PATH"], encoding="utf-8") as f:
+              event = json.load(f)
+
+          if EVENT_NAME == "issues":
+              item = event["issue"]
+              kind = "issue"
+              template = ISSUE_TEMPLATE
+          elif EVENT_NAME == "pull_request_target":
+              item = event["pull_request"]
+              kind = "pull_request"
+              template = PR_TEMPLATE
+          else:
+              sys.exit(f"error: unexpected event '{EVENT_NAME}'")
+
+          author = item["user"]["login"]
+          number = item["number"]
+
+          # Skip bots. Greeting `dependabot[bot]` is noise, and no bot
+          # reads its own greetings.
+          user_type = item["user"].get("type", "User")
+          if user_type == "Bot" or author.endswith("[bot]"):
+              print(f"{author} is a bot; nothing to do.")
+              sys.exit(0)
+
+          # Skip the repository owner. Greeting yourself on your own
+          # first issue is silly, and the maintainer's own issues
+          # should not pollute the "first interaction" signal.
+          owner = REPO.split("/", 1)[0]
+          if author == owner:
+              print(f"{author} is the repository owner; nothing to do.")
+              sys.exit(0)
+
+          # --- Re-run guard ----------------------------------------------
+
+          comments = flatten(json.loads(gh(
+              "api", "--paginate", "--slurp",
+              f"/repos/{REPO}/issues/{number}/comments?per_page=100",
+          )))
+          if any(MARKER in (c.get("body") or "") for c in comments):
+              print(f"Greeting marker already present on #{number}; skipping.")
+              sys.exit(0)
+
+          # --- Has this author interacted before? ------------------------
+
+          # The issues endpoint returns both issues and PRs; entries
+          # with a `pull_request` key are PRs. Fetch all of the
+          # author's items in this repo and exclude the current one to
+          # determine whether this is genuinely their first of its kind.
+          #
+          # `state=all` matters: a contributor whose previous issue was
+          # closed is still not a first-timer.
+          created = flatten(json.loads(gh(
+              "api", "--paginate", "--slurp",
+              f"/repos/{REPO}/issues"
+              f"?creator={urllib.parse.quote(author)}"
+              f"&state=all&sort=created&direction=desc&per_page=100",
+          )))
+
+          prior = [i for i in created if i.get("number") != number]
+          if kind == "pull_request":
+              prior_of_kind = [i for i in prior if "pull_request" in i]
+          else:
+              prior_of_kind = [i for i in prior if "pull_request" not in i]
+
+          if prior_of_kind:
+              print(
+                  f"{author} has {len(prior_of_kind)} prior {kind}(s) "
+                  f"in {REPO}; not a first-timer."
+              )
+              sys.exit(0)
+
+          # --- Post the greeting -----------------------------------------
+
+          body = f"{MARKER}\n{template.replace('{author}', author).strip()}\n"
+
+          # Write the request body to a file and hand it to `gh` with
+          # `--input`, which avoids every shell-quoting hazard that
+          # would come from trying to pass the body as an argument.
+          with open("/tmp/greeting-comment.json", "w", encoding="utf-8") as f:
+              json.dump({"body": body}, f)
+
+          gh(
+              "api", "-X", "POST",
+              f"/repos/{REPO}/issues/{number}/comments",
+              "--input", "/tmp/greeting-comment.json",
+          )
+
+          print(f"Posted {kind} greeting on #{number} for {author}.")
+          PY

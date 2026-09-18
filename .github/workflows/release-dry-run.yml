@@ -54,8 +54,6 @@ on:
     paths:
       - "pyproject.toml"
       - "setup.py"
-      - "setup.cfg"
-      - "MANIFEST.in"
       - "requirements*.txt"
       - "src/**"
       - ".github/workflows/release-dry-run.yml"

@@ -1,0 +1,101 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Community / Automatic PR Labels
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Applies labels to a pull request based on which files it changes.
+# Label definitions live in `.github/labeler.yml` -- this workflow is
+# just the trigger and the action invocation.
+#
+# Why labels-from-paths:
+#
+#   A reviewer scanning the PR list can see at a glance whether a
+#   change touches CI, dependencies, security-sensitive surfaces, or
+#   only docs. The labels are a filter, not a substitute for reading
+#   the diff. They are also the input to any future automation that
+#   acts on label classes (e.g. "deploy docs after the docs label is
+#   applied").
+#
+# Trigger safety:
+#
+#   `pull_request_target` is used instead of `pull_request` so that
+#   PRs opened from a fork get labels too. Under `pull_request`, a
+#   fork PR runs with a read-only token, and the labeler cannot apply
+#   anything.
+#
+#   `pull_request_target` is also the trigger that has caused the most
+#   security incidents on GitHub, because many workflows that use it
+#   check out the PR's head, which means the PR author's code runs
+#   with the base repository's token.
+#
+#   This workflow does NOT check out anything. `actions/labeler`
+#   reads the list of changed files from the event payload, compares
+#   it against the config, and calls the labels API. No code from the
+#   PR is fetched or executed. That is what makes
+#   `pull_request_target` safe here, and it must remain true for any
+#   future change to this file.
+#
+# Config file:
+#
+#   `.github/labeler.yml`. See that file for the path-to-label
+#   mapping. A typo in a glob pattern means a PR silently does not
+#   get labeled -- there is no schema validation at load time.
+#
+# Missing labels:
+#
+#   `actions/labeler` logs a warning and skips any label that does
+#   not exist in the repository. It does not fail the workflow. If a
+#   PR is missing an expected label, check that the label exists in
+#   Settings -> Labels before debugging the config.
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+
+name: Labeler
+
+on:
+  pull_request_target:
+    types: [ opened, synchronize, reopened ]
+
+# Least-privilege token, elevated only for the labels endpoint.
+# `contents: read` is included for consistency with the other
+# workflows even though nothing here reads repository contents.
+permissions:
+  contents: read
+  pull-requests: write
+
+# One labeler run per PR. A rapid push sequence produces several
+# synchronize events; only the last one matters. Cancelling the
+# previous run is safe -- the action is idempotent and reads the
+# full list of changed files on each invocation.
+concurrency:
+  group: labeler-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  label:
+    name: Apply path-based labels
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Apply labels
+        uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9 # v5.0.0
+        with:
+          # Path to the config file. The default is `.github/labeler.yml`,
+          # but the explicit value documents the dependency.
+          configuration-path: .github/labeler.yml
+
+          # `sync-labels: true` removes labels the PR no longer
+          # matches. Without it, a label applied when a file was
+          # present stays applied after that file is reverted in a
+          # later push. The trade-off: a manually-applied label that
+          # happens to also be in the config will be removed if no
+          # matching path is present. Since the config's labels are
+          # all path-derived, that is the intended behaviour.
+          sync-labels: true
