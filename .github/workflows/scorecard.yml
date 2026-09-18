@@ -1,0 +1,189 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / OSSF Supply-Chain Scorecard
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Runs the Open Source Security Foundation's Scorecard analysis against
+# the repository and publishes the result to the Security tab and to
+# the public Scorecard service.
+#
+# What Scorecard measures:
+#
+#   A fixed set of supply-chain hygiene checks, each scored 0-10 and
+#   rolled up into an overall score:
+#
+#     * Binary-Artifacts     -- committed binaries that cannot be reviewed
+#     * Branch-Protection    -- are merges to main gated on review / CI
+#     * CI-Tests             -- does the repo run tests on PRs
+#     * CII-Best-Practices   -- OpenSSF badge level
+#     * Code-Review          -- are changes reviewed before merge
+#     * Contributors         -- bus factor / contributor concentration
+#     * Dangerous-Workflow   -- untrusted code run with write tokens
+#     * Dependency-Update-Tool -- Dependabot/Renovate configured
+#     * Fuzzing              -- is there a fuzz harness
+#     * License              -- is a license declared
+#     * Maintained           -- recent commits, recent issues triaged
+#     * Packaging            -- is the project published to a registry
+#     * Pinned-Dependencies  -- are actions / images pinned to SHAs
+#     * SAST                 -- is static analysis configured (CodeQL)
+#     * Security-Policy      -- is there a SECURITY.md
+#     * Signed-Releases      -- are releases signed
+#     * Token-Permissions    -- do workflows declare least-privilege
+#     * Vulnerabilities      -- are there known CVEs in the dependency tree
+#     * Webhooks             -- are there high-risk webhooks configured
+#
+#   Most of these are already satisfied by the workflows in this repo:
+#   pinned actions, least-privilege tokens, CodeQL, SECURITY.md,
+#   Dependabot, CI on PRs. The score is a measurement of that posture,
+#   and each finding points at a concrete thing to fix.
+#
+# Trigger policy:
+#
+#   * `branch_protection_rule` -- Scorecard's Branch-Protection check
+#     result changes when branch protection changes. This trigger
+#     re-runs the analysis exactly when its own input has moved.
+#
+#   * `schedule` -- a weekly catch-up. A CVE published against an
+#     unchanged dependency set is picked up here.
+#
+#   * `push` to main -- so a merge that touches the workflow set is
+#     re-scored immediately rather than waiting for the schedule.
+#
+#   * `workflow_dispatch` -- manual re-run.
+#
+# Publish behaviour:
+#
+#   `publish_results: true` sends the results to the OpenSSF public
+#   API, where they are visible at:
+#
+#     https://securityscorecards.dev/viewer/?uri=github.com/DylanLRPollock/Monkey-Head-Project
+#
+#   This requires `id-token: write` on the job (see permissions below).
+#   The published score is public — the repository is public, so this
+#   changes nothing about its exposure, but it does mean the score
+#   appears in third-party searches.
+#
+#   Set to `false` if you'd rather keep the score private. In that
+#   case, delete the `id-token: write` permission below and the SARIF
+#   is only uploaded to the Security tab.
+#
+# Required repository setting:
+#
+#   The repository must be public, OR have GitHub Advanced Security
+#   enabled if private. Without one of the two, the SARIF upload step
+#   fails with a permissions error.
+#
+# This is not a required status check:
+#
+#   Scorecard is advisory. It produces findings that the maintainer
+#   may choose to accept — a single-maintainer project will always
+#   score lower on Code-Review and Contributors than a multi-person
+#   one, and that is not a fixable problem. Do not add this to branch
+#   protection.
+#
+# Action pins:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+#
+#   *** ONE SHA IN THIS FILE NEEDS TO BE RESOLVED BEFORE MERGE ***
+#
+#   `ossf/scorecard-action` is pinned to `<SCORECARD_SHA>`. Resolve
+#   the SHA for the current v2 release before merging:
+#
+#     gh api repos/ossf/scorecard-action/git/refs/tags/v2.4.3 \
+#       --jq '.object.sha'
+#
+#   Replace `<SCORECARD_SHA>` with the returned value and update the
+#   trailing comment to the resolved tag. Add the entry to
+#   `.github/actions-pins.md`.
+#
+#   Every other SHA in this file was resolved during the CI audit and
+#   matches what is already used in other workflows.
+
+name: Scorecard
+
+on:
+  branch_protection_rule:
+  push:
+    branches: [ main ]
+  schedule:
+    # Saturdays at 04:27 UTC. Staggered from cache-cleanup (Sunday
+    # 03:17), stale (daily 04:17), and the Monday security scans
+    # (06:00, 06:30, 07:00) so no two jobs run concurrently.
+    - cron: '27 4 * * 6'
+  workflow_dispatch:
+
+# Workflow-level default. Job-level permissions below override this.
+permissions:
+  contents: read
+
+# One analysis per ref. Cancelling is safe — the analysis writes only
+# workspace-local files, and the last run reflects the current state.
+concurrency:
+  group: scorecard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      # Required to upload SARIF to the Security tab.
+      security-events: write
+      # Required only when `publish_results: true` — the action
+      # exchanges this token for a short-lived credential with the
+      # OpenSSF API.
+      id-token: write
+      # Required by some Scorecard checks to read workflow runs and
+      # branch protection state.
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The checkout action writes the token into `.git/config` by
+          # default, which persists it for any later step in the job.
+          # Scorecard does not need git credentials; disabling the
+          # persistence removes a token-exfiltration surface.
+          persist-credentials: false
+
+      - name: Run Scorecard analysis
+        uses: ossf/scorecard-action@<SCORECARD_SHA> # v2.4.3 -- RESOLVE BEFORE MERGE
+        with:
+          # Where to write the raw SARIF.
+          results_file: results.sarif
+          results_format: sarif
+
+          # Publish to the OpenSSF public API. Requires
+          # `id-token: write` on the job. Set to false to keep the
+          # score private (and then remove `id-token: write`).
+          publish_results: true
+
+      - name: Upload SARIF to the Security tab
+        # Runs even if the analysis step reported findings — findings
+        # are the point, and a red analysis step is what populates the
+        # Security tab. If the analysis failed to produce a file at
+        # all, this step will fail loudly rather than uploading
+        # nothing.
+        uses: github/codeql-action/upload-sarif@d8073367669608af8fbcc5f63dd0a0d52bb90cff # v4
+        with:
+          sarif_file: results.sarif
+
+      - name: Upload Scorecard results as an artifact
+        # `if: always()` so the SARIF is retrievable even when the
+        # upload-to-Security-tab step fails (e.g. GHAS not enabled on
+        # a private repo). The artifact is the fallback view.
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: scorecard-results
+          path: results.sarif
+          if-no-files-found: warn
+          retention-days: 30

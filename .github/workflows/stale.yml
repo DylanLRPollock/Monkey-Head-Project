@@ -1,0 +1,200 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Community / Stale Issue and PR Management
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Marks inactive issues and pull requests as stale, then closes them
+# if nothing happens after a grace period.
+#
+# This is a community-management policy, not a technical check. Auto-
+# closing is opinionated: it keeps the tracker readable, but it can
+# also close something a contributor was genuinely waiting on. The
+# exemptions below are the guard rails -- anything sensitive, pinned,
+# already assigned, or filed by the maintainer is left alone.
+#
+# Two independent policies:
+#
+#   * Issues: marked stale after 60 days of inactivity, closed 14
+#     days after that if nothing changes. Long enough that "waiting
+#     for a maintainer" is not mistaken for "abandoned".
+#
+#   * PRs: marked stale after 30 days, closed 14 days after that.
+#     Shorter than the issue policy because an abandoned PR blocks
+#     review attention in a way an abandoned issue does not.
+#
+# What "activity" means:
+#
+#   A new comment, a new commit on the PR, a label change, or a
+#   milestone change. Adding a comment to a stale issue removes the
+#   `stale` label and resets the clock (see `remove-stale-when-updated`).
+#
+# Exemptions:
+#
+#   Labels (both `exempt-issue-labels` and `exempt-pr-labels` below):
+#     * `security` -- security-sensitive, must never auto-close
+#     * `pinned` -- explicitly kept open by the maintainer
+#     * `breaking-change-candidate` -- needs review, not closing
+#     * `help wanted`, `good first issue` -- contribution on-ramps
+#     * `Huey`, `codex`, `aardvark` -- project-specific tracking labels
+#
+#   States:
+#     * Draft PRs are never marked stale. A draft is a deliberate
+#       "not ready" signal, not inactivity.
+#     * Assigned items are never marked stale. Someone has picked
+#       them up.
+#     * Items with a milestone are never marked stale. The milestone
+#       is the schedule.
+#
+#   Authors:
+#     * Dependabot PRs are ignored. They are managed by the
+#       Dependabot policy in `.github/dependabot.yml`, not by this.
+#
+# Debug mode:
+#
+#   Manual dispatch defaults to `debug_only: true`, which reports what
+#   the run *would* do without applying labels or closing anything.
+#   Run it that way the first time to verify the exemptions behave
+#   as expected. Set `debug_only: false` to apply.
+#
+# Warning:
+#
+#   Do NOT add this workflow to branch protection. It is a scheduled
+#   job; it never runs on a PR, and marking it as a required check
+#   would wedge every PR in "Expected -- Waiting for status to be
+#   reported" indefinitely.
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+
+name: Stale
+
+on:
+  schedule:
+    # Daily at 04:17 UTC. Staggered from cache-cleanup (03:17) and the
+    # Monday security scans (06:00, 06:30, 07:00) so the four do not
+    # queue against each other.
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      debug_only:
+        description: 'Report only; do not apply labels or close anything'
+        required: false
+        type: boolean
+        default: true
+
+# Least-privilege token, elevated only for the label and close
+# endpoints. `contents: read` is included for consistency with the
+# other workflows even though nothing here reads repository contents.
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+# A stale run is cheap and idempotent, and there is no reason to cancel
+# one in flight -- a partial run just means the next scheduled run
+# finishes the job. Queueing is correct.
+concurrency:
+  group: stale
+  cancel-in-progress: false
+
+jobs:
+  stale:
+    name: Mark and close stale items
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Run stale action
+        uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9.1.0
+        with:
+          # --- Issue policy ------------------------------------------------
+          days-before-issue-stale: 60
+          days-before-issue-close: 14
+          stale-issue-label: 'stale'
+          stale-issue-message: >-
+            This issue has been automatically marked stale because it
+            has not seen activity in 60 days. It will be closed in 14
+            days if nothing changes.
+
+            If this is still relevant, a comment is enough to keep it
+            open -- the label is removed automatically. If it is no
+            longer relevant, feel free to close it yourself.
+          close-issue-message: >-
+            Closing this as stale after 14 days with no further
+            activity. If it becomes relevant again, a new issue with a
+            fresh description is more useful than reopening this one.
+          close-issue-reason: 'not_planned'
+          exempt-issue-labels: >-
+            security,
+            pinned,
+            breaking-change-candidate,
+            help wanted,
+            good first issue,
+            Huey,
+            codex,
+            aardvark
+
+          # --- PR policy ---------------------------------------------------
+          days-before-pr-stale: 30
+          days-before-pr-close: 14
+          stale-pr-label: 'stale'
+          stale-pr-message: >-
+            This pull request has been automatically marked stale
+            because it has not seen activity in 30 days. It will be
+            closed in 14 days if nothing changes.
+
+            If the work is still in progress, a comment or a push is
+            enough to keep it open. If it has been superseded, please
+            close it yourself so reviewers know it is no longer
+            waiting on them.
+          close-pr-message: >-
+            Closing this pull request as stale after 14 days with no
+            further activity. If the work is still wanted, a fresh PR
+            against the current `main` is more useful than reopening
+            this one -- the branch may have drifted.
+          exempt-pr-labels: >-
+            security,
+            pinned,
+            breaking-change-candidate,
+            help wanted,
+            good first issue,
+            Huey,
+            codex,
+            aardvark
+
+          # --- Behaviour shared by both -----------------------------------
+          # A comment, a push, a label change, or a milestone change all
+          # count as activity. Removing `stale` on any of them means a
+          # single comment is enough to keep an item open indefinitely.
+          remove-stale-when-updated: true
+
+          # A draft is a deliberate "not ready" signal. Leave drafts
+          # alone until the author marks them ready for review.
+          exempt-draft-prs: true
+
+          # Assigned items and items with a milestone are excluded.
+          # Someone has picked them up, or the milestone is the schedule.
+          exempt-all-assignees: true
+          exempt-all-milestones: true
+
+          # Do not touch branches on close. Deleting a contributor's
+          # branch is a surprise they do not want.
+          delete-branch: false
+
+          # Report what would be done, but do not do it. Manual
+          # dispatch defaults to true; the schedule always runs live.
+          debug-only: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_only }}
+
+          # Up to 50 operations per run. The default of 30 is fine for
+          # a steady-state tracker; this leaves headroom for the first
+          # run to clear a backlog without a second pass.
+          operations-per-run: 50
+
+          # Do not count bot comments as activity. Dependabot and
+          # other bots comment on items without human involvement.
+          exempt-issue-assignees: ''

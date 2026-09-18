@@ -1,0 +1,196 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / GitHub Pages Deployment
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Deploys the Sphinx-built documentation to GitHub Pages on every push
+# to `main`.
+#
+# Where the HTML comes from:
+#
+#   This workflow rebuilds the docs from source (same `sphinx-build`
+#   invocation as `docs.yml`) rather than downloading the artifact
+#   produced by `docs.yml`. That costs roughly a minute of extra CI
+#   per push, and buys two things:
+#
+#     1. No cross-workflow artifact coupling. There is no race where
+#        `pages.yml` starts before `docs.yml` has finished producing
+#        the artifact.
+#
+#     2. No `workflow_run` trigger. `workflow_run` runs with the base
+#        repository's full token permissions and is triggered by
+#        PR-triggered workflows, which is a real privilege-escalation
+#        surface. Avoiding it is worth the duplicated build.
+#
+#   The alternative is to add a `deploy` job to `docs.yml` gated on
+#   `push` to `main`. That's a valid design too and saves the rebuild;
+#   it just means one file does two things instead of one file each.
+#
+# URL:
+#
+#   With no custom domain, the site is published at:
+#
+#     https://dylanlrpollock.github.io/Monkey-Head-Project/
+#
+#   If you set a custom domain in Settings -> Pages, update
+#   `html_baseurl` in `docs/conf.py` to match. Sphinx uses that value
+#   to generate canonical URLs, sitemap entries, and relative links;
+#   a mismatch produces links that resolve to the wrong host.
+#
+# Required one-time setup:
+#
+#   1. Settings -> Pages -> Build and deployment -> Source: select
+#      **GitHub Actions**. Do not select "Deploy from a branch" --
+#      the branch-based method and this workflow are mutually
+#      exclusive, and having both enabled produces confusing
+#      overwrite behaviour.
+#
+#   2. Confirm the repository is public, or that GitHub Pages is
+#      enabled for private repositories on your plan. Pages on a
+#      private repo requires GitHub Enterprise Cloud.
+#
+# Environment:
+#
+#   The deploy job uses the `github-pages` environment, which GitHub
+#   creates automatically the first time a Pages deployment runs.
+#   The environment records the deployed URL in the run summary.
+#
+# Not a required status check:
+#
+#   This workflow only runs on `push` to `main` and manual dispatch.
+#   Adding it to branch protection would mark every PR "Expected --
+#   Waiting for status to be reported" indefinitely. Do not do it.
+#
+# Action pins:
+#
+#   *** THREE SHAs IN THIS FILE NEED RESOLUTION BEFORE MERGE ***
+#
+#   `actions/configure-pages`, `actions/upload-pages-artifact`, and
+#   `actions/deploy-pages` are pinned to `<PLACEHOLDER>` below.
+#   Resolve all three in one command:
+#
+#     foreach ($a in @(
+#       @{ repo='actions/configure-pages';           tag='v5' },
+#       @{ repo='actions/upload-pages-artifact';     tag='v3' },
+#       @{ repo='actions/deploy-pages';              tag='v4' }
+#     )) {
+#       $sha = gh api "repos/$($a.repo)/git/refs/tags/$($a.tag)" --jq '.object.sha'
+#       "$($a.repo) @ $($a.tag) -> $sha"
+#     }
+#
+#   Replace each `<PLACEHOLDER>` with the returned value, update the
+#   trailing `# vN` comment to the resolved tag, and add three rows to
+#   `.github/actions-pins.md`.
+#
+#   The SHAs for `actions/checkout` and `actions/setup-python` below
+#   were resolved during the CI audit and match what is already used
+#   in the other workflows.
+
+name: Deploy docs to Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+# Workflow-level default. The build job inherits this; the deploy job
+# elevates to `pages: write` and `id-token: write` below.
+permissions:
+  contents: read
+
+# One deployment at a time. Do NOT cancel an in-flight deployment --
+# a deployment interrupted mid-upload can leave the published site in
+# a state that does not match any commit.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_ROOT_USER_ACTION: ignore
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  # -------------------------------------------------------------------------
+  # Build
+  # -------------------------------------------------------------------------
+  build:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # `fetch-depth: 0` matches `docs.yml` so the build is
+          # reproducible. Some Sphinx extensions read git history for
+          # "last updated" timestamps; a shallow clone produces wrong
+          # or empty values.
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
+          cache-dependency-path: docs/requirements.txt
+
+      - name: Install docs dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r docs/requirements.txt
+          # If `docs/conf.py` uses `sphinx.ext.autodoc` to pull
+          # docstrings from `src/`, the project must be importable.
+          # See the note in `docs.yml` for the same comment.
+          #
+          #   pip install -c constraints.txt -e .
+
+      - name: Build Sphinx docs
+        # Identical flags to `docs.yml`:
+        #   -W            turn warnings into errors
+        #   --keep-going  report all of them before exiting
+        # A build that would fail in `docs.yml` fails here too, so the
+        # Pages site is never published from a source that the docs
+        # workflow would reject.
+        run: sphinx-build -b html -W --keep-going docs docs/_build/html
+
+      - name: Configure Pages
+        # Reads the Pages configuration from the API and writes the
+        # base URL and other values into a file the upload step reads.
+        # Fails if Pages is not enabled with Source = GitHub Actions.
+        uses: actions/configure-pages@<PLACEHOLDER> # v5 -- RESOLVE BEFORE MERGE
+
+      - name: Upload Pages artifact
+        # Packages the built HTML into the format the Pages API
+        # expects. This is NOT the same as `actions/upload-artifact`;
+        # the Pages artifact is signed and versioned for the deploy
+        # step, and it does not appear in the workflow's artifact list.
+        uses: actions/upload-pages-artifact@<PLACEHOLDER> # v3 -- RESOLVE BEFORE MERGE
+        with:
+          path: docs/_build/html
+
+  # -------------------------------------------------------------------------
+  # Deploy
+  # -------------------------------------------------------------------------
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      # Required to publish the site.
+      pages: write
+      # Required for OIDC; the deploy action exchanges this token with
+      # the Pages API for a short-lived deployment credential.
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@<PLACEHOLDER> # v4 -- RESOLVE BEFORE MERGE
