@@ -1,21 +1,81 @@
-name: Artifact & Container-Adjacent Scan
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / Artifact & Filesystem Security Scan
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Two checks:
+#
+#   1. A large-file / binary-artifact inventory of the tracked tree.
+#      Reports every file at or above 1, 5, 25, 50, and 100 MB, flags
+#      extensions that are commonly binary, and writes both a markdown
+#      report and a JSON dump of the top 200 files by size.
+#
+#   2. A Trivy filesystem scan for known vulnerabilities, secrets, and
+#      misconfigurations. Trivy is run with `exit-code: 0` and the step
+#      is `continue-on-error`, so findings are recorded but do not
+#      block a PR. This is deliberate: the scan produces a lot of
+#      findings in dependency trees, and requiring every one to be
+#      resolved before merge would make the check unshippable.
+#
+#   Findings are uploaded as a SARIF artifact, not to the Security
+#   tab. Uploading to the Security tab requires `security-events:
+#   write` on the job, which would elevate the token scope and opt
+#   this workflow into the same required-check interactions that
+#   CodeQL has. Keeping the findings in an artifact is the deliberate
+#   trade-off.
+#
+# Scope:
+#
+#   Trivy is pointed at the repository root but excludes the usual
+#   working directories (`.venv`, `node_modules`, `build`, `dist`,
+#   caches). Without those excludes, most findings come from files
+#   the repository does not own, and the report becomes noise.
+#
+#   This workflow does NOT scan a container image. The name reflects
+#   that artifact and container-adjacent content is in scope; if a
+#   real image scan is wanted, add a build step and switch to
+#   `scan-type: image`.
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+
+name: Artifact & Filesystem Security Scan
 
 on:
-  pull_request:
   push:
     branches:
       - main
-      - master
+      - develop
+  pull_request:
   schedule:
+    # Mondays at 06:30 UTC. Off-hours in every timezone the project
+    # is likely to have contributors in.
     - cron: '30 6 * * 1'
   workflow_dispatch:
 
+# Least-privilege token. Nothing in this workflow writes to the repo.
 permissions:
   contents: read
 
+concurrency:
+  group: artifact-scan-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONUNBUFFERED: "1"
+
 jobs:
   artifact-scan:
+    name: Artifact & filesystem scan
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -25,8 +85,8 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY'
+          import datetime
           import json
-          import os
           import pathlib
           import subprocess
 
@@ -43,7 +103,16 @@ jobs:
               ".bz2", ".pdf", ".mp4", ".mov", ".avi", ".mkv", ".mp3", ".flac", ".wav",
           }
 
-          files = subprocess.check_output(["git", "ls-files", "-z"], text=False).split(b"\x00")
+          # Provenance: a report without a commit SHA cannot be tied
+          # back to the state of the tree it describes.
+          commit = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          generated = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+          files = subprocess.check_output(
+              ["git", "ls-files", "-z"], text=False
+          ).split(b"\x00")
           files = [f.decode("utf-8", "replace") for f in files if f]
 
           records = []
@@ -53,20 +122,29 @@ jobs:
                   continue
               size = p.stat().st_size
               ext = p.suffix.lower()
-              suspected_binary = ext in BINARY_EXTS
               records.append({
                   "path": rel,
                   "bytes": size,
                   "extension": ext,
-                  "binary_extension": suspected_binary,
+                  "binary_extension": ext in BINARY_EXTS,
               })
 
           records.sort(key=lambda r: r["bytes"], reverse=True)
 
           with open("large-files-top200.json", "w", encoding="utf-8") as f:
-              json.dump(records[:200], f, indent=2)
+              json.dump(
+                  {"commit": commit, "generated": generated, "files": records[:200]},
+                  f,
+                  indent=2,
+              )
 
-          lines = ["# Large and Binary-Adjacent Repository Artifact Report", ""]
+          lines = [
+              "# Large and Binary-Adjacent Repository Artifact Report",
+              "",
+              f"- Commit: `{commit}`",
+              f"- Generated: `{generated}`",
+              "",
+          ]
           for limit, label in THRESHOLDS:
               matched = [r for r in records if r["bytes"] >= limit]
               lines.append(f"## Files >= {label} ({limit} bytes)")
@@ -76,7 +154,8 @@ jobs:
                   lines.append("| Size (bytes) | Binary-like ext | Path |")
                   lines.append("|---:|:---:|---|")
                   for r in matched[:200]:
-                      lines.append(f"| {r['bytes']} | {'yes' if r['binary_extension'] else 'no'} | `{r['path']}` |")
+                      flag = "yes" if r["binary_extension"] else "no"
+                      lines.append(f"| {r['bytes']} | {flag} | `{r['path']}` |")
               else:
                   lines.append("No tracked files at this threshold.")
               lines.append("")
@@ -86,31 +165,58 @@ jobs:
           PY
 
       - name: Run Trivy filesystem scan (non-blocking)
+        # `exit-code: '0'` keeps findings from failing the step.
+        # `continue-on-error: true` keeps a genuine scan failure (DB
+        # download, action crash) from failing the workflow. Together
+        # they make this check purely informational. That is the
+        # policy: findings feed review, not CI.
         id: trivy
         continue-on-error: true
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
           scan-ref: .
+          # Exclude the directories that hold installed dependencies,
+          # build output, and tool caches. Without this, most findings
+          # are in files the repository does not own.
+          skip-dirs: >-
+            .git,.venv,venv,env,build,dist,node_modules,
+            .mypy_cache,.ruff_cache,.pytest_cache,.tox,.nox,
+            .hypothesis,htmlcov
           format: sarif
           output: trivy-fs.sarif
           severity: CRITICAL,HIGH
           vuln-type: os,library
           scanners: vuln,secret,misconfig
+          cache: true
           exit-code: '0'
 
       - name: Create Trivy status note
         if: always()
         run: |
+          # `steps.trivy.outcome` reports whether the *step* ran to
+          # completion, not whether findings were found. With
+          # `exit-code: 0`, this is `success` even when CRITICAL
+          # vulnerabilities exist. The note says so explicitly to
+          # avoid the reader mistaking it for a clean bill of health.
           {
             echo "# Trivy FS Scan Status"
             echo
-            echo "- Result: ${{ steps.trivy.outcome }}"
-            echo "- Policy: non-blocking baseline (`exit-code: 0`)"
-            echo "- Scope: repository filesystem only"
+            echo "- Step status: \`${{ steps.trivy.outcome }}\`"
+            echo "- Policy: informational only (\`exit-code: 0\`, \`continue-on-error: true\`)"
+            echo "- Scope: repository filesystem, dependency and cache directories excluded"
+            echo "- Findings: see \`trivy-fs.sarif\` in this artifact"
+            echo
+            echo "A step status of \`success\` means the scan completed."
+            echo "It does **not** mean no findings were produced."
           } > trivy-status.md
 
       - name: Upload artifact scan outputs
+        # `if: always()` so a partial report is uploaded even when the
+        # scan step is red. `if-no-files-found: warn` because the
+        # Python step already fails the workflow if the report could
+        # not be produced -- failing again here would put a
+        # misleading second error on top of the real one.
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
@@ -118,9 +224,14 @@ jobs:
           path: |
             large-files-report.md
             large-files-top200.json
-          if-no-files-found: error
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Upload Trivy outputs
+        # `ignore` rather than `error`: `trivy-fs.sarif` may legitimately
+        # be missing if Trivy itself failed. `trivy-status.md` is
+        # always written by the previous step, so the artifact is never
+        # empty.
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
@@ -129,3 +240,4 @@ jobs:
             trivy-fs.sarif
             trivy-status.md
           if-no-files-found: ignore
+          retention-days: 30

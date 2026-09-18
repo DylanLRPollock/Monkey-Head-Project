@@ -1,12 +1,60 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / Documentation Build
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Builds the Sphinx documentation and fails on any warning.
+#
+# Warning policy:
+#
+#   `-W` turns every warning into an error, so a malformed directive,
+#   an unresolvable reference, or a missing image fails the build
+#   rather than shipping silently. `--keep-going` tells Sphinx to
+#   finish the build and report *all* warnings before exiting
+#   non-zero -- without it, the developer fixes one warning per CI
+#   run, which is how warnings accumulate.
+#
+#   If a specific warning is genuinely unavoidable (an upstream
+#   package whose docs reference a symbol that does not exist), add
+#   it to `suppress_warnings` in `docs/conf.py` rather than weakening
+#   the `-W` flag here. Suppressing one warning in a documented place
+#   is fine; turning off strict mode is not.
+#
+# Artifacts:
+#
+#   The built HTML is uploaded as an artifact on every run so a
+#   reviewer can download and preview the rendered output without
+#   installing Sphinx locally. `if-no-files-found: error` so a build
+#   that silently produces nothing is caught here rather than by a
+#   reviewer discovering an empty zip.
+#
+# Repository settings note:
+#
+#   If this workflow is a *required* status check and a `paths:`
+#   filter is added, a PR that does not match the filter will sit in
+#   "Expected -- Waiting for status to be reported" indefinitely. Do
+#   not add a filter without checking the branch-protection settings.
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+
 name: Docs
 
 on:
   push:
-    branches: [main, develop]
+    branches: [ main, develop ]
   pull_request:
-    branches: [main, develop]
+    branches: [ main, develop ]
   workflow_dispatch:
 
+# Least-privilege token. The build only reads the repo and writes an
+# artifact, neither of which needs write access to the repository.
 permissions:
   contents: read
 
@@ -14,13 +62,29 @@ concurrency:
   group: docs-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_ROOT_USER_ACTION: ignore
+  PYTHONUNBUFFERED: "1"
+
 jobs:
   sphinx:
     name: Build docs (Py 3.13)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # `fetch-depth: 0` is needed if any Sphinx extension reads
+          # git history (e.g. sphinx-last-updated-by-git, gitstamp,
+          # or a theme that renders "last updated" dates). A shallow
+          # clone produces empty or wrong timestamps.
+          #
+          # Set to `1` (the default) to speed up checkout if no
+          # extension needs history. Leaving it at `0` is safe either
+          # way -- the cost is a few seconds on this repo's size.
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v6
@@ -33,6 +97,33 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r docs/requirements.txt
+          # If `docs/conf.py` uses `sphinx.ext.autodoc` to pull
+          # docstrings from `src/`, the project itself must be
+          # importable. Either `conf.py` inserts `../src` into
+          # `sys.path`, or the install below is required:
+          #
+          #   pip install -c constraints.txt -e .
+          #
+          # Left commented because the current setup is one of the
+          # two, and only the docs build knows which.
 
       - name: Build Sphinx docs
-        run: sphinx-build -b html docs docs/_build/html -W --keep-going
+        # `-W` fails on any warning; `--keep-going` reports all of them
+        # before exiting rather than stopping at the first. Together
+        # they give a complete picture of what needs fixing.
+        run: sphinx-build -b html -W --keep-going docs docs/_build/html
+
+      - name: Upload built documentation
+        # Always upload, even on failure, so a partial build can be
+        # inspected when diagnosing a warning that became an error.
+        # `if-no-files-found: error` turns "the build produced nothing"
+        # into a visible failure rather than an empty artifact.
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: sphinx-html
+          path: docs/_build/html/
+          if-no-files-found: error
+          # Docs sites can run tens of MB; keep retention short for a
+          # CI artifact. Adjust if the site grows large.
+          retention-days: 7

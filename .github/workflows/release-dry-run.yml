@@ -1,3 +1,51 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / Release Dry Run
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Rehearses a release: builds the sdist and wheel, generates checksums,
+# and installs both artifacts in fresh virtual environments to confirm
+# they work outside the source tree.
+#
+# When this runs:
+#
+#   * `workflow_dispatch` -- manual, on any branch. Use this to verify
+#     a release candidate before tagging.
+#
+#   * `pull_request` -- whenever a build-affecting file changes
+#     (`pyproject.toml`, `setup.py`, `setup.cfg`, `MANIFEST.in`,
+#     `requirements*.txt`, or anything under `src/`). This is what
+#     catches "the release will be broken" while the PR is still open.
+#
+# Relationship to `package-smoke.yml`:
+#
+#   Both workflows build and install the package. `package-smoke`
+#   runs on every PR and covers 3.13 + 3.14. This workflow runs on
+#   a narrower set of changes, tests only 3.13, and adds the release-
+#   specific artifacts: SHA256SUMS, and an unconditional upload of
+#   `dist/` so a maintainer can attach it to a GitHub release.
+#
+#   If the two drift far enough to be a maintenance burden, merge
+#   them -- this workflow's only unique contributions are the
+#   checksums and the unconditional artifact upload.
+#
+# Install policy:
+#
+#   The wheel and sdist are installed WITHOUT `-c constraints.txt`.
+#   This is deliberate: constraints.txt is a dev-time pin file, and a
+#   real user installing from PyPI does not use it. Installing with
+#   constraints here would make the dry run less representative of a
+#   real install, not more.
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+
 name: Release Dry Run
 
 on:
@@ -12,59 +60,134 @@ on:
       - "src/**"
       - ".github/workflows/release-dry-run.yml"
 
+# Least-privilege token. Nothing here writes to the repository.
+permissions:
+  contents: read
+
+# Cancel superseded runs on the same ref. Safe here (unlike the wiki
+# publish workflow) because a cancelled dry run leaves nothing in a
+# half-published state.
+concurrency:
+  group: release-dry-run-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_ROOT_USER_ACTION: ignore
+  PYTHONUNBUFFERED: "1"
+
 jobs:
   release-dry-run:
-    name: Build + Install Validation (Py3.13)
+    name: Build + Install Validation (Py 3.13)
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python 3.13
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v6
         with:
           python-version: "3.13"
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
 
       - name: Install build tooling
         run: |
           python -m pip install --upgrade pip
-          python -m pip install build
+          # Pinned so an upstream `build` release cannot break this
+          # workflow with no change to the repository.
+          python -m pip install 'build==1.2.2'
 
       - name: Build sdist and wheel
         run: python -m build
 
-      - name: Generate SHA256 checksums
-        run: sha256sum dist/* > dist/SHA256SUMS
+      - name: Verify wheel contents
+        # Confirms the metadata's package-data declarations actually
+        # produced files. A missing `py.typed` builds without error and
+        # silently loses type information for every downstream consumer.
+        run: |
+          set -euo pipefail
+          echo "--- wheel contents ---"
+          python -m zipfile -l dist/*.whl
+          echo "--- assertions ---"
+          python -m zipfile -l dist/*.whl | grep -q 'huey/py.typed' \
+            || { echo "FAIL: huey/py.typed missing from wheel"; exit 1; }
+          python -m zipfile -l dist/*.whl | grep -q 'huey/__init__.py' \
+            || { echo "FAIL: huey/__init__.py missing from wheel"; exit 1; }
 
-      - name: Create fresh virtual environment
-        run: python -m venv .release-dry-run-venv
+      - name: Generate SHA256 checksums
+        run: |
+          cd dist
+          sha256sum ./* > SHA256SUMS
+          echo "--- SHA256SUMS ---"
+          cat SHA256SUMS
+
+      # --- Wheel install smoke -------------------------------------------
+      # The wheel is what `pip install hueyos` fetches. Tested in a
+      # venv with no project source on the path, which is the closest
+      # CI can get to an end-user install.
+
+      - name: Create fresh venv for wheel
+        run: python -m venv .release-dry-run-venv-wheel
 
       - name: Install built wheel in fresh environment
         shell: bash
         run: |
-          source .release-dry-run-venv/bin/activate
+          source .release-dry-run-venv-wheel/bin/activate
           python -m pip install --upgrade pip
           python -m pip install dist/*.whl
 
-      - name: Import smoke checks
+      - name: Import smoke checks (wheel)
         shell: bash
         run: |
-          source .release-dry-run-venv/bin/activate
+          source .release-dry-run-venv-wheel/bin/activate
           python -c "import huey"
           python -c "import hueyos"
           python -c "import huey.api"
 
-      - name: Console script smoke checks
+      - name: Console script smoke checks (wheel)
         shell: bash
         run: |
-          source .release-dry-run-venv/bin/activate
-          huey --help
-          huey-api --help
+          source .release-dry-run-venv-wheel/bin/activate
+          timeout 30s huey --help
+          timeout 30s huey-api --help
+          timeout 30s huey-command-center --help
+
+      # --- Sdist install smoke -------------------------------------------
+      # A separate venv because `pip install *.whl` and
+      # `pip install *.tar.gz` resolve dependencies slightly
+      # differently, and the sdist is what downstream packagers
+      # (Debian, Fedora, Homebrew) actually build from.
+
+      - name: Create fresh venv for sdist
+        run: python -m venv .release-dry-run-venv-sdist
+
+      - name: Install built sdist in fresh environment
+        shell: bash
+        run: |
+          source .release-dry-run-venv-sdist/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install dist/*.tar.gz
+
+      - name: Import smoke checks (sdist)
+        shell: bash
+        run: |
+          source .release-dry-run-venv-sdist/bin/activate
+          python -c "import huey"
+          python -c "import hueyos"
+          python -c "import huey.api"
+
+      # --- Artifacts ------------------------------------------------------
 
       - name: Upload release dry run artifacts
-        uses: actions/upload-artifact@v7
+        # Unconditional upload -- the whole point of a dry run is to
+        # inspect the artifacts a release would produce, whether the
+        # smoke test passed or failed. `if-no-files-found: error` turns
+        # "the build produced nothing" into a visible failure.
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: release-dry-run-dist
           path: dist/
           if-no-files-found: error
+          retention-days: 30

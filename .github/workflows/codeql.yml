@@ -1,3 +1,50 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / CodeQL Advanced Security
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Runs GitHub's CodeQL analysis for two languages:
+#
+#   * actions -- scans the workflow files in this repository for
+#     security issues (unsafe interpolation, excessive permissions,
+#     unpinned actions, etc.). Covers every file under `.github/`.
+#
+#   * python  -- scans the package source for data-flow and taint
+#     issues. Uses `build-mode: none`, so no install step is needed;
+#     CodeQL extracts the code statically.
+#
+# The matrix also enables the extended security query packs, which are
+# not enabled by default in CodeQL. They produce more findings and more
+# false positives than the default set; if the noise becomes a problem,
+# drop `security-and-quality` and keep `+security-extended`.
+#
+# Repository settings note:
+#
+#   If CodeQL is configured as a *required* status check, the
+#   `paths-ignore` block below can wedge a docs-only PR: the workflow
+#   never runs, so the check never reports, so the PR sits in
+#   "Expected -- Waiting for status to be reported" indefinitely.
+#
+#   Two ways to resolve that:
+#     (a) Make CodeQL advisory, not required. Recommended for a
+#         single-maintainer project -- the check still appears on the
+#         PR, it just does not block the merge.
+#     (b) Remove `paths-ignore` from the `pull_request` trigger so the
+#         workflow runs on every PR.
+#
+#   Nothing in this file can detect which mode the repository is in;
+#   that is a branch-protection setting.
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN` comment
+#   records the upstream major. See `.github/actions-pins.md` for the
+#   pin registry and the verification procedure.
+
 name: "CodeQL Advanced (HueyOS)"
 
 on:
@@ -9,34 +56,61 @@ on:
       - '**/*.md'
       - 'media/**'
       - 'assets/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - 'LICENSE'
+      - 'LICENSE.*'
+      - '.gitignore'
+      - '.gitattributes'
+      - '.editorconfig'
   pull_request:
-    branches: [ "main" ]
+    # `develop` added so PRs targeting the integration branch get
+    # CodeQL feedback while they are open, rather than at the point
+    # where `develop` merges to `main` and the PR is already closed.
+    branches: [ "main", "develop" ]
     paths-ignore:
       - 'docs/**'
       - 'wiki/**'
       - '**/*.md'
       - 'media/**'
       - 'assets/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - 'LICENSE'
+      - 'LICENSE.*'
+      - '.gitignore'
+      - '.gitattributes'
+      - '.editorconfig'
   schedule:
-    # Tuesdays at 21:16 UTC
+    # Weekly drift catch. Tuesdays at 21:16 UTC, offset from the other
+    # security workflows (Bandit at 07:00, Trivy at 06:30) so they do
+    # not queue against each other.
     - cron: '16 21 * * 2'
   workflow_dispatch:
+
+# Workflow-level default. Job-level `permissions` below overrides this
+# for the `analyze` job -- job-level permissions replace, not merge --
+# so this is the floor for any future job added to this file, and it
+# satisfies the pin-registry verification grep for `^permissions:`.
+permissions:
+  contents: read
 
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
-    timeout-minutes: 120
+    timeout-minutes: 60
 
     permissions:
-      # required for all workflows
+      # Required to upload SARIF results to the Security tab.
       security-events: write
-      # required to fetch internal or private CodeQL packs
+      # Required to fetch internal or private CodeQL packs.
       packages: read
-      # only required for workflows in private repositories
+      # Required for workflows in private repositories.
       actions: read
       contents: read
 
+    # Job-level concurrency keyed on the language, so a re-push cancels
+    # the previous run of each language independently without killing
+    # the sibling language's job.
     concurrency:
       group: codeql-${{ github.ref }}-${{ matrix.language }}
       cancel-in-progress: true
@@ -49,7 +123,7 @@ jobs:
             build-mode: none
           - language: python
             build-mode: none
-          # Uncomment if/when you add JS/TS to the repo
+          # Uncomment if/when JS/TS is added to the repo.
           # - language: javascript-typescript
           #   build-mode: none
           # CodeQL supports: actions, c-cpp, csharp, go, java-kotlin,
@@ -65,18 +139,30 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
-          # Use the extended security queries in addition to the default set.
+          # Extended query packs, added to the default set. Drop
+          # `security-and-quality` if its findings become noisy.
           queries: +security-extended,security-and-quality
 
-      # If the analyze step fails with "We were unable to automatically build your code"
-      # switch the language's build-mode above to 'manual' and add the commands here.
+      # Only runs if a language is switched to `build-mode: manual` in
+      # the matrix above. For `none` mode this step is skipped.
+      #
+      # The `exit 1` is intentional: switching to manual mode should
+      # fail loudly until this step is replaced with real build
+      # commands. CodeQL's autobuilder handles Python without one.
       - name: Run manual build steps
         if: matrix.build-mode == 'manual'
         shell: bash
         run: |
-          echo 'If you are using a "manual" build mode for one or more of the'             'languages you are analyzing, replace this with the commands to build'             'your code, for example:'
-          echo '  make bootstrap'
-          echo '  make release'
+          echo "Manual build mode is not configured for '${{ matrix.language }}'."
+          echo ""
+          echo "Replace this step with the commands CodeQL needs to build"
+          echo "the project before analysis. For this repository that is"
+          echo "typically:"
+          echo ""
+          echo "    python -m pip install -c constraints.txt -e \".[dev]\""
+          echo ""
+          echo "Then confirm the 'build-mode' value for this language in"
+          echo "the matrix above."
           exit 1
 
       - name: Perform CodeQL Analysis

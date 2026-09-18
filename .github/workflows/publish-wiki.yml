@@ -1,15 +1,56 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / GitHub Wiki Publishing
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Regenerates the GitHub wiki from source files under `scripts/repo/`,
+# validates that the output matches what is committed, and -- on push to
+# `main` only -- publishes it.
+#
+# Two jobs:
+#
+#   validate -- runs on PRs and pushes. Regenerates the wiki, checks
+#     that the output matches the committed source (via `--check`),
+#     runs the generator tests, and uploads the generated tree as an
+#     artifact for review.
+#
+#   publish -- runs only on push to `main` and on manual dispatch.
+#     Gated on `needs: validate` so a failed validation never publishes.
+#     Does NOT run on pull requests.
+#
+# Why `cancel-in-progress: false`:
+#
+#   This is deliberately different from every other workflow in the
+#   repository. A publish must not be cancelled mid-flight -- if the
+#   wiki push is interrupted, the remote can be left in a state that
+#   does not match the source tree. Queueing is the correct behaviour
+#   here, not cancellation.
+#
+# Token:
+#
+#   Publishing uses `secrets.WIKI_DEPLOY_TOKEN`, a PAT (or GitHub App
+#   token) with permission to push to this repository's wiki. The
+#   default `GITHUB_TOKEN` cannot push to a wiki -- they are separate
+#   git repositories and the token's scopes do not extend to it. The
+#   workflow fails fast if the secret is missing rather than falling
+#   back to a token that cannot work.
+#
+#   Configure the secret under:
+#     Settings -> Secrets and variables -> Actions -> New repository secret
+#   Name: WIKI_DEPLOY_TOKEN
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+
 name: Validate and Publish GitHub Wiki
 
 on:
-  pull_request:
-    paths:
-      - "scripts/repo/build_wiki.py"
-      - "scripts/repo/wiki_*.json"
-      - "scripts/repo/publish_wiki.sh"
-      - "tests/test_wiki_generator.py"
-      - ".github/workflows/publish-wiki.yml"
-      - "docs/wiki-overhaul-v201.md"
-  workflow_dispatch:
   push:
     branches:
       - main
@@ -20,47 +61,128 @@ on:
       - "tests/test_wiki_generator.py"
       - ".github/workflows/publish-wiki.yml"
       - "docs/wiki-overhaul-v201.md"
+  pull_request:
+    paths:
+      - "scripts/repo/build_wiki.py"
+      - "scripts/repo/wiki_*.json"
+      - "scripts/repo/publish_wiki.sh"
+      - "tests/test_wiki_generator.py"
+      - ".github/workflows/publish-wiki.yml"
+      - "docs/wiki-overhaul-v201.md"
+  workflow_dispatch:
 
+# Workflow-level default is read-only. The `publish` job elevates to
+# `contents: write` below -- job-level permissions replace, not merge.
+# The `validate` job inherits this read-only scope.
 permissions:
-  contents: write
+  contents: read
 
+# Queue, do not cancel. A publish interrupted mid-flight can leave the
+# remote wiki in a state that does not match the source tree.
 concurrency:
   group: publish-github-wiki-${{ github.ref }}
   cancel-in-progress: false
 
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_ROOT_USER_ACTION: ignore
+  PYTHONUNBUFFERED: "1"
+
 jobs:
+  # -------------------------------------------------------------------------
+  # Validate
+  # -------------------------------------------------------------------------
   validate:
+    name: Validate generated wiki
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
+
+      - name: Install test dependencies
+        # The generator and its tests use the standard library plus
+        # pytest. If `tests/test_wiki_generator.py` ever imports from
+        # the `huey` package, replace this with:
+        #   python -m pip install -c constraints.txt -e ".[dev]"
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'pytest==8.3.3'
 
       - name: Generate and strictly validate wiki
+        # First invocation writes the tree; second invocation checks
+        # the committed source matches what the generator produces.
+        # A non-zero exit from `--check` means someone edited the
+        # output by hand instead of the source.
         run: |
-          python3 scripts/repo/build_wiki.py build/wiki
-          python3 scripts/repo/build_wiki.py build/wiki --check
+          python scripts/repo/build_wiki.py build/wiki
+          python scripts/repo/build_wiki.py build/wiki --check
 
       - name: Run wiki generator tests
-        run: python3 -m pytest -q tests/test_wiki_generator.py
+        run: python -m pytest -q tests/test_wiki_generator.py
 
       - name: Upload generated wiki for review
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: generated-v201-wiki
+          name: generated-wiki
           path: build/wiki
           if-no-files-found: error
+          retention-days: 7
 
+  # -------------------------------------------------------------------------
+  # Publish
+  # -------------------------------------------------------------------------
   publish:
-    if: github.event_name != 'pull_request'
+    name: Publish wiki
+    # Only publish on push to main or a manual dispatch. The positive
+    # form is used instead of `!= 'pull_request'` so the reader does
+    # not have to compute the negation, and so that adding a new
+    # trigger later does not accidentally opt into publishing.
+    if: >-
+      github.event_name == 'push' ||
+      github.event_name == 'workflow_dispatch'
     needs: validate
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      # Only this job needs write access; the validate job above runs
+      # read-only. This is the whole point of scoping permissions per
+      # job rather than at the workflow level.
+      contents: write
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Require deploy token
+        # Fail fast with a clear message rather than falling back to
+        # `github.token`, which cannot push to a wiki -- they are
+        # separate git repositories and the token's scopes do not
+        # extend to it. A silent fallback here produces an opaque
+        # `git push` authentication error several steps later.
+        env:
+          WIKI_TOKEN: ${{ secrets.WIKI_DEPLOY_TOKEN }}
+        run: |
+          if [ -z "$WIKI_TOKEN" ]; then
+            echo "::error::WIKI_DEPLOY_TOKEN is not configured."
+            echo "::error::"
+            echo "::error::Add it under:"
+            echo "::error::  Settings -> Secrets and variables -> Actions"
+            echo "::error::"
+            echo "::error::The default GITHUB_TOKEN cannot push to a"
+            echo "::error::wiki; it requires a PAT or GitHub App token."
+            exit 1
+          fi
 
       - name: Publish validated wiki
         env:
-          WIKI_TOKEN: ${{ secrets.WIKI_DEPLOY_TOKEN || github.token }}
+          WIKI_TOKEN: ${{ secrets.WIKI_DEPLOY_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: scripts/repo/publish_wiki.sh

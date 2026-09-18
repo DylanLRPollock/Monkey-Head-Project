@@ -1,22 +1,84 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / Bandit Security Scan
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Static analysis for common Python security pitfalls: unsafe
+# subprocess use, weak hashes, hardcoded credentials, missing
+# timeouts, and similar patterns.
+#
+# Two Bandit runs, each with a distinct purpose:
+#
+#   1. `Record full Bandit report` -- writes every finding to JSON
+#      for triage. Never fails. The output is the artifact.
+#
+#   2. `Enforce no new medium/high findings` -- compares the current
+#      scan against `.security/bandit-baseline.json` and fails only on
+#      findings the baseline does not already cover. Medium severity
+#      and above, medium confidence and above.
+#
+# A note on baseline files:
+#
+#   A baseline entry says "this finding is known, reviewed, and
+#   accepted; keep watching for new ones." This is fundamentally
+#   different from `-x`, which excludes a file from the scan entirely.
+#   `-x` stops looking; a baseline keeps looking and only suppresses
+#   the specific findings it names.
+#
+#   Do not add `-x` to make a stubborn finding go away. Add the
+#   finding to the baseline with a comment explaining why it is safe,
+#   or fix it.
+#
+# Configuration:
+#
+#   Bandit reads `[tool.bandit]` from `pyproject.toml`, but only when
+#   invoked with `-c pyproject.toml`. It does NOT auto-detect the
+#   file. The `exclude_dirs` list there keeps the vendored trees
+#   (`src/huey/connectors/pyhuey`, `src/huey/memory/PY`) out of the
+#   scan; without the `-c` flag, those directories are scanned and
+#   every finding in them has to be baselined.
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+
 name: Bandit Security Scan
 
 on:
-  pull_request:
   push:
     branches:
       - main
-      - master
+      - develop
+  pull_request:
   schedule:
+    # Mondays at 07:00 UTC, offset from the artifact scan at 06:30 so
+    # the two do not queue against each other.
     - cron: '0 7 * * 1'
   workflow_dispatch:
 
+# Least-privilege token. Nothing in this workflow writes to the repo.
 permissions:
   contents: read
 
+concurrency:
+  group: bandit-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_ROOT_USER_ACTION: ignore
+  PYTHONUNBUFFERED: "1"
+
 jobs:
   bandit:
+    name: Bandit scan
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -25,30 +87,62 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v6
         with:
           python-version: '3.13'
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
 
       - name: Install Bandit
+        # `bandit[toml]` -- the TOML extra is required to read
+        # configuration from `pyproject.toml`. Without it, `-c
+        # pyproject.toml` silently ignores the config.
+        #
+        # Version pinned to match `pyproject.toml`'s dev extras and
+        # the pre-commit config. Bump all three together.
         run: |
           python -m pip install --upgrade pip
-          python -m pip install bandit
+          python -m pip install 'bandit[toml]==1.9.4'
 
       - name: Verify baseline exists
+        # The baseline is checked in at `.security/bandit-baseline.json`.
+        # If this step fails, the file is missing or at the wrong
+        # path -- the enforcement step below cannot run without it.
         run: test -f .security/bandit-baseline.json
 
-      - name: Record full Bandit report (debt + new)
+      - name: Record full Bandit report
+        # Diagnostic artifact: every finding, both known and new.
+        # Never fails -- `|| true` because a Bandit crash here should
+        # not mask the enforcement step below, and the artifact is
+        # still useful even if partially written.
+        #
+        # `-c pyproject.toml` applies the `[tool.bandit]` config,
+        # which is what keeps the vendored trees out of the scan.
         if: always()
         run: |
-          bandit -r src -f json -o bandit-results-full.json || true
+          bandit -r src -c pyproject.toml -f json -o bandit-results-full.json || true
+          if [ ! -f bandit-results-full.json ]; then
+            echo "::warning::Bandit did not produce bandit-results-full.json"
+          fi
 
       - name: Enforce no new medium/high findings
+        # `-ll -ii` = medium severity, medium confidence, and above.
+        # `-b` compares against the baseline and reports only findings
+        # the baseline does not already cover.
+        #
+        # There is deliberately NO `-x` exclusion here. If a specific
+        # finding is a false positive, add it to the baseline with a
+        # comment explaining why. Excluding a file stops Bandit from
+        # seeing *any* finding in that file, present or future.
         run: |
-          bandit -r src -b .security/bandit-baseline.json -ll -ii -x src/huey/storage/hex_cluster.py
+          bandit -r src -c pyproject.toml -b .security/bandit-baseline.json -ll -ii
 
-      - name: Upload Bandit JSON results
+      - name: Upload Bandit results
+        # Only the full report is uploaded -- the baseline is a
+        # checked-in file and duplicating it as an artifact adds
+        # nothing. `if-no-files-found: error` now actually does what
+        # it says: fails if the report was not produced.
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: bandit-results
-          path: |
-            bandit-results-full.json
-            .security/bandit-baseline.json
+          path: bandit-results-full.json
           if-no-files-found: error
+          retention-days: 30

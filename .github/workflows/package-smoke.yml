@@ -1,3 +1,47 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / Package Build + Install Smoke
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Builds the distribution and installs it in a clean virtual environment
+# to verify the packaged artifact actually works. This is the workflow
+# that catches "it works in my checkout but the wheel is broken."
+#
+# Why this exists separately from `ci.yml`:
+#
+#   `ci.yml` installs the project with `pip install -e .`, which uses
+#   the source tree directly. That proves the code is importable; it
+#   does not prove the *packaging* is correct. Missing `package-data`
+#   entries, a broken `MANIFEST.in`, an entry point that points at a
+#   moved module -- none of those fail an editable install. They fail
+#   a fresh `pip install dist/*.whl`, which is what a user runs.
+#
+# Matrix:
+#
+#   3.13 -- supported. `requires-python` in pyproject.toml is
+#           ">=3.13,<3.14", so this leg installs cleanly.
+#
+#   3.14 -- testing. `continue-on-error: true`, and the install uses
+#           `--ignore-requires-python` to bypass the metadata check.
+#           This leg is a signal, not a gate: a red result here does
+#           not block a PR and should not until `requires-python` is
+#           widened.
+#
+# Artifact handling:
+#
+#   The built `dist/` is uploaded only on failure. On success the
+#   artifacts are ephemeral -- the source of truth for a release is
+#   the release workflow, not this one.
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+
 name: Package Smoke
 
 on:
@@ -8,10 +52,26 @@ on:
       - develop
   workflow_dispatch:
 
+# Least-privilege token. Nothing in this workflow writes to the repo.
+permissions:
+  contents: read
+
+# Cancel superseded runs on the same ref so a rapid push sequence does
+# not queue up two full build+install cycles.
+concurrency:
+  group: package-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_ROOT_USER_ACTION: ignore
+  PYTHONUNBUFFERED: "1"
+
 jobs:
   package-smoke:
     name: Build + Install Smoke (Py ${{ matrix.python-version }} - ${{ matrix.track }})
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
@@ -26,54 +86,122 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v6
         with:
           python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
 
       - name: Install build tooling
         run: |
           python -m pip install --upgrade pip
-          python -m pip install build
+          # Pinned so an upstream `build` release cannot break this
+          # workflow with no change to the repository. Bump
+          # deliberately, in its own commit, so a failure is
+          # attributable.
+          python -m pip install 'build==1.2.2'
 
       - name: Build sdist and wheel
         run: python -m build
 
-      - name: Create fresh virtual environment
-        run: python -m venv .pkg-smoke-venv
+      - name: Verify wheel contents
+        # A quick check that the metadata's package-data declarations
+        # actually produced files. A missing `py.typed` in particular
+        # builds without error and silently loses type information for
+        # every downstream consumer.
+        run: |
+          set -euo pipefail
+          echo "--- wheel contents ---"
+          python -m zipfile -l dist/*.whl
+          echo "--- assertions ---"
+          python -m zipfile -l dist/*.whl | grep -q 'huey/py.typed' \
+            || { echo "FAIL: huey/py.typed missing from wheel"; exit 1; }
+          python -m zipfile -l dist/*.whl | grep -q 'huey/__init__.py' \
+            || { echo "FAIL: huey/__init__.py missing from wheel"; exit 1; }
+
+      # --- Wheel install smoke -------------------------------------------
+      # The wheel is what `pip install hueyos` fetches. Testing it in a
+      # venv with no project source on the path is the closest CI can
+      # get to what an end user experiences.
+
+      - name: Create fresh venv for wheel
+        run: python -m venv .pkg-smoke-venv-wheel
 
       - name: Install built wheel in fresh environment
+        env:
+          # Passed via env rather than interpolated into the shell so
+          # the condition cannot be broken by a matrix value that
+          # contains shell metacharacters.
+          EXPERIMENTAL: ${{ matrix.experimental }}
         shell: bash
         run: |
-          source .pkg-smoke-venv/bin/activate
+          source .pkg-smoke-venv-wheel/bin/activate
           python -m pip install --upgrade pip
-          if [ "${{ matrix.experimental }}" = "true" ]; then
-            # Exercise 3.14 compatibility without promoting 3.14 to supported metadata.
+          if [ "$EXPERIMENTAL" = "true" ]; then
+            # Exercise 3.14 compatibility without promoting 3.14 to
+            # supported metadata.
             python -m pip install --ignore-requires-python dist/*.whl
           else
             python -m pip install dist/*.whl
           fi
 
-      - name: Import smoke checks
+      - name: Import smoke checks (wheel)
         shell: bash
         run: |
-          source .pkg-smoke-venv/bin/activate
+          source .pkg-smoke-venv-wheel/bin/activate
           python -c "import huey"
           python -c "import hueyos"
           python -c "import huey.api"
 
-      - name: Console script smoke checks
+      - name: Console script smoke checks (wheel)
         shell: bash
         run: |
-          source .pkg-smoke-venv/bin/activate
-          timeout 15s huey --help
-          timeout 15s huey-api --help
+          source .pkg-smoke-venv-wheel/bin/activate
+          timeout 30s huey --help
+          timeout 30s huey-api --help
+          timeout 30s huey-command-center --help
+
+      # --- Sdist install smoke -------------------------------------------
+      # A separate venv because `pip install *.whl` and
+      # `pip install *.tar.gz` resolve dependencies slightly
+      # differently, and the sdist is what downstream packagers
+      # (Debian, Fedora, Homebrew) actually build from. A missing file
+      # in the sdist is a bug users see, not contributors.
+
+      - name: Create fresh venv for sdist
+        run: python -m venv .pkg-smoke-venv-sdist
+
+      - name: Install built sdist in fresh environment
+        env:
+          EXPERIMENTAL: ${{ matrix.experimental }}
+        shell: bash
+        run: |
+          source .pkg-smoke-venv-sdist/bin/activate
+          python -m pip install --upgrade pip
+          if [ "$EXPERIMENTAL" = "true" ]; then
+            python -m pip install --ignore-requires-python dist/*.tar.gz
+          else
+            python -m pip install dist/*.tar.gz
+          fi
+
+      - name: Import smoke checks (sdist)
+        shell: bash
+        run: |
+          source .pkg-smoke-venv-sdist/bin/activate
+          python -c "import huey"
+          python -c "import hueyos"
+          python -c "import huey.api"
+
+      # --- Failure diagnostics -------------------------------------------
 
       - name: Upload dist artifacts on failure
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: package-dist-artifacts-${{ matrix.python-version }}-${{ matrix.track }}
           path: dist/
+          if-no-files-found: warn
+          retention-days: 7

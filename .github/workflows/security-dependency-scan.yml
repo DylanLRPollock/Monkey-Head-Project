@@ -1,22 +1,100 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / Dependency Security Audit
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Checks the installed dependency set against known CVEs using
+# `pip-audit`. Runs on every PR, on push to the integration branches,
+# and on a weekly schedule (so a CVE published against an unchanged
+# dependency set is still detected).
+#
+# Two steps with distinct purposes:
+#
+#   1. `Record pip-audit JSON output` -- writes the full audit result
+#      to JSON. Never fails. The output is the artifact a reviewer
+#      reads to understand what was found.
+#
+#   2. `Enforce dependency security audit` -- runs the same audit and
+#      fails the job if any vulnerability is found. Accepted
+#      vulnerabilities are listed in `.security/pip-audit-ignores.txt`.
+#
+#   The two steps audit the same environment, so the JSON always
+#   matches what was enforced.
+#
+# Acceptance policy:
+#
+#   A vulnerability that cannot be fixed immediately (no upstream
+#   patch, a bump blocked on a dependency chain) is added to
+#   `.security/pip-audit-ignores.txt` with a companion issue. Every
+#   entry should have a stated reason and a target fix date.
+#
+#   This is the same shape as `.security/bandit-baseline.json` --
+#   a documented, reviewable list of accepted findings rather than a
+#   blanket `|| true` that disarms the check entirely.
+#
+# Scope:
+#
+#   pip-audit inspects the *installed environment*, not just the
+#   declared dependencies. This means it also audits pip, setuptools,
+#   and anything the runner image preinstalls. A CVE in a preinstalled
+#   tool is out of this repository's control to fix, and would need a
+#   `.security/pip-audit-ignores.txt` entry until the runner image is
+#   updated. This is rare but worth knowing when an audit fails on a
+#   package you did not install.
+#
+#   `--skip-editable` keeps the local editable install of `hueyos`
+#   itself out of the audit -- it has no published advisories.
+#
+# SARIF:
+#
+#   Findings are written to JSON and uploaded as an artifact. They are
+#   NOT uploaded to the Security tab, because that requires
+#   `security-events: write` on the job, which would contradict this
+#   workflow's read-only token. If a maintainer wants the advisories
+#   in the Security tab, they need to add that permission deliberately
+#   and accept the required-check interactions that come with it.
+#
+# Maintenance:
+#
+#   Actions are pinned to full commit SHAs. The trailing `# vN`
+#   comment records the upstream major. See `.github/actions-pins.md`.
+
 name: Dependency Security Scan
 
 on:
-  pull_request:
   push:
     branches:
       - main
-      - master
+      - develop
+  pull_request:
   schedule:
+    # Mondays at 06:00 UTC. Staggered from the artifact scan (06:30)
+    # and Bandit (07:00) so the three do not queue against each other.
     - cron: '0 6 * * 1'
   workflow_dispatch:
 
+# Least-privilege token. Nothing in this workflow writes to the repo.
 permissions:
   contents: read
 
+concurrency:
+  group: pip-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_ROOT_USER_ACTION: ignore
+  PYTHONUNBUFFERED: "1"
+
 jobs:
   pip-audit:
+    name: Dependency audit
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -25,27 +103,73 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v6
         with:
           python-version: '3.13'
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
 
       - name: Install audit tooling and project dependencies
+        # `-c constraints.txt` so the audit scans the same pinned set
+        # a contributor gets from `make install-dev` and that a
+        # release ships with. Auditing against an unpinned resolver
+        # result would report CVEs in versions nobody actually uses.
+        #
+        # `pip-audit` is pinned so an upstream release cannot change
+        # the audit's behaviour without a commit in this repository.
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pip-audit
-          pip install -e ".[dev]"
+          python -m pip install 'pip-audit==2.8.0'
+          python -m pip install -c constraints.txt -e ".[dev]"
 
       - name: Record pip-audit JSON output
+        # Diagnostic artifact. Never fails; the enforcement step
+        # below owns the pass/fail decision. The fallback write
+        # produces a valid-but-empty result set so the artifact
+        # upload never sees an empty directory, and so downstream
+        # consumers that parse the JSON do not crash.
         if: always()
         run: |
           pip-audit --format json --output pip-audit-results.json --skip-editable || true
-          test -f pip-audit-results.json || printf '{"error":"pip-audit did not produce JSON output"}\n' > pip-audit-results.json
+          if [ ! -f pip-audit-results.json ]; then
+            printf '{"dependencies": [], "error": "pip-audit did not produce JSON output"}\n' \
+              > pip-audit-results.json
+            echo "::warning::pip-audit did not produce JSON output; wrote empty result set"
+          fi
 
       - name: Enforce dependency security audit
+        # No `|| true`. A vulnerability must fail this step. Accepted
+        # vulnerabilities are listed in
+        # `.security/pip-audit-ignores.txt`, one ID per line, `#`
+        # comments allowed. Each entry should reference an issue.
+        #
+        # The `--ignore-vuln` flags are built from that file so the
+        # command line stays readable and the acceptance list is
+        # reviewable in a diff.
         run: |
-          pip-audit --skip-editable || true
+          set -euo pipefail
+          ignore_file=".security/pip-audit-ignores.txt"
+          args=()
+          if [ -f "$ignore_file" ]; then
+            while IFS= read -r line; do
+              # Strip trailing comments and whitespace.
+              id="${line%%#*}"
+              id="$(echo "$id" | xargs)"
+              [ -z "$id" ] || args+=("--ignore-vuln" "$id")
+            done < "$ignore_file"
+          fi
+          if [ "${#args[@]}" -gt 0 ]; then
+            echo "Accepting ${#args[@]} known vulnerabilities from $ignore_file:"
+            printf '  %s\n' "${args[@]}"
+          fi
+          pip-audit --skip-editable "${args[@]}"
 
       - name: Upload pip-audit results
+        # Only the JSON report is uploaded -- the ignore list is a
+        # checked-in file and duplicating it as an artifact adds
+        # nothing. `if-no-files-found: error` now actually does what
+        # it says: fails if the report was not produced.
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: pip-audit-results
           path: pip-audit-results.json
           if-no-files-found: error
+          retention-days: 30

@@ -1,3 +1,45 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: CI / Lint & Test
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Two jobs, run in parallel:
+#
+#   * static-analysis -- guardrails, linters, formatters (check-only).
+#     Backed by `make lint`, which runs every repo guardrail script
+#     (drift, canon terms, legacy imports, command-center contract,
+#     dependency sync) followed by black/isort/ruff/flake8.
+#
+#   * tests -- pytest with coverage, on a 3.13 (supported) and 3.14
+#     (testing-only) matrix. The 3.14 leg is a signal, not a gate: it
+#     uses `continue-on-error` so an upstream incompatibility does not
+#     block a PR, and it must not be promoted to required status until
+#     `requires-python` in pyproject.toml is widened.
+#
+# Design notes:
+#
+#   * Actions are pinned to full commit SHAs. The trailing `# vN`
+#     comment records the upstream major so Dependabot can update the
+#     pin while preserving upgrade intent. See `.github/actions-pins.md`.
+#
+#   * `constraints.txt` is applied to every install so CI resolves the
+#     same pinned set that `make install-dev` produces locally. If this
+#     ever diverges from what a contributor gets, the difference will
+#     show up as a CI-only failure that is very hard to debug.
+#
+#   * The matrix variable `experimental` is passed to the install step
+#     via `env:`, not interpolated into the shell script. Interpolating
+#     `${{ matrix.* }}` directly into `run:` is fragile -- a matrix
+#     value containing a quote or space would break the script.
+#
+#   * `timeout-minutes` is set on both jobs. The GitHub default is 360
+#     minutes (six hours); a hung linter or a test that blocks on stdin
+#     would otherwise burn the runner until GitHub force-kills it.
+
 name: CI
 
 on:
@@ -7,27 +49,37 @@ on:
     branches: [ main, develop ]
   workflow_dispatch:
 
-# Limit default token permissions for the workflow
+# Least-privilege token. Nothing in this workflow writes to the repo,
+# so `contents: read` is the correct ceiling.
 permissions:
   contents: read
 
-# Prevent overlapping runs on the same ref
+# Cancel superseded runs on the same ref so a rapid push sequence does
+# not queue up four full matrices.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PIP_ROOT_USER_ACTION: ignore
   PYTHONUNBUFFERED: "1"
 
 jobs:
-  lint:
-    name: Lint
+  # -------------------------------------------------------------------------
+  # Static analysis
+  # -------------------------------------------------------------------------
+  static-analysis:
+    name: Static Analysis
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          # `fetch-depth: 0` gives guardrail scripts full history. The
+          # drift and legacy-import checks inspect commit history for
+          # moved or deleted modules; a shallow clone breaks them.
           fetch-depth: 0
 
       - name: Set up Python
@@ -35,27 +87,38 @@ jobs:
         with:
           python-version: "3.13"
           cache: "pip"
+          # Cache key inputs. `constraints.txt` affects resolution and
+          # belongs here; `setup.py` is a compatibility shim and does
+          # not, so it was removed to avoid cache churn on no-op edits.
           cache-dependency-path: |
             **/requirements*.txt
             pyproject.toml
-            setup.cfg
-            setup.py
+            constraints.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+          pip install -c constraints.txt -e ".[dev]"
 
-      - name: Run drift checker
-        run: make check-drift PYTHON=python
-
-      - name: Run linters
+      - name: Run guardrails and linters
+        # `make lint` already runs `scripts/repo/check_repo_drift.py`.
+        # The previous workflow ran `make check-drift` as a separate step
+        # first, which executed the same script twice. Kept as a single
+        # step so the CI log matches the local `make lint` output.
         run: make lint PYTHON=python
 
+  # -------------------------------------------------------------------------
+  # Tests
+  # -------------------------------------------------------------------------
   tests:
     name: Tests (Py ${{ matrix.python-version }} - ${{ matrix.track }})
     runs-on: ubuntu-latest
-    needs: lint
+    timeout-minutes: 30
+    # No `needs: lint`. Lint and tests run in parallel; both report to
+    # the PR, and a lint failure still blocks the merge if the check is
+    # required. Removing the dependency halves the wall-clock feedback
+    # for the common case where lint passes in 30s and tests take
+    # several minutes.
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
@@ -81,25 +144,43 @@ jobs:
           cache-dependency-path: |
             **/requirements*.txt
             pyproject.toml
-            setup.cfg
-            setup.py
+            constraints.txt
 
       - name: Install dependencies
+        env:
+          # Passed via `env:` rather than interpolated into the shell
+          # script so the condition cannot be broken by a matrix value
+          # that contains shell metacharacters.
+          EXPERIMENTAL: ${{ matrix.experimental }}
+        shell: bash
         run: |
           python -m pip install --upgrade pip
-          if [ "${{ matrix.experimental }}" = "true" ]; then
-            # Exercise 3.14 compatibility without advertising it as supported metadata.
+          if [ "$EXPERIMENTAL" = "true" ]; then
+            # Exercise 3.14 compatibility without advertising it as
+            # supported metadata. `requires-python` in pyproject.toml is
+            # ">=3.13,<3.14", so pip refuses to install on 3.14 unless
+            # the check is bypassed. This leg is a signal, not a gate --
+            # a red result here does not block the PR, and should not
+            # until `requires-python` is widened.
             pip install --ignore-requires-python -e ".[dev]"
           else
-            pip install -e ".[dev]"
+            # Supported leg: install the same pinned set a contributor
+            # gets from `make install-dev`.
+            pip install -c constraints.txt -e ".[dev]"
           fi
 
       - name: Run test suite with coverage
-        env:
-          PYTEST_ADDOPTS: "-q"
+        # Verbosity is controlled by `[tool.pytest.ini_options].addopts`
+        # in pyproject.toml, not by a CI-only env var. Setting
+        # `PYTEST_ADDOPTS` here would override whatever a developer has
+        # configured locally and make CI behaviour unreproducible.
         run: make coverage PYTHON=python
 
-      - name: Upload coverage artifacts (if present)
+      - name: Upload coverage report
+        # `if: always()` so a partial report from a failing test run is
+        # still uploaded. `if-no-files-found: error` so a *missing*
+        # report is a visible failure rather than an empty artifact
+        # that a reviewer only notices after downloading it.
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
@@ -107,4 +188,4 @@ jobs:
           path: |
             coverage.xml
             htmlcov/**
-          if-no-files-found: ignore
+          if-no-files-found: error
