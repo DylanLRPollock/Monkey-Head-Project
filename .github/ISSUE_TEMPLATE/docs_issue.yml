@@ -1,34 +1,196 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Community / Documentation Issue Form
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Issue form for problems with the project's documentation -- missing
+# pages, incorrect statements, unclear explanations, broken links, or
+# anything that would stop a reader from understanding the project.
+#
+# Design:
+#
+#   Documentation problems split into two questions that the maintainer
+#   always asks before anything else:
+#
+#     1. Where in the docs? README, Sphinx site, wiki, docstrings, or
+#        a code comment. Each has a different fix path and lives in a
+#        different place.
+#
+#     2. What kind of problem? Missing, wrong, unclear, out of date,
+#        or a formatting issue. A typo is a 30-second merge; "missing
+#        docs for X" is a scoping conversation.
+#
+#   Both questions are dropdowns, which means the answers are uniform
+#   across reports and greppable in the tracker.
+#
+#   The "suggested fix" field is optional. Most people reporting a docs
+#   problem know that something is wrong but not what it should say
+#   instead -- especially for missing documentation. Requiring a fix
+#   would turn a quick report into a research project.
+#
+# Security banner:
+#
+#   Duplicated from the other templates. A docs issue is the least
+#   likely vector for a vulnerability report, but it is not zero --
+#   "the docs suggest running command X" can be a security-relevant
+#   report. The banner costs nothing and stays consistent.
+#
+# Schema reference:
+#   https://docs.github.com/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema
+
 name: Documentation issue
 description: Report missing, unclear, or incorrect documentation.
 title: "[Docs]: "
 labels:
   - documentation
+
 body:
+  # -------------------------------------------------------------------------
+  # Security banner
+  # -------------------------------------------------------------------------
   - type: markdown
     attributes:
       value: |
-        Thanks for helping improve documentation.
+        Thanks for helping improve the documentation.
 
-        **Security note:** Security vulnerabilities must be reported privately, not as public issues. See [SECURITY.md](../../SECURITY.md).
+        > [!WARNING]
+        > If this is a **security vulnerability**, do not open a public
+        > issue. Report it privately following
+        > [SECURITY.md](../../SECURITY.md).
+
+  # -------------------------------------------------------------------------
+  # Where
+  # -------------------------------------------------------------------------
+  # Coarse routing. Each surface lives in a different place and has a
+  # different fix process. "Sphinx site" means editing RST/Markdown
+  # under `docs/` and rebuilding. "Wiki" means editing the generator
+  # input under `scripts/repo/`. "Docstrings" means editing the source.
+  - type: dropdown
+    id: docs_surface
+    attributes:
+      label: Documentation surface
+      description: Where is the documentation you are reporting?
+      options:
+        - README or another root-level document
+        - Sphinx documentation site
+        - GitHub wiki
+        - Docstrings or API reference
+        - CONTRIBUTING, SECURITY, or another project file
+        - Code comments
+        - Not sure
+    validations:
+      required: true
+
+  # -------------------------------------------------------------------------
+  # What specifically
+  # -------------------------------------------------------------------------
+  # The precise location. Matches the surface above.
   - type: input
     id: docs_location
     attributes:
-      label: Documentation location
-      description: Which file/page/section is affected?
-      placeholder: "README.md section 'Installation'"
+      label: Specific location
+      description: |
+        File, page, or URL. The more precise the better -- a section
+        heading, a line number, or a direct link all work.
+      placeholder: |
+        README.md section "Installation"
+        docs/architecture.rst
+        https://dylanlrpollock.github.io/Monkey-Head-Project/api/
+        wiki page "Getting Started"
     validations:
       required: true
+
+  # -------------------------------------------------------------------------
+  # What kind of problem
+  # -------------------------------------------------------------------------
+  # Coarse classification. The first three are the common cases and
+  # each has a different fix effort; the last three are fast fixes.
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: Type of problem
+      description: What kind of issue is this?
+      options:
+        - Missing -- something isn't documented at all
+        - Incorrect -- the docs say something that is wrong
+        - Unclear -- the docs are accurate but hard to follow
+        - Out of date -- the docs were correct once but no longer are
+        - Broken link or formatting -- the content is fine but something renders wrong
+        - Typo or grammar -- the content is fine and so is the structure
+        - Other
+    validations:
+      required: true
+
+  # -------------------------------------------------------------------------
+  # The problem itself
+  # -------------------------------------------------------------------------
   - type: textarea
     id: issue
     attributes:
       label: What is wrong or missing?
-      description: Describe the docs issue clearly.
+      description: |
+        Describe the problem. If the docs say something incorrect,
+        quote what they say. If something is missing, describe what a
+        reader was trying to find when they hit the gap.
+      placeholder: |
+        The "Installation" section says to run `pip install hueyos`
+        but does not mention the Python version requirement. A reader
+        on Python 3.12 gets a confusing resolver error instead of a
+        clear message about the supported version.
     validations:
       required: true
+
+  # -------------------------------------------------------------------------
+  # The fix
+  # -------------------------------------------------------------------------
+  # Optional. Most reporters know something is wrong but not what the
+  # correct text should be. Requiring a fix would turn a two-minute
+  # report into a ten-minute research task -- and the reporter is
+  # already doing you a favour by flagging it.
   - type: textarea
     id: suggested_fix
     attributes:
       label: Suggested fix
-      description: What should the docs say instead?
+      description: |
+        If you know what the documentation should say instead, share
+        it here. Optional -- it's fine to report a problem without
+        proposing a solution.
+      placeholder: |
+        Add a line near the top of the Installation section stating
+        the Python version requirement, e.g. "Requires Python 3.13.x".
     validations:
       required: false
+
+  # -------------------------------------------------------------------------
+  # Supporting material
+  # -------------------------------------------------------------------------
+  # Optional. Screenshots of broken rendering, quotes from the source
+  # showing the correct behavior, links to prior discussion -- anything
+  # that would help evaluate or fix the issue.
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional context
+      description: |
+        Screenshots (paste directly into this field), links to prior
+        discussion, or anything else that would help. Optional.
+    validations:
+      required: false
+
+  # -------------------------------------------------------------------------
+  # Confirmations
+  # -------------------------------------------------------------------------
+  # One checkbox. Documentation issues are low-stakes and often small;
+  # adding more friction than "I looked first" would discourage the
+  # quick reports that are the form's best use case.
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this is not already reported.
+          required: true

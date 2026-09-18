@@ -1,33 +1,192 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Community / Feature Request Issue Form
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Issue form for proposing improvements to HueyOS, its API, its CLIs,
+# or the PyHuey connector.
+#
+# Design:
+#
+#   The three-field minimum for a useful feature request is problem,
+#   proposal, and alternatives. A well-stated problem is more valuable
+#   than a well-stated solution -- the problem is the constraint the
+#   maintainer is solving for, and the solution is one of many possible
+#   answers. The descriptions below push contributors toward stating
+#   the problem first.
+#
+#   The "willingness to contribute" field is a question about capacity,
+#   not commitment. It is included because on a single-maintainer
+#   project the answer materially changes how the request is triaged:
+#   "I can submit a PR with some pointers" and "I have an idea" are
+#   different conversations.
+#
+#   Fields marked optional are collected when the reporter has the
+#   information and skipped otherwise. They never block submission.
+#
+# Security banner:
+#
+#   Duplicated from `bug_report.yml` and `config.yml`. A feature request
+#   is a low-probability vector for a vulnerability report, but
+#   "HueyOS should let users do X" can describe a security-relevant
+#   gap. The banner is cheap and consistent.
+#
+# Schema reference:
+#   https://docs.github.com/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema
+
 name: Feature request
 description: Suggest an improvement for Monkey-Head-Project, HueyOS, or PyHuey.
 title: "[Feature]: "
 labels:
   - enhancement
+
 body:
+  # -------------------------------------------------------------------------
+  # Security banner
+  # -------------------------------------------------------------------------
   - type: markdown
     attributes:
       value: |
         Thanks for the suggestion.
 
-        **Security note:** Do not report security vulnerabilities in public issues. Please use [SECURITY.md](../../SECURITY.md) for private reporting.
+        > [!WARNING]
+        > If this is a **security vulnerability**, do not open a public
+        > issue. Report it privately following
+        > [SECURITY.md](../../SECURITY.md).
+
+  # -------------------------------------------------------------------------
+  # What is affected
+  # -------------------------------------------------------------------------
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of the project would this improve?
+      options:
+        - HueyOS runtime / core
+        - API server (huey-api)
+        - Command-line interface (huey)
+        - Command Center (huey-command-center)
+        - PyHuey connector (legacy)
+        - Memory / persistence
+        - Hardware, network, or power
+        - Documentation
+        - Cross-cutting / multiple
+        - Not sure
+    validations:
+      required: true
+
+  # -------------------------------------------------------------------------
+  # The problem being solved
+  # -------------------------------------------------------------------------
+  # This is the most valuable field in the form. The description and
+  # placeholder both push the contributor toward describing a *situation*
+  # rather than asserting a solution.
   - type: textarea
     id: problem
     attributes:
       label: Problem statement
-      description: What problem are you trying to solve?
+      description: |
+        What problem are you trying to solve? Describe the situation
+        you are in today and why the current behavior is not enough.
+
+        A well-stated problem is more useful than a proposed solution.
+        It lets the maintainer consider approaches you have not thought
+        of, and it stays relevant even if the specific solution changes.
+      placeholder: |
+        When I do X, I currently have to Y because Z. This means ...
     validations:
       required: true
+
+  # -------------------------------------------------------------------------
+  # What the contributor proposes
+  # -------------------------------------------------------------------------
   - type: textarea
     id: proposal
     attributes:
       label: Proposed solution
-      description: Describe the change you want to see.
+      description: |
+        What change would you like to see? A concrete sketch is enough
+        -- this does not need to be a complete design. If you have a
+        specific API in mind, showing it helps.
+      placeholder: |
+        Add a `huey memory export` subcommand that writes the memory
+        tree to a single archive. Example:
+
+            huey memory export --out backup.tar.zst
     validations:
       required: true
+
+  # -------------------------------------------------------------------------
+  # Alternatives
+  # -------------------------------------------------------------------------
+  # Optional. "Nothing" is a fine answer, but naming a rejected
+  # alternative often surfaces a constraint that is otherwise invisible
+  # to the maintainer.
   - type: textarea
     id: alternatives
     attributes:
       label: Alternatives considered
-      description: Any alternative approaches you've considered.
+      description: |
+        What other approaches did you consider, and why did you prefer
+        the proposal above? "Nothing" is a fine answer.
     validations:
       required: false
+
+  # -------------------------------------------------------------------------
+  # Additional context
+  # -------------------------------------------------------------------------
+  # Optional. Distinct from "Alternatives considered": this is for
+  # supporting material -- links, screenshots, prior discussion --
+  # rather than rejected approaches.
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional context
+      description: |
+        Screenshots, mockups, links to prior discussion or similar
+        features in other projects, or anything else that would help
+        evaluate the request. Optional.
+    validations:
+      required: false
+
+  # -------------------------------------------------------------------------
+  # Willingness to contribute
+  # -------------------------------------------------------------------------
+  # On a single-maintainer project, this is the field that most changes
+  # how the request is triaged. The description is deliberate: it asks
+  # about capacity, not commitment, and says so explicitly so a
+  # contributor does not feel they are signing up for work.
+  - type: dropdown
+    id: willingness
+    attributes:
+      label: Willingness to contribute
+      description: |
+        If this request is accepted, would you be able to help
+        implement it? This is a question about capacity, not
+        commitment -- nothing is expected either way.
+      options:
+        - Yes, I would like to submit a pull request
+        - Yes, with guidance on where to start
+        - No, I am only suggesting the idea
+        - Not sure yet
+    validations:
+      required: true
+
+  # -------------------------------------------------------------------------
+  # Confirmations
+  # -------------------------------------------------------------------------
+  # One checkbox, not three. Feature requests are speculative by
+  # nature; asking a contributor to confirm more than "I looked first"
+  # adds friction without improving the request.
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this feature is not already requested.
+          required: true

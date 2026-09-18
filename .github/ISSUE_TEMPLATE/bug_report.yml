@@ -1,75 +1,208 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Community / Bug Report Issue Form
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Issue form for reproducible problems in HueyOS, its API, its CLIs,
+# and the PyHuey connector.
+#
+# Design:
+#
+#   Every required field answers a question a maintainer would
+#   otherwise have to ask. The point of the form is to arrive at a
+#   report that can be investigated without a round trip.
+#
+#   Fields marked optional are collected when the reporter has the
+#   information and skipped otherwise. They never block submission.
+#
+#   The security banner is first so it is the first thing a reporter
+#   sees -- before they start typing into the form. It is duplicated
+#   in `.github/ISSUE_TEMPLATE/config.yml` for the reporter who never
+#   reaches this page (someone opening an issue with a direct link).
+#
+# Schema reference:
+#   https://docs.github.com/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema
+#
+# Valid `type` values: markdown, input, textarea, dropdown, checkboxes.
+
 name: Bug report
 description: Report a reproducible problem in Monkey-Head-Project, HueyOS, or PyHuey.
 title: "[Bug]: "
 labels:
   - bug
+
 body:
+  # -------------------------------------------------------------------------
+  # Security banner
+  # -------------------------------------------------------------------------
   - type: markdown
     attributes:
       value: |
-        Thanks for taking time to report this issue.
+        Thanks for taking the time to report this.
 
-        **Security note:** If you are reporting a security vulnerability, do not open a public issue. Please report it privately following [SECURITY.md](../../SECURITY.md).
+        > [!WARNING]
+        > If this is a **security vulnerability**, do not open a public
+        > issue. Report it privately following
+        > [SECURITY.md](../../SECURITY.md).
+
+  # -------------------------------------------------------------------------
+  # What is affected
+  # -------------------------------------------------------------------------
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of the project is affected?
+      options:
+        - HueyOS runtime / core
+        - API server (huey-api)
+        - Command-line interface (huey)
+        - Command Center (huey-command-center)
+        - PyHuey connector (legacy)
+        - Memory / persistence
+        - Hardware, network, or power
+        - Documentation
+        - Not sure
+    validations:
+      required: true
+
+  - type: input
+    id: hueyos_version
+    attributes:
+      label: HueyOS version
+      description: Output of `pip show hueyos | findstr Version` (Windows) or `pip show hueyos | grep Version` (macOS/Linux).
+      placeholder: "Version: 0.2.0"
+    validations:
+      required: true
+
+  # -------------------------------------------------------------------------
+  # Environment
+  # -------------------------------------------------------------------------
   - type: dropdown
     id: operating_system
     attributes:
       label: Operating system
-      description: What OS are you using?
+      description: What OS are you running on?
       options:
+        - Linux
         - Windows
         - macOS
-        - Linux
         - Other
     validations:
       required: true
+
+  - type: input
+    id: os_detail
+    attributes:
+      label: OS version or distribution
+      description: |
+        Fill this in when the specific version matters -- for example,
+        Windows 10 vs 11, or which Linux distribution and release.
+      placeholder: "Windows 11 24H2 / Ubuntu 24.04 / Debian 13"
+    validations:
+      required: false
+
   - type: input
     id: python_version
     attributes:
       label: Python version
-      description: Output of `python --version`.
-      placeholder: "Python 3.11.9"
+      description: Output of `python --version`. HueyOS requires Python 3.13.x.
+      placeholder: "Python 3.13.15"
     validations:
       required: true
+
   - type: dropdown
     id: install_method
     attributes:
       label: Install method
-      description: How did you install the project?
+      description: How did you install HueyOS?
       options:
         - pip install from PyPI
-        - pip install from source (local clone)
-        - Docker
+        - pip install -e . (editable, from a local clone)
+        - make install-dev (editable + dev extras)
+        - Docker / container
         - Other
     validations:
       required: true
-  - type: input
-    id: command_run
+
+  # -------------------------------------------------------------------------
+  # Reproduction
+  # -------------------------------------------------------------------------
+  # This is the field that determines whether the report is actionable.
+  # Everything above establishes context; everything below is what to do
+  # with it.
+  - type: textarea
+    id: reproduction
     attributes:
-      label: Command run
-      description: Exact command that triggered the problem.
-      placeholder: "python -m huey --help"
+      label: Steps to reproduce
+      description: |
+        List the exact steps that trigger the problem, starting from a
+        fresh environment. Include the precise command and any input
+        that matters. If the problem only happens sometimes, note that.
+      placeholder: |
+        1. Run `huey init`
+        2. Run `huey run`
+        3. Send a request to `POST /api/tasks` with body `{...}`
+        4. Observe the error
+      value: |
+        1.
+        2.
+        3.
     validations:
       required: true
+
+  # -------------------------------------------------------------------------
+  # Expected vs actual
+  # -------------------------------------------------------------------------
   - type: textarea
     id: expected_behavior
     attributes:
       label: Expected behavior
-      description: What did you expect to happen?
+      description: What did you expect to happen, and why?
     validations:
       required: true
+
   - type: textarea
     id: actual_behavior
     attributes:
       label: Actual behavior
-      description: What happened instead?
+      description: What happened instead? If this is a regression, say which version last worked.
     validations:
       required: true
+
+  # -------------------------------------------------------------------------
+  # Evidence
+  # -------------------------------------------------------------------------
   - type: textarea
     id: logs
     attributes:
       label: Logs and traceback
       description: |
-        Paste relevant logs/traceback. **Redact secrets** (API keys, tokens, passwords, private URLs, etc.) before posting.
+        Paste the full traceback and the command's stderr. Redact API
+        keys, tokens, passwords, private URLs, and any personal data
+        before posting.
       render: shell
     validations:
       required: true
+
+  # -------------------------------------------------------------------------
+  # Confirmations
+  # -------------------------------------------------------------------------
+  # Cheap to fill in, and the first one genuinely helps: a contributor
+  # who finds their issue already filed saves their own time more than
+  # anyone else's.
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: I am running a supported Python version (3.13.x).
+          required: true
+        - label: I have redacted secrets and personal data from the logs above.
+          required: true

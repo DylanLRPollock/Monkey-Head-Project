@@ -1,5 +1,94 @@
+# ---------------------------------------------------------------------------
+# Monkey-Head-Project
+# Component: Community / Issue Template Configuration
+# Author: Dylan L.R. Pollock
+# Documentation: https://www.dlrp.ca
+#
+# Philosophy: Breathing new life into old tech.
+# ---------------------------------------------------------------------------
+#
+# Configuration for the "New issue" chooser. This is what a contributor
+# sees when they click "New issue" -- before they pick a template.
+#
+# The three templates in this directory are the primary path:
+#
+#   * `bug_report.yml`     -- reproducible problems
+#   * `docs_issue.yml`     -- missing, unclear, or wrong documentation
+#   * `feature_request.yml` -- improvements and new capability
+#
+# This file configures what else is offered alongside them.
+#
+# `blank_issues_enabled: false`
+#
+#   When false, contributors must use one of the templates. Every
+#   issue arrives with the fields that make it actionable -- OS,
+#   Python version, exact command, expected vs actual.
+#
+#   When true, contributors can also open a free-form issue with no
+#   template and no structure.
+#
+#   Kept false. If a legitimate issue arrives that fits none of the
+#   templates, that is a signal to add a fourth template, not to
+#   disable the discipline.
+#
+# `contact_links`
+#
+#   Shown on the chooser next to the templates. These are escape
+#   hatches: destinations for things that are *not* issues. Each one
+#   keeps a category of traffic out of the tracker.
+#
+#   Order matters. Entries render top-to-bottom. The highest-stakes
+#   destination (security) goes first.
+#
+# Reference:
+#   https://docs.github.com/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
+
 blank_issues_enabled: false
+
 contact_links:
+  # -------------------------------------------------------------------------
+  # Security
+  # -------------------------------------------------------------------------
+  # First, because a vulnerability filed as a public issue is the
+  # worst outcome this chooser can produce. Every template also opens
+  # with a security note -- this is the belt to that braces.
+  #
+  # If private vulnerability reporting is enabled (Settings -> Security
+  # -> Private vulnerability reporting), replace this URL with:
+  #
+  #   https://github.com/DylanLRPollock/Monkey-Head-Project/security/advisories/new
+  #
+  # That endpoint posts directly to the Security tab and is a better
+  # experience than a Markdown file with instructions. Do it when the
+  # feature is enabled; until then, the SECURITY.md link is correct.
   - name: Security vulnerability report
     url: https://github.com/DylanLRPollock/Monkey-Head-Project/blob/main/SECURITY.md
-    about: Report security vulnerabilities privately via the process described in SECURITY.md.
+    about: Report security vulnerabilities privately. Do not open a public issue.
+
+  # -------------------------------------------------------------------------
+  # Documentation
+  # -------------------------------------------------------------------------
+  # The published Sphinx site, if `pages.yml` has run at least once.
+  # Uncomment once the site is live. Until then, this link 404s.
+  #
+  # - name: Read the documentation
+  #   url: https://dylanlrpollock.github.io/Monkey-Head-Project/
+  #   about: Browse the HueyOS documentation site.
+
+  # The repository wiki, maintained by `publish-wiki.yml`. Enabled by
+  # default on any repository that has ever opened the Wiki tab; if
+  # the repo has never had a wiki, this link 404s.
+  - name: Browse the wiki
+    url: https://github.com/DylanLRPollock/Monkey-Head-Project/wiki
+    about: Community notes, guides, and reference material.
+
+  # -------------------------------------------------------------------------
+  # Questions and discussion
+  # -------------------------------------------------------------------------
+  # Uncomment if GitHub Discussions is enabled (Settings -> General
+  # -> Features -> Discussions). Questions answered in Discussions
+  # stay searchable and do not clutter the issue tracker.
+  #
+  # - name: Ask a question
+  #   url: https://github.com/DylanLRPollock/Monkey-Head-Project/discussions
+  #   about: Ask a question or start a discussion about HueyOS.
