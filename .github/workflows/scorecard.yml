@@ -172,7 +172,7 @@ jobs:
         # Security tab. If the analysis failed to produce a file at
         # all, this step will fail loudly rather than uploading
         # nothing.
-        uses: github/codeql-action/upload-sarif@d8073367669608af8fbcc5f63dd0a0d52bb90cff # v4
+        uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4
         with:
           sarif_file: results.sarif
 
