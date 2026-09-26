@@ -18,15 +18,14 @@
 </p>
 
 <p align="center">
-  <img alt="Unified V202" src="https://img.shields.io/badge/release-Unified%20V202-5b2c83">
-  <img alt="README Unified V202 candidate" src="https://img.shields.io/badge/README-Unified%20V202%20candidate-7d3fc0">
+  <img alt="v206" src="https://img.shields.io/badge/release-Unified%20V202-5b2c83">
   <img alt="Status human review required" src="https://img.shields.io/badge/status-human%20review%20required-d97706">
   <img alt="Python 3.13" src="https://img.shields.io/badge/Python-3.13-3776ab">
   <img alt="Code GPLv3" src="https://img.shields.io/badge/code-GPLv3-2f855a">
 </p>
 
 > [!IMPORTANT]
-> This README is the Unified V202 review front door. It does not independently lock project canon. `master-plan-Unified-V202.json` remains the candidate machine-facing architecture until Dylan L.R. Pollock explicitly approves or intentionally merges a designated canonical update.
+> We have unified around v206 as Huey undergoes a critical transition into the V4 physical shell. This reassembly process is deliberate, focusing on integrating the new i9 architecture and updated cooling solutions while managing the structural weight and balance of the expanded internal array.
 
 ## Project position
 
