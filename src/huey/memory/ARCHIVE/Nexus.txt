@@ -1,0 +1,28 @@
+## Experimental Subprojects
+
+### HueyNexusController
+
+**HueyNexusController** is an experimental sandbox initiative exploring the restoration and repurposing of old Google Nexus Android devices as raw physical control surfaces.
+
+*CRITICAL CAVEAT: This subproject is heavily provisional, serves purely as conceptual food-for-thought, and is subject to immediate removal. It possesses zero canonical execution authority over the physical body.*
+
+The experimental device family includes:
+
+| Platform | Codename | Project role |
+|---|---|---|
+| Google Nexus 5 | `hammerhead` | Conceptual pocket-sized handset controller |
+| Google Nexus 7 (2012 Wi-Fi) | `grouper` | Experimental compact tablet interface |
+| Google Nexus 7 (2012 mobile) | `tilapia` | Experimental mobile-connected interface |
+| Google Nexus 7 (2013 Wi-Fi) | `flo` | Experimental higher-resolution interface |
+| Google Nexus 7 (2013 LTE) | `deb` | Experimental LTE-capable interface |
+
+For initial deployment, these devices will eschew complex GUI applications in favor of raw terminal access, utilizing SSH to execute basic functions directly within HueyOS.
+
+| Field | Direction |
+|---|---|
+| **Primary Target** | Native Debian or strictly terminal/SSH access |
+| **Fallback OS** | LineageOS using the same basic protocol boundaries |
+| **Identity boundary** | Controller hardware only; Huey's identity and canonical memory do not reside on a Nexus device |
+| **Hardware policy** | Replaceable operational, development, recovery, backup, and parts-donor devices |
+
+Battery reuse or modification remains strictly safety-gated. Each model requires absolute evidence for capacity, voltage stability, swelling, temperature, sustained-load discharge, and protection.
