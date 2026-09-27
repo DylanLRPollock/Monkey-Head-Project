@@ -147,13 +147,39 @@ def convert_pdf_to_text(
         ) from exc
 
 
+def _fsync_directory(directory: Path) -> None:
+    """Best-effort flush of directory metadata to durable storage.
+
+    Ensures the directory entry for a just-published file survives a power
+    failure. This is not possible on all platforms (notably Windows, which
+    cannot open a directory handle with os.open), so failures are ignored.
+    """
+    try:
+        descriptor = os.open(directory, os.O_RDONLY)
+    except OSError:
+        return
+
+    try:
+        os.fsync(descriptor)
+    except OSError as exc:
+        LOGGER.debug(
+            "Could not fsync directory %s: %s",
+            directory,
+            exc,
+        )
+    finally:
+        os.close(descriptor)
+
+
 def save_text_to_file(
     text: str,
     file_path: str | Path,
     *,
     overwrite: bool = False,
-) -> str:
-    """Atomically publish UTF-8 text; return 'OK' or raise.
+) -> None:
+    """Atomically publish UTF-8 text to ``file_path``.
+
+    Returns nothing. Raises :class:`ConversionError` on failure.
 
     No-overwrite publication uses an atomic hard-link operation.
     It intentionally has no unsafe check-then-rename fallback.
@@ -212,7 +238,8 @@ def save_text_to_file(
                     f"{exc}. No-overwrite mode requires hard-link support."
                 ) from exc
 
-        return "OK"
+        # Make the directory entry durable, not just the file contents.
+        _fsync_directory(destination.parent)
 
     except ConversionError:
         raise
