@@ -1,0 +1,349 @@
+# Upgrading Commodore 64/128 as Secure Robotics Terminals (2025)
+
+**Technical Reference Document**
+**Document Version:** 3.0
+**Status:** Verified and Updated
+**Last Updated:** 2026-09-26
+**Cross-Reference:** LabTech Hardware Archive — Retrocomputing Terminals
+
+---
+
+## Executive Summary
+
+Vintage Commodore 8-bit machines can be remarkably adapted into secure access terminals for modern systems. With today's hardware expansions and clever interfacing, a C64 or C128 can bridge 1980s architecture with 2025 robotics. This document explores performance upgrades, architectural mods, I/O integration, software stacks, and security setups – all geared for expert users aiming to repurpose these classics as reliable, hardened terminals in a robotics project (e.g., the Monkey-Head-Project).
+
+**Verification Summary (2025–2026):**
+
+| Claim | Status | Notes |
+|-------|--------|-------|
+| TurboMaster V3: 4 MHz 65C02, modern fast SRAM, JiffyDOS | **Verified** | 2025 release; works with C64/C128 in 64-mode |
+| MCL64: Teensy 4.1 emulating 6510 at >600 MHz, <$50 | **Verified** | 2× faster than SuperCPU at 20 MHz |
+| RAD Expansion Unit: Raspberry Pi-based, up to 16 MB REU | **Verified** | Also emulates GeoRAM/NeoRAM up to 4 MB |
+| Turbo Chameleon 64: VGA, SD, 16 MB REU, turbo, Ethernet (RR-Net) | **Verified** | Standalone mode possible |
+| Idun-Cartridge: Propeller + Pi Zero 2 for C128/C64 | **Verified** | Provides VT100 terminal to Linux |
+| CCGMS Future: 40/80 column, PETSCII/ANSI, up to 38.4 kbps | **Verified** | Michael Steil maintains it |
+| DesTerm128: 80-column ANSI terminal for C128 | **Verified** | Best-in-class C128 terminal |
+| KipperTerm 2: RR-Net/C64NIC+ Ethernet terminal | **Verified** | Telnet, IRC, simple web |
+| Contiki OS on C64: Multitasking, TCP/IP, web server | **Verified** | Runs on expanded memory |
+| C64 as 2FA TOTP generator: HMAC-SHA1 implementation | **Verified** | Cameron Kaiser's project |
+| Pi Zero W connected via User Port for Linux shell | **Verified** | Leif Bloomquist's interface board |
+
+---
+
+## 1. Performance Enhancements in 2025
+
+### 1.1 Modern CPU Accelerators
+
+Despite the C64's stock 1 MHz 6510 CPU, several contemporary accelerators dramatically boost speed.
+
+**TurboMaster V3 (2025 Re-Release):**
+
+The TurboMaster V3 swaps in a **4 MHz 65C02 CPU** (4× original speed) with fast SRAM and built-in JiffyDOS. It's compatible with C64 (and C128 in C64-mode), featuring toggle switches for 1 MHz/4 MHz operation and ROM selection. The V3 supports two different CPUs: the original R65C02P4 and the new WDC W65C02S6TPG-14.
+
+**MCL64 Accelerator:**
+
+The MCL64 uses a **Teensy 4.1 microcontroller** to emulate a 6510 CPU at effective clock rates **>600 MHz**. In testing, this open-source board ran **2× faster than a SuperCPU at 20 MHz**, yet costs under $50. The board runs Ted Fried's 6502 emulator in C, which can be used as a drop-in replacement for the Commodore 64 CPU.
+
+**Commodore SuperCPU (Historical):**
+
+The legendary SuperCPU (20 MHz 65816 CPU with up to 16 MB RAM) set the bar for C64 acceleration, though it is long discontinued. Modern MCL64 exceeds its performance at a fraction of the cost.
+
+**C128 Native Speed:**
+
+For the C128, built-in dual CPUs (2 MHz 8502 and Z80) already permit modest speed-ups – the 128 can double its 8502 clock when the 40-column VIC display is off (e.g., in 80-col mode), improving performance for purely computational tasks.
+
+### 1.2 Memory Expansions
+
+Both C64 and C128 benefit from greatly expanded RAM.
+
+**RAD Expansion Unit:**
+
+The RAD Expansion Unit is a Raspberry Pi-powered cartridge that provides up to **16 MB RAM** as an REU-compatible memory pool. It uses a Raspberry Pi 3A+, 3B+, or Zero 2 to implement the functionality, emulating a RAM Expansion Unit up to 16 MB (compatible with CBM 1700/1750/1764 REU, CLD Super 1750 Clone, CMD 1750/1750XL) and a GeoRAM/NeoRAM memory expansion up to 4 MB.
+
+**TurboMaster Master Adapter:**
+
+The TurboMaster's Master Adapter (revived alongside V3) also supports REUs or GEOS-specific RAM expansions.
+
+**Turbo Chameleon 64:**
+
+The Chameleon 64 includes **16 MB REU emulation** and **4 MB GeoRAM support**, along with dual 1541 drive emulation, SD card slot, and stereo SID emulation.
+
+### 1.3 Modern Multi-Function Cartridges
+
+**Turbo Chameleon 64:**
+
+The Chameleon 64 (by Individual Computers) docks in the C64's expansion slot and adds:
+
+- **VGA video output** (60 Hz refresh rate or more)
+- **SD card storage** (MMC64 compatibility and 1541 emulation)
+- **Up to 16 MB RAM** (REU emulation)
+- **Freezer/debugger**
+- **"Turbo mode" CPU core** (up to 10 MHz+)
+- **Optional RR-Net module** (10 Mbit Ethernet)
+
+It remains compatible with original software, can accelerate the Commodore (3–4× normal speed), reduce load times, and interface with modern displays and networks seamlessly. The Chameleon can even run in **standalone mode** without a C64 attached.
+
+### 1.4 Storage and Peripherals
+
+| Device | Function | Notes |
+|--------|----------|-------|
+| **SD2IEC** | SD-card drive emulator | Quick program access |
+| **1541 Ultimate II+** | Flash cartridge with drive emulation | Multiple KERNAL ROMs |
+| **EasyFlash 3** | Flash cartridge | Can hold multiple KERNAL ROMs (JiffyDOS, custom terminal ROMs) |
+| **1571/1581 drives** | C128 disk drives | Larger storage via IEEE-488 |
+
+---
+
+## 2. Architecture Modifications & Modern Co-Processors
+
+### 2.1 Microcontroller & FPGA Integration
+
+**Idun-Cartridge (2025):**
+
+The Idun-Cartridge is a custom cart for C128/C64 that embeds a **Parallax Propeller microcontroller** interfacing the Commodore's bus to a **Raspberry Pi Zero 2 running Linux**. The Propeller handles real-time bus signals, effectively acting as an MMU/bridge, while the Pi provides high-level processing and networking.
+
+This architecture gives the Commodore:
+- An **MS-DOS-like shell** with instant app launching
+- **"ERAM" memory** (4 MB on Idun cart)
+- A **built-in VT100 terminal** to the Pi's Linux system
+
+The Idun cartridge kit is available for C128, C64, and C64 Ultimate through Tindie. The Raspberry Pi Zero 2 W remains the most convenient physical match for the cartridge.
+
+**Sidekick64:**
+
+The Sidekick64 similarly uses a Raspberry Pi in a cart to emulate various hardware (REU, drives, etc.) and can run PETSCII graphical launchers – marrying modern compute with the C64's IO.
+
+### 2.2 Internal CPU Replacements
+
+**MCL64 (Teensy-Based):**
+
+The MCL64's Teensy-based 6510 replacement is a drop-in mod that directly swaps the CPU for a much faster emulated core. The project requires a Teensy 4.1 and an adapter PCB with logic circuitry to convert 5V logic from C64 side to 3.3V logic used by Teensy.
+
+**Other Prototypes:**
+
+There are prototype projects using 65816 or WDC 65C02 CPUs as drop-in upgrades for C64/C128, offering higher clocks and CMOS improvements.
+
+**C128 Z80 Clock Doubling:**
+
+Creative hackers have doubled the C128's Z80 clock in experiments, which could expedite CP/M software.
+
+### 2.3 Firmware and OS Mods
+
+| Mod | Benefit |
+|-----|---------|
+| **JiffyDOS** | Fast disk/serial DOS ROM; accelerates disk operations |
+| **CP/M mode (C128)** | Run CP/M terminal software (Kermit, IMP) |
+| **GEOS/Wheels** | GUI OS with limited TCP/IP support |
+| **Contiki** | Multitasking OS with full TCP/IP stack |
+
+---
+
+## 3. I/O Integration Methods
+
+### 3.1 User Port (TTL Serial & GPIO)
+
+The user port is a **24-pin edge connector** exposing one 8-bit parallel I/O port (CIA2 Port B bits PB0–PB7) plus control lines (FLAG2, PC2, etc.) and serial lines from the CIAs. It's essentially a **GPIO breakout**.
+
+**Serial Communication:**
+
+By adding a level shifter (e.g., MAX232), one can achieve RS-232 voltage levels and connect to modern serial devices or microcontrollers. A simple circuit with a MAX232 and inverters can convert the C64's TTL TX/RX lines to a DB9 serial port supporting up to **9600 bps** (UP9600 mode).
+
+**WiFi Modems:**
+
+ESP8266/ESP32 WiFi modem boards plug into the user port, letting the C64 "dial out" to Internet hosts via telnet.
+
+**Direct Microcontroller Connection:**
+
+In one project, a C64 was linked to an Arduino at 2400 bps over the user port to serve as a graphical front-end for sensor and actuator data. The Commodore ran a Firmata client that could toggle Arduino outputs and read inputs.
+
+**Power:**
+
+The user port also provides two 5V power pins and even 9VAC, which can power small external circuits within its current limits.
+
+### 3.2 Expansion/Cartridge Port
+
+This is the Commodore's primary expansion bus, exposing address/data lines, CPU control signals, power, and more. Cartridges here interface at a very low level – effectively becoming part of the system bus.
+
+**Modern Upgrades:**
+
+| Cartridge | Function |
+|-----------|----------|
+| **RR-Net** | Ethernet networking (10 Mbit) |
+| **Turbo Chameleon 64** | VGA, SD, REU, turbo, Ethernet |
+| **RAD Expansion** | 16 MB REU, GeoRAM, full-motion video |
+| **Idun** | Propeller + Pi Zero 2 |
+| **Sidekick64** | Hardware emulation via Pi |
+
+The Idun and Sidekick64 cartridges take this approach by inserting a Propeller or Pi to handle events. The RAD FPGA/Pi expansion can even render full-motion video (running DOOM on a Pi and streaming each frame to the C64 screen).
+
+### 3.3 IEC Serial (CBM Bus)
+
+The Commodore's disk/printer serial bus is a slow (~1 kB/s) serial daisy-chain network used for 1541 drives. Projects like **sd2iec** and **Pi1541** use microcontrollers/Pi to act as a 1541 drive on the IEC bus. This is clever but not the most real-time interface.
+
+### 3.4 Miscellaneous I/O
+
+| Port | Capability |
+|------|------------|
+| **Joystick ports** | 5 digital inputs + 2 analog paddles each; can connect simple sensors |
+| **C128 RGBI** | 80-column video output; RGBI→VGA/SCART converter needed |
+| **Cassette port** | Can be abused for digital I/O or power |
+
+### 3.5 Integration Example – Pi Zero via User Port
+
+Leif Bloomquist designed a board to interface the **Raspberry Pi Zero W** to the Commodore 64 through the User Port. The project allows:
+
+1. **Get a Linux shell prompt on your C64** through the Pi Zero's Console Pins
+2. **Use the C64 as a terminal** to the Pi's Linux system
+
+The Pi's TX/RX GPIO pins are level-shifted (via a 74HC245 buffer) to the C64's user port lines. This setup allows a standard C64 terminal program to log into the Pi's console, effectively giving a Linux shell on the C64 screen. The creator noted this opens up possibilities like running TCP/IP services (SSH, etc.) on the Pi and using the C64 as a terminal to those – beyond the reach of simpler "WiFi modem" devices.
+
+---
+
+## 4. Software Stacks & Protocols
+
+### 4.1 Terminal Emulation Programs
+
+| Program | Platform | Features |
+|---------|----------|----------|
+| **CCGMS Future** | C64 | 40/80 column, PETSCII/ANSI, up to 38.4 kbps, X/Y/Zmodem |
+| **DesTerm128** | C128 | 80-column ANSI, best-in-class C128 terminal |
+| **KipperTerm 2** | C64 | RR-Net/C64NIC+ Ethernet, telnet, IRC |
+| **Novaterm 9.6** | C64 | Classic terminal, 80-column software mode |
+
+**CCGMS Future** (maintained by Michael Steil) features 40-column and 80-column text modes, PETSCII/ASCII↔ANSI translation, and support for higher serial baud rates and devices. It can use the user port at 2400 bps or "UP9600" fast mode up to 9600 bps, and supports SwiftLink cartridges at addresses $DE00/$DF00 (6551 UART) for speeds up to 38,400 bps.
+
+**DesTerm128** runs in the C128's native 80×25 screen and supports ANSI color graphics, making connecting to Unix/Linux systems or BBSes much more user-friendly.
+
+### 4.2 Network Stacks & OS
+
+**Contiki OS:**
+
+Contiki is famous for bringing multitasking and networking to 8-bitters. Remarkably, Contiki on the C64 supports **preemptive multitasking** and includes a **full TCP/IP stack (uIP)** with apps like a web server, web browser, Telnet, FTP, and IRC clients – all in around **64 KB of RAM**. Contiki OS for the C64 supports the RR-Net and ETH64 Ethernet devices.
+
+**Other OS Options:**
+
+| OS | Features |
+|----|----------|
+| **LUnix** | UNIX-like shell for C64 with TCP/IP support |
+| **GEOS/Wheels** | GUI OS with limited TCP connectivity |
+| **CP/M (C128)** | Run Kermit-80, IMP terminal software |
+
+### 4.3 Protocol Bridges (TCPSer)
+
+Many Commodore "networking" setups rely on a PC-side helper program such as **TCPSer** (by Jim Brain). TCPSer acts as a virtual modem: the C64 thinks it's dialing out to a modem over serial, but TCPSer (running on an attached PC or Pi) intercepts those calls and routes them over Telnet/SSH. This preserves the authentic software on the C64 (just using modem commands).
+
+### 4.4 80-Column vs 40-Column
+
+Many modern systems assume at least 80-column terminals. The **C128's 80-column mode** is highly desirable for readability. Using a C128 with DesTerm128 in 80×25 mode allows the full breadth of text to be seen without awkward line wraps. For a C64 (40-col only), some software implements an 80-column software mode using bitmap graphics, but it's slow and low-contrast.
+
+---
+
+## 5. Security Features & Hardening Measures
+
+### 5.1 Limited Connectivity = Fewer Vectors
+
+A stock Commodore has no network stack, no background processes, no wireless interfaces. When employed as a dedicated console (especially via direct serial), it's essentially **"air-gapped"** except for the explicit link to the host robot system. This isolation can protect critical systems from typical malware – the Commodore cannot run modern viruses or spyware targeting Windows/Linux.
+
+### 5.2 One Fixed Application (Kiosk Mode)
+
+Burning the terminal client into a ROM cartridge ensures the machine boots straight into that program and cannot easily execute anything else. An **EPROM cartridge** or **EasyFlash** can hold the terminal software – with autoboot, the user is presented with a login prompt and no normal READY prompt.
+
+### 5.3 Secure Communication
+
+While the Commodore can't do strong encryption alone, encryption can be integrated via hardware:
+
+- **SSH via intermediary**: The Commodore communicates over a local serial cable to a Pi; the Pi runs the SSH client to the robot's server, securing traffic with modern ciphers.
+- **Terminal server**: Connect the user port to a secure terminal server device that connects to the robot's controller over a separate network.
+
+### 5.4 Authentication & Logging
+
+**C64 as 2FA TOTP Generator:**
+
+The **TOTP-C64** project (by Cameron Kaiser) demonstrates that a Commodore can generate **Time-based One-Time Passwords** using hand-optimized HMAC-SHA1 and an RTC. The program can generate real-time codes compatible with any service that supports app-based 2FA, like Google, Facebook, Discord, and Mastodon.
+
+Keys can be entered manually in hexadecimal or loaded as binary files from disk. This proves that even cryptographic algorithms can run on C64 in a "reasonable" time.
+
+### 5.5 Physical Tamper Resistance
+
+Commodore machines are robust and can be further fortified:
+
+- **Key switch** in series with power button or reset line
+- **Covered ports** (cartridge, cassette) when not in use
+- **Locked enclosure** for the terminal unit
+
+### 5.6 Minimal Attackable Code
+
+The simplicity of the terminal program itself can be an asset. A well-tested C64 terminal is unlikely to crash or be exploited by malformed data – it just prints characters. There is no buffer overflow in a 40-year-old PETSCII print routine that hasn't already been discovered.
+
+---
+
+## 6. Real-World Upgrade Examples
+
+### 6.1 Idun Cartridge (C128/C64 + Raspberry Pi)
+
+The Idun project provides a DOS-like menu on the Commodore, allowing selection of apps and even a built-in web interface for management. One mode is a VT100 terminal directly to the Pi's Linux – the Commodore essentially becomes a smart terminal for the Pi. Users have used it to Telnet into BBSes and even stream music from a PC to the SID chip.
+
+### 6.2 Leif Bloomquist's PiZero Interface (C64 User Port)
+
+A project connected a **Pi Zero W via the user port** to provide two modes: use any C64 terminal software to get a Linux shell on the Pi, or display the Pi's HDMI/composite output on a monitor. Both the C64 and Pi run in parallel, enabling creative dual-screen or dual-processor possibilities. Schematics (Fritzing files) were provided showing the wiring between Pi GPIO and C64 user port, using a level translator.
+
+### 6.3 GGLabs GLINK & WiFi Modems (Serial Upgrades)
+
+**GLINK-LT** is a modern clone of Commodore's RS-232 cartridges, plugging into the user port and supporting up to 38.4 kbps with hardware flow control.
+
+**WiFi modem devices** (e.g., from RetroRewind, or DIY ESP8266 mods) plug into C64 user port and emulate a modem but actually connect to WiFi. With minimal hardware (just a $30 WiFi modem), a Commodore can join modern networks and control systems via telnet.
+
+### 6.4 Turbo Chameleon 64 (FPGA Cart)
+
+The Chameleon cartridge is often touted as "the only C64 cart you will ever need". A Chameleon-equipped C64 could connect to an Ethernet LAN (using RR-Net Mk3) and run Contiki or Novaterm IP clients. It could output to a VGA monitor and even be used **standalone** – running without a C64 attached (as an FPGA emulating a C64).
+
+### 6.5 Custom GPIO Projects
+
+In the 1980s, Commodore published application guides for using the user port to drive stepper motors, lights, etc. Modern takes include using Firmata (C64 controlling Arduino with sensors) or an Arduino-based C64 MIDI interface.
+
+### 6.6 Two-Factor Authenticator C64
+
+The TOTP-C64 project converted an SX-64 to generate TOTP codes using hand-optimized SHA-1 and an RTC. This underscores that even cryptographic algorithms can run on C64 in a "reasonable" time.
+
+---
+
+## 7. Conclusion
+
+The Commodore 64/128, enhanced with 2020s hardware mods, can indeed serve as secure access terminals. They offer just enough performance with accelerators and memory expansions to handle interface tasks, and their plethora of I/O (augmented by new cartridges) allows connection to modern controllers. By running well-crafted terminal software and offloading heavy computing to companion devices, a Commodore terminal provides an isolated, user-friendly control link to a robot. And beyond practicality, there's an undeniable charm (and perhaps security) in using a 40-year-old computer to oversee an advanced AI robot – a reminder that sometimes simplicity and resilience go hand in hand.
+
+---
+
+## Appendix A: Source Verification
+
+| Source | Type | Credibility |
+|--------|------|-------------|
+| TurboMaster V3 (totsrc.com, The Oasis BBS) | Primary | High |
+| MCL64 (MicroCore Labs) | Primary | High |
+| RAD Expansion Unit (Raspberry Pi Magazine, GitHub) | Primary | High |
+| Turbo Chameleon 64 (iComp, C64-Wiki) | Primary | High |
+| Idun-Cartridge (GitHub, The Oasis BBS) | Primary | High |
+| CCGMS Future (GitHub, Adafruit Blog) | Primary | High |
+| DesTerm128 (obsolete.computer, Lemon64) | Secondary | High |
+| KipperTerm 2 (Lemon64, commodore.software) | Secondary | High |
+| Contiki OS (GitHub) | Primary | High |
+| TOTP-C64 (GitHub, How-To Geek) | Primary | High |
+| Pi Zero W Interface (OSH Park, GitHub) | Primary | High |
+
+---
+
+## Appendix B: Glossary
+
+| Term | Definition |
+|------|------------|
+| **REU** | RAM Expansion Unit |
+| **GeoRAM** | GEOS-specific memory expansion |
+| **Firmata** | Protocol for microcontroller communication |
+| **TOTP** | Time-based One-Time Password |
+| **VT100** | Terminal emulation standard |
+| **PETSCII** | Commodore character set |
+| **IEC** | Commodore serial bus |
+| **UP9600** | Fast serial mode for user port |
+| **Idun** | C128/C64 cartridge with Propeller + Pi |
+| **Chameleon** | FPGA-based multi-function cartridge |
+| **MCL64** | Teensy 4.1-based 6510 emulator |
+| **TurboMaster** | 4 MHz accelerator |

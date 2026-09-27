@@ -1,0 +1,261 @@
+# Distributed Power Architecture for a Multi-PSU Robotic System
+
+**Technical Reference Document**
+**Document Version:** 2.0
+**Status:** Verified and Updated
+**Last Updated:** 2026-09-26
+**Cross-Reference:** V206 Master Plan — V4 Shell Power Architecture
+
+---
+
+## Executive Summary
+
+This report presents a distributed power architecture for a robotics prototype employing multiple consumer-grade power supply units (PSUs) to power an integrated system. Instead of a single supply, several off-the-shelf PSUs are used in parallel by dividing the load (not by directly paralleling outputs) to drive interconnected motherboard-based subsystems alongside motors, sensors, microcontrollers, and auxiliary devices. All PSUs share a common ground reference.
+
+**Verification Summary:**
+
+| Claim | Status | Notes |
+|-------|--------|-------|
+| Multiple ATX PSUs can be used by splitting loads | **Verified** | Common practice in mining rigs and home servers |
+| Common ground required for signal interoperability | **Verified** | Confirmed by Cosel FAQ and EE Stack Exchange |
+| Diode OR-ing prevents reverse current | **Verified** | Standard technique for redundant supplies |
+| Backfeeding can damage powered-off PSUs | **Verified** | Confirmed by EE Stack Exchange and industry sources |
+| Ground loops cause noise and instability | **Verified** | Documented in RIT thesis and EEVblog |
+| Add2PSU synchronizes PSU power-on | **Verified** | CNET and ExtremeTech confirm functionality |
+| Star grounding recommended for multi-PSU | **Verified** | Industry best practice |
+| No isolation between subsystems increases noise coupling | **Verified** | Confirmed by patent literature and forum discussions |
+
+---
+
+## 1. Introduction
+
+Robotic systems typically require multiple voltage rails and substantial currents to support components ranging from high-performance computing boards to motors and sensors. In professional designs, a centralized power architecture might use one high-capacity supply feeding all components, or a distributed power architecture with a single high-voltage source and point-of-load converters at subsystems.
+
+In early-stage prototyping, engineers often repurpose readily available consumer-grade PSUs (such as PC ATX power supplies) to meet power needs. This approach offers practical benefits: multiple smaller PSUs can provide combined current capacity across different voltages and can be cheaper or more accessible than a single purpose-built supply. For instance, one case study found that using two standard ATX PSUs doubled the available 5V current (from ~25–30A to ~50A) and spread the load and heat dissipation between units, all at roughly one-quarter the cost of a single high-wattage supply.
+
+**Rationale for Multiple PSUs:** The decision to employ multiple PSUs in the Huey robotic shell (a complex system with three onboard motherboards and numerous peripherals) is driven by practical and technical factors:
+
+1. **No single consumer PSU on hand may meet aggregate power requirements** – especially if high currents are needed at standard voltages like 5V and 12V.
+2. **Load-splitting increases total available current** – This approach has been observed in Backblaze's storage pods, which used dual ATX PSUs not for redundancy but to share the heavy load.
+3. **Flexibility** – One can mix-and-match units for different sections and easily swap or upgrade them as needed.
+4. **Convenience** – ATX PSUs offer multiple voltage outputs with built-in regulation and protection.
+
+---
+
+## 2. System Architecture
+
+### 2.1 Overview
+
+The prototype robotic shell's power architecture consists of multiple consumer-grade PSUs powering different portions of the system in a distributed manner. Rather than tying all PSUs together on the same output, each PSU is allocated to specific subsystems or sets of components.
+
+In this design, three primary subsystems – each built around a motherboard – are each powered by one or more dedicated PSUs. All PSUs share a common ground connection (0V reference) but their positive outputs are largely kept separate, each feeding its intended load group.
+
+This approach avoids the complexities of current-sharing between PSUs on a single rail and instead resembles a decentralized power distribution, where multiple sources feed different branches of the system.
+
+### 2.2 Common Ground Strategy
+
+A critical aspect of this architecture is that all subsystems must share a common reference potential for their signals to interoperate. The ground (negative) terminals of all PSUs are therefore tied together, creating a single common ground plane across the robot.
+
+**Verification:** Cosel's technical FAQ confirms that connecting the GND of multiple power supplies with different outputs together poses no electrical operation problem, though there is a concern about increased noise. They recommend connecting with "thick, short" wires at the output terminals.
+
+In practice, the PSU ground outputs are connected (often at a star point or common grounding bus in the chassis) so that 0V is uniform everywhere. Since all PSUs are plugged into the same mains circuit, their earth grounds are inherently common. Explicitly tying their DC grounds together at a single point helps prevent differences in ground potential from arising across the robot's frame.
+
+By not including any isolation or OR-ing diodes between the grounds, the design essentially treats all subsystem grounds as one unified node. Signals (e.g., a PWM control from a microcontroller on one board driving a motor driver on another supply) can flow reliably because the return currents all share that same ground path.
+
+### 2.3 Power Distribution to Subsystems
+
+Power wiring is arranged so that high-current devices are served by the nearest or most capable PSU. The three motherboards each receive ATX power from their respective supplies.
+
+| Subsystem | PSU Assignment | Typical Loads |
+|-----------|----------------|---------------|
+| **Primary Computer** | PSU A | Motherboard, CPU, RAM, storage |
+| **Motor/Actuator Control** | PSU B | Motor drivers, actuators, 12V loads |
+| **Auxiliary/Sensor Board** | PSU C | Sensors, microcontrollers, 5V/3.3V logic |
+
+**Guiding Principle:** Avoid having two different PSUs drive the same exact load or node. There are no parallel connections of two supplies to one circuit, which means classic current-sharing problems are averted. This approach has precedent in large disk storage arrays, where one half of the drives run off one PSU and the other half off a second PSU.
+
+It is recommended in engineering forums that if one must use multiple PSUs, "split the load into two halves" (or thirds, etc.) and dedicate each supply to a portion of the devices, rather than directly paralleling outputs.
+
+### 2.4 No OR-ing Diodes or Redundancy
+
+In this prototype configuration, diode OR-ing is deliberately not used. In a redundant power supply design, OR-ing diodes allow one supply to take over if another fails, without backfeeding current into the failed unit.
+
+**Verification:** OR-ing diodes provide isolation for power supplies and prevent reverse current flow. They may be conventional diodes, Schottky diodes, or MOSFET-based ideal diodes.
+
+Here, because each PSU has its own dedicated outputs, redundancy was not a design goal – the aim was increased total capacity, not fault-tolerance. Avoiding OR-ing components saves cost and avoids the voltage drop that diodes introduce on the lines.
+
+**Consequence:** If one PSU loses power, the devices it feeds shut down and there is no automatic failover. The other PSUs continue powering their sections, so the system as a whole might operate in a degraded state.
+
+---
+
+## 3. Challenges
+
+While the multi-PSU architecture successfully powers the robot prototype, it introduces several electrical challenges and risks.
+
+### 3.1 Ground Potential Differences and Ground Loops
+
+With all PSUs sharing a common ground, it is crucial to ensure that this ground is truly at the same potential throughout the system. In practice, if the ground wiring is not ideal, high current flows can cause slight voltage differences between different ground points – a phenomenon known as **ground offset** or **ground bounce**.
+
+**Verification:** Any shared ground conductor can be modeled as a small resistor, so large currents through it cause a voltage drop that appears as noise to other devices on the same ground. The effect is analogous to lights dimming in a house when a heavy appliance turns on.
+
+Moreover, with multiple PSUs, there is a possibility of **ground loops** if the ground is connected in more than one topology. Ideally, all grounds should connect at a single common point (a **star ground** configuration) to avoid loop currents.
+
+**Verification:** A RIT thesis on multi-PSU systems confirms that improperly designed ground bridges "open the door to large ground loops" and that "the single ground source eliminates the risk from ground loops and voltage level drift imposed by multiple power supplies".
+
+**Mitigation Strategies:**
+
+| Strategy | Description |
+|----------|-------------|
+| **Star grounding** | All PSU grounds and major return paths meet at one node (or bar) |
+| **Low-resistance wiring** | Thick, short ground conductors to carry heavy currents |
+| **Physical clustering** | High-current devices close to their PSU ground connection |
+| **Separated returns** | Analog/sensor ground returns kept separate until a single combine point |
+
+### 3.2 Power Interference and Electrical Noise
+
+A direct consequence of the common ground and lack of isolation is that electrical noise generated in one part of the system can propagate into others. Each ATX PSU is a switching power supply that inherently generates switching noise on its outputs.
+
+**Verification:** Patent literature confirms that "the use of a common ground, while desirable to prevent damage to components, can allow different currents running to the common ground to generate strong electromagnetic interference (EMI) noise".
+
+Interference can occur via conducted paths (through the common ground) or radiated paths (EMI from switching circuits and motor commutation).
+
+**Mitigation Strategies:**
+
+| Strategy | Description |
+|----------|-------------|
+| **Decoupling capacitors** | Local capacitors near motor drivers and sensitive ICs |
+| **Ferrite beads/inductors** | Choke high-frequency noise on supply lines |
+| **Shielded/twisted cables** | Reduce noise coupling on signal lines |
+| **Isolated DC/DC converters** | For particularly noise-sensitive components |
+
+### 3.3 Backfeeding and Cross-Regulation Risks
+
+Backfeeding refers to current flowing from one power source into another, which is a major risk when multiple supplies are connected without OR-ing diodes or isolation.
+
+**Verification:** EE Stack Exchange answers confirm that "you can't back-feed voltage/current into a powered-off supply… or you can, but the power supply may get destroyed".
+
+**Scenarios where backfeed could occur:**
+
+1. **Phantom powering through I/O** – A powered subsystem drives a signal line high into an unpowered subsystem, sourcing current through protection diodes.
+2. **Direct output connection** – If two PSU outputs were accidentally tied together, the higher-voltage supply would push current into the other.
+
+**Verification:** Forum discussions confirm that "the regulator circuits will work against each other, one wanting to raise and the other to lower the voltage. There is a risk of getting negative current into the supply with lower voltage".
+
+**Mitigation:** The design absolutely avoids wiring two PSU outputs together at different potentials. The common ground is the only shared line; all positive rails go to distinct loads.
+
+### 3.4 Load Transient Handling and Stability
+
+With multiple independent PSUs, system-wide power stability can be an issue under fast load changes. A large motor on PSU B drawing a surge of current can cause ground bounce that affects the main computer on PSU A.
+
+**Power-up sequencing** can also be challenging: if PSUs are switched on at slightly different times, some subsystems come up before others, risking backfeeding through signal lines.
+
+**Mitigation Strategies:**
+
+| Strategy | Description |
+|----------|-------------|
+| **Overspec PSUs** | Use only ~50% of each PSU's max load in normal operation |
+| **Separate variable loads** | Motors on separate PSUs from sensitive computing |
+| **Buffer capacitors** | Large capacitors on motor supply to absorb surges |
+| **Synchronized power-on** | Add2PSU or similar adapter to link PS_ON signals |
+
+**Verification:** Add2PSU is a small circuit board that lets you daisy-chain desktop power supplies, with the ability to add a "virtually unlimited" number of PSUs. The device works by taking a signal from a 4-pin Molex from the primary PSU and plugging the secondary PSU's motherboard cable into the adapter card.
+
+### 3.5 Monitoring and Diagnostics
+
+A subtle challenge is the lack of unified power monitoring in a multi-PSU scheme. Each PSU has its own feedback and protections, but there is no single dashboard showing power distribution or if a PSU is nearing its limit.
+
+| Challenge | Impact |
+|-----------|--------|
+| **No unified monitoring** | Imbalance may go unnoticed until overload triggers shutdown |
+| **Partial failure modes** | One PSU tripping is hard to troubleshoot without indicators |
+| **Energy management** | Power data is siloed unless explicitly gathered |
+
+**Mitigation:** Include LED indicators or voltage readouts for each PSU's output. A supervisory microcontroller could monitor all supply voltages and communicate if any rail falls out of range.
+
+---
+
+## 4. Discussion
+
+### 4.1 Why It Makes Sense in Prototyping
+
+Prototyping often involves rapidly implementing a solution with components on hand. Consumer PSUs are modular and well-understood – one can add a new PSU to the system to get an extra 12V rail in minutes.
+
+**Benefits:**
+- **Cost:** Two standard PSUs can sometimes outperform a single larger unit in specific ways
+- **Modularity:** Easy to add or swap PSUs as power needs grow
+- **Simplicity:** Common ground makes subsystem integration straightforward
+- **Incremental testing:** Power subsets of the system individually
+
+### 4.2 Evolution and Refinement Opportunities
+
+| Pathway | Description | Trade-offs |
+|---------|-------------|------------|
+| **Consolidation into Single Supply** | Replace multiple PSUs with one higher-capacity supply | Eliminates ground differential and backfeed risks; may be more expensive |
+| **Intermediate Bus Architecture** | Use a single 48V or 24V source with DC-DC converters at each subsystem | Proper distributed architecture; significant redesign |
+| **OR-ing and Redundancy** | Add diode OR-ing or ideal diode controllers | Improves reliability; adds voltage drop and cost |
+| **Improved Grounding/Isolation** | Segment grounds (analog/digital, dirty/clean); selective isolation | Reduces noise; adds complexity |
+| **Active Power Management** | Power management board to sequence, monitor, and balance PSUs | Provides diagnostics; requires custom hardware |
+| **Server PSU Modules** | Use compact, efficient server power supplies with current sharing | Saves space, adds reliability; may need custom breakout boards |
+
+**Verification:** An expert on an electronics forum suggested that a single 750W–850W ATX supply can provide 60–70A on 12V and would "solve the grounding issue" while simplifying replacement and reducing complexity.
+
+### 4.3 Comparison to Alternatives
+
+| Approach | Advantages | Disadvantages |
+|----------|------------|---------------|
+| **Multi-PSU (current)** | Uses available hardware, modular, cost-effective for prototyping | Ground loops, noise coupling, no redundancy, complex monitoring |
+| **Single Large PSU** | Simpler grounding, single point of control | Higher upfront cost, may not have needed rails |
+| **Battery + Regulators** | Portable, isolated, clean power | Complex charging, limited runtime |
+| **Distributed Bus (48V)** | Efficient, scalable, proper DPA | Significant redesign, requires DC-DC converters |
+
+---
+
+## 5. Conclusion
+
+In this report, we examined the conceptual design of a distributed power architecture employing multiple consumer-grade PSUs in a complex robotic shell prototype. This multi-PSU approach was chosen for pragmatic reasons: it allowed the use of readily available hardware to meet the system's considerable and diverse power needs, and enabled partitioning the load across several supplies.
+
+**Key Findings:**
+
+1. **Common ground simplifies integration** but emerges as a focal point for many challenges, including ground loops and noise coupling.
+2. **Lack of isolation or OR-ing** means there is a real risk of backfeed damage if supplies are not kept to their own loads.
+3. **Stability issues** can arise since supplies operate independently – a surge on one rail can indirectly perturb another subsystem.
+4. **Monitoring multiple supplies** is more complicated, potentially leaving blind spots in power management.
+
+**The architecture is a compromise solution characteristic of a prototype:** it favors immediate functionality and flexibility over refined performance and fault tolerance.
+
+**Future refinements** might include consolidating power into a single source or a more formalized bus distribution, adding proper OR-ing circuits and control logic, improving grounding practices (star topology), and implementing filtering. Recommendations from experienced engineers – such as using a higher-capacity single PSU – should be weighed against the project's goals for redundancy and modularity.
+
+**Key Insight:** The solutions that get a prototype up and running (multiple cheap PSUs tied together) are often not the same solutions one will use in the final implementation, yet they are a critical step in the development process.
+
+---
+
+## Appendix A: Source Verification
+
+| Source | Type | Credibility |
+|--------|------|-------------|
+| Cosel Technical FAQ | Primary | High |
+| EE Stack Exchange (backfeeding) | Secondary | High |
+| RIT MS Grad Paper (ground loops) | Primary | High |
+| Patent US8084885 (OR-ing diodes) | Primary | High |
+| CNET (Add2PSU) | Secondary | High |
+| EEVblog Forum (multi-PSU grounding) | Secondary | Medium-High |
+| Hive OS Forum (PSU grounding) | Tertiary | Medium |
+| J-STAGE (Diode ORing) | Primary | High |
+
+---
+
+## Appendix B: Glossary
+
+| Term | Definition |
+|------|------------|
+| **PSU** | Power Supply Unit |
+| **ATX** | Advanced Technology eXtended (PC power supply standard) |
+| **Common Ground** | Shared 0V reference between multiple power sources |
+| **Ground Loop** | Unwanted current path formed when grounds are connected at multiple points |
+| **Ground Bounce** | Temporary voltage difference between ground points due to current flow |
+| **OR-ing Diode** | Diode used to combine multiple power sources without backfeed |
+| **Backfeeding** | Current flowing from one power source into another |
+| **Star Ground** | Grounding topology where all returns meet at a single point |
+| **Add2PSU** | Adapter board for synchronizing multiple ATX PSUs |
+| **PS_ON** | ATX signal (green wire) that turns PSU on when grounded |
+| **DPA** | Distributed Power Architecture |

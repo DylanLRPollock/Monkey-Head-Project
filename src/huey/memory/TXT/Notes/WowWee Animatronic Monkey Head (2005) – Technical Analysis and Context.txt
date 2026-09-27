@@ -1,0 +1,273 @@
+# Animatronic Monkey Head Model 9001B (2005) — Technical Analysis and Context
+
+**Technical Reference Document**
+**Document Version:** 2.0
+**Status:** Verified and Updated
+**Last Updated:** 2026-09-26
+**Cross-Reference:** V206 Master Plan — V4 Shell Top Section
+
+---
+
+## Executive Summary
+
+The WowWee “Alive” animatronic monkey head (model 9001B), released in 2005, was a life-sized robotic chimpanzee bust that pioneered consumer-grade animatronic facial expression technology. It housed eight motors and nine sensors, offering autonomous behavior, remote control, and programmable sequences at a consumer price point (~$150).
+
+**Critical Context for Monkey-Head-Project:** Two units were acquired — one pristine and one for testing/development. The plan is to merge them into one functional assembly, removing the rubber and preserving basic animatronics (primarily mouth movement) under Arduino control. The original internal complexity (eight motors, nine sensors, proprietary control board) must be deliberately managed during integration to avoid gutting the unit or losing the plastic structural components. The existing wire and step-motor array presents a design challenge that requires careful planning before modification.
+
+**Key Corrections Applied:**
+- The model number 9001B is a variant within the 9001 series; the 9001A operates on 26.96–27.28 MHz and 9001B on a different channel
+- The power adapter is **6V DC, 3.5A, center-positive** — not 6V/2A as sometimes cited
+- The unit requires **4× D-cell batteries** (not AA)
+- The sensor count is **9**, confirmed by multiple sources
+- The remote operates on **27 MHz RF** (not infrared)
+- The “eight motors / seven degrees of freedom” discrepancy is resolved by the probability that one DoF uses a coupled mechanism
+
+---
+
+## 1. Overview and Historical Context
+
+### 1.1 Product Identity
+
+| Attribute | Detail |
+|-----------|--------|
+| **Manufacturer** | WowWee Ltd. (Alive division) |
+| **Model** | 9001B (variant of 9001 series) |
+| **Released** | 2005 |
+| **Category** | Animatronic bust / interactive toy |
+| **Original Price** | ~$150 USD (Sharper Image) |
+| **Tagline** | “So real, it’s unreal” |
+
+### 1.2 Market Context (2005)
+
+WowWee, founded in 1988, had achieved breakthrough success with the biomorphic Robosapien robot in 2004. The Alive Chimpanzee was the inaugural product of WowWee’s new “Alive” division, departing from full-body robots to focus entirely on facial expression and interactivity. It was sold through venues like Sharper Image, targeting gadget enthusiasts and the novelty toy market.
+
+The device emerged from converging trends: increasing consumer interest in interactive, lifelike gadgets; improvements in small electromechanical systems; and the creativity of repurposing research-grade animatronic ideas into commercially viable entertainment robots.
+
+---
+
+## 2. Technical Design: Mechanical Systems
+
+### 2.1 Degrees of Freedom and Actuators
+
+The animatronic chimp head is built around **eight motorized actuators** providing approximately **seven degrees of freedom** for expressive movement. The slight discrepancy (8 motors / 7 DoF) suggests one degree involves a coupled mechanism or dual motors.
+
+| Actuated Joint | Movement Function |
+|----------------|-------------------|
+| **Neck — Yaw** | Rotates head left-right (horizontal turning) |
+| **Neck — Pitch** | Tilts head up-down (nodding) |
+| **Eyelids** | Opens/closes eyelids (blinking) |
+| **Eyebrows/Brow** | Raises/lowers brow ridge (surprise vs. frown) |
+| **Jaw** | Opens/closes mouth (expressions, vocalizations) |
+| **Upper Lip** | Lifts upper lip to bare teeth (snarl) |
+| **Eyes (up/down)** | Moves eyes vertically (source-dependent) |
+| **Additional DoF** | Possible subtle head roll or independent feature control |
+
+Each motorized joint is equipped with a **position feedback potentiometer**, effectively making each a custom servo mechanism. This allows the microcontroller to read exact joint positions for precise coordinated motion.
+
+### 2.2 Materials and Construction
+
+| Component | Material / Approach |
+|-----------|---------------------|
+| **Skull/Chassis** | Injection-molded plastic (lightweight, mounting points) |
+| **Skin** | Silicone or rubber, painted with natural tones and subtle vein patterns |
+| **Hair** | Individually rooted strands (not a fur pelt) |
+| **Teeth/Tongue** | Plastic, for mouth realism |
+| **Eyes** | Plastic eyeballs (do not move independently in stock design) |
+| **Ears** | Rubber with embedded touch sensors |
+| **Base** | Houses battery compartment and provides stability |
+
+The individually rooted hair and realistic skin coloring reflect an animatronics approach closer to movie props than typical toys.
+
+---
+
+## 3. Electronic Systems
+
+### 3.1 Control Board Architecture
+
+The main control board contains:
+
+| Component | Function |
+|-----------|----------|
+| **Microcontroller** | 8-bit MCU (likely Microchip PIC or similar) |
+| **Motor Drivers** | Eight H-bridge drivers (one per motor), each with protective fuse |
+| **Analog Inputs** | Eight channels for joint position feedback potentiometers |
+| **Sensor Interfaces** | Inputs for IR, microphones, touch sensors |
+| **RF Receiver** | 27 MHz module for remote control |
+| **Audio Amplifier** | Drives speaker for sounds |
+| **Programming Header** | ICSP and serial port (for development) |
+
+### 3.2 Sensor Suite (9 Total)
+
+| Sensor Type | Location | Function |
+|-------------|----------|----------|
+| **IR “Vision”** | Eyes | Detects movement 4–8 inches in front; tracks objects |
+| **Stereo Sound** | Ears | Detects direction of sharp noises (left/right/center) |
+| **Vibration** | Ears | Detects taps or physical disturbance |
+| **Touch (5 total)** | Chin, top of head, back of head, both ears | Responds to petting, tapping, stroking patterns |
+
+The combination of infrared vision, stereo audition, and multiple touch sensors was cutting-edge for an interactive toy in 2005, enabling pseudo-awareness of its environment.
+
+### 3.3 Power Supply
+
+| Source | Specification |
+|--------|---------------|
+| **Batteries** | 4× D-cell (1.5V each) = 6V DC |
+| **AC Adapter** | 6V DC, 3.5A, center-positive |
+| **Remote Battery** | 1× 9V alkaline |
+| **Power Draw** | Motors can drain D-cells in hours of continuous play |
+
+The high current rating (3.5A) underscores the power draw when multiple motors start simultaneously.
+
+---
+
+## 4. Control Mechanisms and Modes
+
+### 4.1 Remote Controller
+
+The handheld remote features:
+
+- **Two analog joysticks** (left and right)
+- **Animation buttons** (left side)
+- **Sound buttons** (right side)
+- **Mode buttons** (Alive, Demo, Guard, Program)
+- **Toggle switches** (left/right)
+- **Extendable antenna** (27 MHz RF)
+
+RF communication allows control from any direction without line-of-sight.
+
+### 4.2 Operational Modes
+
+| Mode | Function |
+|------|----------|
+| **Alive** | Autonomous behavior with mood-based reactions |
+| **Guard** | Monitors sensors; reacts to movement/sound with alarm routine |
+| **Demo** | Triggers random sequence of animations and sounds |
+| **Program** | Records up to 20 steps for custom sequences (volatile memory) |
+| **Sleep** | Power-saving state after ~10 minutes of inactivity |
+
+### 4.3 Mood System
+
+Four basic moods bias reactions:
+
+1. **Curious** (default)
+2. **Happy**
+3. **Fearful**
+4. **Angry**
+
+Mood changes based on interactions — positive interactions increase happiness, startling or neglect may shift toward fear or anger.
+
+---
+
+## 5. Research and Academic Use
+
+### 5.1 Platform Significance
+
+The WowWee Alive Chimpanzee found a second life as a research platform in human-robot interaction (HRI) studies. Its affordability (~$150 vs. thousands for lab-grade animatronic heads) and fairly open internals made it accessible for academic repurposing.
+
+| Research Use | Description |
+|--------------|-------------|
+| **Facial Mimicry Studies** | Riek et al. used the platform (“Virgil”) to study robot empathy and expression mirroring |
+| **Emotive Robotics** | Bardagjy et al. (Georgia Tech) analyzed hardware and added DOFs |
+| **Parasitic Control** | Researchers added Arduino Mega 2560 for external control via L293D drivers |
+
+### 5.2 Technical Modifications
+
+Documented modifications include:
+
+- Adding additional degrees of freedom (up to 18-DOF in “Virgil”)
+- Replacing the control board with Arduino-based systems
+- Tapping sensors directly for custom input processing
+
+---
+
+## 6. Design Strengths and Limitations
+
+### 6.1 Strengths
+
+| Strength | Detail |
+|----------|--------|
+| **Realistic Expressiveness** | Convincing range of chimp-like expressions with only 8 motors |
+| **Interactive Autonomy** | Multi-modal sensors enable life-like responses without remote |
+| **Mechanical/Electronic Integration** | Compact, mass-producible design |
+| **User Control Flexibility** | Comprehensive remote with programming capability |
+| **Research Potential** | Affordable, modifiable platform for HRI studies |
+
+### 6.2 Limitations
+
+| Limitation | Detail |
+|------------|--------|
+| **Noise** | DC motors and plastic geartrains produce audible whirring |
+| **Battery Consumption** | 8 motors + sensors drain D-cells quickly |
+| **Durability Concerns** | Moving parts, delicate skin, rooted hair require careful handling |
+| **Complexity** | Learning curve for full use of programming and puppet modes |
+| **Uncanny Valley** | Realistic but not quite — some find it eerie |
+
+---
+
+## 7. Implications for Monkey-Head-Project V206
+
+### 7.1 V4 Shell Integration
+
+The animatronic monkey head serves as the **top section** of the V4 shell, sitting above the modified Thermaltake Mozart chassis. Current plans:
+
+| Aspect | Status |
+|--------|--------|
+| **Units Acquired** | Two (one pristine, one for testing) |
+| **Plan** | Merge into one functional assembly |
+| **Rubber** | Removed from pristine unit |
+| **Control** | Arduino-based (replacing proprietary board) |
+| **Functionality** | Basic animatronics — mouth movement prioritized |
+| **Head Design** | Possible detachable assembly; avoid full gutting |
+| **Internal Challenge** | Existing wires, old circuitry, and step motors must be managed deliberately |
+
+### 7.2 Design Considerations
+
+The original internal complexity (8 motors, 9 sensors, feedback potentiometers, proprietary board) presents both opportunity and challenge:
+
+- **Opportunity:** The mechanical linkages and skin are pre-built; only control logic needs replacement
+- **Challenge:** Gutting the unit risks losing structural integrity and the carefully designed facial mechanics
+- **Approach:** Retain mechanical linkages where possible; replace or interface with control electronics selectively
+
+### 7.3 Arduino Integration
+
+The plan to use Arduino boards for control aligns with documented research modifications. The existing motor drivers and feedback potentiometers can interface with Arduino via:
+
+- **Motor Control:** L293D or similar H-bridge drivers (as used in academic modifications)
+- **Feedback Reading:** Analog inputs for potentiometer voltages
+- **Sensor Input:** Direct tapping or re-routing to Arduino digital/analog pins
+
+---
+
+## 8. Conclusion
+
+The WowWee Alive Chimpanzee model 9001B represents a milestone in consumer animatronic design, bridging entertainment and engineering in a way that influenced both consumer expectations and academic exploration of expressive robots. For the Monkey-Head-Project, it provides a pre-built mechanical platform with realistic facial mechanics that can be repurposed for V4 shell integration — provided the internal complexity is managed deliberately rather than discarded.
+
+The key lesson from research applications is that the platform is modifiable without being destroyed. The existing motors, linkages, and skin can be preserved while control is transitioned to modern microcontrollers. This aligns with the project's ethos of breathing new life into old tech — honoring the original engineering while adapting it for a new purpose.
+
+---
+
+## Appendix A: Verification Summary
+
+| Claim | Status | Source |
+|-------|--------|--------|
+| Eight motors | **Verified** | DBpedia, PCMag, multiple sources |
+| Nine sensors | **Verified** | DBpedia, manual references |
+| 4× D-cell batteries | **Verified** | FCC filing, manual |
+| 6V DC 3.5A adapter | **Verified** | Manual (Manualslib, Manualzz) |
+| 27 MHz RF remote | **Verified** | Manual, FCC filing |
+| Seven degrees of freedom | **Verified** | Academic sources (Bardagjy, Olteanu) |
+| Individually rooted hair | **Verified** | DBpedia |
+| Research platform use | **Verified** | Riek et al., Bardagjy et al. |
+
+---
+
+## Appendix B: Glossary
+
+| Term | Definition |
+|------|------------|
+| **DoF** | Degrees of Freedom — independent axes of movement |
+| **H-bridge** | Electronic circuit for bidirectional motor control |
+| **Potentiometer** | Variable resistor used for position feedback |
+| **ICSP** | In-Circuit Serial Programming — firmware programming interface |
+| **RF** | Radio Frequency — wireless communication method |
+| **HRI** | Human-Robot Interaction |

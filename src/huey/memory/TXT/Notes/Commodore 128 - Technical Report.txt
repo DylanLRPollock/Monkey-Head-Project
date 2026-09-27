@@ -1,0 +1,201 @@
+# Commodore 128 Technical Report
+
+**Technical Reference Document**
+**Document Version:** 2.0
+**Status:** Verified and Updated
+**Last Updated:** 2026-09-26
+**Cross-Reference:** LabTech Hardware Archive — Retrocomputing Reference
+
+---
+
+## Executive Summary
+
+The Commodore 128 (C128), released in January 1985 at US$299, was the last 8-bit home computer commercially released by Commodore Business Machines. It sold approximately 2.5 million units worldwide during its four-year production run (1985–1989). The C128 represented a significant expansion over the C64 with a dual-CPU architecture (MOS 8502 and Zilog Z80A), 128 KB of RAM, dual video chips (VIC-IIe for 40-column and VDC for 80-column), and near-full C64 compatibility.
+
+**Verification Summary:**
+
+| Claim | Status | Notes |
+|-------|--------|-------|
+| 8502 @ 1–2 MHz | **Verified** | 2 MHz only in 80-column mode or with VIC-II disabled |
+| Z80A @ 4 MHz (effective ~2 MHz) | **Verified** | Bus sharing with VIC-II forces wait states |
+| 128 KB RAM (2× 64 KB banks) | **Verified** | Bank-switched via MOS 8722 MMU |
+| VIC-IIe: 320×200, 16 colors, sprites | **Verified** | Commodore 64 compatible |
+| VDC 8563: 640×200, 16 colors, dedicated VRAM | **Verified** | 16 KB standard, expandable to 64 KB |
+| User Port +5V: **50 mA** on C128 | **Corrected** | Original document stated 100 mA (C64 spec) |
+| 1571 burst mode: ~3–5 KB/s | **Verified** | Burst rate up to ~5,200 cps under C128 control |
+
+---
+
+## 1. Performance
+
+### 1.1 CPU Clock Speeds and Throughput
+
+The Commodore 128 employs two microprocessors:
+
+| CPU | Clock | Modes | Notes |
+|-----|-------|-------|-------|
+| **MOS 8502** | 1–2 MHz | C128 native, C64 mode | 6502-family, 8-bit |
+| **Zilog Z80A** | 4 MHz (effective ~2 MHz) | CP/M mode | 8-bit, bus sharing limits throughput |
+
+The 8502 runs at approximately **1 MHz in standard C128 40-column mode** and can double to **2 MHz in 80-column mode**. The 2 MHz mode is available only when the 80-column VDC display is used or the 40-column screen is disabled—the VIC-IIe otherwise steals cycles, constraining the 8502 to ~1 MHz.
+
+The Z80A is clocked at 4 MHz but due to bus sharing with the VIC-II, it runs at an **effective speed of approximately 2 MHz** in operation. This means the C128's CP/M mode is noticeably slower than dedicated 4 MHz Z80 systems.
+
+**Performance Context:**
+
+| System | CPU | Clock | RAM | Notes |
+|--------|-----|-------|-----|-------|
+| **Commodore 128** | 8502 + Z80A | 1–2 MHz / 4 MHz (eff. 2) | 128 KB | Dual video, SID audio |
+| **Commodore 64** | 6510 | ~1 MHz | 64 KB | VIC-II, SID audio |
+| **Apple IIe** | 6502/65C02 | 1.023 MHz | 64 KB | No sprites, 1-bit beeper |
+| **IBM PCjr** | Intel 8088 | 4.77 MHz | 128 KB | CGA graphics, SN76489 sound |
+
+In raw CPU power, the C128's 2 MHz 8502 could outperform the Apple IIe's 1 MHz 6502 by roughly 2×, and approach the IBM PCjr's 4.77 MHz 8088 in some tasks. The Apple IIe's lack of graphics acceleration meant its CPU had to handle all drawing, whereas the C128/C64's VIC-II chip offloaded graphics to hardware.
+
+### 1.2 Benchmarks and Real-World Application Performance
+
+In general computing tasks, the C128's 8502 at 2 MHz provided a significant speed-up over the C64. The C128's BASIC 7.0, though more feature-rich, could exceed C64 BASIC performance when 2 MHz fast mode was engaged. The 128 KB of RAM allowed BASIC programs to use separate memory banks for code and variables, reducing garbage collection pauses.
+
+**Disk I/O and GEOS:** When paired with the Commodore 1571 disk drive, the C128 could use a **burst mode** serial transfer that dramatically increased disk loading speed. Burst mode increased transfer speed from 1541 speed to approximately **3–5 KB/s** (about a 10-fold increase). The 1571 service manual documents burst rates up to **5,200 cps** under C128 control.
+
+---
+
+## 2. Architecture
+
+### 2.1 Dual-CPU Design and Operating Modes
+
+The C128 has three operating modes:
+
+| Mode | CPU Active | Clock | Display | Software |
+|------|-----------|-------|---------|----------|
+| **C128 Mode** | 8502 | 1 or 2 MHz | 40/80 col | BASIC 7.0 |
+| **C64 Mode** | 8502 | 1 MHz | 40 col | BASIC 2.0 (compatibility) |
+| **CP/M Mode** | Z80A + 8502 | 4 MHz (eff. 2) | 80 col | CP/M 3.0 |
+
+On power-up, the Z80 takes brief control first—it checks for a CP/M boot disk, and if not found, hands off to the 8502 which boots into Commodore BASIC 7.0. The user can manually force C64-mode by holding the Commodore key at boot or issuing `GO 64` in BASIC.
+
+In CP/M mode, the Z80 executes CP/M BIOS and programs, but the 8502 is used as an **intelligent I/O controller** for Commodore-specific hardware access and interrupts. The Z80 talks directly to the 8563 VDC for screen output; the 8502 handles disk I/O and printer output.
+
+### 2.2 Memory Architecture and Banking System
+
+The C128 is equipped with **128 KB of RAM** (two 64 KB banks). The MOS 8722 MMU controls:
+
+- 8502/Z80 processor selection
+- ROM/RAM banking
+- Common RAM areas
+- Relocation of zero page and stack
+
+**Common Areas:** Certain memory regions are shared between banks. The **lower common area** ($0000–$03FF) contains zero page and stack. The **upper common area** ($FC00–$FFFF) can be enabled to share additional RAM. The MMU allows defining common areas of **1 KB, 4 KB, 8 KB, or 16 KB**. The zero page is physically stored in Bank 0; when the CPU addresses it while in Bank 1, the MMU redirects to Bank 0.
+
+**ROM:** The C128 contains 72 KB of ROM total: BASIC 7.0 (~32 KB), C128 KERNAL (16 KB), machine language monitor, plus C64 BASIC 2.0 and KERNAL for C64 mode.
+
+### 2.3 Video Hardware: VIC-IIe and VDC
+
+The C128 has two separate video chips:
+
+**VIC-IIe (40-column):** Backward-compatible with the C64's VIC-II. Generates 40×25 text and 320×200 graphics (16 colors). Supports 8 hardware sprites, smooth scrolling, and raster interrupts. The "e" variant can access two 16 KB video banks and supports an extra 1 KB of color RAM. The VIC-IIe **steals CPU cycles** while drawing, which is why the 8502 cannot run at 2 MHz in 40-column mode.
+
+**VDC 8563 (80-column):** An entirely separate video controller with its own **dedicated video RAM** (16 KB standard, expandable to 64 KB). Generates 640×200 RGBI output (compatible with CGA monitors). Supports 80×25 text with attributes (foreground/background color, underline, blink). The VDC does not contend with the 8502 for main memory, allowing 2 MHz operation. A **blitter** provides limited block-copy acceleration.
+
+The presence of two video outputs meant a C128 could drive two monitors simultaneously (one for VIC output, one for VDC output).
+
+### 2.4 Bus Structure, DMA, and Peripherals
+
+The C128's system bus is an evolution of the C64's architecture. The dual CPUs required bus arbitration logic: a hardware PLA and the MMU coordinate which CPU drives the address/data lines. When the Z80 is active, the 8502 is put into a wait state (or vice versa).
+
+**DMA:** The VIC-IIe performs DMA steals for video data. The VDC has its own RAM and does not steal the main bus. An optional RAM Expansion Unit (REU) could perform DMA transfers via the cartridge port.
+
+**Peripheral Interface:** The C128 retains standard Commodore ports: IEC serial bus, cassette port, two joystick ports, A/V output, RF modulator, and cartridge/expansion port. The IEC bus was enhanced with **burst mode** when used with a 1571 drive. A new **RGBI video port** provided crisp 80-column output.
+
+---
+
+## 3. User Port Details
+
+### 3.1 Pinout and Electrical Specifications
+
+The C128's User Port is the same **24-pin edge connector** found on the C64, providing general-purpose 8-bit parallel I/O plus serial handshake lines and power.
+
+| Pin | Signal | Description |
+|-----|--------|-------------|
+| 1, A, N | GND | Ground |
+| 2 | +5V | +5 VDC **50 mA max (C128)** |
+| 3 | /RESET | Reset line |
+| 4 | CNT1 | Timer Counter 1 (CIA#1) |
+| 5 | SP1 | Serial Port 1 (CIA#1) |
+| 6 | CNT2 | Timer Counter 2 (CIA#2) |
+| 7 | SP2 | Serial Port 2 (CIA#2) |
+| 8 | /PC2 | Handshake line (CIA#2) |
+| 9 | ATN | Attention detect |
+| 10, 11 | 9VAC | 9 VAC from power supply |
+| 12 | GND | Ground |
+| B | /FLAG2 | Flag 2 input (CIA#2) |
+| C–L | PB0–PB7 | Parallel data bits (CIA#2 Port B) |
+| M | PA2 | Peripheral A2 (RS-232 TxD) |
+
+**Critical Correction:** On the **C128, pin 7 (+5V) is limited to 50 mA** (not 100 mA as on the C64). The total for user port and cartridge devices must not exceed **450 mA**.
+
+All signals are TTL-level (0–5V). The RS-232 signals are **inverted TTL** relative to standard RS-232 convention—a logic HIGH on the user port corresponds to a negative voltage in true RS-232. An external level shifter (MAX232) is required to connect to standard RS-232 devices.
+
+### 3.2 Typical Use Cases (Historical)
+
+| Category | Examples |
+|----------|----------|
+| **Modems** | Commodore 1650/1660/1670 (300–1200 baud) |
+| **Printers** | Centronics parallel interfaces |
+| **RS-232** | Level converters for standard serial devices |
+| **Control** | Relays, sensors, home automation |
+| **Networking** | C64-to-C64 links, Easy Intercomputer Connection |
+
+### 3.3 Modern Interfacing Potential and Challenges
+
+| Consideration | Recommendation |
+|---------------|----------------|
+| **Voltage Levels** | Use level shifters for RS-232 (±12V) and 3.3V devices |
+| **Current Limits** | 50 mA max on +5V; use external power for heavy loads |
+| **Signal Inversion** | RS-232 TxD/RxD are inverted; use inverting level shifter |
+| **Signal Integrity** | Use multiple GND pins for return path |
+
+Modern devices interfacing through the user port include **Wi-Fi modems** (microcontroller-based devices that emulate phone modems), **microcontroller kits** (Arduino-based projects), and **USB bridges** (FT232R adapters).
+
+---
+
+## 4. Implications for Monkey-Head-Project
+
+The Commodore 128 serves as a **historical reference and retrocomputing platform** within the Monkey-Head-Project's LabTech ecosystem. Its architecture demonstrates:
+
+1. **Heterogeneous Computing:** The dual-CPU design (8502 for native modes, Z80A for CP/M) is an early example of specialized co-processing—relevant to understanding modern multi-core and accelerator architectures.
+2. **Memory Banking:** The MMU-based bank-switching scheme (with common areas) demonstrates how to extend addressable memory beyond native CPU limits.
+3. **Bus Arbitration:** The VIC-IIe's cycle stealing and the MMU's CPU coordination illustrate early bus-sharing techniques, relevant to modern PCIe and memory contention.
+4. **Expandability:** The User Port and cartridge slot demonstrate how general-purpose I/O enables diverse applications.
+
+**LabTech Note:** The C128 is retained as a reference platform for understanding fundamental computer architecture. Its **2 MHz operation in 80-column mode** and **dedicated VDC video RAM** distinguish it from the C64, making it a more capable productivity machine while maintaining near-full C64 compatibility.
+
+---
+
+## Appendix A: Source Verification
+
+| Claim | Status | Source |
+|-------|--------|--------|
+| 8502 @ 1–2 MHz | **Verified** | Wikipedia, Computing History |
+| Z80A @ 4 MHz (eff. ~2 MHz) | **Verified** | Retrocomputing StackExchange |
+| 128 KB RAM (2× 64 KB) | **Verified** | Wikipedia, C128 Internals |
+| MMU 8722 common areas (1–16 KB) | **Verified** | C128 Internals (Abacus Software) |
+| VIC-IIe: 320×200, 16 colors | **Verified** | Wikipedia |
+| VDC 8563: 640×200, 16 KB VRAM | **Verified** | Wikipedia, MOS 8563 |
+| User Port +5V: **50 mA on C128** | **Verified** | Retro Isle Technical Section |
+| 1571 burst mode: ~3–5 KB/s | **Verified** | FOLDOC, 1571 Service Manual |
+
+---
+
+## Appendix B: Glossary
+
+| Term | Definition |
+|------|------------|
+| **8502** | MOS Technology 8-bit CPU (6510 variant, up to 2 MHz) |
+| **Z80A** | Zilog 8-bit CPU (used for CP/M mode) |
+| **MMU 8722** | Memory Management Unit (bank switching, common areas) |
+| **VIC-IIe** | Video Interface Chip (40-column graphics) |
+| **VDC 8563** | Video Display Controller (80-column, dedicated VRAM) |
+| **SID** | Sound Interface Device (audio synthesizer) |
+| **Burst Mode** | High-speed serial transfer between C128 and 1571 drive |
+| **Common Area** | RAM region shared between memory banks |

@@ -1,0 +1,382 @@
+# Roadmap for Offline Language Model Integration (Monkey Head Project)
+
+**Technical Reference Document**
+**Document Version:** 3.0
+**Status:** Verified and Updated
+**Last Updated:** 2026-09-26
+**Cross-Reference:** V206 Master Plan — PyHuey Runtime Environment
+
+---
+
+## Executive Summary
+
+This roadmap outlines a comprehensive strategy for integrating open-source language models into the Monkey Head Project's HueyOS architecture. The goal is to enable fully offline, multi-GPU-powered language understanding, translation, and generation capabilities. This document has been updated to reflect the current state of open-source models, deployment frameworks, and best practices as of 2026.
+
+**Verification Summary (2026-09-26):**
+
+| Claim | Status | Notes |
+|-------|--------|-------|
+| Llama 2 weights remain freely downloadable | **Verified** | Still available under Llama 2 Community License |
+| Llama 3 family offers substantially better performance | **Verified** | Llama 3 70B scored ~82 on MMLU vs Llama 2's 68.9 |
+| Mistral 7B matches older 13B models | **Verified** | 56.4 tok/s decode; best quality among tested models |
+| `device_map="auto"` enables multi-GPU model parallelism | **Verified** | Fills GPU → CPU → disk automatically |
+| DeepSpeed ZeRO-Inference partitions models across GPUs | **Verified** | Partitions massive models, reducing per-GPU memory |
+| Ollama serves API on localhost:11434 | **Verified** | Native Windows, NVIDIA, and AMD Radeon support |
+| Whisper can run fully offline on Raspberry Pi 4 | **Verified** | >95% accuracy, <7.5% WER, 1.23s latency |
+| NLLB-200 supports 200+ languages offline | **Verified** | Available via HuggingFace and browser deployment |
+
+---
+
+## 1. Select an Open-Source Language Model
+
+### 1.1 Model Options
+
+**Recommended Models (2026):**
+
+| Model | Parameters | Context | License | Notes |
+|-------|-----------|---------|---------|-------|
+| **Llama 3.1 70B** | 70B | 128K | Llama 3 Community | Best open model for RAG |
+| **Llama 3.3 70B** | 70B | 128K | Llama 3 Community | Approaching 405B quality at lower cost |
+| **Mistral 7B v0.3** | 7.3B | 32K | Apache 2.0 | Best quality-to-size ratio |
+| **Gemma 4** | Various | 8K+ | Gemma License | Google's open-weight model |
+
+**Historical Context:** Llama 2 was released in July 2023 with a permissive commercial license, establishing itself as the default foundation for hundreds of community fine-tuning projects. As of early 2026, Llama 2 weights remain freely downloadable, but the Llama 3 and Llama 4 families offer substantially better performance across all benchmarks, and most active users have migrated.
+
+**Mistral 7B v0.3 Performance (2026 Benchmarks):**
+
+| Metric | Value |
+|--------|-------|
+| **Decode Speed** | 56.4 tok/s |
+| **VRAM Used** | 6,722 MiB |
+| **Quality Score** | 5/6 (best among tested models) |
+| **Context Scaling** | 53% speed reduction at 32K vs baseline |
+
+**Key Insight:** Mistral 7B uses a dense transformer with Grouped-Query Attention (GQA) and sliding window attention. All 7.3B parameters are active on every token, with no MoE or PLE.
+
+### 1.2 Translation Models
+
+**NLLB-200 (No Language Left Behind):**
+- Meta's open-source translation model supporting **200+ languages**
+- Available in distilled 600M parameter version
+- Can run fully offline via HuggingFace Transformers or browser deployment
+
+**Practical Deployment:** NLLB-200 distilled 600M is "light enough for a free CPU host" and runs fully offline.
+
+### 1.3 Speech Recognition
+
+**OpenAI Whisper:**
+- Robust multilingual speech-to-text model
+- **Offline performance on Raspberry Pi 4:**
+  - Command recognition accuracy: **>95%**
+  - Word error rate: **<7.5%** under moderate noise
+  - End-to-end latency: **1.23 seconds**
+- Available in multiple sizes: tiny, base, small, medium, large-v3
+- Can run fully offline with `whisper.cpp` or HuggingFace Transformers
+
+---
+
+## 2. Setup in a Multi-GPU Environment
+
+### 2.1 Environment Preparation
+
+**Required Libraries:**
+```bash
+pip install transformers accelerate deepspeed bitsandbytes
+pip install torch --index-url https://download.pytorch.org/whl/cu121
+```
+
+**CUDA Configuration:**
+```bash
+export CUDA_VISIBLE_DEVICES=0,1,2,3
+```
+
+### 2.2 Model Loading with HuggingFace Accelerate
+
+**Simple Multi-GPU Loading:**
+```python
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+model_name = "meta-llama/Llama-3.1-70B-Instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map="auto",           # Automatic multi-GPU distribution
+    torch_dtype=torch.float16,   # Half precision
+    load_in_8bit=True            # Optional: 8-bit quantization
+)
+```
+
+**How `device_map="auto"` Works:**
+- Automatically fills all available GPU memory first
+- Then uses CPU RAM for overflow
+- Finally uses disk (slowest option) if needed
+- **Limitation:** Only one GPU is active at any given moment; GPUs wait for the previous GPU to send output
+
+### 2.3 DeepSpeed ZeRO-Inference
+
+**For More Efficient Multi-GPU Inference:**
+```python
+import deepspeed
+
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.float16
+)
+
+ds_engine = deepspeed.init_inference(
+    model,
+    dtype=torch.float16,
+    tensor_parallel_degree=4,    # Use 4 GPUs
+    mp_size=4
+)
+model = ds_engine.module
+```
+
+**How ZeRO-Inference Works:**
+- Partitions a massive model across multiple GPUs
+- Each GPU only activates and loads the layers it needs
+- **Drastically reduces per-GPU memory during inference**
+
+### 2.4 Memory Format Options
+
+| Format | Memory Reduction | Accuracy Impact | Use Case |
+|--------|-----------------|-----------------|----------|
+| **FP16/BF16** | 50% vs FP32 | Minimal | Default choice |
+| **8-bit (bitsandbytes)** | ~75% vs FP32 | Low | Larger models |
+| **4-bit (GPTQ/GGUF)** | ~87% vs FP32 | Moderate | Maximum efficiency |
+
+---
+
+## 3. Multi-GPU Resource Management
+
+### 3.1 CPU vs GPU Allocation
+
+| Task | Recommended Device | Rationale |
+|------|-------------------|-----------|
+| **Neural inference** | GPU | Matrix operations are GPU-optimized |
+| **Tokenization** | CPU | Fast, parallelizable, CPU-bound |
+| **Orchestration logic** | CPU | PyGPT-net agent logic |
+| **Text pre/post-processing** | CPU | Lightweight operations |
+
+### 3.2 Memory Management
+
+**Accelerate's Layer Streaming:**
+- Weights are streamed from CPU → GPU → CPU on the fly
+- Each time an input passes through a layer, it's sent from CPU to GPU
+- The output is calculated, and the layer is removed from GPU
+
+**Optimization Tips:**
+- Use `no_split_module_classes` to keep certain modules together
+- Pin frequently used layers to GPU
+- Use memory-mapped weights for faster loading
+
+### 3.3 Batching and Parallel Streams
+
+| Strategy | Description | Trade-off |
+|----------|-------------|-----------|
+| **Model Parallel** | One model across all GPUs | Lower latency per request |
+| **Data Parallel** | One model per GPU | Higher throughput for many requests |
+| **Hybrid** | Combine both | Complex but optimal |
+
+---
+
+## 4. Storage, RAM, and Bandwidth
+
+### 4.1 Disk Storage Requirements
+
+| Model Size | FP16 Size | 8-bit Size | 4-bit Size |
+|------------|-----------|------------|------------|
+| **7B** | ~14 GB | ~7 GB | ~3.5 GB |
+| **13B** | ~26 GB | ~13 GB | ~6.5 GB |
+| **70B** | ~140 GB | ~70 GB | ~35 GB |
+
+**Recommendation:** Use NVMe SSD for model storage to minimize load times.
+
+### 4.2 RAM Requirements
+
+| Model Size | Minimum RAM | Recommended RAM |
+|------------|-------------|-----------------|
+| **7B** | 16 GB | 32 GB |
+| **13B** | 32 GB | 64 GB |
+| **70B** | 64 GB | 128 GB+ |
+
+### 4.3 Bandwidth Considerations
+
+- **PCIe 4.0 x16:** ~32 GB/s bidirectional
+- **NVLink:** ~600 GB/s bidirectional (if available)
+- **DDR5:** ~50-100 GB/s
+- **NVMe SSD:** ~3-7 GB/s
+
+---
+
+## 5. Security and Privacy Considerations
+
+### 5.1 Data Privacy
+
+- **Offline inference:** No data leaves the machine
+- **GDPR compliance:** Local processing keeps data residency internal
+- **Sensitive data:** Camera feeds, conversations, sensor data stay within controlled environment
+
+### 5.2 System Security
+
+| Threat | Mitigation |
+|--------|------------|
+| **Unauthorized access** | OS updates, firewall, authentication |
+| **Insider threats** | Sandboxing, access control |
+| **Prompt injection** | Output filtering, constitutional AI |
+| **Model tampering** | Checksums, verified sources |
+
+### 5.3 Model Content and Behavior
+
+**Mitigation Strategies:**
+- **System prompts:** Steer model away from unsafe instructions
+- **Output filtering:** Moderation models or heuristics
+- **Isolation:** Model should not have system privileges
+- **Validation:** Treat model output as untrusted
+
+---
+
+## 6. Trade-offs: Open-Source vs API
+
+| Factor | Open-Source Local | OpenAI API |
+|--------|-------------------|------------|
+| **Accuracy** | Good (approaching GPT-4 on some tasks) | Best available |
+| **Latency** | No network delay; dependent on local hardware | Network-dependent |
+| **Cost** | Fixed hardware cost | Variable per-token cost |
+| **Privacy** | Complete data sovereignty | Data leaves premises |
+| **Control** | Full customization | Limited by policy |
+| **Maintenance** | Manual updates | Automatic improvements |
+
+**Verification (Privacy Value):** "For any team handling customer data, medical records, legal documents, or proprietary source code, sending that data to a third-party API endpoint creates a compliance surface area... Local inference eliminates the most uncomfortable question in any data protection impact assessment: 'Where does the data go?' When the model runs on hardware you control, the answer is nowhere."
+
+---
+
+## 7. Integration into Monkey Head Project Structure
+
+### 7.1 Integration Patterns
+
+| Pattern | Description | Use Case |
+|---------|-------------|----------|
+| **Service Mode** | Ollama/vLLM runs as separate service | Simpler integration; managed GPU usage |
+| **Embedded Mode** | Model loaded in HueyOS process | Lower overhead; higher memory usage |
+
+### 7.2 Ollama Integration (Recommended)
+
+**Setup:**
+```bash
+# Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull model
+ollama pull llama3.1:70b
+
+# Start server
+ollama serve
+```
+
+**API Access:**
+```bash
+curl http://localhost:11434/api/generate -d '{
+  "model": "llama3.1:70b",
+  "prompt": "Why is the sky blue?",
+  "stream": false
+}'
+```
+
+**Verification:** "Ollama runs locally. We don't see your prompts or data when you run locally."
+
+### 7.3 Embedded Mode
+
+```python
+# In initialization
+if config.LLM_PROVIDER == "local":
+    model_name = "meta-llama/Llama-3.1-70B-Instruct"
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        device_map="auto",
+        torch_dtype=torch.float16
+    )
+
+# In request handler
+if config.LLM_PROVIDER == "local":
+    input_ids = tokenizer.encode(user_query, return_tensors='pt').to(model.device)
+    output = model.generate(input_ids, max_new_tokens=256)
+    reply = tokenizer.decode(output[0], skip_special_tokens=True)
+```
+
+### 7.4 Memory and Data Flow
+
+- Integrate LLM outputs into HueyOS unified memory (JSON + SQLite)
+- Log each user query and model response for future context
+- Implement retrieval-augmented generation (RAG) with vector store
+
+---
+
+## 8. Testing and Examples
+
+### 8.1 Translation Pipeline Test
+
+1. **Speech Input:** User speaks in English
+2. **Whisper STT:** Transcribes to text
+3. **Local LLM:** Translates to French (or use NLLB-200)
+4. **TTS:** Speaks French output
+
+### 8.2 General Q&A Test
+
+Compare local model responses to previous OpenAI-powered system. Expect to fine-tune prompt styles and system prompts.
+
+### 8.3 Performance Monitoring
+
+- Log response latency
+- Monitor GPU memory usage
+- Profile with PyTorch profiler or NVIDIA Nsight
+
+---
+
+## 9. Conclusion
+
+By following this roadmap, Monkey Head Project's HueyOS will gain a fully offline, multi-GPU-powered language interpretation module. This aligns with the project's goal of autonomy and modularity — the AI core becomes self-sufficient, running on local compute with no external dependencies.
+
+**Key Recommendations:**
+
+| Component | Recommendation |
+|-----------|----------------|
+| **Primary LLM** | Llama 3.1 70B or Mistral 7B v0.3 |
+| **Translation** | NLLB-200 distilled 600M |
+| **Speech-to-Text** | OpenAI Whisper (large-v3 or turbo) |
+| **Deployment** | Ollama for service mode; HuggingFace Accelerate for embedded |
+| **Multi-GPU** | `device_map="auto"` or DeepSpeed ZeRO-Inference |
+| **Quantization** | 8-bit for larger models; 4-bit GGUF for efficiency |
+
+---
+
+## Appendix A: Source Verification
+
+| Source | Type | Credibility |
+|--------|------|-------------|
+| HuggingFace Accelerate Documentation | Primary | High |
+| DeepSpeed Documentation | Primary | High |
+| Ollama Documentation | Primary | High |
+| AI Wiki (Llama models) | Secondary | High |
+| SitePoint (Local LLM Guide 2026) | Secondary | High |
+| Garuda (Whisper on Raspberry Pi) | Primary | High |
+| HuggingFace (NLLB-200) | Primary | High |
+
+---
+
+## Appendix B: Glossary
+
+| Term | Definition |
+|------|------------|
+| **device_map** | HuggingFace parameter for distributing model across devices |
+| **ZeRO-Inference** | DeepSpeed's memory optimization for inference |
+| **Ollama** | Local LLM runtime with API server |
+| **NLLB-200** | Meta's 200-language translation model |
+| **Whisper** | OpenAI's speech recognition model |
+| **GQA** | Grouped-Query Attention |
+| **GGUF** | GPT-Generated Unified Format for quantized models |
+| **GPTQ** | Post-training quantization for GPT models |
+| **RAG** | Retrieval-Augmented Generation |

@@ -1,0 +1,272 @@
+# Commodore 64 Technical Report
+
+**Technical Reference Document**
+**Document Version:** 2.0
+**Status:** Verified and Updated
+**Last Updated:** 2026-09-26
+**Cross-Reference:** LabTech Hardware Archive — Retrocomputing Reference
+
+---
+
+## Executive Summary
+
+The Commodore 64 (C64), released in August 1982 at $595, remains the best-selling single personal computer model of all time. Powered by the MOS Technology 6510 CPU at approximately 1 MHz, it packed 64 KB of RAM and a suite of custom co-processors—the VIC-II for graphics, the SID for sound, and dual 6526 CIAs for I/O—into an integrated system that outperformed contemporaries in graphics and audio despite modest raw processing power.
+
+**Verification Summary:**
+
+| Claim | Status | Notes |
+|-------|--------|-------|
+| 6510 CPU at 1.02 MHz (NTSC) / 0.985 MHz (PAL) | **Verified** | Exact: 1.0227277143 MHz / 0.9852484444 MHz |
+| ~0.5 MIPS maximum, ~0.3 MIPS typical | **Verified** | 2+ cycles per instruction; exact figures vary by workload |
+| 64 KB RAM, 38,911 BASIC bytes free | **Verified** | 20 KB ROM (BASIC 8K, KERNAL 8K, CharGen 4K) + I/O |
+| VIC-II: 320×200, 16 colors, 8 sprites | **Verified** | MOS 6567 (NTSC) / 6569 (PAL) |
+| SID: 3 voices, ADSR, analog filter | **Verified** | MOS 6581 / 8580 |
+| Dual 6526 CIA chips | **Verified** | CIA#1 (keyboard/joystick), CIA#2 (serial/user port) |
+| User Port: 24-pin, CIA#2 PB0–PB7 | **Verified** | 100 mA max on +5V, 3.96 mm pitch |
+| 1541 disk drive: ~300 bytes/sec | **Verified** | Up to ~400 bytes/sec; JiffyDOS ~4,000 bytes/sec |
+
+---
+
+## 1. Performance
+
+### 1.1 CPU Specifications and Speed
+
+The Commodore 64 is powered by the **MOS Technology 6510** microprocessor—an enhanced 8-bit CPU based on the 6502 core. The 6510 adds an 8-bit general-purpose I/O port (6 pins available in the most common version) used for bank-switching and controlling peripherals. The address bus can be tri-stated, and the CPU can be halted cleanly for bus sharing with the VIC-II.
+
+| Parameter | NTSC | PAL |
+|-----------|------|-----|
+| **CPU Clock** | 1.0227277143 MHz | 0.9852484444 MHz |
+| **Master Crystal** | 14.31818 MHz | 17.73447 MHz |
+| **Clock Division** | ÷14 | ÷16 |
+| **Frame Rate** | ~60 Hz | ~50 Hz |
+| **Cycles per Frame** | ~17,000 | ~20,000 |
+
+**Effective Throughput:** Because the 6510 requires at least 2 clock cycles per instruction (many require more), its maximum throughput is around **0.5 MIPS**, with an average of ~0.3 MIPS in typical code. By modern standards this is extremely slow—a basic 8-bit Arduino microcontroller at 16 MHz reaches ~16 MIPS, over 50× faster in raw instruction rate.
+
+**Verification:** The 6510 performance is similar to a 6502, executing the same instruction set with 8-bit registers and a 16-bit address bus.
+
+### 1.2 Memory Subsystem (RAM/ROM) and Bandwidth
+
+The C64 includes **64 KB of RAM** (65,536 bytes of dynamic MOS DRAM). Of this, approximately **38,911 bytes** are free for BASIC programs in the default configuration, since 20 KB of ROM overlaps the address space and system variables use some RAM.
+
+| ROM Component | Size | Address Range |
+|---------------|------|---------------|
+| **BASIC Interpreter** | 8 KB | $A000–$BFFF |
+| **KERNAL (OS)** | 8 KB | $E000–$FFFF |
+| **Character Generator** | 4 KB | $D000–$DFFF (VIC-II access only) |
+| **Total ROM** | 20 KB | — |
+
+**Bank Switching:** The 6510 can address only 64 KB at a time, so ROMs are banked into the CPU's address space. By writing to the processor port at address $0001 (the 6510's I/O port), software can configure which parts of memory are RAM or ROM/I/O. It is possible to configure the C64 to have almost the full 64 KB RAM accessible (with all ROMs disabled) except for the few bytes of the CPU's port itself.
+
+**Memory Access Characteristics:** The C64's RAM is shared between the CPU and the VIC-II graphics chip. During certain video operations (such as "bad lines"), the VIC-II holds the CPU off the bus for extra cycles. The memory bandwidth available to the CPU is roughly **1 byte per microsecond** (1 MHz bus), i.e., ~1 MB/s.
+
+### 1.3 Memory Map
+
+| Address Range | Description |
+|---------------|-------------|
+| $0000–$00FF | Zero Page (256 bytes) — fast addressing modes |
+| $0100–$01FF | Processor Stack (256 bytes) |
+| $0200–$07FF | System work RAM and video buffers (screen at $0400–$07FF) |
+| $0800–$9FFF | BASIC program RAM |
+| $A000–$BFFF | 8 KB BASIC ROM (or banked RAM) |
+| $C000–$CFFF | 4 KB additional RAM (always RAM) |
+| $D000–$D3FF | VIC-II graphics chip registers |
+| $D400–$D7FF | SID audio chip registers |
+| $D800–$DBFF | Color RAM (1K × 4-bit static RAM) |
+| $DC00–$DCFF | CIA#1 I/O registers |
+| $DD00–$DDFF | CIA#2 I/O registers |
+| $DE00–$DFFF | I/O expansion (cartridge) area |
+| $E000–$FFFF | 8 KB KERNAL OS ROM (or banked RAM) |
+
+### 1.4 Performance Relative to Modern Standards
+
+| Metric | C64 | Modern Desktop | Ratio |
+|--------|-----|----------------|-------|
+| **CPU Throughput** | ~0.3–0.5 MIPS | ~10,000–100,000 MIPS | ~10⁴–10⁵× |
+| **Memory Bandwidth** | ~1 MB/s | ~50,000 MB/s | ~50,000× |
+| **Storage (1541)** | ~300 bytes/sec | ~500 MB/s (SSD) | ~1,600,000× |
+| **RAM Latency** | ~1 µs | ~50 ns (DDR4) | ~20× |
+
+A 3 GHz modern CPU can execute more instructions in one second than a C64 could in a day. However, the C64's custom chips (VIC-II and SID) provided specialized capabilities that took load off the CPU for graphics and sound—an early form of hardware acceleration.
+
+---
+
+## 2. Architecture
+
+### 2.1 High-Level System Design
+
+The C64 is built around the following specialized ICs working in tandem:
+
+| Component | Chip | Function |
+|-----------|------|----------|
+| **CPU** | MOS 6510 | 8-bit microprocessor, 16-bit address bus |
+| **Graphics** | MOS 6567/6569 VIC-II | Video generation (NTSC/PAL) |
+| **Sound** | MOS 6581/8580 SID | Analog synthesizer-style audio |
+| **I/O** | 2× MOS 6526 CIA | Peripherals, timers, I/O ports |
+| **Memory** | 64 KB RAM + 1 KB Color RAM + 20 KB ROM | — |
+| **Glue Logic** | PLA (Programmable Logic Array) | Memory banking, address decoding |
+| **Interface Ports** | User Port, Serial IEC, Tape, Cartridge, Joystick, A/V | — |
+
+All components communicate via a common system bus: an 8-bit bidirectional data bus and a 16-bit address bus, plus control lines. Memory-mapped I/O is used; the VIC-II, SID, CIAs, etc., each occupy address ranges in the 6510's 64K address space.
+
+### 2.2 VIC-II Graphics Chip
+
+The VIC-II generates video output at **320×200 resolution** (or 160×200 in multicolor mode) with a palette of **16 colors**.
+
+| Feature | Detail |
+|---------|--------|
+| **Sprites** | 8 hardware sprites (24×21 px), multiplexable |
+| **Scrolling** | Smooth pixel scrolling registers |
+| **Raster Interrupts** | Programmable interrupt on specified scanline |
+| **Bitmap Mode** | 320×200 bitmapped graphics |
+| **Character Mode** | 40×25 text with 8×8 characters |
+| **Bus Access** | Timeshares RAM with CPU on each clock cycle |
+| **Bad Lines** | Halts CPU for ~40 µs every 8 raster lines |
+| **Video Bank** | 16 KB selectable at $0000, $4000, $8000, or $C000 |
+
+### 2.3 SID Audio Chip
+
+The SID provides **3 independent tone generators**, each with:
+
+- **Waveforms:** Sawtooth, triangle, square/pulse (variable duty cycle), pseudo-random noise
+- **ADSR Envelope:** Attack/Decay/Sustain/Release for volume shaping
+- **Ring Modulation and Sync:** For complex sounds
+- **Analog Multimode Filter:** Low-pass, high-pass, band-pass, or combinations
+
+The SID is controlled via **29 memory-mapped registers** at addresses $D400–$D41C. Sound generation runs asynchronously—the CPU only updates registers when changing notes or effects.
+
+### 2.4 CIA Complex Interface Adapters
+
+Two **6526 CIA** chips provide versatile I/O control:
+
+| CIA | Address | Primary Functions |
+|-----|---------|-------------------|
+| **CIA#1** | $DC00–$DCFF | Keyboard, joysticks, tape, system IRQ, TOD clock |
+| **CIA#2** | $DD00–$DDFF | Serial IEC bus, User Port, VIC bank select, NMI |
+
+Each CIA provides:
+- Two 8-bit I/O ports (A and B)
+- Two programmable 16-bit interval timers
+- Time-of-Day (TOD) clock with alarm
+- Serial shift register
+
+**Electrical Characteristics:** CIA outputs are open-drain with pull-up resistors. When outputting "1", the line floats high weakly; when outputting "0", it actively pulls low. This allows wired-OR logic but limits current sourcing to ~1–2 mA while sinking ~3 mA.
+
+### 2.5 System Bus and Interrupts
+
+The C64 has a single maskable interrupt (**IRQ**) line and a non-maskable interrupt (**NMI**) line:
+
+| Interrupt | Sources | Use |
+|-----------|---------|-----|
+| **IRQ** | CIA#1 (timer/keyboard), VIC-II (raster) | System ticks, keyboard scan |
+| **NMI** | CIA#2 (serial/user port), RESTORE key | RS-232 RX, soft reset |
+
+---
+
+## 3. User Port Details
+
+### 3.1 Physical Layout and Pinout
+
+The User Port is a **24-pin edge connector** on the back of the C64, with 12 contacts on top (numbered 1–12) and 12 on bottom (lettered A–N, omitting I and O). The port has a plastic keying notch to prevent reversed insertion. Edge connectors have **3.96 mm pitch** and accept cards **1.57 mm thick**.
+
+| Pin | Name | Description |
+|-----|------|-------------|
+| 1 | GND | Ground |
+| 2 | +5V | +5 VDC (100 mA max) |
+| 3 | /RESET | Reset (forces cold start) |
+| 4 | CNT1 | Counter 1, from CIA#1 |
+| 5 | SP1 | Serial Port 1, from CIA#1 |
+| 6 | CNT2 | Counter 2, from CIA#2 |
+| 7 | SP2 | Serial Port 2, from CIA#2 |
+| 8 | /PC2 | Handshaking line, from CIA#2 |
+| 9 | ATN | Serial attention in |
+| 10 | 9VAC | 9 VAC (+ phase, 100 mA max) |
+| 11 | 9VAC | 9 VAC (− phase, 100 mA max) |
+| 12 | GND | Ground |
+| A | GND | Ground |
+| B | /FLAG2 | Flag 2 (NMI on falling edge) |
+| C | PB0 | Data 0 |
+| D | PB1 | Data 1 |
+| E | PB2 | Data 2 |
+| F | PB3 | Data 3 |
+| H | PB4 | Data 4 |
+| J | PB5 | Data 5 |
+| K | PB6 | Data 6 |
+| L | PB7 | Data 7 |
+| M | PA2 | PA2 (RS-232 TXD) |
+| N | GND | Ground |
+
+### 3.2 Electrical Characteristics
+
+- **Logic Levels:** TTL (5V) — logic high >2V, logic low <0.8V
+- **Output Drive:** Open-drain with weak pull-up; sink ~3 mA per line, source ~1–2 mA
+- **Power:** +5V limited to ~100 mA; 9VAC limited to ~100 mA
+- **Protection:** Internal fuse protects +5V and 9VAC lines
+
+### 3.3 Typical and Advanced Uses
+
+| Category | Examples |
+|----------|----------|
+| **Modems** | Commodore 1660/1670 (300–1200 baud) |
+| **Printers** | Centronics parallel interfaces |
+| **RS-232** | Level converters for standard serial devices |
+| **ADC/DAC** | Analog-to-digital and digital-to-analog converters |
+| **Control** | Relays, sensors, home automation |
+| **Networking** | C64-to-C64 links, WiFi modems (ESP8266) |
+| **Disk Speeders** | Parallel cables for 1541 drives (SpeedDOS) |
+| **EPROM Programmers** | DIY chip programming |
+
+### 3.4 Safety and Interfacing Considerations
+
+| Consideration | Recommendation |
+|---------------|----------------|
+| **Voltage Levels** | Use level shifters for RS-232 (±12V) and 3.3V devices |
+| **Current Limits** | Do not exceed 100 mA on +5V; use external power for heavy loads |
+| **Output Drive** | Use buffers (7406, ULN2803) for relays/LEDs; prefer current-sinking |
+| **Protection** | Series resistors, clamping diodes, or optocouplers for external connections |
+| **Grounding** | Always connect common ground with external supplies |
+| **Hot Plugging** | Avoid; power off when connecting/disconnecting |
+| **/RESET Line** | Use open-collector driver or push-button to ground |
+
+---
+
+## 4. Implications for Monkey-Head-Project
+
+The Commodore 64 serves as a **historical reference and retrocomputing platform** within the Monkey-Head-Project's LabTech ecosystem. Its architecture demonstrates:
+
+1. **Hardware Acceleration:** The VIC-II and SID offloaded graphics and sound from the CPU, an early form of specialized co-processing relevant to modern AI accelerator design.
+2. **Memory-Mapped I/O:** The unified address space simplifies low-level programming but lacks protection—a contrast to modern protected-mode architectures.
+3. **Bus Sharing:** The VIC-II's cycle stealing for DMA is an early example of bus arbitration, relevant to understanding modern PCIe and memory contention.
+4. **Expandability:** The User Port and cartridge slot demonstrate how general-purpose I/O enables diverse applications.
+
+**LabTech Note:** The C64 is retained as a reference platform for understanding fundamental computer architecture and for potential retrocomputing projects aligned with the ethos of "breathing new life into old tech."
+
+---
+
+## Appendix A: Source Verification
+
+| Claim | Status | Source |
+|-------|--------|--------|
+| 6510 clock: 0.985 MHz (PAL) / 1.023 MHz (NTSC) | **Verified** | Wikipedia, technical references |
+| 38,911 BASIC bytes free | **Verified** | Archive.org programming course |
+| 64 KB RAM, 20 KB ROM | **Verified** | Memory map documentation |
+| VIC-II: 320×200, 16 colors | **Verified** | C64 Wiki, hardware documentation |
+| SID: 3 voices, ADSR, filter | **Verified** | C64 Wiki, SID datasheet |
+| CIA 6526: dual I/O, timers, TOD | **Verified** | C64 Wiki, CIA datasheet |
+| User Port: 24-pin, CIA#2 PB0–PB7 | **Verified** | C64 Wiki, pinout references |
+| 1541 disk: ~300–400 bytes/sec | **Verified** | Computing History, service manual |
+
+---
+
+## Appendix B: Glossary
+
+| Term | Definition |
+|------|------------|
+| **6510** | MOS Technology 8-bit CPU (6502 variant with I/O port) |
+| **VIC-II** | Video Interface Chip (graphics co-processor) |
+| **SID** | Sound Interface Device (audio synthesizer chip) |
+| **CIA** | Complex Interface Adapter (6526 I/O controller) |
+| **PLA** | Programmable Logic Array (memory banking/decoding) |
+| **Bad Line** | Raster line where VIC-II steals extra cycles for character data |
+| **TOD** | Time-of-Day clock (in CIA) |
+| **ADSR** | Attack/Decay/Sustain/Release envelope |

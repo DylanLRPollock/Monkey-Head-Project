@@ -1,0 +1,356 @@
+# The MOS Technology VIC-II: Architecture, Specifications, and Legacy
+
+**Technical Reference Document**
+**Document Version:** 3.0
+**Status:** Verified and Updated
+**Last Updated:** 2026-09-26
+**Cross-Reference:** LabTech Hardware Archive — Retrocomputing Chips
+
+---
+
+## Executive Summary
+
+The MOS Technology VIC-II (Video Interface Chip II) is the graphics and video processor used in Commodore's 8-bit home computers, most notably the Commodore 64 (1982) and later the C128. As the successor to the VIC-I chip from the VIC-20, the VIC-II was responsible for generating the C64's video output and managing dynamic RAM refresh. It was a 40-pin NMOS integrated circuit (originally labeled MOS 6567/6569 for NTSC/PAL variants) that acted as a video display controller, producing composite video signals and handling tasks such as sprite rendering, scrolling, and interrupt generation. Its advanced capabilities were a key part of the C64's success, enabling graphics and animation features well beyond many contemporaries.
+
+**Verification Summary:**
+
+| Claim | Status | Notes |
+|-------|--------|-------|
+| 320×200 resolution, 16 colors, 8 sprites | **Verified** | Standard VIC-II specifications |
+| 24×21 pixel sprites (12×21 multicolor) | **Verified** | Per technical documentation |
+| 40×25 character text mode | **Verified** | Standard text mode |
+| 16 KB video memory addressing window | **Verified** | VIC-II has 14 address lines |
+| 47 control registers at $D000–$D02E | **Verified** | 34 dedicated to sprites |
+| Designed by Al Charpentier and Charles Winterble | **Verified** | MOS Technology |
+| Bad lines: CPU halted for 40 cycles | **Verified** | Every 8th scanline in character mode |
+| Sprite multiplexing enables >8 sprites | **Verified** | Via raster interrupts |
+| NTSC ~1.02 MHz, PAL ~0.985 MHz dot clock | **Verified** | Timing variants |
+| 75% of die area for sprites | **Verified** | Design case history |
+
+---
+
+## 1. Introduction
+
+The MOS Technology VIC-II (Video Interface Chip II) is the graphics and video processor famously used in Commodore's 8-bit home computers, most notably the Commodore 64 (released 1982) and later the C128. As the successor to the VIC-I chip from the VIC-20, the VIC-II was responsible for generating the C64's video output and managing dynamic RAM refresh.
+
+It was a 40-pin NMOS integrated circuit (originally labeled MOS 6567/6569 for NTSC/PAL variants, among other part numbers) that acted as a video display controller, producing composite video signals (separated luma/chroma) and handling tasks such as sprite rendering, scrolling, and interrupt generation. The VIC-II's advanced capabilities were a key part of the C64's success, enabling graphics and animation features well beyond many contemporaries. This paper provides a technical deep dive into the VIC-II's specifications, architecture, historical development, comparisons with peer chips, engineering innovations/limitations, and its lasting legacy in computing.
+
+---
+
+## 2. Technical Specifications of the VIC-II
+
+### 2.1 Display Resolution and Modes
+
+The VIC-II generates a base resolution of **320×200 pixels** for bitmap graphics, or **40×25 characters** in text mode. In its special multicolor modes (where each pixel can be wider for more colors per tile), the effective resolution is halved horizontally (**160×200 pixels**).
+
+| Mode | Resolution | Colors |
+|------|-----------|--------|
+| **Standard Text** | 40×25 chars (8×8) | 2 (foreground/background) |
+| **Multicolor Text** | 40×25 chars | 3 (plus background) |
+| **High-Resolution Bitmap** | 320×200 | 2 |
+| **Multicolor Bitmap** | 160×200 | 4 per 4×8 cell |
+
+### 2.2 Color Palette
+
+A hallmark of the VIC-II is its **16-color palette**. These colors are hard-wired in the chip (fixed palette) and include black, white, red, cyan, purple, green, blue, yellow, orange, brown, light red, dark gray, medium gray, light green, light blue, and light gray.
+
+The palette was generated using analog circuits internally, producing a composite NTSC or PAL signal. The VIC-II does not support custom palette registers (unlike some later chips); the palette is fixed but was carefully chosen to be visually appealing and varied given the limitations.
+
+### 2.3 Sprites (MOBs — Movable Object Blocks)
+
+One of VIC-II's most innovative features is its support for hardware sprites (referred to in documentation as **MOBs** — Movable Object Blocks). It can display **8 sprites per scanline**, each up to **24×21 pixels** in size (a non-square aspect).
+
+| Feature | Specification |
+|---------|---------------|
+| **Sprites per line** | 8 |
+| **Sprite size (standard)** | 24×21 pixels |
+| **Sprite size (multicolor)** | 12×21 pixels |
+| **Colors per sprite** | 3 (multicolor mode) |
+| **Collision detection** | Sprite-sprite and sprite-background |
+
+Sprites can be positioned arbitrarily on screen by writing to the sprite X/Y coordinate registers, and they can overlap. The VIC-II provides hardware collision detection flags. Each sprite has an independent color register and can be set to appear in front of or behind the background.
+
+**Limitation:** Only 8 sprites can be shown per scanline in hardware. Programmers often implemented **sprite multiplexing** techniques (via raster interrupts) to reuse sprites at different vertical positions in the same frame, thereby displaying more than 8 sprites total by time-multiplexing them.
+
+### 2.4 Scrolling and Raster Effects
+
+The VIC-II provides built-in smooth scrolling support, both horizontal and vertical. This is achieved with hardware scroll registers that can offset the display by **0–7 pixels** horizontally and **0–7 scanlines** vertically.
+
+Additionally, the VIC-II includes a **raster interrupt system**: it can generate an interrupt when the electron beam reaches a specified scanline. This enables mid-frame changes to graphics registers — effectively allowing multiple display zones with different settings. The raster interrupt is central to many advanced VIC-II tricks, including parallax scrolling, color gradient skies, and extended sprite multiplexing.
+
+### 2.5 Memory and Addressing
+
+The VIC-II can address **16 KB of video memory** for screens, character sets, bitmaps, and sprites. The chip has **14 address lines (A0–A13)**.
+
+| Feature | Specification |
+|---------|---------------|
+| **Address lines** | 14 (16 KB window) |
+| **Video banks** | 4 (selectable via CIA#2) |
+| **Color RAM** | 1 KB (4-bit × 1024) |
+| **Character ROM** | 4 KB (default font) |
+| **Registers** | 47 at $D000–$D02E |
+
+The starting addresses of the screen memory and character bitmap tables within that 16 KB space are programmable via VIC-II registers. Color information for characters is held separately in a small **1 KB Color RAM** (4-bit RAM) connected via a dedicated 4-bit bus to the VIC-II.
+
+The VIC-II also generates the necessary **DRAM refresh signals** for the system memory (RAS/CAS), performing memory refresh during video logic operations.
+
+### 2.6 Timing Variants (NTSC/PAL)
+
+| Variant | Chip | Dot Clock | Scanlines | Frame Rate |
+|---------|------|-----------|-----------|------------|
+| **NTSC** | MOS 6567 | ~1.02 MHz | 262 | ~60 Hz |
+| **PAL** | MOS 6569 | ~0.985 MHz | 312 | ~50 Hz |
+
+Later revisions (the **8562/8565** in the C64C and the **VIC-IIe 8564/8566** in the Commodore 128) were made in HMOS technology, which ran on a single 5V supply (whereas original 6567/6569 needed 12V, 5V, and -5V supplies). The HMOS VIC-II chips fixed some minor issues and reduced heat/power.
+
+---
+
+## 3. Architectural Overview and Design
+
+### 3.1 Internal Architecture and Bus Interface
+
+Internally, the VIC-II is a synchronous video processing unit tightly integrated with the system bus of the 6502-family CPU (the C64's 6510 CPU). It functions as a **bus master** on the 8-bit system bus, alternating memory access with the CPU on a half-cycle basis.
+
+In each clock cycle (≈1 MHz in C64), the 6510 CPU runs on one phase (phi1) and the VIC-II on the opposite phase (phi2). This interleaving means the VIC-II can read video data from memory without slowing the CPU — except during certain times when it needs extra bandwidth.
+
+**Bad Lines:** When the VIC-II requires additional cycles (for example, to fetch an entire line of character data or sprite data), it asserts **BA** (Bus Available) and **AEC** signals to momentarily halt the CPU. These **Bad Lines** refer to specific raster lines (usually every 8th line in a character-mode frame) where the VIC-II must fetch a full 40 bytes of character definitions; on those lines, it stops the CPU for **40 clock cycles**.
+
+### 3.2 Memory Map and Registers
+
+The VIC-II has **47 control registers**, memory-mapped to the CPU I/O address range **$D000–$D02E**. Of the 47 registers, **34 are dedicated to sprite control** — which underscores how much the chip's architecture is oriented towards the sprite subsystem.
+
+| Register Range | Function |
+|----------------|----------|
+| $D000–$D00F | Sprite X/Y coordinates |
+| $D010 | Sprite X MSB |
+| $D011 | Control (scroll, mode, raster high bit) |
+| $D012 | Raster line |
+| $D015 | Sprite enable |
+| $D016 | Control (scroll, columns, multicolor) |
+| $D017–$D01E | Sprite expand, priority, collision |
+| $D020–$D021 | Border/background color |
+| $D022–$D024 | Extended color registers |
+| $D025–$D026 | Sprite multicolor registers |
+| $D027–$D02E | Sprite colors |
+
+### 3.3 Raster and Timing Behavior
+
+The VIC-II generates video on a scanline-by-scanline basis. For each line, it goes through a known sequence of memory fetches divided into **63 clock cycles (PAL; 65 on NTSC)**.
+
+During the visible portion of a line, the VIC-II shifts out pixel data that was fetched a few cycles prior. In character mode, it fetches the next character code and color nybble from screen memory and color RAM for each 8-pixel group, and looks up the corresponding bits from character ROM or RAM.
+
+The **raster interrupt system** ($D019/$D01A) can trigger an IRQ when the raster counter ($D012) reaches a set value. This mechanism allows the CPU and VIC-II to operate in lock-step for mid-frame effects.
+
+### 3.4 Interface with Other Components
+
+The VIC-II interfaces with several other components on the board:
+
+| Component | Interface |
+|-----------|-----------|
+| **6510 CPU** | Shared address/data bus via PLA |
+| **Character ROM** | 4 KB ROM (default font) |
+| **Color RAM** | Separate 2114 SRAM (4-bit × 1024) |
+| **CIA#2** | Bank selection (two high address bits) |
+| **DRAM** | RAS/CAS generation, refresh |
+| **SID** | Shared clock, audio output |
+| **Light Pen** | LP input pin for beam coordinate latching |
+
+---
+
+## 4. Historical Development and Context
+
+### 4.1 Design Team and Origins
+
+The VIC-II chip was designed primarily by **Al Charpentier** and **Charles Winterble** at MOS Technology, Inc. as a successor to the MOS Technology 6560 "VIC". Charpentier had been the lead on the original VIC-I (6560/6561) used in the VIC-20.
+
+After the VIC-20's success, Commodore was planning its next-generation machine (what became the Commodore 64). Earlier, the team at MOS had attempted two improved VIC-like chips — the **6562** for a never-released "TOI" computer and **6564** for a color PET — but those projects failed due to memory speed limitations.
+
+### 4.2 Design Methodology and Feature Research
+
+In order to construct the VIC-II, Charpentier and Winterble made a **market survey** of current home computers and video games, listing up the current features and what features they wanted to have in the VIC-II.
+
+They explicitly looked at what competitors offered:
+- **TI's TMS9918A** video chip inspired them to include hardware sprites
+- **Mattel Intellivision's** graphics included collision detection hardware, leading the VIC-II to support sprite-sprite and sprite-background collision flags
+- **Atari 800** had a sophisticated graphics system with a bitmap mode and fine scrolling — features they made sure the VIC-II would have as well
+
+### 4.3 Development and Fabrication
+
+The development was done on a relatively tight schedule. The design combined manual drafting and computerized tools:
+
+| Aspect | Detail |
+|--------|--------|
+| **EDA Software** | Applicon (partial layout) |
+| **Hand Drafting** | Vellum sheets, photoreduced for masks |
+| **Process** | NMOS, 5 µm |
+| **Test Chips** | On-site fab for incremental testing |
+| **Completion** | November 1981 |
+| **Introduction** | January 1982 CES (with SID) |
+
+The first test chips came back nearly fully functional, with only a minor issue in one sprite unit. The final VIC-II silicon was ready by **November 1981**, and was integrated (along with the new SID sound chip developed in parallel by Bob Yannes) into the prototype Commodore 64 boards.
+
+### 4.4 Cost and Variants
+
+| Variant | Part Number | Application |
+|---------|-------------|-------------|
+| **VIC-II (Max Machine)** | 6566 | SRAM-based game console |
+| **VIC-II (NTSC)** | 6567 | Commodore 64 (NTSC) |
+| **VIC-II (PAL)** | 6569 | Commodore 64 (PAL) |
+| **VIC-II (HMOS NTSC)** | 8562 | C64C (NTSC) |
+| **VIC-II (HMOS PAL)** | 8565 | C64C (PAL) |
+| **VIC-IIe (C128)** | 8564/8566 | Commodore 128 |
+
+---
+
+## 5. Comparison with Contemporary Video Chips
+
+### 5.1 Vs. Texas Instruments TMS9918A (TI-99/4A, MSX1, ColecoVision)
+
+The TMS9918A (also known as the "Video Display Processor" or VDP) was released around 1979–1981 and became a popular off-the-shelf video chip.
+
+| Feature | VIC-II | TMS9918A |
+|---------|--------|----------|
+| **Bitmap Resolution** | 320×200 | 256×192 |
+| **Total Sprites** | 8 | 32 |
+| **Sprites per Line** | 8 | 4 |
+| **Sprite Size** | 24×21 | 8×8 or 16×16 |
+| **Colors per Sprite** | 3 (multicolor) | 1 |
+| **Video Memory** | Shared system RAM | Dedicated 16 KB VRAM |
+| **Raster Interrupts** | Yes | No |
+| **Smooth Scrolling** | Yes | No |
+
+**Verification:** "The TMS9918 was inferior to the C64's VIC-II chip in almost every way that mattered, but the VIC-II chip was designed years later so it's not exactly a fair comparison. ... The only thing the TMS9918 has over the VIC-II is built in sprite multiplexing capabilities, but this is more than counterbalanced by the excellent raster effect capabilities".
+
+### 5.2 Vs. Atari 8-bit Graphics (ANTIC/GTIA)
+
+Atari's 8-bit computers (400/800 and XL/XE series) had a sophisticated graphics system split into two chips: **ANTIC** (Alphanumeric Television Interface Controller) and **CTIA/GTIA** (Color Television Interface Adaptor).
+
+| Feature | VIC-II | ANTIC/GTIA |
+|---------|--------|------------|
+| **Display List** | No | Yes (programmable) |
+| **Sprites** | 8 (24×21) | 4 players + 4 missiles |
+| **Player Height** | 21 pixels | 256 lines |
+| **Palette** | 16 fixed | 128–256 selectable |
+| **Scrolling** | 0–7 pixels | Unlimited (display list) |
+| **Sprite Colors** | 3 (multicolor) | 1 per player |
+
+**Verification:** "Where the VIC-II needs dedicated RAM to store limited sprites, the ANTIC/GTIA pair uses the whole CPU memory to produce unlimited sized (in height at least) sprites".
+
+### 5.3 Summary Comparison
+
+| Chip | Sprites/Line | Resolution | Colors | Scrolling | Raster IRQ |
+|------|-------------|------------|--------|-----------|------------|
+| **VIC-II** | 8 | 320×200 | 16 | Hardware | Yes |
+| **TMS9918A** | 4 | 256×192 | 16 | No | No |
+| **ANTIC/GTIA** | 4 | 320×192 | 128+ | Display List | Yes |
+| **ZX Spectrum ULA** | 0 | 256×192 | 8 | No | No |
+
+---
+
+## 6. Engineering Innovations and Limitations
+
+### 6.1 Innovations
+
+| Innovation | Description |
+|------------|-------------|
+| **Hardware Sprites** | Cutting-edge in 1982; larger and more flexible than competitors |
+| **Raster Interrupts** | Enabled mid-frame register changes for advanced effects |
+| **Fine Scrolling** | Pixel-precise smooth scrolling via dedicated registers |
+| **Integrated DRAM Refresh** | Combined video generator and memory controller |
+| **Composite/S-Video Output** | On-chip NTSC/PAL encoding |
+| **Collision Detection** | Hardware flags for sprite-sprite and sprite-background |
+
+**Die Area:** Roughly **75% of the VIC-II's silicon area** is dedicated to sprite functionality alone, indicating how significant that feature was in the design.
+
+### 6.2 Limitations
+
+| Limitation | Description |
+|------------|-------------|
+| **16 KB Video Window** | Restricted to one bank at a time |
+| **Color Attribute Clash** | Limited colors per 8×8 cell |
+| **8-Sprite Limit** | Requires multiplexing for more |
+| **Fixed Palette** | No programmable RGB values |
+| **Grey Dot Artifact** | HMOS variants produce faint dots |
+| **No Hardware Cursor** | Software must handle blinking |
+| **NTSC/PAL Timing** | Different frame rates complicate porting |
+
+**Verification:** "The hardware limitation of 8 sprites per scanline could be increased further by letting the sprites flicker rapidly on and off".
+
+**Verification:** "Another limitation, at least on Commodore machines, was that the screen had to be turned off during video capture – otherwise, the video chip would interrupt the CPU halfway through the process".
+
+---
+
+## 7. Legacy and Influence on Future Graphics Hardware
+
+### 7.1 Within Commodore
+
+The VIC-II (and the sound SID) were the defining features of the Commodore 64's identity. The success of the C64 — shipping millions of units — meant that the VIC-II probably saw the widest usage of any proprietary graphics chip of the 8-bit era.
+
+Commodore's follow-on 8-bit machines didn't significantly surpass the VIC-II in graphics: the C128 included the VIC-II (8564/8566) for backward compatibility and added a separate 80-column chip (the MOS 8563 VDC) for business applications.
+
+### 7.2 Influence on Console Design
+
+The concepts popularized by VIC-II spread widely:
+
+| System | Influence |
+|--------|-----------|
+| **NES PPU (1983)** | 8 sprites/line limit, similar philosophy |
+| **Sega Master System (1985)** | Evolved from TMS9918A with VIC-II lessons |
+| **Amiga (1985)** | Hardware sprites (BOBs), Copper for raster effects |
+| **Neo Geo (1990)** | Raster interrupt support for multi-layer effects |
+
+### 7.3 Demoscene and Community
+
+The VIC-II became central to the **C64 demoscene**, where programmers competed to produce seemingly impossible visual effects on stock hardware — such as fullscreen effects with no borders, loads of sprites through multiplexing, raster bars, and interference patterns by mid-scanline changes.
+
+The famous **"VIC-II trick"** of opening the side borders (allowing graphics in the normally empty border area by manipulating the raster timing on an exact cycle) was a legendary hack that showed the depths of understanding developers achieved.
+
+**Verification:** "The VIC-II video chip was highly programmable. Developers discovered that by timing code precisely with the CRT's electron beam (raster interrupts), they could change graphics modes mid-screen, or even mid-line".
+
+### 7.4 FPGA Reimplementations
+
+Decades later, retro computing enthusiasts design FPGA re-implementations of the VIC-II (such as in the Ultimate64 FPGA-based C64, or the VIC-II FPGA core in the MiSTer project). Recreating the VIC-II's exact behavior (including all the little bugs and timing) is a challenge that many have undertaken, proving its status as a classic.
+
+---
+
+## 8. Conclusion
+
+The MOS Technology VIC-II stands as a landmark in the evolution of video chips. Technically, it merged a variety of graphics functions — high-resolution and multicolor bitmap graphics, hardware sprites, scrolling, raster interrupts, and memory refresh — into one cost-effective package at a time when such integration was rare.
+
+In a historical context, the VIC-II was born from observing the best ideas of its contemporaries (TI, Atari, etc.) and improving upon them, which it accomplished with aplomb — contributing hugely to the Commodore 64's success and setting a benchmark for home computer graphics.
+
+Comparatively, the VIC-II either met or exceeded the capabilities of other chips of its era in key areas. It wasn't without limitations: fixed palette, attribute clashes, and sprite count limits challenged developers, but these were overcome by ingenuity, giving rise to a culture of optimization and "demo effects" that are a testament to the VIC-II's design.
+
+The VIC-II chip exemplifies the brilliance of early computer engineering — doing a lot with a little. It turned the humble C64 into a machine that could animate colorful games and demos that captivated a generation. Even today, studying the VIC-II provides valuable insight into the fundamentals of raster graphics, memory timing, and hardware/software interplay.
+
+---
+
+## Appendix A: Source Verification
+
+| Source | Type | Credibility |
+|--------|------|-------------|
+| Christian Bauer's VIC-II Article | Primary | High |
+| C64 Wiki (VIC-II) | Secondary | High |
+| Wikipedia (MOS Technology VIC-II) | Secondary | High |
+| Design Case History: The Commodore 64 | Primary | High |
+| Retrocomputing StackExchange | Secondary | Medium-High |
+| Forum64 (VIC-II Revisions) | Tertiary | Medium |
+
+---
+
+## Appendix B: Glossary
+
+| Term | Definition |
+|------|------------|
+| **VIC-II** | Video Interface Chip II (MOS 6567/6569) |
+| **MOB** | Movable Object Block (Commodore term for sprite) |
+| **Bad Line** | Scanline where VIC-II steals cycles for character data |
+| **Raster Interrupt** | IRQ triggered at a specified scanline |
+| **Sprite Multiplexing** | Reusing sprites at different Y positions |
+| **Color RAM** | 1 KB 4-bit SRAM for character colors |
+| **PLA** | Programmable Logic Array (memory banking) |
+| **BA** | Bus Available (VIC-II bus request signal) |
+| **AEC** | Address Enable Control (CPU bus isolation) |
+| **DRAM** | Dynamic RAM (requires refresh) |
+| **NMOS** | N-type Metal-Oxide-Semiconductor |
+| **HMOS** | High-performance NMOS |

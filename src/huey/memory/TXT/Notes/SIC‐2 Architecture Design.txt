@@ -1,0 +1,347 @@
+# The SIC-2 Architecture: Design, Instruction Set, and Educational Significance
+
+**Technical Reference Document**
+**Document Version:** 3.0
+**Status:** Verified and Updated
+**Last Updated:** 2026-09-26
+**Cross-Reference:** LabTech Hardware Archive — Educational Architectures
+
+---
+
+## Executive Summary
+
+The Simplified Instructional Computer (SIC) is a hypothetical computer architecture introduced by Leland L. Beck in his textbook "System Software: An Introduction to Systems Programming." Beck developed SIC to strip away the complexities of modern processors and provide a clear, accessible model for teaching system software concepts. The original SIC (sometimes called SIC Standard Model) includes only the most essential hardware features common to real machines. In response to the need for a more capable yet still educational platform, Beck also defined an enhanced version of this machine – referred to here as SIC-2 (and known in Beck's text as SIC/XE, for "eXtended Equipment" or "Extra Expensive") – which builds upon the standard SIC by adding significant features and resources while maintaining backward compatibility. Object programs assembled for the original SIC can execute correctly on SIC-2 (SIC/XE), demonstrating full upward compatibility between the two versions.
+
+**Verification Summary:**
+
+| Claim | Status | Notes |
+|-------|--------|-------|
+| SIC has 5 registers (A, X, L, PC, SW) | **Verified** | NEIU CS302 notes |
+| SIC/XE adds B, S, T, F registers | **Verified** | Total 9 registers |
+| SIC memory: 32,768 bytes (2^15) | **Verified** | 15-bit addressing |
+| SIC/XE memory: 1,048,576 bytes (2^20) | **Verified** | 20-bit addressing |
+| SIC instruction: 24 bits (8 opcode + 1 x + 15 address) | **Verified** | Single format |
+| SIC/XE: 4 instruction formats (1, 2, 3, 4 bytes) | **Verified** | Format 1 (1B), 2 (2B), 3 (3B), 4 (4B) |
+| SIC/XE addressing flags: n, i, x, b, p, e | **Verified** | Six flag bits in Format 3/4 |
+| 48-bit floating point: 1 sign, 11 exponent, 36 fraction | **Verified** | Bias 1024 |
+| SIO, TIO, HIO are Format 1 I/O channel instructions | **Verified** | Opcodes F0, F8, F4 |
+| FPGA implementation exists (Kloboves, 2011) | **Verified** | University of Ljubljana |
+
+---
+
+## 1. Introduction and Historical Context
+
+The Simplified Instructional Computer (SIC) is a hypothetical computer architecture introduced by Leland L. Beck in his textbook "System Software: An Introduction to Systems Programming." Beck developed SIC to strip away the complexities of modern processors and provide a clear, accessible model for teaching system software concepts. The original SIC includes only the most essential hardware features common to real machines, making it easier for students to learn how assemblers, linkers, and operating systems interact with computer architecture.
+
+The creation of SIC and SIC-2 was motivated by educational needs. By the late 20th century, real CPUs had grown complex – with pipelines, caches, microcode, and elaborate instruction sets – making them less ideal for beginner-level system programming exercises. Beck's SIC architecture abstracts away those complexities in favor of clarity. The later SIC-2 variant introduces more advanced architectural concepts (such as additional addressing modes, registers, and I/O mechanisms) in a controlled manner, allowing students to transition into more realistic system-level programming without the full complexity of a commercial CPU.
+
+Historically, SIC (first appearing in Beck's work around the 1980s) and SIC-2 have been widely adopted in academia as a sandbox for teaching assembly language, compiler design, and operating system fundamentals. These architectures are not implemented in silicon commercially, but they have been brought to life in simulators and even FPGA-based experimental "chips" in academic projects.
+
+---
+
+## 2. Overall Architecture of SIC and SIC-2
+
+### 2.1 Processor and Registers
+
+Both SIC and SIC-2 are **single-accumulator, binary, stored-program machines with a 24-bit word size**. The processor of the standard SIC includes **five core registers**, each 24 bits long:
+
+| Register | Number | Purpose |
+|----------|--------|---------|
+| **A (Accumulator)** | 0 | General-purpose accumulator for arithmetic/logical operations |
+| **X (Index Register)** | 1 | Used for indexed addressing; holds index value |
+| **L (Linkage Register)** | 2 | Stores return address for subroutine calls (JSUB) |
+| **PC (Program Counter)** | 8 | Holds address of next instruction |
+| **SW (Status Word)** | 9 | Contains condition codes and status flags |
+
+**Verification:** "Total Registers: Five ... Accumulator (A): Used for most of the operations (number 0) ... Index (X): Used for indexed addressing (number 1) ... Linkage (L): Stores return addresses for JSUB (number 2) ... Program Counter (PC): Address for next instruction (number 8) ... Status Word (SW): Information and condition codes (number 9)".
+
+SIC-2 extends the register set to include several new registers:
+
+| Register | Number | Purpose |
+|----------|--------|---------|
+| **B (Base Register)** | 3 | Dedicated base pointer for base-relative addressing |
+| **S (General Register)** | 4 | General-purpose register |
+| **T (General Register)** | 5 | General-purpose register |
+| **F (Floating-Point Accumulator)** | 6 | 48-bit register for floating-point arithmetic |
+
+**Verification:** "Total Registers: Nine, same five from SIC plus four additional ones. ... Base (B): Used for base-relative addressing (number 3) ... General (S and T): General use (numbers 4 and 5 resp.) ... Floating Point Accumulator (F): Used for floating point arithmetic, 48 bits long (number 6)".
+
+### 2.2 Memory Organization and Data Representation
+
+Memory in both SIC and SIC-2 is a **flat, byte-addressable array of bytes**. Each memory address refers to a single 8-bit byte. Groupings of three consecutive bytes form a **24-bit word**.
+
+| Attribute | SIC | SIC-2 |
+|-----------|-----|-------|
+| **Address Space** | 15 bits | 20 bits |
+| **Maximum Memory** | 32,768 bytes (32 KB) | 1,048,576 bytes (1 MB) |
+| **Word Size** | 24 bits (3 bytes) | 24 bits (3 bytes) |
+| **Addressing** | Byte-addressable | Byte-addressable |
+| **Endianness** | Big-endian (lowest byte is high-order) | Big-endian |
+
+**Verification:** "Word size: 3 bytes (24 bits) ... Total size: 32,768 bytes (2^15)". For SIC/XE: "Total size: 1 megabytes (2^20)".
+
+**Data Formats:**
+
+| Data Type | SIC | SIC-2 |
+|-----------|-----|-------|
+| **Integer** | 24-bit two's complement | 24-bit two's complement |
+| **Character** | 8-bit ASCII | 8-bit ASCII |
+| **Floating-Point** | Not supported | 48-bit (1 sign, 11 exponent, 36 fraction) |
+
+**SIC-2 Floating-Point Format:**
+- **Sign:** 1 bit (0 = positive, 1 = negative)
+- **Exponent:** 11 bits (biased by 1024, range 0–2047)
+- **Fraction:** 36 bits (value between 0 and 1)
+
+**Verification:** "Floating point is stored in 48 bit signed-exponent-fraction format ... The fraction is represented as a 36 bit number and has value between 0 and 1 ... The exponent is represented as a 11 bit unsigned binary number between 0 and 2047".
+
+---
+
+## 3. Instruction Set and Addressing Modes
+
+### 3.1 SIC Instruction Format
+
+All SIC instructions are encoded in a **fixed 24-bit format** (3 bytes per instruction):
+
+| Field | Size | Description |
+|-------|------|-------------|
+| **Opcode** | 8 bits | Operation code |
+| **X (index flag)** | 1 bit | 0 = direct, 1 = indexed |
+| **Address** | 15 bits | Operand address |
+
+**Addressing Modes in SIC:**
+
+| Mode | X Bit | Target Address Calculation |
+|------|-------|---------------------------|
+| **Direct** | 0 | TA = address |
+| **Indexed** | 1 | TA = address + (X) |
+
+### 3.2 SIC-2 Instruction Formats
+
+SIC-2 defines **four instruction formats**:
+
+| Format | Size | Layout |
+|--------|------|--------|
+| **Format 1** | 1 byte | 8-bit opcode only |
+| **Format 2** | 2 bytes | 8-bit opcode, 4-bit r1, 4-bit r2 |
+| **Format 3** | 3 bytes | 6-bit opcode, 6 flag bits, 12-bit displacement |
+| **Format 4** | 4 bytes | 6-bit opcode, 6 flag bits, 20-bit address |
+
+**Verification:** "Format 1 (1 byte): 8 op ... Format 2 (2 bytes): 8 4 op r1 r2 ... Format 3 (3 bytes): 6 1 1 1 1 1 1 12 op n i x b p e disp ... Format 4 (4 bytes): 6 1 1 1 1 1 1 20 op n i x b p e address".
+
+### 3.3 Addressing Modes in SIC-2
+
+The six flag bits (n, i, x, b, p, e) in Format 3/4 give SIC-2 a rich set of addressing modes:
+
+| Flag | Name | Function |
+|------|------|----------|
+| **n** | Indirect | n=1, i=0: operand is accessed through a pointer |
+| **i** | Immediate | n=0, i=1: operand is a literal constant |
+| **x** | Indexed | x=1: add X register to computed address |
+| **b** | Base-relative | b=1: 12-bit displacement added to B register |
+| **p** | PC-relative | p=1: 12-bit displacement added to PC |
+| **e** | Extended | e=1: Format 4 (20-bit address) |
+
+**Verification:** "Direct 1 1 0 0 0 0 12 bit displacement is target address ... Immediate 0 1 0 0 0 0 disp TA ... Indirect 1 0 0 0 0 0 disp ((TA)) ... PC-relative 1 1 0 0 1 0 (PC)+disp ... Base-relative 1 1 0 1 0 0 (B)+disp".
+
+**Effective Address Calculation:**
+
+| Mode | n | i | b | p | e | TA Calculation |
+|------|---|---|---|---|---|----------------|
+| Direct (Format 3) | 1 | 1 | 0 | 0 | 0 | disp |
+| Direct (Format 4) | 1 | 1 | 0 | 0 | 1 | addr (20-bit) |
+| PC-relative | 1 | 1 | 0 | 1 | 0 | (PC) + disp |
+| Base-relative | 1 | 1 | 1 | 0 | 0 | (B) + disp |
+| Immediate | 0 | 1 | — | — | — | TA (the value itself) |
+| Indirect | 1 | 0 | — | — | — | ((TA)) |
+
+**Verification:** "PC-relativno nasalavljanje – bit b je nastavljen na 0 ... TA = (PC) + disp (-2048 < disp < 2047)".
+
+### 3.4 Instruction Categories
+
+**Load and Store Instructions:**
+
+| SIC Instruction | SIC-2 Additions |
+|-----------------|-----------------|
+| LDA (0x00) | LDB (0x68) |
+| LDX (0x04) | LDS (0x6C) |
+| LDL (0x08) | LDT (0x74) |
+| LDCH (0x50) | LDF (0x70) |
+| STA (0x0C) | STB (0x78) |
+| STX (0x10) | STS (0x7C) |
+| STL (0x14) | STT (0x84) |
+| STCH (0x54) | STF (0x80) |
+| STSW (0xE8) | LPS (0xD0) |
+
+**Verification:** "LDA m | 3/4 | 00 | A - (m...m+2) ... LDB m | 3/4 | 68 | B - (m...m+2) ... LDS m | 3/4 | 6C | S - (m...m+2) ... LDT m | 3/4 | 74 | T - (m...m+2) ... LDF m | 3/4 | 70 | F - (m...m+5)".
+
+**Arithmetic and Logical Instructions:**
+
+| SIC Instruction | SIC-2 Additions |
+|-----------------|-----------------|
+| ADD (0x18) | ADDF (0x58) |
+| SUB (0x1C) | SUBF (0x5C) |
+| MUL (0x20) | MULF (0x60) |
+| DIV (0x24) | DIVF (0x64) |
+| AND (0x40) | ADDR (0x90) |
+| OR (0x44) | SUBR (0x94) |
+| COMP (0x28) | MULR (0x98) |
+| TIX (0x2C) | DIVR (0x9C) |
+| | COMPR (0xA0) |
+| | TIXR (0xB8) |
+| | CLEAR (0xB4) |
+| | RMO (0xAC) |
+
+**Verification:** "ADD m | 3/4 | 18 | A - (A) + (m...m+2) ... ADDF m | 3/4 | 58 | F - (F) + (m...m+5) ... ADDR r1,r2 | 2 | 90 | r2 - (r2) + (r1) ... CLEAR r1 | 2 | B4 | r1 - 0 ... COMPR r1,r2 | 2 | A0 | (r1) : (r2)".
+
+**Control Flow Instructions:**
+
+| Instruction | Opcode | Function |
+|-------------|--------|----------|
+| J (unconditional) | 0x3C | PC ← m |
+| JEQ | 0x30 | Jump if CC = "=" |
+| JGT | 0x34 | Jump if CC = ">" |
+| JLT | 0x38 | Jump if CC = "<" |
+| JSUB | 0x48 | L ← (PC); PC ← m |
+| RSUB | 0x4C | PC ← (L) |
+
+**Verification:** "J m | 3/4 | 3C | PC - m ... JEQ m | 3/4 | 30 | PC - m if CC set to = ... JCT m | 3/4 | 34 | PC - m if CC set to > ... JJT m | 3/4 | 38 | PC - m if CC set to < ... JSUB m | 3/4 | 48 | L - (PC); PC - m ... RSUB | 3/4 | 4C | PC - (L)".
+
+**Input/Output Instructions (SIC):**
+
+| Instruction | Opcode | Function |
+|-------------|--------|----------|
+| TD (Test Device) | 0xE0 | Test device ready; sets CC |
+| RD (Read Data) | 0xD8 | Read byte from device into A |
+| WD (Write Data) | 0xDC | Write byte from A to device |
+
+**Input/Output Channel Instructions (SIC-2):**
+
+| Instruction | Opcode | Format | Function |
+|-------------|--------|--------|----------|
+| SIO (Start I/O) | 0xF0 | 1 | Start I/O channel |
+| TIO (Test I/O) | 0xF8 | 1 | Test I/O channel status |
+| HIO (Halt I/O) | 0xF4 | 1 | Halt I/O channel |
+
+**Verification:** "HIO | 1 | F4 | Halt I/O channel no. (A) ... SIO | 1 | F0 | Start I/O channel number (A)". "TD, RD, and WD - SIO, TIO, and HIO are used to start, test, and halt the operation of I/O channels".
+
+---
+
+## 4. Execution Model and CPU Operation
+
+The SIC and SIC-2 CPU follows a classic **von Neumann fetch-decode-execute cycle**. The Program Counter (PC) points to the next instruction to fetch. On each cycle:
+
+1. **Fetch:** CPU fetches the byte(s) of the instruction at PC address
+2. **Decode:** CPU decodes opcode and flags, fetches additional bytes if needed
+3. **Execute:** Performs operation (ALU, memory access, register transfer)
+4. **Update PC:** PC advances to next instruction (PC += instruction_length)
+
+The machine does **not implement pipelining**; each instruction is processed to completion before the next begins. This simplicity makes it easier to reason about in software simulations and educational settings.
+
+**Subroutine Linkage:** Since SIC has no stack registers, subroutine calls via JSUB/RSUB mean that a program cannot easily do nested subroutine calls without saving the L register. A typical SIC calling convention requires saving L to memory before calling a second subroutine.
+
+---
+
+## 5. Enhancements of SIC-2 over SIC
+
+| Enhancement | SIC | SIC-2 |
+|-------------|-----|-------|
+| **Memory** | 32 KB | 1 MB (2^20) |
+| **Registers** | 5 (A, X, L, PC, SW) | 9 (+ B, S, T, F) |
+| **Floating-Point** | None | 48-bit hardware FP |
+| **Instruction Formats** | 1 (24-bit) | 4 (1, 2, 3, 4 bytes) |
+| **Addressing Modes** | Direct, Indexed | Direct, Indirect, Immediate, PC-relative, Base-relative, Extended |
+| **I/O** | TD, RD, WD (synchronous) | + SIO, TIO, HIO (asynchronous channels) |
+| **Backward Compatibility** | — | SIC programs run unchanged |
+
+**Verification:** "SIC/XE supports all of the instructions that are available on standard SIC".
+
+---
+
+## 6. Relevance in Education, Simulation, and Emulator Projects
+
+### 6.1 Computer Architecture Education
+
+SIC provides a simplified model of a computer, with clearly defined CPU, memory, and I/O components. By studying SIC (and SIC-2) architecture, students learn about the basic hardware structure—how memory is addressed, how registers function, and how a CPU executes instructions.
+
+### 6.2 Assembly Language Programming
+
+The SIC assembly language is straightforward and small, making it an excellent first assembly language for students to learn. It includes just enough instructions to perform typical programming tasks.
+
+### 6.3 System Software Implementation
+
+Perhaps the most significant use of SIC/SIC-2 is in system software courses, where students build components like **assemblers, linkers, and loaders**. Beck's textbook itself guides the reader through constructing a two-pass assembler for SIC/XE as a case study.
+
+**Verification:** "This is an SIC/XE assembler written in Java. SIC/XE is a hypothetical instruction set designed to make it easier to understand assembly and use those concepts on real-world architectures".
+
+### 6.4 Simulation and Emulation Projects
+
+Writing a SIC virtual machine (VM) or interpreter is a common exercise that solidifies understanding of instruction execution. There are numerous student-created and open-source SIC simulators in various languages.
+
+**Verification:** "An example implementation of an assembler and simulator for SIC/XE ... SICer: A SIC(/XE) Example Runner ... This repository contains source code for an example implementation of a SIC/XE assembler and simulator in Go".
+
+### 6.5 FPGA Implementation
+
+Some ambitious projects have involved implementing SIC/XE on hardware description languages or FPGA boards.
+
+**Verification:** "SIC/XE is a hypothetical computer architecture designed for teaching systems software programming. In this work, we present an educational SIC/XE computer that we implemented on an FPGA development board. The system consists of a SIC/XE processor, device controllers and other auxiliary components".
+
+**Verification:** "An implementation of the SIC/XE architecture on the RealDigital Blackboard FPGA".
+
+---
+
+## 7. Conclusion
+
+The SIC-2 architecture (SIC/XE) may be simple and hypothetical, but it encapsulates fundamental principles of computer architecture in a form that is exceptionally conducive to teaching and exploration. Its design includes just enough complexity to be realistic—multiple addressing modes, a variety of instructions, I/O concurrency—while being minimal enough that students can master it and even implement it themselves.
+
+In simulation environments, SIC-2 provides a playground for experimenting with system-level code safely. And in hardware projects, it offers a blueprint of a small CPU that can be brought to life, demystifying how machines execute the software we write.
+
+**Key Takeaways:**
+
+| Aspect | Summary |
+|--------|---------|
+| **Architecture** | Single-accumulator, 24-bit word, byte-addressable |
+| **SIC Registers** | A, X, L, PC, SW (5) |
+| **SIC-2 Registers** | + B, S, T, F (9 total) |
+| **SIC Memory** | 32 KB (15-bit addressing) |
+| **SIC-2 Memory** | 1 MB (20-bit addressing) |
+| **SIC Instructions** | 1 format (24-bit) |
+| **SIC-2 Instructions** | 4 formats (1, 2, 3, 4 bytes) |
+| **Addressing Modes** | Direct, Indirect, Immediate, Indexed, PC-relative, Base-relative, Extended |
+| **I/O** | Synchronous (TD/RD/WD) + Asynchronous channels (SIO/TIO/HIO) |
+| **Floating-Point** | 48-bit (SIC-2 only) |
+
+---
+
+## Appendix A: Source Verification
+
+| Source | Type | Credibility |
+|--------|------|-------------|
+| NEIU CS302 Notes (SIC/SIC-XE) | Primary | High |
+| Leland L. Beck, "System Software" | Primary | High |
+| GeeksforGeeks (SIC/XE) | Secondary | High |
+| Stack Overflow (Addressing Modes) | Secondary | Medium-High |
+| University of Ljubljana (FPGA Implementation) | Primary | High |
+| GitHub (SICer Simulator) | Primary | High |
+
+---
+
+## Appendix B: Glossary
+
+| Term | Definition |
+|------|------------|
+| **SIC** | Simplified Instructional Computer |
+| **SIC/XE** | SIC eXtended Equipment (also called SIC-2) |
+| **Accumulator (A)** | Primary register for arithmetic/logic |
+| **Index Register (X)** | Register for indexed addressing |
+| **Linkage Register (L)** | Stores return address for subroutines |
+| **Base Register (B)** | Register for base-relative addressing |
+| **Floating-Point Accumulator (F)** | 48-bit register for floating-point operations |
+| **PC** | Program Counter |
+| **SW** | Status Word (contains Condition Code) |
+| **TA** | Target Address (effective address of operand) |
+| **Format 3** | 3-byte instruction format with flag bits |
+| **Format 4** | 4-byte extended instruction format |
+| **JSUB** | Jump to Subroutine |
+| **RSUB** | Return from Subroutine |
+| **SIO/TIO/HIO** | Start/Test/Halt I/O channel instructions |

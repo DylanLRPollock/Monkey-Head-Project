@@ -1,0 +1,257 @@
+# An Analysis of RAID 10 on 4× SATA 2.0 Ports (3 Gbps Each)
+
+**Technical Reference Document**
+**Document Version:** 1.0
+**Status:** Verified and Corrected
+**Last Updated:** 2026-09-26
+**Cross-Reference:** V206 Master Plan — Storage Architecture
+
+---
+
+## Executive Summary
+
+RAID 10 (RAID 1+0) combines disk mirroring and striping, requiring a minimum of four drives. This paper examines the feasibility and performance of a four-disk RAID 10 array on SATA 2.0 interfaces (3 Gb/s, ~300 MB/s max per port). Key aspects analyzed include I/O performance, data redundancy and fault tolerance, scalability limits, power consumption and thermal impacts, cost-effectiveness, and suitable use cases.
+
+**Key Findings:**
+- RAID 10 offers robust fault tolerance (up to one drive failure per mirror pair) and improved read performance over single disks
+- Write speeds typically match or modestly exceed a single disk due to mirroring overhead
+- SATA 2.0's 3 Gb/s bandwidth per port is **not a bottleneck for typical HDDs** (max ~150–200 MB/s each), though it caps peak throughput with SSDs
+- A four-disk RAID 10 can tolerate multiple drive failures (up to one in each mirrored pair) without data loss
+- Power usage and heat output roughly scale with drive count — a four-disk array can draw ~20–40 W under load
+
+**Critical Correction for Monkey-Head-Project:** The V206 plan to use **Intel Optane M10 drives in a RAID 10 array requires verification**. Intel's official documentation states that Optane memory devices are **not storage devices** and **cannot be used to set up RAID volumes or accelerate them**.
+
+---
+
+## 1. Introduction
+
+Redundant Array of Independent Disks (RAID) technology combines multiple physical drives into unified logical volumes that improve performance and/or reliability. RAID 10, also known as RAID 1+0, is a nested RAID level that integrates RAID 1 mirroring with RAID 0 striping. A RAID 10 array is organized as mirrored pairs of drives with data striped across the pairs, requiring at least four disks.
+
+The hardware context for this analysis is a storage controller with four SATA revision 2.0 ports, each supporting up to 3 Gb/s (approximately 300 MB/s) throughput. SATA 2.0 (Serial ATA-300) was common in mid-2000s to early 2010s systems. The 3 Gb/s per-port limit equates to a theoretical max of ~300 MB/s after 8b/10b encoding overhead.
+
+**Note on Terminology:** The correct terminology is "SATA 3Gb/s" or "SATA Revision 2.0," not "SATA II" or "SATA 2.0" — the latter terms have been deprecated by the SATA-IO working group. This document uses "SATA 2.0" for clarity but acknowledges the official naming convention.
+
+---
+
+## 2. Performance Characteristics of RAID 10 on SATA 2.0
+
+### 2.1 Sequential Read/Write
+
+RAID 10 can theoretically deliver roughly the sum of the throughput of two drives for sequential reads, as reading occurs in parallel from both mirror pairs. Empirical data supports improved read throughput: ~130–140 MB/s sequential read on a 4× HDD RAID 10 (on SATA 3 Gb/s hardware) versus ~90 MB/s on a single disk — about a 44–55% increase.
+
+The SATA 2.0 link rate (300 MB/s) is generally not a limiting factor for such read workloads, since observed throughput is well below 300 MB/s. Only if extremely fast SSDs were used would the 3 Gb/s cap become an issue.
+
+| Metric | Single HDD | 4× RAID 10 (HDD) | SATA 2.0 Ceiling |
+|--------|-----------|------------------|------------------|
+| Sequential Read | ~90 MB/s | ~130–150 MB/s | ~300 MB/s |
+| Sequential Write | ~90 MB/s | ~60–150 MB/s | ~300 MB/s |
+| Random 4K Read IOPS | ~75–175 | ~1,600 (QD256) | N/A |
+
+**Verified:** The SATA 2.0 interface is **disk-limited rather than interface-limited** for HDD-based arrays, yielding fast, consistent I/O ideal for multi-user workloads.
+
+### 2.2 Random I/O and Latency
+
+RAID 10 improves IOPS and latency for certain workloads. Because data is mirrored, read IOPS can scale — the system can dispatch independent read requests to different drives in the mirror pairs. For example, a single HGST Ultrastar He8 8TB drive reaches 175 IOPS at QD 32 for random 4K reads; in RAID 10, IOPS climb to nearly 1,600 at QD 256.
+
+Write latency in RAID 10 is slightly impacted by mirroring: a write is not complete until written to both disks of a pair. In practice, the two writes occur in parallel, so latency is governed by the slower of the two drives' response times. With identical disks in good health, this is a negligible penalty.
+
+**Verified:** RAID 10 has a **write penalty of 2** (each write goes to two drives), compared to RAID 5's write penalty of 4. This makes RAID 10 attractive for latency-sensitive applications like databases.
+
+### 2.3 SATA 2.0 Bandwidth Considerations
+
+With four SATA 2.0 ports, the maximum raw throughput if all ports are active could be up to ~4 × 300 MB/s = 1,200 MB/s (theoretical). However, actual achievable combined throughput depends on the host interface architecture.
+
+On many motherboards, SATA ports connect through a chipset with its own bandwidth to the CPU/RAM. An older southbridge or I/O controller hub might only support a few gigabytes per second total. For instance, a PCIe 1.0 ×4 link (common on older chipsets) offers ~1 GB/s (1,000 MB/s), which could bottleneck a full-tilt 4-drive transfer.
+
+**Verified:** For HDD-based arrays, the SATA 2.0 bandwidth per port is **sufficient and not a performance limiter**. The primary performance limits come from the drives themselves and RAID overhead.
+
+---
+
+## 3. Data Redundancy and Reliability
+
+### 3.1 Fault Tolerance
+
+RAID 10 provides strong fault tolerance. In a standard four-disk RAID 10 (two mirrored pairs):
+
+- **Single drive failure:** Always survivable
+- **Two drive failures:** Survivable if and only if failures occur in **different mirror pairs**
+- **Worst-case scenario:** Both drives in the same mirror pair fail — data loss
+
+The probability of surviving two failures is therefore higher than in RAID 5 (where any second failure during rebuild is catastrophic).
+
+### 3.2 Rebuild Process
+
+When a drive fails, the array remains accessible in a degraded mode using the surviving disk of the mirror. Recovery is straightforward: the new disk is made a mirror of the surviving disk by copying all data.
+
+**Verified:** RAID 10 rebuild **requires one read and one write** (essentially a direct copy), compared to RAID 5 which requires six reads plus one parity operation for each write. This makes RAID 10 rebuilds faster and less stressful on remaining drives.
+
+### 3.3 Storage Efficiency
+
+Only 50% of total raw disk capacity is usable for data. In a four 2 TB drive example (8 TB raw), RAID 10 yields **4 TB usable**. This is a fixed overhead — the trade-off for high redundancy and performance.
+
+---
+
+## 4. Scalability and Hardware Limitations
+
+### 4.1 Port Count Limits
+
+With only four SATA ports, the array cannot expand beyond four drives in this configuration. RAID 10 itself can span more drives (any even number ≥4), but on a fixed 4-port SATA 2.0 platform, expansion requires hardware changes.
+
+### 4.2 Controller Capability
+
+RAID 10 can often be implemented without expensive hardware RAID cards. Since it is a simpler RAID level (no parity calculation), motherboard firmware RAID or software RAID (mdadm, Storage Spaces) is effective with negligible CPU overhead.
+
+**Verified:** Even older processors can manage a 4-disk RAID 10 without issue; RAID 10 causes **no significant load** during throughput tests.
+
+### 4.3 Host Interface Bottlenecks
+
+If all four drives are reading/writing at once, total traffic could reach ~600 MB/s or more. Many southbridges of the SATA 2 era (e.g., Intel ICH10) have shared bandwidth limits among ports. For HDD-based arrays, this is generally not a bottleneck; for all-SSD arrays, the older interface could constrain performance.
+
+---
+
+## 5. Power Consumption and Thermal Considerations
+
+### 5.1 Power Draw
+
+A typical 3.5″ SATA HDD draws approximately **5–9 W during active use** and **3–5 W when idle**. A four-HDD RAID 10 array may consume roughly **20–40 W under typical load**.
+
+| Drive Type | Active Power | Idle Power |
+|-----------|-------------|-----------|
+| 3.5″ 7200 RPM HDD | 6–9 W | 4–5 W |
+| 3.5″ 5400 RPM HDD | 4–6 W | 3–4 W |
+| 2.5″ SSD | 1–3 W | <1 W |
+
+**Verified:** Synology HAT5320-4T (4TB, 7200 RPM): Average operating power **7.29 W**, idle **3.49 W**. Seagate Exos 7E8 (4TB, 7200 RPM): Average operating power **6.9 W**, idle **5.45 W**.
+
+### 5.2 Spin-Up Surge
+
+A critical moment is startup/spin-up: spinning up a drive from rest can draw a surge of current (2–3× running current). Four drives spinning up simultaneously could draw **~60–80 W** for a few seconds. Staggered spin-up features or an adequately sized PSU mitigate this.
+
+### 5.3 Thermal Management
+
+Four hard drives in close proximity generate significant heat. Each disk dissipating ~5–10 W will raise internal temperatures if the enclosure lacks adequate cooling. High drive temperatures (above ~50°C) adversely affect drive lifespan and reliability.
+
+**Verified:** Proper airflow is crucial. Most 4-bay NAS boxes and server chassis have a dedicated fan moving air over the drives. In a home-built system, ensure drives are spaced or have a front intake fan.
+
+---
+
+## 6. Cost-Effectiveness Analysis
+
+### 6.1 Drive Cost
+
+RAID 10 requires **double the raw disk space** for the same data compared to no RAID, and about **33% more compared to RAID 5** (50% vs 33% overhead in a 4-drive scenario). To store ~2 TB of data with redundancy:
+
+- RAID 10: 4× 1 TB drives (2 TB usable)
+- RAID 5: 3× 1 TB drives (~2 TB usable, 1 TB parity)
+- No RAID: 2 TB total
+
+### 6.2 Controller Cost
+
+RAID 10 can often be implemented without expensive hardware RAID cards. Software RAID or motherboard firmware RAID is effective with negligible CPU overhead. This saves costs for small deployments.
+
+### 6.3 Total Cost of Ownership
+
+| Factor | RAID 10 | RAID 5 |
+|--------|---------|--------|
+| Storage efficiency | 50% | 67–75% |
+| Write performance | High | Moderate (parity penalty) |
+| Rebuild speed | Fast | Slow |
+| Rebuild risk | Low | High |
+| Controller requirement | Low (software RAID OK) | Often benefits from hardware |
+| Fault tolerance | Up to one per mirror pair | One drive only |
+
+**Verified:** RAID 10 is less cost-efficient in raw $/GB than single-disk or parity RAIDs, but cost-effective for performance and reliability gains in the right scenarios.
+
+---
+
+## 7. Use-Case Applicability
+
+### 7.1 Small Business Servers
+
+A four-disk RAID 10 provides an excellent balance of speed and safety for small companies using a single server or NAS for file sharing, databases, or email. Low latency and good random I/O benefit transactional workloads. RAID 10 is straightforward to manage and rebuild, requiring less expertise than parity RAID.
+
+### 7.2 Home Labs and Enthusiast PCs
+
+Tech enthusiasts running home servers often repurpose older hardware. RAID 10 appeals for its performance with spinning disks and data protection. In virtualization setups (VMware, Proxmox), multiple VMs benefit from improved IOPS and redundancy.
+
+### 7.3 Entry-Level NAS Systems
+
+Many 4-bay NAS devices support RAID 0/1/5/6/10. RAID 5 is popular for maximizing space, but RAID 10 is often recommended for higher performance or when using high-capacity drives where parity rebuild time and URE risk are concerns. Even on SATA 2.0, RAID 10's improved throughput will saturate a 1 GbE network (~100–110 MB/s) and approach multi-Gig if available.
+
+---
+
+## 8. Implications for Monkey-Head-Project V206
+
+### 8.1 OS Storage: Intel Optane M10 RAID 10 — REQUIRES VERIFICATION
+
+The V206 plan specifies **four Intel Optane M10 16GB drives in RAID 10** for the OS pool.
+
+**Critical Finding:** According to Intel's official documentation, Intel Optane memory devices are **not storage devices** and **cannot be used to set up RAID volumes or accelerate them**. While an Optane memory volume can reside in the same system as a RAID volume, it cannot itself be part of a RAID array.
+
+**Required Actions:**
+1. Verify whether the M10 drives can function as standalone boot drives outside Intel's officially supported configurations
+2. Confirm RAID controller compatibility (ASUS TUF Gaming Z790-Plus WiFi may not support RAID 10 on M.2 slots)
+3. Consider alternative OS storage (e.g., standard NVMe SSDs in RAID 1 or a single high-end NVMe drive)
+4. If Optane is desired for acceleration, use it as cache for a separate RAID volume, not as RAID members
+
+### 8.2 Data Storage: 10TB HDDs in RAID 1
+
+The 10TB Western Digital NAS drives are **mechanical HDDs** connected via SATA. Their sequential throughput (~200 MB/s) is well below SATA 2.0 limits, but their role is **redundant bulk storage**, not high-speed access. RAID 1 (mirroring) is appropriate for this use case.
+
+### 8.3 Power Budget
+
+The four V100 GPUs, i9-12900K, and dual 1000W PSUs dominate the power budget. The storage array (2× 10TB HDDs) adds ~10–20 W — negligible compared to the compute components.
+
+### 8.4 Thermal Considerations
+
+The V4 shell must provide adequate airflow across all storage devices. The Thermaltake Mozart case (upside down, backwards) must accommodate drive cooling.
+
+---
+
+## 9. Conclusion
+
+A RAID 10 configuration using four drives on SATA 2.0 (3 Gb/s) ports is a viable and often advantageous solution for entry-level to mid-range storage requirements. It combines the speed benefits of striping with the security of mirroring, yielding a storage array that is fast, resilient to drive failures, and relatively easy to manage.
+
+**For the Monkey-Head-Project:**
+
+| Aspect | Assessment |
+|--------|-----------|
+| Performance | SATA 2.0 is not a bottleneck for HDD-based arrays |
+| Reliability | RAID 10 offers excellent fault tolerance (one drive per mirror pair) |
+| Rebuild | Fast and low-risk compared to parity RAID |
+| **Optane M10 RAID** | **Not supported per Intel documentation — requires redesign** |
+| Power | ~20–40 W for four HDDs — manageable |
+| Thermal | Requires adequate airflow in V4 shell |
+
+The primary correction required for the V206 master plan is the **OS storage strategy**. The Intel Optane M10 drives cannot be used in a RAID 10 array. Alternative approaches include:
+
+1. **Single high-end NVMe SSD** for OS (simpler, faster)
+2. **Two NVMe SSDs in RAID 1** for redundancy
+3. **Optane as cache** for a separate RAID volume
+
+---
+
+## Appendix A: Verified Claims Summary
+
+| Claim | Status | Source |
+|-------|--------|--------|
+| SATA 2.0 = 3 Gb/s, ~300 MB/s | **Verified** | SATA-IO, multiple sources |
+| SATA 2.0 practical throughput ~250–285 MB/s | **Verified** | Real-world tests |
+| RAID 10 write penalty = 2 | **Verified** | Dell, IBM documentation |
+| RAID 10 rebuild = 1 read + 1 write | **Verified** | IBM Redbooks |
+| RAID 10 4K IOPS ~1,600 at QD256 | **Verified** | TheSSDReview |
+| HDD active power 5–9 W | **Verified** | Synology, Seagate specs |
+| Optane M10 cannot be used in RAID | **Verified** | Intel official documentation |
+
+---
+
+## Appendix B: Glossary
+
+| Term | Definition |
+|------|------------|
+| **RAID 10** | RAID 1+0 — mirrored pairs striped together |
+| **SATA 2.0** | SATA Revision 2.0, 3 Gb/s interface (officially "SATA 3Gb/s") |
+| **Write Penalty** | Number of I/O operations required per logical write (RAID 10 = 2, RAID 5 = 4) |
+| **URE** | Unrecoverable Read Error — a sector that cannot be read |
+| **Optane M10** | Intel memory device (not storage) for caching |
+| **mdadm** | Linux software RAID management tool |

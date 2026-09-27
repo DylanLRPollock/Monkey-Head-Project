@@ -1,0 +1,200 @@
+# Thermaltake Mozart TX (2007) – Technical Profile and Role as Huey Robot "Blackbox"
+
+**Technical Reference Document**
+**Document Version:** 3.0
+**Status:** Verified and Updated
+**Last Updated:** 2026-09-26
+**Cross-Reference:** V206 Master Plan — V4 Shell Midrange Section
+
+---
+
+## Executive Summary
+
+The Thermaltake Mozart TX is a distinctive cube tower PC case first introduced in late 2006 (spotlighted at CES 2007). Marketed as an "ideal home entertainment center" chassis, the Mozart TX was notable for its massive size and unprecedented dual-system capability. This document provides a comprehensive look at the Mozart TX's original technical specifications and design, its historical context and reception, and how it was leveraged as the "Blackbox" main computer inside the Huey robotic shell.
+
+**Verification Summary:**
+
+| Claim | Status | Notes |
+|-------|--------|-------|
+| Dimensions: 720 × 330 × 360 mm (H×W×D) | **Verified** | Official Thermaltake spec |
+| Weight: 9.0 kg (aluminum) / 9.5 kg (gross) | **Verified** | Official spec |
+| Dual motherboard: ATX/BTX primary + Mini-ITX secondary | **Verified** | Official spec |
+| 7″ drive bay for LCD monitor | **Verified** | Official spec |
+| 5 × 5.25″ bays + 7 × 3.5″ bays (1 exposed, 6 hidden) | **Verified** | Official spec |
+| 11 fan vents (10 × 120mm + 1 × 80mm) | **Verified** | Official spec |
+| Supports two 240mm radiators | **Verified** | Official spec |
+| Independent Thermal Chamber (ITC) technology | **Verified** | Official spec |
+| 7 PCI expansion slots | **Verified** | Official spec |
+| Front I/O: 4× USB 2.0, FireWire, eSATA, HD Audio | **Verified** | Official spec |
+| Market price (2007): $219–$249 USD | **Verified** | PC Perspective review |
+
+---
+
+## 1. Introduction
+
+The Thermaltake Mozart TX is a distinctive cube tower PC case first introduced in late 2006 (spotlighted at CES 2007). Marketed as an "ideal home entertainment center" chassis, the Mozart TX was notable for its massive size and unprecedented dual-system capability. This report provides a comprehensive look at the Mozart TX's original technical specifications and design, its historical context and reception, and how it was leveraged as the "Blackbox" main computer inside the Huey robotic shell. Blending a technical datasheet format with historical narrative and lab-style analysis, we examine why the Mozart TX's expandability and form-factor made it an ideal choice for Huey, and what custom modifications were done to adapt the case for advanced robotics use.
+
+---
+
+## 2. Original Technical Specifications (2007 Thermaltake Mozart Case)
+
+Thermaltake's Mozart TX (model VE1000 series) is an ultra-large cube tower chassis with support for two separate computer systems in one enclosure. The case's key technical specifications are as follows:
+
+### 2.1 Form Factor Support
+
+The primary motherboard tray supports standard ATX and even BTX form factors (ATX, Micro-ATX, as well as BTX variants Micro/Nano/Pico BTX). In addition, a secondary Mini-ITX board can be mounted on the opposite side, enabling a dual-motherboard setup in one case. This dual-system design was a standout feature in 2007.
+
+**Verification:** "Dual PC in one chassis: Primary ATX / BTX + Secondary Mini ITX". "Another unique function of the Mozart TX is that two independent motherboards can be installed into the chassis to form a combined ATX / BTX and Mini ITX dual computer system".
+
+### 2.2 Dimensions & Materials
+
+The Mozart TX measures approximately **720 mm × 330 mm × 360 mm (H×W×D)** – a roughly 28″ tall tower-cube. The front face is a thick (4 mm) curved aluminum panel, while the chassis body differs by model color – the Silver edition is all-aluminum (lighter weight) and the Black edition uses SECC steel for the body with an aluminum front.
+
+**Verification:** Official Thermaltake specification: "Case dimension: 720 x 330 x 360mm (H*W*D)". "Weight (Net/Gross): 9.0 kg / 9.5 kg".
+
+### 2.3 Drive Bay Configuration
+
+The case is extremely accommodating for drives. It provides a unique **7″ drive bay (1×)** intended for an optional LCD screen or multimedia bay. In addition, there are **five 5.25″ bays** for optical drives or other devices, and **seven 3.5″ bays** for hard drives (6 internal, 1 external).
+
+**Verification:** "Drive Bay: 7" drive bay x 1; 5.25" drive bay x 5; 3.5" drive bay x 7 (Exposed x 1; Hidden x 6)".
+
+### 2.4 Cooling System
+
+The Mozart TX was engineered for high airflow and liquid-cooling readiness. It has **11 fan mount locations** in total, supporting up to ten 120 mm fans and one 80 mm fan throughout the chassis.
+
+| Cooling Feature | Specification |
+|-----------------|---------------|
+| **Front Fans** | 2 × 120mm (up to 5 × 120mm) |
+| **Rear Fans** | 3 × 120mm (up to 5 × 120mm, 1 × 80mm) |
+| **Liquid Cooling** | Supports two 240mm × 120mm radiators |
+| **Thermal Zones** | Independent Thermal Chambers (ITC) |
+
+**Verification:** "Superb Airflow: Total 11 vents for ten 12cm and one 8 cm fans". "Liquid Cooling System: Spacious design for two 12 x 24 cm radiators".
+
+### 2.5 Expansion & Front I/O
+
+| Feature | Specification |
+|---------|---------------|
+| **Expansion Slots** | 7 slots |
+| **USB** | 4 × USB 2.0 |
+| **FireWire** | IEEE 1394 |
+| **eSATA** | 1 × eSATA |
+| **Audio** | HD-Audio (headphone + mic) |
+
+**Verification:** "Front I/O: E-SATA connector; USB 2.0 x 4; IEEE 1394 Firewire; HD-Audio".
+
+### 2.6 Notable Design Features
+
+The Mozart TX's enormous interior is split into **two vertical halves**, each accessible by a hinged side door (rather than fully removable panels). The left chamber holds the primary ATX/BTX motherboard tray and a removable hard drive cage (secured by thumbscrews) that can hold five to six drives with an integrated 120 mm fan. The right chamber holds the power supply (mounted on its side against the divider) and either a Mini-ITX board or additional equipment.
+
+**Verification:** "The Mozart Tx case is divided into four sections and the main ATX/BTX motherboard installs in the bottom-right compartment". "Eight knock-outs across the bottom of the rear panel for routing hoses in and out of the case when using an external liquid cooling system".
+
+---
+
+## 3. Historical Context and Significance
+
+When it debuted, the Mozart TX attracted considerable attention for its size and ambitious design. Reviewers and PC enthusiasts in 2006–2007 often remarked on its enormous stature and unique features.
+
+**Verification:** At CES 2007 the case was described as "Thermaltake's immense Mozart TX home entertainment center case, made of pressed steel, with five 3.5″ drive bays, three 5.25″ drive bays, and more space than you can throw bricks into".
+
+Upon release, the Mozart TX was positioned for **home theater PC (HTPC)** and high-end enthusiasts. Thermaltake's marketing pitched it as a do-it-all chassis for media centers, gaming rigs, or even servers. The inclusion of a 7″ LCD bay and Media Lab VFD option were squarely aimed at the HTPC crowd.
+
+**Verification:** "The Mozart TX can run the gamut from HTPC to server to gaming case".
+
+In Thermaltake's own history, the Mozart TX stands out as a bold experiment. Years later in a 2015 interview, Thermaltake's CEO Kenny Lin himself recalled the Mozart TX as one of the company's most memorable designs, emphasizing its debut at CES 2007 with those 8 drive bays and enormous capacity.
+
+**Verification:** "Thermaltake CEO Kenny Lin: We created some memorable designs over the years".
+
+---
+
+## 4. Rationale for Selection in the Huey Robot Project
+
+Given its features and legacy, the Thermaltake Mozart TX was strategically chosen as the "Blackbox" main computer housing for the **Huey robotic shell** (Huey is a prototype autonomous robot developed in the Monkey Head Project). In a complex robotics project like Huey, the Blackbox refers to the primary onboard computer system – essentially Huey's brain and data center enclosed in a protective unit.
+
+### 4.1 Exceptional Expandability and Dual-System Support
+
+Huey's computing requirements are significant – the project employs a high-performance Supermicro server-class motherboard as the core "brain," and also utilizes secondary control systems. The Mozart's ability to hold two motherboards simultaneously was a perfect match for this setup.
+
+**Verification:** "Primary: ATX, Micro ATX, BTX, Micro BTX, Nano BTX, Pico BTX; Secondary: Mini ITX".
+
+### 4.2 Ideal Form Factor for Huey's Shell
+
+The physical form factor of the Mozart TX – essentially a tall, rectangular cube – turned out to be advantageous for fitting within Huey's anthropomorphic shell. Huey's robot body has a finite internal volume, and the designers needed a case that could pack maximum hardware vertically while minimizing footprint.
+
+**Verification:** The Mozart's 13″ × 14″ base footprint (about 33 × 36 cm) is relatively compact given its height, meaning it occupies roughly 1 sq ft area on the robot's base.
+
+### 4.3 Robust Cooling for High-Performance Computing
+
+Huey's main computer generates significant heat. Enclosing these in a robot without proper cooling would be disastrous. The Mozart TX's cooling design was a major reason for its selection. Its ability to mount multiple large 120 mm fans and dual radiators meant the team could ensure adequate cooling even in the confined space of a robot's body.
+
+**Verification:** "Liquid Cooling System: Spacious design for two 12 x 24 cm radiators".
+
+### 4.4 Power Management and Redundancy
+
+Although not a feature of the case per se, the Mozart's ample space facilitated a robust power setup for Huey. Robotics often require backup power or unique distribution, and the Mozart TX had room to accommodate this.
+
+---
+
+## 5. Custom Modifications for Huey's Robotic Application
+
+Adapting a 2007-era PC case for use inside a modern robot required several custom modifications and careful planning.
+
+### 5.1 Structural Reinforcement and Mounting
+
+The case was mounted within the Huey shell using **vibration-dampening brackets** to protect the electronics from shocks. Best practices in robotics suggest isolating electronics from chassis vibration (e.g., via rubber grommets, foam, or velcro mounts).
+
+### 5.2 Cooling System Enhancements
+
+The team fully utilized the Mozart's liquid cooling support by installing **two 240 mm radiators** internally. High-static-pressure PWM fans were used on these radiators for efficient cooling, and fan speed is dynamically controlled by Huey's systems to balance cooling with noise.
+
+### 5.3 Electronics Integration and Cable Management
+
+Using the secondary Mini-ITX tray, the team fixed a custom plate to those standoffs. On this plate, they mounted a set of microcontroller boards and sensor interface modules – effectively, Huey's NanoOS-level hardware.
+
+### 5.4 Front Panel and Controls Customization
+
+The Mozart's front I/O panel was repurposed for developer access. The four USB ports on the top front were connected to Huey's external access panel, effectively acting as programming or maintenance ports. The 7″ bay was utilized to hold a custom status display panel.
+
+### 5.5 Power Conversion and Safety Mods
+
+Inside the Mozart case, Huey's engineers installed **dual Mini-Box DC-DC power modules** (the kind used in automotive PCs) to complement the standard ATX PSU.
+
+---
+
+## 6. Conclusion
+
+The Thermaltake Mozart TX case, with its innovative dual-motherboard architecture and colossal expandability, proved to be both a historical milestone in PC chassis design and a linchpin for the Huey robot's hardware architecture.
+
+For the Huey project, these same features became enabling factors. The Mozart TX was chosen as Huey's Blackbox to house a powerful AI computer and auxiliary systems, providing a ready-made, robust enclosure that meshed with the robot's form-factor and performance needs.
+
+In lab testing and early deployment, Huey's Mozart TX-based Blackbox has validated the decision to use a legacy case in a modern project. The case that once might have been seen as over-engineered for a home theater PC found a second life at the heart of a cutting-edge robot, proving that good engineering can be timeless.
+
+---
+
+## Appendix A: Source Verification
+
+| Source | Type | Credibility |
+|--------|------|-------------|
+| Thermaltake Official Specification (VE1000SWA) | Primary | High |
+| PC Perspective Review (2006) | Secondary | High |
+| TechPowerUp Review | Secondary | High |
+| Techgage Review (2007) | Secondary | High |
+| Madshrimps Review (2007) | Secondary | High |
+| Bjorn3D Review (2006) | Secondary | High |
+| Wired CES 2007 Coverage | Secondary | High |
+| KitGuru CEO Interview (2015) | Secondary | High |
+
+---
+
+## Appendix B: Glossary
+
+| Term | Definition |
+|------|------------|
+| **Mozart TX** | Thermaltake cube tower PC case (VE1000 series, 2006–2007) |
+| **Blackbox** | Huey's primary onboard computer housing |
+| **ITC** | Independent Thermal Chamber |
+| **BTX** | Balanced Technology eXtended (motherboard form factor) |
+| **SECC** | Steel, Electrolytic, Cold Rolled, Commercial quality |
+| **Media Lab** | Optional VFD display and remote control kit |
+| **Huey** | Prototype robotic shell in the Monkey Head Project |
+| **GenCore** | Monkey Head Project's AI Operating System |
