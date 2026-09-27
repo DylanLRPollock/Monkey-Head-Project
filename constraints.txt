@@ -35,7 +35,7 @@ uv==0.12.17
 # --- Core API / runtime anchors ---
 fastapi==0.141.1
 starlette==1.6.0
-uvicorn[standard]==0.53.0
+uvicorn==0.53.0
 pydantic==2.13.5
 pydantic-settings==2.15.0
 orjson==3.12.0
