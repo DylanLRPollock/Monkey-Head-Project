@@ -1,6 +1,4 @@
-# PEBBLE.md
-
-## Definition
+# PEBBLE - Definition
 
 **Pebble** — the symbolic name for a single instantiated `citizenAI` within the Huey Federation system.  
 Each pebble represents a lightweight, clause-bound AI agent that temporarily exists within the orchestration structure to vote, interpret, respond, or observe.
