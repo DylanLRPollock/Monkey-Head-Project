@@ -1,28 +1,30 @@
-## Experimental Subprojects
+Deploying legacy Google Nexus devices as raw physical control surfaces for HueyOS requires aggressively stripping down their software layers and physically bypassing their aging power delivery systems.
 
-### HueyNexusController
+Here is the technical breakdown for isolating and re-purposing these devices while breathing new life into old tech.
 
-**HueyNexusController** is an experimental sandbox initiative exploring the restoration and repurposing of old Google Nexus Android devices as raw physical control surfaces.
+## Hardware Modifications & Power Delivery
 
-*CRITICAL CAVEAT: This subproject is heavily provisional, serves purely as conceptual food-for-thought, and is subject to immediate removal. It possesses zero canonical execution authority over the physical body.*
+* **Battery Elimination:** Old lithium-ion cells pose a significant swelling and fire hazard in a continuously docked state. You can bypass the battery entirely by stripping a USB cable and soldering a 5V source to a step-down buck converter (or TP4056 module), delivering a stable 4.2V directly to the motherboard's battery terminal pins. For devices like the Nexus 5 (`hammerhead`), adding inline capacitors helps handle occasional 2A CPU load spikes.
+* **Storage Degradation Bypass:** The 2012 Nexus 7 (`grouper`/`tilapia`) suffers from notoriously slow eMMC due to an early lack of TRIM support and severe NAND degradation over time. The most robust workaround for a permanent terminal node is to bypass the internal storage entirely by running the operating system from RAM (initramfs) or utilizing a fast USB-OTG drive.
 
-The experimental device family includes:
+## Operating System Pathways
 
-| Platform | Codename | Project role |
-|---|---|---|
-| Google Nexus 5 | `hammerhead` | Conceptual pocket-sized handset controller |
-| Google Nexus 7 (2012 Wi-Fi) | `grouper` | Experimental compact tablet interface |
-| Google Nexus 7 (2012 mobile) | `tilapia` | Experimental mobile-connected interface |
-| Google Nexus 7 (2013 Wi-Fi) | `flo` | Experimental higher-resolution interface |
-| Google Nexus 7 (2013 LTE) | `deb` | Experimental LTE-capable interface |
+* **Native Mainline Linux:** The postmarketOS community maintains robust mainline kernel ports for these specific architectures. The Nexus 5 (`hammerhead`) and Nexus 7 2012 (`grouper` - Nvidia Tegra 3) both hold active testing and community mainline status.
+* **Bootloader Constraints:** The `grouper` (2012 Nexus 7) requires flashing a custom U-Boot implementation to properly boot postmarketOS, as the stock Asus bootloader is insufficient.
+* **Fallback Environment:** If native Debian drivers prove unstable (e.g., DRM graphical driver failures on the `flo` Snapdragon S4 Pro), flashing a minimal build of LineageOS coupled with Termux or Dropbear provides a perfectly isolated SSH client environment without the heavy Android GUI overhead.
 
-For initial deployment, these devices will eschew complex GUI applications in favor of raw terminal access, utilizing SSH to execute basic functions directly within HueyOS.
+---
 
-| Field | Direction |
-|---|---|
-| **Primary Target** | Native Debian or strictly terminal/SSH access |
-| **Fallback OS** | LineageOS using the same basic protocol boundaries |
-| **Identity boundary** | Controller hardware only; Huey's identity and canonical memory do not reside on a Nexus device |
-| **Hardware policy** | Replaceable operational, development, recovery, backup, and parts-donor devices |
+This flowchart maps the communication protocol bridge between a legacy Android device acting as a dumb terminal and the main architectural host:
 
-Battery reuse or modification remains strictly safety-gated. Each model requires absolute evidence for capacity, voltage stability, swelling, temperature, sustained-load discharge, and protection.
+> **Key insight:** Bypassing standard Wi-Fi in favor of a hardwired USB tether creates an isolated, interference-free subnet between the controller and the main processing unit.
+
+## Architecture & Integration Setup
+
+By treating these devices strictly as dumb terminals with zero canonical memory, you reinforce a distributed-load architecture that keeps the heavy lifting centralized.
+
+| Layer | Implementation |
+| --- | --- |
+| **Transport** | Hardwired USB tethering to the central Lenovo Legion Go node. |
+| **Authentication** | SSH via mTLS (mutual TLS) using ed25519 keys to eliminate password overhead. |
+| **Interface** | Python 3.13 `ncurses` dashboards or standard `tmux` sessions triggering modular HueyOS commands. |
