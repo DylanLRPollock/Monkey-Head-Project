@@ -30,12 +30,12 @@
 pip==26.2.1
 setuptools==84.0.0
 wheel==0.48.0
-uv==0.12.17
+uv==0.12.19
 
 # --- Core API / runtime anchors ---
 fastapi==0.141.1
-starlette==1.6.0
-uvicorn==0.53.0
+starlette==1.7.0
+uvicorn==0.54.0
 pydantic==2.13.5
 pydantic-settings==2.15.0
 orjson==3.12.0
@@ -44,7 +44,7 @@ cryptography==50.0.1
 
 # --- Local model / orchestration anchors (extras) ---
 ollama==0.6.2
-pygpt-net==2.8.26
+pygpt-net==2.8.32
 faster-whisper==1.2.1
 # NOTE: transformers was previously pinned to 5.17.0 here, which conflicts
 # with requirements.txt (4.56.2). Because constraints are additive, that
@@ -54,7 +54,7 @@ transformers==5.17.0
 # --- Developer / QA anchors ---
 pytest==9.1.1
 pytest-cov==7.1.0
-ruff==0.16.8
+ruff==0.16.9
 black==26.5.1
 isort==9.0.1
 mypy==2.3.1
