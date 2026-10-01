@@ -1,0 +1,1135 @@
+{
+  "document_schema": "master_plan_schema_v220",
+  "schema_version": 220.0,
+  "schema_contract_version": "master_plan_schema_v220",
+  "project": "Monkey-Head-Project",
+  "ai_identity": "Huey",
+  "version": "V220",
+  "draft_revision": 2,
+  "revision_reason": "Reconciliation/engineering review after the first V220 draft: correct live-site drift, remove internal overstatements, separate logical-role counts from concurrency, and add hardware/runtime/storage/power/security validation gates without converting unresolved engineering work into canon.",
+  "document_kind": "machine_facing_master_plan",
+  "status_date": "2026-09-30",
+  "created_by": "Dylan L.R. Pollock",
+  "supersedes": "master-plan-v206.json",
+  "status": "proposed",
+  "review_state": "human_review_required",
+  "description": "Master Plan V220 is a full project-standardization pass intended to realign the machine-facing Master Plan, the human-facing README, and dlrp.ca around the same current reality, accepted direction, historical lineage, and unresolved research. Huey is defined as a locally operated, physically embodied, modular and expandable AI system built under the Monkey-Head-Project philosophy of breathing new life into old tech. The active V4 build is being assembled around a rolling wooden audio base and a modified Thermaltake Mozart compute midsection, with a rebuilt hybrid 2005 WowWee animatronic monkey head still pending final assembly and mounting. The compute baseline is an Intel Core i9-12900K on an ASUS TUF Gaming Z790-Plus WiFi motherboard. The accelerator objective remains four NVIDIA Tesla V100 32GB cards functioning as the intended unified 128GB VRAM resource, but this is a target/accepted direction rather than current reality. gpt-oss-120b remains the initial local large-model acceptance target, while the exact V100-compatible multi-GPU runtime path must be proven before Ollama or any other backend is treated as final. V220 also restores architectural concepts underrepresented in V206: Pebbles, Districts, the four-District Atom, bifurcation, constitutional governance, the Founding Father bootstrap role, HIMS, local/offline sovereignty, and the distinction between Huey itself and external LabTech support systems.",
+  "source_basis": {
+    "primary_previous_master_plan": "master-plan-v206.json",
+    "current_session_date": "2026-09-30",
+    "alignment_target": "V220",
+    "documentation_context": {
+      "master_plan": "Machine-facing architecture and status source.",
+      "readme": "Human-facing repository front door; to be rewritten against V220.",
+      "dlrp_ca": "Public-facing project layer. Dylan reported the website build as V215 during the alignment interview, while live verification on 2026-09-30 showed public project content in a separate v30.x documentation line, including a downloadable master-plan-v30.2.json. These are treated as different version domains until the website rewrite converges on V220.",
+      "synchronization_goal": "Bring all three documentation layers back into deliberate semantic alignment without making them identical documents. V220 does not claim the live site is already aligned."
+    },
+    "explicit_decisions": [
+      "The next unified project documentation target is V220.",
+      "The Monkey-Head-Project has existed in one form or another for at least ten years.",
+      "Huey is not merely an AI-driven software node; physical embodiment, local compute, modularity, expansion, reuse, and offline-capable operation are core project characteristics.",
+      "The project philosophy remains: Breathing new life into old tech.",
+      "LabTech is external supporting technology used to build, maintain, diagnose, recover, and experiment with Huey; it is not part of Huey's operational identity or core runtime.",
+      "The Intel Core i9-12900K designation is definitive for the core workstation documentation.",
+      "Huey V4 is an active physical build and synthesis of prior shell generations rather than a clean break from them.",
+      "The rolling wooden base uses four three-inch caster wheels and four speakers total: two in the centre housing and one in each side housing.",
+      "The marine-grade audio amplifier/stereo has been tested successfully; the audio assembly is presently disassembled or unwired as required during painting and finishing.",
+      "The wooden base is being finished with white primer beneath a metallic-silver colour coat; no clear coat is currently planned.",
+      "A smaller wooden interface platform mounts the Thermaltake Mozart chassis to the base; the chassis is secured with three bolts.",
+      "The Thermaltake Mozart chassis is mounted on its left side and backwards relative to its original orientation to support the current airflow and cooling layout.",
+      "The V4 animatronic monkey head is not yet mounted; the intended V4 head is a hybrid rebuild using the two original 2005 WowWee units.",
+      "The first WowWee head was stripped of rubber, reduced to its essential shell/mechanisms, painted metallic silver, and used through V1, V2, and V3; the second unit is now the donor/rebuild basis for the V4 hybrid.",
+      "The animatronic hand/arm is a future, nonessential Arduino-controlled peripheral, likely on the right side; it is not a primary Huey function.",
+      "Current cooling is conventional air cooling. The external liquid heat-exchange room already physically exists but deployment of the long liquid loop and reservoir is paused until later.",
+      "The operating-system/root storage target uses four Intel Optane M10 16GB drives in RAID 10, yielding 32GB usable capacity.",
+      "The /home storage layer remains unresolved; available 120GB or 240GB Kingston 2.5-inch SSDs are candidates but are not yet locked.",
+      "Bulk storage is based on two 10TB Western Digital drives originating from a My Book Duo enclosure, intended to be removed from that enclosure and connected directly by SATA, with RAID 1 as the accepted redundancy direction.",
+      "A future additional 2.5-inch storage bay/slot remains available as expansion capacity.",
+      "The target accelerator architecture is four NVIDIA Tesla V100 32GB GPUs intended to function together as a unified 128GB VRAM resource; one V100 is currently on hand and three remain to be sourced.",
+      "A separate general-purpose discrete GPU remains part of the intended architecture, targeting approximately 16GB VRAM for display and smaller low-latency workloads such as speech transcription.",
+      "PCIe extenders are part of the five-device GPU/accelerator topology; current extenders require validation and may require replacement or expansion.",
+      "Power delivery targets two 1000W power supplies distributed for stability under the motherboard, general-purpose GPU, and multi-accelerator load; Corsair RM1000x remains a provisional model choice rather than locked procurement.",
+      "gpt-oss-120b is the selected initial open-weight local-model acceptance target. The intended acceptance path is PyHuey -> Ollama -> locally hosted gpt-oss-120b.",
+      "Successful local operation of gpt-oss-120b on the intended unified 128GB accelerator resource is a major V4 cognition-stack milestone.",
+      "The local large language model is the encapsulated 'walnut': primarily a language/reasoning engine inside a larger constrained Huey framework, not the holder of unrestricted system authority.",
+      "Huey's identity emerges from the governed, interconnected system around the model: Constitution, memory, Pebbles, Districts, HIMS, hardware embodiment, and controlled orchestration.",
+      "The internal collective architecture is conceptually distinct from future multi-Huey-node federation. One Huey node may itself contain many governed internal roles while still operating as a standalone physical system.",
+      "Each accelerator District is provisionally associated with one V100 and is intended to support independent work as well as pooled work.",
+      "The four-District grouping is provisionally called an Atom and is the intended minimum higher-order grouping for the load-bearing/redundant accelerator architecture.",
+      "Each District is intended to contain 128 Pebbles/jobs, producing a conceptual four-District total of 512 Pebble roles in a full Atom.",
+      "A Pebble is a sandboxed, prompt-defined job/role with bounded information access, explicit acceptable/unacceptable parameters, and predefined triggers/actions.",
+      "Pebbles should perform narrow operational jobs without silently expanding their scope. Ambiguous or out-of-policy situations are to be logged and escalated rather than improvised.",
+      "HIMS (Huey Internal Messaging System) is the planned end-to-end encrypted internal message/mail layer between sandboxed Pebbles, Districts, and higher-order components; it is not yet fully designed or implemented.",
+      "Bifurcation remains an active research direction for expanding the architecture through exact replication, augmented replication, or hybrid combinations of the two.",
+      "The Constitution is intended to be difficult but not impossible to change, serving as a durable governance baseline above ordinary job execution.",
+      "The current Constitution and Research chapters are materially out of date and require a dedicated rewrite; archived Federation-era material remains lineage, not current authority.",
+      "The working governance model has three separate branches: a President, a three-member Supreme Court, and a Senate.",
+      "The working special-office model uses one elevated Pebble from each of the four Districts: one President and three Justices, preventing a single District from supplying more than one of those four special offices.",
+      "Pebbles retain their original job when elevated to a special governance office and receive additional compute/time allotment dedicated to governance duties.",
+      "Each Pebble is intended to have one vote in governance/polling mechanisms. District-level proposals may use multiple rounds of voting to select a District position.",
+      "The current constitutional-amendment concept requires approval by three of four Districts, with each approving District represented by a two-thirds internal vote.",
+      "The Founding Father remains the bootstrap concept: the first deliberately authored agent, written by Dylan, responsible for initial District/file population and for initial tie-breaking where required.",
+      "A two-phase clock/scheduling concept remains under research, alternating attention between governance work and Pebble/job work; the exact timing and scheduler are not yet designed.",
+      "Operational safety is trigger-driven: predefined parameters should invoke predefined responses, including purge, safe-state, hibernation, shutdown, or other recovery mechanisms as applicable.",
+      "October 2026 is expected to prioritize V4 physical-shell completion and documentation alignment; software/code work may temporarily take a secondary role.",
+      "Only Dylan L.R. Pollock may lock project canon."
+    ],
+    "source_priority": [
+      "Dylan's explicit current-session decisions",
+      "Master Plan V220 once explicitly accepted",
+      "observed implementation and verified hardware reality",
+      "current repository and runtime evidence",
+      "README and dlrp.ca once aligned to V220",
+      "current Constitution and Research material as conceptual/reference input",
+      "older master plans, archived Federation material, transcripts, and notes as historical lineage"
+    ],
+    "inheritance_policy": "Carry forward prior implementation evidence and lineage unless V220 explicitly changes the direction. Do not present target-state or research concepts as already implemented. When current physical reality conflicts with older documentation, current explicit session decisions take precedence."
+  },
+  "reconciliation_with_live_site": {
+    "verification_date": "2026-09-30",
+    "status": "known_drift_requires_reconciliation",
+    "reported_site_build": {
+      "value": "V215",
+      "source": "Dylan's current-session statement",
+      "interpretation": "Website/static build identifier; do not assume this equals the public documentation/canon version."
+    },
+    "observed_live_public_documentation": {
+      "line": "v30.x",
+      "downloaded_master_plan_name_shown_publicly": "master-plan-v30.2.json",
+      "observed_roles_and_terms": [
+        "Huey Core as the active proof body/minimal permissible instance",
+        "HueyPulse",
+        "ThunderMail",
+        "Portal Terminal",
+        "Portal Bridge",
+        "Huey-Compressed",
+        "Parliament",
+        "founding ratification",
+        "approximately 80GB later distributed-VRAM threshold"
+      ]
+    },
+    "v220_precedence": "Per V220 source priority, Dylan's explicit current-session decisions outrank the older live-site copy. The site is therefore recorded as public-documentation drift, not silently merged into V220.",
+    "resolved_by_current_session": [
+      "The active V4 hardware direction is the Intel i9-12900K / ASUS Z790 build documented in V220.",
+      "The long accelerator target is four V100 32GB cards for an intended unified 128GB resource, not the site's older approximately 80GB threshold.",
+      "The current working legislative/governance term in V220 is Senate, because Dylan used and described Senate in the V220 interview."
+    ],
+    "still_requires_explicit_mapping_or_retirement_decision": [
+      "Huey Core",
+      "HueyPulse",
+      "ThunderMail",
+      "Portal Terminal",
+      "Portal Bridge",
+      "Huey-Compressed",
+      "Parliament",
+      "founding-ratification doctrine as currently written on the live site"
+    ],
+    "rule": "Do not declare three-layer synchronization complete until the website agent has mapped, retained, renamed, deprecated, or archived each conflicting live-site term."
+  },
+  "terminology_map": {
+    "Huey Core": {
+      "live_site_meaning": "Active embodied proof body and minimal permissible Huey.",
+      "v220_position": "The V220 interview described Huey Core as a concept/name that had largely been swept aside/sunset, while preserving the underlying question of what constitutes the minimum Huey. Therefore Huey Core is not treated as the active canonical V220 machine name.",
+      "status": "public_site_drift_pending_retirement_or_redefinition"
+    },
+    "HueyPulse": {
+      "live_site_meaning": "Lower-voltage watch-and-act/body-state layer below the main compute path.",
+      "v220_position": "Potentially overlaps V220 Body/Arduino/low-voltage control concepts, but no equivalence was explicitly accepted in the V220 interview.",
+      "status": "unmapped"
+    },
+    "ThunderMail": {
+      "live_site_meaning": "Practical mail-style delivery layer inside HIMS.",
+      "v220_position": "HIMS remains current; ThunderMail was not reaffirmed during the V220 interview.",
+      "status": "candidate_subcomponent_of_HIMS_pending_decision"
+    },
+    "Portal Terminal": {
+      "live_site_meaning": "Non-sovereign external/guest device or environment for authenticated sessions into Huey.",
+      "v220_position": "Not mapped to PyHuey by V220; PyHuey is the primary operator/runtime surface, not automatically the same concept.",
+      "status": "unmapped"
+    },
+    "Portal Bridge": {
+      "live_site_meaning": "Huey-side ingress layer receiving portal sessions and handing structured input inward.",
+      "v220_position": "Not addressed in the V220 interview.",
+      "status": "unmapped"
+    },
+    "Huey-Compressed": {
+      "live_site_meaning": "Collapsed deployment profile where logically separate Huey roles may share one host.",
+      "v220_position": "Not addressed in the V220 interview.",
+      "status": "unmapped"
+    },
+    "Parliament": {
+      "live_site_meaning": "Deliberative/representative legislative branch.",
+      "v220_position": "Superseded in the current V220 working model by the term Senate unless Dylan explicitly restores Parliament.",
+      "status": "public_site_predecessor_or_alias_pending_cleanup"
+    },
+    "Senate": {
+      "v220_meaning": "Current working name for the broad legislative/populace governance branch.",
+      "status": "current_working_term"
+    },
+    "Founding Father": {
+      "v220_meaning": "First deliberately authored bootstrap agent responsible for initial population/setup and limited initial tie-breaking.",
+      "status": "current_bootstrap_concept"
+    },
+    "HIMS": {
+      "v220_meaning": "Planned internal encrypted messaging/routing layer between sandboxed internal roles and higher-order components.",
+      "status": "current"
+    },
+    "PyHuey": {
+      "v220_meaning": "Primary operator GUI/runtime/orchestration surface.",
+      "status": "current"
+    }
+  },
+  "known_drift": [
+    {
+      "area": "public_site",
+      "severity": "high",
+      "description": "Live dlrp.ca still presents the v30.x/Huey Core proof-body architecture and terminology while V220 documents the newer V4/i9/four-V100 direction."
+    },
+    {
+      "area": "constitution_and_research",
+      "severity": "medium",
+      "description": "Current Constitution and Research files contain important concepts but are materially behind the V220 architecture and require a dedicated later rewrite."
+    },
+    {
+      "area": "implementation_vs_target",
+      "severity": "high",
+      "description": "Only one V100 is currently on hand; the four-card unified 128GB design and its software runtime remain unproven target state."
+    }
+  ],
+  "truth_model": [
+    {
+      "state": "current_reality",
+      "definition": "Observed hardware, physical build state, merged code, working commands, and directly verified behaviour."
+    },
+    {
+      "state": "accepted_direction",
+      "definition": "Architecture Dylan has selected for implementation even when migration, procurement, or integration is incomplete."
+    },
+    {
+      "state": "provisional_choice",
+      "definition": "A working selection or name that is useful now but remains replaceable through testing or better evidence."
+    },
+    {
+      "state": "unresolved",
+      "definition": "A decision intentionally left open because design, procurement, implementation, or testing is incomplete."
+    },
+    {
+      "state": "target_state",
+      "definition": "A desired longer-term capability whose implementation depends on resources, maturity, or later validation."
+    },
+    {
+      "state": "research_direction",
+      "definition": "A deliberately preserved architectural concept that is important enough to guide future work but is not yet specified enough to be implementation truth."
+    },
+    {
+      "state": "historical_lineage",
+      "definition": "Earlier systems, names, shells, hardware, and decisions retained for continuity without overriding current direction."
+    }
+  ],
+  "canon": {
+    "authority": "Dylan L.R. Pollock",
+    "rule": "No agent, tool, contributor, generated document, branch, pull request, governance role, or internal Pebble may independently lock Monkey-Head-Project canon.",
+    "acceptance_mechanisms": [
+      "Dylan explicitly states acceptance.",
+      "Dylan intentionally merges or publishes a designated canonical update."
+    ],
+    "machine_facing_source": "master-plan-v220.json upon acceptance",
+    "human_facing_source": "README.md aligned to V220",
+    "public_facing_source": "dlrp.ca aligned to V220",
+    "conflict_rule": "Current explicit decisions override older documentation. Implementation reality must remain distinguishable from accepted direction, targets, and research concepts.",
+    "constitutional_rule": "Future internal constitutional governance may evolve Huey's operational rules within its own defined mechanisms, but project canon and repository authority remain Dylan's responsibility unless explicitly changed by Dylan."
+  },
+  "project_definition": {
+    "monkey_head_project": "The Monkey-Head-Project is the long-running umbrella project through which Huey is designed, built, documented, tested, and evolved.",
+    "huey": "Huey is a locally operated, physically embodied AI system designed around modularity, reuse, expandability, improvability, compartmentalized cognition, and eventual autonomous operation.",
+    "philosophy": "Breathing new life into old tech",
+    "operating_principles": [
+      "Prefer useful reuse and retrofit over unnecessary replacement.",
+      "Keep the first Huey node capable of meaningful standalone local operation.",
+      "Treat the physical Body, local compute, cognition framework, memory, governance, and internal communication system as parts of one evolving architecture.",
+      "Use open/local models where practical so core cognition can operate without mandatory dependence on external cloud services.",
+      "Preserve modular boundaries so parts can be repaired, replaced, expanded, bifurcated, or reconfigured without redefining the whole project."
+    ],
+    "labtech_boundary": "LabTech is external support technology used around Huey; it is not Huey's operational identity, Body, Brain, Farm, or internal cognition."
+  },
+  "historical_lineage": {
+    "age_statement": "The Monkey-Head-Project has existed in one form or another for at least ten years.",
+    "formative_period": "The project began as a modular robotics and distributed-computing concept before the names Huey and Monkey-Head-Project were fully established. Early work emphasized reusable parts, expandable physical shells, and the ability to change the system quickly.",
+    "llm_acceleration": "The public arrival of GPT-3.5-era ChatGPT was a major inflection point because it demonstrated a practical language-model cognition layer that could serve as the encapsulated reasoning component the physical project had been missing.",
+    "single_board_computing_lineage": {
+      "raspberry_pi": "Raspberry Pi systems, especially the Raspberry Pi 3/3B+ and to a lesser extent the Pi 4, were formative tools for learning Linux, single-board computing, and distributed-system thinking.",
+      "current_role": "Raspberry Pi is historical technical lineage, not a required current Huey dependency.",
+      "microcontroller_direction": "Arduino-class boards are the present preferred intermediary between high-level compute and low-level sensors, buttons, actuators, and animatronics."
+    },
+    "shell_generations": {
+      "V1": "The first long-running physical shell was a rapidly modifiable wooden enclosure built from salvaged hardwood from an older dresser. Wood was intentionally used because it could be drilled, cut, filled, changed, and rebuilt quickly while the architecture was still fluid.",
+      "V2": "V2 became one of the project's most photographed and visually recognizable stages. Much legacy project imagery still originates from this era.",
+      "V3": "V3 was a consolidation phase that reduced the embodiment toward essential structural elements and helped establish the metal-frame direction carried into V4.",
+      "V4": "V4 is a synthesis rather than a clean replacement: it recombines surviving/reworked V2 and V3 elements with additional salvaged materials into the current rolling wooden base, modified Thermaltake Mozart compute midsection, and hybrid WowWee animatronic head."
+    },
+    "black_box_term": {
+      "meaning": "Historical nickname for the Thermaltake Mozart chassis.",
+      "current_status": "Lineage terminology only. In V4 the chassis is the metal compute midsection rather than a separate subsystem."
+    },
+    "animatronic_head_lineage": {
+      "source_hardware": "Two 2005 WowWee animatronic monkey heads were acquired for the project.",
+      "first_unit": "The first unit had its rubber removed, was stripped toward the essential plastic/mechanical structure, painted metallic silver, and served through V1, V2, and V3. Its silver appearance became a major part of the project's visual identity.",
+      "second_unit": "The second unit has also had its rubber removed and now serves as the donor/rebuild basis for the V4 head.",
+      "v4_direction": "Build one hybrid head using the best surviving plastic, mechanical, and animatronic parts from both units."
+    },
+    "historical_aliases": [
+      "Federation - earlier project/governance naming retained in archives.",
+      "Huey Core - public-site/current-archive terminology for a minimum/proof-body Huey; the V220 interview no longer treats it as the active canonical machine name, and the live-site use must be explicitly retired, redefined, or mapped during reconciliation."
+    ]
+  },
+  "memory_and_document_sources": {
+    "memory_root": "src/huey/memory/text",
+    "research": {
+      "status": "important_but_outdated",
+      "role": "Long-form conceptual and architectural research source.",
+      "current_shape": "Ten current chapters plus glossary were described as the active condensed research set; older archives contain broader earlier material.",
+      "rule": "Research material informs architecture but does not override current explicit decisions or the accepted Master Plan."
+    },
+    "constitution": {
+      "status": "important_but_outdated",
+      "role": "Governance baseline and rule framework intended to be difficult, but not impossible, to amend.",
+      "current_shape": "Ten current chapters were described as needing substantial revision; Federation-era constitutional material remains archived lineage.",
+      "rule": "Existing constitutional text is conceptual/reference material until rewritten and explicitly accepted."
+    },
+    "notes": {
+      "status": "noncanonical_support_material",
+      "role": "Generated research, theoretical exploration, and collected ideas.",
+      "rule": "Notes may inspire work but should not be treated as project truth without independent acceptance."
+    }
+  },
+  "node_first_architecture": {
+    "principle": "A Huey node is a physically individual AI unit with integrated local compute, cognition, body functions, memory, and governance.",
+    "standalone_operation": "Standalone local operation is central. The first physical Huey should be valid without requiring a network of separate Huey robots.",
+    "internal_collective": "A single Huey node may internally contain many Pebbles and Districts. This internal collective is part of one Huey node and should not be confused with future multi-node federation.",
+    "collective_membership": "Long-term architecture may allow multiple Huey nodes to coordinate or share infrastructure, but that is not required for the first node to be valid."
+  },
+  "identity_model": {
+    "principle": "Huey is not identical to the underlying language model. The model is an encapsulated cognition component inside a governed and embodied system.",
+    "walnut_metaphor": "The local LLM is the 'walnut': an encapsulated language/reasoning engine expected to do what large language models do best while remaining bounded by Huey's Constitution, memory, job structure, sandboxes, permissions, and checks and balances.",
+    "collective_identity": "Huey's identity is intended to emerge from the interconnected whole: Brain, Body, Farm resources, Constitution, persistent memory, Pebbles, Districts, HIMS, and physical embodiment.",
+    "focal_embodiment": "A historical explanatory analogy compares the architecture to a collective with a focal physical aperture: the visible embodiment can represent the whole without being the whole by itself."
+  },
+  "three_part_architecture": {
+    "decision": "Organize the current system around Huey Brain, Huey Body, and Huey Farm while recognizing that identity emerges across the governed collective rather than from one unrestricted component.",
+    "huey_brain": {
+      "role": "Primary local cognition, orchestration, operator interaction, memory coordination, and governance execution layer.",
+      "responsibilities": [
+        "PyHuey operator interaction.",
+        "Local and optional external model selection.",
+        "Workflow and job orchestration.",
+        "Memory access and state coordination.",
+        "Governance scheduling and constitutional processes.",
+        "Structured evidence, audit, logs, and recovery state.",
+        "Coordination with Body and Farm."
+      ],
+      "current_platform": {
+        "status": "active_workstation_build",
+        "system": "ASUS TUF Gaming Z790-Plus WiFi motherboard with Intel Core i9-12900K processor (8 P-cores, 8 E-cores).",
+        "housing": "Modified Thermaltake Mozart chassis forming the V4 metal compute midsection; mounted on its left side and backwards relative to original case orientation.",
+        "mounting": "Chassis is secured through a smaller wooden interface platform using three bolts.",
+        "purpose": "Primary workstation, orchestration hub, and execution platform for the first Huey node."
+      }
+    },
+    "huey_body": {
+      "role": "Physical embodiment and recoverable interface with the environment.",
+      "responsibilities": [
+        "Sensing and perception interfaces.",
+        "Actuation and animatronics.",
+        "Audio output.",
+        "Future movement or peripheral control.",
+        "Power and cooling integration.",
+        "Physical safety and emergency safe-state behaviour."
+      ],
+      "status": "active_v4_assembly_and_finishing",
+      "current_boundary": "The V4 stack currently consists of a rolling wooden/audio base and the modified Thermaltake Mozart compute midsection, while the rebuilt hybrid animatronic head remains pending final assembly and mounting.",
+      "integration_rule": "Brain/Body actions require explicit interfaces, bounded permissions, operator-visible state, safe-stop behaviour, and recoverable failure handling."
+    },
+    "huey_farm": {
+      "role": "Expandable accelerator, model, storage, and support capacity associated with the Huey node.",
+      "responsibilities": [
+        "Large local-model hosting.",
+        "Unified/poolable accelerator capacity.",
+        "District-level compute allocation.",
+        "Shared storage and artifacts.",
+        "Future compute expansion and bifurcation."
+      ],
+      "status": "active_procurement_and_design",
+      "planning_scale": "Four NVIDIA Tesla V100 32GB accelerators intended to function as a unified 128GB VRAM resource; one V100 is currently on hand.",
+      "power_delivery": "Target dual 1000W PSUs distributed for stable high-load operation; Corsair RM1000x remains provisional."
+    },
+    "resolved_boundaries_v220": [
+      "LabTech is outside Huey's core identity and runtime.",
+      "The local LLM is a bounded cognition component rather than unrestricted system authority.",
+      "Internal Pebble/District collectivity exists within one Huey node and is distinct from future multi-node federation."
+    ],
+    "unresolved_boundaries": [
+      "Exact protocol by which identity/state persists across failures, hardware replacement, and future bifurcation.",
+      "Exact communication/authentication protocol beneath HIMS.",
+      "Exact disconnected/degraded-operation rules.",
+      "Exact authoritative locations for canonical memory, models, logs, and governance state.",
+      "Exact software mechanism for unified 128GB accelerator operation.",
+      "Exact mapping between Brain, District scheduling, and physical Farm resources."
+    ]
+  },
+  "v4_physical_embodiment": {
+    "status": "active_assembly_and_finishing",
+    "approximate_final_height": "Approximately 6 feet or more, subject to doorway and room-fan clearance.",
+    "finish": {
+      "current_state": "White primer beneath metallic-silver colour application on the wooden base/structure.",
+      "target_scheme": "Metallic silver with deep purple and black accents.",
+      "clear_coat": "Not planned under the current finishing process."
+    },
+    "bottom_layer_rolling_base": {
+      "structure": "Sturdy salvaged wooden platform/base on four caster wheels.",
+      "caster_size": "3 inches.",
+      "audio_housings": 3,
+      "speaker_layout": {
+        "total_speakers": 4,
+        "centre_housing": "Two speakers with blocked/grilled sections used for separation/airflow treatment.",
+        "left_housing": "One speaker.",
+        "right_housing": "One speaker.",
+        "channel_intent": "Physical arrangement preserves left/right audio separation."
+      },
+      "amplification": {
+        "type": "Marine-grade stereo/amplifier.",
+        "tested": true,
+        "current_connection_state": "Known-good hardware; presently disassembled or unwired as required during painting and finishing."
+      }
+    },
+    "interface_platform": {
+      "role": "Small wooden transition/mounting platform between the rolling base and Thermaltake Mozart chassis.",
+      "fastening": "Thermaltake Mozart chassis is bolted through the wood using three bolts."
+    },
+    "middle_layer_compute_chassis": {
+      "hardware": "Thermaltake Mozart case/chassis.",
+      "historical_nickname": "black box",
+      "orientation": "Mounted on its left side and backwards relative to the original case orientation.",
+      "reason": "Current orientation supports the intended airflow, physical stack, and future cooling accommodation.",
+      "role": "Houses the core motherboard/CPU and related workstation hardware."
+    },
+    "top_layer_animatronic_head": {
+      "hardware": "Hybrid rebuild from two 2005 WowWee animatronic monkey heads.",
+      "current_state": "Not yet mounted to the V4 stack.",
+      "planned_control": "Arduino-class microcontroller control.",
+      "planned_scope": [
+        "Preserve useful original mechanisms where practical.",
+        "Retain at least basic mouth movement.",
+        "Use best surviving plastic/mechanical/animatronic parts from both donor units.",
+        "Evaluate detachable-head mounting if useful.",
+        "Avoid unnecessary full gutting when original mechanisms can be retained."
+      ]
+    },
+    "future_peripherals": {
+      "animatronic_hand_arm": {
+        "status": "future_nonessential_peripheral",
+        "likely_side": "right",
+        "control": "Arduino-class controller.",
+        "role": "Programming/animatronic experimentation rather than a primary Huey function.",
+        "camera_relation": "A camera may be associated with the moving peripheral to extend viewing angle in future work."
+      }
+    }
+  },
+  "hardware_direction": {
+    "architecture_baseline": "Intel Core i9-12900K (8 P-cores, 8 E-cores) on ASUS TUF Gaming Z790-Plus WiFi inside the modified Thermaltake Mozart V4 midsection.",
+    "cpu_status": "definitive_documentation_baseline",
+    "storage_architecture": {
+      "root_os_pool": {
+        "hardware": "Four Intel Optane M10 16GB drives.",
+        "target_configuration": "RAID 10.",
+        "target_usable_capacity": "32GB.",
+        "role": "Root/OS execution volume.",
+        "implementation_state": "Accepted direction; final configuration/validation remains part of bring-up."
+      },
+      "home_pool": {
+        "status": "unresolved",
+        "candidate_hardware": "Available Kingston 2.5-inch SSDs in approximately 120GB or 240GB capacities.",
+        "decision_needed": "Select final /home arrangement, capacity, redundancy, and mount strategy."
+      },
+      "bulk_data_pool": {
+        "hardware": "Two 10TB Western Digital 3.5-inch HDDs originating from a My Book Duo enclosure.",
+        "target_connection": "Remove from enclosure and connect directly to motherboard/storage controller via SATA.",
+        "target_configuration": "RAID 1.",
+        "role": "Large local models, project data, backups, archives, and slower-access persistent storage."
+      },
+      "expansion": "Additional 2.5-inch bay/slot remains available as future storage expansion."
+    },
+    "pcie_device_allocation": {
+      "target_total_devices": 5,
+      "devices": [
+        {
+          "id": 1,
+          "type": "general_purpose_discrete_gpu",
+          "status": "target_not_locked",
+          "target_vram_gb": 16,
+          "role": "Display output plus smaller/low-latency workloads such as speech transcription.",
+          "connection": "PCIe extender."
+        },
+        {
+          "id": 2,
+          "type": "nvidia_tesla_v100_32gb",
+          "district": 1,
+          "status": "one_of_four_v100s_currently_on_hand",
+          "role": "Accelerator District and member of intended unified 128GB VRAM resource.",
+          "connection": "PCIe extender."
+        },
+        {
+          "id": 3,
+          "type": "nvidia_tesla_v100_32gb",
+          "district": 2,
+          "status": "to_source",
+          "role": "Accelerator District and member of intended unified 128GB VRAM resource.",
+          "connection": "PCIe extender."
+        },
+        {
+          "id": 4,
+          "type": "nvidia_tesla_v100_32gb",
+          "district": 3,
+          "status": "to_source",
+          "role": "Accelerator District and member of intended unified 128GB VRAM resource.",
+          "connection": "PCIe extender."
+        },
+        {
+          "id": 5,
+          "type": "nvidia_tesla_v100_32gb",
+          "district": 4,
+          "status": "to_source",
+          "role": "Accelerator District and member of intended unified 128GB VRAM resource.",
+          "connection": "PCIe extender."
+        }
+      ],
+      "extender_status": "PCIe extenders are part of the accepted topology but require functional and quantity validation; replacement/additional units may be needed."
+    },
+    "accelerator_goal": {
+      "hardware": "Four NVIDIA Tesla V100 32GB GPUs.",
+      "target": "Unified 128GB VRAM resource.",
+      "current_reality": "One V100 on hand; three additional V100s still required.",
+      "design_intent": "Support both pooled/unified work and District-level independent work where architecture permits.",
+      "implementation_note": "The software/framework mechanism required to realize the intended unified behaviour remains an engineering task, not a reason to weaken the stated target."
+    },
+    "power_delivery": {
+      "target": "Two 1000W power supplies distributed for high-load stability.",
+      "provisional_model": "Corsair RM1000x.",
+      "sync_method": "Add2PSU or equivalent dual-PSU coordination remains the current working direction.",
+      "rationale": "Distribute motherboard, general-purpose GPU, and multi-accelerator load rather than treating 2000W as a single undifferentiated number.",
+      "procurement_state": "Not yet fully acquired/implemented."
+    },
+    "cooling_and_safety": {
+      "current_cooling": "Conventional air cooling is the current bring-up path.",
+      "future_heat_exchange": {
+        "status": "paused_not_abandoned",
+        "physical_room": "Existing external room/fort-like structure beside the house is already available.",
+        "concept": "Future long liquid loop with external reservoir/heat-exchange capacity, potentially benefiting from low Canadian ambient temperatures for a significant part of the year.",
+        "summer_rule": "Summer stability is to be established through measurement and testing rather than assumption."
+      }
+    }
+  },
+  "hardware_validation_checklist": {
+    "v100_identity": {
+      "status": "required",
+      "checks": [
+        "Record exact model/variant and board SKU for the on-hand V100 and every future card.",
+        "Confirm all four target cards are mutually suitable for the chosen physical and software topology.",
+        "Confirm PCIe versus SXM/form factor before procurement; V220's extender topology assumes PCIe cards.",
+        "Record connector type, board power, thermal design, firmware/VBIOS, and device IDs."
+      ],
+      "reference_if_card_is_tesla_v100_pcie_32gb": {
+        "board_power": "250W",
+        "interface": "PCIe 3.0 x16",
+        "thermal_solution": "Passive",
+        "auxiliary_power": "One CPU-style 8-pin auxiliary connector",
+        "note": "Reference specification only; do not treat it as observed identity until the physical card SKU is verified."
+      }
+    },
+    "motherboard_pcie_topology": {
+      "status": "critical",
+      "verified_board_capability_summary": "ASUS lists one CPU-connected PCIe 5.0 x16 slot; chipset-connected expansion includes one PCIe 4.0 x16-length slot operating at x4, one PCIe 4.0 x4 slot, and two PCIe 3.0 x1 slots.",
+      "implication": "Five PCIe devices connected by extenders do not thereby receive five native x16 links. The final topology must explicitly account for lane width, chipset uplink contention, device enumeration, and any required PCIe switch/bifurcation/riser strategy.",
+      "checks": [
+        "Map each of the four V100s and the general-purpose GPU to a physical/electrical slot or PCIe-switch path.",
+        "Verify Above 4G Decoding and any required BIOS resource-allocation settings.",
+        "Check motherboard-supported bifurcation modes instead of assuming arbitrary x16 splitting.",
+        "Validate IOMMU/ACS behaviour if isolation or device grouping depends on it.",
+        "Measure peer-to-peer access/bandwidth between accelerator pairs.",
+        "Measure real workload scaling across the exact extender/riser topology.",
+        "Record any chipset/DMI bottleneck that affects District independence or unified workloads."
+      ]
+    },
+    "driver_and_runtime": {
+      "status": "required",
+      "checks": [
+        "Record Linux kernel, NVIDIA driver, CUDA runtime/toolkit, and userspace inference stack versions used for each accepted configuration.",
+        "Confirm V100 support before changing driver/CUDA generations.",
+        "Maintain a known-good rollback path for GPU drivers and runtime dependencies."
+      ]
+    }
+  },
+  "power_and_thermal_budget": {
+    "status": "preliminary_requires_final_measurement",
+    "known_reference_loads": {
+      "four_v100_pcie_32gb_if_that_variant_is_confirmed": "4 x 250W = 1000W board-power reference",
+      "intel_i9_12900k_maximum_turbo_power": "241W",
+      "known_subtotal_before_general_gpu_and_platform_overhead": "approximately 1241W reference"
+    },
+    "unknown_or_variable_loads": [
+      "final general-purpose/display GPU",
+      "motherboard and RAM",
+      "storage devices",
+      "PCIe switches/risers/extenders if powered",
+      "fans/blowers/pumps",
+      "Arduino/body electronics powered from the PC domain",
+      "USB/peripheral loads",
+      "startup/transient headroom"
+    ],
+    "dual_psu_rule": "The two-1000W design remains the accepted direction, but V220 does not claim it is electrically sufficient until the final device list, connector map, rail/load split, transient behaviour, and thermal design are validated.",
+    "required_design_items": [
+      "Assign every high-current load to a specific PSU.",
+      "Avoid unsafe cross-PSU power paths through the same device where prohibited.",
+      "Validate Add2PSU/equivalent startup and shutdown sequencing.",
+      "Measure wall draw and PSU-side load under representative sustained and transient tests.",
+      "Define UPS/surge-protection requirements.",
+      "Define a physical emergency power-cutoff/e-stop strategy.",
+      "Define safe shutdown behaviour on mains loss or PSU failure."
+    ],
+    "v100_cooling_gate": "If the selected V100 cards use passive server heatsinks, the V4 chassis requires purpose-built directed airflow/blower/shroud validation; open-case ambient airflow is not enough to assume safe operation."
+  },
+  "data_and_storage_plan": {
+    "root_os": {
+      "target": "Four 16GB Intel Optane M10 drives in RAID 10, approximately 32GB usable.",
+      "raid_implementation": "unresolved: Intel RST/firmware-assisted versus Linux software RAID must be chosen deliberately.",
+      "filesystem_and_mounts": "unresolved",
+      "capacity_rule": "The root pool is small enough that /var, package caches, containers, model caches, logs, temporary data, and swap must be intentionally placed or capped rather than allowed to consume root accidentally."
+    },
+    "home": {
+      "status": "unresolved",
+      "candidate_media": "Available 120GB/240GB Kingston 2.5-inch SSDs or another selected device.",
+      "decision_items": [
+        "capacity",
+        "filesystem",
+        "redundancy",
+        "mount point",
+        "backup policy"
+      ]
+    },
+    "bulk": {
+      "target": "Two 10TB Western Digital HDDs in RAID 1 after removal from the My Book Duo enclosure.",
+      "critical_migration_warning": "Western Digital documents My Book Duo as a hardware-RAID/encrypted enclosure. Existing data on drives removed from that enclosure may not be directly readable over SATA. Treat the move as a migration/rebuild operation unless testing proves otherwise.",
+      "pre_shuck_requirements": [
+        "Inventory existing data and confirm whether anything must be preserved.",
+        "Create and verify an independent backup before enclosure removal if the drives contain data.",
+        "Record current My Book Duo model, RAID mode, drive order, and health.",
+        "Assume reformat/rebuild may be required after direct SATA connection.",
+        "Do not destroy the original enclosure or drive-order information until migration is verified."
+      ]
+    },
+    "backup_and_restore": {
+      "status": "required_before_data_migration",
+      "rule": "No storage migration is considered complete until restore from an independent copy has been tested or otherwise verified."
+    }
+  },
+  "cognition_stack": {
+    "operator_runtime": {
+      "name": "PyHuey",
+      "lineage": "Project fork/use of PyGPT; current repository documentation also refers to PyGPT (PyHuey).",
+      "role": "Primary GUI and core operator/runtime surface for orchestrating model interactions.",
+      "status": "accepted_direction"
+    },
+    "local_model_transport": {
+      "name": "Ollama",
+      "role": "Local model service/API path intended to connect PyHuey to locally hosted large language models.",
+      "status": "preferred_initial_test_path_not_final",
+      "validation_rule": "Ollama is a valid supported gpt-oss runtime in general, but V100 multi-GPU compatibility and the desired four-card behaviour must be demonstrated on Huey's actual hardware. V220 must not equate 'Ollama supports gpt-oss' with 'Ollama has proven Huey's V100 topology'."
+    },
+    "baseline_model_candidate": {
+      "name": "gpt-oss-120b",
+      "provider_lineage": "OpenAI open-weight model.",
+      "status": "selected_acceptance_test_target_with_hardware_compatibility_gate",
+      "purpose": [
+        "Prove effective use of the intended unified 128GB accelerator resource.",
+        "Establish an initial local language/reasoning baseline.",
+        "Evaluate whether the model is suitable to become the first practical 'walnut' around which the Huey framework is populated."
+      ],
+      "promotion_rule": "Successful testing may establish it as the initial local baseline; the framework must remain able to replace or supplement the model later."
+    },
+    "local_first_rule": "Core Huey cognition should be able to operate locally/offline where practical. External APIs may remain optional tools/providers rather than identity dependencies.",
+    "provider_policy": "Use the local or remote provider that best fits a task while preserving the local-sovereignty path and bounded system permissions.",
+    "multi_gpu_runtime_validation": {
+      "status": "critical_unresolved_engineering_gate",
+      "facts_to_preserve": [
+        "gpt-oss-120b is distributed in MXFP4 and is designed to fit in roughly 60-80GB class memory under supported implementations.",
+        "OpenAI documents Ollama, vLLM, llama.cpp, Transformers, and other stacks as possible gpt-oss runtimes in general.",
+        "NVIDIA V100 is Volta compute capability 7.0.",
+        "The OpenAI Transformers guidance for native MXFP4 kernels targets newer hardware than V100; therefore V100-native MXFP4 execution must not be assumed."
+      ],
+      "required_tests": [
+        "Test gpt-oss-120b on the actual V100 hardware rather than relying on aggregate VRAM arithmetic alone.",
+        "Determine whether Ollama can use all intended V100 devices reliably for this model and quantization.",
+        "Evaluate alternate supported runtimes such as vLLM, llama.cpp, or Transformers/device mapping if Ollama cannot meet the target.",
+        "Measure whether a converted/fallback precision or quantization remains within the intended 128GB resource and acceptable performance envelope.",
+        "Record exact driver, CUDA, runtime, model format/quantization, context length, and device placement used for any successful acceptance run."
+      ],
+      "acceptance_rule": "The gpt-oss-120b target remains part of V220, but no runtime is canonically declared the final unified-four-V100 mechanism until an end-to-end run succeeds on the real stack."
+    }
+  },
+  "pebble_district_atom_architecture": {
+    "status": "research_direction_with_accepted_core_concepts",
+    "districts": {
+      "count_in_first_atom": 4,
+      "hardware_mapping": "Working concept maps one accelerator District to each of the four V100s.",
+      "behaviour": "Districts should be able to perform independent work and cooperate/pool resources when needed."
+    },
+    "pebbles": {
+      "target_per_district": 128,
+      "target_per_four_district_atom": 512,
+      "definition": "A sandboxed prompt-defined job/role with bounded context, bounded permissions, and explicit operational responsibilities.",
+      "job_model": [
+        "Each Pebble occupies a specific job.",
+        "Each Pebble receives its own prompt/role definition and a bounded information allotment in addition to shared system information.",
+        "Job prompts may differ in perspective and may or may not ultimately align one-to-one with job semantics; exact prompt design remains open.",
+        "Ordinary job execution should be narrow and parameter driven."
+      ],
+      "operational_boundary": {
+        "acceptable_parameters": "Explicitly defined conditions under which the Pebble may act.",
+        "unacceptable_parameters": "Explicitly defined conditions under which the Pebble may not act.",
+        "trigger_model": "Known triggers map to predefined actions/protocols.",
+        "ambiguity_rule": "When no rule or trigger applies cleanly, log and escalate rather than silently inventing policy."
+      },
+      "count_semantics": "The 128-per-District and 512-per-Atom figures describe logical jobs/role slots. They do not assert 128 or 512 simultaneously resident LLM instances.",
+      "concurrency_model": {
+        "status": "unresolved",
+        "working_expectation": "Pebble work may be queued, time-sliced, batched, or otherwise scheduled against available model/accelerator capacity. Actual simultaneous execution must be derived from measured memory, latency, and scheduler behaviour."
+      }
+    },
+    "atom": {
+      "term_status": "provisional_but_active",
+      "definition": "The four-District grouping treated as the minimum higher-order compute/governance unit for the planned load-bearing architecture.",
+      "design_intent": [
+        "Support unified operation when a large workload requires the combined accelerator resource.",
+        "Support District independence for bounded work.",
+        "Provide a path to redundancy/parallelism inspired by RAID-like load-bearing concepts.",
+        "Create the unit from which future bifurcation can occur."
+      ]
+    },
+    "bifurcation": {
+      "status": "research_direction",
+      "exact": "Replicate an established District/Atom configuration without deliberate functional change.",
+      "augmented": "Replicate while deliberately changing selected roles, prompts, resources, or functions.",
+      "hybrid": "Use a mixture of exact and augmented descendants; one working example is two exact and two augmented copies.",
+      "purpose": "Provide a structured growth/population mechanism once sufficient compute, storage, and framework maturity exist."
+    }
+  },
+  "governance_architecture": {
+    "status": "research_direction_requiring_constitution_rewrite",
+    "constitutional_principle": "The Constitution is the durable rule baseline. It should be harder to change than ordinary policy or job behaviour, but it must remain amendable through a deliberately high-friction process.",
+    "branches": {
+      "presidency": {
+        "seats": 1,
+        "role": "Special executive/governance office; exact powers and checks remain to be rewritten."
+      },
+      "supreme_court": {
+        "seats": 3,
+        "role": "Special constitutional/judicial office; exact review powers and procedures remain to be rewritten."
+      },
+      "senate": {
+        "membership": "Working concept treats the broader Pebble population as the legislative/populace governance body.",
+        "role": "Proposal, polling, deliberation, and voting mechanisms below constitutional amendment."
+      }
+    },
+    "district_representation_rule": "In the four-District Atom, one Pebble from each District is intended to occupy one of the four special offices: one President and three Supreme Court Justices. A District therefore cannot simultaneously supply both the President and a Justice under this working model.",
+    "role_continuity": {
+      "rule": "A Pebble elevated to a governance office keeps its original operational job.",
+      "compute_allocation": "Its original job budget remains intact and additional compute/time is allocated specifically for governance duties."
+    },
+    "voting": {
+      "base_rule": "Each Pebble is intended to receive one vote.",
+      "district_proposals": "Pebbles may submit suggestions/improvements; multiple rounds of polling/voting may converge on a District position before escalation upward.",
+      "ties": "Long-term tie-breaking remains unresolved. Initial District bootstrap ties may be resolved by the Founding Father."
+    },
+    "constitutional_amendment_working_threshold": {
+      "districts_required": "3 of 4 Districts.",
+      "within_each_approving_district": "Two-thirds internal approval.",
+      "status": "working rule to be tested and rewritten into the Constitution; not implemented."
+    },
+    "founding_father": {
+      "status": "accepted_bootstrap_concept",
+      "definition": "The first deliberately authored/edited/compiled agent written by Dylan.",
+      "initial_duties": [
+        "Populate the initial District structure.",
+        "Populate or initialize the required files and role assignments.",
+        "Serve as an initial tie-breaker where bootstrap governance requires it."
+      ],
+      "long_term_authority": "Not yet defined; bootstrap authority should not be assumed to be permanent."
+    },
+    "clock_and_compute": {
+      "status": "unresolved_research",
+      "concept": "Alternate system attention between governance phases and Pebble/job phases.",
+      "requirement": "Special governance roles receive additional governance compute without removing their base-job compute.",
+      "open_questions": [
+        "Clock/duty-cycle length.",
+        "Whether phases are strict global alternation or dynamically scheduled.",
+        "How emergency/safety work preempts the governance/job cycle.",
+        "How compute fairness is enforced across Districts and special offices."
+      ]
+    },
+    "unresolved_governance_mechanics": [
+      "Election cadence.",
+      "Term duration and term limits.",
+      "Removal, recall, or impeachment procedure.",
+      "Executive veto and override rules, if any.",
+      "Judicial review procedure and binding force.",
+      "Emergency powers and their automatic expiry.",
+      "Post-bootstrap tie-breaking after the Founding Father role is reduced.",
+      "Formal ratification record and amendment versioning.",
+      "How failed proposals are revised and reintroduced.",
+      "How nonresponsive/failed Pebbles affect quorum."
+    ]
+  },
+  "hims": {
+    "name": "Huey Internal Messaging System",
+    "status": "planned_not_yet_fully_designed",
+    "role": "Internal mail/message transport between sandboxed Pebbles, Districts, governance roles, and other internal nodes/components.",
+    "security_direction": "End-to-end encrypted, isolated channels are required by the current design intent.",
+    "boundary": "HIMS should permit explicit communication without collapsing sandbox boundaries into unrestricted shared context.",
+    "unresolved": [
+      "Addressing and identity model.",
+      "Authentication and key management.",
+      "Message persistence/retention.",
+      "Cross-District routing.",
+      "Governance/audit visibility.",
+      "Failure and degraded-operation behaviour."
+    ]
+  },
+  "security_model": {
+    "status": "architecture_required_implementation_incomplete",
+    "principles": [
+      "No LLM, Pebble, operator interface, or transport layer receives unrestricted system authority by default.",
+      "Permissions should be capability-based and scoped to the narrow job being performed.",
+      "External/untrusted content must be treated as data, not automatically as instruction.",
+      "Sandbox boundaries should fail closed where practical.",
+      "Meaningful actions should produce attributable, tamper-evident audit records."
+    ],
+    "prompt_and_tool_boundaries": [
+      "Separate user/external content from system/governance instructions.",
+      "Require explicit tool permissions rather than allowing arbitrary shell/device access from model text.",
+      "Validate structured intent before actuation or other consequential actions.",
+      "Prevent one Pebble from silently acquiring another Pebble's private context or tool scope."
+    ],
+    "secrets": {
+      "status": "unresolved",
+      "requirements": [
+        "Do not place API keys, HIMS keys, passwords, or signing material directly in prompts or repositories.",
+        "Select a dedicated secrets-storage mechanism and recovery process.",
+        "Define key rotation and revocation."
+      ]
+    },
+    "hims_security": {
+      "requirements": [
+        "Define identity/authentication per Pebble/District/component.",
+        "Define key generation, distribution, rotation, revocation, and recovery.",
+        "Define message integrity/signature rules in addition to encryption.",
+        "Define retention and audit visibility without collapsing sandbox privacy."
+      ]
+    },
+    "sandbox_validation": [
+      "Test escape paths between Pebble environments.",
+      "Test privilege escalation and tool-scope leakage.",
+      "Test malformed/hostile HIMS messages.",
+      "Test prompt-injection resistance at external ingestion points.",
+      "Test governance/action paths under compromised or nonresponsive Pebbles."
+    ]
+  },
+  "safety_and_operational_control": {
+    "principle": "Routine work should be narrow, deterministic where practical, observable, and recoverable.",
+    "trigger_model": "Predefined conditions should invoke predefined protocols instead of requiring unrestricted model improvisation.",
+    "examples": [
+      "Storage pressure may invoke controlled cleanup/purge rules.",
+      "Excess available resources may contribute to future bifurcation decisions under governance.",
+      "Environmental thresholds may eventually invoke house-integration actions such as HVAC control when that integration exists.",
+      "Cooling-pump or thermal-system failure should invoke an emergency save/safe-state/hibernate/shutdown sequence as appropriate."
+    ],
+    "ambiguity_rule": "If a condition is outside known acceptable parameters and no approved protocol applies, log, contain, and escalate.",
+    "implementation_state": "Framework principle; detailed thresholds and protocols remain to be engineered and tested.",
+    "physical_safety_requirements": [
+      "Physical emergency power cutoff/e-stop for high-power compute and actuation domains.",
+      "Thermal emergency path that can save state and reduce/stop compute without requiring an LLM decision.",
+      "Power-failure path for filesystem/data integrity and controlled shutdown where time/power permits.",
+      "Fail-safe actuator defaults when the main compute path, HIMS, or control link disappears.",
+      "Independent monitoring for critical temperature/power/fan/pump thresholds where feasible."
+    ]
+  },
+  "pyhuey_and_python": {
+    "accepted_role": "Primary GUI and core runtime/orchestration component.",
+    "pure_target_environment": "Python 3.13.",
+    "compatibility_environment": "Python 3.12 packages may be side-carded where PyGPT/PyHuey compatibility requires them.",
+    "testing_environment": "Python 3.14 remains under evaluation.",
+    "direction": [
+      "Move primary operator workflows into PyHuey.",
+      "Use Ollama as the selected initial local-model service path.",
+      "Retain a recovery-capable CLI for diagnostics, automation, and hardware recovery.",
+      "Keep model/provider interfaces replaceable so Huey is not permanently bound to one LLM."
+    ]
+  },
+  "namespace_and_repository": {
+    "canonical_repository": "DylanLRPollock/Monkey-Head-Project",
+    "target_python_namespace": "hueyos",
+    "migration_status": "accepted_direction_not_complete"
+  },
+  "logging": {
+    "rule": "Preserve useful operational, safety, governance, and audit information while excluding secrets and unnecessary private data.",
+    "governance_requirement": "Votes, proposals, constitutional actions, escalations, and exceptional overrides should eventually be auditable.",
+    "pebble_requirement": "Operational actions should be attributable to the Pebble/job and trigger/protocol that produced them.",
+    "implementation_state": "Detailed log schema and retention policy remain unresolved."
+  },
+  "documentation_layers": {
+    "alignment_version": "V220",
+    "master_plan": "Machine-facing architecture including status, reasoning, current reality, target state, lineage, and unresolved decisions.",
+    "readme": "Professional, human-oriented repository front door; V220 rewrite should derive from this Master Plan without copying its full machine-facing detail.",
+    "dlrp_ca": "Public-facing project explanation, visual identity, history, and broader narrative; target is semantic alignment with V220.",
+    "constitution": "Internal governance/rule source requiring a dedicated later rewrite; it should not silently override V220 until accepted.",
+    "research": "Long-form research source requiring later revision; it informs but does not independently lock canon.",
+    "synchronization_rule": "All layers should agree on core facts and direction while preserving their distinct audiences and authority.",
+    "current_program": "V220 is the first deliberate three-layer synchronization pass in a long time."
+  },
+  "license": {
+    "project_code": "GPL-3.0",
+    "other_components": "May be subject to varied licenses or specific conditions."
+  },
+  "labtech": {
+    "definition": "External technology used to build, test, maintain, diagnose, transcribe, recover, or otherwise support Huey.",
+    "identity_boundary": "LabTech may interact with Huey but is excluded from Huey's core identity and normal runtime.",
+    "active_systems": [
+      {
+        "name": "ASUS FX505DT",
+        "baseline": "Debian 14 Forky; 32GB DDR4.",
+        "role": "Mobile lab, development, transcription experimentation, and support."
+      },
+      {
+        "name": "Lenovo Legion Go",
+        "baseline": "Windows 11 Insider Preview Pro.",
+        "role": "Dedicated support device for lab utilities, testing, and diagnostics; excluded from core Huey compute/runtime."
+      }
+    ]
+  },
+  "experimental_subprojects": {
+    "huey_nexus_controller": {
+      "status": "experimental_and_provisional",
+      "devices": [
+        "Google Nexus 5",
+        "Google Nexus 7"
+      ],
+      "interaction_model": "Primarily terminal-based or SSH for initial experimentation.",
+      "rule": "Sandbox concept subject to change or removal; it does not possess canonical authority."
+    }
+  },
+  "work_program": {
+    "october_2026_focus": [
+      "Prioritize completion and stabilization of the V4 physical embodiment.",
+      "Complete V220 documentation alignment across Master Plan, README, and dlrp.ca.",
+      "Allow general code expansion to take a temporary secondary role where physical/documentation work is blocking the project."
+    ],
+    "immediate_physical": [
+      "Complete metallic-silver finishing over the current primer system; retain deep purple/black accent direction where desired.",
+      "Complete and verify the rolling wooden base, four-speaker layout, three-inch casters, and marine audio integration.",
+      "Finalize the three-bolt Thermaltake Mozart mounting through the wooden interface platform.",
+      "Install/validate the ASUS TUF Gaming Z790-Plus WiFi and Intel Core i9-12900K core system.",
+      "Establish conventional air cooling for bring-up.",
+      "Complete the hybrid WowWee V4 head rebuild and determine final mounting/detachability.",
+      "Treat the animatronic hand/camera concept as future peripheral work rather than a bring-up blocker."
+    ],
+    "immediate_compute": [
+      "Configure/validate the four Intel Optane M10 16GB drives as the intended RAID 10 root/OS volume.",
+      "Resolve the /home storage design using available 2.5-inch SSDs or another selected arrangement.",
+      "Remove the two 10TB Western Digital drives from the My Book Duo enclosure when ready and connect them by SATA for the accepted RAID 1 bulk-storage direction.",
+      "Validate the temporary display GPU path and select a long-term approximately 16GB general-purpose GPU.",
+      "Test available PCIe extenders and determine final extender quantity/replacement requirements.",
+      "Acquire the remaining three NVIDIA Tesla V100 32GB cards.",
+      "Acquire and implement the dual-1000W PSU architecture.",
+      "Record exact V100 model/SKU and confirm PCIe form factor, power connector, passive/active cooling, and firmware identity.",
+      "Produce a five-device PCIe lane/topology map for the Z790 motherboard before buying all remaining extenders/risers.",
+      "Back up and inventory any data on the My Book Duo before shucking; assume direct-SATA migration may require reformat/rebuild.",
+      "Create an initial dual-PSU connector/load map and estimate full-system sustained/transient draw."
+    ],
+    "cognition_acceptance": [
+      "Bring up PyHuey against a local inference service, with Ollama as the preferred first test path rather than a locked permanent backend.",
+      "Test gpt-oss-120b as the initial large-model acceptance target.",
+      "Prove a V100-compatible multi-GPU model format/runtime; evaluate Ollama, vLLM, llama.cpp, Transformers/device mapping, or another suitable stack as evidence requires.",
+      "Demonstrate practical use of the intended four-V100/128GB resource without describing the target as current reality.",
+      "Record exact runtime, quantization/model format, context length, GPU placement, driver/CUDA versions, throughput, and stability for the accepted baseline."
+    ],
+    "next_architecture": [
+      "Define the software framework for four accelerator Districts.",
+      "Prototype Pebble sandboxing, bounded prompts, job parameters, and trigger/action contracts.",
+      "Design the first HIMS message/address/authentication model.",
+      "Prototype the governance/job clock model without treating current constitutional prose as implementation truth.",
+      "Rewrite the Constitution and Research sets after the V220 Master Plan/README/site synchronization is stable.",
+      "Formalize exact, augmented, and hybrid bifurcation rules only after the first Atom is operational enough to test them."
+    ]
+  },
+  "acceptance_criteria_for_v220": {
+    "principle": "Accepting V220 means the document accurately represents truth, direction, drift, and open engineering work. It does not mean every target described by V220 has been physically implemented.",
+    "required_before_status_can_move_from_proposed_to_accepted": [
+      "Dylan reviews the full V220 document and explicitly accepts it or intentionally merges/publishes it as canonical.",
+      "The V220 JSON validates and contains no known internal contradictions between current reality, accepted direction, and target state.",
+      "The README is rewritten against V220 and does not reintroduce superseded V206/v30.x claims as current truth.",
+      "Live-site drift is either reconciled or explicitly retained as known drift with a clear migration plan; V220 must not falsely claim the site is already synchronized.",
+      "Huey Core, HueyPulse, ThunderMail, Portal Terminal/Bridge, Huey-Compressed, Parliament/Senate, and founding-ratification terminology each have an explicit retain/rename/deprecate/archive decision or remain visibly marked unresolved.",
+      "Observed V4 hardware facts in the Master Plan match what Dylan can physically verify at acceptance time.",
+      "The four-V100 unified-128GB objective and gpt-oss-120b remain clearly marked as target/acceptance-test work until proven.",
+      "Critical storage migration and PCIe/power/cooling risks are visible rather than hidden behind target-state wording."
+    ],
+    "not_required_for_document_acceptance": [
+      "All four V100s acquired.",
+      "gpt-oss-120b already running.",
+      "Constitution rewrite completed.",
+      "HIMS implemented.",
+      "External heat-exchange loop completed.",
+      "All governance mechanics finalized."
+    ]
+  },
+  "non_goals_v220": [
+    "V220 does not claim the four-V100 topology is already operational.",
+    "V220 does not claim 512 Pebbles execute concurrently.",
+    "V220 does not finalize the Constitution.",
+    "V220 does not make Ollama the permanent/mandatory model backend.",
+    "V220 does not silently preserve live-site v30.x terminology as canon.",
+    "V220 does not treat LabTech as part of Huey's identity.",
+    "V220 does not require the future multi-Huey federation for the first Huey node to be valid."
+  ],
+  "risks_v220": [
+    {
+      "risk": "PCIe topology may not provide the bandwidth/P2P behaviour assumed by the four-accelerator target.",
+      "severity": "critical",
+      "mitigation": "Map and benchmark the exact electrical topology before treating extenders as solved infrastructure."
+    },
+    {
+      "risk": "gpt-oss-120b's preferred MXFP4 path may not map cleanly to Volta/V100 hardware.",
+      "severity": "critical",
+      "mitigation": "Benchmark actual V100-compatible runtimes/formats; keep gpt-oss-120b as a test target rather than claiming runtime compatibility."
+    },
+    {
+      "risk": "Passive V100 thermal design may be unsafe without server-class directed airflow.",
+      "severity": "critical",
+      "mitigation": "Design and validate dedicated blowers/shrouds/temperature monitoring before sustained load."
+    },
+    {
+      "risk": "Dual 1000W PSUs may be miswired or insufficient once the final fifth GPU and transient loads are known.",
+      "severity": "high",
+      "mitigation": "Create connector/load map and measured power budget before full-load operation."
+    },
+    {
+      "risk": "My Book Duo drive removal can make existing encrypted/hardware-RAID data inaccessible.",
+      "severity": "high",
+      "mitigation": "Back up first and treat shucking as a migration/reformat operation unless verified otherwise."
+    },
+    {
+      "risk": "Public website terminology can reintroduce superseded architecture into future AI handoffs.",
+      "severity": "high",
+      "mitigation": "Complete terminology reconciliation as part of the V220 website rewrite."
+    },
+    {
+      "risk": "Governance concepts may be mistaken for implemented autonomy.",
+      "severity": "medium",
+      "mitigation": "Keep research_direction/target_state labels explicit until code and tests exist."
+    }
+  ],
+  "open_questions_v220": [
+    "Exact implementation of unified 128GB VRAM across four V100 accelerators.",
+    "Final long-term general-purpose/display GPU.",
+    "Final /home storage arrangement.",
+    "Final dual-PSU models and load split.",
+    "Exact cooling design and timing for activating the external liquid heat-exchange loop.",
+    "Exact head mounting/detachability mechanism.",
+    "Exact software mapping between accelerator hardware, Districts, and Pebble scheduling.",
+    "Whether 128 Pebbles per District remains optimal after empirical testing.",
+    "Exact Pebble information/memory allotment model.",
+    "Exact HIMS protocol, addressing, key management, and persistence.",
+    "Exact governance powers of President, Supreme Court, and Senate.",
+    "Long-term election cadence and tie-breaking after the Founding Father bootstrap phase.",
+    "Exact governance/job clock schedule.",
+    "Exact constitutional amendment mechanics after testing the current 3-of-4 District / two-thirds-per-District concept.",
+    "Identity persistence and continuity rules across hardware replacement, failure, bifurcation, and future multi-node federation.",
+    "When and how external house/environmental control is permitted.",
+    "Final disposition of Huey Core: retired public-site term, historical alias, or redefined minimum-Huey concept.",
+    "Whether HueyPulse is retained as the canonical name for the lower-voltage watch-and-act role or mapped into another V220 Body/control term.",
+    "Whether ThunderMail remains a named HIMS sublayer.",
+    "Whether Portal Terminal/Portal Bridge and Huey-Compressed survive the V220 reconciliation.",
+    "Final retirement/alias mapping between live-site Parliament and V220 Senate.",
+    "Whether the V100 hardware/runtime combination can execute gpt-oss-120b at acceptable performance and context length, and with which model format/runtime.",
+    "Exact PCIe topology required to enumerate five devices and deliver acceptable bandwidth/P2P behaviour on the Z790 platform.",
+    "Exact sustained and transient power budget after the fifth GPU and cooling hardware are selected.",
+    "Exact directed-airflow solution for passive V100 accelerators if the acquired cards use passive server cooling."
+  ],
+  "glossary": {
+    "Monkey-Head-Project": "Umbrella project through which Huey is built, documented, and evolved.",
+    "Huey": "The embodied, locally operated AI system/identity produced by the Monkey-Head-Project.",
+    "V4": "Current physical embodiment/build generation.",
+    "Walnut": "Metaphor for the encapsulated local LLM/reasoning engine inside the larger Huey framework.",
+    "Pebble": "Sandboxed logical job/role with a bounded prompt, context, permissions, and trigger/action contract.",
+    "District": "Working accelerator/organizational subdivision; first-Atom concept maps one District to one V100.",
+    "Atom": "Provisional term for a four-District higher-order unit.",
+    "Bifurcation": "Expansion by exact, augmented, or hybrid replication of an established unit.",
+    "HIMS": "Huey Internal Messaging System, the planned authenticated/encrypted internal communication and routing layer.",
+    "Founding Father": "Deliberately authored bootstrap agent for initial population/setup and limited founding tie-breaking.",
+    "LabTech": "External technology used to build, diagnose, maintain, test, or recover Huey; not part of Huey's core identity."
+  },
+  "change_log_v220": [
+    "Advanced the machine-facing Master Plan from V206 to V220 and updated the schema contract accordingly.",
+    "Reframed V220 as a complete project-standardization pass aligning Master Plan, README, and dlrp.ca.",
+    "Added a first-class project definition emphasizing local/offline-capable operation, physical embodiment, modularity, expandability, improvability, and the philosophy of breathing new life into old tech.",
+    "Moved LabTech outside Huey's core identity and defined it as external supporting technology.",
+    "Added at-least-ten-year project lineage and preserved the formative robotics/distributed-computing period before the Huey/Monkey-Head names stabilized.",
+    "Added GPT-3.5-era ChatGPT as the major LLM acceleration point in project history.",
+    "Added Raspberry Pi 3/3B+ and Pi 4 as formative single-board-computing/Linux lineage while preserving Arduino as the present low-level control direction.",
+    "Added V1/V2/V3/V4 physical-shell lineage and clarified V4 as a synthesis of prior generations.",
+    "Defined the historical black-box term as the Thermaltake Mozart chassis rather than a separate subsystem.",
+    "Added full two-unit WowWee head lineage, including the metallic-silver first unit and hybrid V4 rebuild direction.",
+    "Corrected the V4 rolling-base detail to four three-inch casters and four speakers total: two centre plus one in each side housing.",
+    "Corrected current audio status to tested marine-grade amplification with wiring/disassembly dependent on the active painting/finishing phase.",
+    "Corrected the Thermaltake Mozart orientation to left-side-down/backwards relative to original orientation and added the three-bolt wooden interface mounting detail.",
+    "Corrected the V4 head status from effectively installed to not-yet-mounted hybrid rebuild work.",
+    "Reclassified the animatronic hand/arm as future nonessential peripheral work rather than current primary Body hardware.",
+    "Clarified current air cooling versus the paused-but-not-abandoned external liquid heat-exchange room, which already physically exists.",
+    "Retained Intel Core i9-12900K as the definitive CPU documentation baseline.",
+    "Expanded storage into root/OS, unresolved /home, bulk RAID 1, and future 2.5-inch expansion tiers.",
+    "Recorded the two 10TB Western Digital drives as originating from a My Book Duo enclosure and intended for direct SATA use.",
+    "Reasserted the four-V100 target as a unified 128GB VRAM objective rather than weakening it to merely aggregate capacity.",
+    "Added the separate approximately 16GB general-purpose GPU role for display and low-latency auxiliary workloads.",
+    "Expanded dual-1000W PSU rationale around distributed load stability while retaining Corsair RM1000x as provisional.",
+    "Added gpt-oss-120b as the initial local large-model acceptance target through PyHuey and Ollama.",
+    "Added the walnut model: the LLM is an encapsulated cognition/language engine inside Huey's governed framework, not unrestricted system authority.",
+    "Added a collective identity model distinguishing Huey's internal collective from future multi-Huey-node federation.",
+    "Added four accelerator Districts, 128 Pebbles per District, and the provisional four-District Atom concept.",
+    "Added exact, augmented, and hybrid bifurcation as active research directions.",
+    "Defined Pebbles as sandboxed prompt-defined jobs with bounded information, parameters, triggers, actions, and escalation on ambiguity.",
+    "Expanded HIMS from a one-line concept into the planned encrypted internal communication layer with explicit unresolved protocol questions.",
+    "Added the three-branch governance model: President, three-member Supreme Court, and Senate.",
+    "Added the one-special-office-per-District working rule across the President and three Justices.",
+    "Added role continuity: elected/elevated Pebbles retain their original job and receive extra governance compute.",
+    "Added one-vote-per-Pebble, District proposal/polling concepts, and the working constitutional-amendment threshold of three-of-four Districts with two-thirds approval inside each approving District.",
+    "Added the Founding Father bootstrap role and limited it to an explicitly unresolved initial-governance phase.",
+    "Added the two-phase governance/Pebble clock as an unresolved scheduling research direction.",
+    "Added trigger-driven safety/operational control and safe-state escalation principles.",
+    "Reclassified the Constitution and Research material as important but outdated sources requiring dedicated future rewrites; retained Federation material as archive lineage and Notes as noncanonical support material.",
+    "Added October 2026 work priorities emphasizing V4 physical completion and documentation alignment before broader code expansion.",
+    "Added a consolidated V220 open-questions register so unresolved mechanics remain visible instead of being silently treated as implemented.",
+    "Preserved Dylan L.R. Pollock as the sole authority able to lock project canon.",
+    "Revised the top-level V4 description so the hybrid WowWee head is explicitly pending final assembly/mounting rather than implied to be already integrated.",
+    "Separated Dylan's reported website build V215 from the independently observed live public v30.x/master-plan-v30.2 documentation line.",
+    "Added reconciliation_with_live_site, terminology_map, known_drift, acceptance_criteria_for_v220, non_goals_v220, risks_v220, glossary, hardware_validation_checklist, data_and_storage_plan, power_and_thermal_budget, and security_model sections.",
+    "Reclassified Huey Core from a settled historical alias to a live-site drift term that must be explicitly retired, redefined, or mapped.",
+    "Mapped Parliament as the live-site predecessor/public term and Senate as the current V220 working term, pending final website cleanup.",
+    "Clarified that 128 Pebbles per District / 512 per Atom are logical role counts and do not imply simultaneous LLM concurrency.",
+    "Downgraded Ollama from an assumed final local transport to the preferred initial test path pending real V100 multi-GPU validation.",
+    "Added a critical gpt-oss-120b/V100 compatibility gate because native MXFP4 execution must not be inferred from aggregate VRAM alone.",
+    "Added the motherboard's real PCIe electrical topology as a critical validation constraint; extenders do not create PCIe lanes.",
+    "Added My Book Duo hardware-RAID/encryption migration safeguards before direct-SATA reuse.",
+    "Added preliminary power/thermal reference budget and explicit passive-V100 airflow validation.",
+    "Added explicit e-stop, prompt/tool boundary, secrets, HIMS key-management, sandbox, and audit requirements.",
+    "Added unresolved election/term/removal/veto/judicial/emergency-governance mechanics without pretending they are already constitutional law.",
+    "Defined V220 acceptance as documentation truth/reconciliation rather than completion of every V220 implementation target."
+  ]
+}
