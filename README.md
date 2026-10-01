@@ -3,7 +3,7 @@
 ---
 
 <p align="center">
-  <img src="src/huey/memory/PNG/HueyOS.png" alt="HueyOS - Monkey-Head-Project" width="40%">
+  <img src="src/huey/memory/PNG/monkey-head-project.png" alt="Monkey-Head-Project" width="40%">
 </p>
 
 <p align="center"><strong>Philosophy: "Breathing new life into old tech"</strong></p>
