@@ -53,7 +53,7 @@ setup(
         "pymongo==4.13.1",
         "redis==6.2.0",
         "cryptography==50.0.0",
-        "pyjwt==2.13.0",
+        "pyjwt==2.15.0",
         "bcrypt==4.3.0",
         "paramiko==5.0.0",
         "docker==7.1.0",
