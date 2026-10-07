@@ -377,7 +377,7 @@ jobs:
         # (SLSA level 3) that PyPI publishes alongside the package.
         # Consumers can verify the artifact came from this repository
         # and this workflow.
-        uses: pypa/gh-action-pypi-publish@fb13cb306901256ace3dab689990e13a5550ffaa # v1.11.0
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
         with:
           attestations: true
           # The dist/ directory was extracted by the previous step;
