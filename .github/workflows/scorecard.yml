@@ -172,7 +172,7 @@ jobs:
         # Security tab. If the analysis failed to produce a file at
         # all, this step will fail loudly rather than uploading
         # nothing.
-        uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4
+        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4
         with:
           sarif_file: results.sarif
 
@@ -181,7 +181,7 @@ jobs:
         # upload-to-Security-tab step fails (e.g. GHAS not enabled on
         # a private repo). The artifact is the fallback view.
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: scorecard-results
           path: results.sarif
