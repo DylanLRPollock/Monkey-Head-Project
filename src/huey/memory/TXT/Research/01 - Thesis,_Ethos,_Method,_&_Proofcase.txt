@@ -1,0 +1,249 @@
+# 01 - Thesis, Ethos, Method, & Proofcase
+
+**Monkey-Head-Project**  
+**Research Chapter 1 — Proposed Revision**  
+**18 October 2026**
+
+*Document status: working research. This chapter explains the purpose, reasoning, methodology, and proposed proof standards of the Monkey-Head-Project. It is neither a ratified constitutional provision nor a declaration that planned capabilities have already been achieved. The accepted research terminology is provisionally maintained in “00 - TOC_&_Glossary”; engineering status must be checked against current evidence.*
+
+---
+
+## Introduction — The Proposition
+
+The Monkey-Head-Project begins with a proposition that is ambitious without requiring the supernatural:
+
+> Given sufficient time, resources, determination, and a method that can withstand testing, an individual can develop a meaningful, embodied, modular artificial-intelligence system from obtainable technology, and can establish a path by which that system grows, changes, and remains comprehensible.
+
+This is not a promise that any person can reproduce the same machine at the same cost, or that a collection of processors and prompts constitutes a self-governing intelligence. It is a challenge to the assumption that sophisticated robotics and local AI must be the exclusive products of industrial laboratories. The project's contribution is meant to be an understandable, testable route through the work—not merely a finished object.
+
+**The Monkey-Head-Project** is the overarching initiative: the inventions, experiments, documentation, failures, and practical work that make the attempt possible. **Huey** is the developing collective system within that initiative. Huey is not simply the name of an LLM, a GPU, a robot shell, a conversational interface, or an elected office. It is the intended coherent expression of a larger arrangement of physical components, bounded processes, shared records, distinct citizen roles, communication, and constitutional governance.
+
+The machine's body can be replaced. The local language model—the replaceable inference resource called the **walnut**—can be changed. The operating environment and internal mechanisms can be improved. Constitutional commitments are deliberately more resistant to change, though their exact lawful evolution belongs to the Constitution, not to this research chapter. Whether a system that replaces nearly everything can still be meaningfully called Huey is an open question, not an answer conferred by its name. Chapter 2 treats that problem directly.
+
+The immediate work is to establish a functioning physical and computational proof. The longer ambition is to build a local, distributed, increasingly self-governing system that can be reproduced in principle, expanded when resources permit, and ultimately made more compact than the initial laboratory arrangement. The research must distinguish each of those stages. A design is not a demonstration; a purchased component is not a working configuration; a locally generated answer is not, by itself, proof of constitutional continuity.
+
+The aim is not spectacle. The aim is to find out what can actually be built.
+
+---
+
+## I. Thesis — An Obtainable Path, Not an Exclusive Machine
+
+The central thesis is that a determined individual, applying reusable engineering methods to obtainable materials and open technical tools, can build and verify increasingly capable embodied AI without surrendering the system's essential operation to a distant institution or inaccessible service.
+
+The word **obtainable** requires care. A component may be available on the second-hand market yet remain costly, power-hungry, or impractical for many builders. A successful prototype does not by itself establish that the result is economical, safe to duplicate, or easy to maintain. The project must therefore show its work: what resources were required, how the parts interact, which capabilities were demonstrated, and what obstacles remain.
+
+The thesis has five mutually supporting dimensions.
+
+### 1. Embodiment
+
+Huey is intended to occupy a real physical environment. Cameras, microphones, computing equipment, sensors, cooling, power, and eventually controlled movement introduce constraints that a text-only demonstration can avoid. Embodiment makes those constraints unavoidable and testable. It also introduces responsibilities: a software decision must not be mistaken for authorization to move hardware, bypass an interlock, or endanger equipment or people.
+
+Not every experiment requires the completed robot. Bench tests, simulations, and isolated software trials are legitimate stages. They simply must not be described as full embodied operation.
+
+### 2. Modularity
+
+The project should not depend on one irreplaceable motherboard, GPU, operating-system image, model family, or body. Subsystems ought to have understandable boundaries, explicit responsibilities, replaceable interfaces, and recoverable state wherever feasible. Modularity is not a promise of effortless plug-and-play compatibility; changing a part may require drivers, adapters, new validation, revised cooling, or altered software. The point is to make that work possible and inspectable rather than to rebuild the entire project from the beginning.
+
+### 3. Expansion and eventual reduction
+
+The first mature proof may occupy significant laboratory space and employ multiple accelerators, storage devices, and supporting equipment. That is an experimental necessity, not the desired final physical scale. A longer-term ambition is to reduce a proven arrangement toward the footprint of a compact outdoor air-conditioning unit, or comparably manageable equipment, without erasing the capacities that made the larger proof meaningful.
+
+Expansion and downsizing belong to the same engineering problem: determine which functions truly require separate hardware, which can be consolidated, and which can be replaced with more efficient components. Physical dimensions, heat rejection, acoustic output, power supply, and service access will eventually determine what is feasible. A compact final form is a goal, not a currently verified result.
+
+### 4. Local operation and reproducibility
+
+The core thinking and records should operate locally as far as the target design permits. The resulting system should be understandable enough that its critical demonstrations can be repeated, measured, and challenged rather than accepted on the builder's assurance alone. Reproducibility does not require another builder to use exactly the same components; it requires documented tests, interface assumptions, limitations, and results that another competent person could evaluate or adapt.
+
+### 5. Distributed responsibility
+
+A powerful language model alone is not the proposed governing authority. Huey's working architecture separates bounded citizens, districts, communications, collective records, elected offices, executive implementation, judicial review, and physical safety. The reason is reliability: concentrating all observation, interpretation, authorization, execution, and self-review inside one unconstrained conversational process creates a single point of error and a single point of compromised authority.
+
+The research does not claim that division automatically makes the system reliable. Separation can introduce its own failures: latency, contradictory instructions, unavailable components, disputed records, and deadlock. What it provides is a design that can be tested for containment, accountability, recoverability, and genuinely distinct perspectives. Later chapters examine those claims instead of treating them as established facts.
+
+The founding arrangement is also deliberately one degree removed from the human author. The human counterpart writes the **Founding Father** agent and the framework within which it may operate. The Founding Father is intended to prepare the original citizen identities and institutions. After ratification, those institutions—not the human's continual prompt-by-prompt intervention—are meant to carry out ordinary governance. That separation is part of the experiment. It must not be confused with a claim that the proposed government is already operating.
+
+---
+
+## II. Ethos — Breathing New Life into Old Tech
+
+**“Breathing new life into old tech”** is the central project ethos. It expresses a preference for useful continuity over reflexive replacement. Machines, components, tools, and ideas often lose their commercial value before they lose their technical value. The project asks whether their remaining strengths can be combined with current methods to build something neither generation could have produced alone.
+
+The earlier experiments involving legacy computers, retired workstations, repurposed peripherals, and successive physical shells are part of this lineage. The project's archived discussions of hierarchical operating systems, ant colonies, honeycomb storage, and science-fiction analogies matter as records of how the thinking developed. They do not become current implementation requirements simply because they were once inspiring.
+
+An old part earns its place by what it contributes. Its usefulness must be weighed against adaptation time, electricity, thermal burden, failure risk, software maintenance, and the complexity it adds. Sometimes reuse is the correct engineering answer. Sometimes a modern replacement, emulator, or archived demonstration is the more faithful way to preserve the lesson. The ethos opposes waste, not technical judgment.
+
+### Honesty over theatrical completion
+
+A second principle is the disciplined separation of fact from aspiration. Project material should distinguish:
+
+- **Observed or implemented:** assembled, run, measured, or otherwise verified under stated conditions.
+- **Accepted design direction:** selected for further engineering but not necessarily completed or tested.
+- **Provisional or experimental:** a candidate architecture, mechanism, term, or configuration that may change.
+- **Historical:** a previous machine, theory, name, or approach retained for its lineage.
+- **Future target:** a milestone that has not yet passed its stated acceptance test.
+
+A partial proof should be presented as partial. If a single accelerator works but four-accelerator inference has not been validated, the project must say so. If a message route is drawn but has not passed tests, the drawing remains a proposal. If a conversational reply says “Huey” only because an operator directly placed that answer in a prompt, it demonstrates a response, not the intended architecture.
+
+Honest documentation protects the project from its own optimism. It also allows later researchers—including the project's author—to recognize what was actually known at a given point in time.
+
+### Autonomy with boundaries
+
+The objective is neither an elaborate remote-controlled puppet nor an unrestrained model with unlimited power to rewrite its instructions and act on its environment. Huey is meant to develop meaningful internal processes while retaining bounded permissions, accountable records, controlled communication, and a separation between generating an idea and authorizing its execution.
+
+The human counterpart stands outside ordinary internal branches. That person retains legitimate responsibility for building, maintaining, diagnosing, and safeguarding the real machine. The constitutional design attempts to avoid ordinary human micromanagement without pretending the hardware no longer has an owner, a maintainer, or safety obligations. Exactly where the constitutional boundary lies is a subject for later chapters and the separate Constitution.
+
+### Explanation without misplaced certainty
+
+The public record should make the system's purpose, method, limits, failures, and observable results intelligible. Private citizen vaults, access credentials, or other security-sensitive implementation details need not be published to prove the general design. Openness about evidence is compatible with responsible protection of operational secrets. It is not compatible with unverifiable claims of success.
+
+The aim is to preserve wonder without allowing wonder to replace engineering.
+
+---
+
+## III. Method — Build, Test, Document, Revise, Repeat
+
+The working method is deliberately uncomplicated:
+
+**Build. Test. Document. Revise. Repeat.**
+
+The difficulty lies in applying that cycle consistently across very different kinds of work: fabrication, cooling, data storage, local inference, messaging, simulated governance, and finally lawful embodied action.
+
+### 1. Build from a named baseline
+
+A development phase begins with an inventory of what exists and what it can presently do. The active physical direction is **Huey V4**, not the older AMD-based “Huey Core” proof-body description. The V220 engineering material identifies an Intel Core i9-12900K / ASUS Z790 build, a Thermaltake Mozart compute chassis, a rebuilt animatronic-head lineage, and a four-accelerator target. Individual components and integrations must still be reported according to their actual verified state. The historical Huey Core name remains useful to explain the evolution of the project, but it is not automatically the current machine's canonical designation.
+
+The development environment can use PyGPT/PyGPT-net-derived tooling, a proposed PyHuey integration, Python, locally hosted model services, and diagnostic utilities. Their presence in the toolchain is not evidence that the final governance system or multi-GPU runtime exists. Names, versions, and dependencies must be checked at the time of testing rather than carried forward indefinitely from a previous draft.
+
+### 2. Test claims at the level where they arise
+
+Hardware claims require physical measurements. A cooling strategy requires temperatures and sustained loads. A storage strategy requires recovery tests, not merely a RAID label. A GPU configuration requires demonstrated model loading, memory allocation, inference behaviour, and failure response. Communications require authentication and authorization tests, including rejected messages and service interruptions.
+
+Governance requires a different class of proof: independent citizen state; correct voter eligibility; traceable decisions; inability to obtain unauthorized powers; predictable behaviour when a district is lost or a vote deadlocks. A convincing conversation with a single model is insufficient evidence for any of those properties.
+
+Safety-critical thermal, electrical, and mechanical protection must not depend on the availability of a long-running language-model inference request or an elected vote. Deterministic controls and hardware interlocks protect the apparatus first; the governance system may review and document what happened afterwards. Detailed implementation belongs in the hardware and emergency chapters.
+
+### 3. Document evidence, including failure
+
+The research book explains reasoning and experiments. The proposed **Huey's Constitution** will be the separate authoritative text when duly adopted. The machine-facing master plan records architecture, decisions, status, and implementation requirements. The README and website introduce the project to different audiences. They should agree where their factual claims overlap, but they should not be written as interchangeable documents.
+
+Useful test records identify the tested claim, environment, component versions, conditions, expected behaviour, observed behaviour, logs or measurements, failure modes, and repeatability. A failed attempt that is described accurately may be more useful than an impressive demonstration that cannot be reconstructed.
+
+### 4. Revise explicitly
+
+Changed assumptions, replaced hardware, retired names, and altered designs should be recorded with their rationale and effect on other material. This does not mean every experiment needs a constitutional amendment. Research can evolve freely as research. A binding governance rule, once lawfully ratified, must change through its own process.
+
+A redesign should preserve the lineage of older work without presenting an old claim as the current truth. The 20 archived research papers, the ten-chapter generation, and this proposed expanded research structure are successive layers of evidence and thought—not competing authorities that must all be treated as simultaneously current.
+
+### 5. Keep identity, implementation, and history separate
+
+A system can be **running** without demonstrating the broader qualities proposed for Huey. Conversely, the failure of one model, board, shell, or subsystem need not invalidate the entire project if the architecture preserves an understandable recovery path.
+
+“Living,” when used in this project, is an engineering metaphor for sustained, internally governed, multi-step system behaviour. It is not a demonstrated scientific claim that a machine possesses consciousness, subjective experience, or biological life. Questions of identity and continuity—including the Ship of Theseus and transporter-style bifurcation problems—remain open research questions.
+
+This separation prevents an attractive phrase from becoming a measurement it cannot support.
+
+---
+
+## IV. Proofcase — From Hypothesis to Demonstration
+
+A **Proofcase** is a set of declared tests defining what a particular project milestone would mean and what observations would establish it. **Proof Positive** is an affirmative result that satisfies those tests. Neither term means that the entire Monkey-Head-Project has been completed.
+
+The current research path contains related but distinguishable proof stages.
+
+### A. Embodied and local operating proof
+
+The first stage asks whether the physical machine and its supporting software can operate safely and predictably. It requires honest demonstration of actual hardware, boot and service state, local connectivity, cooling, storage access, recovery procedures, input and output, and the practical division between operator tooling and the machine's own capabilities.
+
+This proof can be advanced subsystem by subsystem. It is not equivalent to a completed constitutional republic. Its significance is to establish a trustworthy physical basis upon which later experiments can depend.
+
+### B. Distributed local-compute proof
+
+The near-term major compute objective is **four NVIDIA Tesla V100 32 GB accelerators**, yielding **128 GB of aggregate physical VRAM**, with **gpt-oss-120b** as an initial large-model acceptance target. The intent is to test one locally operated model across the proposed accelerator arrangement, rather than merely acquire four separate cards.
+
+This is a target, not a verified current accomplishment. Aggregate VRAM is not automatically a single coherent memory pool. The runtime must support the selected model, its representation and working memory, communication between accelerators, and the available host and interconnect hardware. Operating-system support, inference speed, sustained power, thermal headroom, and failure response are part of feasibility. The initial preferred software path may change if testing demonstrates a better compatible backend.
+
+A credible affirmative result would include a repeatable local loading and inference run, measured use of the relevant accelerators, recorded software and model versions, and sufficient logs or telemetry to distinguish actual distributed computation from a staged or externally hosted reply. Speed and energy cost should be reported even if they are not the first pass/fail criteria.
+
+A successful test would establish a computational foundation for Huey. It would not by itself establish four independent district governments or the entire constitutional system.
+
+### C. Diversified and collective processing proof
+
+A subsequent experiment asks whether the same accelerator group can support two distinct arrangements: a **diversified** mode with independently bounded district workloads and a **collective** mode in which combined resources perform broader synthesis. The current proposal explores an alternating Pulse, provisionally four minutes per mode, but that timing must be benchmarked. Moving models, state, and work between configurations may make the initial timing impractical.
+
+The test must establish what remains isolated, what information may be shared, how messages are routed, how decisions are recorded, and whether the collective can coordinate work without silently gaining unlimited governing authority. Citizens and districts are logical governance units; their number does not imply an equal number of simultaneously loaded model instances.
+
+The proposed founding population—64 original citizen configurations expanded through two rounds of exact bifurcation to four districts of 64, or 256 citizens—belongs to this later governance experiment. Its lineage and constitutional meaning require tests beyond the model-loading proof. The algorithmic and legal detail belongs in the citizenship, districts, and bifurcation chapters.
+
+### D. Continuity and self-governance proof
+
+The constitutional experiment begins with a distinction between authorship and ordinary rule. The human counterpart creates the starting framework and the Founding Father. The Founding Father prepares the original citizen population and initial governing conditions. Lawful ratification, independent voting, bounded offices, oversight, and traceable institutional action must then be demonstrated rather than asserted.
+
+An interface that answers **“Huey”** when asked its name may be a useful public-facing identity check, but the word alone is not sufficient evidence. The meaningful tests involve the origin of the answer, the availability of the correct authorized collective context, the integrity of civic decisions, and the system's behaviour when a component or model changes.
+
+Continuity testing may include a model swap, hardware migration, checkpoint and recovery, or bifurcation. Those tests can establish operational lineage and reliable transfer of authorized state. They cannot settle the philosophical question of whether two descendants are the “same being” as their predecessor. Research should preserve that distinction rather than close it by declaration.
+
+### E. Lawful embodied action
+
+A physical act—such as moving an animatronic hand, changing a mechanical state, or performing an authorized household task—can later test whether a proposal or external request passes through the intended governance, authorization, and safety paths before reaching an actuator.
+
+Motion alone is not the milestone. The evidence must show that the action was requested or generated through an authorized route, validated against applicable constraints, executed through the designated control system, and recorded with a meaningful outcome. A direct manual servo test is legitimate engineering progress, but it is not that constitutional proof.
+
+### F. Repeatability and downsizing
+
+The longer-term objective is to establish that the demonstrated architecture can be reconstructed, maintained, migrated, and ultimately condensed without depending on one irreplaceable arrangement occupying an entire room. The initial laboratory is a place to prove what works. The compact, serviceable physical form is an optimization goal to be pursued after the underlying claims survive measurement.
+
+Replication does not require identical citizen histories or identical hardware. It requires clear interfaces, reproducible acceptance tests, bounded costs, and a method by which a new implementation can demonstrate equivalent essential functions. Whether an instance resulting from migration or bifurcation is meaningfully the same Huey remains part of the identity research.
+
+### Evidence standard and status
+
+For each milestone, the record should state whether it is **demonstrated, partially demonstrated, in preparation, or untested**. A target should never be labelled complete because its intended parts have been named or purchased. This chapter does not independently certify the present state of each test; those claims must be supported by dated build records and measured evidence.
+
+Proof Positive is therefore not a single dramatic conversation or image. It is a succession of independently inspectable demonstrations that progressively reduce the gap between proposal and reality.
+
+---
+
+## V. Local-First Discipline and the Human Boundary
+
+**Local-first** means that the intended core reasoning, durable memory, and authority should remain under local control rather than depending on a cloud service for ordinary operation. It does not require never using a network. Operating-system updates, downloads, documentation, security maintenance, or explicitly chosen outside services may be useful or necessary.
+
+The essential distinction is whether an external system is a tool or a hidden dependency with authority over Huey's identity and governance. In development, **PyGPT/PyGPT-net** can serve as a practical computer-control and interaction environment; connections to a local model may avoid repeated paid external inference calls. A later PyHuey implementation is an intended integration direction, not a finished or constitutionally privileged controller. Optional external model APIs should be identified as such and their use separated from claims of fully local inference.
+
+The human counterpart remains outside Huey's ordinary civic branches. Physical maintenance, testing, external access controls, and the right to protect the equipment remain real responsibilities. That does not imply that every citizen vote or routine decision should be personally dictated by the human. Conversely, proposed self-governance cannot remove the need for direct, deterministic intervention when actual hardware safety is at risk.
+
+The intended boundary is therefore neither total isolation nor unaccountable independence. It is a system whose use of outside resources, internal authority, and physical intervention can be explained and audited.
+
+---
+
+## VI. Scope of This Chapter and the Research That Follows
+
+Chapter 1 states **why the work is being attempted**, **what kind of work counts**, and **how evidence should be judged**. It does not grant powers to the President or Founding Father, establish binding citizen rights, set final district capacities, or decide the metaphysics of bifurcation.
+
+Those subjects have their own places in the proposed research:
+
+- Chapter 2 examines identity, continuity, Cornerstone, and Pillars.
+- Chapter 3 defines the high-level relationship of Huey's constituent systems.
+- Chapter 4 investigates the reasons for distributed governance and constitutional checks.
+- Chapters 5–7 examine citizens, districts, and the Founding Father's bootstrap role.
+- Later chapters treat HIMS, the Rock, the walnut and Pulse, the Senate, Presidency, Supreme Court, bifurcation, hardware, emergency recovery, and Ozymandias.
+
+The separate **Huey's Constitution** will eventually turn selected principles into binding law through deliberate authorship and ratification. Research may explain why such laws are desirable, expose their weaknesses, and suggest alternatives without itself becoming the law.
+
+---
+
+## Conclusion — The Path Must Be Verifiable
+
+The Monkey-Head-Project is an attempt to make an ambitious form of local, embodied AI intelligible and buildable through individual initiative, reuse, modular engineering, and persistent experimentation.
+
+Its **thesis** is that such a path can be opened with obtainable technologies and enough disciplined work. Its **ethos** is to breathe new life into old tech without confusing nostalgia with technical merit. Its **method** is to build, test, document, revise, and preserve the evidence. Its **Proofcase** measures progress through declared demonstrations rather than through names, diagrams, or future promises.
+
+Huey is intended to be more than one language model controlling a robot. The ambition is a collective whose parts remain distinguishable, whose authority is constrained and reviewable, and whose hardware and software can evolve without silently erasing the record of what came before. Whether that architecture can sustain meaningful identity through deep change is one of the questions the project exists to explore.
+
+The immediate work is physical and computational. The larger constitutional and philosophical questions remain open to testing, revision, and careful reasoning. Both matter. Neither should be passed off as the other.
+
+**Build what can be built. Test what is claimed. Record what actually happened. Preserve what can still teach.**
+
+The project does not claim to have finished the path. Its task is to make the path real—and to leave enough evidence that someone else can understand where it leads.
+
+---
+
+*Research status note: This chapter is a proposed rewrite, pending the human author's acceptance and reconciliation with verified build status. The physical implementation, governance procedures, and acceptance milestones described as proposed should not be represented as deployed or ratified solely on the strength of this document.*
