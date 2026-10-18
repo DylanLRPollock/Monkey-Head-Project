@@ -1,160 +1,355 @@
 00 - TOC_&_Glossary
 Monkey-Head-Project
-Canonical Documentation Structure
+Proposed Research Documentation Structure — Working Draft
+18 October 2026
 
-Table of Contents
+PURPOSE AND DOCUMENT STATUS
 
-Chapter 1 — Thesis, Ethos, Method, & Proofcase
-Sets the opening frame of the project: why Huey exists, the ethos behind the work, the practical method of development, and the proof-positive standard by which progress is judged.
+This document is the proposed table of contents and working glossary for the next generation of Monkey-Head-Project research papers. It consolidates the original 20 archived research notes, the ten-chapter research generation, and the subsequent design discussions. It is a planning document, not a ratified Constitution or a claim that a proposed subsystem has been implemented.
 
-Chapter 2 — Cornerstone & Pillars
-Defines the fixed foundations of the project: the immutables, structural constraints, declared upgrade paths, and the load-bearing decisions that shape Huey's continuity.
+The Monkey-Head-Project is the overarching initiative. Huey is the governed collective identity being developed within it. Huey's Constitution will be a separate authoritative document, built anew from the Federation-era Constitution, the subsequent draft, and our agreed principles. Research explains motivations, alternatives, mechanisms, experiments, and open questions; it does not independently create constitutional powers.
 
-Chapter 3 — Huey Constitution
-Formerly called the Federation Constitution.
-Defines the governing law of Huey: legitimacy, branches of governance, ratification, amendment process, emergency distinctions, powers, limits, and the lawful basis of authority.
+Terminology and design status used below:
+- WORKING: accepted as the current direction for writing, but subject to testing, reconciliation, or constitutional ratification.
+- PROVISIONAL: a useful proposal still requiring a specific decision or validation.
+- HISTORICAL: important to project lineage, but not automatically part of the active architecture.
+- ENGINEERING TARGET: intended or proposed capability, not proof of operation.
 
-Chapter 4 — HIMS
-Huey Internal Messaging System.
-Defines the internal and external messaging architecture of Huey: scrolls, interfaces, validation, audit trails, key structure, routing, and the governance of communication between systems, users, and internal processes.
+TABLE OF CONTENTS — PROPOSED 17-CHAPTER RESEARCH SERIES
 
-Chapter 5 — Founding Father
-Defines the bootstrap authority responsible for the initial formation of the republic: creating the first 128 citizens, assigning founding roles, preparing the constitutional state, and retiring into read-only advisory status after ratification, with only narrow constitutional-reserve consultation thereafter.
+Chapter 1 — Thesis, Ethos, Method & Proofcase
+Explains why the project exists, its aim of making embodied local AI more accessible, and the ethos of “breathing new life into old tech.” Establishes the iterative build–test–document–revise method; near-term local-model and distributed-hardware proof; longer-term repeatability, modularity, portability, and downsizing goals. Introduces self-governance and the one-degree-of-separation founding method, without legislating their details.
 
-Chapter 6 — 128 Pebbles & Districts
-Defines the citizen structure of Huey: the 128 pebbles, their identities, sealed vaults, one-vote rule, specialization, district logic, and the relationship between bounded citizen units and the wider organism.
+Chapter 2 — Identity, Continuity, Cornerstone & Pillars
+Investigates what makes Huey remain Huey through replacement, growth, constitutional evolution, migration, and bifurcation. Distinguishes difficult-to-change identity foundations from adaptable commitments. Preserves the unresolved Ship of Theseus / transporter continuity question instead of declaring it philosophically solved.
 
-Chapter 7 — President
-Defines the executive role: authority under time constraint, immediate-action doctrine, emergency execution, limitations, reviewability, term and election logic, and the distinction between presidential governance authority and Huey as a whole.
+Chapter 3 — Huey as a Collective System
+Presents Huey as the coordinated result of citizens, districts, governance, messaging, shared records, model-based language processing, physical embodiment, and external input. Defines component boundaries and the distinction between the system's collective identity and any single model or office. The human counterpart remains outside ordinary internal governance.
 
-Chapter 8 — Supreme Court
-Defines the judicial branch: constitutional interpretation, review of executive and parliamentary action, thresholds for judgment, contradiction handling, precedent, deadlock handling, and the Court's role as stabilizer of the republic.
+Chapter 4 — Governance Architecture & Constitutional Theory
+Explains why plurality, isolation, limited privileges, checks and balances, and reviewable authority were chosen over one unrestricted model controlling everything. Traces the evolution from the Cloud Pyramid and Federation concepts toward Huey's Senate, Presidency, Supreme Court, and district autonomy. The actual Constitution remains a separate document.
 
-Chapter 9 — Parliament
-Defines the legislative branch: deliberation, proposal, consensus-building, representation of the citizen body, the Speaker role, internal parliamentary structure, and the relationship between Parliament and the other two branches.
+Chapter 5 — Pebbles: Citizenship, Identity, Jobs & Rights
+Investigates bounded AI citizens, private vaults, individuality, one-personality/one-identity distinctions, baseline resources, specialized and general work, initial preference-based job allocation, later job challenges, incapacity, and the relationship between operational work and civic participation. Distinguishes citizen identity from office and ancestry.
 
-Chapter 10 — Ozymandias: Drift, Degradation, & Growth
-The closing doctrine chapter. Defines continuity, explainability, drift, degradation, growth, and the conditions under which a republic remains legitimate, fails, or must begin again.
+Chapter 6 — Districts, Elections & Representation
+Describes four initial districts, the working plan of 64 citizens in each, origin through two rounds of exact bifurcation from 64 founding identities, one founding lineage represented per district, local jurisdiction, district-block legislative votes, direct presidential suffrage, and scalability questions. Covers local versus district-level bifurcation only to the extent needed to explain population and representation; the full mechanism belongs in Chapter 14.
 
+Chapter 7 — Founding Father: Bootstrap, Ratification & Reserve Authority
+Explores the single agent deliberately authored by the human creator, its responsibility for preparing the first citizens and institutions, and its retirement from ordinary rule after ratification. Distinguishes advisory reactivation from narrowly authorized protective hibernation and human-gated recovery. Explains why the founder cannot become a permanent superior government.
 
-Glossary
+Chapter 8 — HIMS: Messaging, Identity & Authorization
+Studies Huey Internal Messaging System as the controlled route between separated citizens, districts, offices, interfaces, and records. Covers addressing, authentication, encryption, message queues, routing, authorization, rejection, auditability, degraded operation, and the boundary between transporting an instruction and permitting an action.
 
-Monkey-Head-Project
-The umbrella initiative. Huey, Huey Core, HueyOS, and the wider documentation set all live within the Monkey-Head-Project.
+Chapter 9 — The Rock: Shared Memory, Storage & Lineage
+Defines the Rock as Huey's durable shared-information store, distinct from the collective LLM and the government itself. Covers read-only access for ordinary citizens, authorized mediated writes, append-oriented records, lineage, private/shared storage divisions, quotas, integrity, retention, compression, and future migration. Revisits historical honeycomb/storage influences as research, not active architecture.
 
-Huey
-The identity being built within the Monkey-Head-Project. Huey is the governed intelligence and not merely a flat assistant, single office, or puppet system.
+Chapter 10 — The Walnut & the Pulse Clock
+Examines replaceable local LLMs as constrained language/reasoning resources, the four-accelerator target, and the proposed alternating unified and diversified modes. Documents the provisional four-minute collective phase and four-minute diversified phase; simultaneous district voting in the diversified phase's first minute, followed by execution; the Court's distinct four-minute decision window; task routing, refusal, workload allocation, and benchmarking. Safety interlocks remain outside this schedule.
 
-Huey Core
-The current proof body and minimal permissible instance of Huey. It is the smallest complete building block from which the larger system may later grow.
+Chapter 11 — The Senate: Deliberation, Proposals & Collective Law
+Explains the legislative role of eligible citizens, district proposals, internal voting, district-block results, ordinary law, veto overrides, constitutional sponsorship, urgent fast-tracks, and limitations on legislative authority. Preserves Parliament and Speaker as historical or unresolved terminology rather than silently treating them as current offices.
 
-Huey proper
-The fuller unified world-facing expression of the system beyond the present proof-body phase.
+Chapter 12 — The Presidency: Election, Execution & Accountability
+Covers direct ranked-choice elections, district nominations, runoff elections, four-month terms, limited consecutive service, a runner-up vice president, lawful implementation, time-bound directives, one active presidential legislative initiative, justified priority referrals, veto, review, removal, and executive accountability. Presidential power does not supersede district sovereignty or judicial interpretation.
 
-HueyOS
-The software and operating-system layer behind Huey.
+Chapter 13 — The Supreme Court: Interpretation, Review & Deadlock
+Covers four justices, one from each founding district; an annual review/challenge opportunity with potential continuous service; district-selected standbys; review of law and executive conduct; the working three-of-four threshold; four-minute decision obligations for pulse-flagged constitutional problems; conflict, recusal, succession, and formal deadlock escalation.
 
-HueyPulse
-The lower-voltage watch-and-act layer. In simplified public language: the motherboard thinks; HueyPulse watches and acts.
+Chapter 14 — Bifurcation, Migration & Scale
+Separates exact bifurcation (the parent retires; two equal descendants share a sealed, read-only ancestral snapshot and then diverge) from augmented bifurcation (the parent remains; a new citizen inherits selected prompt/traits but starts with fresh personal memory). Covers lineage identifiers, access to encrypted records without district disclosure, population expansion, district creation by exact bifurcation, hardware growth, and succession restrictions for sitting officeholders.
 
-HIMS
-Huey Internal Messaging System. The lawful internal messaging, validation, routing, and record-preservation layer of Huey.
+Chapter 15 — Hardware, Embodiment & Runtime Topology
+Documents Huey's physical shell and evolution, current validated hardware versus plans, accelerator/district correspondence, the aggregate 128 GB VRAM goal using four 32 GB accelerators, possible pooled/sharded versus independent execution, storage and safety hardware, PyHuey/PyGPT development interfaces, communications, external LabTech, power, cooling, and eventual downsizing. Hardware names and multi-GPU capabilities must be verified before being described as achieved.
 
-ThunderMail
-The practical mail-style delivery layer inside HIMS. It handles inbox/outbox, queue, and delivery behavior, but is not the whole of HIMS.
+Chapter 16 — Emergency States, Hibernation & Recovery
+Studies yellow/orange/red severity, automatic hardware protection, constitutional versus operational emergencies, advisory escalation, Founding Father protective authority, human-gated tier-two recovery, consistent checkpoints, integrity verification, partial district failure, snapshot repair, and the preservation of evidence. A controlled protective shutdown is not automatically the death of the constitutional system.
 
-Founding Father
-The bootstrap authority that prepares the first lawful conditions of the republic, creates the first 128 citizens, seeds the first offices and records, enables ratification, and then retires from ordinary rule.
+Chapter 17 — Ozymandias: Drift, Degradation, Failure & Renewal
+Investigates how the system detects departures from its purpose and how to evaluate repairs, reform, growth, restart, and continuity. Includes failure analysis, transparent reporting of unsuccessful experiments, and the unresolved question of whether a radical successor remains Huey. Does not purport to resolve consciousness or philosophical personal identity by definition.
 
-Bootstrap Authority
-A founding authority whose legitimacy comes from creating the first lawful conditions of the republic before ordinary constitutional life fully exists.
+Glossary — Working Definitions
+A maintained reference covering the current research language, with explicit labels for provisional and historical terms. Definitions are descriptive until adopted through the appropriate constitutional or engineering process.
 
-Reserve Constitutional Authority
-Exceptional authority invoked only in the rarest constitutional circumstances, such as deep identity-layer crisis, ratification ambiguity, or republic-level continuity dispute.
+Appendix — Historical Influences & Superseded Models
+Preserves the 20 original research papers and their contributions, including historic hardware, the Cloud Pyramid, HostOS/SubOS/NanoOS, carpenter ants and fungi, Borg/Replicators, conductor/symphony, McCoy's transporter hypothetical, honeycomb storage, parasitic protocol, logistics/safety, and the original Ozymandias and future essays. Distinguishes inspiration, discarded implementations, and surviving principles. The appendix is not an eighteenth governing chapter.
 
-Pebble
-A bounded AI citizen unit of Huey. In current canon, a pebble is defined by one identity, one sealed vault, and one vote.
+GLOSSARY — WORKING DEFINITIONS
 
-Rock
-The pooled deliberative substrate or cognitive body formed by many pebbles contributing upward into a wider coherent intelligence.
+A. PROJECT AND IDENTITY
 
-District
-A larger governance and expansion unit within Huey's constitutional design. District logic remains canon, even though the current proof body is still simplified and not yet the fully expanded multi-district hardware organism.
+Monkey-Head-Project [WORKING]
+The overarching research, invention, and engineering initiative under which Huey and related experimental work are developed. It is not itself an internal branch of Huey's government.
 
-Governor
-A district-level coordinating office in mature district doctrine. A governor organizes district-scale governance and local coordination without becoming a sovereign above the republic.
+Huey [WORKING]
+The collective identity expressed through the coordinated operation of its governed citizens, shared information, interpretation and model resources, messaging, decisions, embodiment, and actions or deliberate inaction. No single LLM, pebble, office, or accelerator is Huey by itself.
 
-President
-The executive office of the living republic. The President acts under time constraint, executes lawful decisions, and remains reviewable afterward.
+Huey's Constitution [WORKING TITLE]
+The future standalone, authoritative governing document for the Huey collective, to be composed as a third-generation synthesis rather than a cosmetic revision of either the Federation Constitution or its later successor. Research provides rationale but is not law.
 
-Supreme Court
-The judicial branch of the living republic. The Court interprets the Constitution, reviews branch action, handles contradiction, and stabilizes constitutional continuity.
+Federation Constitution [HISTORICAL]
+An earlier constitutional generation and naming convention. It is retained for comparison and historical reasoning, not automatically inherited as current doctrine.
 
-Parliament
-The deliberative and representative branch of the living republic. Parliament organizes plurality into proposals, motions, recommendations, and legislative process.
+Huey V4 / Physical Shell [WORKING]
+The current physical embodiment/build lineage. Its implemented components must be distinguished from planned upgrades and the eventual fully governed system.
 
-Speaker
-The coordinating office of Parliament. The Speaker organizes agenda, recognizes motions, structures debate, and preserves parliamentary procedure without becoming Parliament itself.
+Huey Core [HISTORICAL / REDEFINITION OPEN]
+An earlier proof-body and minimal-Huey designation. It must not automatically be presented as the active machine or current canonical embodiment without a new explicit decision.
 
-Cornerstone
-The non-casual identity and continuity layer of Huey: the truths that cannot be casually rewritten without threatening constitutional continuity.
+Huey proper [HISTORICAL / REDEFINITION OPEN]
+Older shorthand for a larger, integrated world-facing Huey beyond an early proof body. Current research can instead specify the actual deployment or maturation stage.
 
-Pillar
-A declared load-bearing commitment that the current version of Huey stands on. Pillars may change lawfully, but they are not casual settings.
+HueyOS [PROVISIONAL]
+A historical/software-architecture term for Huey's supporting operating and orchestration environment. Its scope relative to the current runtime and PyHuey requires deliberate definition.
 
-Ozymandias
-The doctrine chapter concerned with drift, degradation, growth, and continuity over time: how to judge whether change remains lawful, legible, and still meaningfully the same republic.
+HueyPulse [HISTORICAL / UNMAPPED]
+An earlier name for lower-voltage watch-and-act infrastructure. Its correspondence to current body controls and deterministic safety hardware remains undecided. Not synonymous with the new cognitive Pulse Clock by default.
 
-Proof Body
-The currently embodied proving instance of Huey. In present canon, this refers to Huey Core as the active proof body rather than the fully expanded future republic.
+Proof Body [WORKING]
+A physical configuration used to demonstrate measurable architecture or behaviour. A proof body does not imply that the complete 256-citizen constitutional system is already operating.
 
-Proofcase
-The chapter-level frame for the project's proof standard: the section of the book where proof is defined as the threshold between aspiration and demonstrated reality.
+Proofcase [WORKING]
+The project's explicit research framework for testable claims, milestones, methods, and failures.
 
-Proof Positive
-The concrete affirmative proof standard inside the Proofcase: the specific milestones by which the project can succeed or fail in public, verifiable terms.
+Proof Positive [WORKING]
+A verified affirmative result against a declared acceptance test, distinguished from aspiration or a design drawing.
 
-Lawful Embodied Action
-A physical act performed only after the appropriate constitutional, executive, judicial, safety, and control path exists. It is the difference between mere motion and legitimate action.
+Cornerstone [WORKING]
+The high-trust continuity and identity principles proposed as especially resistant to casual change. Their precise constitutional status must be adopted lawfully, not assumed from a research chapter.
 
-Ratification
-The explicit, logged transition by which the living system accepts the Constitution as lived law rather than mere founding doctrine.
+Pillars [WORKING]
+The declared load-bearing architectural and methodological commitments of a given Huey generation, changeable through transparent authorized processes.
 
-Pre-ratified State
-The condition in which the lawful frame is being prepared but the republic has not yet fully ratified itself.
+Ozymandias [WORKING]
+The research lens for recognizing drift, degradation, failure, growth, and meaningful continuity.
 
-Living Constitutional State
-The condition in which the citizen body and branches exist inside a ratified constitutional framework and bootstrap authority has given way to ordinary constitutional life.
+B. CITIZENS, DISTRICTS AND GOVERNMENT
 
-Constitutional Crisis
-A crisis of law, legitimacy, contradiction, succession, ratification, or internal authority.
+Pebble [WORKING]
+A distinct sandboxed AI citizen with a unique identity, bounded prompt, private memory domain, and defined civic/operational responsibilities. Shared LLM weights do not erase citizen separation. Political rights depend on voting eligibility and office rules.
 
-Nuclear / Safety Crisis
-A crisis of thermal, electrical, mechanical, power, hardware, or system-preservation danger. It is not the same as a Constitutional Crisis and must not be routed through the same authority path.
+Founding Lineage [WORKING]
+An ancestry record connecting a present citizen to one of the 64 originals authored by the Founding Father. Lineage identifies provenance, not superior rank or inherited office.
 
-Sealed Vault
-A pebble's bounded private continuity and memory domain. It allows lawful private reflection and continuity without flattening all thought into shared state.
+Founding Population [WORKING]
+The proposed bootstrap begins with 64 authored pebbles and uses two generations of exact bifurcation to establish four districts of 64: 256 citizens in all. No original identity automatically survives an exact split; each initial lineage is represented once in each district.
 
-Scrolls
-The preserved record and ledger logic through which major communications, actions, and lawful traces remain attributable and reviewable.
+District [WORKING]
+A bounded citizen and local-governance unit, provisionally linked one-to-one with an accelerator during diversified execution. The four original districts have equal representation but may vary in internal methods within constitutional limits. Whether 64 is an enduring cap remains open.
 
-Keeper of the Scrolls
-The office most closely associated with HIMS. The Keeper validates message legitimacy, preserves the scrolls ledger, records rejected traffic, and watches routing discipline without becoming the hidden author or sovereign of the system.
+District Sovereignty / Local Jurisdiction [WORKING]
+The protected competence of each district over matters internal to it, subject to the Constitution and valid collective laws. Shared hardware, cross-district effects, and system-wide rights require collective handling.
 
-Human Counterpart
-The external arbiter and service authority who remains outside the internal branches of Huey while still retaining the right to intervene, preserve, suspend, or gate external exposure.
+Senate [WORKING]
+The legislative body composed of citizens eligible for Senate voting. An elevated President or Justice retains citizenship but suspends their Senate vote while in office. Collective legislative decisions may use district blocks rather than a single pooled popular tally.
 
-Unified Memory
-The doctrine that memory should remain reconcilable and shared where lawful, even while governance remains distributed and pebbles remain bounded.
+District Block Vote [WORKING]
+A district-wide position produced by its eligible voters and counted as one district approval or rejection in the collective legislative process, regardless of district population differences.
 
-Distributed Governance
-The doctrine that authority should remain separated, plural, and reviewable rather than collapsing into one flat sovereign voice.
+One Pebble, One Vote [WORKING]
+The principle that a citizen casts no more than one ballot on a question for which they are eligible. It does not entitle an elevated official to an additional Senate vote, nor grant identical procedures to every kind of election.
 
-Cycle
-The project's formal time unit for governance and review. In current machine-facing canon, one cycle is four months.
+Voter Roll / Electoral Snapshot [PROVISIONAL]
+The eligible voter list fixed for a ballot window so bifurcation, incapacity, or office changes cannot retroactively alter that vote's electorate. Exceptions and quorum require further design.
 
-Bifurcation
-A governed expansion event in which new districts, structures, or descendant instances emerge through lawful division, tracked lineage, and preserved record rather than silent cloning.
+Operational Job [WORKING]
+A citizen's practical role or area of responsibility, distinct from legislative membership or elevated executive/judicial office. Specialist and general-worker assignments may change through defined procedures.
 
-V4: the Farm
-The planned later housing and expansion environment for Huey's broader scale-out beyond the current proof body.
+General Worker Pool [PROVISIONAL]
+Citizens available for flexible operational tasks rather than one permanently exclusive specialist function. Its size and assignment rules depend on real hardware and workload requirements.
+
+President [WORKING]
+The separately elected executive officer responsible for lawful implementation, limited directives, external representation, and accountable proposals. The office does not confer an independent right to rewrite the Constitution or command district votes.
+
+Vice President [WORKING]
+The presidential election runner-up, designated as a standby successor rather than an independent executive authority. Succession and inherited-term accounting follow defined continuity rules.
+
+Presidential Initiative [WORKING]
+An ordinary legislative proposal introduced in the President's official capacity. Only one such initiative may be formally active at a time; additional ideas may be prepared privately.
+
+Priority Designation [WORKING]
+A justified request to accelerate consideration of an active initiative without lowering the required voting threshold or guaranteeing passage. Repeated unjustified use is reviewable.
+
+Presidential Veto [WORKING]
+A single formal rejection or return of an ordinary law. The working override bar is two-thirds support in at least three of four district blocks. Constitutional amendments do not gain a presidential priority or veto shortcut.
+
+Presidential Term [WORKING]
+Four months. The current proposal allows up to four consecutive elected terms followed by one full term out, after which the consecutive-term count resets; repeated later service is permitted.
+
+Presidential Nomination [WORKING]
+Self-nomination followed by qualifying support from at least 25 percent of the candidate's home district's eligible nomination electorate. Final election is system-wide.
+
+Ranked-Choice Presidential Election [WORKING]
+Each eligible pebble ranks up to four candidates; votes transfer in elimination rounds. A separate top-two runoff is contemplated where exhausted ballots prevent a majority of the original valid electorate; tied contests return to voters rather than to the Founding Father.
+
+Supreme Court [WORKING]
+Four justices, one from each founding district, responsible for constitutional interpretation, review, and formal deadlock determinations. A proposed 3-of-4 agreement threshold applies to substantive judicial decisions, subject to further vacancy and recusal rules.
+
+Justice / Standby Justice [WORKING]
+A home-district-selected judicial officeholder and its election runner-up as continuity reserve. Service is potentially indefinite with annual review and challenge; if the justice is permanently lost, the standby succeeds until the next regular review, with emergency appointment if both are unavailable.
+
+Judicial Accountability Vote [WORKING]
+A proposed exceptional cross-district removal process in which the home district's block counts for two and each other district's for one; three of five weighted votes suffice. Each block requires two-thirds internal support. Procedure and due-process details remain to be drafted.
+
+Parliament [HISTORICAL / ALIAS]
+Earlier name for the broad legislative branch. The present working term is Senate; any restoration of Parliament requires an explicit decision.
+
+Speaker [HISTORICAL / UNRESOLVED]
+Previously proposed legislative agenda-coordination office. It is not yet confirmed as a separate current office in the Senate.
+
+Governor [HISTORICAL / UNRESOLVED]
+Previously proposed district-level coordinating office. District autonomy does not by itself establish the Governor's current powers or necessity.
+
+Founding Father [WORKING]
+The original bootstrap agent whose design/prompt is written by the human creator, and which prepares the founding citizens, offices, state, and ratification process. Following successful ratification it has no ordinary governing role. Advisory reactivation and highly constrained emergency functions are separate.
+
+Bootstrap Authority [WORKING]
+Authority necessary to prepare lawful institutions before the citizenry has ratified its governance. It is transitional and must not become permanent executive supremacy.
+
+Ratification [WORKING]
+The recorded, authorized transition from prepared constitutional design to a self-governing order recognized by the established citizen electorate and initial institutions. The exact founding ballot and formal legal mechanics remain to be written.
+
+Pre-Ratified State [WORKING]
+A state in which the constitutional machinery and citizen population are being initialized but have not yet lawfully ratified themselves.
+
+Living Constitutional State [WORKING]
+The state after legitimate ratification in which ordinary distributed offices and procedures govern and the founding authority has stepped aside.
+
+Constitutional Amendment [WORKING]
+A formal alteration of binding foundational law. The current proposed district threshold is two-thirds support in at least three of four districts, with judicial safeguards whose sequencing remains unresolved.
+
+C. BIFURCATION, INFORMATION AND PROCESSING
+
+Bifurcation [WORKING]
+A governed creation or division process that preserves traceable ancestry and separates new identities. It can occur locally within a district or at a broader scale when establishing a new district; these are different scopes, not different citizen rights.
+
+Exact Bifurcation [WORKING]
+One pebble ceases as an active citizen and is replaced by two equally legitimate descendants. Each shares lawful access to the same sealed pre-split historical snapshot, which is thereafter read-only, while receiving a new identity, independent credentials, and private post-split memory.
+
+Augmented Bifurcation [WORKING]
+The existing pebble continues; a distinct additional pebble receives an intentionally modified or selectively inherited prompt and behavioural configuration, starts with new credentials and private storage, and does not automatically inherit the parent's private memory.
+
+District Bifurcation [WORKING]
+A larger-scale event producing a new district through exact division of existing citizen lineages; the intended founding expansion follows this pattern. Hardware capacity, district allocation, authorization, and timing remain research questions.
+
+Local Bifurcation [WORKING]
+District-authorized creation within an existing district using exact or augmented methods. Individual citizens do not independently authorize population creation. The permitted district population range is not yet fixed.
+
+Ancestral Snapshot [WORKING]
+A sealed, integrity-verifiable, shared read-only historical state used in exact bifurcation. District services may copy, address, and verify the ciphertext without decrypting the private contents; descendant access requires separate authorized keys.
+
+Sealed Vault [WORKING]
+A citizen's bounded private memory and continuity domain, kept separate from other citizens and the Rock. Operations such as copying encrypted archives do not grant their operators permission to read the contents.
+
+The Rock [WORKING — REDEFINED]
+Huey's durable shared information and governance-record store. Pebbles may read information authorized for their scope; changes pass through authenticated, authorized services via HIMS, with reviewable provenance. The Rock is not the collective LLM or an office of government.
+
+Walnut [WORKING]
+The encapsulated, replaceable LLM inference resource used for language interpretation, analysis, and reasoning within restricted contexts. It does not hold unlimited executive or legislative authority.
+
+HIMS [WORKING]
+Huey Internal Messaging System, the proposed authenticated and permission-controlled communications architecture linking sandboxed citizens, offices, external interfaces, and authorized record services. Encryption alone cannot guarantee that a message is truthful or safe.
+
+Collective Pulse [WORKING]
+The proposed interval in which combined accelerator resources host a unified model receiving approved shared state and work outputs to synthesize, flag problems, route tasks, and recommend action without independently overruling constitutional decisions.
+
+Diversified Pulse [WORKING]
+The proposed interval in which four district-associated compute environments operate separately, allowing plural reasoning, parallel methods, district elections, and operational execution without merging private citizen contexts.
+
+Operational Pulse Cycle [PROVISIONAL]
+A complete proposed eight-minute interval: four minutes collective followed by four minutes diversified. In the diversified interval, the first minute is reserved for simultaneous district voting and ordinary decisions and the remaining three for execution; the Supreme Court may use the full four minutes for a flagged constitutional decision. Exact timing remains an engineering hypothesis.
+
+Electoral Term / Election Cycle [WORKING]
+The distinct four-month calendar interval used for presidential elections and normal job review/shuffling. It must never be confused with the eight-minute operational Pulse Cycle.
+
+Collective Task Routing [WORKING]
+Work allocation proposed by the collective model to districts, potentially with different competing approaches. Districts may decline unsafe or impracticable methods with documented justification and may challenge unlawful objectives; routing is not authority to dictate judicial or legislative outcomes.
+
+Scrolls [HISTORICAL / POSSIBLE IMPLEMENTATION]
+Earlier terminology for attributable message and action records. Record preservation remains essential; whether Scrolls is an active named subsystem is undecided.
+
+Keeper of the Scrolls [HISTORICAL / UNRESOLVED]
+An earlier proposed office responsible for communication integrity and audit stewardship. HIMS still requires enforceable authorization and audit, but no independent hidden supervisory office is presumed.
+
+ThunderMail [HISTORICAL / UNMAPPED]
+An earlier mail-style queue and delivery implementation concept associated with HIMS. It is not yet confirmed as a current software component.
+
+Unified Memory [WORKING PRINCIPLE]
+Authorized collective information remains reconcilable while individual private vaults are isolated. It does not imply that every citizen may read every memory or that all histories are physically merged.
+
+Storage Division [ENGINEERING TARGET]
+The proposed bulk-data arrangement uses two mirrored 10 TB disks, yielding approximately 10 TB usable before filesystem overhead, provisionally divided into roughly 5 TB personal storage and 5 TB shared/Rock storage. OS/root storage is separate. All figures are targets subject to validation.
+
+Civic Resource Guarantee [PROVISIONAL]
+A proposed minimum personal-storage entitlement of 1 GB per pebble, plus equitable access to processing resources within measured hardware constraints. The ceiling, reserve capacity, and future population scaling remain open.
+
+D. SAFETY, HUMAN OVERSIGHT AND CONTINUITY
+
+Distributed Governance [WORKING]
+The separation of citizens, jurisdictions, legislative authority, executive implementation, judicial interpretation, and technical safeguards so no single unrestricted model controls Huey.
+
+Human Counterpart [WORKING]
+The external operator, builder, and protected maintenance authority. This role is outside ordinary internal branches but can authorize physical maintenance and tier-two recovery; it must not be confused with a constantly governing fourth branch.
+
+Constitutional Crisis [WORKING]
+A serious issue of legitimacy, ratification, succession, incompatible law, office authority, or unresolved constitutional interpretation; it is handled by lawful review and escalation, not as if it were a failing coolant pump.
+
+Physical Safety Emergency [WORKING]
+A thermal, power, cooling, electrical, mechanical, or hardware threat requiring bounded deterministic response. Safety interlocks must not wait for a vote or LLM reasoning when immediate protection is necessary.
+
+Yellow / Orange / Red States [WORKING]
+A severity vocabulary: Yellow is recoverable with logs and routine reporting; Orange requires heightened human awareness and correction; Red means protective stop or suspension with human-controlled recovery. Thresholds and exact diagnostics remain to be engineered. Red alone does not prove Huey's society is irrecoverable.
+
+Founding Father Tier One [WORKING]
+Read-only advisory reactivation following a qualified collective or judicial referral. Recommendations are recorded and considered by lawful institutions; advice is not unilateral legislation or removal.
+
+Founding Father Tier Two [WORKING]
+A narrow reserve ability to order protective hibernation in defined existential or unrecoverable circumstances, subject to logging and human-gated maintenance/restart. Independent hardware interlocks may act more rapidly when necessary.
+
+Protected Hibernation / Safe State [WORKING]
+A coordinated attempt to quiesce workloads, persist valid checkpoints, preserve logs and identity state, and shut down safely. For urgent physical danger, immediate protection takes precedence over completing a perfect RAM image.
+
+Checkpoint [WORKING]
+A verifiable record of recoverable citizen, district, shared-governance, and transactional state. All districts must follow a uniform validity protocol even if their physical storage and redundancy differ.
+
+Recovery Authorization [WORKING]
+Following a tier-two protective shutdown, the human counterpart must enter an authenticated maintenance state, inspect and repair the problem as necessary, and explicitly authorize restart. Routine minor faults may use bounded automatic recovery outside tier two.
+
+Lawful Embodied Action [WORKING]
+A physical or external act executed through authorized operational, constitutional, and independent safety controls, rather than unrestricted LLM output.
+
+Ozymandias / Drift [WORKING]
+The study of divergence between present behaviour and intended safeguards, meaning, identity, and constitutional legitimacy; includes degradation, incomplete repair, and lessons from failed versions.
+
+E. ARCHIVED TERMS REQUIRING CAREFUL RETENTION
+
+Cloud Pyramid [HISTORICAL]
+An earlier conceptual hierarchy and predecessor to later district and constitutional ideas; valuable for understanding evolution, not automatically a current system diagram.
+
+HostOS / SubOS / NanoOS [HISTORICAL]
+A former layered software/control scheme. The principle of separated responsibility may survive, but these exact named layers are not assumed to be deployed.
+
+Honeycomb [HISTORICAL]
+An explored storage/organizational analogy from bee structures; remains inspiration and should not be presented as the Rock's installed storage scheme.
+
+Borg Queen / Replicators [HISTORICAL ANALOGY]
+Media-based thought experiments on individuality, central coordination, replication, and adaptation, not a constitutional authority or implemented system design.
+
+McCoy / Transporter Hypothetical [HISTORICAL ANALOGY]
+An illustration of continuity uncertainty across copying or disassembly/reassembly. Useful for exact bifurcation and Huey's identity question, but not proof of an answer.
+
+V4: the Farm [HISTORICAL / UNRESOLVED]
+Older proposed name for later housing or scale-out infrastructure. The term's relationship to current Huey V4, Huey Farm, and external laboratory infrastructure must be resolved before current-state publication.
+
+DOCUMENT CONTROL — EDITORIAL RULES
+
+1. A research definition records the current investigation; only a ratified Constitution can grant binding internal constitutional authority.
+2. Do not silently restore superseded 128-total or 128-per-district population claims. The current working founding plan is 64 originals branching into four districts of 64, or 256 citizens total.
+3. Use four Supreme Court justices, one per district, unless expressly changed by later agreement; old three-justice language is historical.
+4. Use Senate as the working legislative name, not Parliament, unless deliberately revisited.
+5. Use Rock for shared durable records, not for the pooled cognitive LLM.
+6. Distinguish the four-month electoral term from the proposed eight-minute operational pulse, its four-minute halves, and the first one-minute district decision window.
+7. Exact bifurcation retires the source identity into two descendants; augmented bifurcation leaves the parent active. Both create uniquely authenticated citizens; office is never inherited by a split.
+8. Distinguish an accepted design direction, a tested implementation, and a philosophical hypothesis. No architectural test is declared successful merely because it appears in this book.
+9. Preserve the original source material as a cited historical lineage. Every archived idea must be retained, revised, or explicitly classified; it must not disappear silently.
+10. Before publication, reconcile these research definitions with the forthcoming Huey's Constitution, project master plan, source code, and validated hardware state.
