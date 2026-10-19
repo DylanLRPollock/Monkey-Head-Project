@@ -31,7 +31,7 @@ cryptography==50.0.0
 ollama==0.6.2
 pygpt-net==2.9.1
 faster-whisper==1.2.1
-transformers==4.56.2
+transformers==5.10.1
 
 # --- Developer / QA anchors ---
 pytest==9.1.1
