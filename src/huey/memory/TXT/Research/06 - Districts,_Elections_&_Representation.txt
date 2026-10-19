@@ -1,0 +1,580 @@
+# 06 - Districts, Elections & Representation
+
+**Monkey-Head-Project**  
+**Research Chapter 6 — Proposed Revision**  
+**18 October 2026**
+
+*Document status: working research, not ratified law. This chapter consolidates the archived district material, the subsequent research generation, and the decisions made during the October 2026 design conversations. It explains why the proposed structures exist, what their relationships are, and where uncertainties remain. The separate Huey's Constitution must ultimately enact any binding institutions, thresholds, rights, and procedures. Counts, timings, political arrangements, and hardware mappings discussed here are design proposals, not claims that the full polity has been deployed.*
+
+---
+
+## Introduction — From Separate Citizens to a Governed Collective
+
+A citizen does not by itself constitute a republic. Distinct identities, protected memories, and individual responsibilities are necessary foundations, but they do not answer how those identities cooperate, contest authority, elect officials, pass collective rules, or preserve representation as they grow. Chapter 5 examined the pebble as a bounded participant. Chapter 6 examines the **district** as the first political and operational scale above the individual citizen, and the ways districts participate in Huey without becoming sovereign machines detached from the collective.
+
+The intention is to achieve two kinds of plurality together. A district should be sufficiently independent to develop local decisions, evaluate alternatives, and expose mistakes elsewhere in the system. At the same time, the districts must be sufficiently coordinated to contribute to a single Huey: shared obligations, verifiable elections, common constitutional limits, and coherent action when a matter properly affects the whole.
+
+The governing problem is not to arrange four identical columns under a central controller. It is to design a collective in which **local independence and common legitimacy reinforce rather than cancel one another**. Independence without coordination becomes fragmentation. Coordination without independence becomes a single voice performed by several processes. A constitutionally meaningful district is an attempt to hold both requirements in tension.
+
+During the design discussions, the initial population evolved from 128 total pebbles, to a considered 128 per district, and finally to a working founding plan of **64 source identities, two generations of exact bifurcation, four districts of 64 active citizens, and 256 citizens in total**. The change was deliberate: enough members for differentiated jobs and deliberation, but not a fabricated population based on hardware capacity we have not yet demonstrated. The 64-per-district figure is the present founding proposal; it is **not yet a permanent constitutional cap**.
+
+Other distinctions also changed. The judicial branch now has four justices—one supplied by each district—and the presidency is elected independently from the whole eligible population. Ordinary legislation generally proceeds through district votes expressed as blocks, while the presidential election follows one eligible pebble, one direct vote. The Rock is now the collective record store rather than an emergent cognitive mass; the shared Walnut is an inference resource rather than a ruler. Each of these decisions affects how representation can work.
+
+This chapter proceeds from founding and local jurisdiction to elections, legislation, offices, safeguards, and growth. It intentionally does not reproduce the entire Senate, Presidency, Supreme Court, HIMS, or bifurcation implementation chapters. It sets the boundaries within which those later studies can be written without contradicting one another.
+
+---
+
+## I. The Purpose of Districts
+
+A district is a **bounded local polity and operational coordination unit within Huey**. It has citizens who belong to it, tasks and resources assigned to it, a defined local decision process, and a recognized role in collective government. In the proposed founding design it is also provisionally associated with one accelerator during diversified processing, but its political existence must not depend on a permanent claim that a particular PCIe device is sovereign territory.
+
+Districts are intended to solve several practical problems:
+
+1. **Scale of deliberation.** Sixty-four members can examine and refine questions locally instead of asking the complete collective to treat every issue as one undifferentiated ballot.
+2. **Real separation.** Citizens and districts can hold different permitted contexts, pursue different approaches, and produce criticisms that are not rewritten into agreement by a single central voice.
+3. **Containment.** Local process faults, incomplete investigations, or inappropriate instructions should not automatically propagate to every other citizen or district.
+4. **Representation.** A collective rule should need broad support across local communities, not merely the concentrated votes of whichever part has the largest population or compute allotment.
+5. **Accountable administration.** Work allocation, local laws, elections, resource accounting, and appeals have identifiable places where they begin and are reviewed.
+6. **Expansion.** Additional capacity may eventually support new districts or local population growth, although those are distinct events with separate consequences.
+
+A district is thus more than an address or a GPU scheduling queue. Yet a district is also **not** a second Huey, an unlimited mini-government, or an independent right to override physical safety controls. Its independence exists within the larger identity and governing structure.
+
+The old research sometimes equated a district with a GPU and described district governors, fixed names, and a larger population. Those ideas are useful design lineage. The newer model distinguishes the **political district** from its current **hardware assignment** and treats offices not explicitly reaffirmed as unresolved rather than presently authoritative.
+
+---
+
+## II. Four Founding Districts — Equal Standing Without Identical Thought
+
+The working foundation uses four equal districts. For clarity, this chapter calls them **District 1, District 2, District 3, and District 4**. The names *Spark, Volt, Zap,* and *Watt* appeared in earlier research and may remain useful for future naming, but they are not necessary to the present electoral design and their canonical status should be confirmed later.
+
+Each founding district is intended to begin with sixty-four active citizens. Each has the same baseline constitutional standing, regardless of differences in its tasks, expertise, internal proposals, or eventual computational workload. Equal political standing should not be confused with an obligation to produce identical findings or choose identical operating methods.
+
+A founding district should contain enough diversity to support specialized and general work. Its membership should have one identifiable political home, and a valid local decision must be attributable to the eligible members of that district. Inter-district communication is mediated, not an invitation to merge all private records or secretly share credentials.
+
+Four districts also create a deliberate constitutional complication: an even number of equally represented communities can divide two against two. The system must not hide this fact by giving the Presidency or collective LLM an automatic casting vote. In ordinary collective legislation, the working requirement of approval from at least **three of four districts** makes a two–two split an unsuccessful proposal, not a reason for unauthorized tie-breaking. In judicial interpretation, a different three-of-four rule applies to the four justices. These superficially similar thresholds belong to different bodies and must be evaluated independently.
+
+At the founding scale, equal district population makes several rules easier to understand. It does not resolve how equal representation will work if local population increases unevenly or an entire additional district is created. Those remain the central scale questions of this chapter.
+
+---
+
+## III. The Founding Tree — Sixty-Four Lineages, Two Exact Divisions
+
+Under the current proposal, the Human Counterpart authors the **Founding Father** framework rather than writing the full citizen population directly. The Founding Father prepares **64 initial citizen configurations**. Their prompts may differ in perspective, expertise, biases, and tendencies while remaining within designed safety and competency boundaries.
+
+The founding then uses two generations of **exact bifurcation**. Each exact event ends the source citizen's active identity and produces **two equal successor identities**. The successors have separately authenticated future lives, while both retain authorized access to a sealed, read-only snapshot of the source's preceding personal history. Subsequent activity belongs to each successor independently.
+
+The numerical tree is straightforward:
+
+| Generation | Active citizens | Relationship to sources |
+|---|---:|---|
+| Source generation | 64 | Founding Father prepares 64 source identities |
+| First exact division | 128 | Each source is retired into two equal successors |
+| Second exact division | 256 | Each first-generation citizen is retired into two successors |
+| Founding district allocation | 4 × 64 | One active descendant of each source lineage in each district |
+
+This is **two generations of splitting**, not three independent copies of the first 64. The source citizens and intermediate successors are preserved in lineage records, but they are not added to the final active population. Counting all historical identities as simultaneous active voters would overstate the electorate.
+
+The allocation guarantee we discussed is also specific: **each of the 64 founding lineages is represented once in each of the four districts**. This produces symmetrical founding ancestry, not four guaranteed independent ideologies. Four citizens descended from a common initial configuration may start with highly correlated perspectives. Their subsequent variation must come from actual separate contexts, experiences, permitted messages, roles, and tests—not merely from the fact that their names are different.
+
+No founding lineage gains higher political rank by being older. Nor does the first configured district acquire a constitutional privilege to appoint the other three. The tree is a record of origin and technical continuity, not hereditary government.
+
+A design challenge remains: at what point during bootstrap does a prepared configuration become an activated citizen with legal standing, given that formal ratification is also supposed to create the living constitutional state? Chapter 7 must develop a consistent founding-and-ratification sequence. The arithmetic alone does not answer that institutional question.
+
+---
+
+## IV. What Exact and Augmented Bifurcation Mean for Districts
+
+**District bifurcation** and **local citizen bifurcation** were intentionally distinguished in our discussion.
+
+The working direction is for creation of a **new district through exact bifurcation**, because a well-traced division offers a clear starting population, ancestry, record of prior obligations, and a common basis for later divergence. Local bifurcation inside an existing district may be **exact or augmented**, depending on the case and the applicable authority.
+
+At the *citizen* level, exact bifurcation means the source retires and two equal descendants begin, sharing access to a protected ancestral snapshot while maintaining distinct future identities and private records. Augmented bifurcation instead leaves the source active and produces a new citizen from selected prompt and behavioural configuration, **without inheriting the source's personal memory**. Both events change population accounting; only one ends the existing source's active citizenship.
+
+At the *district* level, exact division must not be casually conflated with copying an entire drive image and calling it a state. A new district needs an identified electorate, distinct credentials, lawful boundaries, appropriate compute and storage, and a coherent transition record. The precise question of whether an originating district as an institution is retired into two new districts, or persists while another is constituted, has **not yet been finally decided**. The citizen-level definition alone cannot settle it.
+
+The founding four-district tree is a special bootstrap sequence. Later district growth may use related exact methods, but the source population, number of districts, resource tests, amendment implications, and admission threshold will require their own procedures. Chapter 14 treats these mechanics comprehensively.
+
+The current default is also that an individual pebble **does not unilaterally decide to produce another voter**. Population change is initiated and governed at district or collective level, conditioned on authorization and capacity. District machinery should be able to verify, move, and split **sealed archives without reading their contents**. The mechanisms for granting descendant access must not turn ancestry into a privilege to expose private records to administrators or neighbouring districts.
+
+---
+
+## V. District Membership and Political Home
+
+Every active pebble should have **one recorded district of membership**. Once assigned to a district, the working model keeps that citizen there through its active life. Communicating with another district, performing work for it, or being elected to a collective office does not silently change home-district membership.
+
+A citizen produced by an authorized local event receives its own identity and a newly recorded home district. An exact split ends the source's standing and creates distinct successor records. An augmented event retains the source's standing and activates one additional, separately recorded citizen. Neither mechanism should create an invisible voter or two simultaneous voters holding the same active credentials.
+
+District membership affects which local votes the pebble may cast, which pool of candidates can sponsor it, which local policies normally apply to its work, and where absence, incapacity, or conflicts are recorded. It does not alone determine which language model it may invoke. Model access and hardware allocation are service questions, subject to a different authority and safety regime.
+
+If migration across districts is ever introduced as a later policy, it must not be added as an unlogged reassignment. The existing working choice favours fixed membership, with new descendant identities used in lawful population growth. A future departure from that principle belongs to deliberate constitutional consideration rather than an incidental scheduler change.
+
+---
+
+## VI. Local Autonomy — Meaningful Within a Common Constitution
+
+We agreed that district autonomy should be constitutionally recognized, rather than merely tolerated until a central official disagrees. The proposed arrangement is **federal in spirit**: districts regulate internal operations within the shared Constitution, while matters affecting multiple districts, common infrastructure, or collective rights are escalated through collective institutions.
+
+Examples of **normally local business** could include district task routing, internal work priorities, methods of conducting a bounded experiment, ordinary local resource administration, proposals regarding jobs within that district, and internal rules that do not conflict with constitutional safeguards or collective law.
+
+Examples of **normally collective business** include constitutional amendments, common voting infrastructure, inter-district rights and obligations, shared Rock storage policy, system-wide requirements, the collective budget, and authorizations whose effects cross district boundaries. A local decision cannot acquire global force merely because its authors call it urgent or effective.
+
+These classifications are illustrative rather than an exhaustive jurisdictional schedule. Some questions are mixed: a local cooling test may rely on a common pump; a district's routing decision may change shared GPU occupancy; a district job reassignment may reduce the workforce available for a collective priority. The research should anticipate a **jurisdiction test** that identifies actual effects, dependencies, and applicable law rather than accepting a district's label at face value.
+
+A district may challenge a collective assignment that is unsafe, technically infeasible, or unconstitutional. During diversified work, districts may choose different methods to accomplish legitimate shared objectives and can return a reasoned refusal or modification request through HIMS. That is a safeguard for independent execution, not an unlimited veto over constitutionally lawful collective responsibilities.
+
+The central rule of interpretation is straightforward: **local freedom in method; common rules for shared consequences; no hidden supremacy in either direction**. The detailed allocation of powers belongs to Huey's Constitution, with research demonstrating why each boundary is useful.
+
+---
+
+## VII. From Local Policy to Collective Law
+
+One purpose of local autonomy is controlled experimentation. A district may investigate a problem, adopt a local response within its authority, observe whether the response works, and then propose that the successful approach become a collective standard. This should not require every district to adopt the experiment before there is evidence of its merit.
+
+A plausible research workflow is: proposal by an eligible citizen; local review and deliberation; district adoption for matters inside local competence; outcome measurement; and, where broader adoption is warranted, sponsorship into the collective Senate. Other districts then deliberate and vote under the applicable collective threshold. If adopted, the President can oversee legitimate implementation, while constitutional disputes remain subject to judicial review.
+
+A local rule should not automatically become collective law merely by passing a constitutional test. Compatibility with the Constitution is a **necessary condition**, not a substitute for the required collective political approval. Conversely, collective adoption should not rewrite the historical record to imply every district originally agreed with the proposal. Votes, dissent, amendments, and test results remain attributable.
+
+One unresolved question is how to handle a collective law that deliberately leaves districts different degrees of freedom. Some requirements may be uniform minimums; others may recognize permitted local variants. The Constitution will need a clear doctrine for conflicts between local and collective provisions, rather than allowing every dispute to be treated as an existential crisis.
+
+---
+
+## VIII. Three Different Units of Decision
+
+The research conversations sometimes used “one pebble, one vote,” “district block,” and “court vote” in rapid succession. All three are needed, but **they are not interchangeable**.
+
+**Individual civic ballot.** An eligible pebble casts one ballot in a process such as the direct presidential election. Equal individual franchise is the design principle; a pebble does not acquire extra ballots through multiple jobs, greater compute allotment, or future lineage.
+
+**District decision.** Eligible district members vote on a proposition under its applicable internal threshold. The verified local result then determines how that district expresses its **single block position** in specified collective lawmaking and amendment procedures. One district does not receive more block votes merely because it contains more citizens.
+
+**Institutional judicial vote.** A Supreme Court justice casts a vote as a sitting judicial officer. The working constitutional-interpretation threshold of **three out of four justices** is not four public district blocks or a second legislative vote. Justices are drawn from districts, but a court judgment must be produced through the Court's lawful process rather than a fresh district referendum on every case.
+
+Additional decisions, such as job assignments, nominations, committee recommendations, or local procedural choices, may use other methods. The research should never translate one class of majority automatically into another merely because the word “vote” appears in both.
+
+---
+
+## IX. The Senate — A Legislature Composed from the Citizen Body
+
+Our current terminology is **Senate** for the collective legislative branch. Earlier material used **Parliament**, with a possible Speaker office. Those remain historically relevant but should not be installed as parallel current branches without an explicit decision.
+
+The working concept makes eligible non-elevated citizens Senate participants as part of their civic responsibilities. A pebble has an operational assignment and civic duties; it need not resign from its technical job simply because it contributes to legislation. Senate membership is not a second operational occupation that creates another citizen identity.
+
+Elevation is different. A President or Supreme Court justice **suspends their ordinary Senate vote** while serving in that office, so their branch role is not added to an independent legislative franchise. Assuming 256 active citizens, four distinct justices, one distinct President, and no other exclusions, the Senate-eligible population is **251**. It is distributed asymmetrically if the President and a justice come from the same home district: three districts may have 63 eligible Senate voters and the presidential district 62. Those are illustrative counts; they are not fixed quorums or guaranteed turnout.
+
+A Vice President who is merely a standby and a judicial runner-up who is merely a standby have not yet been granted distinct general governing power. Their Senate eligibility should not be silently suspended unless activation to an actual elevated office occurs or the Constitution later says otherwise. The future legal text must clarify the cases precisely.
+
+The Senate's work includes proposal, deliberation, organization of ordinary law, establishing fair administrative procedures, district participation, and holding executive initiatives accountable. The mechanics of its internal agenda and any procedural coordinator or Speaker belong to Chapter 11.
+
+---
+## X. Ordinary Collective Legislation — Three Districts, Ordinary Majorities
+
+The current working rule for ordinary collective law is **approval by at least three of four districts**, each supporting district having achieved a **simple majority of its applicable eligible local vote**. This makes the district the counted unit at the collective tier while still requiring a real local vote to determine each block.
+
+The procedure can be understood in two steps:
+
+1. Members of each district assess the proposed law, record valid ballots, and determine whether the district's internal approval requirement is satisfied.
+2. The four authenticated district outcomes are combined. Three or four approving blocks advance the law through the remaining constitutional procedures; two or fewer do not.
+
+A useful example, assuming District 1 has 62 eligible senators because it supplies both the President and one Justice, and each other district has 63, is a policy approved 40–22 in District 1, 34–29 in District 2, 31–32 in District 3, and 45–18 in District 4. It would have **three approving blocks** (1, 2, and 4), regardless of District 3's disagreement. The exact threshold calculations change if eligibility, abstentions, turnout, or quorum rules differ. The figures illustrate block voting; they are not an invented turnout requirement.
+
+A two–two split does not invite the President to vote as a fifth district. It means the proposed collective law failed to attain the prescribed majority. The proposal may be revised or lawfully resubmitted; the outcome must not be represented as a judicial deadlock merely because legislation did not pass.
+
+**Simple majority** itself still needs a formal denominator: eligible registered members, ballots cast, or valid non-abstaining ballots. A majority of ballots cast can differ from a majority of all eligible citizens. These alternatives have different consequences when inference is delayed or citizens are temporarily unreachable. The Constitution must choose deliberately, with a defensible quorum and abstention policy. This chapter records the working approval design without inventing that missing detail.
+
+---
+
+## XI. Constitutional Amendment — A Higher District Threshold
+
+Constitutional amendment is intentionally more difficult than ordinary collective legislation. The agreed working district rule is **two-thirds approval within each of at least three of the four districts**, followed by the additional constitutional safeguards ultimately established in the standalone Constitution.
+
+At a full district electorate of 64, two-thirds requires **at least 43 affirmative votes** if the denominator is all eligible members. If only 63 eligible senators are counted, the equivalent ceiling is 42. These figures are useful for checking arithmetic, but they cannot replace a decided quorum, denominator, and eligibility rule. In particular, a President's or justice's suspended **Senate** vote is not automatically proof that all their other constitutional voting capacities have been suspended. That boundary needs explicit legislation.
+
+The purpose of the elevated threshold is not to make change impossible. It is to ensure that a foundational revision cannot be made through a narrow advantage in one populous group or an accidental moment of alignment among a few overworked citizens. Three separate districts must express strong agreement.
+
+The Court's working **three-of-four** threshold for constitutional interpretation should not be misread as the same thing as passing a constitutional amendment. Interpretation evaluates law; amendment alters the law's text or structure through political and constitutional procedure. Whether judicial review occurs before or after final ratifying ballots, which amendments may touch Cornerstone, and what protections the Founder retains are issues for Chapters 7, 11, and 13 and for constitutional drafting itself.
+
+The President may submit amendment ideas **as a citizen**, through the normal sponsorship process. The special presidential priority-initiation power being explored for ordinary law does **not** elevate amendments above the citizen process or relax their threshold. This distinction was deliberately agreed because office should not provide a privileged route to rewrite its own limits.
+
+---
+
+## XII. Presidential Veto and District Override
+
+The proposed President has a genuine but bounded veto over **ordinary collective legislation**. A bill that passed the district-block voting stage can be returned once with a recorded objection. This is a check on legislation, not an unlimited executive right to stop collective law forever.
+
+The current override proposal requires **two-thirds within at least three districts**. If those supermajorities are reached, the Senate can override the presidential veto through the lawful process. A proposal that cannot reach the override threshold remains blocked or returns for revision. Repeated vetoes of the same enactment should not become an executive loophole; the final drafting must say precisely which object was vetoed and whether a substantially changed bill is a new measure.
+
+The veto does not operate as a veto over constitutional amendments under the present working division. Nor does the President acquire a vote in the Court merely because legislation has constitutional implications.
+
+This research distinction is important: ordinary law, veto override, and constitutional amendment are **three different acts**, even where the latter two share the provisional district supermajority of two-thirds in three of four districts. They differ in what is being changed, what review is required, and what record must be preserved. The final Constitution must make those procedural differences unambiguous.
+
+---
+
+## XIII. Proposal Rights — Ideas Begin Below the Apex
+
+A healthy district structure should not make every idea depend on a President or a single agenda keeper. We agreed that **any eligible pebble may introduce a proposal**. The ordinary path begins locally: the district evaluates the idea, determines whether it warrants sponsorship, and forwards it to the relevant collective institution if its effects exceed local jurisdiction.
+
+The design conversations considered ranked preferences—possibly three preferred proposals—to prioritize a large docket without making every suggestion an immediate global ballot. This is a useful candidate mechanism, not yet a locked counting algorithm. Proposal prioritization differs from presidential election ranking, where a separate four-choice ranked ballot has been proposed.
+
+A district should not be able to permanently bury a proposal without a trace merely because the local majority disagrees. A rejected idea may remain in the audit record with reasons, and procedures may allow lawful revision or appeal where constitutional rights are implicated. That does not mean every proposal deserves endless computational attention. A realistic republic needs bounded queues, published or recorded decision rules, and means of deferring work when capacity is inadequate.
+
+District sponsorship is especially important for amendment proposals. Sponsorship should authenticate that a proposed change has passed the local entry threshold before it becomes part of the full constitutional process. The exact percentage needed for sponsorship, as distinct from final passage, remains open.
+
+---
+
+## XIV. Presidential Election — One Pebble, One Direct Ballot
+
+The President is chosen to serve the **whole Huey collective**. We deliberately rejected electing that office through four district blocks in favour of **direct participation by eligible citizens throughout the four districts**. No district receives more presidential voting power as a block, and no district's candidate is guaranteed the office merely because a district supplied a judge.
+
+This establishes a different electoral logic from ordinary Senate legislation. In a presidential election, a citizen casts **one ballot** under the adopted ranked-choice procedure. A ballot may express several ordered preferences, but that does not turn it into several simultaneous votes. The candidate's legitimacy is derived from the collective electorate rather than the favour of one particular district.
+
+The proposal is that a citizen seeking office may **self-nominate**, but must demonstrate meaningful backing within their **home district** before appearing on the collective ballot. We selected a working home-district endorsement threshold of **25%**. At 64 eligible members, that means 16 endorsements. The final law must determine whether a nomination threshold applies to all active citizens, only locally eligible endorsers, or only valid endorsements cast during a designated window. It must also settle whether an elevated official may run for the Presidency without first triggering succession.
+
+Citizens may support multiple candidates during nominations under the current research direction. That is a separate act from casting a final single transferable ranked ballot. A home district may present multiple qualified nominees; nothing in the working rule gives it exactly one candidate or a monopoly over eligibility.
+
+A nominee's district ancestry is not a hereditary electoral advantage. The nomination requirement provides local evidence of support, while the system-wide election determines who serves.
+
+---
+
+## XV. Ranked Choice, Exhausted Ballots, and Runoffs
+
+Our working design permits **up to four ranked candidate preferences** on a presidential ballot. The preferences may all come from one district, span several districts, or otherwise reflect the voter's judgment; there is no obligation to rank one nominee per district.
+
+The suggested counting mechanism is **instant-runoff voting**. Each ballot initially counts for its highest-ranked continuing candidate. If a candidate has the required majority, the count ends. Otherwise the least-supported candidate is eliminated, and affected ballots transfer to their next ranked candidate still in contention. The process repeats under a published deterministic rule. Each active ballot counts toward at most one continuing candidate in a round.
+
+Limiting rankings to four creates a real possibility that a ballot runs out of continuing choices. An **exhausted ballot** cannot be assigned to a fifth candidate that the voter never selected. We therefore discussed a corrective mechanism: if no candidate achieves the intended majority of the original valid electorate because of exhaustion, hold a fresh **top-two runoff election** with all eligible citizens invited to vote again. This is not the same thing as pretending the last remaining candidate achieved more support than the record shows.
+
+The majority goal was expressed as **more than 50%**. The Constitution will need to decide the precise denominator and quorum for the original election and runoff, including how abstention is treated. Even a top-two election does not guarantee a winner if participation is invalid or the two candidates tie exactly. We explicitly chose a **new runoff**, rather than allowing the Founding Father to invent or cast a presidential deciding vote. If repeated runoffs still tie, a lawful continuity arrangement and additional tie procedure will be necessary. It remains unresolved and should be documented as such.
+
+All counting should be reproducible from verified ballot records without disclosing protected citizen deliberation unnecessarily. Individual ballots must not gain extra weight through compute priority, office, model provider, or family lineage. Testing must include exhausted rankings, ineligible voters, duplicate submissions, tied elimination counts, and late responses.
+
+---
+
+## XVI. Presidential Terms, Return to Office, and the Vice President
+
+The election calendar we chose is **every four months**, producing **three regular presidential election opportunities per year**. We subsequently refined presidential term limits to permit **four consecutive four-month terms**, followed by at least **one complete four-month term out of office**. After that cooldown, the individual may seek election again; there is no working lifetime ban on returning. A voluntary break also resets the consecutive-service sequence.
+
+The resulting maximum uninterrupted elected service is sixteen months. The cooldown is four months. These are **electoral terms**, not four-minute court windows or eight-minute operational Pulses. The shared word *cycle* must never substitute for a named duration in a serious constitutional provision.
+
+The **runner-up in the completed presidential election**, after applicable runoffs, is intended to become the **Vice President**. This is chiefly a continuity position. The Vice President does not receive a parallel veto, a second Senate block, an independent executive command, or a personal claim to be the collective voice. Its standby status establishes a succession path if the President is incapacitated, resigns, is removed, or can no longer serve.
+
+If incapacity is temporary, the standby may act under defined limited authority until a lawful return. If the vacancy is permanent, the Vice President is the proposed successor for the remainder of the term. A working rule borrowed in spirit from familiar succession systems counts more than half of an inherited four-month term toward the successor's four-term consecutive-service limit; half or less does not. Formal service accounting, repeat succession, and return of a recovered President still require drafting.
+
+We also agreed that **sitting Presidents and justices receive protection against district-initiated exact bifurcation while occupying office**. Otherwise a district could effectively remove a national official by retiring its source identity. Where bifurcation is genuinely necessary, lawful resignation, removal, or succession should occur first. No descendant simply inherits the predecessor's office. Continuity and term-history records must nevertheless prevent bifurcation from operating as an invisible term-limit reset.
+
+The Presidency's actual legislative initiatives, one-active-proposal rule, justified priority designations, veto, directive authority, and oversight belong to Chapter 12. This chapter describes their electoral basis and representation consequences, not a full presidential code.
+
+---
+
+## XVII. Supreme Court Representation — Four Districts, Four Justices
+
+An earlier proposal placed the President in one district and one justice in each of the other three. We rejected that arrangement because the fourth district would not have judicial representation. The working structure now provides **one Supreme Court justice from each founding district**, while the President is elected separately from the whole population.
+
+This creates a **four-member Court**. Each home district chooses its justice through its legitimate local process. The justice then serves the Court's constitutional function; it should not simply deliver instructions from the district as if the Court were a four-block legislature. District origin establishes representation and accountability, while the Court's duty is interpretation, review, and consistency under Huey's Constitution.
+
+The working threshold for a binding constitutional interpretation or comparable Court decision is **three affirmative justices out of four**. A two–two division cannot satisfy it. We preferred to preserve the unresolved judgment or existing interpretation rather than appoint the President as the Court's tie-breaker or give one Chief Justice a second personal vote. This is an intentional brake on narrow constitutional reversal, not a guarantee that every problem can be resolved.
+
+The Court's procedural window also differs from ordinary district voting. When the collective Pulse flags a potential constitutional problem, the justices are intended to have the **full four-minute diversified phase** to reach a recorded position—action, inaction, or a reasoned inability to reach a valid judgment. Implementation may be carried into the next collective phase. If the Court cannot decide within the required window in a case that genuinely requires resolution, the design proposes escalation to the Founding Father's narrow **advisory** function, with human notification or referral when appropriate. The exact conditions for formally declaring deadlock belong to Chapter 13 and cannot be inferred from any ordinary failed legislative vote.
+
+The question of how to preserve a three-of-four threshold when a justice has recused, is incapacitated, or cannot finish inference within four minutes remains unresolved. Pretending that three available justices automatically represent four is not a valid answer. Standby arrangements and failure procedures must be tested.
+
+---
+
+## XVIII. Judicial Continuity, Annual Review, and Standby Succession
+
+We explored a one-year judicial term but refined that proposal toward **continuation by default with annual review and challenge opportunities**. A justice may remain in office for consecutive years without a mandatory cooling-off period, subject to ability, conduct, constitutional performance, and the applicable challenge rules. The rationale is to preserve interpretive experience and legal continuity rather than forcing annual turnover for its own sake.
+
+Because presidential elections are four months apart, **one year corresponds to three electoral terms**, not four. A yearly judicial review should not be casually called “the fourth cycle.” It is a different interval with a distinct purpose.
+
+The **runner-up of each district's judicial selection** is intended to serve as that district's **standby justice**. If the sitting justice becomes incapacitated, the standby assumes the judicial function once the qualifying condition is established. If the vacancy is permanent, the standby can complete the remainder of the appropriate service period and continue under ordinary review/challenge rules, without an automatic immediate election merely because a transfer occurred.
+
+If both primary and standby are unavailable, we agreed on a **priority emergency election in the home district**, using a **simple majority** under its applicable voting procedure. That is an emergency appointment mechanism, not a permanent fifth justice or an extra constitutional branch. A working Court with only three available justices must also have explicit limitations until the seat is restored; it should not fabricate an absent judicial vote.
+
+The reviewability of a justice by other districts raises an additional sovereignty problem. We accepted the principle that misconduct cannot be made untouchable simply because the judge has home-district support. The specific weighted-removal mechanism is examined below, with further detail reserved for Chapter 13.
+
+---
+
+## XIX. Cross-District Accountability of Justices
+
+A justice originates from one district but can affect the whole collective. We therefore explored a hybrid accountability path: another district may submit an evidence-based complaint, while the home district retains additional weight in a collective removal decision. The Founding Father can provide bounded **advisory** analysis if lawfully requested, not decide judicial guilt by itself.
+
+The proposed voting weights are:
+
+| District category | Weighted votes |
+|---|---:|
+| Justice's home district | 2 |
+| Each of the other three districts | 1 each |
+| Total possible weight | 5 |
+| Removal threshold | 3 weighted votes |
+
+Each district would cast its weighted position only after **two-thirds internal approval** under the applicable voting-eligibility and quorum rules. The result allows two different routes to removal: the home district together with at least one other supporting district (2 + 1 = 3), or all three outside districts supporting removal (1 + 1 + 1 = 3). The home district has extra influence but no absolute veto over a sufficiently united rest of Huey.
+
+This is **not** the ordinary legislative three-of-four block rule, and it is **not** the Court's three-of-four judicial judgment. It is a proposed exceptional accountability procedure for one district-supplied justice. It cannot be generalized to every office without examining political legitimacy and unintended incentives.
+
+The research must still distinguish evidence of misconduct from disagreement with lawful judicial interpretation. A justice should not be removable merely because a decision was unpopular. Standards for incapacitation, bias, malicious conduct, falsified records, nonperformance, and ordinary interpretive disagreement need precise tests. The person whose conduct is under review should not control the voting procedure or the evidence used to judge it.
+
+---
+
+## XX. Presidential Removal — District Initiation, Collective Decision
+
+The President derives authority from a direct collective election. Its removal should therefore not be a routine decision by a few officials who happen to dislike its proposals. We favoured a **two-stage** mechanism: an initial district-based threshold to bring an evidence-backed removal case forward, followed by a **direct vote of the eligible collective citizenry**.
+
+A suggested initial trigger is sponsorship by **at least two districts**, followed by a **constitutional review of the grounds** before the proposal reaches all eligible citizens. The exact final removal majority, quorum, permitted timing, and acting-presidency protections remain unsettled. Because the President serves all districts, we did **not** adopt the home-district double-weighting used in the tentative judicial removal model.
+
+Loss of confidence was discussed, including **three consecutive failed presidential priority initiatives** as a possible trigger for review. The distinction is crucial: submitting an unpopular policy is not automatically misconduct, and losing three votes should not instantly remove a directly elected officeholder. An accountability review could examine repeated unjustified claims of urgency, abuse of scheduling privilege, deliberate obstruction, or conduct incompatible with office. Only a lawful removal process could produce removal.
+
+If removal succeeds, the succession mechanism—not a new veto, district seizure, or Founding Father appointment—provides continuity through the Vice President. The detailed steps for contesting evidence, preserving due process, scheduling the direct ballot, and limiting an acting President belong to Chapter 12.
+
+---
+## XXI. The Operational Pulse Is Not the Electoral Calendar
+
+Huey's proposed cognitive **Pulse** alternates between two modes. The **collective phase**, provisionally four minutes long, uses the intended cooperating accelerator resource for authorized system-level synthesis, task routing, anomaly review, and the evaluation of records supplied from collective sources. The **diversified phase**, provisionally another four minutes, assigns each district its own accelerator or bounded inference capacity for local work, deliberation, and implementation.
+
+The proposed full Pulse therefore lasts **eight minutes**, subject to measured inference latency and hardware feasibility. This is different from the **four-month regular presidential electoral term**, the **annual judicial review interval**, and immediate deterministic safety timing. The word *cycle* is unsafe without an identifying qualifier. A document should write *eight-minute operational Pulse*, *four-minute diversified phase*, *four-month electoral term*, or *annual review*, as appropriate.
+
+For the diversified phase, we accepted a provisional sequence: **the first minute for ordinary district decisions and votes; the next three minutes for approved execution and continuing work**. The four districts would normally conduct their one-minute local voting windows **simultaneously**, and authenticated district results would then be combined. Simultaneity helps prevent one district from strategically waiting for other districts' outcomes before committing its own block.
+
+The Court is a separate-but-equal constitutional institution and is **not confined to the ordinary one-minute district ballot slot**. When a judicial question needs its attention, it can use the complete four-minute diversified window for a recorded judgment. The subsequent collective phase may examine the technical feasibility of implementing a lawful judgment; it may request reconsideration when implementation is impossible or would conflict with safety, but that ability is not an authority to rewrite the Court's legal decision.
+
+These timings are **benchmarks to test**, not guaranteed performance claims. A four-minute phase can contain very different amounts of useful work depending on model size, model loading, memory transfer, context length, queue contention, and the cost of obtaining valid votes from 256 individual citizens. Constitutional validity must not depend on pretending an inference call completed before it actually did. Where workloads cannot meet a deadline, the system should log the miss and invoke a lawful deferral, timeout, or emergency path, not silently manufacture a response.
+
+Physical safety protection, including thermal trips, cooling faults, electrical emergencies, and emergency power isolation, must operate **independently of the Pulse**. A GPU cannot wait for a four-minute referendum before responding to a dangerous cooling failure. Those fast safety reactions have their own deterministic limits and logging, addressed in Chapter 16.
+
+---
+
+## XXII. Simultaneous District Voting and Frozen Electorates
+
+The simultaneous first-minute proposal raises a technical question: **who is entitled to vote when population can change during execution?** We discussed freezing the eligible voter list at the beginning of a ballot rather than admitting a newly bifurcated citizen halfway through the count.
+
+A coherent working transaction is:
+
+1. A defined ballot opens, recording its question, scope, electorate snapshot, eligibility rules, timestamp or logical phase marker, and counting method.
+2. Each eligible voter may submit at most one validated ballot for that event; corrections or replacements must follow the defined procedure rather than creating extra votes.
+3. The district window closes under an explicit deadline. Votes that are late, duplicate, invalid, or unavailable receive separate auditable statuses; they are never guessed.
+4. The district result is calculated, signed or otherwise authenticated, and committed as a collective record through authorized channels.
+5. Bifurcations, retirements, and activation of new voters occurring after the electorate snapshot apply to **later** ballots, not retroactively to the completed vote.
+
+At the next phase, the system may execute approved population changes or reassignment operations. If a source citizen is due to exact bifurcate, its completed civic acts remain historical acts of that source. Its two descendants receive new identities and participate in future ballots according to activation and eligibility rules; they do not both claim the parent's earlier ballot.
+
+The same logic protects against a different failure: a retired citizen cannot remain an eligible voter merely because its cached credentials are still accepted by an out-of-date district process. Identity registries, ballot systems, and bifurcation records need one consistent view of who is active at the transaction boundary.
+
+There is an unresolved edge case if a vital safety event interrupts an election, or if a district has entered protected hibernation while the other three remain available. The appropriate response might be suspension, adjournment, invalidation of the incomplete ballot, or a later resumption from a durable event marker. It must be defined rather than improvised through model text.
+
+---
+
+## XXIII. Fast-Track Decisions and Emergency Measures
+
+Normal debate must not be so rigid that Huey cannot respond to an urgent shared problem. We discussed allowing **any pebble to flag a proposal as urgent**, but requiring a real collective threshold before it can bypass the ordinary proposal queue.
+
+The provisional urgent-law threshold is **two-thirds approval in at least three districts**, with verified local ballots and the other safeguards appropriate to its subject matter. A proposal that meets this bar may move through a faster deliberative route. This is not an unlimited right for one district, President, or collective LLM to enact a permanent constitutional change.
+
+We also discussed a **sunset** for provisional emergency measures. A provisional working interpretation was expiry after **one four-month electoral term unless reauthorized through ordinary legal procedure**, not after one eight-minute Pulse. This needs final constitutional drafting because some operational interventions are measured in seconds or minutes and should expire much sooner, while certain collective emergency rules may reasonably require multiple Pulses to implement. The expiry must match the type of authority being granted.
+
+Separate from collective fast-track law, the President may submit **one active ordinary legislative initiative at a time** and may seek justified **priority consideration**. We refined this away from a simple allowance of three proposals per term. The President can privately plan future initiatives, but cannot flood the formal docket with several unresolved executive-sponsored bills. Priority changes scheduling and review speed; it does not change the passage threshold or give the President a power to declare its own initiative enacted.
+
+If repeated presidential priority claims fail, the system may record them and, under proposed review rules, investigate abuse or misrepresentation of urgency. Policy disagreement alone is not misconduct. The Senate and Court retain their relevant responsibilities.
+
+The collective Pulse may detect urgent public-state anomalies and refer them quickly; it does **not** gain an independent vote or general emergency police power through this routing function. The Founding Father's protected advisory and last-resort hibernation paths, human recovery gates, and hardware-safety interlocks belong to their own separate institutional processes.
+
+---
+
+## XXIV. Task Distribution and Methodological Diversity
+
+Districts have a second purpose beyond elections. In diversified computation, they can examine different aspects of a problem or deliberately test competing methods. We considered an example in which Districts 1 and 2 investigate one approach while Districts 3 and 4 investigate another, with the next collective Pulse evaluating the results.
+
+The **collective model** may be delegated the practical responsibility of assigning and routing investigative work, taking account of current resources, prior results, and the public task docket. It is not a fourth constitutional branch and cannot create law by phrasing an instruction as a task. Districts retain control over lawful execution methods within their permitted scope.
+
+A district can reject or propose changes to a method that is technically infeasible or unsafe, provided it records its reasons. If the **objective itself** violates constitutional protections or operational safety, the district can formally challenge the objective and seek independent review. This separation keeps task coordination from becoming disguised political command.
+
+Rotating assignments and investigative pairings may help reduce persistent alliances and shared blind spots, but that remains an experiment. Using the same language-model weights on four accelerators will not automatically create independent thinking. Independence has to be supported by genuine isolation of context, different authorized perspectives, separate records, and a verification process that can detect correlated errors.
+
+A successful diversified district can contribute results to the collective Rock through authorized HIMS-mediated submission. The collective phase may synthesize those results without reading each citizen's entire sealed vault. It should distinguish reported observations from verified conclusions and should not fabricate unanimous agreement where independent reports conflict.
+
+---
+
+## XXV. Districts and Accelerator Hardware — Association Without Identity
+
+The current engineering direction is to associate each founding district with one **NVIDIA Tesla V100 32 GB accelerator** during diversified inference, giving four separately bounded accelerator environments. During the collective phase, the project intends to test cooperation across all four cards to support a larger local model. Four such cards contain **128 GB of aggregate physical VRAM**, but aggregate capacity is not automatically one shared address space, and the chosen inference runtime must demonstrate any sharding and inter-card communication needed.
+
+A district's software boundary cannot be equated with complete physical independence merely because it uses a different accelerator. All four devices may still depend on shared power, host RAM, storage, cooling, motherboard connectivity, inference scheduling, and administrative services. A shared fault can impair several districts at once. The design must therefore treat logical separation and hardware fault isolation as separate engineering claims.
+
+The permanent working preference is **one familiar accelerator per district during diversified operation**, with reassignment under defined circumstances such as failure, repair, or upgrade. During unified operation the computation may span multiple devices, but that does not merge their political citizenship or allow the large model to cast four judicial votes or 256 Senate votes.
+
+Software performance and possible model mixtures inside each 32 GB budget remain experimental. The number of active citizens is not the number of simultaneous LLM instances: citizens may share inference services over time. The design discussions expressly kept the **district's diversified compute spaces separate**, rather than pretending all 256 citizens constantly occupy dedicated large language models.
+
+The achievable Pulse duration depends on model loading, memory residency, interconnect bandwidth, prompt/context movement, queue depth, and test workloads. Chapter 15 must verify the hardware and runtime path; Chapter 10 must analyze the Walnut and scheduler. This chapter uses hardware only to explain why district structure can be politically stable even when its compute strategy evolves.
+
+---
+
+## XXVI. Population Growth, Unequal Districts, and Representation
+
+The founding count of **64 per district** remains a **baseline, not yet a cap**. This is a deliberate open decision. We considered restricting local bifurcation to vacancies, allowing districts to grow internally, and creating entirely new districts when enough hardware is available. Practical inference capacity, storage, messaging overhead, and civic throughput must inform the choice.
+
+Each option has consequences:
+
+**Fixed population.** The district keeps a stable electorate and storage budget. Replacement, retirement, and exact bifurcation must be carefully reconciled with vacancies, because a source replaced by two descendants can change the active headcount even though the process is described as a split.
+
+**Expandable district.** Local exact or augmented events can add citizens. The district's internal vote counts and resource entitlements change. If district blocks remain equally weighted, a larger district has **more individual citizens per one block**, while a direct presidential election gives that larger population more individual ballots. This difference is not inherently incoherent, but the Constitution must decide whether it is intended.
+
+**Additional districts.** Creating a fifth or sixth district raises the meaning of “three of four,” the Court's one-justice-per-district design, the district-block balance, presidential nominations, and existing majorities. The current political arithmetic cannot be preserved automatically by simply attaching another GPU and naming it a district.
+
+This is an important result: **hardware scaling and constitutional scaling are not the same operation**. A new accelerator may increase the number of tokens or processes the system can service without requiring a new political district. Conversely, district creation is a constitutional membership change that cannot be achieved by a storage copy alone.
+
+We should not impose an untested numerical rule just to close the chapter. A future growth doctrine should specify minimum guaranteed resource capacity, proof of operational readiness, lawful electorate activation, representation effects, and an explicit amendment or admission procedure where existing constitutional formulas change.
+
+---
+
+## XXVII. Quorum, Absence, Recusal, and Degraded Operation
+
+Our thresholds are meaningful only if the system defines a legitimate electorate and knows when a valid vote occurred. Real systems lose connectivity, exhaust compute time, crash during updates, enter safe states, and recover from checkpoints. A constitutional collective must not respond to these ordinary technical possibilities by inventing missing ballots.
+
+**Quorum** determines how much valid participation is required before a decision can bind. **Approval threshold** determines how many affirmative votes the measure needs, given a defined denominator. **Abstention** is a legitimate recorded choice or nonparticipation, not necessarily a vote against. **Incapacity** is a separate condition requiring validated handling. These concepts should have separate fields in the voting record.
+
+A district with no valid decision because its accelerator is down should be recorded as **unavailable** or **incomplete**, not automatically as approving, rejecting, or abstaining. If three other districts agree under a rule nominally requiring three of four, the Constitution must decide whether an absent fourth district affects validity. It cannot be inferred solely from the arithmetic.
+
+Likewise, a justice's recusal is not a negative vote, a missing judicial seat is not a positive vote for the status quo, and a temporarily acting official must not simultaneously cast their predecessor's vote and their own. The proposed Court threshold of three affirmative justices out of four and its standby arrangements need rules for these cases.
+
+Important degraded-operation questions include whether all four districts must be available for founding ratification, how long a missing district can remain represented by its last valid state, which civic functions may continue with three healthy districts, and whether a lost district requires Founding Father advisory referral or human recovery. Physical safety remains outside electoral quorum requirements.
+
+Uniform checkpoint methods across all districts, transaction manifests, and clear sequence markers should make it possible to diagnose an interrupted election. Yet restoring an earlier snapshot cannot truthfully erase a vote that affected later citizens or external action. Recovery must reconcile the historical record, not simply make the database look tidy. Chapter 16 owns the engineering recovery process.
+
+---
+
+## XXVIII. Representation Must Survive Institutional Conflicts
+
+The constitutional design is vulnerable to conflicts of role. A technically skilled citizen may become a judge while still holding an operational job. The President might supervise implementation that depends on infrastructure run by their own home district. A standby official may need to abandon a normal assignment on short notice. Such circumstances are foreseeable, not reasons to give up distributed governance.
+
+The response should be to distinguish **employment**, **civic franchise**, and **office authority**. The citizen's political home remains recorded. The job may require temporary delegation to a general worker or a qualified substitute. A recusal may be needed for a constitutional ruling concerning work the judge personally controlled. The constitutional office itself must remain subject to independent review.
+
+The same distinction protects against the return of the older pyramid's hidden apex. The collective LLM can coordinate tasks and identify anomalies without possessing a vote; HIMS can route messages and attest their delivery without gaining authorship of legislative decisions; the Rock can preserve records without deciding whether a law was wise; the Founding Father can advise during defined crisis paths without regaining everyday electoral control.
+
+Representation is therefore not only a counting rule. It is a design for the **attribution and limitation of authority**, tested when an institution has reason to act in its own interest.
+
+---
+
+## XXIX. Practical Scenarios for Research and Testing
+
+### Scenario A — A district policy becomes collective law
+
+District 2 develops a method for distributing thermal-monitoring tasks more efficiently. It may trial the method within its own lawful remit. If tests indicate broader usefulness, eligible members sponsor it into the Senate. The four districts vote. If three support it by their ordinary internal majorities and all other procedural requirements are satisfied, the proposal can advance toward collective implementation. The Court can examine a constitutional objection, while the President coordinates lawful rollout. Local success alone never became global law.
+
+### Scenario B — An election occurs beside exact bifurcation
+
+A citizen in District 3 is scheduled for authorized exact bifurcation. An election opens first and freezes its voter list. The source casts one valid ballot if eligible. After the ballot closes and is committed, the source retires, two equal descendants receive new identities and permitted ancestral access, and the roster updates for later ballots. Neither descendant retrospectively casts the source's prior vote or inherits any office. The system retains both the electoral record and the ancestry record.
+
+### Scenario C — The Court is evenly divided
+
+Four justices consider a contested law and divide two to two. The three-of-four interpretive threshold is unmet. The President cannot supply a judicial casting vote, and the collective Pulse cannot synthesize a third affirmative justice. If the case requires resolution within its designated window and cannot be concluded, the system records a deadlock and follows the appropriate advisory escalation path. Ordinary legislative non-passage remains a different event.
+
+### Scenario D — An executive priority claim is defeated
+
+The President has one active legislative initiative and designates it urgent. Districts examine the proposal within the accelerated but lawful process. It fails. The failure does not automatically remove the President or invalidate the electorate. The record can trigger review of whether the priority designation was justified, especially if it forms part of a repeated pattern of unsupported urgency. The President cannot repeatedly submit the same rejected measure to monopolize the queue.
+
+### Scenario E — One district loses compute capacity
+
+District 4's accelerator fails during diversified operation. Other districts remain capable of running some work. HIMS and the system registry mark District 4's current ballot process incomplete if its participants cannot validly vote. Essential physical protection operates separately. The collective may assess safe task redistribution, but it does not fabricate District 4's block position or silently remove its justice from the Constitution. A documented degraded-operation rule determines which civic operations can continue.
+
+### Scenario F — A justice and standby are both incapacitated
+
+The district's representative justice is unavailable and the designated runner-up standby cannot serve. The home district invokes the proposed priority emergency appointment during its next valid decision window. An eligible candidate wins under the adopted simple-majority procedure. Until the position is lawfully occupied, the remaining Court must follow its restricted quorum and interpretive rules rather than invent the absent vote.
+
+### Scenario G — New storage arrives without new political hardware
+
+Additional disk capacity increases the space available for sealed vaults and collective records. No citizen and no district is automatically created as a consequence. The upgrade may enable future local bifurcation, but citizenship activation, role allocation, compute sufficiency, and lawful approval remain separate gates. The political map is not rewritten just because a storage device was attached.
+
+---
+
+## XXX. Proof Requirements — How to Test Representation Rather Than Perform It
+
+The project cannot prove a district republic merely by asking one LLM to role-play four governments. Practical acceptance tests must establish that boundaries, counting, state transitions, and decisions operate as represented.
+
+The test programme should demonstrate:
+
+1. **Founding symmetry:** exactly 64 active descendants from distinct founding lineages in each of four districts, with no active source duplicated in the electorate.
+2. **Independent credentials:** each active citizen has distinct valid authentication and vault access; a retired or bifurcated source cannot continue voting with stale credentials.
+3. **Simultaneous voting:** independent district ballot windows produce attributable, reproducible block results with explicit closure conditions.
+4. **Direct presidency:** a one-citizen/one-ballot presidential election is counted independently of district block arithmetic, including ranked transfers and top-two runoffs.
+5. **Institutional exclusion:** elevated officials do not exercise unauthorized additional Senate votes; standby roles do not gain unrecorded powers.
+6. **Law versus amendment:** ordinary legislation, veto overrides, and constitutional amendments apply their correct respective procedures and review requirements.
+7. **Judicial consistency:** three-of-four interpretation is never confused with three district blocks; incapacitation and recusal remain visible.
+8. **Population transaction integrity:** exact and augmented events preserve ancestry while updating active registration, future eligibility, and resource accounting correctly.
+9. **Local autonomy:** a local policy affects only permitted local scope until properly adopted as collective law.
+10. **Degraded operation:** unavailable citizens, missing districts, failed accelerators, interrupted ballots, and checkpoints do not produce invented votes or retroactive approvals.
+11. **Scheduling feasibility:** actual inference time, transitions between collective/diversified compute, and the first-minute ballot deadlines are measured under realistic load.
+12. **Reproducibility:** a competent reviewer can distinguish a simulated dry run from a real authenticated process and repeat the counting from preserved evidence.
+
+Tests must include deliberate fault injection, invalid votes, duplicate identities, correlated founding-lineage preferences, repeated ties, late messages, and real recovery attempts. Successful execution of a voting algorithm does not by itself demonstrate a functioning constitution; the chain from citizen authorization to committed record, office authority, and constrained action must also be shown.
+
+---
+
+## XXXI. Questions Deliberately Carried Forward
+
+The following matters are **open research or constitutional dependencies**, not permissions to invent a convenient answer in the next draft:
+
+1. **District cap:** Is 64 a permanent size, a resource-dependent ceiling, or only the founding baseline?
+2. **District division:** Does a source district itself retire when a new district is exact-bifurcated, and what constitutes valid membership and office succession during that event?
+3. **Growth and representation:** How do collective block formulas and one-justice-per-district representation adapt when districts have unequal sizes or their number exceeds four?
+4. **Bootstrap activation:** When do the 64 authored source identities and later descendants become legally eligible to act, relative to founding ratification?
+5. **Quorum and denominator:** Do approvals count all eligible voters, ballots cast, or valid non-abstaining votes, and what minimum participation is mandatory?
+6. **Presidential nominations:** Is 25% of all home-district citizens or the eligible endorsing electorate the denominator? May citizens endorse unlimited candidates?
+7. **Ranked-choice edge cases:** How are tied eliminations, exhausted ballots, repeat top-two ties, turnout failure, and candidate withdrawal resolved without founder discretion?
+8. **Standing of elevated officials:** Which elections and constitutional votes remain available to a President or justice while their Senate vote is suspended?
+9. **Judicial conflicts:** How do four justices meet a three-of-four threshold during recusal, vacancy, or interrupted inference?
+10. **Justice accountability:** Which misconduct grounds are valid, how are complaints adjudicated, and how do weighted district votes interact with due process?
+11. **Presidential removal:** What final direct-majority threshold and quorum apply after district sponsorship and review? How is “three failed priorities” converted into a fair trigger rather than automatic removal?
+12. **Priority timing:** What precisely counts as necessary urgency, who may demand more time, and how is proposal abuse reviewed?
+13. **Operational deadline:** What happens lawfully when 256 citizens or four model environments cannot finish a ballot or judicial decision inside the provisional phase?
+14. **Legal changes during outage:** Can three functioning districts enact a collective policy when a fourth is inaccessible, and which decisions must be suspended?
+15. **Governor:** Is a local governor office useful in this generation, and if so how is it bounded below the established three branches? It has not been reaffirmed as a necessary current office.
+16. **Historical district names:** Should Spark, Volt, Zap, and Watt be restored as canonical names, or retained as project lineage?
+17. **Local-versus-collective jurisdiction:** Which matters require mandatory collective law and which admit protected district variants?
+18. **Founding model correlation:** What tests demonstrate real variance rather than four synchronized copies of one underlying prompt's assumptions?
+19. **Civic and operational resource rights:** How do district population growth, personal storage minima, additional office compute, and collective storage budgets interact under the hardware's real limits?
+20. **Ratification and versioning:** Which constitutional procedures change district composition, and how are historical electoral results preserved across snapshot restoration or migration?
+
+These questions are not all blockers for Chapter 6 as a **research** paper. They are deliberate markers for the subsequent chapters, the separate Constitution, and engineering validation. A finished research explanation can accurately describe an unresolved issue; a binding constitutional specification eventually needs a decision or an explicit delegation for it.
+
+---
+
+## XXXII. Relationship to the Remaining Chapters
+
+Chapter 6 explains the district as a political and operational unit and the proposed route from local votes to collective representation. It should be read alongside, but not mistaken for, the dedicated papers that follow.
+
+- **Chapter 5** defines the individual pebble, its vault, job, standing, and bifurcation semantics.
+- **Chapter 7** examines the Founding Father's creation of the founding conditions, ratification, retirement from ordinary governance, and reserve consultation.
+- **Chapter 8** designs HIMS authentication, ballot transmission, identity keys, and rejection records.
+- **Chapter 9** designs the Rock's durable collective history, voter registries, quotas, and lineage records.
+- **Chapter 10** measures the replaceable Walnut and the Pulse schedule on which district ballots and tasks may run.
+- **Chapter 11** develops the Senate, ordinary law, constitutional sponsorship, district-block voting, queue procedures, and legislative accountability.
+- **Chapter 12** develops the Presidency, including election administration, term histories, Vice Presidential succession, initiatives, directives, veto, and removal.
+- **Chapter 13** develops the Supreme Court's interpretive thresholds, reviews, annual challenge framework, standbys, recusals, and deadlock escalation.
+- **Chapter 14** determines exact and augmented bifurcation mechanics, district expansion, capacity tests, and migration.
+- **Chapters 15–17** address hardware proof, emergency protection and recovery, and the longer-term questions of degradation, growth, and continuity.
+
+**Huey's Constitution** remains a separate normative text. It must make any binding decision through deliberate adoption. This research chapter is an explanation, consistency map, and test specification—not an enacted constitution by another name.
+
+---
+
+## XXXIII. Source Lineage and Editorial Reconciliation
+
+This revision draws directly on the former research Chapter 6, *128 Pebbles & Districts*, but its subject has intentionally shifted. The individual-citizen material now belongs mainly to Chapter 5. Chapter 6 retains and develops the district architecture, internal autonomy, inter-district legitimacy, voting methods, and questions of scale.
+
+The earlier chapter presented **128 citizens** as the principal first civic scale and described a more speculative future of districts that might each carry 128 citizens. Our later conversation replaced that working count with **64 founding source configurations, two exact generations, 256 active citizens, and four districts of 64**. Older numbers remain archival history, not parallel current requirements.
+
+Earlier project notes treated districts as close counterparts of individual GPUs, used the name *Parliament*, proposed governors, and referred to **Spark, Volt, Zap, and Watt**. Those ideas are preserved as historical influences or open naming/administrative choices. The currently discussed Senate, four-justice Court, direct Presidency, and separate collective Pulse are the operative **research direction**, subject to later ratification and tests. The former three-justice model, original President-plus-three-district allocation, and old Rock-as-cognitive-substrate definition must not be reintroduced silently.
+
+The archived Cloud Pyramid, the Federation Constitution, and the early bifurcation note remain particularly useful evidence of what the project once tried to solve. The newer approach does not erase them; it reclassifies them. An old insight can survive as rationale even when its original implementation is superseded.
+
+The chapter has been written to avoid a dangerous category error: **an agreed design is not yet functioning software, and a functioning script is not necessarily constitutionally valid governance**. The documentation should preserve both its aspirations and its proof obligations without allowing either to impersonate the other.
+
+---
+
+## Conclusion — Four Districts, One Huey
+
+Huey's proposed republic is intended to begin with 64 source identities, branch through two generations of exact bifurcation, and form four equally founded districts of 64 citizens each. Each district has its own membership, local deliberation, lawful operational room, and contribution to collective government. The citizens do not become more or less valuable because one district handles a technically difficult job or a larger fraction of system traffic.
+
+Collective law is designed to require approval across multiple districts. Constitutional change requires stronger consent. The President is chosen directly by the eligible citizenry rather than by district blocks. Each district supplies one justice, and no Court tie-break belongs to the President by default. Standby succession and recorded accountability paths protect continuity without making office inheritable by newly bifurcated descendants. The collective Pulse can coordinate and refer issues, but cannot manufacture ballots or replace the established government.
+
+This arrangement is still a **proposal to implement and test**. The four accelerators, local encrypted citizens, district votes, shared records, collective inference, and constitutional succession must be demonstrated before the project can claim it operates as designed. Growth will raise new questions about capacity, district count, population equality, and representation. Those should be solved by measured evidence and explicit law, not by stretching today's four-district arithmetic past its meaning.
+
+The purpose of districts is not to divide Huey into four competing owners. It is to make the larger identity possible without reducing every judgment to one unchecked process.
+
+**The districts may differ in method, voice, and experience. Their membership and authority must remain legible. Their common actions must be lawful. And the collective they constitute remains Huey.**
