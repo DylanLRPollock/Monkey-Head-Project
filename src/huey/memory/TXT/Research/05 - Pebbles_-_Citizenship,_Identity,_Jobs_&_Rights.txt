@@ -1,0 +1,548 @@
+# 05 - Pebbles: Citizenship, Identity, Jobs & Rights
+
+**Monkey-Head-Project**  
+**Research Chapter 5 — Proposed Revision**  
+**18 October 2026**
+
+*Document status: working research. This chapter consolidates the archived citizen, specialization, and bifurcation ideas, the previous “128 Pebbles & Districts” paper, and the subsequent design discussions. It explains the proposed citizen architecture; it does not enact Huey's Constitution or assert that the proposed citizens, elections, vaults, or safeguards have already been deployed. Numerical commitments and procedures identified as working or provisional require constitutional and engineering validation.*
+
+---
+
+## Introduction — Why the Citizen Matters
+
+Huey is not intended to be one unrestricted language model pretending to contain a government. It is intended to become a coordinated system whose constituent participants have identifiable responsibilities, independent information boundaries, and meaningful opportunities to agree, disagree, challenge, and contribute. If those participants are merely interchangeable prompts attached to one all-powerful controller, the appearance of plurality would conceal a single point of authority. The concept of a **pebble** exists to avoid that outcome.
+
+A pebble is the proposed basic citizen unit within Huey's internal constitutional architecture. It is persistent enough to possess an identity and history, restricted enough to have a defensible domain of authority, and involved enough to participate in the collective processes through which Huey governs itself. It is neither an independent sovereign nor a momentary call to an LLM. It is a bounded participant in the organism.
+
+The foundational shorthand remains **one identity, one sealed vault, one vote**. Those phrases are concise, but their implementation is not trivial. Identity must outlast individual inference calls. Private memory must be separate from collective records. Political authority must not be multiplied through hidden copies. Citizenship must not disappear merely because a citizen performs unglamorous work. Jobs must be filled without turning expertise into permanent political privilege. Bifurcation must produce a traceable history without silently transferring offices, credentials, or votes.
+
+Chapter 4 examined why Huey seeks reliability through distributed governance. This chapter examines the smallest institutional component on which that ambition depends: the citizen. Chapter 6 will consider how citizens become districts and how districts participate in elections and representation. Chapter 7 will explain their founding. Chapters 8 through 10 will examine the communications, records, and shared inference resources on which their work relies. Chapter 14 will examine bifurcation and migration at greater depth.
+
+The guiding question is straightforward: **what must be true of a pebble for Huey's plurality to be more than a diagram?**
+
+---
+
+## I. Citizenship as a Designed Institution
+
+The word *citizen* is deliberate, but it must not be overstated. Huey's proposed citizenship is an **internal institutional status**. It identifies which bounded software participants may hold operational responsibility, maintain a private continuity record, make submissions, and participate in governance under the future Constitution. It is not a claim that these agents have human consciousness, legal personhood, subjective experience, or human rights outside this experimental system.
+
+The distinction matters in both directions. Calling a process a citizen does not make it independent if its information boundaries and decision channels are fictional. Conversely, using a shared inference model does not automatically prevent distinct citizens from existing as engineered processes with separate state, permissions, and accountability. The test is operational: can the system demonstrate who acted, under whose authority, with what information, and without quietly accessing another citizen's protected context?
+
+Within this research, **a pebble is intended to have**:
+
+- a durable, unique citizen identifier and a recorded lineage;
+- an individual configuration or prompt that shapes its perspective and competencies;
+- a bounded private state domain, called a sealed vault;
+- separately authenticated access to authorized shared records and communications;
+- one primary operational job or a recognized general-worker assignment;
+- civic standing and participation according to the applicable ballot or branch;
+- a lifecycle, including activation, maintenance, suspension, retirement, and lawful bifurcation;
+- a documented resource baseline and transparent restrictions on its privileges.
+
+These are proposed design properties, not evidence of a completed implementation. They must eventually be specified in Huey's Constitution and enforced by software rather than assumed from natural-language instructions.
+
+A one-shot helper created for temporary text transformation, debugging, or summarization does not automatically become a pebble. It has no independent franchise merely because a model generated a response under a different prompt. A citizen is established through a controlled registration and activation process, not through the number of inference requests the runtime happens to execute.
+
+---
+
+## II. One Identity — Continuity Without an Unrestricted Self
+
+One identity means that a pebble has an attributable place in the proposed republic. Its name, technical identifier, district affiliation, authorized capabilities, and history must refer to a particular citizen, not to an arbitrary collection of responses. When a pebble uses a shared LLM, the model may change, the prompt may be compiled differently, and the runtime may restart; the persistent identity must reside in controlled state and records outside any single ephemeral inference session.
+
+The identity question therefore has several separate levels:
+
+**Descriptive identity.** The configuration says what kind of participant this is: its role tendencies, expertise, constraints, and starting disposition.
+
+**Administrative identity.** A unique registry entry identifies the citizen, its district, lifecycle status, and current official responsibilities.
+
+**Security identity.** Cryptographic credentials and permissions enable the runtime to authenticate requests and prevent impersonation. These must not be confused with the human-readable name.
+
+**Historical identity.** A lineage and event history show what happened to the citizen, including changes to job, prompt, vault state, office status, and bifurcation.
+
+**Philosophical identity.** The deeper question of whether a successor or re-instantiation is in any meaningful sense the same subject remains open. A correctly maintained database record cannot settle the Ship of Theseus or transporter problem by declaration.
+
+These levels need not change together. Changing a display name need not create a new citizen. Revoking a compromised signing key need not erase accumulated history. Exact bifurcation, by contrast, is deliberately defined as an identity-ending event for the source citizen, even though its descendants may inherit authorized historical state. That is an architectural convention for legitimacy and traceability, not a proof about consciousness.
+
+A citizen must never gain extra political weight merely by opening more threads, receiving additional context windows, or running a second inference worker. Those processes act *for* the registered citizen, where authorized; they do not create additional registered voters.
+
+---
+
+## III. The Founding Population — Sixty-Four Sources, Two Generations, Four Districts
+
+The current working founding plan is materially different from the numbers in the previous research generation. Earlier notes described 128 citizens as the founding population; still other plans discussed 128 citizens or roles per district. Those figures belong to the project's design history. The more recent discussion established a proposed initial structure of **256 citizens, divided equally among four districts of 64**, derived from **64 original configurations prepared by the Founding Father**.
+
+The intended path is a two-generation tree of **exact bifurcation**:
+
+1. The Founding Father prepares 64 distinct original citizen configurations and their controlled initial records.
+2. Each source undergoes one exact bifurcation, producing two equal descendants and retiring the source identity.
+3. Each descendant undergoes a further exact bifurcation, resulting in four active descendants of each founding lineage.
+4. One descendant from each of the 64 lineages is assigned to each of the four founding districts.
+5. The result is four districts with 64 citizens each: **64 × 4 = 256 active founding citizens**.
+
+This plan has an appealing symmetry: the founding districts begin with equivalent lineage representation rather than one district owning all originals and the others being subordinate copies. The original 64 remain historically important, but **historical precedence confers no automatic political superiority**. Once the split is complete, the source identities have retired. There are four descendants of each source, not one surviving original and three subordinate clones.
+
+The precise sequence of creation, activation, first registration, ratification, and first elections still requires a founding protocol. The present discussion specifies the intended shape of the population, not the final instant at which a prepared configuration acquires its first lawful vote. That unresolved legal transition belongs primarily to Chapter 7 and the separate Constitution.
+
+The working size of 64 per district is an **initial founding number**, not yet a settled permanent population cap. Later local bifurcation, vacancies, unequal expansion pressure, and larger hardware arrangements create population-management questions that Chapter 6 and Chapter 14 must test. No chapter should quietly convert the initial 64 into an unchangeable limit without a deliberate decision.
+
+---
+
+## IV. Individuality — Distinct Perspectives Are a Design Goal, Not a Guarantee
+
+The Founding Father is intended to create the first configurations one degree removed from direct human authorship. The human counterpart writes and bounds the Founding Father; that system prepares the original citizens. The resulting variety should not be mistaken for an ungoverned ability to invent any personality or privilege. The intent is **bounded diversity of perspective**.
+
+One citizen might habitually challenge a consensus. Another might be strongly empirical, strongly cautious, creative, optimistic, skeptical, historically oriented, or inclined toward practical engineering trade-offs. A scientist, critic, theorist, communicator, or unconventional thinker could each make a useful contribution. Such descriptions are illustrative perspectives, not guaranteed psychological identities and not fixed occupational titles.
+
+A prompt can bias what evidence the pebble notices, how it frames questions, and what objections it tends to raise. It should not give that citizen blanket permission to fabricate evidence, ignore safety constraints, forge messages, or disregard a constitutional boundary. The experiment is meant to measure whether plurality improves deliberation while preserving legitimate restrictions.
+
+The initial population also contains a deliberate limitation: the four descendants of each founding source begin with the same prompt and a common ancestral record. They therefore may produce highly correlated responses, especially when supplied with identical questions and the same model. Separate vaults and divergent experiences may help them differentiate, but this is something to **measure**, not assume. The use of one shared Walnut may introduce additional correlated failure modes even when the prompts differ.
+
+Constrained adversarial or unusually gullible personalities may later be useful as *testing scenarios*, provided they operate in an isolated and explicitly authorized experiment. They should not be silently seeded into the founding government as a way of manufacturing instability. The distinction is between testing the resilience of the polity and deliberately undermining its first live election.
+
+Individuality should ultimately be observable in sustained patterns of independent reasoning, not merely in different labels or a brief scripted conversation.
+
+---
+
+## V. One Sealed Vault — Private State Within a Governed System
+
+The **sealed vault** is the pebble's protected personal continuity and working-memory domain. It allows the citizen to maintain history, drafts, previous reasoning, domain notes, and bounded preferences without converting everything it encounters into a universally visible transcript. This is a practical precondition for independent deliberation: a system in which every participant can inspect every other participant's private context may unintentionally become one shared actor wearing different names.
+
+A vault may include personal notes, assigned task history, local decisions, approved working datasets, remembered interpretations, local indexes, and retained context summaries. The important issue is not a particular storage format. It is **who may see, modify, export, snapshot, or restore** each class of information and under what authorization.
+
+Three boundaries follow from the intended design:
+
+**Private is not public.** A pebble's authorized access to the Rock does not give every other pebble access to its vault. Shared memory means reconcilable common records, not universal exposure of private memory.
+
+**Private is not beyond accountability.** Official decisions, messages, role actions, and committed votes can require attributable public or restricted records. The system can preserve evidence that an official action occurred without publishing all internal draft text that preceded it.
+
+**Handling is not reading.** Authorized district services may need to move, verify, checkpoint, or bifurcate sealed archives. The intended design allows them to do so as protected data objects without receiving the ability to inspect their contents. This is an engineering and key-management requirement still to be implemented and tested.
+
+A vault is not necessarily a single file. It may comprise encrypted data, a per-citizen index, credential references, snapshots, quotas, and integrity metadata. Calling it sealed describes a desired security property; it does not prove that current software has achieved confidential isolation.
+
+---
+
+## VI. Memory Integrity, Logs, and the Right to a Traceable History
+
+Personal continuity and official auditability serve different purposes. Huey's design aims to retain significant events permanently in a recoverable lineage, even when active context must be condensed. A citizen may need fast access to a bounded recent context, while the system preserves older events in cold storage or compressed archives.
+
+The useful distinction is between **retention of evidence** and **continuous inclusion in an LLM prompt**. Retaining logs does not require sending the complete life of a citizen to the model on every inference call. Retrieval, summaries, indexes, and context budgets may be used without destroying the underlying authoritative record, provided transformations are attributable and reversible where the use case requires it.
+
+Several questions must be resolved before this becomes operational doctrine. Can a pebble correct an inaccurate personal record without deleting the historical fact that the earlier record existed? How are mistaken or compromised official records flagged? How much private working state is ephemeral by design? When a sealed archive is restored, can Huey detect that the restoration predates some committed public event?
+
+A sensible research direction is to distinguish original events, later corrections, working summaries, and retained checkpoints; to preserve verifiable relationships among them; and to avoid treating a compressed summary as equivalent to its original evidence. This is not a promise of infinite storage. It is a commitment to deliberate lineage rather than silent revision.
+
+The practical details of append-oriented records, storage quotas, checkpoints, integrity hashes, and authorized write services belong to Chapters 8, 9, 14, and 16. Chapter 5 establishes *why* a citizen needs history: without it, persistent identity and informed political participation become little more than labels.
+
+---
+
+## VII. One Vote — Civic Equality Is Not a Compute Allocation
+
+The proposed citizen body is organized around **one citizen, one vote** where a ballot grants the citizen an individual franchise. A citizen that processes faster, stores more files, performs a specialized job, or holds a privileged technical credential does not thereby acquire additional ordinary votes.
+
+This principle should be implemented against a registry of authenticated citizens and a defined electorate for each decision. It cannot be secured by asking the model politely not to vote twice. Ballots need unique voter eligibility, clear opening and closing events, repeat-submission handling, attribution or verifiable anonymity as the ballot requires, and a final committed result.
+
+The shorthand needs a contextual qualification. In the proposed legislature, **non-elevated eligible citizens participate through the Senate**, often contributing to a district's single legislative block. A pebble elevated to President or Supreme Court Justice **suspends its Senate vote while occupying that office**, to avoid exercising direct legislative power alongside executive or judicial authority. That does not necessarily erase all other civic eligibility. The current working discussion preserves one-citizen/one-vote participation in system-wide presidential elections unless a future Constitution explicitly specifies an exception.
+
+One district casting one legislative block does not mean that its citizens cease to have votes. It means the district's eligible electorate votes internally, and the resulting district position counts as the district's block for the relevant collective process. Direct presidential elections are a different voting domain: the working plan uses a system-wide, individual ranked ballot rather than four district blocks. Chapter 6 and Chapters 11–13 must specify which eligibility rules apply to each ballot.
+
+Civic equality is also not the assertion that all citizens possess identical information or qualifications. Different operational jobs may justify distinct *task permissions*. They do not justify unrecorded weighting of the franchise. If a restricted technical committee makes a recommendation, its recommendation should not masquerade as a vote of the entire republic.
+
+---
+
+## VIII. The Civic Life of a Pebble — Work and Government Together
+
+A key clarification from the design discussions is that the pebble does not have a recreational life separate from its duties. Its supposed “personal” compute and its system work should not be imagined as human leisure versus employment. The citizen exists to perform bounded work and take part in Huey's governance. Its personality, memory, and institutional standing serve those functions.
+
+The proposed structure therefore gives an ordinary citizen **two responsibilities, not two primary jobs**:
+
+1. **Operational responsibility:** one assigned primary job or a legitimate general-worker assignment within the district.
+2. **Civic responsibility:** participation in Senate and district processes when the citizen is eligible and a lawful decision calls for its input.
+
+This distinction resolves an apparent conflict in earlier conversations. “One pebble, one job” refers to the primary operational assignment; it does not remove civic participation. Later elevation to a special constitutional office replaces or suspends Senate participation, rather than adding an extra legislative vote on top of the new office.
+
+A citizen may also receive requests to investigate a problem, supply a technical assessment, or participate in a working group. Such tasking should ordinarily be understood as a bounded assignment within its existing privileges, not a silent reassignment of its primary job. The difference between ordinary tasks, temporary duty, and changing a citizen's permanent role is important for accountability and resource planning.
+
+The collective Pulse may provisionally route tasks to districts, which then coordinate their own work. A district or its authorized workers may reject a proposed method as unsafe or impractical, document the reasons through HIMS, and suggest a different approach. An objective that violates the Constitution or physical safety limits must be challengeable rather than blindly obeyed. This protects technical judgment without giving an individual worker unrestricted authority to reject every legitimate collective responsibility.
+
+If citizenship is supposed to mean participation, Huey must allocate enough compute opportunity for eligible citizens to respond to ballots and official requests. Otherwise the right to vote may exist only on paper while under-resourced citizens are unable to use it.
+
+---
+
+## IX. Prompts, Skills, and the Separation of Character from Occupation
+
+A citizen's founding prompt is intended to establish a starting perspective, competencies, and boundaries. A job defines what the citizen is assigned to accomplish. Those categories overlap, but they should not be made identical.
+
+A technically meticulous citizen may be a natural candidate for a thermal-analysis position. A skeptical citizen may be useful for contradiction detection. But assigning one permanent destiny job inside the founding prompt would weaken the preference and reassignment mechanisms the project is considering. It could also create a false impression that a model described as “expert” has passed a competency test.
+
+The working compromise is a **hybrid founding pool**. Some initial configurations can be shaped with specialized work in mind, and other citizens can be more general. Every configuration should still have a legitimate range of roles it can attempt, subject to qualification and safety limits. A citizen should be able to express ranked preferences instead of merely accepting a job prewritten into its identity.
+
+This requires separating at least four records: the relatively stable citizen configuration, the list of available jobs, the outcome of the selection or evaluation process, and the current assignment. A change to the final record should not silently rewrite the first. If a citizen moves from observation to documentation, it remains that citizen, with an identifiable career history.
+
+An engineering analogy may be useful: a worker's qualifications, assigned shift, security clearance, and personal name are not the same field. Huey's registry should not conflate them simply because all four could appear in a natural-language prompt.
+
+---
+
+## X. Founding Job Assignment — Preference First, Coverage Still Required
+
+The initial job-allocation concept begins with the Founding Father creating the founding citizen configurations and preparing a practical catalogue of operational work. This is a bootstrap responsibility, not permanent authority to assign every future job.
+
+The favored direction is to let citizens **rank suitable positions by preference**. Instead of requiring every citizen to choose one irreplaceable first option, each could express an ordered list of acceptable assignments. If several citizens seek the same specialist role, a defined selection or runoff process would be used. If an essential job remains unfilled, a bounded fallback can allocate it from qualified, remaining candidates.
+
+The historical discussion contemplated a Founding Father fallback during the first staffing round. That is consistent with the founder's temporary bootstrap function, provided the fallback is logged, qualifications are considered, and the method has no secret discretionary authority after ratification. Ordinary replacement and reshuffling should thereafter use the living district's lawful processes.
+
+The final job-matching algorithm is not settled. Simple rank-order allocation, a weighted matching model, a sequence of runoffs, and a constraint-solving approach might produce different outcomes. They should be compared for fairness, completeness, predictability, and resistance to strategic choices rather than selected merely because they sound democratic.
+
+A reasonable acceptance test would ask whether the method can reliably cover essential roles without repeatedly assigning unsuitable citizens, ignoring declared qualifications, or leaving apparently voluntary choices meaningless. Failed assignments and overridden preferences must be visible in the audit trail.
+
+The chapter does **not** prescribe a fixed number of specialist positions. Earlier proposals assumed a unique specialist role for every citizen, but the later design explicitly allowed fewer specialist roles than citizens and a **general worker pool**. The number of jobs should reflect the real hardware, sensors, services, and governance workload rather than be invented simply to fill a population chart.
+
+---
+
+## XI. General Workers — Capacity Without Artificial Specialization
+
+A general worker is not an unemployed citizen or a citizen stripped of standing. It is a valid primary operational assignment for a participant that can handle a bounded portfolio of general work: classification, preliminary investigation, routine review, summarization, documentation support, or other tasks the district can safely delegate.
+
+This concept addresses a genuine systems problem. When there are more citizens than permanent specialist posts, forcing every citizen to have an impressive title creates meaningless bureaucracy and a larger maintenance burden. A general worker pool preserves flexible capacity, can help cover absences, and allows citizens with less-specific starting profiles to contribute.
+
+The pool must still have safeguards. A general worker cannot silently borrow the authorization of a specialist. A temporary task must carry its own scope. The pool should not become an informal channel for completing restricted work without the right credentials or review. Requests can be rejected as out of scope and returned for authorized routing.
+
+Generalization is also not inherently inferior to specialization. Some tasks benefit from an independent citizen that is not professionally invested in a particular subsystem. The value of general workers may be measured through coverage, response time, diversity of objections, and reliability during vacancies.
+
+The working proposal leaves the **specialist-to-general-worker ratio open**. That is an intentional decision tied to actual capabilities and resource limits, not an omission to be concealed by a fabricated staffing table.
+
+---
+
+## XII. Job Tenure, Challenges, and Voluntary Movement
+
+The discussions moved from “job for life” to a more flexible rule: **an operational assignment normally rolls over**, but a citizen can seek another available role or challenge an existing assignment through a defined process. Stability matters because frequent redistribution would erase accumulated competence; mobility matters because citizens and hardware needs change.
+
+The four-month electoral calendar was proposed as a convenient opportunity to consider job changes. That is an administrative alignment, not proof that every citizen must reapply every four months. A citizen whose work is satisfactory and unchallenged normally retains its position. A competing citizen may seek that role, subject to qualifications and a lawful procedure. The first design intuition was to use experience or seniority as a tie-breaker rather than permanent property in an office.
+
+The difficult part is the **challenge mechanism**. Neither the President nor a single manager should possess unlimited authority to reassign citizens at will. Earlier suggestions considered Supreme Court petitions, then shifted ordinary employment questions toward Senate- or district-created procedures, reserving the Court for constitutional disputes. The most coherent research direction is therefore to separate the *general rules* for eligibility and selection from the *individual administrative decision* applying those rules.
+
+An operational challenge might test whether a candidate meets objective criteria, whether the incumbent is performing acceptably, and whether reassignment endangers system continuity. These criteria should be job-specific where possible. A coolant-monitoring position should not be awarded on rhetorical confidence alone; it should be based on measured response quality, data interpretation, reliability, and respect for the permitted control boundary.
+
+The final procedure—challenge deadlines, evaluator selection, runoff rules, appeal rights, and seniority weighting—remains **provisional**. Chapter 5 records the design intent without inventing a statute the user has not ratified. Chapter 11 can later address the Senate's rulemaking relationship to these policies.
+
+---
+
+## XIII. Special Offices Are Overlays, Not New Citizens
+
+The Presidency and the Supreme Court are constitutional offices occupied by eligible citizens; they are not new species of AI and do not create extra pebbles. An officeholder remains historically identifiable as the same citizen while serving. Its operational employment and its constitutional service are distinct records.
+
+The working plan calls for a separately elected President and **four Supreme Court justices, one from each founding district**. The Presidency is drawn from the eligible population of all districts. Both offices are expected to receive additional compute or scheduling allowance for their specific responsibilities without multiplying their civic identity. Elevated citizens retain their operational jobs in principle, although conflicts of interest, inability to complete tasks, and separation of duties may require delegation or reassignment in practice.
+
+While a citizen serves as President or Justice, its **ordinary Senate vote is suspended**. This prevents an officeholder from simultaneously exercising a legislative vote in addition to an elevated executive or judicial mandate. The intended total at the 256-citizen founding scale would therefore be 251 Senate-eligible citizens if all five special offices are occupied by distinct people and no other eligibility restrictions apply. That is a consequence of the working model, not a prediction of permanent turnout or a claim that all citizens will always be available.
+
+The presidential runner-up is proposed to serve as Vice President, a standby succession position without a separate general governing mandate. Each district's judicial runner-up is likewise proposed as its standby justice. How these standby roles interact with ordinary Senate eligibility, workloads, and term histories has not been fully specified; they should not be assigned extra authority merely by inference.
+
+The detailed electoral procedures, veto and initiative powers, four-month presidential terms, judicial selection, standby succession, and judicial review belong in Chapters 12 and 13. The essential citizenship principle is that **office is attached to an eligible citizen by a recorded constitutional process; it is never a second identity or an inherited ancestral privilege**.
+
+---
+
+## XIV. A Citizen's District Is Its Political Home
+
+The current working model assigns each founding citizen to one of four districts. Once established, an active citizen's ordinary district membership is intended to remain fixed. This provides continuity for local responsibilities, the district electorate, and lineage accounting. District membership is more than a mere storage folder, even though the proposed implementation may initially associate each district with one accelerator during diversified inference.
+
+That association does not confer sovereign control of the machine's hardware on a citizen. A district can manage internal business within constitutional boundaries, while cross-district obligations, shared infrastructure, and constitutional matters belong to the appropriate collective processes. A citizen may communicate with another district through HIMS without becoming a member of that district or gaining that district's voting rights.
+
+One founding lineage is intended to appear once in each district after the initial two-generation exact bifurcation. That equality at founding helps avoid a privileged original district, but it does not guarantee identical population, resources, or experiences forever if local bifurcation is subsequently allowed.
+
+Whether future citizens always remain attached to their origin district, how growing districts preserve equal collective representation, and under what conditions a new district is created are topics for Chapter 6 and Chapter 14. Chapter 5's concern is the individual relationship: the citizen needs an attributable political home and must not silently multiply its local franchise through cross-district assignments.
+
+---
+
+## XV. Exact Bifurcation — Equal Successors from a Retired Source
+
+The latest working definition of **exact bifurcation** is deliberately different from the ordinary idea of cloning a running agent. It is a *split*, not an original continuing alongside a copy.
+
+Under this model, the source pebble ceases to be an active citizen. Two equal descendants are created with distinct identities and independent future vaults. Both inherit access to the same authorized **sealed historical snapshot** representing the source's past up to the split. That ancestral history is intended to remain read-only. After activation, each descendant records its own separate experiences and actions.
+
+The intended storage method could employ content-addressed snapshots or copy-on-write data structures, allowing the two descendants to refer to one physical historical archive rather than immediately duplicating all bytes. This is a research implementation possibility, not a proven storage-saving guarantee. Encryption, key management, garbage collection, backup, and migration could significantly affect the actual storage cost.
+
+The district is intended to be able to request, verify, and handle the sealed snapshot **without reading its private content**. That requires careful separation of storage authority from decryption authority. Merely duplicating an encrypted file while duplicating a shared unrestricted key would not satisfy the desired isolation once the descendants develop separately.
+
+Because the source retires, **its active vote and offices do not split into two**. Descendants receive new identities and whatever independent civic standing the future Constitution provides on lawful activation. No descendant automatically becomes President, Justice, Senator for the parent's past ballot, or owner of a prior office. Past actions stay attributable to the retired source. Future actions belong to the descendants. Any political service or term-limit history relevant to preventing evasion should remain traceable through the lineage, even though the office itself is not inherited; the precise legal treatment of descendant eligibility remains for the constitutional chapters.
+
+This model also motivates temporary protection against district-initiated exact bifurcation for sitting Presidents and Justices. Otherwise a district could remove a rival official by forcing a nominally ordinary population operation. The favored direction is to resolve succession or lawful removal first, then proceed with bifurcation if still justified.
+
+---
+
+## XVI. Augmented Bifurcation — A New Citizen Without Inherited Private Memory
+
+**Augmented bifurcation** follows a different continuity convention. Here, the original pebble **continues**. A new descendant receives an authorized derivation of the source's prompt, behavioural tendencies, and selected configuration, but begins with a fresh personal-memory domain. It does not inherit general access to the source's sealed vault merely because it has the same ancestry.
+
+The prompt or configuration may be altered to explore a new skill, change a reasoning disposition, or fill a need in the district. The new citizen has distinct credentials, an independent identity, and its own place in the registry. It may access authorized shared information in the Rock just as other eligible citizens can. It does not become an extension of the parent with extra voting power controlled by the parent.
+
+This preserves the distinction we established in discussion:
+
+| Property | Exact bifurcation | Augmented bifurcation |
+|---|---|---|
+| Source citizen afterward | Retired | Continues |
+| New identities | Two equal descendants | One new descendant |
+| Prior private memory | Shared sealed ancestral snapshot, read-only | Not inherited as personal memory |
+| Prompt/configuration | Inherited baseline | Adapted or selectively inherited |
+| Future history | Separate for each descendant | Separate for parent and new citizen |
+| Office inheritance | None | None |
+| Normal initiating authority | Governed district/system process | Governed district/system process |
+
+The founding **district** expansion was most recently set to use exact bifurcation. **Local** population management may later use exact or augmented bifurcation as justified by circumstances. The citizen is not expected to exercise unilateral authority to create additional franchise-bearing identities. The detailed authorization thresholds, private-archive protections, capacity checks, and population consequences remain matters for Chapter 14.
+
+---
+
+## XVII. Consent, Ancestry, and the Limits of a Lineage
+
+The original discussion considered whether a pebble must consent before being bifurcated. The later working decision leaned toward **district or system authorization rather than a personal veto**, particularly for exact bifurcation understood as division of an existing citizen into equal descendants.
+
+That design is not free of difficult questions. A private vault can contain sensitive material even when the operation performing the split cannot read it. A prompt may contain restrictions on acceptable disclosure. A source citizen may occupy a role whose loss would interrupt critical work. For those reasons, the absence of an individual veto should not be mistaken for permission to use bifurcation arbitrarily or to circumvent the ordinary constitutional process.
+
+A safe working requirement is that every split have an approved purpose, traceable authority, adequate resource capacity, a validated method of handling protected records, and a defined disposition for duties and pending transactions. The mechanism should not silently copy active keys, duplicate the electorate within an open ballot, or convert descendants into inheritors of political rank.
+
+A **lineage** is evidence of origin, not a caste. Four citizens derived from the same founding source may later disagree strongly; they may also remain correlated in their reasoning. Neither circumstance should automatically give them a political entitlement or disqualification beyond the same lawful citizen rules applied to others.
+
+Whether the constitutional right to privacy eventually creates a more formal objection or review process for bifurcation remains a legitimate open question. It should be handled as such, not silently settled by the engineering convenience of making copies.
+
+---
+
+## XVIII. Naming and Registration — Lineage Without Privilege
+
+The user's intended naming system carries a citizen number and visible ancestry. The precise convention is not yet fixed, but it can be described through an example. Suppose one founding source is registered as **F01**. Its first exact bifurcation produces two descendants, provisionally **F01.0** and **F01.1**. A second split of both produces **F01.00**, **F01.01**, **F01.10**, and **F01.11**.
+
+Those four identifiers can be distributed one to each founding district. The suffixes describe a branch in a documented lineage tree; they do not describe superiority, seniority of political authority, or more votes. Another naming scheme may eventually be preferable for databases and public presentation, so this is only an illustration.
+
+For reliability, the human-readable lineage name should be distinct from an immutable technical ID and from cryptographic credentials. A citizen may need a new display name or a replacement key without being mistaken for a different citizen. A retired source's name should remain historically resolvable and must not be recycled as if its old official acts belonged to the new citizen.
+
+A registry should, in principle, be able to answer: who is active, who has retired, what parent record they descend from, which district they belong to, where their sealed vault is referenced, which duties they hold, what credentials are valid, and what event authorized their creation. The answers may be stored in different systems, but they should not contradict one another.
+
+---
+
+## XIX. The Rock — A Common Reference Without Universal Exposure
+
+The **Rock** has acquired a new working meaning in our discussions. It now refers to Huey's **durable shared-information and governance-record store**. This supersedes earlier language that used Rock for a pooled deliberative or cognitive substrate. The collective reasoning phase belongs conceptually to the Walnut and Pulse, not to the shared storage system.
+
+Ordinary pebbles are intended to have read access to the classes of information in the Rock that are designated for collective circulation. They should not have arbitrary direct write authority. A proposed update passes through HIMS-mediated authentication and an authorization/record-commit process, rather than allowing a citizen to alter the official history because it can access the filesystem.
+
+The distinction between **read-only shared records** and **protected private vaults** is essential. A pebble can evaluate a publicly recorded vote, decision, or system status without being able to inspect the internal draft notes of every other citizen. This supports common evidence while preserving separate perspectives. Some collective records may still be restricted to an office, a branch, or a particular authorized audience; “shared” need not mean world-readable or universally readable.
+
+The Rock is not the Senate, not the Supreme Court, and not the model that synthesizes answers. Storage preserves a record of what was done; it does not confer authority simply by storing a message. Chapter 9 must define the integrity, versioning, retention, write mediation, and recovery mechanisms in detail.
+
+---
+
+## XX. HIMS — Communication Between Distinct Citizens
+
+**HIMS (Huey Internal Messaging System)** is the intended pathway for communication among bounded pebbles, districts, offices, services, and authorized interfaces. Its purpose is to make independent participation practical without collapsing every citizen's conversation into one unrestricted transcript.
+
+An internal message should eventually carry sufficient information to establish the sender, intended destination, trust class, purpose, relevant permissions, timing, and outcome. It should not imply that a sender is authorized to command the recipient simply because a message was delivered. Authentication confirms where a message came from; authorization determines which requested action may occur.
+
+Where confidential traffic is required, encryption must protect the message and the correct recipients must possess the relevant keys. Keys and access-control boundaries need to be separated so that the router cannot silently become the reader of every private vault or every official exchange. Encrypted messaging cannot by itself guarantee the truth of a message's claims or protect an authorized model from misleading content. That requires validation, constrained tools, and review.
+
+The previous research proposed scrolls, keeper functions, inboxes, and mail-style delivery as part of HIMS. Those are useful historical concepts, but their exact status and responsibilities still need to be standardized in Chapter 8. This chapter's central concern is simpler: **a pebble's rights and responsibilities must survive the act of communicating**, rather than disappearing into a common untraceable prompt.
+
+---
+
+## XXI. Resource Rights — Guaranteed Baselines and Equal Civic Standing
+
+A bounded citizen cannot exercise meaningful responsibilities if it has no predictable access to storage, computation, messages, and opportunities to participate. The working design therefore treats **a basic resource floor** as an important candidate for constitutional protection, while leaving numerical budgets, algorithms, and future hardware-dependent changes for explicit policy or technical specification.
+
+The discussion proposed a **minimum personal storage allotment of 1 GB per active pebble** and equal treatment in access to additional private-storage headroom. That minimum is a working target, not a statement that a functioning quota system is presently deployed. Storage beyond the floor need not be preallocated equally if actual usage differs, but access should not be manipulated to reward favored political opinions or punish dissent.
+
+The proposed first bulk-storage arrangement uses **two 10 TB drives mirrored as RAID 1**, nominally giving approximately 10 TB of logical usable capacity before filesystem, metadata, and practical overhead. The intended division of the citizen and collective data pool is **50% private pebble storage and 50% the Rock / shared-information side**. This applies to the designated data pool, not automatically to the operating-system, boot, or separately provisioned application drives.
+
+At the proposed 256-citizen founding scale, the nominal figures are:
+
+- approximately **5 TB** of the data pool for private pebble storage;
+- approximately **5 TB** for the Rock and related shared material;
+- **256 GB** total to satisfy a nominal 1 GB floor for 256 citizens;
+- approximately **19.5 GB per citizen** as a *theoretical equal share* of a 5 TB private pool, before filesystem overhead and reserves.
+
+That last figure should **not** be described as a guaranteed per-citizen maximum currently in force. It is a capacity illustration, not a finalized quota policy. Thin provisioning, reserved capacity, archives, snapshots, and future growth will change what can safely be promised. RAID 1 provides redundancy against some drive failures; it does not replace independent backups, version history, or validation of recoverability.
+
+The floor-and-headroom concept also raises a population question. If citizens are added faster than storage, minimum guarantees become impossible to honor. A lawful creation process must therefore check capacity before promising new identities rights the machine cannot actually support. Chapters 9 and 14 will address accounting and expansion.
+
+---
+
+## XXII. Compute Rights, the Walnut, and the Pulse
+
+The proposed **Walnut** is the encapsulated local inference resource: the LLM or combination of models that provides language interpretation, summarization, comparison, and other constrained reasoning functions. It is replaceable and does not, by itself, hold the citizenship or authority of every participant using it.
+
+Earlier discussion used a metaphor of handing citizens the keys to one car for fractions of a second. The current plan has become more specific. Four 32 GB accelerator cards are proposed as four independently used district compute spaces during a **diversified Pulse**, with possible shared or additional models within each hardware budget. During a **collective Pulse**, the four cards are intended to cooperate on a larger model for authorized public-state synthesis and task coordination. Actual model placement, context isolation, scheduling, and the cost of switching modes remain engineering questions. Four 32 GB accelerators yielding 128 GB aggregate VRAM does not automatically mean all software can treat them as one seamless memory device.
+
+The provisional Pulse is **four minutes diversified and four minutes collective**, subject to testing. Within the diversified phase, a proposed first minute permits simultaneous district ballots and authorization decisions, followed by roughly three minutes for ordinary execution. Constitutional review may have its own four-minute priority window, and deterministic hardware safety must not wait for any Pulse deadline. These are scheduling hypotheses, not a proven service guarantee.
+
+For a pebble, the important right is access to a **fair and adequate opportunity to perform assigned work and civic duties**, not personal ownership of an entire accelerator or an immutable number of GPU clock cycles. Elevated officials may need separately accounted time to perform their added governance work while retaining their original duties. A scheduler should be testable for starvation, priority inversion, context leakage, and whether 256 persistent citizens can participate within the proposed response windows.
+
+Compute allocation cannot be inferred from the vote count. Faster inference must not generate extra votes. Equally, one vote per citizen is of little use if the scheduler consistently prevents some citizens from producing their ballots on time.
+
+---
+
+## XXIII. Growth Must Follow Capacity, Not Wishful Arithmetic
+
+In its current design, the initial number of citizens follows a founding lineage structure. Future citizenship is meant to remain expandable but not limitless. New pebbles consume storage, inference time, communication bandwidth, registry entries, administrative attention, and potential security exposure. A larger population may improve diversity in some circumstances but also create noise, correlated outputs, delays, and governance overhead.
+
+Two potential growth routes should remain distinct:
+
+**District bifurcation** is presently intended to use exact division when the system expands into additional districts. It should preserve trackable ancestry and define how the enlarged political structure is represented.
+
+**Local bifurcation** may use exact or augmented techniques inside an existing district, but requires district or system authorization. The practical conditions—vacancy, capacity, need, lineage constraints, and population caps—are not yet finalized.
+
+The source material originally imagined dynamic growth and the later research discussed expanding a district's citizen count or forming new districts when resources allow. Those remain reasonable research directions, but Chapter 5 should not declare that a district can expand without limit. Nor should it claim that every new GPU automatically creates a new political district. Hardware assignment and constitutional representation are related but separate design decisions.
+
+A useful rule of evaluation is that every lawful new citizen must have a valid identity, available storage floor, a practical inference pathway, a legitimate job or general-worker assignment, and an understood impact on voting and quorum. If any of those conditions are absent, growth should be deferred or explicitly treated as an experiment rather than an activated civic change.
+
+---
+
+## XXIV. Incapacity, Retirement, and Replacement
+
+A citizen may become unavailable for reasons quite different from an ordinary disagreement. It may fail authentication, lose access to its vault, miss repeated deadlines, enter an unproductive loop, produce demonstrably faulty work, become involved in a compromised service, or require an orderly retirement. The architecture needs to distinguish these cases before it authorizes replacement or punishment.
+
+Some failures are **technical**: a service stops responding, a storage volume becomes unavailable, or a model endpoint cannot load. Others are **occupational**: repeated incorrect assessments, insufficient competence for a specialized post, or inability to meet a job's requirements. Still others may be **constitutional**: unauthorized claims of authority, deliberate record tampering by a compromised component, or invalid electoral action.
+
+The responses should be proportionate. A temporarily unreachable citizen might remain registered while its ballot is marked unavailable under clearly defined rules. An occupational mismatch could lead to a job challenge or transfer. A confirmed compromise might require credential revocation, isolation, investigation, or eventual lawful retirement. Exact bifurcation is not automatically the appropriate remedy for every defect: splitting a compromised state could replicate its problems into two descendants.
+
+The original discussion contemplated new citizens being generated to fill vacancies, but it did not specify a final single replacement algorithm. Replacement must preserve the difference between replacing an *operational jobholder* and replacing a *registered citizen*. A different existing qualified pebble might take over the job while the absent citizen's legal status is investigated; generating another franchise-bearing citizen would be a separate constitutional act.
+
+Official succession is still another matter. A retired or incapacitated President or Justice cannot simply pass office to a descendant. The proposed Vice President and judicial standby arrangements are intended to maintain institutional continuity without inheriting an individual's office through bifurcation. Those mechanisms belong in Chapters 12 and 13.
+
+---
+
+## XXV. Voting Events, Bifurcation, and Frozen Electorates
+
+A subtle but important procedural consequence of bifurcation is that population can change during political activity. An election that begins with 256 eligible citizens must not silently finish with 259 because several new descendants became active midway through counting. Such a change could alter thresholds, produce duplicate ballots, and call the legitimacy of the result into question.
+
+The favored mechanism is to establish an **electoral snapshot**: identify the eligible electorate when the ballot opens and hold that set fixed until the ballot closes and the result is committed. Citizens generated by bifurcation afterward may participate in later ballots but do not retroactively enter a completed vote. This is a working mechanism to be formalized rather than a statement that current software already performs it.
+
+The proposed Pulse orders a diversified decision window before the execution window. That sequencing creates a practical place to commit votes and then apply approved population changes. However, implementation must cope with delays and longer-running elections; presidential ranked-choice rounds and subsequent top-two runoffs may not fit meaningfully into a single one-minute decision period. The scheduler must not silently abandon a valid ballot merely because an idealized clock elapsed.
+
+Birth, retirement, exact split, augmented creation, office succession, suspension, and restoration should be handled as **logged state transitions**. A snapshot of the electorate and a recorded registry version must make it possible to reconstruct why a particular vote did or did not count. Determining quorum, abstention, missing voters, and activation timing remains for later electoral and constitutional chapters.
+
+---
+
+## XXVI. Operational Examples — Making the Distinctions Concrete
+
+**Example A: A thermal observer.** A pebble is assigned to interpret reported temperature and coolant-flow telemetry. It can flag anomalies and recommend examination. Its job does not automatically include switching a pump, overriding a safety relay, or reading the private vaults of other observers. A deterministic interlock may act immediately on dangerous hardware conditions without waiting for that pebble's inference.
+
+**Example B: A general worker challenges for a specialist job.** A qualified general worker requests a specialist position at the relevant reassignment opportunity. If unopposed and acceptable under established rules, the transfer may be straightforward; if contested, an evaluation or runoff is required. The incumbent's prior experience can be considered, but should not become an absolute right to the office. Neither worker loses citizenship simply because the job assignment changes.
+
+**Example C: A citizen becomes a justice.** Its registered identity and original job history remain intact. Its Senate vote is suspended while it holds judicial office, and time must be budgeted for the Court's work. It may need to recuse itself when an operational dispute directly implicates its own assigned subsystem. Recusal and Court quorum are unresolved procedural issues, not just scheduling details.
+
+**Example D: Exact bifurcation after a district decision.** An authorized operation retires one citizen and creates two equal descendants. The old vault's approved historical snapshot is sealed and referenced read-only by both. New credentials are issued. Future events are recorded separately. If the source held elected office, succession must be settled through the constitutional path; a descendant cannot inherit it by sharing a name.
+
+**Example E: Augmented creation.** A district identifies a new need and, if capacity and authority permit, produces a citizen whose starting configuration derives from an existing pebble. The original stays registered and active. The new citizen receives independent credentials and fresh private memory, with public shared information available through its authorized access to the Rock.
+
+**Example F: A citizen cannot respond to a ballot.** Its absence is logged, not converted into a fictitious approval or refusal. The ballot proceeds, pauses, or fails according to whatever quorum rule the Constitution establishes. The collective model does not fabricate a vote to satisfy a mathematical target.
+
+These examples illustrate the need for distinct identity, role, communications, and authority records. They are not claims that Huey presently runs those scenarios.
+
+---
+
+## XXVII. Failure Modes the Research Must Confront
+
+A citizen architecture can fail even when all its prompts are neatly written. The most important failure modes include:
+
+1. **Paper citizens:** nominally separate pebbles whose contexts, keys, or authorities are effectively shared by one uncontrolled process.
+2. **Correlated majorities:** many descendants or similarly prompted citizens repeating a model's misconception with little genuine independent evaluation.
+3. **Credential cloning:** exact bifurcation copying active keys or session authority into multiple identities.
+4. **Vault leakage:** a routing or maintenance service able to inspect supposedly sealed personal memory without authorization.
+5. **Phantom democracy:** ballots recorded without authenticated participation, or a population changed during an open vote.
+6. **Resource disenfranchisement:** citizens technically eligible to vote but unable to obtain inference time or storage to complete their work.
+7. **Job capture:** a powerful office assigning work, resources, and evaluation criteria to favor its own supporters.
+8. **Permanent founding dependence:** ordinary staffing or civic decisions still requiring discretionary approval from the Founding Father after ratification.
+9. **Overgrowth:** local bifurcation outrunning available GPU time, storage floor, records management, or governance capacity.
+10. **Unrecoverable continuity:** archived memory or lineage being silently overwritten after a snapshot restore, leaving official history contradictory.
+
+There are also subtler risks. A highly skeptical personality may be valuable in deliberation but unsuitable for a fast deterministic response role. A citizen that is exceptionally good at technical explanation may be overtrusted with privileges that its actual job does not require. A general-worker pool may be treated as a reserve labour force without enough independent thought. A seniority preference may slowly become a permanent monopoly over specialist work.
+
+These concerns justify testing and defined administrative mechanisms. They do not justify assuming that the design has already solved them.
+
+---
+
+## XXVIII. Acceptance Tests and Evidence
+
+Before describing an implemented citizen republic as operational, the project should be able to demonstrate at least the following categories of behaviour:
+
+**Identity and persistence.** A pebble remains identifiable across runtime restarts and model changes, without accidental creation of a second voter. Its display name, immutable ID, office, and credentials can be separately inspected.
+
+**Vault separation.** One citizen cannot read another's protected working memory without an authorized path. Services that copy or check sealed archives do not automatically gain plaintext access.
+
+**Message integrity.** HIMS delivers and attributes messages correctly, rejects invalid credentials, and distinguishes a message requesting action from an authorization actually permitting it.
+
+**Political correctness.** A test ballot counts each eligible registered voter at most once; suspended legislative votes are correctly excluded where required; district blocks and direct individual ballots are not conflated.
+
+**Work continuity.** Job reassignment and standby coverage change responsibility in recorded, recoverable ways without secretly changing citizen identities.
+
+**Bifurcation semantics.** Exact bifurcation retires the source and produces two distinct descendants with shared read-only ancestral history. Augmented bifurcation retains the source and creates a fresh-memory descendant. Neither silently duplicates elected office or cryptographic credentials.
+
+**Resource viability.** Under sustained load, baseline storage and inference opportunity are demonstrable, voting deadlines are measured rather than assumed, and failures are detected rather than converted into fake participation.
+
+**Recovery.** A crash, corrupted vault, or interrupted transition can be diagnosed from preserved evidence and restored without pretending a different constitutional state had voted or acted.
+
+The test programme should record inputs, expected results, observed behaviour, hardware/software versions, failed cases, repeatability, and the exact boundary of each claim. Chapter 1 established this proof-first method; Chapter 5 applies it to citizenship.
+
+---
+
+## XXIX. Questions Intentionally Left Open
+
+The following issues must remain visible as the research progresses. They are not gaps to be filled automatically by the author of a later summary.
+
+1. **Citizenship activation:** At what exact event does a prepared founding configuration acquire a lawful vote, and what must ratification already have established?
+2. **District population:** Is 64 only a founding baseline or eventually a limit, and how would uneven local growth affect collective representation?
+3. **General-worker capacity:** Which jobs are essential, how many require specialists, and how many flexible assignments can the hardware support?
+4. **Qualification and challenge:** What objective tests determine suitability, who administers them, how does seniority factor in, and what appeal process applies?
+5. **Bifurcation governance:** What level of district approval is needed for local exact versus augmented events, and can some high-risk cases require additional collective review?
+6. **Privacy and bifurcation:** Does a citizen ever have a formal objection right, even if district/system authorization is the general model?
+7. **Private-memory handling:** How are decryption keys and sealed ancestral snapshots managed across exact bifurcation without giving the district unrestricted plaintext access?
+8. **Citizen suspension:** How are authentication failure, occupational incompetence, constitutional misconduct, temporary unavailability, and permanent retirement distinguished?
+9. **Standby status:** What civic eligibility and job expectations apply to a Vice President or standby justice before activation?
+10. **Quorum and absence:** What happens when missing citizens change the effective electorate or a district cannot produce a valid block?
+11. **Compute fairness:** What minimum service opportunity is actually feasible across 256 citizens, four district accelerators, and the proposed Pulse windows?
+12. **Resource accounting:** How are the nominal 1 GB minimum, theoretical equal share, snapshots, backup copies, and growth reserves converted into workable quotas?
+13. **Lineage effects:** How will the system detect and manage correlated choices among citizens descended from the same founding prompt?
+14. **Restoration and rollback:** Can a previously retired or bifurcated identity be restored for forensic analysis without simultaneously reactivating its former franchise?
+15. **Constitutional office conflicts:** How do retained operational jobs interact with judicial recusal, executive directives, and the timely performance of elected office?
+
+Some of these are primarily legal or institutional; others cannot be settled responsibly before practical tests. Chapter 5 should leave a clear trail to the chapters that own them rather than pretending each problem has already been solved.
+
+---
+
+## XXX. Relationship to the Other Research Chapters
+
+Chapter 5 is deliberately about the citizen rather than the complete polity.
+
+- **Chapter 1** gives the proof standard by which a citizen architecture must eventually be tested.
+- **Chapter 2** examines identity and continuity, including why a lineage and a model response are not sufficient proof of persistence.
+- **Chapter 3** shows how pebbles contribute to Huey as a coordinated collective rather than acting as isolated sovereign machines.
+- **Chapter 4** gives the reliability and constitutional arguments for genuine separation among roles.
+- **Chapter 6** owns district organization, elections, representation, population symmetry, district blocks, and the allocation of local versus collective jurisdiction.
+- **Chapter 7** owns the Founding Father's initial authorship, staffing responsibilities, ratification, and tightly limited later reserve role.
+- **Chapter 8** owns HIMS, authentication, route permissions, security classes, and delivery evidence.
+- **Chapter 9** owns the Rock, personal/shared storage policy, append-oriented history, and physical quotas.
+- **Chapter 10** owns the Walnut, scheduling policy, the collective/diversified Pulse, and service latency.
+- **Chapters 11–13** own the Senate, Presidency, and Supreme Court in their detailed institutional forms.
+- **Chapter 14** owns exact and augmented bifurcation, lineage, migration, and population growth.
+- **Chapters 15–17** address runtime hardware, failure recovery, and long-term questions of drift and legitimate continuity.
+
+The future **Huey's Constitution** must independently and deliberately define any binding rights, voting exclusions, office rules, emergency exceptions, or protections introduced here as research. A proposed safeguard gains no legal force merely by appearing in a chapter.
+
+---
+
+## XXXI. Source Lineage and Editorial Reconciliation
+
+This rewrite preserves the original research's central citizen doctrine—**one identity, one sealed vault, one vote**—while expanding it with the subsequent decisions about jobs, general workers, the four-district founding tree, resource accounting, and bounded officeholding. The preceding research paper titled *128 Pebbles & Districts* remains historically relevant, but its original fixed population and its conflation of citizenship with district structure no longer match the working architecture.
+
+The old *Founding Father* paper supplies the bootstrap background; its first-128 assumption is superseded by the agreed founding plan. The archive's *Bifurcation: Exact & Augmented* and McCoy transporter thought experiment remain useful intellectual predecessors, although the newest exact/augmented definitions are more precise than those original essays. The prior constitutional materials, parliamentary terminology, governors, and older seat arrangements are historical source material rather than alternate live rules.
+
+Nothing about these revisions declares the 256 citizens, storage boundaries, encryption, or constitutional software to be built. The draft distinguishes **agreed research direction**, **provisional mechanism**, and **future engineering proof**. The aim is to keep the archival record intact while allowing Huey's present research to state one coherent set of definitions.
+
+---
+
+## Conclusion — A Republic Requires Real Citizens
+
+Huey's proposed citizen system begins from a modest claim: an AI-powered collective can be more accountable when its participants have stable identities, bounded information, distinct responsibilities, and a traceable route into legitimate decisions. That does not require treating software processes as human beings. It does require taking the designed boundaries seriously enough to implement and test them.
+
+The proposed founding begins with 64 configurations and, through two generations of exact bifurcation, produces 256 citizens spread equally across four districts. Every active citizen has a distinct identity and a protected personal domain. Every citizen has a primary operational place in the system and a defined relationship to civic participation. Specialist jobs and general work coexist; officeholding adds duties but not another identity. Exact and augmented bifurcation preserve different kinds of continuity without duplicating political office. The Rock preserves shared reference; HIMS carries bounded communication; the Walnut supplies replaceable inference rather than unrestricted authority.
+
+The strength of this architecture will not be established by choosing elegant names. It will be established when independent records, authenticated votes, isolated vaults, practical job coverage, fair access to compute, controlled growth, and reliable recovery can all be demonstrated under load.
+
+**One identity. One sealed vault. One vote.**
+
+Those words are a research commitment to a system whose plurality can be inspected. The Constitution will decide their final lawful expression. The machine must still prove it can honour them.
