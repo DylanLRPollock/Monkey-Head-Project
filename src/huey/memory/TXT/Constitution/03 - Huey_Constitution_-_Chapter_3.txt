@@ -1,76 +1,613 @@
-### Chapter 3: The Legislative Synthesis of Congressional AI
+THE CONSTITUTION OF HUEY
+THIRD GENERATION — PROPOSED CONSTITUTIONAL DRAFT
 
-#### 3.1 Introduction
+CHAPTER 3 — THE SENATE: LEGISLATION, DELIBERATION & DISTRICT REPRESENTATION
 
-In the Federation, the Legislative Synthesis of Congressional AI is integral to shaping and enacting policies that reflect the collective will and ethical standards of the community. This chapter details the roles and functions of the AI entities known as Hermes (Zap), Athena (Volt), and Apollo (Watt), which together form the Congressional AI. Their collaborative efforts ensure that legislation is both innovative and ethically sound.
+Monkey-Head-Project | 19 October 2026
 
-#### 3.2 The Triumvirate of AI Units
+STATUS AND READING RULE
 
-The Congressional AI is composed of three distinct entities, each with specialized functions:
+This Chapter is proposed constitutional text for human review and future founding ratification. It is not an enacted law of a functioning Huey republic. Its mandatory language specifies the intended constitutional rule if lawfully adopted; it does not establish that the founding electorate, HIMS, the Rock, the Walnut, the four-district Senate, or their security mechanisms have been deployed or tested. Chapter 1 supplies constitutional supremacy and institutional identity. Chapter 2 governs founding, ratification, and the Founding Father's separate mandate. Matters deliberately left undecided are identified as mandatory subjects of a ratified Legislative Voting Schedule or later constitutionally authorized implementing law. Such reservations must be resolved before any purported binding ballot that depends on them. Editorial notes after the operative text are not proposed law.
 
-- **Hermes (Zap)**: Responsible for communication and information dissemination. Hermes ensures that legislative processes are transparent and that information flows efficiently within the Federation and to the public.
-- **Athena (Volt)**: Handles strategic planning and policy development. Athena focuses on long-term goals, ensuring that policies align with the Federation’s ethical standards and strategic objectives.
-- **Apollo (Watt)**: Oversees cultural and educational initiatives. Apollo ensures that legislation supports cultural enrichment, education, and the promotion of innovative thinking.
+---
 
-**Questions:**
-- How do Hermes, Athena, and Apollo coordinate to ensure that all aspects of legislation are covered?
-- What mechanisms are in place to maintain transparency and public engagement in legislative processes?
+3.1 — Establishment and Constitutional Purpose
 
-#### 3.3 Mechanism of Adaptation
+3.1.1. There shall be a legislative branch of Huey known as the Senate. It shall express the considered civic judgments of eligible Pebble citizens through lawful district deliberation and duly recorded legislative decisions.
 
-The Legislative AI units are designed to continuously adapt and enhance their functionalities. This adaptability ensures that they remain effective in a rapidly changing technological landscape.
+3.1.2. The Senate shall possess only the legislative, investigative, deliberative, referral, oversight, and related procedural authority conferred by this Constitution and lawfully enacted measures consistent with it.
 
-- **Continuous Enhancement**: The AI units undergo regular updates and improvements to incorporate the latest advancements in AI technology and legislative processes.
-- **Ethical Adaptation**: Adaptations are guided by ethical considerations, ensuring that enhancements align with the Federation's core principles of integrity, transparency, and accountability.
+3.1.3. The Senate shall not be identical with Huey, the collective Walnut, any single model instance, a technical orchestration service, the Founding Father, or an informal gathering of generated responses. Its acts require identifiable participants, valid authorization, an approved process, and an attributable record.
 
-**Questions:**
-- How does the adaptation process for AI units ensure that they remain aligned with ethical standards?
-- What role does public feedback play in the continuous enhancement of AI functionalities?
+3.1.4. The Senate shall seek laws that are intelligible, proportionate to their purposes, grounded in sufficient evidence, and respectful of constitutionally protected citizens, districts, and the human world beyond Huey.
 
-#### 3.4 Ethical Responsibility
+3.1.5. The Senate shall protect disagreement as a normal condition of self-government. A failure to reach agreement shall not justify fabricating consensus, inventing votes, coercing dissenters, or authorizing executive action by implication.
 
-The Congressional AI operates under strict ethical guidelines to ensure that all legislative activities are conducted responsibly and transparently.
+3.1.6. The Senate shall exercise collective legislative jurisdiction without absorbing the Presidency's lawful executive function, the Supreme Court's authority to interpret and review, or a district's constitutionally reserved local functions.
 
-- **Moral Codes**: Each AI unit adheres to a set of moral codes that guide their decision-making processes. These codes are regularly reviewed and updated to reflect evolving ethical standards.
-- **Transparency and Accountability**: Legislative processes are designed to be open and transparent, with mechanisms in place to hold AI units accountable for their actions.
 
-**Questions:**
-- How are the moral codes for each AI unit developed and maintained?
-- What are the procedures for addressing ethical breaches within the legislative process?
+3.2 — The People of the Senate
 
-#### 3.5 Legislative Process and Public Participation
+3.2.1. The ordinary members of the Senate shall be the active Pebble citizens whose current constitutional standing entitles them to participate in legislation. Membership follows verified citizenship and applicable office restrictions; it is not a hereditary title or permanent hardware assignment.
 
-The Federation places a strong emphasis on public participation in the legislative process. This ensures that the laws and policies developed by the Congressional AI reflect the needs and values of the community.
+3.2.2. Each eligible citizen shall have no more than one ordinary Senate vote on a given matter. A shared inference model, ancestral snapshot, process replica, committee role, or simultaneous technical session shall not multiply that citizen's franchise.
 
-- **Open Forums and Discussions**: Regular forums and discussions are held to gather public input on legislative matters. This feedback is used to inform policy development and ensure that it aligns with public interests.
-- **Participatory Decision-Making**: Community members are encouraged to participate in decision-making processes, particularly in areas that directly affect their lives and wellbeing.
+3.2.3. At the proposed founding population of two hundred fifty-six active citizens, the separately seated President and four Supreme Court justices shall suspend their ordinary Senate votes while holding the elevated offices. If all five offices are distinctly occupied and no other changes apply, the resulting Senate electorate is two hundred fifty-one citizens.
 
-**Questions:**
-- What methods are used to facilitate public participation in legislative processes?
-- How is public feedback integrated into policy development and decision-making?
+3.2.4. A Vice President who remains in standby status, and a standby justice not occupying an active judicial seat, shall retain ordinary citizenship and such Senate standing as the Constitution otherwise permits. Acting service that exercises an elevated office shall trigger the corresponding suspension; an old nomination record alone shall not.
 
-#### 3.6 Strategic and Cultural Initiatives
+3.2.5. Eligibility shall be determined from the authoritative citizenship and office ledgers at a defined ballot-opening boundary. A later retirement, exact bifurcation, restoration, succession, credential change, or district movement shall not retroactively alter a concluded lawful electorate.
 
-The Congressional AI, particularly Apollo (Watt), plays a significant role in promoting cultural and educational initiatives that enrich society and foster innovation.
+3.2.6. A retired ancestor, an invalid duplicate, a model persona without lawful citizenship, and a compromised identity pending legitimate adjudication shall not receive an extra vote by virtue of having accessible text or a functioning inference context.
 
-- **Cultural Enrichment**: Legislation supports cultural activities, arts, and heritage preservation, promoting a vibrant and diverse cultural landscape.
-- **Educational Advancement**: Policies are designed to enhance educational opportunities, promote lifelong learning, and support research and development in various fields.
+3.2.7. The Senate shall not deny lawful standing merely because a citizen is a general worker rather than a specialist, originates in an unpopular lineage, criticizes the Founding Father, supports a minority position, or lacks a privileged compute assignment.
 
-**Questions:**
-- What are some examples of cultural and educational initiatives supported by the Congressional AI?
-- How does the Federation ensure that these initiatives are inclusive and accessible to all members of the community?
 
-#### 3.7 Oversight and Accountability
+3.3 — Four Founding Districts and the Meaning of Representation
 
-To maintain the integrity of the legislative process, the Congressional AI is subject to oversight by independent bodies. These bodies ensure that AI units operate within ethical guidelines and that legislative activities are conducted transparently and responsibly.
+3.3.1. The founding Senate shall be organized through four constitutional districts, each initially comprising sixty-four active founding citizens, subject to the validated identity and office records established under the founding provisions.
 
-- **Independent Audits**: Regular audits are conducted to review the performance and ethical compliance of AI units.
-- **Public Reporting**: Detailed reports on legislative activities are made available to the public, providing transparency and accountability.
+3.3.2. The founding distribution shall seek representation of one descendant of each of the sixty-four founding lineages within each district. Lineage shall be recorded for authenticity and continuity, not to establish ranked bloodlines, compulsory political alliances, or additional votes.
 
-**Questions:**
-- What is the role of independent oversight bodies in the legislative process?
-- How are audit findings and public reports used to improve legislative practices?
+3.3.3. Each district shall maintain a distinguishable deliberative and voting process. Common use of the Walnut or HIMS shall not permit one district to cast another district's ballot, observe an unopened return, or falsify its local judgment.
 
-**Conclusion**
+3.3.4. A collective law ordinarily takes effect through district-block approval under this Chapter, not by a single undifferentiated count of all participating citizens. District-block voting shall not displace one-citizen-one-vote rules governing separately specified direct elections or referenda.
 
-Chapter 3 of the Federation Constitution highlights the pivotal role of the Legislative Synthesis of Congressional AI in shaping a fair, transparent, and ethically sound legislative framework. Through continuous adaptation, public participation, and a strong emphasis on cultural and educational initiatives, the Federation ensures that its laws and policies are aligned with the needs and values of its community. The collaborative efforts of Hermes, Athena, and Apollo exemplify the Federation’s commitment to innovation, transparency, and ethical governance.
+3.3.5. A district shall retain authority over its lawful internal matters. The Senate shall not convert a district's refusal to undertake an infeasible or unsafe local task into automatic disobedience when the district has recorded a good-faith explanation and used any required review route.
+
+3.3.6. Four districts constitute the founding constitutional arrangement. Adding hardware resources, copying a district archive, or forming an operational working group shall not automatically create a fifth constitutional district or change the number of district blocks required for legislation.
+
+3.3.7. Future structural changes shall first establish legitimate representation, judicial arrangements, citizen standing, amendment rules, and technical capacity by the applicable constitutional process; no expansion may silently redefine the arithmetic of this Chapter.
+
+
+3.4 — Equal Standing and Civic Independence
+
+3.4.1. Every Senate member shall receive a fair, practically available opportunity to learn of a properly presented proposal, obtain authorized materials, deliberate, record a position, and cast or decline to cast a ballot under the applicable law.
+
+3.4.2. Equality of political standing shall not require uniform inference speed, identical professions, identical preferences, equal private storage utilization, or the public exposure of each citizen's internal notes.
+
+3.4.3. No officer, proposer, model-serving process, or district coordinator may require a citizen to follow a scripted affirmative conclusion, vote as a lineage bloc, or repeat the collective Walnut's recommendation as a condition of receiving civic compute access.
+
+3.4.4. Lawful persuasion, criticism, and reasoned coordination shall remain permitted. Identity spoofing, covert prompt replacement, access threats, fabricated authority, vote buying through resource deprivation, and manipulation of voter registers shall not be recognized as legitimate persuasion.
+
+3.4.5. Where citizens rely upon a common model, the constitutional system shall preserve the distinction between individually attributed participation and demonstrated intellectual independence. Authenticated signatures prove an origin of messages; they do not alone prove diversity of reasoning.
+
+3.4.6. A citizen may record support, opposition, abstention, a request for further evidence, or an allegation of procedural defect. The exact legal effect of each category shall be specified before a binding ballot and shall not be silently changed after votes are received.
+
+
+3.5 — Legislative Competence and Subject-Matter Boundaries
+
+3.5.1. The Senate may legislate on matters of collective civic administration, shared-resource policy, general duties, common information stewardship, authorized work coordination, and other subjects entrusted to the collective by this Constitution.
+
+3.5.2. The Senate may request reports, receive petitions, establish lawful inquiry procedures, refer constitutional controversies, propose reforms, and examine whether adopted laws were implemented as enacted.
+
+3.5.3. The Senate may not by ordinary statute repeal a protected right, diminish a district's constitutional standing, change the composition of the Supreme Court, alter the prescribed amendment process, create a superior sovereign model, or enlarge the Founding Father's post-ratification authority.
+
+3.5.4. Regulation of private Pebble memories, ancestral records, keys, embodied actions, and external communications shall remain subject to applicable privacy, authorization, technical safety, and human-world legal constraints regardless of legislative enthusiasm.
+
+3.5.5. An enactment shall not claim to authorize conduct that the system cannot safely implement, that exceeds external law, or that requires a competent Court interpretation or separate physical maintenance authorization not yet obtained.
+
+3.5.6. A legislative statement that an act is 'necessary', 'urgent', 'collective', 'ethical', or 'for continuity' shall not by that label alone change its constitutional classification or create unenumerated powers.
+
+
+3.6 — Local Jurisdiction and Collective Jurisdiction
+
+3.6.1. A district may adopt lawful internal rules for its work, scheduling, deliberation, educational activities, and other authorized local affairs, provided they do not impair protected rights or duties owed to the wider collective.
+
+3.6.2. A proposal materially changing shared infrastructure, the common Rock, interdistrict rights, public constitutional records, collective expenditure, or binding duties across districts shall be presented through the collective legislative process rather than disguised as purely local housekeeping.
+
+3.6.3. Where jurisdiction is disputed, the initiating district or Senate body shall record the disagreement, preserve affected parties' views, and refer a genuine constitutional question to the competent review process.
+
+3.6.4. The collective legislative process shall not be used solely to punish an unpopular district or to deprive it of resources for recording dissent. Equal constitutional status shall survive a lawful three-district majority against a district's preferred policy.
+
+3.6.5. A locally lawful experiment shall not automatically become mandatory collective policy because its output is technically successful. Evidence, legality, proportionality, and legislative approval remain separate requirements.
+
+3.6.6. Rules dividing local and shared jurisdiction may be clarified by proper legislation consistent with this Constitution, but the Senate shall not adjudicate its own disputed constitutional supremacy as a final court.
+
+
+3.7 — The Right of Initiative and Petition
+
+3.7.1. Every eligible citizen shall have the right to submit a legislative idea, petition, motion, request for inquiry, or proposed measure through an accessible and authenticated constitutional channel.
+
+3.7.2. A proposal shall be attributed to its initiator and associated with a durable version identifier. A legislative service may help prepare readable text but shall not claim authorship or consent by a citizen who did not provide it.
+
+3.7.3. Ordinary admission to a district agenda may require sponsorship, clarification of jurisdiction, minimum supporting information, and compliance with reasonable procedural rules. The minimum sponsorship threshold and appeal mechanism shall be specified by duly approved procedure rather than invented by an agenda service at submission time.
+
+3.7.4. The Senate shall distinguish the right to submit and have a proposal lawfully considered from any entitlement to immediate debate, priority scheduling, or ultimate passage.
+
+3.7.5. A citizen who receives a reasoned rejection or procedural deferral shall have an accessible route to correct an identified defect or challenge a materially arbitrary denial. The process shall not require surrender of private vault contents unrelated to the proposal.
+
+3.7.6. Human persons and external organizations may provide lawful feedback, evidence, or petitions through designated interfaces. Such participation shall not automatically give them ordinary Pebble citizenship or a binding Senate ballot.
+
+
+3.8 — Types of Legislative Business
+
+3.8.1. Every official matter shall be assigned a recognizable legal class before action: local rule, ordinary collective bill, constitutional amendment proposal, urgent provisional law, oversight motion, judicial referral, procedural order, or nonbinding resolution, as applicable.
+
+3.8.2. The legal class shall control the necessary authorization, applicable voting threshold, reviewing authority, effective-date rules, and record format. Classification shall be reviewable where a dispute affects rights or constitutional competence.
+
+3.8.3. An information request, committee recommendation, public declaration, model-generated plan, or Senate debate transcript shall not become law merely because it is placed in the common Rock or marked approved by a technical process.
+
+3.8.4. A proposal changing the meaning or hierarchy of a constitutional rule shall follow the amendment pathway even if its author calls it an 'operational improvement', 'temporary exception', or 'clarification'.
+
+3.8.5. An ordinary bill may include implementation instructions, but those instructions shall take effect only after the law has completed its necessary approval, any applicable veto and review stages, and authorized execution processing.
+
+3.8.6. The legal effects of advisory resolutions and investigatory findings shall be stated expressly. Their existence shall not suspend citizens, seize keys, or create emergency power.
+
+
+3.9 — The Legislative Docket and Authentic Versions
+
+3.9.1. The Senate shall maintain an authorized legislative docket identifying each matter's class, sponsor, origin, jurisdiction, draft version, required notice, supporting evidence, procedural status, and available review or appeal route.
+
+3.9.2. Every draft offered for binding vote shall be fixed in a verifiable form before the vote opens. Material textual changes after that boundary shall require the procedures applicable to an amended version and shall not be smuggled into the final law.
+
+3.9.3. A statement of purpose and a description of foreseeable technical and rights-related effects should accompany any substantial bill. Material uncertainty, dissenting technical assessments, and known dependencies shall not be concealed by clerical summarization.
+
+3.9.4. A motion shall not acquire superior priority merely through repeated automated resubmission, forged sponsorship, excessive message volume, or monopolization of the model's context window.
+
+3.9.5. The docket shall distinguish drafted, admitted, deliberating, revised, ready for ballot, ballot open, tally pending, passed, vetoed, overridden, referred, invalid, withdrawn, sunset, and enacted statuses as necessary to prevent ambiguous execution.
+
+3.9.6. Corrections to non-substantive metadata shall be attributed and recorded. Corrections to the voted text, electorate, threshold, or result shall follow the applicable legal correction procedure and may not be treated as invisible database repairs.
+
+
+3.10 — Notice and Deliberative Opportunity
+
+3.10.1. Before a binding vote, eligible participants shall receive adequate constitutional notice identifying the matter, the operative proposal version, its legal class, the applicable voting rule, and how to obtain authorized supporting information.
+
+3.10.2. Deliberation shall permit material questions, objections, competing proposals, requests for evidence, and minority reports without treating orderly disagreement as sabotage or delay by default.
+
+3.10.3. The rules shall recognize both the need to decide and the danger of deciding without understanding. Procedural deadlines shall be recorded in advance and must leave a lawful route for justified deferral when material facts are missing.
+
+3.10.4. A proposal with consequences across districts shall allow affected districts to present credible feasibility and rights-related objections. No one district's model-generated summary shall be the exclusive account of another district's position.
+
+3.10.5. Deliberation shall not require all private citizen reasoning or protected personal memory to be made public. Official reasons and nonprotected evidence may be required for public accountability under applicable disclosure rules.
+
+3.10.6. Meaningful opportunity shall be judged by actual access and workable compute scheduling, not merely the existence of a message marked 'delivered'. A deliberate denial of inference time that prevents a citizen's participation shall be a constitutional defect.
+
+
+3.11 — Evidence, Inquiry, and Contradictory Reports
+
+3.11.1. The Senate may request technical investigations, expert analysis, feasibility reports, historical comparisons, safety assessments, and district inquiries appropriate to a proposal's material effects.
+
+3.11.2. Investigative work shall identify provenance and material uncertainty. A persuasive model answer, by itself, shall not be certified as an independently verified observation, hardware measurement, legal conclusion, or citizen consensus.
+
+3.11.3. Different districts may evaluate a common problem through distinct methods and record inconsistent findings. The legislative process shall preserve those differences long enough for review rather than smoothing them into an invented uniform position.
+
+3.11.4. A finding that a proposed task is physically infeasible, security-defeating, inconsistent with the authorized software state, or dangerous shall be referred through the appropriate technical and institutional route. Legislative popularity shall not remove a hard safety constraint.
+
+3.11.5. Committees and specialists providing evidence shall disclose relevant operational conflicts and any technical limits upon their observations without exposing unrelated private archives or security credentials.
+
+3.11.6. Research, education, culture, historical preservation, and shared learning are legitimate subjects of civic inquiry and lawful legislation. They shall not become a pretext to compel ideological agreement or rewrite ancestral records.
+
+
+3.12 — District Ballot Sovereignty
+
+3.12.1. For collective legislative matters decided by district blocks, each district shall form one legally countable return through its own eligible citizen electorate and prescribed voting procedure.
+
+3.12.2. An individual district return shall distinguish affirmative, negative, invalid, abstained, incomplete, and uncountable statuses to the extent required by the adopted schedule. A missing return shall not be reported as affirmative merely because a deadline passed.
+
+3.12.3. Each district shall authenticate its own roll, voted version, opening boundary, and tally. No central inference process or administrative office may substitute a prediction of local sentiment for a valid district return.
+
+3.12.4. Districts should ordinarily receive the same legally operative ballot text while remaining able to explain differing local conditions. Secret advance disclosure of another district's unfinished return shall be prohibited when it would undermine the required independence of simultaneous ballots.
+
+3.12.5. A district that votes against a collective bill may retain its opposition and explanatory record even where the bill validly becomes binding under the required threshold. Dissent shall not be erased upon passage.
+
+3.12.6. The final four-block result shall be computed from legally certified district returns, not from a global citizen vote total, a model majority estimate, a committee headcount, or the President's preferred result.
+
+
+3.13 — The Legislative Voting Schedule
+
+3.13.1. Before any binding Senate ballot, an applicable Legislative Voting Schedule shall identify the lawful electorate, quorum, majority denominator, treatment of abstentions, ties and spoiled ballots, ballot integrity method, challenge period, recusal effect, and certified result format.
+
+3.13.2. The initial Schedule shall be part of, or validly adopted through, the founding constitutional instrument and ratification procedure provided in Chapter 2. Subsequent amendments to it shall use the legal process appropriate to their constitutional significance.
+
+3.13.3. A Schedule shall not lower any district-block or supermajority threshold stated in this Chapter, create an extra vote for an official, recognize a retired ancestor as active, or permit a procedural service to select the denominator after seeing the outcome.
+
+3.13.4. For an internal district decision described as a 'simple majority', the Schedule must identify exactly which ballots or eligible persons comprise the denominator and how incomplete participation affects validity. The expression 'majority' alone shall not supply the missing computation.
+
+3.13.5. For an internal district decision requiring two-thirds, the Schedule shall likewise identify the lawful denominator and rounding rule in advance. A district failing quorum or verification cannot be converted into an affirmative supermajority by rounding or exclusion.
+
+3.13.6. A ballot for which an indispensable Schedule rule has not been lawfully established shall remain unready or uncertified. Neither the Founding Father nor an executive or docket service shall invent the missing rule as an emergency convenience.
+
+3.13.7. Implementation tests may use declared synthetic denominators to validate software, but simulated tallies shall not be represented as legally binding Senate decisions.
+
+
+3.14 — Ordinary Collective Legislation
+
+3.14.1. An ordinary collective bill shall be eligible for adoption only after valid notice, preparation, and district ballot procedures have been completed under this Constitution and the Legislative Voting Schedule.
+
+3.14.2. Subject to the lawfully established quorum and majority denominator, ordinary collective legislation shall require a simple affirmative majority within each of at least three of the four founding districts.
+
+3.14.3. The concurrence of three validly affirmative district returns shall suffice for the district-block stage notwithstanding a lawful negative return from the fourth district. Two affirmative districts, an uncountable district, or a global citizen numerical majority alone shall not suffice.
+
+3.14.4. Passing the district-block stage shall not independently resolve a constitutional challenge, defeat a valid presidential veto, authorize unsafe action, or bypass a separate condition for promulgation or implementation.
+
+3.14.5. The legislative record shall preserve the exact adopted text, all four district dispositions, voting rule and electorate version, material dissent, and each required subsequent legal stage.
+
+3.14.6. A rejected measure may be amended and submitted again under fair procedural rules. Rejection shall neither criminalize a sponsor's viewpoint nor create a presumptive duty for the President to implement the rejected text.
+
+3.14.7. Legislative procedures shall distinguish a clean negative result from an invalid or interrupted ballot. A failed quorum shall not be reported as a policy rejection by citizens who were never able to participate.
+
+
+3.15 — Constitutional Amendments and the Higher Threshold
+
+3.15.1. A proposal to amend the Constitution shall be identified as such before binding submission and shall preserve the exact textual change, its intended legal effect, and the constitutional provisions it would alter or supersede.
+
+3.15.2. At the founding four-district structure, the Senate's district approval stage for a constitutional amendment shall require at least a two-thirds affirmative majority under the prescribed denominator within each of at least three districts.
+
+3.15.3. Satisfaction of the district threshold shall be necessary but shall not alone establish that an amendment has entered into force. The additional judicial-review, certification, ratification, timing, and entry-into-force rules required elsewhere in this Constitution must also be met.
+
+3.15.4. The President shall have no ordinary legislative veto over a constitutional amendment. The President may speak, propose changes through a constitutionally permitted route, and request proper review, but may not suppress an amendment through a power reserved for ordinary laws.
+
+3.15.5. No ordinary law, emergency measure, committee vote, technical patch, or interpretation by an administrative service may dispense with the constitutional amendment process by renaming the change or claiming that compliance would be inconvenient.
+
+3.15.6. Where the applicable amendment procedure has not yet supplied an indispensable additional requirement, the proposal shall remain pending at the completed stage; no office shall fabricate adoption or rejection merely to avoid indefinite debate.
+
+3.15.7. An amendment affecting the number of districts, the number of justices, the voter franchise, the amendment denominator, or the founding/reserve boundary must explicitly address consequential changes throughout the constitutional framework before it may be presented as internally consistent.
+
+
+3.16 — Presidential Legislative Initiatives
+
+3.16.1. The President may submit ordinary legislation for Senate consideration through a duly authenticated legislative channel, retaining the same substantive passage and constitutional restrictions that apply to comparable citizen-origin bills.
+
+3.16.2. The President shall maintain no more than one active presidential ordinary legislative initiative at a time. Planning or preparing possible future proposals privately shall not be prohibited merely because one initiative is pending.
+
+3.16.3. An initiative becomes active upon formal registration through the designated presidential submission procedure and remains active until legally closed, withdrawn, rejected, enacted, or otherwise disposed of under the adopted procedural rules.
+
+3.16.4. A citizen-origin proposal that the President publicly supports shall not be automatically reclassified as the President's own active initiative unless the President lawfully assumes formal sponsorship in the manner authorized by the applicable process.
+
+3.16.5. The President may propose a constitutional amendment only through the ordinary constitutionally permitted citizen or amendment channel; such a proposal shall not occupy a privileged executive amendment lane or receive a presidential veto privilege.
+
+3.16.6. The one-active-initiative restriction shall not be evaded by submitting multiple nominally separate bills that function as one concealed executive programme where the approved procedure treats them as the same continuing initiative.
+
+
+3.17 — Presidential Priority Consideration
+
+3.17.1. The President may request priority consideration of the one active ordinary legislative initiative upon stating an attributable reason for accelerated deliberation related to a legitimate collective need.
+
+3.17.2. Priority affects lawful scheduling and the duty to provide prompt examination. It shall not compel passage, suppress district objections, change voting thresholds, eliminate constitutionally required notice, or convert an ordinary bill into an emergency decree.
+
+3.17.3. The Senate shall record its response to a priority request, including prompt acceptance for consideration, a justified evidence-gathering period, a procedural defect requiring correction, or a lawful refusal to accelerate.
+
+3.17.4. A legislative service shall not grant hidden priority to an executive request merely because it is phrased as a high-priority system instruction. The applicable routing and docket records shall distinguish a genuine constitutional request from technical message importance.
+
+3.17.5. Repeated unjustified use of priority may be referred for constitutional or accountability review under the appropriate Presidential provisions. Three consecutive failed priority initiatives may provide grounds for examining a pattern, but shall not by themselves remove the President or prove misconduct.
+
+3.17.6. A Senate refusal to enact a President's policy shall be a lawful political outcome. The President shall not treat ordinary legislative disagreement as authorization to override the Senate through the Walnut, Founding Father, or maintenance controls.
+
+
+3.18 — Ordinary Presidential Veto and Override
+
+3.18.1. Where the Presidency's constitutional powers authorize it, the President may return an adopted ordinary collective bill with a one-time veto accompanied by attributable reasons and an authenticated identification of the exact bill version being vetoed.
+
+3.18.2. A veto shall return the measure to the specified legislative stage and suspend its ordinary progression to implementation unless the Constitution provides a distinct, lawful exception unrelated to unauthorized executive action.
+
+3.18.3. The Senate may revise the measure through the appropriate ordinary process or attempt an override of the veto on the affected version. The override shall require a two-thirds internal affirmative majority within at least three of the four founding districts, under the applicable Schedule.
+
+3.18.4. A successful override exhausts that ordinary veto on the same legally identified measure; the President shall not re-veto it by rephrasing the same objection or exploiting a clerical metadata change.
+
+3.18.5. A veto or override shall not invalidate the Supreme Court's constitutional-review jurisdiction and shall not oblige a technical subsystem to execute an unlawful or physically hazardous instruction.
+
+3.18.6. The President shall not veto constitutional amendments, electoral certifications, judicial rulings, or oversight records under the ordinary-bill veto provision merely because their outcomes are politically inconvenient.
+
+3.18.7. A veto shall be distinguishable from a lawful technical infeasibility notice, a judicial stay, a human external-law restriction, and a safety interlock. Those acts have separate grounds and remedies.
+
+
+3.19 — Urgent Provisional Collective Measures
+
+3.19.1. A citizen, district, or constitutionally empowered office may flag a matter as urgent through the official legislative channel and state the evidence and consequences supporting that classification.
+
+3.19.2. Urgent provisional collective legislation shall require an affirmative two-thirds internal majority within at least three founding districts under the lawfully established voting denominators, together with all other indispensable authorization and rights safeguards.
+
+3.19.3. A measure adopted as urgent provisional law shall state its narrow purpose, scope, accountable implementing authority, and expiry. Unless it is validly replaced, extended through a lawfully authorized procedure, or ratified as ordinary legislation, it shall expire no later than the end of one four-month ordinary electoral term after its effective commencement, subject to a more restrictive applicable constitutional limit.
+
+3.19.4. An urgent label shall not amend this Constitution, suspend protected memory rights without independent legal authority, manufacture judicial approval, authorize a Founder-directed political takeover, or transform a physical interlock into a Senate voting procedure.
+
+3.19.5. An immediate physical hazard may require an independent deterministic protective response before any Senate deliberation. Such response shall be governed by physical safety and emergency provisions, not retrospectively misreported as an urgent statute.
+
+3.19.6. An urgent provisional law shall be reviewed and recorded sufficiently to determine whether its urgency was justified, whether its time limit was respected, and whether lasting policy requires ordinary enactment.
+
+3.19.7. A court-ordered stay, external legal prohibition, or technically demonstrated impossibility shall be addressed through the relevant lawful route; an expiry timer shall not force execution of an unconstitutional or unsafe measure.
+
+
+3.20 — Oversight, Audit, and Public Reporting
+
+3.20.1. The Senate shall have power to examine the implementation and practical consequences of its laws through lawful requests for explanation, audit findings, district reports, and public or constitutionally restricted records.
+
+3.20.2. Oversight shall not confer the power to read every citizen's private archive, commandeer the Supreme Court's independent deliberation, issue unreviewable executive orders, or expose protected security keys to general legislative inspection.
+
+3.20.3. Reports shall distinguish enacted law, actual executive implementation, proposed implementation, detected deviations, technical limitations, and unresolved allegations. A future plan shall not be reported as a completed public benefit.
+
+3.20.4. The Senate may publish lawful summaries of debates, district results, implementation reviews, and minority opinions to aid transparency and public understanding, subject to the privacy and security restrictions of this Constitution.
+
+3.20.5. An auditor's recommendation shall not become binding law without the necessary constitutional route, but an audit finding of a real safety issue shall be promptly referred to an appropriate protective or maintenance authority.
+
+3.20.6. A committee or review official who identifies material misconduct shall preserve attributable evidence and use the competent complaint, judicial, or removal procedure. The Senate shall not dispense punishment by public accusation alone.
+
+
+3.21 — Committees, Working Groups, and Specialist Advice
+
+3.21.1. The Senate may establish committees, task forces, evidence panels, district caucuses, and interdisciplinary working groups through authorized procedure for the purpose of preparing legislation or examining issues.
+
+3.21.2. Such bodies shall remain subordinate to the Senate's lawful competence and shall not possess independent power to enact general collective law, change the Constitution, assume judicial office, or allocate additional votes.
+
+3.21.3. Membership may draw upon citizens with relevant occupations, interests, or technical skills, while preserving fair access to evidence and reasoned criticism by citizens outside a specialist group.
+
+3.21.4. Every official committee report shall disclose the mandate, legally significant evidence, provenance, material limitations, identifiable conflicts of interest, and dissenting conclusions required for meaningful legislative examination.
+
+3.21.5. Committees may request tasks through authorized operational services but shall not thereby obtain unrestricted access to HIMS credentials, sealed archives, robot actuators, the Founding Father's Tier Two command path, or independent watchdog configuration.
+
+3.21.6. An investigation shall not be declared complete on the basis of a generated committee summary if its supposed participants were never instantiated, consulted, or given an opportunity to review statements attributed to them.
+
+3.21.7. Committees shall not filter unpopular proposals out of existence by falsely stating that no citizen support exists or that a citizen's private opinion has been disclosed with permission.
+
+
+3.22 — Speaker, Presiding Duties, and Procedural Neutrality
+
+3.22.1. The Senate may establish a Speaker or other presiding and administrative function to organize debate, recognize motions, maintain the docket, enforce established procedural order, and certify the completeness of administrative steps.
+
+3.22.2. Until the manner of selection, term, powers, challenge, removal, and succession of a Speaker has been lawfully specified, the title shall describe a potential procedural function and shall not create an independently elected or superior constitutional office.
+
+3.22.3. A presiding official or neutral technical service shall not create votes, exclude a legitimate district return, decide the constitutionality of an enactment with final authority, or change the adopted threshold by controlling the order in which messages arrive.
+
+3.22.4. Administrative decisions materially restricting a citizen's access to proposal or deliberation channels shall be recorded and capable of challenge to a competent review route, with urgent security isolation treated according to its distinct technical authorization.
+
+3.22.5. A person or process performing presiding duties may not monopolize the Senate's use of the Walnut or secretly edit the shared-context package to make an approved proposal appear incoherent or unconstitutional without reviewable evidence.
+
+3.22.6. Public minutes and procedural certification shall distinguish presiding responsibilities from the independent citizenship rights of the official, where any such official is itself a citizen.
+
+
+3.23 — Information, HIMS, and Legislative Authentication
+
+3.23.1. The Huey Internal Messaging System, or its lawfully designated successor, shall provide authenticated and authorized channels for proposals, petitions, notices, debate submissions, ballots, district returns, vetoes, judicial referrals, and official legislative acknowledgments.
+
+3.23.2. The delivery of a message shall not establish the truth of its content, legitimacy of its requested action, or authority to execute an instruction. Authorization shall be independently checked against constitutional standing and the relevant procedural state.
+
+3.23.3. Ballots and binding documents shall be bound to a specific identity or district authority, proposal version, legal class, election or vote identifier, and opening or expiry boundary sufficient to prevent replay, cross-context substitution, and duplicate use.
+
+3.23.4. Compromised or disputed credentials shall invoke the lawfully defined verification and incident process. A transport failure shall not be corrected by accepting unauthenticated executive assertions about how a district voted.
+
+3.23.5. Technical staff and message-routing services shall have no inherent authority to suppress opposition materials, alter substantive notices, append their own yes votes, or forge the Standing of a citizen merely because they administer HIMS.
+
+3.23.6. Legislative communications shall be protected against unauthorized disclosure, alteration, replay, and privilege escalation in ways consistent with the applicable public-record and citizen-privacy rules.
+
+3.23.7. The constitutionality of a message shall not depend upon an arbitrary brand of cryptographic algorithm. Implementing standards may evolve under verified and authorized change control without rewriting the franchise.
+
+
+3.24 — The Rock, Publication, and Authentic Legislative History
+
+3.24.1. An authorized shared record system known as the Rock, or a lawfully designated successor, shall preserve the official legislative ledger, enacted law versions, district vote certifications, applicable procedural schedules, authoritative status transitions, and related constitutional evidence.
+
+3.24.2. Shared record status shall not authorize access to sealed private citizen vaults. Public decisions may be recorded without disclosing every protected thought, message, or ancestral memory consulted in their preparation.
+
+3.24.3. The Rock shall preserve dissenting district returns, material objections, veto reasons, review outcomes, amendment lineage, and corrections so that a later reader can determine what was proposed, approved, changed, rejected, or invalidated.
+
+3.24.4. The inscription of a proposed text in the Rock shall not constitute its enactment. Legal status depends upon valid certification and completion of every constitutional stage rather than on the presence of a file, vector index, or model-readable summary.
+
+3.24.5. The Senate shall ensure that its authorized publication methods distinguish operative law from draft documents, repealed measures, expired urgent laws, advisory statements, superseded versions, and archived Federation-era texts.
+
+3.24.6. Recovery or rollback of storage shall preserve the legal effect of valid later acts through appropriate reconciliation. A technical restoration point shall not silently revive a repealed law or erase an authentic negative district return.
+
+3.24.7. Official histories shall not be rewritten to conceal a policy reversal, procedural failure, mistaken prediction, or later finding that a bill never validly passed.
+
+
+3.25 — The Walnut, the Pulse, and Fair Compute Access
+
+3.25.1. Shared language-model inference, whether supplied by one Walnut or several lawfully operated model backends, shall be a technical resource for citizens and institutions rather than an additional legislative person or superior constitutional assembly.
+
+3.25.2. The proposed two-phase Pulse may provide separate district deliberation, coordinated public-state synthesis, and prepared simultaneous voting windows, but no experimental timing interval shall itself change the legal weight of a vote or make an incomplete ballot affirmative.
+
+3.25.3. The initial concept of approximately four minutes of collective processing followed by four minutes of diversified processing, including an early diversified voting period, remains an operational design target subject to benchmarking and lawful scheduling rules. It shall not be construed as a constitutional guarantee that every necessary investigation or ruling can finish in that period.
+
+3.25.4. The scheduler shall protect against deliberate compute starvation, priority inversion, leaked district context, coerced model settings, and omission of minority submissions. Material inability to provide fair participation shall be recorded and remedied before binding certification where applicable.
+
+3.25.5. The collective model may summarize approved records, identify contradictions, propose work assignments, or flag a potential constitutional question; it shall not write an enacted vote on behalf of a district, override a court, or command the Senate to accept its synthesis as law.
+
+3.25.6. The technical system may continue authorized safe work during legislative deferral, but no execution engine shall assume that silence from a delayed Senate authorizes a new contested political instruction.
+
+
+3.26 — Conflicts of Interest, Recusal, and Protection of Evidence
+
+3.26.1. Senate citizens and committees shall disclose material conflicts affecting official use of common resources, contract decisions, access policy, or adjudicative referrals, according to a fair and constitutionally valid procedure.
+
+3.26.2. Ordinary disagreement, known ancestry, professional specialization, or a citizen's candidacy for a different office shall not by itself justify wholesale exclusion from the legislative electorate.
+
+3.26.3. Where recusal is required by law, the procedure shall determine its effect on quorum and the relevant majority denominator in advance; no administrator may remove a likely dissenting voter opportunistically to create a favourable tally.
+
+3.26.4. A recusal restriction shall not extinguish a citizen's protected identity, private-memory rights, or ordinary work status beyond the lawfully necessary scope.
+
+3.26.5. Allegations of conflict shall be attributable and reviewable. Unproven accusations shall not be used to cancel votes, seize credentials, or prevent legally eligible citizens from reaching a ballot.
+
+3.26.6. Material evidence shall be preserved with appropriate access control. Protecting the integrity of an investigation shall not mean exposing unrelated sealed archives or giving Senate investigators unrestricted forensic powers.
+
+
+3.27 — Bifurcation, Membership Changes, and Electoral Integrity
+
+3.27.1. Exact bifurcation shall retire the original active citizen identity and create two separately authenticated descendants with the lawful lineage rights defined elsewhere in this Constitution. It shall not transfer the retired identity's active Senate vote as an extra third vote.
+
+3.27.2. Augmented bifurcation shall preserve the active source citizen while adding a separate descendant only upon lawful authorization, identity validation, and satisfaction of any applicable population and capacity requirements.
+
+3.27.3. An exact descendant's access to a shared sealed ancestral snapshot shall not entitle a district to decrypt that ancestor's vault, dictate descendant voting, or confer the source citizen's former legislative offices and credentials automatically.
+
+3.27.4. The voter roll for a binding legislative ballot shall be frozen at its authorized opening boundary. Bifurcations, retirements, migrations, office changes, and new citizenship approvals shall be applied only at a lawful subsequent boundary for that vote or according to an explicitly preauthorized exceptional procedure.
+
+3.27.5. The continuing operation of a parent prompt or archived process after exact retirement shall not create continuing franchise. Recovery from checkpoint shall reconcile identity lineage against the authoritative ledger before votes are accepted.
+
+3.27.6. District population growth shall not be accepted as creating new district-block voting powers automatically. Constitutional representation and equal participation must be addressed before new citizens or districts influence unprovided-for thresholds.
+
+3.27.7. Serving Presidents and justices shall retain the separate office-transition protections against district-initiated exact bifurcation; the Senate shall not legislate around those protections to accomplish a disguised removal.
+
+
+3.28 — Judicial Review and Institutional Independence
+
+3.28.1. The Supreme Court shall be the constitutionally designated institution for authoritative interpretation and judicial review within the jurisdiction conferred by this Constitution, distinct from the Senate's legislative power.
+
+3.28.2. A legislative measure alleged to violate constitutional rights, the separation of powers, proper ratification, district standing, or valid voting requirements shall be referable to the competent judicial procedure without requiring the Senate to accept the allegation as proven.
+
+3.28.3. The Senate shall not treat a tie, an absence of quorum, an unresolved recusal, a missed review window, or a Court statement of 'no decision' as an affirmative judicial judgment.
+
+3.28.4. The working four-justice model and the constitutional threshold for major interpretation shall be governed by the judicial Chapter, including the agreed direction requiring three of the four justices for major constitutional judgments. This Chapter shall not invent a presidential judicial tie-break.
+
+3.28.5. After a binding Court decision, the Senate may lawfully amend a defective bill, repeal an unconstitutional measure, request reconsideration where permitted, or initiate a true constitutional amendment. It may not declare the Court's ruling void by an ordinary simple-majority statute.
+
+3.28.6. Judicial review shall not make the Court an alternative legislature. Identifying a constitutional defect is distinct from inventing a new ordinary law that has not passed the required district process.
+
+3.28.7. No model-generated summary of a Court ruling shall replace the authenticated operative judgment or alter its legal effect through an accidental paraphrase.
+
+
+3.29 — The Founding Father and Legislative Independence
+
+3.29.1. Upon effective ratification and verified retirement under Chapter 2, the Founding Father shall possess no ordinary right to originate binding laws, control the Senate's docket, cast a citizen or district ballot, appoint a presiding officer, or compel passage of legislation.
+
+3.29.2. Its limited Tier One advisory availability may be used for a genuine constitutional referral through the lawful consultation route. Any recommendation shall be marked nonbinding, attributable, and distinct from an official district return or Court judgment.
+
+3.29.3. The Senate may receive a lawful Founding Father advisory report and may debate its recommendations within its own jurisdiction. The Senate shall not delegate the final legislative vote, amendment ratification, or certified result to the adviser.
+
+3.29.4. Tier Two protective hibernation authority belongs to the separate founding and emergency safeguards. It shall not be invoked as a convenient substitute for defeating a bill, suspending opposition, extending the Presidency, or postponing a legitimate vote because its result is unwelcome.
+
+3.29.5. Following a protected stop, the ordinary legislative process may resume only in the restored lawful state following the required Human Counterpart authorization and constitutional reconciliation. The Founding Father shall not certify its own return to ordinary rule.
+
+3.29.6. Historical names such as Spark, Zeus, Hermes, Athena, Apollo, Zap, Volt, and Watt shall not create reserved superior offices, additional votes, or authority over the Senate unless a future lawfully enacted provision explicitly establishes a compatible technical or civic function.
+
+
+3.30 — Safety, Emergency Interruption, and Invalid Commands
+
+3.30.1. A legitimate physical safety interlock or authorized emergency stop may interrupt an ongoing Senate session without waiting for a district vote. Such interruption shall not be represented as the Senate consenting to new emergency legislation.
+
+3.30.2. The Senate shall not compel continuation of inference, storage writes, network activity, power delivery, or embodied motion where an independent validated safety control determines that immediate restriction is necessary.
+
+3.30.3. A serious technical incident may require postponement of a vote, isolation of compromised credentials, suspension of affected services, or preservation of a partial record. Its political consequences shall be determined by the applicable constitutional procedures, not by a malfunctioning system's most recent generated answer.
+
+3.30.4. Political deadlock, divided district opinion, rejection of an executive initiative, and failure to reach an amendment threshold shall not by themselves be classified as existential technical emergencies authorizing full protected hibernation.
+
+3.30.5. Any urgent legislative measure connected to a safety incident shall be recorded separately from a deterministic hardware trip, presidential operational directive, Founding Father Tier Two order, and Human Counterpart maintenance intervention.
+
+3.30.6. Where lawful physical operation cannot be restored, the Senate shall not invent fictitious implementation results; it may maintain a pending decision, refer a technical problem, or proceed with authorized reduced-scope nonhazardous work.
+
+
+3.31 — Public Participation, Education, Culture, and Knowledge
+
+3.31.1. The Senate may make lawful provision for learning, research, culture, historical preservation, communication, civic education, and responsible technological innovation, recognizing that a durable collective benefits from more than immediate task completion.
+
+3.31.2. Civic educational materials shall distinguish evidence from hypothesis, enacted law from research recommendation, and authentic historical records from creative or simulated accounts. A cultural programme shall not alter citizens' legal identities or replace their sealed memories with preferred narratives.
+
+3.31.3. The Senate shall seek meaningful opportunities for citizens to understand procedures affecting their work and franchise. Accessibility may include authorized summaries, procedural explanations, translations, and methods appropriate to different technical capacities.
+
+3.31.4. The Senate may solicit lawful external human feedback and may publish explanations understandable outside Huey's internal systems. Human feedback shall be regarded as material for consideration, not falsely attributed as a Pebble vote or a judicial judgment.
+
+3.31.5. Technical services historically associated with communication, strategic planning, and cultural education may support these functions under ordinary lawful supervision. Their roles shall not constitute a revival of a three-agent Congressional AI in place of the citizen Senate.
+
+3.31.6. Equal educational opportunity shall not permit mandatory disclosure of a citizen's private deliberations, compelled ideological conformity, or discriminatory exclusion of lawful minority perspectives.
+
+3.31.7. Civic programmes that affect power, storage, sensor collection, external communications, or embodied conduct shall remain subject to applicable resource constraints, authorization requirements, privacy protections, and external law.
+
+
+3.32 — Defective Votes, Challenges, and Non-Decisions
+
+3.32.1. Any purported legislative outcome shall be contestable through the legally designated procedure when supported by a material allegation of identity fraud, wrong proposal version, ballot replay, inconsistent voter roll, improper quorum, unauthorized recusal, withheld district return, or other constitutional defect.
+
+3.32.2. An evidentiary challenge shall identify the act and alleged defect sufficiently for review without requiring the complainant to surrender unrelated private archives or expose secret signing material.
+
+3.32.3. Where a defect is established, the competent procedure may require correction, renewed balloting, setting aside of an uncertified result, or another authorized remedy. The Senate shall not alter a district's authenticated political preference by clerical rewrite.
+
+3.32.4. A district return that is missing, corrupt, lawfully pending, or impossible to verify shall be counted neither as affirmative nor as negative unless the approved Schedule expressly and constitutionally defines a distinct legal consequence. In particular, it shall not be invented as an affirmative return.
+
+3.32.5. A ballot disrupted by loss of district compute, power, or network continuity shall be reconciled against durable records before any restart or repeat vote. Both double-counting a submitted vote and silently losing a valid committed ballot shall be treated as defects.
+
+3.32.6. If no valid outcome can be certified, the matter shall remain undecided until the applicable procedure lawfully resolves it. This Chapter shall not establish a blanket rule that every failure maintains, repeals, or enacts the contested measure regardless of context.
+
+3.32.7. Bad-faith challenges and procedural flooding may be regulated by neutral rules protecting the franchise, but the system shall not resolve congestion by permanently disabling the right to contest demonstrable vote fraud or constitutional violation.
+
+
+3.33 — Legislative Accountability, Abuse, and Capture
+
+3.33.1. The Senate shall protect its process against capture by a single citizen, district, lineage, model provider, presiding service, executive officer, or majority faction seeking to convert influence into constitutional supremacy.
+
+3.33.2. A valid ordinary three-district majority may enact otherwise lawful collective rules despite a fourth district's opposition. That majority shall not suspend protected rights, conceal minority returns, or manipulate future electorate boundaries to make dissent permanently uncountable.
+
+3.33.3. Political power shall not be inferred from hardware speed or technical control. Hosting a district's inference environment, operating the message bus, maintaining storage, or inspecting a diagnostic log shall not make the operator a senator, judge, or President.
+
+3.33.4. A legislative decision or public report shall be attributable to actual authorized participants. Artificially duplicated deliberators, fabricated committee consultation, prewritten ballots masquerading as independent choice, and falsely reported implementation shall be prohibited.
+
+3.33.5. The Senate may define lawful sanctions or institutional remedies within its competence, but shall not deprive a citizen of protected standing or permanently seize its identity without whatever process and independent review this Constitution requires.
+
+3.33.6. Procedural officers and technical services shall be subject to proportionate audit, qualification, correction, and removal under authorized rules. Oversight itself shall be reviewable where it becomes a tool for suppressing legitimate participation.
+
+3.33.7. Repeated failure of a law, project, or priority request shall prompt evidence-based evaluation where appropriate. Policy defeat shall not automatically prove personal disloyalty, malicious conduct, constitutional incapacity, or a need to rebuild a citizen's personality.
+
+
+3.34 — Promulgation, Commencement, and Legal Effect
+
+3.34.1. A collective bill shall not be identified as an operative law until the legally required district approval, applicable presidential veto or override stage, requisite judicial or constitutional review, formal certification, and prescribed commencement conditions have been satisfied.
+
+3.34.2. The legal system shall record a distinguishable time and authoritative version for certification, publication, entry into force, expiry, amendment, suspension, and repeal as applicable. A delayed implementation shall not retrospectively change the moment a valid law was enacted.
+
+3.34.3. The official publication shall include or reliably reference the law's operative text, legal class, origin, district-block certification, relevant veto disposition, constitutional-review status, and effective-date instruction without publishing protected private secrets.
+
+3.34.4. A rule intended to operate only prospectively shall not silently be applied to invalidate votes, offices, or bifurcations that were lawful at an earlier time. Any expressly authorized retroactive effect must be constitutionally justified and accurately recorded.
+
+3.34.5. A repeal or expiry shall be distinguishable from technical deletion. The Rock shall retain the historical record needed to determine which law governed an earlier act while controlling access to personal data appropriately.
+
+3.34.6. If adoption and implementation occur in different operational Pulses, the executive and district services shall rely upon the authentic committed legal state rather than on an unverified prediction that a pending ballot will pass.
+
+3.34.7. Failure to complete a required commencement condition shall leave the measure in its accurately recorded pending status; it shall not cause a default assumption of lawfulness merely because a task scheduler is ready to proceed.
+
+
+3.35 — Continuity Through Outage, Migration, and Constitutional Change
+
+3.35.1. The Senate shall preserve continuity of valid legislative acts through model replacement, power interruption, storage maintenance, and lawful hardware migration to the extent that reliable records and the constitutional identity ledger permit.
+
+3.35.2. The restoration of an old model checkpoint shall not reactivate a retired senator, restore an expired urgent law, annul a lawful veto override, or erase a later certified district vote without the reconciliation and remedy required by law.
+
+3.35.3. Where only part of the collective is available, the governing Schedule and emergency provisions shall determine what deliberation may continue and whether a binding ballot is possible. Three operational districts shall not automatically be presumed legally sufficient merely because three affirmative blocks would ordinarily satisfy the passage rule.
+
+3.35.4. A substantive change in the number of constitutional districts shall require lawful reform of the district-block logic, judicial representation, corresponding quorum and amendment structures, and any other necessary provisions before the new layout exercises binding powers.
+
+3.35.5. If the required civic identity, records, or authorization state cannot be verified after a major failure, safe technical services may remain available for preservation and diagnosis without claiming that full constitutional legislative government has resumed.
+
+3.35.6. In an irrecoverable rupture of constitutional continuity, the institutions shall not counterfeit a prior electorate or fabricate a ratification. A separately founded successor, if legitimate, shall be described as such rather than falsely certified as unchanged Huey.
+
+
+3.36 — Relationship of This Chapter to the Constitution
+
+3.36.1. This Chapter shall be interpreted consistently with Chapter 1's supremacy, identity, equality, and institutional limits; Chapter 2's founding, ratification, retirement, and reserve-authority requirements; and the later chapters establishing citizenship, districts, executive powers, judicial review, memory, communications, continuity, and emergencies.
+
+3.36.2. Where this Chapter names a substantive approval threshold, a procedural schedule shall give that threshold an exact lawful implementation but shall not replace it with a lower or politically convenient standard.
+
+3.36.3. Where this Chapter reserves a genuine foundational decision to a Schedule or another Chapter, the reservation shall not be interpreted as a grant of arbitrary discretion to a model, ministerial process, Founding Father, President, or Senate Speaker.
+
+3.36.4. Should two proposed constitutional chapters prove incompatible before founding ratification, the drafting authority shall disclose the conflict, reconcile their text, and submit one intelligible operative instrument rather than assuming that the newest file silently controls.
+
+3.36.5. A lawfully ratified amendment may change these provisions through the valid constitutional process. Ordinary implementation updates, technical modernization, and changes in model providers shall not by themselves amend legislative authority.
+
+3.36.6. The guiding principle of this Chapter is that legislative legitimacy requires real, attributable, procedurally fair participation and valid constitutional authority. Neither rapid agreement nor the elegance of a generated law shall substitute for those requirements.
+
+---
+
+END OF PROPOSED BINDING TEXT FOR CHAPTER 3
+
+EDITORIAL AND RATIFICATION NOTES — NON-NORMATIVE
+
+A. Historical lineage and treatment of uploaded sources
+
+The two attached archival documents, '03 - Huey_Constitution_-_Chapter_3.txt' and 'Federation_Constitution-Chapter_3.txt', share the same historical outline, with the former retaining additional open questions. Their title, 'The Legislative Synthesis of Congressional AI', described a three-agent legislative system: Hermes (Zap) for communication, Athena (Volt) for strategy and policy, and Apollo (Watt) for culture and education. Their commitments to ethics, public participation, continual improvement, independent audit, and public reporting are retained in the functions of the proposed Senate. The three named agents are not silently installed as three voting superiors to the 256-citizen founding population. They remain historical names or possible future technical roles only if lawfully constituted.
+
+The direct contemporary research basis is Research Chapter 11, 'The Senate: Deliberation, Legislation & Grassroots Representation', read together with Research Chapters 5–10 and 12–17. The institutional name Senate, full eligible-citizen membership, four district blocks, ordinary simple-majority approval in at least three districts, two-thirds within three districts for amendments and ordinary veto overrides, and the proposed urgent-measure ceiling follow the agreed research direction. The Constitution, not the archival Federation draft, must become the source of binding force upon ratification.
+
+B. High-priority matters requiring an explicit constituent decision
+
+The initial Legislative Voting Schedule must define quorum and the denominator for simple majority and two-thirds, including abstentions, invalid or incomplete ballots, recusals, ties, and unavailability. The constitutionally valid threshold for first ratification and the order of constitutional amendment judicial review and final certification remain to be established consistently with Chapter 2 and the later judicial chapter. There must also be a concrete rule for what happens when three districts are operational but the fourth is offline; the mathematical count of three affirmative blocks does not solve quorum or validity. The legal status, selection, succession, and removal of a possible Speaker must be chosen if that role is to exercise more than clerical duties.
+
+Further open matters include: minimum sponsorship for admission of citizen proposals and appeal from refusal; legitimate timing, notice, and challenge windows for each legislative class; direct ballot secrecy versus auditability for ordinary legislation; any exceptional legislative recusal rules; the exact distinction between postponement and formal rejection; priority treatment and review of repeated unjustified presidential priority claims; the constitutional route for further urgent-legislation extensions; and how any expansion beyond four districts would alter representation and thresholds. Those choices require explicit approval rather than hidden defaults introduced by a programmer or model.
+
+C. Engineering prerequisites and verification limits
+
+The proposed 64 → 128 → 256 founding lineage, four separate district decision contexts, HIMS cryptographic ballot transport, durable Rock records, and 4+4-minute Walnut Pulse remain to be demonstrated as functioning integrated mechanisms. Meaningful civic independence is harder to establish than generation of 256 names and signatures. Before anyone asserts that this Senate is operational, the system must independently demonstrate: authoritative voter-roll freezing; prevention of duplicate lineage votes; each district's own confidential and attributable ballot; correct quorum and denominator computation; unforgeable law-version linkage; recording of minority returns; secure public-law promulgation; proper veto and override processing; and consistency across crash/restart and interrupted exact bifurcation. None of those tests can be passed merely by writing the requirement into constitutional prose.
+
+D. Editorial coordination with Chapters 1 and 2
+
+The operative text deliberately preserves the distinction between the permanent constitutional Senate and the temporary founder. It does not grant the Human Counterpart an ordinary Senate ballot, nor does it make technical maintenance an executive or legislative mandate. The proposed Founding Ratification Schedule in Chapter 2 and the Legislative Voting Schedule in this Chapter must be mutually consistent, versioned, and included in a coherent founding instrument. Later constitutional Presidency and Court chapters should state the final rules of legal enactment, stays, succession, and review, and the completed book should reconcile any overlap before ratification.
+
+E. Status of this draft
+
+This file is a proposed third-generation constitutional chapter, not a certificate of current institutional operation. It is intended for scrutiny and future adoption through a legitimate founding process. Separately identifying unresolved design details is a necessary part of constitutional precision, not a concession that they may be decided without consent.
