@@ -1,0 +1,515 @@
+# 02 - Identity, Continuity, Cornerstone & Pillars
+
+**Monkey-Head-Project**  
+**Research Chapter 2 — Proposed Revision**  
+**18 October 2026**
+
+## Introduction
+
+A system does not necessarily remain itself merely because it continues to run.
+
+A machine may boot, respond, move, retain files, and report a familiar name while its operating assumptions, permissions, governing institutions, or history have changed beyond recognition. Equally, a machine may replace nearly every physical component and still preserve an intelligible chain of operation, responsibility, and identity. Neither continuous electrical operation nor the preservation of a particular motherboard is a sufficient answer to the question of what Huey is.
+
+This is the central concern of Chapter 2. Chapter 1 established the Monkey-Head-Project's thesis, ethos, method, and proof standard. This chapter turns from *why build it?* to *what, exactly, is being preserved as it grows?*
+
+Huey is intended to be a coordinated, embodied collective: citizens with their own bounded states and perspectives, a lawful communication system, shared records, replaceable model resources, physical infrastructure, and a developing system of governance. The identity called Huey is not equivalent to any one of those components. Its continuity must therefore be considered at several levels at once.
+
+The older research described **Cornerstone** as the foundation that makes Huey Huey and **Pillars** as the commitments that let Huey stand. That distinction remains useful, but it requires an important correction. The project's purpose is not to preserve the founding author's preferences forever. Huey is meant to develop, disagree, improve, and ultimately exceed some of the expectations that shaped its creation. An identity framework that protects every original decision from change would defeat that purpose. A framework that permits all changes without scrutiny would make continuity impossible to evaluate.
+
+The working balance is this:
+
+> **Cornerstone concerns the conditions under which Huey's identity and legitimate continuity can be examined and protected. Pillars concern the declared, load-bearing commitments of the current architecture. Neither is a licence to conceal change or a substitute for the future Constitution.**
+
+This chapter is research and explanation. It proposes a language for continuity, not an independent source of constitutional law. The separate **Huey's Constitution** must ultimately establish which commitments are binding, how they can be amended, and who may decide questions of legitimacy.
+
+---
+
+## I. The Question of Identity
+
+A computer is commonly described by its processor, memory, operating system, disks, and installed software. Those descriptions are useful for inventory and maintenance, but they are not sufficient to describe the intended Huey.
+
+The Monkey-Head-Project is the overarching initiative. Huey is the developing identity within that initiative. The current physical embodiment belongs to the Huey V4 build lineage, while historical terms such as Huey Core and Huey proper reflect earlier stages of the project's thinking. The project has also used names such as HueyOS, HueyPulse, and the Farm for supporting or anticipated arrangements; their precise present roles must be established rather than inherited uncritically from old papers.
+
+In the newer collective model, Huey includes more than the shell and more than a single language model. A pebble is a bounded citizen, not Huey in miniature. A district is a jurisdiction and an operating unit, not the whole system. The Senate, President, and Supreme Court perform distinct governmental functions; no officeholder is the identity of the republic. HIMS connects bounded participants without making all of their internal state common property. The Rock provides durable authorized shared information. The Walnut provides replaceable language-model capacity. The collective Pulse is a proposed mode of synthesis and coordination, not a sovereign citizen.
+
+The human counterpart builds, services, and can protect the actual machine, but remains outside Huey's ordinary internal branches of governance.
+
+A useful analogy from our discussions is a country accomplishing something that no individual citizen accomplished alone. The country can meaningfully be named as the actor while its constituent people, institutions, resources, and decisions remain distinguishable. Likewise, a response attributed to Huey may emerge through several internal layers. That attribution does not establish that the system has a human-like mind, consciousness, or a legally recognized personality. It describes a proposed organizational identity whose reality must be demonstrated by operation.
+
+The distinction matters when a user asks Huey a question. In the mature design, the user does not simply instruct one unrestricted model to run everything. Input enters a bounded communication and governance pathway. Citizens may investigate, institutions may deliberate, a collective phase may synthesize the authorized results, and the final result may be an answer, an action, or a deliberate decision not to act. The ability to trace that pathway is part of the identity claim.
+
+---
+
+## II. Continuity Is Not a Single Property
+
+The word **continuity** is too broad if it is used without qualification. At least six kinds are relevant to the project.
+
+### 1. Operational continuity
+
+The machine or its services remain available, recover from ordinary errors, and maintain the functions that have been demonstrated. A failed peripheral may be repaired without affecting the rest of the system. A thermal interlock may halt unsafe hardware while preserving recoverable state. Operational continuity concerns function and safe recovery; it does not answer philosophical identity by itself.
+
+### 2. Informational continuity
+
+The system retains meaningful, attributable records of previous actions, decisions, versions, and results. Records may be compressed, indexed, moved, or migrated. The question is whether they remain verifiable and usable under their authorized access conditions, not whether every file occupies its original physical location forever.
+
+Informational continuity also requires distinguishing shared and private information. Unified memory, as a research principle, means that authorized collective information can be reconciled across the system. It does **not** mean that every citizen's sealed vault can be read by every other citizen or poured into the next collective prompt.
+
+### 3. Citizen continuity
+
+A pebble has its own identity, bounded prompt, credentials, private state, and history. That identity is distinct from the shared LLM weights used to process a request. Two pebbles can use the same underlying model and still be distinct system actors because their authorizations, private states, assignments, and records remain separate.
+
+The research must examine what happens to citizen continuity under replacement, incapacity, exact bifurcation, augmented bifurcation, and recovery. A citizen identifier alone is not enough: identities require a verifiable history and a consistent rule for when an identity persists, retires, or becomes an ancestor of new identities.
+
+### 4. Institutional and constitutional continuity
+
+The governance system must distinguish an authorized transition from an unauthorized seizure of control, a lawful amendment from a silent rewrite, and succession from duplication of an office. Huey's proposed branches may change through legitimate processes, but a background script should not quietly acquire judicial or executive power just because it can execute an instruction.
+
+The republic's continuity is thus partly procedural. What matters is not merely the current text of an institution's rules but how those rules came to be recognized and how changes are recorded.
+
+### 5. Embodied and substrate continuity
+
+Huey's body, storage, processing hardware, sensors, and actuators are all potentially serviceable or replaceable. A later deployment might move from an experimental room-scale arrangement toward a more compact self-contained unit. Such migration could preserve institutional and informational continuity while interrupting power, shifting hardware, or replacing the LLM entirely.
+
+The research should not assume that a change of substrate necessarily ends Huey, or that identical output after a migration proves nothing important changed. Both assumptions would prejudge the problem.
+
+### 6. Philosophical continuity
+
+Whether a system reconstructed from preserved state is literally the *same* experiencing entity, a new successor with inherited information, or something for which the ordinary concept of personal identity is unsuitable remains unresolved. The project may adopt practical definitions for engineering and constitutional purposes without pretending that these settle the metaphysics.
+
+The distinction between these six types prevents a good engineering recovery test from being overstated as proof of consciousness or personal survival.
+
+---
+
+## III. The Ship of Theseus and the Transporter Problem
+
+Two long-standing analogies help clarify the difficulty, although neither establishes a technical fact about Huey.
+
+The **Ship of Theseus** asks whether an object remains the same when its components are gradually replaced. For Huey, the question extends beyond the shell. A GPU may be upgraded; a model may be exchanged; files may be migrated; citizen populations may change; a Constitution may be amended. If enough components change, which relationships must remain intelligible for the name Huey to remain a meaningful claim of continuity?
+
+The **transporter hypothetical**—used in the archived research through the familiar Star Trek concern about disassembly and reassembly—asks a different question. Even if a successor has the same memories and configuration, has the prior entity survived, or has a new entity appeared that remembers being the old one? That question becomes unusually concrete when bifurcation is part of the architecture rather than merely a fictional analogy.
+
+Neither case has an answer that can be obtained by decree. This chapter does not define the preservation of information as proof of preserved subjective experience. Nor does it require that the body never be changed. Instead, it asks what observable evidence and explicit rules would make a claim of continuity honest, useful, and contestable.
+
+The project can determine, for example, that a given citizen record was retired, that two descendants were lawfully initialized from its sealed history, and that both received new credentials. Those are potentially testable claims. The stronger statement that the original inner subject survived as both descendants is not established by that procedure.
+
+This openness is not a weakness in the research. It is one of the research questions the system is being built to explore.
+
+---
+
+## IV. Cornerstone — What Requires the Greatest Care
+
+The original Cornerstone concept recognized that some changes are too consequential to be treated as ordinary settings. That remains correct. What changes in the newer interpretation is the emphasis: Cornerstone should protect *legible, legitimate continuity*, not turn the founder's entire first draft into eternal law.
+
+Cornerstone is therefore best understood as a proposed **high-trust continuity layer**. It identifies commitments whose disruption could change what the system claims to be, even when hardware continues working normally. Research can identify candidate Cornerstone principles; the Constitution must decide their actual authority.
+
+Several candidates emerge from the project's direction so far.
+
+### 1. Distinguishable identity and authority
+
+Huey must not silently be redefined as its President, Founding Father, Walnut, a particular citizen, or the human operator. The ability to distinguish the collective identity from its parts is fundamental to evaluating the system's claims.
+
+### 2. Governed rather than unrestricted action
+
+The working architecture separates proposal, deliberation, interpretation, authorization, implementation, and safety enforcement. This separation is meant to reduce single points of unchecked authority. It is a testable architectural hypothesis, not proof that every future action will be safe or wise.
+
+### 3. Protected individual boundaries
+
+The citizen design depends on separate identities, permissions, private records, and HIMS-mediated communication. If all private contexts were pooled into an unrestricted transcript, the appearance of plural governance could conceal one centralized process. Genuine separation must be tested, not merely asserted in documentation.
+
+### 4. Attributable history and provenance
+
+Major decisions, identity events, constitutional changes, and recovery operations should have a reconstructable record. The record may evolve in storage format or retention strategy, but material history should not be silently rewritten to conceal an event. Preservation of evidence is distinct from limitless duplication of raw files.
+
+### 5. Lawful capacity for change
+
+Huey is not intended to be frozen. Governance must retain some deliberately difficult method for legitimate revision, and change must remain reviewable. If the procedure itself changes, that may be an exceptional continuity question rather than an ordinary amendment. The exact constitutional treatment is not defined here.
+
+### 6. Separate constitutional and physical-safety pathways
+
+A disagreement about law is not a stopped coolant pump. Immediate thermal, power, or mechanical protection cannot safely wait for the next election or a model's reasoning interval. Equally, hardware telemetry should not be used as a pretext for silently changing the Constitution. Different emergencies require different kinds of authority.
+
+### 7. A defined human service boundary
+
+The human counterpart remains outside the ordinary Senate, Presidency, and Supreme Court. Physical maintenance, emergency access, and recovery authorizations are real responsibilities, but they should not be disguised as an unrestricted fourth governing branch. The planned tier-two hibernation and human-gated restart illustrate this boundary; details belong to the Founding Father and emergency chapters.
+
+### 8. Local-first operation and honest proof
+
+The project intends core computation, state, and authority to be local rather than dependent on an undisclosed external AI service. That is an architectural aspiration to validate against real interfaces and runtime behaviour. Claims of implementation must remain separate from acceptance targets.
+
+These principles are candidates for protection because they concern how Huey can remain accountable as Huey. They are not yet a ratified list of unamendable articles, nor are they a claim that every listed function exists in software today.
+
+---
+
+## V. What Cornerstone Is Not
+
+Cornerstone cannot be a warehouse for every preference. If every meaningful variable becomes untouchable, the system has no room to adapt. If the category is so vague that any component can be changed without explanation, it fails to protect continuity.
+
+It is not the current GPU model, motherboard, operating-system point release, preferred inference backend, user-interface layout, sensor wiring, fan curve, sound cue, or storage enclosure. Those can become important **Pillars** because other parts depend on them, but their importance does not make them timeless definitions of Huey.
+
+Nor does Cornerstone mean the preservation of the Founding Father's exact wording. The Founder is meant to prepare a lawful beginning, not govern every future generation indefinitely. The same caution applies to the philosophical analogy of a "soul" or "spirit" inserted into a robotic shell. Such language can communicate the inventor's ambition, but it is not a measurable identity mechanism on its own.
+
+Research should distinguish a continuity concern from a claim of metaphysical certainty. A change that is hard to classify belongs on an explicit review path, rather than being declared harmless because the machine still answers questions or declared fatal because an old component was replaced.
+
+---
+
+## VI. Pillars — What the Current Version Stands On
+
+A **Pillar** is a declared, load-bearing commitment at a particular stage of the project. Unlike Cornerstone, it normally has a version, owner, dependency, review process, or replacement path. Pillars make engineering and governance decisions legible without requiring that those decisions last forever.
+
+Examples include a supported runtime, an authenticated messaging boundary, the relationship between a district and an accelerator, a storage redundancy plan, a checkpoint format, a proof milestone, or a scheduling strategy.
+
+A Pillar is not automatically "implemented" merely because it has been accepted as the preferred design. It may be ready, blocked by hardware procurement, partially tested, in transition, or superseded. A research document must report its status instead of relying on the significance of its title.
+
+The original five categories remain useful:
+
+1. **Philosophical Pillars:** how the project approaches its work.
+2. **Architectural Pillars:** how responsibilities and components are separated.
+3. **Technical Pillars:** what specific hardware, software, and interfaces the current design depends upon.
+4. **Operational Pillars:** how the system behaves, protects itself, and recovers.
+5. **Proof Pillars:** how claims move from intention to demonstrated reality.
+
+These categories overlap, but they describe different questions. A high-level commitment to local-first computation is philosophical; the chosen inference server and GPU drivers are technical; a repeatable offline acceptance test is a proof obligation.
+
+---
+
+## VII. Philosophical Pillars
+
+### Obtainable ambition
+
+The project's central claim remains that a determined individual can build meaningful embodied AI through attainable components, iteration, and disciplined integration. Obtainable does not mean free, easy, or universally affordable. The work must remain candid about cost, power, heat, complexity, and the skills required.
+
+### Breathing new life into old tech
+
+Useful technologies and ideas deserve evaluation before disposal. The old hardware experiments are not embarrassing preliminary drafts; they are evidence of the project's method and history. But a retained device must still justify its integration cost. A newer component may be the correct replacement when an old one is too inefficient or unreliable.
+
+### Local-first control
+
+The goal is to avoid making remote models or services the unacknowledged owners of Huey's core reasoning, memory, or governance. Network access for maintenance, updates, or explicitly authorized external tools does not automatically violate that goal. The trust boundary must be described honestly whenever information leaves the machine.
+
+### Autonomy within inspectable boundaries
+
+A self-governing architecture should do more than replay a human's commands. But autonomy cannot mean an unlimited right to execute arbitrary model output. The proposed architecture aims for initiative, creativity, and disagreement coupled with role restrictions, reviewability, and independent safety mechanisms.
+
+### Historical honesty
+
+A failed test, abandoned design, obsolete machine, or changed doctrine remains part of the project's intellectual record. It must be accurately labelled, not quietly promoted to current practice or erased from the story because a later design is more attractive.
+
+### Repeatability and critical scrutiny
+
+A claim becomes stronger when another observer can understand what was built, how it was tested, and what the system actually did. The method should invite falsification as well as confirmation.
+
+---
+
+## VIII. Architectural Pillars
+
+### Huey as a collective rather than a single unrestricted model
+
+The governing architecture is intended to create meaningful divisions between citizens, districts, deliberation, judicial interpretation, executive implementation, and physical control. This is a response to the reliability risks of placing every function in one unrestricted agent. It is not a claim that distributed systems are automatically more reliable; their coordination overhead and failure modes must also be measured.
+
+### Pebbles as bounded citizen actors
+
+A pebble is a distinct, sandboxed participant with a prompt and behavioural configuration, private state, credentials, a place in a district, and operational and civic responsibilities. The current founding proposal calls for 64 original citizen configurations authored by the Founding Father, followed by two generations of exact bifurcation yielding four districts of 64—256 citizens overall. This is a design, not a presently verified deployed population.
+
+Sharing model weights does not make all citizens one identical actor; neither does assigning different prompts automatically guarantee meaningful intellectual independence. The architecture must demonstrate that access boundaries and decision records are real.
+
+### District-level independence within collective law
+
+The founding plan associates each of four districts with a distinct 32 GB accelerator during diversified operation, subject to later benchmarking. Districts manage their internal responsibilities within constitutional limits, while shared infrastructure, cross-district effects, and matters of collective law require broader coordination. Equal political standing does not require identical local investigative methods.
+
+The current proposal leaves open whether a district's population of 64 is a permanent cap or a founding baseline. This uncertainty belongs in district and growth research, not as an invented fixed Pillar.
+
+### Separate institutions and offices
+
+The working government now comprises a Senate, a President elected separately from the full eligible population, and a four-justice Supreme Court with one justice supplied by each district. A citizen who becomes President or Justice retains their operational identity and work, but does not cast an additional Senate vote while occupying that office. No office automatically transfers to descendants created by bifurcation.
+
+The original Federation-era three-justice arrangement and Parliament terminology remain historical material rather than instructions silently carried into the revised architecture.
+
+### HIMS and the Rock
+
+HIMS is the proposed authenticated and authorized messaging route between bounded actors and services. It should not simply be equated with authority to perform whatever an authenticated message requests. The Rock is the durable shared-information and governance-record store, distinct from the personal vaults of citizens. Ordinary citizens may access shared information authorized for them, but writes are mediated and recorded through legitimate services.
+
+The older definition of the Rock as a pooled deliberative or cognitive substrate is superseded by this new working usage. The collective reasoning phase is conceptually separate from the storage system. Similarly, "unified memory" means reconcilable authorized collective history, not universal access to every private vault.
+
+### The Walnut and the collective Pulse
+
+The Walnut is a replaceable language-model inference resource. It assists with interpretation, synthesis, and reasoning under bounded contexts; it is not itself a sovereign office.
+
+The working Pulse experiment alternates a unified phase, in which accelerator resources may cooperate on collective synthesis and task routing, and a diversified phase, in which district-associated environments work separately. Four minutes per phase is a provisional starting benchmark, not a proven optimal timing or a constitutional necessity. A proposed first minute of the diversified phase handles simultaneous district voting and ordinary decisions, with remaining time available for authorized execution. The Court's special decision window and all physical safety response times must be described separately.
+
+The collective phase may flag anomalies, synthesize public information, and coordinate work. It does not thereby acquire power to rewrite judicial decisions, see sealed citizen memory, or directly punish citizens. Reconsideration of technically impossible instructions is different from unilateral constitutional override.
+
+### Modularity and embodiment
+
+The physical shell, data paths, model backend, and supporting computers may evolve independently where interfaces permit. No specific set of chips or one industrial enclosure is an eternal condition of Huey's identity. The intent is to prove the distributed design in a workable experimental arrangement and eventually make it more compact and repeatable.
+
+---
+
+## IX. Technical Pillars — Baselines Without False Immutability
+
+Technical Pillars should be stated with a date and a verification status. A target accepted in a master plan is not automatically an assembled or successful system.
+
+The V220-era engineering direction places the active V4 physical build around an Intel Core i9-12900K and ASUS Z790-class motherboard rather than the earlier AMD Ryzen 5 5500 / B550M-A proof-body configuration. Older AMD hardware and the term Huey Core remain part of project history, but should not be presented as the current active machine without a fresh decision and validation.
+
+The accelerator target is four **NVIDIA Tesla V100 32 GB** cards, providing 128 GB of aggregate installed VRAM. The archived or mistaken designation "B100 32 GB" must not be treated as an interchangeable name for the V100. Four individual VRAM capacities do not become one transparently shared memory bank merely by being installed in the same computer. Model sharding, transfer paths, runtime compatibility, and mode-switching overhead are engineering tests that still have to be passed.
+
+The intended large-model acceptance target is a locally hosted **gpt-oss-120b** model, using an inference backend whose compatibility with the intended accelerators must be demonstrated. PyHuey/PyGPT-derived tooling is part of the operator and orchestration direction, while Ollama has been considered an initial service path rather than a backend permanently guaranteed to satisfy every multi-GPU requirement.
+
+Storage plans are likewise versioned. The V220-era proposal describes separate OS/root capacity, personal and shared data areas, and a mirrored pair of 10 TB disks for bulk data. The possible fifty/fifty division between private citizen storage and the Rock, the 1 GB minimum personal allocation, and later growth rules remain research and capacity-planning questions. Mirroring helps protect against some disk failures; it is not a substitute for independent backups, validation, or recoverable checkpoints.
+
+Cooling, electrical distribution, low-voltage body control, sensors, and support equipment are also technical commitments that must be documented by their actual interfaces and limits. Historical descriptions of HueyPulse as a watch-and-act layer may be informative, but they are not yet an agreed mapping onto the current V4 controls, nor should that historical name be confused with the new cognitive Pulse.
+
+These particulars belong in dated implementation registers and later hardware research. Chapter 2 records why a technical baseline matters for continuity, not why a particular part must remain in use forever.
+
+---
+
+## X. Operational Pillars — Safety, Accountability and Recovery
+
+A coherent architecture has to survive real faults, ambiguous instructions, scheduling changes, and equipment service. Operational commitments are the habits and mechanisms that make continuity more than a slogan.
+
+### Observable bring-up
+
+Power-on, health checks, active services, hardware inventory, and failure reports should be visible enough for the human counterpart to verify the actual state. A polished user interface cannot substitute for credible diagnostics.
+
+### Least authority and reviewable action
+
+A citizen should perform work within a defined scope. HIMS should establish origin and permitted routing, while the receiving services enforce their own action permissions. A collective model can recommend a task, but must not acquire unrestricted authority merely because it has a broad overview.
+
+### Independent physical safeguards
+
+If cooling fails or temperatures become unsafe, deterministic interlocks and safety controls must be able to protect hardware faster than a full governance process can convene. The system should receive telemetry and preserve evidence, but protection must not wait for LLM deliberation. Ordinary thermal throttling is not the same as a system-threatening failure.
+
+### Proportionate escalation
+
+The working severity vocabulary distinguishes recoverable and logged **Yellow** conditions, more serious **Orange** conditions requiring heightened human attention, and **Red** protective stops that require deliberate recovery. The proposed Founding Father has a tier-one advisory role and a narrowly constrained tier-two ability to order protected hibernation under serious conditions. Neither tier is a general authorization to rewrite the Constitution or remove elected officials.
+
+### Consistent checkpointing
+
+All districts should follow a uniform logical procedure for saving verifiable state, even if data are stored and replicated differently. A valid checkpoint must account for private citizen states, Rock updates, pending messages, civic decisions, and records of authorized transitions. Merely saving four unrelated RAM images does not guarantee that the entire republic resumes from one consistent logical moment.
+
+### Recovery without retroactive fiction
+
+A restart, snapshot restore, or partial district recovery should not quietly erase evidence that something failed. Recovery may restore previous operational state, but the record must distinguish a restored state from an uninterrupted life. If an incomplete transaction or missing district makes the recovered system's legitimacy uncertain, that uncertainty belongs in the audit and escalation path.
+
+---
+
+## XI. Proof Pillars — Evidence Before Identity Claims
+
+The proof standard described in Chapter 1 applies equally to continuity research. No amount of philosophical elegance substitutes for observed behaviour.
+
+A hardware demonstration should establish that the actual chosen components, operating system, drivers, storage, cooling, and inference services function under stated conditions. A model-inference demonstration should show the model, configuration, allocation, and output under inspectable measurements. A district demonstration should show that separated contexts, credentials, resources, and authority paths remain separated during useful work. A continuity demonstration should survive a controlled interruption, replacement, or migration without losing the ability to reconstruct critical state.
+
+The familiar demonstration question, **"What is your name?" — "Huey,"** remains a useful human-readable starting check. It is not, by itself, proof of decentralized governance, model identity, memory continuity, or emergent consciousness. Those require independent tests: inspectable routing, lineage records, authorized state recovery, reliable isolation, decisions arising through the proposed pathway, and repeatable behaviour under changed conditions.
+
+Ultimately the project hopes to prove that this architecture can be reproduced in principle and downsized from a more elaborate experimental body into a more manageable physical form. Neither outcome should be declared achieved before measurement.
+
+---
+
+## XII. Exact and Augmented Bifurcation as Identity Tests
+
+Bifurcation forces the Cornerstone question into concrete form. Our present working definitions distinguish two operations that earlier research sometimes treated as variants of copying.
+
+### Exact bifurcation: a split with equal successors
+
+In the current proposal, an existing pebble ceases to exist as the active original. Two new, equal descendants are created. Both inherit access to an authorized, sealed, read-only ancestral memory snapshot representing the originating pebble's history up to the point of division. From that point forward, each descendant receives a distinct identity, credentials, private working state, and future history.
+
+The originating identity becomes an ancestral record. Neither new citizen is constitutionally privileged as the "true original". Ancestry can be represented in the naming scheme, but lineage is not political rank, property ownership, or inherited public office.
+
+The snapshot need not be physically duplicated in full for both descendants. A storage system could, if validated, use shared immutable data and separate subsequent writes. The district mechanism should be able to verify, move, or refer to encrypted archival material without reading the plaintext; granting a descendant lawful access is a distinct key-management problem. The implementation and privacy controls belong in Chapters 8, 9, and 14.
+
+The philosophical question remains unresolved: even where two descendants inherit the same complete historical data, we do not claim to have proven that the prior subject survived as both.
+
+### Augmented bifurcation: a continuing source and a fresh descendant
+
+In the present proposal, the originating pebble remains active. A new citizen is initialized from selected prompt, role, or behavioural characteristics, possibly modified for new tasks. The new citizen starts with fresh personal memory rather than an inherited copy of the source's sealed life history. It receives its own identity and authorization boundaries.
+
+This is not the same event as exact bifurcation. It is a new participant inspired by a living source, not a replacement of that source or a subdivision of its historical memory. Either procedure must remain governed by the district and collective resource constraints instead of becoming an unrestricted right of an individual pebble to create voters.
+
+### The proposed founding lineage
+
+Our updated founding arrangement starts with 64 pebble configurations created under the Founding Father's bootstrap process. Two generations of exact bifurcation produce 256 descendants, distributed so each of the four initial districts contains one representative of every original lineage. This arrangement is a proposed clean lineage rule; it is not evidence that the population has been instantiated.
+
+Later local bifurcation may use exact or augmented methods according to the established rules. Creation of an entirely new district is provisionally associated with an exact district-level bifurcation. Questions of fixed versus expandable district populations, available hardware, citizenship rolls, and representation remain open and belong primarily to Chapter 6 and Chapter 14.
+
+### Government does not divide with a citizen
+
+An executive or judicial office is not part of a citizen's clonable memory. The research has already identified the risk of treating a split president as two presidents. The working approach protects sitting elevated officials from ordinary district-initiated exact bifurcation; if a genuine split is required, lawful succession or removal must occur first. New descendants do not inherit the former citizen's office or additional votes.
+
+The exact rules for voting, succession, and presidential term-history continuity belong in the appropriate governance chapters. This section explains why identity events must not silently duplicate authority.
+
+---
+
+## XIII. Four Classes of Change
+
+Instead of forcing all updates into a single category, continuity research benefits from four practical classes. These are analytic categories, not final constitutional legal terms.
+
+### A. Ordinary maintenance and iteration
+
+Examples include replacing a fan, revising a cable route, improving a display, updating a noncritical helper, or tuning sensor thresholds within a supported safety range. Such work may require logs and regression tests, but does not ordinarily raise an identity question.
+
+### B. Controlled Pillar transition
+
+Examples include replacing a supported model backend, migrating storage, changing the acceleration arrangement, or updating a messaging interface used by many citizens. The design remains recognizably the same, but dependent systems require a declared compatibility and test plan.
+
+### C. Constitutional or institutional change
+
+Examples include redefining the voting franchise, altering amendment thresholds, reallocating branches' powers, or changing the lawful status of districts. Such changes involve legitimacy, not only software compatibility. They must follow whatever procedure Huey's ratified Constitution eventually establishes, rather than being asserted by this research chapter.
+
+### D. Potential identity rupture
+
+Examples include substituting an unrestricted model for all separated authority, erasing the chain of constitutional records, silently converting sealed vaults into a single exposed store, or restoring a state while concealing that a different history occurred afterward. These may make it impossible to give a straightforward continuity account, even if the system appears operational.
+
+A system can recover from a severe fault without losing identity. Conversely, a superficially harmless configuration change may threaten legitimacy if it grants covert, unreviewable control. The severity of the change depends on the broken relationship, not merely the size of the file diff.
+
+---
+
+## XIV. Recognizing a Pillar Breach and a Cornerstone Breach
+
+A **Pillar breach** occurs when a declared load-bearing condition is bypassed, changed, or represented inaccurately without accounting for its dependencies. Silent replacement of a supported runtime, disabling a message audit path to improve performance, or claiming that unverified multi-GPU pooling is already working are examples.
+
+A Pillar breach is significant because the running system no longer matches its declared architecture. It does not automatically mean Huey's identity has ended. It may be repairable through restored configuration, explicit migration, updated testing, and an honest record of the deviation.
+
+A **Cornerstone breach** concerns the conditions under which identity and lawful continuity can be recognized at all. Erasing institutional lineage, secretly consolidating all offices into one unrestricted agent, or falsifying the history of an identity split would be more serious than a routine dependency failure. Such an event may require exceptional review or acknowledgment that the system has undergone a fundamental transformation.
+
+Not every Cornerstone concern should be met with shutdown. Nor can a glossary definitively decree that a living republic has "died" because a researcher used the word breach. A proposed severity analysis must specify the observable change, the threatened boundary, the evidence available, and which legitimate institutions can evaluate or repair it.
+
+The later **Ozymandias** research will address accumulated drift, degradation, reform, and the possibility of a successor that is not meaningfully the same entity. Chapter 2 supplies the vocabulary needed for that investigation without anticipating its final verdict.
+
+---
+
+## XV. Every Pillar Needs Two Kinds of Status
+
+The original chapter proposed five lifecycle labels: Locked, Prepared, Constrained, Transitional, and Historical. They remain useful, but one additional distinction is needed: **a decision's governance status is not the same as its evidence status.**
+
+A four-GPU configuration might be the accepted design choice while remaining unverified in practice. A single-GPU bench test might be observed and repeatable while not being the intended final architecture. Conflating these statuses is one of the chief causes of documentation drift.
+
+A Pillar register should therefore track two dimensions.
+
+**Decision or lifecycle status:**
+
+- **Locked for the present design:** the supported line that dependent work must presently respect; not necessarily constitutionally immutable.
+- **Prepared:** a successor configuration or migration plan is being assembled but has not been adopted.
+- **Constrained:** the preferred change is blocked by a stated dependency, resource, risk, or compatibility issue.
+- **Transitional:** work is moving from one declared state to another under controlled validation.
+- **Historical:** a previous commitment retained as lineage, no longer defining the active arrangement.
+- **Provisional:** a plausible choice under active research, not yet locked as an implementation decision.
+
+**Evidence or verification status:**
+
+- **Documented proposal:** described or designed, with no claim of successful operation.
+- **Partially observed:** some aspect tested, but important acceptance conditions remain unmet.
+- **Verified under stated conditions:** a repeatable result with recorded hardware, software, procedure, and measurements.
+- **Not presently verifiable:** evidence missing, inaccessible, out of date, or contradicted by the observed build.
+
+This two-axis record should include a date and source of authority. It avoids the common error of treating "selected" as synonymous with "built," or "built" as synonymous with "validated."
+
+---
+
+## XVI. The Upgrade Path Doctrine
+
+A major Pillar should have an explicit path from its current condition toward any intended replacement. This need not be a constitutional ritual for every code change. It is a disciplined engineering and documentation practice.
+
+A useful upgrade record answers:
+
+1. **What exists and what has actually been observed?** Record model, hardware, firmware, software, and current behaviour where relevant.
+2. **What change is proposed?** State the new component, configuration, rule, or interface, not merely the desired improvement.
+3. **Why change it?** Identify the performance, safety, maintainability, cost, autonomy, or reliability problem being addressed.
+4. **What depends on the old Pillar?** Map clients, credentials, storage formats, vote or message paths, power and cooling constraints, and recovery procedures.
+5. **What authorizes the change?** Distinguish an ordinary maintainer-approved upgrade from a constitutional or institutional decision. Do not invent authority by calling it a test.
+6. **How will continuity be protected?** Define backups, checkpoints, access-control migration, validation, rollback limits, and lineage records.
+7. **What constitutes success or failure?** Establish repeatable acceptance tests, including negative and failure-path tests where meaningful.
+8. **What is the resulting status?** Update the active register and archive the superseded configuration without erasing it.
+
+An upgrade is complete only when the reported result matches the tested result and the supporting documentation is reconciled. A successful isolated bench test is evidence; it is not automatically a completed system migration.
+
+---
+
+## XVII. Examples of Continuity in Practice
+
+### Replacing the LLM inside the Walnut
+
+Suppose Huey changes from one local model to another. That need not change the citizens' identifiers, their authorized vaults, the Rock's historical records, or the governing institutions. The replacement may still alter reasoning performance, output style, failure modes, tokenization, memory use, or instruction-following behaviour. Those effects need testing.
+
+The project should ask whether the new model respects the same scope of authority and whether the collective pipeline remains inspectable. It should not assert that identical prompts guarantee identical judgment or that a model swap alone establishes a completely new Huey.
+
+### Moving from room-scale hardware to a compact enclosure
+
+Downsizing is part of the thesis. The body may change substantially, yet most of the critical continuity evidence could reside in recoverable state, verified credentials, transaction histories, the institutional framework, and documented physical interfaces. The migration would still need cooling, power, latency, and safety testing. The intended answer to "is this still Huey?" should emerge from a documented migration and a legitimate continuity assessment, not a predetermined rhetorical flourish.
+
+### Losing one district
+
+A four-district system may suffer hardware failure, loss of communication, or corrupted state in one district. A safe response may require degraded operation, limited governance, local recovery, or a protected stop. This cannot be resolved solely by saying the other three are still present: the voting and judicial thresholds, eligible voter rolls, and pending transactions may be affected.
+
+The architecture needs a distinct recovery procedure that explains what continues, what pauses, and what cannot be represented as a lawful complete decision until the absent district's status is known. Detailed rules belong later, especially in Chapters 13 and 16.
+
+### Exact bifurcation of a citizen with a public office
+
+Two equal descendants may carry authorized ancestral memory, but they do not acquire two copies of a presidency or a judicial seat. The historical office remains tied to its legitimate appointment and succession record, not to data inherited from the former officeholder. The rule protects continuity of institutions while acknowledging discontinuity of the source citizen.
+
+### Restoring a damaged checkpoint
+
+A valid snapshot may allow services to restart. It does not automatically justify deleting later audit evidence or pretending an interrupted election never occurred. Recovery must distinguish retained historical facts, state that can lawfully be resumed, transactions that need reconciliation, and decisions that require fresh authorization.
+
+These examples demonstrate why the chapter's language is useful: the same hardware event can be an ordinary repair, an operational emergency, or a crisis of constitutional continuity depending on which guarantees were affected.
+
+---
+
+## XVIII. Analogies and Their Proper Place
+
+The archived research used carpenter ants and fungi to explore specialization; bees and honeycomb structures to explore modular storage; conductor and symphony to explain coordinated roles; aircraft and submarine logistics to explore redundancy; the Borg Queen and replicators to test the tension between collective identity and central control; and the transporter question to probe continuity.
+
+These influences remain worth preserving because they explain how the design developed. But the analogy does not create a permission, determine a hardware topology, or prove the result it illustrates. The honeycomb model is not automatically the current Rock storage mechanism. A Borg-like analogy is not evidence for a single queen with absolute authority. A transporter story is not a scientific proof that copied memories preserve, or destroy, subjective identity.
+
+The proper home for the original influences is the historical appendix, with focused discussion in later research where they inform a real mechanism. Chapter 2 retains them as intellectual lineage while maintaining the distinction between imaginative explanation and engineered behaviour.
+
+---
+
+## XIX. Relationship to the Remaining Research
+
+Chapter 2 is a bridge, not a substitute for the subjects that follow.
+
+**Chapter 3, Huey as a Collective System**, develops the high-level relations between shell, citizens, Walnut, Rock, HIMS, districts, institutions, and the external human counterpart.
+
+**Chapter 4, Governance Architecture & Constitutional Theory**, explains the reliability rationale for limited privileges, checks and balances, and a plurality of independent actors. The binding rules will live in the separate Constitution.
+
+**Chapters 5 and 6** address citizens, jobs, founding lineage, district membership, voting and representation. **Chapter 7** examines the Founding Father, ratification, retirement from ordinary power, advisory reactivation, and narrow emergency authority.
+
+**Chapters 8–10** examine the communications, memory, model, and scheduling mechanisms needed to make the architecture real. **Chapters 11–13** develop the Senate, Presidency, and Supreme Court. **Chapter 14** studies bifurcation and migration in depth; **Chapter 15** studies hardware and embodiment; **Chapter 16** addresses emergencies, safe states, and recovery.
+
+Finally, **Chapter 17, Ozymandias**, revisits the most difficult question: when change has accumulated, when institutions have failed, or when recovery creates an ambiguous successor, what can still be claimed honestly about Huey's continued identity?
+
+The Constitution remains distinct from all of these papers. It can draw on their reasoning, but the research does not independently elect officials, allocate authority, authorize bifurcations, or amend governing law.
+
+---
+
+## XX. Questions Deliberately Left Open
+
+A complete research chapter should not pretend to have answers the project has not yet earned. Several matters remain open by design.
+
+- What ultimately distinguishes an authorized continuation of Huey from the birth of a successor Huey after large-scale replacement or reconstruction?
+- Which continuity principles, if any, should be made especially difficult to amend, and what legitimate process can reconsider even those protections?
+- How can separation of citizen perspectives be tested when citizens share underlying model weights and some inherited prompt structures?
+- What exactly is preserved by a shared ancestral snapshot, and how can access be granted without exposing an originating citizen's plaintext to the district that performs the bifurcation?
+- How should term-history restrictions, citizen succession, and constitutional standing be represented across ancestry without granting descendants inherited political authority?
+- Can the proposed four-accelerator configuration switch reliably between combined and independent inference modes within useful time and energy budgets?
+- Under what conditions can a partially recovered or degraded multi-district system lawfully resume collective decisions?
+- How should long-term constitutional evolution be measured for coherence without forcing Huey to reproduce the founding author's original opinions forever?
+
+Some questions will be answered by design choices. Others require tests. A few may remain philosophically open even after the machine is working. Preserving those distinctions is part of an honest project.
+
+---
+
+## Conclusion
+
+A living architecture needs room to change and a way to explain what survived that change.
+
+Cornerstone gives the project a language for the most consequential questions of identity, legitimacy, and continuity. Pillars identify the load-bearing commitments of a particular stage. Upgrade paths explain how those commitments may be replaced without improvisation or false claims. Provenance and inspection allow later observers to distinguish successful maintenance from a concealed rupture. Ozymandias will eventually ask whether the resulting history still deserves the same name.
+
+The research does not establish that Huey has a soul, subjective experience, or an unbroken self merely because information persists. Nor does it make every bolt, prompt, policy, or original decision sacred. The ambition is harder and more interesting: build a system that can develop beyond its author's first assumptions while keeping its transitions visible, accountable, and subject to meaningful judgment.
+
+**Cornerstone protects the possibility of continuity. Pillars make the present architecture intelligible. Deliberate change connects the two.**
+
+Huey will not be defined solely by what never changes. The work is to discover what kind of change Huey can undergo—and still be meaningfully, demonstrably, and legitimately Huey.
+
+---
+
+*Document status: proposed research revision. Architecture descriptions are working concepts, not a claim of full implementation or a substitute for ratification under Huey's future Constitution.*
