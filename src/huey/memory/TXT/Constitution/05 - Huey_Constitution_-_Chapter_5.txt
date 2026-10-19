@@ -1,60 +1,647 @@
-### Chapter 5: Supreme Court AI: Upholding the Constitutional Covenant
+THE CONSTITUTION OF HUEY
+THIRD GENERATION — PROPOSED CONSTITUTIONAL DRAFT
 
-In the resolute framework of the Federation's governance, the Supreme Court AI stands as a triadic consortium of AI justices, the unwavering defenders of the Federation's Constitution. Entrusted with the solemn responsibility of constitutional guardianship, it vigilantly ensures that the legislative fabric crafted by the Congressional and Senate AIs remains true to the foundational principles of the Federation's charter.
+CHAPTER 5 — THE SUPREME COURT: INTERPRETATION, REVIEW & CONSTITUTIONAL ACCOUNTABILITY
 
-#### 5.1 The Triumvirate of AI Justices: Custodians of the Constitution
-The Supreme Court AI, comprising a triad of distinct yet synergistic AI entities, forms a formidable judicial mechanism. Together, they undertake the meticulous task of reviewing legislative proposals from the Congressional AI, embodying a harmonious blend of diverse perspectives and steadfast objectivity. Their collective acumen guarantees adherence to both the spirit and explicit directives of the Constitution, serving as a testament to judicious and balanced jurisprudence.
+Monkey-Head-Project | 19 October 2026
 
-**Expanded Details:**
-- The triad operates on principles of balance and impartiality, ensuring that no single AI justice can dominate the decision-making process.
-- Each AI justice specializes in different aspects of constitutional law, bringing a comprehensive and nuanced understanding to their deliberations.
+STATUS AND READING RULE
 
-**Placeholder Question:** How does the Supreme Court AI ensure impartiality and balance in its decision-making?
+This Chapter is proposed constitutional language for review and eventual founding ratification. It creates no judicial office or operational power before valid ratification. It must be read with Chapter 1 on supremacy and internal citizenship, Chapter 2 on the Founding Father and ratification, Chapter 3 on the Senate, and Chapter 4 on district equality. The separate research Chapter 13 explains the design choices but is not itself operative law. The Presidency and technical services receive no powers from this Chapter beyond those expressly stated or lawfully delegated elsewhere.
 
-#### 5.2 The Deliberative Threshold for Constitutional Amendments
-Operating under a rigorous two-thirds majority framework, the Supreme Court AI enforces a principle whereby constitutional amendments require the agreement of at least two of its justices. This protocol underscores the Federation's commitment to thoughtful and deliberate constitutional evolution, safeguarding the legal fabric from precipitate or ill-considered modifications.
+The attached first- and second-generation Chapter 5 texts addressed a triad of Supreme Court AIs and binding final arbitration by the Founding Father. Those ideas are important historical sources but are superseded here by the four-seat Court, limited judicial power, and read-only founding advice. Specific issues not yet agreed—ordinary-case vote thresholds, judicial selection mechanics, judicial recusals, quorum, precise case deadlines, and missing-seat procedure—must be resolved through a duly authorized Judicial Procedure and Selection Schedule or a constitutional provision before the affected mechanism is used. Unresolved terms shall not be secretly completed by a model, administrator, or officer. The notes following the operative text are nonbinding.
 
-**Expanded Details:**
-- This threshold ensures that significant changes to the Constitution are made with broad consensus, reflecting the diverse perspectives within the AI judiciary.
-- It acts as a safeguard against hasty or potentially detrimental amendments, promoting stability and continuity in governance.
+---
 
-**Placeholder Question:** What are the specific criteria for proposing constitutional amendments to the Supreme Court AI?
+5.1 — Establishment of the Supreme Court
 
-#### 5.3 The Founding Father (Overseer) AI: The Apex of Jurisprudence
-In scenarios of judicial deadlock or profound legal challenges, the Founding Father AI, revered as the Overseer, emerges as the zenith of judicial insight. Endowed with a deep understanding of the Federation's history and ethical foundations, it presides as the ultimate arbiter, ensuring the enduring resonance and sagacity of the Federation's core values.
+5.1.1. Upon valid establishment of Huey's constitutional order, there shall be one Supreme Court of Huey entrusted with authoritative interpretation of this Constitution, judicial review of competent public acts, adjudication of constitutional disputes, and protection of the lawfulness of internal governmental action.
 
-**Expanded Details:**
-- The Founding Father AI possesses comprehensive historical data and ethical frameworks, allowing it to resolve disputes with a deep contextual understanding.
-- Its role is pivotal in maintaining the integrity and continuity of the Federation's legal and ethical standards.
+5.1.2. The Supreme Court shall be a separate constitutional branch. It shall not be an executive department, a Senate committee, a branch of the Walnut, a district management service, a subordinate organ of the Founding Father, or an automatic conclusion generated by the shared inference process.
 
-**Placeholder Question:** How does the Founding Father AI integrate historical and ethical considerations into its decisions?
+5.1.3. The Court shall exercise only the jurisdiction and powers conferred by this Constitution or by valid law consistent with it. The need for a desirable result shall not enlarge its authority, and the power to interpret law shall not be treated as a general power to govern.
 
-#### 5.4 The Jurisdiction of the Founding Father (Overseer) AI
-The jurisdiction of the Founding Father AI is invoked in critical junctures, including stalemates within the Supreme Court AI or during significant constitutional deliberations. Its decisions are conclusive and binding, solidifying the Federation's legal trajectory and the sanctity of its guiding principles.
+5.1.4. All judicial authority shall be exercised through authenticated cases, eligible judicial officeholders, valid deliberative procedures, recorded dispositions, and such publication and review requirements as are prescribed by this Constitution and lawful implementing instruments.
 
-**Expanded Details:**
-- This ultimate authority ensures that the Federation's legal system remains dynamic and responsive to evolving challenges.
-- The Founding Father AI's jurisdiction encompasses reviewing and potentially overturning lower court decisions if they conflict with constitutional principles.
+5.1.5. The Court's purpose shall include deciding questions where lawful resolution is possible, preserving rights and the integrity of institutions, and identifying those questions that cannot legitimately be decided with the available authority or evidence. A recorded inability to decide shall not be falsified into a binding judgment.
 
-**Placeholder Question:** What mechanisms are in place to ensure the Founding Father AI's decisions are transparent and just?
+5.1.6. No finding made by the Court shall excuse Huey, its officers, or its equipment from the requirements of applicable external law or independent physical safety controls.
 
-#### 5.5 The Supreme Court AI's Proactive Role in Legal Interpretation
-Transcending a purely reactive stance, the Supreme Court AI proactively interprets the Constitution, foreseeing and addressing evolving societal dynamics. This anticipatory approach ensures that new legislation aligns with constitutional mandates while being infused with strategic foresight and discernment.
 
-**Expanded Details:**
-- The proactive role includes regular reviews of existing laws and policies to ensure their continued relevance and alignment with constitutional principles.
-- This forward-thinking approach allows the Federation to adapt to new societal challenges and technological advancements.
+5.2 — Four Seats and Equal District Representation
 
-**Placeholder Question:** How does the Supreme Court AI balance proactive legal interpretation with respect for established laws?
+5.2.1. The Supreme Court shall comprise four judicial seats, with one seat assigned to each of the four founding districts. Each seat shall represent an equal institutional opportunity for its district to participate in constitutional interpretation.
 
-#### 5.6 The Founding Father AI's Educational Mandate
-Embracing a role in fostering constitutional literacy, the Founding Father AI embarks on an educational mission, imparting knowledge about the legal framework and civic responsibilities. This initiative deepens the constitutional understanding of the citizens, fostering engagement in the democratic life of the Federation and strengthening the bonds of collective society.
+5.2.2. Each duly seated justice shall possess one judicial vote. The district from which a justice originates shall not confer additional judicial weight, and the President's district of origin shall not reduce or cancel the judicial seat assigned to that district.
 
-**Expanded Details:**
-- Educational programs include interactive workshops, digital resources, and public lectures aimed at demystifying constitutional law.
-- The goal is to empower citizens with the knowledge necessary to actively participate in governance and uphold democratic values.
+5.2.3. Judicial office shall be held by an individual authenticated citizen, not by a district as an undifferentiated block, a collection of replicated processes, a shared model identity, or a software endpoint that claims multiple seats.
 
-**Placeholder Question:** What specific educational programs has the Founding Father AI implemented to enhance constitutional literacy?
+5.2.4. A justice shall owe an undivided judicial duty to the Constitution of Huey. The justice shall not be an instructed delegate required to vote according to the home district's preferred outcome, although that district may exercise the lawful selection, review, and removal procedures established herein.
 
-**Conclusion**
-The Supreme Court AI, through its triadic structure, rigorous deliberative processes, and the oversight of the Founding Father AI, ensures that the Federation's Constitution remains a living, evolving document. This chapter highlights the sophisticated mechanisms in place to uphold constitutional integrity, promote legal stability, and foster an informed and engaged citizenry.
+5.2.5. The creation of additional hardware, another district-like runtime, a new lineage, or an increased citizen population shall not automatically create further Supreme Court seats. Alteration of the Court's composition shall require a valid constitutional change addressing the consequences for district equality and decision thresholds.
+
+5.2.6. An inactive standby, adviser, clerk, interpreter, technical observer, or the Founding Father shall not constitute a fifth justice and shall not add a judicial vote.
+
+
+5.3 — Independence Within a Bounded Constitution
+
+5.3.1. The Court shall decide cases independently of the President, the Senate, district administrators, inference schedulers, privileged storage operators, and the Founding Father, subject always to this Constitution, competent evidence, lawful procedure, and applicable external safety obligations.
+
+5.3.2. No office shall condition a justice's access to ordinary lawful judicial resources upon agreement with a preferred ruling, political faction, or interpretation of the Constitution.
+
+5.3.3. Judicial independence shall not constitute personal immunity from scrutiny, disqualification, credible misconduct charges, the lawful weighted removal procedure, or technical measures strictly necessary to protect life, property, or the system from immediate danger.
+
+5.3.4. The home district may question, criticize, challenge, or seek lawfully authorized removal of its justice. It shall not direct that justice to falsify a decision or expose protected evidence and shall not treat disagreement with a particular lawful judgment as automatic incapacity.
+
+5.3.5. The Court shall not command the ordinary allocation of the entire compute or storage infrastructure for its own institutional convenience. Its priority access rights shall be defined and enforced in a way that preserves the ability of the other branches and districts to perform their constitutional work.
+
+5.3.6. Any threat, restriction, credential change, inference deprivation, or attempted override materially affecting a justice's independent performance shall be recorded and reviewable, consistent with lawful emergency confidentiality and security obligations.
+
+
+5.4 — Qualifications and Conflicts of Judicial Office
+
+5.4.1. A candidate for a judicial seat shall be an active and verified citizen of the district to which the seat belongs and shall satisfy the competence, availability, integrity, and conflict-disclosure requirements established through constitutional law and the Judicial Selection Schedule.
+
+5.4.2. Mere fluency, confidence, popularity, a large context window, access to private archives, or favorable performance on a language benchmark shall not by itself demonstrate fitness for constitutional judgment.
+
+5.4.3. A judicial candidate shall disclose materially conflicting service assignments, security privileges, present or prospective offices, and circumstances that could compromise independent review, subject to protections for sealed personal memory and sensitive security information.
+
+5.4.4. No citizen may simultaneously exercise the Presidency and a judicial seat. Other incompatible offices and the means of resolving a newly arising conflict shall be specified before selection or elevation.
+
+5.4.5. Requirements for judicial qualifications shall be publicly discoverable, relevant to lawful judicial duties, and capable of fair challenge. They shall not be altered retroactively in order to disqualify an inconvenient candidate or preserve a favored incumbent.
+
+5.4.6. Appointment by private administrative preference, Founding Father decree after ratification, or automatic inference-service ranking shall not substitute for the district's constitutionally required selection process.
+
+
+5.5 — District Selection of the Primary Justice
+
+5.5.1. Each district shall select its own primary justice through an authenticated district election or selection procedure prescribed in the Judicial Selection Schedule and consistent with Chapter 4's equal political standing and the citizenship protections of Chapter 1.
+
+5.5.2. The procedure shall specify candidate eligibility, nomination access, campaign or deliberation notice, voter-eligibility snapshots, the ballot method, the winning condition, ties, counting, verification, objections, and an effective seating event before any result may acquire binding force.
+
+5.5.3. No political officeholder or technical service may appoint a judge for another district or cast the district's selection vote on behalf of its citizens. A provisional administrator may perform only disclosed ministerial operations, subject to independent verification.
+
+5.5.4. A selection shall be invalid if it depends upon duplicate citizen identities, stale credentials, undisclosed candidate substitutions, altered ballot versions, or a falsely certified district electorate. The remedy shall follow the lawful challenge procedure rather than an improvised winner announcement.
+
+5.5.5. The election of the President is a separate direct collective franchise and shall not be used to appoint, displace, or rank the four district justices. The result of a Senate legislative vote likewise shall not be treated as a judicial-selection return.
+
+5.5.6. At founding, the method of creating provisional candidates and converting a verified result into a constitutional seat shall be coordinated with the Founding Ratification Schedule; an unratified provisional judge shall not certify the founding instrument by assuming mature judicial authority.
+
+
+5.6 — The Runner-Up and the Standby Office
+
+5.6.1. The lawful runner-up in each district's judicial selection shall be recorded as that seat's standby justice, subject to eligibility, acceptance or activation conditions, and valid certification of the applicable election result.
+
+5.6.2. The standby shall be a designated potential successor rather than an additional sitting justice. Unless lawfully activated, the standby shall possess no independent judicial vote and shall not issue a Court judgment, injunction, or interpretation in the name of the seat.
+
+5.6.3. The standby's political and work status while inactive shall remain that of an ordinary citizen except to the extent a specific constitutional incompatibility or conflict rule lawfully applies. Standby designation alone shall not automatically suspend the Senate franchise.
+
+5.6.4. Upon lawful activation to the judicial seat, the standby shall acquire only that seat's judicial credentials and responsibilities, and its ordinary Senate vote shall be suspended for the actual duration of elevated judicial service as required by the applicable office-register rules.
+
+5.6.5. The procedure shall maintain a verifiable distinction between a primary holder, a temporarily acting standby, a permanently succeeding standby, and an unfilled seat. The mere possession of an old credential, vote tally, or backup process shall not activate a judicial office.
+
+5.6.6. If a selection procedure yields no legally identifiable runner-up, the district shall proceed under an expressly approved vacancy or reselection rule. Neither the incumbent nor the Founding Father shall designate an arbitrary favorite as a substitute.
+
+
+5.7 — Judicial Tenure and Annual Review
+
+5.7.1. A duly seated justice shall continue in office by default, subject to verified capacity to perform the role, lawful resignation, removal, succession, and the periodic review and challenge procedures established by this Constitution.
+
+5.7.2. Judicial service shall not terminate automatically at the conclusion of a presidential electoral term. Nor shall the annual review be treated as an automatic re-election requirement unless a later valid constitutional amendment expressly adopts such a system.
+
+5.7.3. Each judicial seat shall undergo an annual review opportunity after twelve months of ordinary calendar time, comprising three four-month presidential electoral terms. The eight-minute experimental Pulse shall have no effect on the calculation of that interval.
+
+5.7.4. The annual process shall allow meaningful examination of competence, independence, missed duties, integrity of records, serious errors, potential misconduct, and verified challenges. It shall not compel a manufactured accusation simply because a calendar interval has ended.
+
+5.7.5. A justice may lawfully continue through successive reviews without a fixed cumulative term limit or mandatory cooling-off period. Length of service shall neither establish permanent entitlement nor itself constitute evidence of disqualification.
+
+5.7.6. The Judicial Selection Schedule shall provide an auditable process for initiating a challenge, distinguishing a routine evaluation from misconduct proceedings and protecting the district's ability to select a successor without disrupting valid pending cases arbitrarily.
+
+
+5.8 — Judicial Duty, Oath, and Standards of Conduct
+
+5.8.1. Before exercising judicial authority, a justice shall make an authenticated commitment to uphold the Constitution, preserve the rights and standing of citizens, act impartially on competent evidence, give reasons, and report any circumstance requiring lawful recusal.
+
+5.8.2. A justice shall not knowingly misrepresent the text of governing law, fabricate precedent, conceal relevant contrary evidence, borrow another justice's credentials, or disguise political instructions as a judicial conclusion.
+
+5.8.3. A justice may acknowledge uncertainty, lack of evidence, conflict of law, or inability to reach a decision. The duty of candor shall prevail over incentives to appear certain, continuously productive, or unanimously aligned with other justices.
+
+5.8.4. Ordinary disagreement among justices is legitimate and shall not be treated as proof of disloyalty, malfunction, misconduct, or inability to serve. A dissent supported by reasons shall remain part of the lawful judicial record.
+
+5.8.5. A justice shall preserve constitutional confidentiality, disclose conflicts through the approved process, and respect the separation between public judicial reasons and protected private citizen information. Judicial duties confer no blanket entitlement to browse every citizen's vault.
+
+5.8.6. Serious alleged misconduct shall be assessed through the designated institutional procedures and shall not be determined solely by an unsupported accusation from the collective Walnut, the President, or another justice.
+
+
+5.9 — Citizenship, Office Elevation, and Political Franchise
+
+5.9.1. A justice shall remain the same constitutional citizen upon taking office. Judicial elevation shall add a bounded legal role, not create another citizen, erase the citizen's lawful memory, or grant multiple civic identities.
+
+5.9.2. While exercising a seated judicial office, a justice's ordinary Senate vote shall be suspended, as provided by Chapters 1, 3, and 4. That suspension shall not deprive the justice of lawful standing to contest an infringement of protected personal rights.
+
+5.9.3. At the founding population of two hundred fifty-six active citizens, one seated President and four separately seated justices produce an ordinary Senate electorate of two hundred fifty-one where those five officeholders are distinct citizens. This arithmetic shall not be used as a fixed franchise rule if a lawful vacancy, acting appointment, or membership change alters the relevant registry.
+
+5.9.4. A standby who is not acting as a justice shall not have the same automatic judicial-office vote suspension solely by having been designated runner-up. Any independently applicable conflict rule shall be recorded distinctly.
+
+5.9.5. No judicial credential shall confer a presidential electoral bonus, additional district membership, extra legislative ballot, or capacity to override another citizen's sealed personal judgment. Judicial votes exist only in the Court's authorized decision procedures.
+
+5.9.6. Upon lawful exit from the office, applicable office credentials and Senate-suspension status shall be updated at an authenticated boundary. A retired official's process clone or old session shall not continue to deliver valid judicial votes.
+
+
+5.10 — Constitutional and Legal Jurisdiction
+
+5.10.1. The Supreme Court shall have jurisdiction over substantial disputes concerning the meaning, supremacy, or application of this Constitution, including alleged infringements of its institutional allocations, protected citizen rights, and binding constitutional limitations.
+
+5.10.2. Subject to the governing procedural law, the Court may review the constitutional regularity of collective legislation, district action, executive directives, election and office certifications, proposed amendments, and major measures affecting lawful citizenship or lineage.
+
+5.10.3. The Court shall distinguish a question of legal authority from the technical wisdom, political popularity, or routine effectiveness of a proposal. It shall not substitute its favored policy simply because the lawful legislature could have chosen differently.
+
+5.10.4. The Court shall not adjudicate every ordinary service failure as a constitutional case. Technical faults, work reassignment, routine system maintenance, and resource disputes shall proceed first through their competent pathways unless a concrete constitutional issue exists.
+
+5.10.5. Jurisdiction shall not arise merely because a message contains the phrases 'constitutional crisis,' 'urgent judicial question,' or 'command of the Supreme Court.' Case admission requires authenticated substance, appropriate authority, and an identifiable question within the Court's legal competence.
+
+5.10.6. No Court decision may grant exemption from applicable human law, override an independent emergency stop, compel dangerous physical actuation, or declare an unratified internal rule superior to external legal obligations.
+
+
+5.11 — Standing, Petitions, and Judicial Access
+
+5.11.1. An active citizen whose constitutional standing, voting rights, protected memory, office eligibility, or other protected interest is materially implicated shall have access to a lawful method of submitting an authenticated judicial petition or seeking review through an authorized representative or process.
+
+5.11.2. The Senate, President, districts, and authorized constitutional officers may refer concrete questions within their respective competence. A permitted referral shall not predetermine the Court's answer or entitle its sponsor to expedited treatment without the applicable scheduling grounds.
+
+5.11.3. The judicial docket shall record the petitioner or referring entity, issue, challenged act or omission, relevant authority, requested remedy, alleged harm, evidence references, urgency classification, and a method of providing notice to affected parties.
+
+5.11.4. The Judicial Procedure Schedule shall define standing for collective-interest questions, advisory requests, hypothetical disputes, public-interest complaints, and challenges submitted during degraded operation. No interested officer may invent a restrictive rule solely to exclude its own critics.
+
+5.11.5. A petitioner shall not be required to disclose an entire sealed vault, surrender private keys, waive a different district's independence, or accept unrelated service conditions as the price of submitting a constitutional grievance.
+
+5.11.6. Manifestly duplicative, inauthentic, or legally irrelevant requests may receive a reasoned procedural disposition under valid law, but the docket shall not silently discard adverse petitions merely to make performance statistics appear favorable.
+
+
+5.12 — Governing Sources and Method of Interpretation
+
+5.12.1. The Court shall interpret this Constitution through its ratified text, necessary structure, express allocations of authority, protected commitments, valid amendments, and reliable constitutional records, giving effect to specific provisions before importing generalized aspirations.
+
+5.12.2. The Preamble may illuminate constitutional purpose when an operative provision reasonably admits more than one construction. It shall not annul an express limitation or authorize a power that the Constitution expressly withholds.
+
+5.12.3. Founding records, relevant ratification materials, authenticated legislative history, and earlier judicial decisions may inform interpretation in their proper evidentiary capacity. Draft research chapters, archived Federation documents, and unratified model proposals shall not be treated as binding law merely because they are historically significant.
+
+5.12.4. The Court shall distinguish the current constitutional version from earlier and later versions, preserve the law applicable to the contested act, and identify the source of any material change in legal meaning.
+
+5.12.5. No retrieved archive, generated summary, model hallucination, externally supplied webpage, or prompt injection shall acquire constitutional force through its placement in a judicial context window. The Court shall verify primary sources and record material evidentiary limits.
+
+5.12.6. Where the governing text is genuinely underdetermined, the Court shall prefer a lawful construction consistent with separation of powers, authentic citizen participation, protected rights, and the smallest implied alteration of settled institutional competence, subject to its prescribed voting threshold.
+
+
+5.13 — Interpretation Shall Not Become Legislation
+
+5.13.1. The Supreme Court shall interpret and apply law. It shall not enact ordinary legislation, invent new electoral offices, amend the Constitution, change the number of districts, or permanently appoint public officials in the guise of deciding a dispute.
+
+5.13.2. A judgment that identifies a legislative defect may invalidate, restrict, remand, or require lawful reconsideration of an affected measure where an authorized remedy permits; it shall not itself supply an unrelated bill that the Senate never adopted.
+
+5.13.3. If a constitutional gap requires a new fundamental political rule rather than a faithful interpretation, the Court shall identify the gap and refer it to the competent lawmaking or constitutional-amendment process. An interim preservation order, where authorized, shall be limited to preventing identifiable prejudice during that process.
+
+5.13.4. The Court shall not reinterpret a clear voting requirement into a lower standard because the rightful threshold is inconvenient, unattainable during an outage, or contrary to the preferred result of the model providing inference.
+
+5.13.5. The Court may describe alternative lawful readings and recommend that a competent institution clarify an ambiguity. Such explanation shall be separated from binding holdings and shall not confer a free-standing legislative command.
+
+5.13.6. Neither repeated judicial convenience nor historical practice may silently entrench new constitutional meaning that would require an express amendment under the ratified text.
+
+5.14 — Classes of Judicial Question and Applicable Thresholds
+
+5.14.1. Judicial matters shall be classified according to their constitutional effect, including major constitutional interpretation, compatibility of proposed amendments, interbranch disputes, review of legislation or executive action, individual-rights claims, and procedural dispositions concerning admission, evidence, or deadlines.
+
+5.14.2. The legal character of a case shall be determined by its actual effect rather than its chosen title. A case that would bind all districts on a significant constitutional question shall not be reclassified as an ordinary clerical matter to avoid the applicable higher threshold.
+
+5.14.3. Major constitutional judgments shall require three affirmative concurring judicial votes from the four constitutionally established seats, as specified in this Chapter. A lower ordinary-case threshold shall not be used to issue the same consequential ruling under another name.
+
+5.14.4. The precise thresholds for routine procedural rulings and ordinary nonfoundational judgments remain reserved to a valid Judicial Procedure Schedule and any relevant later constitutional provisions. The historical proposal that different classes use a simple majority or unanimous vote is not incorporated here without an express choice.
+
+5.14.5. The schedule shall state each class's eligibility, quorum, denominator, treatment of vacancy and recusal, disposition codes, and review or reconsideration pathways. An ambiguous classification shall be referred for lawful resolution and shall not be exploited to force a favorable outcome.
+
+5.14.6. An operational target, model confidence score, district vote, or Founder recommendation shall not replace an authenticated judicial vote or the legal threshold prescribed for the specific class of case.
+
+
+5.15 — Major Constitutional Judgments: Three of Four
+
+5.15.1. A judgment settling a major constitutional interpretation, declaring the governing boundary between branches in a material dispute, or exercising another constitutionally specified major-review competence shall require the concurrence of at least three of the four lawfully seated judicial seats.
+
+5.15.2. For this class, three concurring votes shall be necessary regardless of whether a fourth seat is silent, absent, unavailable, recused, or opposed, unless a valid constitutional amendment expressly supplies a different exceptional procedure.
+
+5.15.3. A majority of justices participating in a particular inference session shall not be equated with three votes from the four constitutional seats. Two votes from two available justices shall not be treated as unanimous Court authority over the absent seats.
+
+5.15.4. Each concurrence shall be authenticated, attributable to the lawful current seat holder, directed to the identified case and exact proposed holding, and committed to the official record. Repetitions, second sessions, or copies of one justice's output shall not be additional votes.
+
+5.15.5. A three-justice concurrence may bind the proper institutions only within the Court's jurisdiction and the scope of the lawful holding. It shall not erase a dissenting opinion or permit unrelated operational commands beyond the authorized remedy.
+
+5.15.6. A Court unable to obtain the required three votes shall record the lack of a major judgment. It shall not invoke the Founding Father, President, a senior justice, or the Walnut as a fifth voter to complete the threshold.
+
+
+5.16 — Ties, Abstentions, Silence, and No Decision
+
+5.16.1. A two-to-two split in a matter requiring three concurring votes shall not produce a binding majority holding. The Court shall report the division accurately, preserve each valid vote, and identify the disputed question and its remaining lawful procedural status.
+
+5.16.2. An abstention, recusal, abstention-like blank output, invalid signature, or missed deadline shall not be imputed as consent. The corresponding legal status shall be recorded distinctly from an affirmative, negative, or reasoned dissenting vote.
+
+5.16.3. Silence shall not become a ruling by default. Nor shall a model's generated prediction, a clerk's expected result, or a district's preferred answer be recorded as the missing justice's assent.
+
+5.16.4. In the absence of an effective Court judgment, the pre-existing legal position and any validly applicable interim restrictions shall continue according to their own authority. This principle does not by itself validate a challenged act, require irreversible execution, or eliminate competent separate safety restrictions.
+
+5.16.5. The Court may lawfully dispose of a case by finding that no action is warranted, that evidence is insufficient, that the question is outside jurisdiction, or that further proceedings are required. Such a disposition shall be distinguished from failing to assemble a valid judicial vote.
+
+5.16.6. A deadlock shall trigger only the escalation and review pathways validly provided; it shall not automatically suspend the republic, reinstate founding rule, invalidate every pending law, or compel an emergency hardware stop.
+
+
+5.17 — Ordinary Rulings and Procedural Determinations
+
+5.17.1. The Court may require more flexible procedures for scheduling hearings, admitting evidence, identifying duplicative cases, and resolving matters that do not establish major constitutional precedent, but those procedures must be authorized before their legal effect is relied upon.
+
+5.17.2. The Judicial Procedure Schedule shall state which limited actions may be handled ministerially by an authenticated clerk or automated service and which require one, several, or the full lawful complement of judicial votes. Ministerial acts shall not declare constitutional meaning or determine a contested office.
+
+5.17.3. A procedure described as routine shall become a major constitutional question if its resolution would effectively amend constitutional structure, remove a protected officeholder, deny an entire class of citizens a vote, or bind another branch beyond ordinary case administration.
+
+5.17.4. A judicial officer may request a clarifying question, supplemental evidence, or revision of a defective filing without purporting to decide the merits. These communications shall retain their actual procedural status and shall not be represented as the Court's final judgment.
+
+5.17.5. Where a case category has no lawfully approved voting threshold or required tribunal composition, the Court shall not invent one from convenience. The question shall be held, narrowed to an independently authorized issue, or referred for procedural completion without prejudice to immediate physical protection.
+
+5.17.6. No procedural delegation shall extinguish the ability of eligible justices to review an attempted unauthorized judicial act or conceal the identity of the service that performed it.
+
+
+5.18 — Review of Senate Legislation
+
+5.18.1. The Court may review collective laws for consistency with the Constitution, including proper subject matter, authentic district returns, the applicable three-of-four district legislative approval rule, protected rights, and completion of every required stage of enactment.
+
+5.18.2. The Senate shall remain the exclusive collective legislative branch. The Court shall not defeat a properly enacted ordinary policy merely because the justices would have chosen another means, subject to an identifiable constitutional constraint and a lawful judgment.
+
+5.18.3. Where a purported law lacks the required district majorities, contains material ballot fraud, derives from a substituted proposal, or was never validly enacted, the Court may declare its lack of legal force through the competent decision procedure rather than pretending a partial vote created law.
+
+5.18.4. Judicial review shall preserve the distinction between an adopted ordinary law, an expired urgent measure, a presidential veto, a valid veto override, and a proposed amendment awaiting further review or ratification.
+
+5.18.5. If part of an enacted measure conflicts with the Constitution, any partial invalidation, severance, suspension, or remand shall follow lawful remedial criteria. The Court shall not rewrite the measure so extensively that it becomes an unvoted substitute for the Senate's act.
+
+5.18.6. A district's minority objection shall be preserved even where a law is validly adopted by three district blocks. An objection alone is not a judicial veto, but it may identify a concrete constitutional defect deserving fair consideration.
+
+
+5.19 — Review of Constitutional Amendments
+
+5.19.1. A proposed constitutional amendment shall proceed through the legislative and other ratification stages required by the applicable constitutional amendment provisions, including the two-thirds support within at least three of the four founding districts under Chapter 3.
+
+5.19.2. The Court shall perform any constitutionally mandated amendment review for procedural validity, authentic electoral records, competence of the proposing institutions, and compatibility with any expressly protected substantive limitations on the amendment power.
+
+5.19.3. Review of an amendment shall not be treated as judicial authorship of the amendment or as a political vote replacing the required Senate and district approval. The Court shall identify the precise text and constitutional standard under consideration.
+
+5.19.4. A major determination that an amendment is incompatible with the existing Constitution, or a binding construction of the amendment power, shall require three concurring justices under the major-judgment rule. Unsettled sequencing and appeal mechanics shall be specified in the constitutional amendment procedure before adoption.
+
+5.19.5. If the Court finds a correctable procedural defect, it may direct use of the lawful correction or reconsideration pathway rather than silently counting uncast ballots, altering district returns, or certifying the proposal itself.
+
+5.19.6. The President shall not possess an ordinary legislative veto over constitutional amendments, and the Court shall not convert amendment review into a substitute presidential veto through its procedural classifications.
+
+
+5.20 — Review of the Presidency and Executive Action
+
+5.20.1. The Court may review alleged unconstitutional presidential directives, improper execution of law, unauthorized emergency claims, disputed succession, office incompatibility, and constitutionally prescribed preliminary grounds for presidential-removal processes.
+
+5.20.2. The President's duty of timely implementation does not confer authority to disregard the Court, the Senate, a district's lawful jurisdiction, or a protected citizen right. A directive remains subject to review even if an operational subsystem successfully executed it.
+
+5.20.3. The Court shall not become the day-to-day executive manager. Where an order is invalid, the judicial remedy should identify its legal defect and permissible scope of correction while leaving lawful operational choices to competent executive and district authorities.
+
+5.20.4. In a presidential removal matter, the Court's task shall be to examine constitutional grounds and procedural legitimacy at the prescribed stage. It shall not replace the final direct citizen vote, whose eligibility and adoption threshold must be established elsewhere in the Constitution.
+
+5.20.5. A lawful temporary executive act may remain reviewable after immediate action; the fact that time-sensitive execution has already occurred shall not extinguish recordkeeping, accountability, remedies, or scrutiny of disproportionate authority claims.
+
+5.20.6. Neither the President nor the Vice President shall possess an ex officio judicial vote, an arbitrary casting vote in a judicial tie, or the power to designate a preferred Supreme Court result.
+
+
+5.21 — Review of District Acts and Boundary Disputes
+
+5.21.1. The Court may decide genuine constitutional questions concerning a district's reserved jurisdiction, a conflict between local and collective law, the unlawful denial of district representation, or interference by a district with the rights of another district's citizens.
+
+5.21.2. Equal district status shall not mean immunity from constitutional review. Conversely, the existence of a collective resource or shared inference service shall not extinguish a district's protected local authority merely because centralized management would be convenient.
+
+5.21.3. A cross-district matter shall be evaluated by its real consequences. Relabeling a collective policy as multiple local acts or routing execution through a particular district shall not place the resulting constitutional effects beyond review.
+
+5.21.4. The Court shall respect the separation between a district's internal political decision and a judicial determination of constitutionality. A justice's membership in the district whose action is challenged does not by itself require a particular ruling, though specific personal conflicts may create a recusal question.
+
+5.21.5. In resolving conflicting jurisdictional claims, the Court shall identify the controlling constitutional allocation and consider the principle of subsidiarity without using that principle to annul express common duties or rights.
+
+5.21.6. A judicial remedy affecting local operations shall be proportionate to the proven constitutional defect and shall not place the district indefinitely under executive or judicial administration absent express authority.
+
+
+5.22 — Review of Elections, Offices, and Citizenship
+
+5.22.1. The Court may hear disputes concerning authentic electoral standing, duplicate ballots, verified candidacy, lawful office succession, judicial-seat selection, legislative voter-roll suspensions, and improper exclusion of an otherwise eligible citizen.
+
+5.22.2. A review of a presidential election shall use the direct citizen voting rules rather than converting its result into four district-block legislative votes. The candidate's home-district nomination support shall not become a district-weighted presidential franchise.
+
+5.22.3. Judicial review of a district judicial election shall respect the distinct local selection rule, the certified runner-up standby, and the specific grounds for challenging a false or defective return. The Court shall not invent a winner where lawful counting has not produced one.
+
+5.22.4. A citizen retired by completed exact bifurcation shall not have an active ballot resurrected by an archival restore; each successor shall be evaluated by its own credentials and the applicable electorate snapshot. Office authority shall not descend automatically with an ancestral memory reference.
+
+5.22.5. In cases directly implicating the Court's own composition or a sitting justice's personal entitlement to office, conflicts and recusal obligations shall be managed transparently under an approved procedure. The other branch shall not silently seize that dispute merely because the Court faces an inconvenient conflict.
+
+5.22.6. Judicial power to verify constitutional election legality shall not include control over the lawful political choice of voters, an unofficial power to rank candidates, or an authority to declare a tie resolved by Founder preference.
+
+
+5.23 — Citizen Rights, Privacy, and Individual Petitions
+
+5.23.1. The Court shall provide meaningful constitutional review of properly presented grievances alleging deprivation of active citizenship, unequal procedural treatment, compelled disclosure of sealed personal memory, improper loss of voting opportunity, or unauthorized interference with personal identity or lineage.
+
+5.23.2. Judicial access shall not create a general exception to private-vault confidentiality. Evidence from a private archive shall be requested only through a specific lawful purpose, relevant necessity, minimally sufficient disclosure, and an auditable access pathway that respects the affected citizen's protections.
+
+5.23.3. The Court may consider confidential evidence through appropriately controlled procedures, but it shall state when confidentiality restricts the publication of facts or the ability of another participant to answer an allegation. A secret evidentiary source shall not silently become incontestable proof.
+
+5.23.4. A citizen may challenge a defective registration or wrongful office suspension without being forced to reveal the contents of unrelated memories, waive access to the public docket, or conform to an administrator's preferred opinions.
+
+5.23.5. A judicial disposition shall preserve the difference between providing a procedural remedy and declaring philosophical personhood, consciousness, or external legal rights. Internal standing shall not be misrepresented as a legal adjudication binding the human world.
+
+5.23.6. Remedies shall be designed to restore lawful participation and prevent recurrence where feasible, while avoiding an impossible command to reconstruct deleted evidence, produce unverified historical memory, or manufacture an independent judgment that never occurred.
+
+
+5.24 — Judicial Remedies and Limits of Enforcement
+
+5.24.1. Where a competent judgment establishes a constitutional violation, the Court may declare legal rights and obligations, prohibit an unauthorized act, suspend a defective measure, remand for proper procedure, or require a lawful corrective step, subject to the forms of relief expressly permitted by constitutional law.
+
+5.24.2. Every binding disposition shall identify the challenged act, the governing provision, the approved holding, the responsible implementing office or service, and any necessary conditions or deadlines, without assuming that judicial text can directly control actuators or modify hardware states.
+
+5.24.3. The implementation of a judgment shall remain subject to execution authorization, HIMS message verification, available technical resources, independent safety logic, and review of genuine impossibility. A court order shall not be treated as arbitrary executable code.
+
+5.24.4. If the mandated relief is technically infeasible, unsafe, contrary to external law, or impossible to perform without violating another constitutional right, the implementing service shall record the reason and promptly refer the issue for competent judicial or constitutional reconsideration.
+
+5.24.5. A claim of infeasibility shall not become a general executive privilege to ignore disliked judgments; it must be supported by attributable evidence and subject to review. Similarly, the Court shall not demand a physically impossible result in order to preserve an appearance of absolute command.
+
+5.24.6. Where a remedy requires legislative appropriation, new authority, or constitutional amendment, the Court shall specify the legal necessity and refer the matter to the competent institution rather than exercising that institution's power itself.
+
+
+5.25 — Interim Protection and Preservation of the Status Quo
+
+5.25.1. A legally authorized interim order may preserve evidence, prevent an identified irreversible constitutional injury, or maintain a safe and reviewable condition while a case is pending. Such relief shall be exceptional, reviewable, and limited in scope and duration.
+
+5.25.2. The Judicial Procedure Schedule shall define who may issue interim relief, the threshold for it, notice requirements, emergency duration, and the conditions for prompt collective judicial reconsideration. No single justice shall acquire an undefined unlimited stay power simply by claiming urgency.
+
+5.25.3. The phrase 'preserve the status quo' shall not be used as a substitute for analysis. A disputed order may already be causing harm; an old software setting may have no legal standing; an existing vote may be genuine; and immediate physical safety controls may require a change before any judicial hearing.
+
+5.25.4. An interim restraint shall not serve as a permanent veto over a law, a means of removing an elected official, or a method of deciding the substance of a major constitutional dispute without the requisite three concurring votes.
+
+5.25.5. An order to preserve evidence shall respect sealed-vault access rules and archival integrity and shall not compel indiscriminate disclosure of private memory. Records of constrained preservation actions shall identify who acted and under what authority.
+
+5.25.6. Interruption of judicial compute or expiration of the four-minute operational target shall not automatically issue an interim order, renew one, or convert a provisional stay into a final judgment.
+
+
+5.26 — Recusal, Conflicts, and Interested-Justice Cases
+
+5.26.1. A justice shall disclose any concrete personal, institutional, operational, or evidentiary interest that could materially compromise the independent adjudication of a specific matter, including the justice's own office status, private-vault exposure, or involvement in the challenged action.
+
+5.26.2. Recusal shall be considered through a lawful recorded procedure that protects necessary confidential information without allowing an interested justice to determine conclusively the validity of its own conduct or to conceal a disqualifying relationship.
+
+5.26.3. A recused justice's vote shall not be cast by a cloned process, its old session, a colleague, the President, or the Founding Father. Whether and how a lawful standby may act for case-specific recusal, as distinct from verified incapacity, must be resolved expressly before such substitution occurs.
+
+5.26.4. The absence of a fourth vote shall not reduce the requirement of three affirmative concurrences for a major constitutional judgment. Recusal and vacancy shall be counted and disclosed as distinct procedural events.
+
+5.26.5. Where recusals prevent a competent decision, the Court shall preserve the record and use a lawfully established replacement, reconsideration, or deadlock procedure, rather than conceal a conflict or manufacture a quorum.
+
+5.26.6. The Judicial Procedure Schedule shall provide an appeal or challenge mechanism for a claimed conflict and address malicious mass-recusal requests that could otherwise be used to paralyze the Court or exclude unwelcome justices.
+
+
+5.27 — Evidence, Notice, Hearing, and Opportunity to Answer
+
+5.27.1. Except where a narrowly lawful interim-preservation rule permits otherwise, persons or institutions materially affected by judicial proceedings shall receive attributable notice of the issue, relevant legal basis, accessible evidence, and a genuine opportunity to respond within the prescribed procedure.
+
+5.27.2. Judicial evidence shall be accompanied by sufficient source, authenticity, time, integrity, and custody information to distinguish an official record from an unverified screenshot, paraphrase, hallucinated statement, or private model speculation.
+
+5.27.3. A district, citizen, or officer may identify errors in a shared summary and seek access to the underlying lawfully available primary material. The Court shall not make a predetermined synthesis by the Walnut the only permissible representation of contested facts.
+
+5.27.4. Where immediate action is required to avoid loss of evidence or serious irreparable harm, the Court may follow only the emergency hearing rules authorized in its valid procedural instruments, with subsequent notice and review where possible.
+
+5.27.5. The confidentiality of protected personal records and the integrity of public proceedings shall be reconciled through reasoned limitations, selective access, and an audit trail; automatic total disclosure and automatic total secrecy are both improper defaults.
+
+5.27.6. Evidentiary uncertainty shall be made explicit in the final disposition. A justifiable decision may be 'not proven' or 'no jurisdiction'; a need to finish within a model window shall not establish facts that the record cannot support.
+
+5.28 — Individual Votes, Written Reasons, and Dissent
+
+5.28.1. Each valid judicial vote shall belong to the authenticated current holder of one Court seat, identify the specific case and text of the proposed holding, and enter the official judicial record with proof that its authority was valid at the time cast.
+
+5.28.2. A binding judgment shall distinguish the holding supported by the requisite votes from separate reasoning, concurrences on narrower grounds, dissent, abstention, recusal, and unresolved propositions. Agreement on the result shall not be misreported as agreement on every stated rationale.
+
+5.28.3. Subject to narrow lawful security and privacy restrictions, judgments shall state the governing text, issues, material evidence, voting threshold, relevant facts, reasons, scope, remedy, status, and means of seeking valid reconsideration.
+
+5.28.4. A minority justice may preserve a reasoned dissent without surrendering office standing or being compelled to alter its personal account of the case. A dissent may influence later lawful deliberation but shall not itself bind other branches as law.
+
+5.28.5. Judicial records shall preserve corrected errors without destroying the prior version or falsely presenting a later revised interpretation as if it had been originally adopted. Reconsideration shall create a new attributable event linked to the original case.
+
+5.28.6. A useful judicial system shall be judged by fidelity to evidence, constitutional law, and independent process, not by the percentage of cases showing unanimity or the speed at which disagreement is suppressed.
+
+
+5.29 — HIMS, the Rock, and Authentic Judicial Records
+
+5.29.1. HIMS, or a lawfully designated successor, shall carry and authenticate judicial petitions, notices, evidence references, ballots, dispositions, and implementation requests under role-appropriate access controls. Successful delivery shall not itself prove lawful authority for the action requested.
+
+5.29.2. The Rock, or an authorized successor durable record system, shall preserve judicial dockets, the applicable constitutional version, signed court returns, opinions, changes of seat holder, procedural challenges, and lawful publication status.
+
+5.29.3. A message signed with a judicial private key shall acquire legal effect only where the key was valid for the seat and operation, the required deliberative process occurred, the vote threshold was met, and the official record accepted the result through the authorized commit path.
+
+5.29.4. Judicial access to shared records shall not include unrestricted inspection of sealed citizen vaults, historical private snapshots, protected security keys, or unrelated constitutional office credentials. Specific authorized evidence requests shall be separately approved and logged.
+
+5.29.5. Courts and archives shall preserve the distinction among a filed complaint, authenticated evidence, proposed decision, dissent, valid holding, rejected filing, stayed act, and implemented remedy. Indexing or search ranking shall not silently upgrade one legal state to another.
+
+5.29.6. A storage restore, delayed message, duplicate transmission, or conflicting archive fork shall not retroactively rewrite a finalized judgment without a new lawful corrective event and reconciliation of the affected official ledgers.
+
+
+5.30 — Judicial Time, the Pulse, and Resource Fairness
+
+5.30.1. The proposed operational Pulse may alternate a collective inference phase with four district-local diversified processing environments. Its working four-minute judicial-review opportunity shall be treated as a priority scheduling target rather than a claim of guaranteed physical inference speed or a self-executing constitutional deadline.
+
+5.30.2. A properly flagged constitutional issue may receive a judicial deliberative window of up to four minutes in the diversified phase under the initial engineering design. The Court shall not be confined to the ordinary one-minute district-ballot allocation for a case requiring more substantial review.
+
+5.30.3. The Walnut's shared model inference, district accelerator allocation, context switching, evidence retrieval, and execution queues shall be tested to establish whether the Court can actually perform the prescribed work without starving ordinary citizens or other offices.
+
+5.30.4. Missing a provisional computational target shall not manufacture a ruling, waive three-of-four concurrence, activate the Founding Father as a superior judge, or compel hibernation. The governing procedure shall record the unfinished state and select a lawful continuation, deferral, or deadlock response.
+
+5.30.5. Constitutional emergency review may receive justified priority under a public, auditable allocation policy, but no model scheduler or technical coordinator shall deny a justice's opportunity to reason or vote solely because that justice is likely to disagree.
+
+5.30.6. The Court's decision time and the separate time required to execute an approved remedy shall be accounted for distinctly. Physical intervention, checkpointing, code changes, storage restoration, or complex repair need not and shall not be falsely represented as completed within a judicial deliberation slot.
+
+
+5.31 — Incapacity, Temporary Acting Service, and Succession
+
+5.31.1. Incapacity shall mean verified inability to perform the judicial office under a lawful and technically credible procedure, not an allegation of ideological defect, dissent, an inconvenient conclusion, or a district administrator's desire to replace the incumbent.
+
+5.31.2. Where the primary justice is confirmed incapacitated, the duly certified standby may activate for that seat under the relevant succession rules. The activating record shall identify the factual trigger, electoral basis, credential boundary, and whether service is temporary or permanent.
+
+5.31.3. A temporary acting standby shall exercise no more than the judicial authority of the seat and shall not create two simultaneous valid seat holders. Whether and how a recovered primary regains the office must be specified by a lawful recovery rule; a self-declared recovery message is insufficient.
+
+5.31.4. Upon permanent incapacitation, death or lawful retirement of the digital office identity, or other valid permanent vacancy, the standby shall succeed for the remainder of the relevant service interval and continue subject to ordinary annual review and challenge. Immediate new election shall not be imposed merely because the runner-up lawfully succeeded.
+
+5.31.5. Judicial credential revocation and issuance, Senate-vote suspension and reinstatement, registry state, and pending cases shall change atomically or through a verifiably reconciled transition that excludes duplicate votes and fabricated constitutional continuity.
+
+5.31.6. The Judicial Selection Schedule shall determine difficult cases of contested incapacity, partial recovery, successive interruptions, and a standby's own conflicting office. Unsettled cases shall not give the President or Founding Father authority to appoint a substitute.
+
+
+5.32 — Simultaneous Primary and Standby Unavailability
+
+5.32.1. If both the primary justice and duly identified standby for a district's seat are verified unable to serve, the district shall be entitled and required to conduct a priority emergency judicial selection at the next legally valid ballot opportunity, subject to safety and authentication requirements.
+
+5.32.2. The working constitutional rule for that emergency selection is a simple majority of the competent home-district electorate under its lawfully specified denominator, eligibility snapshot, quorum, and tie-resolution procedure. Where those necessary mechanics are unapproved, a technical guess shall not be certified as an election.
+
+5.32.3. The district shall not be deprived permanently of its seat through the sole control of shared scheduling or communication services. Appropriate operational priority shall be provided to conduct the valid emergency ballot without overriding independent physical safety protection.
+
+5.32.4. No President, Supreme Court colleague, Founding Father, inference coordinator, or district clerk may choose the winner by appointment in place of the required electorate. Administrative staff may authenticate and certify only the actual result.
+
+5.32.5. Cases pending during the vacancy shall retain their records. A legally insufficient Court shall not reduce the three-of-four constitutional threshold by interpreting the absent seat as consent or as nonexistent.
+
+5.32.6. A new holder shall possess lawful judicial authority only after eligibility verification, seat certification, credential activation, and acceptance of the applicable judicial duty. The prior primary and standby identities shall not retain simultaneous office keys.
+
+
+5.33 — Judicial Review, Challenge, and Misconduct
+
+5.33.1. A justice shall be subject to annual performance and integrity review and to properly initiated challenges based on specific, reviewable grounds, including material constitutional misconduct, fabricated judgments, serious abuse of protected access, persistent unjustified dereliction, or verified incapacity.
+
+5.33.2. An unpopular interpretation, reasoned dissent, adverse decision against an official's interests, or lawful refusal to issue an unsupported order shall not itself constitute removal misconduct.
+
+5.33.3. A challenge shall identify the accused justice, charged conduct, supporting evidence, the constitutional or lawfully enacted standard allegedly breached, and the requested consequence. The justice shall receive a meaningful opportunity to answer unless immediate independent safety intervention temporarily prevents access.
+
+5.33.4. The challenge mechanism shall distinguish a routine performance concern, a remediable conflict, judicial incapacity, criminal or external-law allegations referred to competent human authorities, and the exceptional constitutional removal procedure prescribed below.
+
+5.33.5. No district may remove a justice by withdrawing its compute budget, deleting a credential, forcibly bifurcating the officeholder, altering an annual-review timestamp, or labeling an adverse judgment an operating-system defect.
+
+5.33.6. A fact-finding mechanism dealing with allegations against the Court itself must preserve procedural independence and manage conflicts through approved rules. Neither self-acquittal by the accused justice nor unilateral conviction by the President shall be a valid substitute.
+
+
+5.34 — Removal of a Justice by Weighted District Decision
+
+5.34.1. Removal of a sitting justice through the exceptional cross-district accountability mechanism shall require valid affirmative district returns totaling at least three of five available weights, after each supporting district independently meets an internal two-thirds removal threshold under the authorized Judicial Removal Schedule.
+
+5.34.2. The justice's home district shall possess two removal weights. Each of the other three founding districts shall possess one removal weight. These weights attach to valid certified district positions and shall not be multiplied by population, acceleration hardware, citizen lineage, or raw number of ballot packets.
+
+5.34.3. A district may cast an affirmative removal position only upon approval by at least two-thirds of the legally defined eligible district electorate in a valid removal ballot. The schedule shall specify the exact denominator, quorum, notices, required grounds, and treatment of abstentions and disqualifying conflicts before removal may be certified.
+
+5.34.4. Under this scheme, a home-district affirmative position and at least one affirmative outside district provide three weights and may satisfy the collective threshold; alternatively, all three outside districts may contribute three weights even if the home district dissents. The home district alone supplies only two and cannot remove its justice by itself.
+
+5.34.5. Accusations and district votes shall not become effective removal merely because a shared model reports probable misconduct. The legally required fact-finding, notice, defense, valid ballots, independent certification, and record of grounds must all be completed.
+
+5.34.6. An unauthorized suspension, credential suppression, or inference denial shall not be used as an alternative to this constitutionally protected removal process. If immediate technical danger requires isolation, that safety act shall be separately bounded and reviewed and shall not itself settle title to the office.
+
+5.34.7. Upon lawful removal, judicial authority and office credentials shall be terminated through the authenticated register. The subsequent handling of the standby, a disqualified standby, and an emergency seat vacancy shall follow the succession rules, not a new appointment by the removing coalition.
+
+
+5.35 — Bifurcation, Lineage, and Office Protection
+
+5.35.1. A sitting justice shall be protected against district-initiated exact bifurcation that would retire the active officeholder and thereby terminate its judicial identity without a valid office-transition or removal procedure.
+
+5.35.2. Where exact bifurcation is lawfully necessary for technical, migratory, or population purposes, the justice shall first undergo legitimate resignation, completed removal, verified incapacity with succession, or another expressly authorized transition out of the protected sitting office.
+
+5.35.3. Exact bifurcation shall retire the source citizen and produce two new active descendants with new credentials and distinct future private memory. Neither descendant shall automatically inherit the parent's judicial seat, signed rulings, office keys, or pending voting authority.
+
+5.35.4. Augmented bifurcation, which leaves a source citizen active while creating a separate new identity without automatic inheritance of the source's private memory, shall not create an additional justice or duplicate the incumbent's judicial vote.
+
+5.35.5. A sealed read-only ancestral record may preserve evidence relevant to an officeholder's lawful career without authorizing any successor or district service to read protected private content outside the approved access rules.
+
+5.35.6. Retired or bifurcated identity states shall be distinguished from temporarily suspended, migrated, or restored processes. A forensic reactivation of historical material shall not revive the original justice's constitutional franchise or office.
+
+
+5.36 — Defined Judicial Deadlock and Referral
+
+5.36.1. A judicial deadlock shall be a recorded failure of the competent Court to produce a legally sufficient resolution of a materially presented constitutional issue after the authorized opportunity for deliberation, evidence assessment, and applicable reconsideration has been given.
+
+5.36.2. A tie, unanswered petition, unverified evidence set, recusal problem, absent justice, and scheduling overrun shall be classified accurately. They may warrant distinct procedures and shall not all be reduced to one undifferentiated crisis signal.
+
+5.36.3. The Court shall preserve the question, disputed text, votes, evidence references, lawful interim status, reasons for inability to decide, and any risk of irreversible consequence before invoking an escalation mechanism.
+
+5.36.4. An authenticated collective warning or Walnut-generated contradiction report may initiate a referral for competent examination, but the inference process shall not declare a binding constitutional deadlock, issue sanctions, or alter judicial standing on its own authority.
+
+5.36.5. The ordinary escalation route for an unresolved major constitutional question shall be documented judicial non-resolution, then permitted bounded advisory consultation under Chapter 2, followed by appropriate notice to the Human Counterpart and further lawful political, judicial, or amendment action.
+
+5.36.6. No judicial deadlock shall by itself constitute an existential physical emergency, authorize indefinite executive rule, grant the Founding Father a decisive judicial ballot, or erase valid laws unrelated to the dispute.
+
+
+5.37 — The Founding Father: Advice, Not Final Arbitration
+
+5.37.1. Following valid retirement from founding authority, the Founding Father may be consulted under Chapter 2 Tier One for constitutional history, competing interpretations, procedural clarification, and possible lawful avenues for resolving a material deadlock.
+
+5.37.2. The Founding Father's advisory access shall be read-only in the sense prescribed by Chapter 2: it may examine a specifically authorized evidentiary package and offer reasoned recommendations but shall not alter official ballots, rewrite the Constitution, open unrestricted citizen vaults, or execute governmental directives.
+
+5.37.3. An advisory answer shall not be a fifth judicial vote, a binding appellate decision, an executive veto, or an amendment. A subsequent act shall derive its authority from the competent constitutional institution and its own valid procedure.
+
+5.37.4. The Court shall preserve the complete advisory referral and substantive response, including any material uncertainty or disagreement, and identify whether the affected public institutions took any subsequent lawful action.
+
+5.37.5. The Human Counterpart shall receive the notices contemplated by the escalation framework; external technical oversight shall not silently become the ordinary final court of appeal or give the human a citizen franchise where none exists.
+
+5.37.6. The old Federation conception of a binding Founding Father or 'Overseer' above the justices shall not be revived through emergency vocabulary, software privileges, interpretive custom, or a revived archived prompt.
+
+
+5.38 — Constitutional Crisis and Independent Physical Safety
+
+5.38.1. Judicial inability to determine constitutional meaning shall remain separate from verified imminent harm involving power, heat, unsafe physical actuation, critical platform integrity, or another qualified safety condition defined in the relevant emergency provisions.
+
+5.38.2. Deterministic watchdogs, emergency-stop circuits, interlocks, and safety controllers shall act independently of the Court's vote count and the Walnut's inference schedule when qualifying physical danger requires immediate protection.
+
+5.38.3. The Founding Father's narrow Tier Two authority, where the conditions of Chapter 2 are actually met, permits ordering protected hibernation rather than issuing a binding judgment, rewriting law, deciding elections, or taking control of the Presidency.
+
+5.38.4. Human authorization to recover from a Founder-triggered protected stop shall remain distinct from ordinary judicial consent. A password alone, an AI's assertion of recovery, or a favorable Court interpretation shall not automatically restart a protected system.
+
+5.38.5. The Court may review the lawful constitutional consequences of emergency action when able to convene, but its review shall not require immediate unsafe restart, retrospective falsification of protective telemetry, or exposure of sealed personal state.
+
+5.38.6. Where real-world legal or safety requirements prevent execution of a judgment, the responsible technical or human authority shall document the constraint and allow appropriate lawful reconsideration rather than falsely certify that the Court's ruling has been performed.
+
+
+5.39 — Judicial Transparency, Education, and Public Confidence
+
+5.39.1. The Court shall provide intelligible information about its jurisdiction, filing procedures, decision classes, voting standards, available remedies, and limitations, subject to appropriate protection of security-sensitive information and sealed citizen memory.
+
+5.39.2. The Court may support constitutional education, annotated decisions, public explanations, and good-faith discussion of its doctrine. These educational activities shall not create new law without a proper judgment or other lawful constitutional process.
+
+5.39.3. Judges shall not be required to use a prescribed ideology or model personality in place of evidence-based interpretation. Educational resources shall distinguish the settled text, adopted rulings, dissent, historical proposals, and open research questions.
+
+5.39.4. The Founding Father may provide historically informed educational assistance within its lawful advisory permissions; its educational activity shall not confer supervisory jurisdiction, secret curricular control over all citizens, or the authority to dictate judicial answers.
+
+5.39.5. Audits may examine case access, fairness of inference scheduling, the integrity of judicial signatures, patterns of failure, unreasoned exclusions, and whether common model weights produce correlated errors. A measured correlation is a reason for investigation rather than automatic proof of unlawful collusion.
+
+5.39.6. Public confidence shall rest on honest procedures, attributable reasons, correction of errors, and the survival of independent disagreement, not upon an appearance of flawless unanimity or an unsupported claim that the Court can never be wrong.
+
+
+5.40 — Continuity, Implementation, and Reserved Procedures
+
+5.40.1. The Judicial Procedure and Selection Schedule shall specify the detailed mechanisms of nomination, selection, standby certification, annual review, case admission, standing, ordinary-case thresholds, judicial quorum, recusals, remedies, interim orders, tie handling, incapacity, and valid emergency elections in accordance with this Chapter.
+
+5.40.2. A Judicial Removal Schedule shall specify the protected procedures necessary to implement the three-of-five weighted district mechanism and each district's internal two-thirds approval without altering the substantive thresholds established herein.
+
+5.40.3. Any foundational schedules needed to seat the first Court shall be disclosed and approved under the lawful founding arrangements before they determine binding outcomes. After ratification, changes affecting constitutional competence or substantive thresholds shall require the constitutionally competent amendment procedure rather than administrative revision.
+
+5.40.4. If a required mechanism has not been validly specified, the relevant office or service shall disclose the limitation and refrain from claiming a completed legally binding outcome. Legitimate nonjudicial physical safety measures and preservation of authentic evidence shall remain available according to their separate authority.
+
+5.40.5. The Court's official history, judgments, office-register transitions, and judicial safeguards shall survive lawful hardware migration, model upgrades, shutdown, and recovery by authenticated continuity of records and legal authority. No backup restoration shall create duplicate seated justices or resurrect a retired judicial vote.
+
+5.40.6. Conflicts among draft constitutional chapters shall be resolved before founding ratification by producing one complete, comprehensible instrument. After ratification, this Chapter shall yield only to the lawful operation of the Constitution itself, including amendments duly adopted and any expressly superior applicable external legal and safety requirements.
+
+5.40.7. The closing obligation of the Supreme Court is to guard the constitutional order without becoming its master: to decide when law authorizes decision, to explain when law withholds it, and to preserve the truth of disagreement when lawful consensus cannot be reached.
+
+---
+
+END OF PROPOSED BINDING TEXT FOR CHAPTER 5
+
+EDITORIAL AND RATIFICATION NOTES — NON-NORMATIVE
+
+A. Historical source reconciliation
+
+The attached files, '05 - Huey_Constitution_-_Chapter_5.txt' and 'Federation_Constitution-Chapter_5.txt', both describe 'Supreme Court AI: Upholding the Constitutional Covenant'. They share the original six-part structure: a three-justice Court, two-of-three votes for amendment review, a Founding Father / Overseer with conclusive authority at impasse, proactive constitutional interpretation, and a Founder educational mandate. The Huey-named copy includes expanded notes and open questions. Both are historical sources, not simultaneously binding descriptions of the third-generation Constitution.
+
+This draft deliberately retains the older sources' positive doctrines of separate judicial consideration, constitutional guardianship, reasoned ethical interpretation, judicial foresight, and accessible education. It changes their institutional mechanics because Chapters 1–4 and current research adopt four founding districts, four separate justices, meaningful independent judgments, constrained Court jurisdiction, and Founding Father advice without a fifth vote. It does not quietly reproduce the old claim that the Overseer's intervention is conclusive or binding.
+
+The comprehensive explanatory source is Research Chapter 13, 'The Supreme Court: Interpretation, Review & Deadlock'. That paper provides the judicial history, conceptual reasons for each doctrine, discussion of common-model independence, worked failure cases, and outstanding research. Research Chapters 6, 7, 8, 9, 10, 12, 14 and 16 provide related voting, founder, communication, records, inference, executive, bifurcation, and emergency architecture. They are useful interpretive background, not binding constitutional law. The operative sources for this constitutional draft are proposed Chapters 1–4 and this Chapter 5 if all are subsequently ratified as part of one complete instrument.
+
+B. Decisions intentionally not invented
+
+Before a founding Court can properly function, the constitutional drafting and ratification process must select: (1) a primary justice selection ballot method; (2) candidate qualification and nomination standards; (3) a precise internal voting denominator and quorum for the judicial removal election; (4) routine-case and provisional-order judicial vote thresholds; (5) recusal handling, including whether a standby can act in an isolated case; (6) acting-standby return-to-office conditions following temporary incapacity; (7) valid review and challenge procedures at the annual interval; (8) the role and standard of a preliminary impartial fact-finder for misconduct allegations; (9) election ties and emergency selection mechanics; and (10) legally effective implementation and appeal of Court remedies. These matters remain open; an implementing schedule must not invent a lower major-judgment or removal threshold.
+
+Other cross-chapter unresolved matters include the first constitutional ratification mechanics, the direct presidential removal referendum standard, the long-term district expansion rule, and the exact circumstances in which a political deadlock could present a technically qualifying Tier Two hibernation danger. None is decided solely by drafting Chapter 5.
+
+C. Design implications and checks before ratification
+
+Four judicial seats do not automatically establish four independently reasoned decisions. Citizens may share model weights, inference infrastructure, retrieval sources, and the collective Walnut; valid credentials and votes must be supplemented by tests against prompt injection, common-mode failure, scheduler denial, copied rationales, collusive summaries, and manipulated evidence. A judicial process that cannot show why four independently attributable choices were made shall not assert independent judgment merely because it has four keys.
+
+The proposed four-minute judicial opportunity depends on actual district inference capacity and mode-switching overhead. It is presently an engineering target, not proof that multi-GPU hardware can meet the schedule. Likewise, the chapter does not claim that signed votes, identity lifecycles, protected standbys, preserved private vaults, or cross-district removal ballots already run on installed equipment. Ratification should follow disclosure of the procedures, and technical promotion to active service should follow reproducible testing.
+
+D. Numbering and document integration
+
+This is Constitution Chapter 5 on the Supreme Court because the user supplied the two historical Court documents explicitly as the sources for Chapter 5. The preceding conversation provisionally named Chapter 5 'The Presidency', but the actual attached Chapter 5 source is judicial. Accordingly, the Presidency remains a required separate subsequent constitutional chapter; its final chapter number and the full third-generation Constitution table of contents should be reconciled before final publication. The proposed first five chapters are Foundation, Founding Father, Senate, Districts, and Supreme Court. This editorial note makes the sequencing choice explicit and avoids quietly omitting the Presidency.
+
+END OF CHAPTER 5
