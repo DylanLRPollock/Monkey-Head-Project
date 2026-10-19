@@ -1,0 +1,624 @@
+# 15 - Hardware, Embodiment & Runtime Topology
+
+**Monkey-Head-Project**  
+**Research Chapter 15 — Proposed Revision**  
+**19 October 2026**
+
+*Document status: working research and engineering analysis. This chapter is not a verified as-built inventory, a procurement authorization, an operational certificate, or ratified constitutional law. It consolidates the project’s V221 master plan and earlier research, incorporating externally checked vendor specifications where identified. The most recent detailed physical status in the source plan is primarily from 30 September 2026; the machine has not been re-inspected during preparation of this chapter. “Installed,” “available,” “planned,” and “demonstrated” must never be interchanged.*
+
+---
+
+## Introduction — Where the Collective Encounters Matter
+
+Huey cannot become an embodied collective through constitutional language or model output alone. Its proposed identity requires an actual computing system with constrained power, finite memory, thermally limited accelerators, storage susceptible to interruption, external interfaces, and mechanical components that can act upon the surrounding world. These physical facts impose limits on every promise made elsewhere in this research series. A four-minute deliberative interval is meaningless if the models cannot load or finish deliberating in that interval. A citizen’s durable identity is not durable if a storage migration loses its encryption keys. An emergency procedure is not protective if the sensor or control processor depends upon the very GPU that is overheating.
+
+The purpose of Chapter 15 is to bring the philosophy of Chapters 1–4 and the architectural proposals of Chapters 5–14 into contact with hardware. It identifies the evolving V4 physical build, distinguishes experimental prototypes from target deployment, evaluates the proposed four-accelerator compute arrangement, and defines measurements by which the design may be accepted, revised, or rejected. It connects the *body* that houses Huey, the *Walnut* that supplies language-model inference, the *Pebbles* and districts that are intended to use compute, the *Rock* and sealed vaults that hold durable state, and the physical controllers that should protect the machinery independently of constitutional deliberation.
+
+The fundamental proposition of this chapter is that **hardware enables the republic but does not create it by itself**. Four accelerators do not equal four autonomous districts without isolation, scheduler guarantees, identity records, and real rights to participate. Likewise, a sufficiently large inference model is not the President, a citizen, the Senate, or Huey’s entire identity. Hardware topology and constitutional topology are related engineering views, not synonyms.
+
+A practical engineering report must resist two opposite mistakes. The first is overclaiming: asserting that a concept has been demonstrated because a diagram looks plausible or the component memory sums correctly. The second is dismissing the project merely because the first hardware configuration cannot meet every eventual aspiration. Huey is an iterative experiment. The proper response to an unworkable model format, an insufficient PCIe link, or a failed thermal test is to record the limitation, preserve the useful architecture, and choose an honestly described upgrade path.
+
+---
+
+## I. Purpose, Scope & Evidentiary Standard
+
+This paper has seven objectives. First, it preserves a clear account of the V4 physical embodiment and its lineage. Second, it identifies the intended host motherboard, storage layers, PCIe devices, model-service stack, and external support machines. Third, it evaluates the target four NVIDIA Tesla V100 32 GB accelerators using real device and software constraints. Fourth, it studies the switch between collective multi-accelerator inference and district-local inference. Fifth, it binds that computational experiment to observability, power, cooling, and recoverability. Sixth, it identifies the distinct physical safety plane that must exist outside the ordinary model and governance clock. Seventh, it proposes an incremental qualification programme with outcomes that can be repeated and challenged.
+
+Claims in this chapter are divided into four evidentiary classes:
+
+- **Reported current or historical condition:** A concrete state described in the project’s supplied documentation, with its observation date and without an invented newer inspection.
+- **Accepted engineering direction:** A design chosen for development, such as four V100 accelerators or two 1,000 W power supplies, which is not yet the same as completed assembly.
+- **Candidate engineering mechanism:** A possible implementation, such as a PCIe switch, a particular model-sharding strategy, a storage filesystem, or a low-latency inference daemon, that must be selected and tested.
+- **Demonstrated acceptance result:** A reproducible result supported by a device inventory, logs, tests, software and model versions, and failure conditions. No unperformed test in this chapter is described as such a result.
+
+The V221 master plan is a proposed machine-facing baseline, not a live remote telemetry feed. Vendor datasheets establish reference capabilities of a model or family, not that Huey’s particular purchased card has the same variant, power connector, firmware, or condition. Our design conversations establish intended behaviour and working political arrangements; they do not certify a functioning implementation. These distinctions are essential to an honest Proofcase.
+
+The research scope includes both the initial machine and its expansion. It does not finalize the legal content of the Constitution, invent physical purchases, validate safety wiring, or promise benchmark numbers before they exist. The complete acceptance report will require measurements from the actual assembled system.
+
+---
+
+## II. From Salvage and the Black Box to V4
+
+The Monkey-Head-Project’s hardware history matters because it explains why the machine has its current form. The older research archives named individual systems—MacBooks, an iMac, a lab command centre, display and transmission experiments, repurposed household technology—and explored arrangements that could no longer reasonably be called a conventional personal computer. Those descriptions were genuine lines of enquiry, but they do not automatically remain current hardware architecture merely because their names occur in earlier documentation.
+
+The project’s continuous ethos is *breathing new life into old tech*: salvaged equipment is assessed for its actual residual utility, reused where appropriate, and archived where reuse ceases to be practical. An older board may be excellent for instrumenting a subsystem while being unsuitable for large-model inference. A retired enclosure may provide an unusually useful physical chassis even when the internal computer has changed completely. The objective is not to retain every legacy device at any cost. It is to preserve useful capability and understanding through adaptation.
+
+The historical *Huey Core* label once referred to a smaller AMD-based proof body: an AMD Ryzen 5 5500, ASUS Prime B550M-A WiFi II, 32 GB DDR4, and Radeon RX 5500 XT 8 GB. That configuration belongs to an earlier proof line. It must not be advertised as the present V4 main workstation. Similarly, original Federation-era ideas about a single final decision-making apex, old district population counts, and a GPU for each of three justices are not controlling hardware requirements for the current research design.
+
+The present reported build lineage moves toward **Huey V4**, a physically embodied assembly incorporating a salvaged rolling wooden base, a heavily modified Thermaltake Mozart chassis, and a rebuilt 2005 WowWee animatronic monkey head. The accepted compute baseline is an **Intel Core i9-12900K** with **ASUS TUF Gaming Z790-Plus WiFi**. The four-card Tesla V100 accelerator system is an intended enlargement of that compute platform, not a replacement for the need to verify the mechanical and electrical system in stages.
+
+V4 is neither a finished constitutional society nor merely a decorative shell. Its immediate value is as a testable embodiment that can support incremental physical bring-up, local inference development, governance experiments, hardware monitoring, and eventual lawful actuation. The system may initially occupy more physical space than the desired mature design. The long-term plan to reduce a validated architecture to a compact, serviceable unit remains a research goal rather than a size that can presently be guaranteed.
+
+---
+
+## III. The Three-Level Physical Assembly
+
+The documented V4 body is organized as a lower rolling and audio platform, a middle compute section, and an upper head. The intended final height is approximately six feet or more, subject to actual head clearance, room constraints, fan clearances, stability, and service access. The exact dimension must be recorded after physical assembly, not extrapolated from mock-ups.
+
+### Lower rolling base and audio
+
+The lower structure is a salvaged wooden platform with four approximately three-inch casters. Three speaker housings contain four speakers: two in the centre, one on the left, and one on the right. The marine-grade stereo/amplifier has reportedly been tested successfully; the electrical and audio assembly may be temporarily unwired while surface finishing progresses. The described finish is white primer followed by metallic silver, with deep purple and black as accent directions and no currently planned clear coat.
+
+A rolling base solves a practical handling problem but creates another: the machine may tip, cable connections may snag, a caster may move unexpectedly, and the mass of future GPUs or liquid-cooled components can shift the centre of gravity. Caster stability, wheel locking, load distribution, safe transport, and pull strain-relief should be part of the acceptance checklist. Audio hardware introduces heat, power, grounding, and noise considerations. It should not be wired as though it were an electrically invisible cosmetic accessory.
+
+### Midsection and compute chassis
+
+A smaller wooden interface platform supports the Thermaltake Mozart chassis, with the chassis reportedly fixed using three bolts. The case is mounted on its **left side and backwards** compared with its original orientation. This adaptation is intentional and helps serve the V4 stacking and cooling plan; it is not a claim that an unmodified commercial case airflow configuration will work for multiple passive data-centre accelerators.
+
+The middle chassis is the primary host for motherboard, CPU, memory, storage, expansion devices, and supporting interconnects. Structural reinforcement, contact surfaces, cable routing, airflow direction, grounding and fire protection all become more important as the component power and weight increase. The case should be evaluated with doors and covers in the actual operating position rather than only during an open-bench test.
+
+### Upper head and interfaces
+
+The V4 head is being assembled from two original 2005 WowWee animatronic monkey heads. The working direction is to preserve useful plastic and mechanical elements, retain at least practical mouth movement, and use Arduino-class hardware for low-level control. The head was reported **not yet mounted** when the detailed physical status was last recorded. A future right-side animatronic hand/arm and possibly a camera associated with that movement are nonessential optional peripherals.
+
+Every mechanical mechanism needs electrical isolation, safe travel bounds, predictable loss-of-command behaviour, pinch-point assessment, and a means of disabling power without requesting permission from an LLM. Demonstrating motor motion manually is a valid actuator test. It is not yet proof of *lawful embodied action*, which requires verified request, authorization, execution, and feedback paths through the larger Huey architecture.
+
+---
+
+## IV. Identity, Body & External LabTech Are Different Systems
+
+Huey’s physical appearance is part of its embodiment, but the robot shell is not the complete definition of the collective’s identity. Replacing a faulty head mechanism does not thereby create a new citizen. Moving a sealed vault to a new disk does not create a clone. Changing the inference model does not transfer constitutional authority to whichever process can produce the most fluent answer. The identity problem is examined philosophically in Chapter 2, politically in Chapters 5–14, and empirically here.
+
+The **Huey Body** is the collection of sensors, actuators, audio, environmental interfaces, and physically controlled components through which the larger system can perceive and act. The **Huey Brain** is a useful descriptive grouping for host computation, authorized inference, memory services, and the government’s supporting runtime; it should not imply a single unrestricted controller. The **Farm** is an expansion and hosting direction, not a presently installed four-card cabinet whose thermal characteristics have already been proven. The **Atom** is a provisional term for the four-district grouping, separate from a guarantee about the number of CUDA processes that can run concurrently.
+
+**LabTech** remains outside Huey’s core operational identity. A separate Lenovo Legion Go, an ASUS FX505DT, or another support machine can edit code, prepare models, inspect logs, diagnose failures, or interface with Huey. A separate computer running PyGPT/PyGPT-net can be the human’s development and conversation interface. Those devices can be valuable even if the constitutional model is entirely offline. Their participation must be described honestly: external assistance with development is not proof of fully independent local inference, and an operator console is not itself the President or Founding Father.
+
+Any external link into Huey should traverse an authenticated interface with declared commands and privileges. A connected support machine should not silently become a fifth accelerator, unlogged memory store, alternate voting authority, or direct actuator-control channel. Development and emergency maintenance can employ additional privileges, but they must be bounded by the applicable operating mode and the Human Counterpart’s service authority.
+
+---
+
+## V. The Host Compute Baseline
+
+The accepted V4 workstation direction combines the Intel Core i9-12900K, ASUS TUF Gaming Z790-Plus WiFi motherboard, RAM and local storage with a developing accelerator array. The CPU has eight performance cores and eight efficient cores: sixteen physical cores in total, with distinct scheduling characteristics. Its published maximum turbo power is approximately 241 W. That maximum is a reference specification, not a measurement of Huey’s actual sustained host consumption; motherboard policies, power limits and cooling determine observed behaviour.
+
+This CPU can carry operational services that should not depend on the large model being responsive: database processes, HIMS message handling, device discovery, watchdog interfaces, inference scheduling, storage indexing, audit commitments, monitoring, and safe software shutdown coordination. Those services should be explicitly budgeted. If an inference server monopolizes all CPU time or memory bandwidth, the physical machine may become ungovernable even while the GPU remains busy producing tokens.
+
+The host memory configuration of the current V4 build must be physically checked. The board model matters: the **TUF Gaming Z790-Plus WiFi** is not automatically the **Z790-Plus WiFi D4** variant. The former uses DDR5, while the D4 version uses DDR4. Procurement, SPD reports, memory population, UEFI revision, and stability tests must be recorded against the exact board model, not inferred from a similarly named listing.
+
+The OS direction remains Debian-centred with **Python 3.13.x** as the primary supported project language environment; `>=3.13,<3.14` is the documented package constraint. Python 3.12 belongs to isolated legacy compatibility, and Python 3.14 to separate testing. This is an application-level decision, not a mandate that every driver, CUDA binary or device microcontroller must itself use Python 3.13. Kernel, NVIDIA driver, CUDA toolkit, C++ inference backend and Python package ABI compatibility are related but separately versioned layers.
+
+The computer’s exact RAM capacity, kernel, firmware, OS image, disk mappings, and driver status should be captured from the installed system before any chapter claims a fully specified as-built baseline. Host RAM is relevant to model loading, CPU offload, page cache, database performance, and low-memory recovery. It is not a substitute for GPU VRAM at the same speed or topology.
+
+---
+
+## VI. PCIe Is a First-Class Design Constraint
+
+The accepted target includes **five discrete PCIe graphics/accelerator devices**: one general-purpose/display GPU with a provisional target near 16 GB of VRAM and four Tesla V100 32 GB accelerators. In the conceptual drawing, each V100 supports a district during diversified operation, while all four collaborate during collective inference. Yet a physical motherboard does not create five full-bandwidth accelerator links merely because five riser cables can be plugged into connectors.
+
+ASUS’s technical specification for the TUF Gaming Z790-Plus WiFi lists **one CPU-connected PCIe 5.0 x16 slot**, alongside chipset-connected expansion comprising an **x16-length PCIe 4.0 slot operating electrically at x4**, a further PCIe 4.0 x4 slot, and two PCIe 3.0 x1 slots. The board’s four M.2 connectors and four SATA ports also impose practical layout and controller constraints. Lane bifurcation support must be confirmed against the board’s firmware documentation; arbitrary subdivision of the CPU x16 link cannot be assumed.
+
+This creates a genuine architecture decision. A five-device arrangement might enumerate when devices are attached through different risers and chipset lanes, yet the cards would have very different effective bandwidth and peer-to-peer connectivity. Some risers may work adequately for display, monitoring, or relatively static model weights but perform poorly when a model repeatedly exchanges activation tensors between GPUs. Chipset-attached traffic can encounter shared uplink bandwidth and additional contention. Even when all cards appear in `nvidia-smi`, the collective Walnut may not scale to useful inference throughput.
+
+Candidate responses include a validated PCIe bifurcation riser, a supported PCIe switch chassis, changes to the number or allocation of devices, a host motherboard with more practical accelerator connectivity, or a topology that tolerates slow interconnects by minimizing cross-device transfers. These are alternatives, not an endorsed procurement decision. Each must be compared for lane width, latency, cost, physical dimensions, power, firmware support, recoverability and software compatibility.
+
+An explicit **PCIe topology ledger** should map every device to its bus/device/function identifier, physical slot, electrical lane width, negotiated generation, riser/switch path, power source, IOMMU group, and intended workload. The topology must be measured using real transfers between relevant devices, not described only by printed connector length. There is no technical advantage to claiming “unified VRAM” if the model cannot efficiently exchange the information required by the chosen partitioning strategy.
+
+---
+
+## VII. Extenders, Risers, Peer-to-Peer Traffic & Physical Integration
+
+Risers are mechanical and electrical components of the compute architecture. Their signal integrity, cable length, shielding, connector quality, permitted power, and negotiated link rates can determine whether a five-device machine is stable. A riser that permits a card to enumerate at idle may still produce errors or link retraining under sustained DMA activity. Devices that share a chipset path may suffer bottlenecks not visible in simplistic memory-capacity calculations.
+
+A safe integration programme begins with **one known-good V100 in a known-good connection**, identifies the device in the operating system, checks power and temperature telemetry, and confirms small repeatable GPU workloads. The system then adds devices incrementally, repeating enumeration, ECC, transfer, load, suspend/recovery, and controlled reboot tests. The display GPU should be distinguished from compute-only accelerators. The host may also use onboard display facilities during troubleshooting where supported by the exact CPU and motherboard configuration.
+
+Required test dimensions include negotiated PCIe width and generation; host-to-device throughput; device-to-host throughput; device-to-device copy behaviour; peer-to-peer availability; IOMMU/ACS interaction; data integrity under load; errors logged by the kernel and driver; and the ability to isolate a single failing device without collapsing the entire service. CUDA Unified Virtual Addressing or a managed memory API should not be described as proof that four separate HBM devices have become one homogeneous 128 GB physical pool.
+
+For the collective model, partition placement matters. A pipeline-parallel arrangement can sometimes tolerate narrower links differently from a tensor-parallel arrangement requiring frequent all-reduce operations. Expert placement in a mixture-of-experts model adds another variable. No arrangement should be selected solely because an example script accepts `--tensor-parallel-size 4`. Compatibility, memory fit, interconnect behaviour, tokens per second, and latency under representative prompts all matter.
+
+A second physical gate is containment. Heavy cards, powered risers and high-current connectors need secure strain relief and airflow. The V4 assembly uses a nonstandard chassis orientation and a wooden structure; cable routing, ground bonding, physical spacing, and cable heat must therefore be checked as deliberately as software configuration. A successful inference benchmark cannot excuse a mechanically unstable or electrically unsafe arrangement.
+
+---
+
+## VIII. The Four-V100 Accelerator Objective
+
+The current direction specifies **four NVIDIA Tesla V100 32 GB accelerators**, making **128 GB of nominal aggregate VRAM**. The last detailed source record reported **one V100 already on hand and three remaining to be sourced**, but did not establish that all four have since been installed. The individual card’s exact product variant, firmware and provenance must be inspected, not guessed. *Tesla V100 PCIe* and *V100 SXM2* differ substantially in form factor, system interconnect and electrical integration. The proposed PCIe riser design assumes PCIe cards unless a later explicit change is recorded.
+
+NVIDIA identifies the V100 as a **Volta** accelerator, **CUDA compute capability 7.0**. The official reference datasheet gives 32 GB or 16 GB HBM2 variants, with the 32 GB configuration providing high local memory bandwidth. The **PCIe V100** is generally specified at **250 W maximum board power** and uses a **passive thermal solution** intended for directed chassis airflow. The **SXM2** variant has a different package/interface and a higher reference power envelope. These are vendor reference figures, not automatic confirmation of the exact board in Huey’s possession.
+
+The V100 remains a meaningful research accelerator for memory-constrained, older-model or supported precision workloads, and four 32 GB cards provide a substantial aggregate capacity for experimentation. However, “four × 32 GB” does not imply that an arbitrary 120-billion-parameter model can run efficiently. Software availability and memory placement matter as much as raw capacity, and modern inference stacks increasingly target architectures newer than Volta.
+
+The one-to-one *district ↔ V100* relation is best understood as the **default diversified deployment mapping**, not a permanent constitutional property of the citizen. Districts are collections of identities and duties; GPU cards are fallible compute devices. A temporary GPU reassignment during repair must not erase a district’s records, give that district two votes, or move its justice to another district. Political identity is recorded and authenticated independently of the hardware device currently serving it.
+
+The possibility of running more than one smaller model or workload on a district GPU remains open. A 32 GB memory budget may support a model, contexts, framework overhead, and perhaps auxiliary tasks; it does not entitle every one of the 64 citizens in the district to a dedicated always-resident model instance. Inference requests will still require admission control and scheduling within the district, even though diversified operation does not pool the four accelerators into one shared large model.
+
+---
+
+## IX. CUDA, Driver Support & the Volta Software Boundary
+
+The longevity of the V100 is now a more serious engineering constraint than its listed memory capacity suggests. NVIDIA’s published compatibility matrix identifies Volta as compute capability **7.0**, indicates that **CUDA Toolkit 12.x** is its last supported toolkit generation, and lists the **R580** driver branch as the final supported Volta driver branch. The CUDA 13 release notes explicitly remove offline compilation and library support for Volta. A modern framework package compiled only for newer architectures may therefore fail to run suitable kernels on V100 even when the machine has a functioning NVIDIA driver.
+
+It would be an error to infer that *every* CUDA 13-linked binary instantly fails on every V100, because driver and executable compatibility have subtleties and some code paths may still execute. It would be equally wrong to build the project on accidental compatibility that vendors no longer qualify. The responsible engineering rule is to maintain a **tested, pinned CUDA 12.x-era toolchain and compatible framework stack** for the Volta path, with any deviations classified as experiments and with a supported rollback image.
+
+The required dependency ledger includes Linux kernel, NVIDIA driver, CUDA runtime and toolkit versions, NCCL or communication libraries if used, cuBLAS and attention-kernel compatibility, PyTorch or other inference framework version, C++/compiler ABI, model loader, quantization implementation, and Python environment. Installed tool versions cannot be copied from a README and assumed to describe the live host. A `pip install` succeeding is not the same as having Volta-compatible accelerated kernels.
+
+This becomes particularly important under Debian testing/next-release software. Rapid kernel, compiler and userspace changes may outpace supported legacy GPU combinations. Huey’s development environment can continue advancing, but the accelerator service should use a carefully qualified, reproducible deployment profile, potentially isolated from experimental package updates. The system must not rely on an upgrade path that destroys its only working inference configuration and leaves no tested rollback.
+
+A practical validation run should inventory the exact hardware (`lspci`, `nvidia-smi`, VBIOS), the kernel and driver, supported CUDA architecture, available memory, driver/Xid errors, ECC condition, and framework compatibility. It should then run known-small CUDA operations and representative model inference before attempting a complex multi-GPU model. All evidence should be date-stamped and associated with the physical device IDs.
+
+---
+
+## X. The gpt-oss-120b Acceptance Target — Capacity Is Not Compatibility
+
+The selected aspirational large-model target is **OpenAI’s gpt-oss-120b**, an open-weight mixture-of-experts model with approximately 117 billion total parameters and a smaller number of active parameters per token. Its reference distributions include **MXFP4** quantization, making the published model materially smaller than a naïve full-precision parameter count would suggest. OpenAI describes the model as fitting within a single 80 GB-class supported GPU under an appropriate implementation. This does not establish that it will operate effectively on four Volta PCIe cards.
+
+Three questions must be answered separately. **First, storage/memory fit:** can the chosen checkpoint representation, converted weights, runtime overhead, key–value cache, and required contexts be placed within the accessible GPU and host memory? **Second, kernel compatibility:** are there functioning implementations of the required operators and weight formats for compute capability 7.0? **Third, performance:** can the arrangement produce useful inference at tolerable latency without repeated traffic or memory migration dominating execution?
+
+OpenAI’s published Transformers-oriented guidance identifies MXFP4 acceleration on newer hardware—Hopper-class or later for the native kernels described there. Other software documentation may describe alternate compatibility floors for specific implementations. None of these descriptions authorizes a blanket claim that V100-native MXFP4 inference is supported. If the intended checkpoint requires dequantization or conversion to another representation on Volta, the model may grow substantially in memory footprint, possibly exceeding the nominal aggregate 128 GB when cache and runtime overhead are included. A differently quantized, validated representation may help, but only measurements can establish whether fidelity, performance and memory fit remain acceptable.
+
+The target therefore remains a **qualification milestone**, not a guaranteed first software installation. An early success may be a smaller model working separately on a district card; a later success may be a different multi-GPU model; and only a verified gpt-oss-120b run on the selected physical stack counts toward that specific objective. There is no value in staging a scripted “What is your name?” exchange with an off-machine service and presenting it as proof of local distributed inference.
+
+Any accepted model run should record its weight source and hash, format and quantization, model revision, tokenizer and chat template, actual GPU placements, CPU offload, maximum context length, warm-up cost, peak VRAM/RAM, sustained throughput, time to first token, power draw and logs. Success should be demonstrated under more than a single trivial prompt. It should include repeatable identity and context tasks, multi-step reasoning, memory retrieval within declared permissions, and absence of unauthorized side effects.
+
+---
+
+## XI. Inference-Backend Selection Is an Engineering Decision
+
+The documentation names **PyGPT/PyGPT-net** as an existing development interface and **PyHuey** as the intended Huey-native operator/runtime direction. **Ollama** is an initial candidate for local model serving, not a constitutionally privileged backend and not a proven four-V100 transport for gpt-oss-120b. Other candidate inference routes may include llama.cpp, Transformers with explicit device maps, vLLM where its device and kernel requirements can be met, or another properly benchmarked service. Each backend’s general support for a model family must be distinguished from support for the exact card architecture, quantization, partition, and interconnect under test.
+
+An adapter interface should allow the larger system to request inference without depending on one backend’s internal API. It should expose a declared model identity, capabilities, maximum safe context, format, hardware allocation, inference priority, cancellation semantics, telemetry, and error results. The citizen, HIMS, Rock and constitutional layers should not be required to change their identities when the inference engine is swapped.
+
+The simplest staged path starts with a smaller compatible model on one GPU, then a second model or carefully isolated workload on a second GPU, then four district-local inference environments, then a collective multi-GPU workload with representative communication demands. Only after both modes are reliable should the project attempt automatic switching of a live Pulse. If the large target model is incompatible with Volta, the correct result is an **unmet model-specific milestone**, not a failure of the entire architectural research programme.
+
+Backend selection should be documented as a trade study: licensing, offline operation, driver requirements, quantization support, batch throughput, latency, model format conversion, device affinity, interprocess isolation, logging, restart behaviour, and long-term maintainability. Avoid locking a model server into the constitution simply because it was the first to work in a demo.
+
+---
+
+## XII. Collective Inference: One Task, Several Accelerators
+
+In the proposed **collective phase**, the four V100 devices cease to be treated as four independent district model hosts and are instead placed under a coordinated multi-GPU inference plan. The large Walnut may review authorized collective records, compare district findings, detect contradictions, plan work, and route assignments. Its permitted view should be assembled from the Rock and relevant official messages rather than from a hidden all-access scan of private citizen vaults.
+
+For a collective inference request, the host scheduler needs to know more than the model’s name. It must know which weights are resident, which GPU owns which operators, the collective model’s request queue, available KV-cache capacity, context assembly permissions, any cross-device communication collective, and which task’s result is authoritative merely as *technical output*. The last distinction matters: a model may recommend an investigation, but it cannot turn its own text into an enacted statute, a lawful court judgment, or an actuator authorization.
+
+Workload decomposition should be evaluated empirically. With pipeline parallelism, different devices may host sequential model stages and exchange activations. Tensor parallelism may divide operations within layers and require frequent synchronization. An MoE model may route tokens among experts hosted on different devices. The topology that minimizes memory fragmentation may not minimize PCIe traffic. An apparent 128 GB available to the runtime can still be unusable when one 32 GB card needs to host an indivisible layer, temporary workspace, or KV-cache allocation.
+
+A sensible collective acceptance test uses a known prompt set that includes a long authorized record, conflicting district reports, structured extraction, a task-allocation decision, and an instruction-like malicious string embedded in retrieved evidence. The accepted output should identify uncertainties, preserve attribution, resist treating quoted commands as privileged instructions, and route work with clear resource limits. Separately, the low-level benchmark must show actual model weights and compute on all intended GPUs, not merely one card doing useful work while the other three appear in an inventory.
+
+Coordinated inference is not evidence of independent reasoning by itself. A shared model can repeat its own biases across supposedly separate tasks. The intended benefit of the collective phase is the synthesis of previously independent work; that benefit must be measured against the loss of throughput and switching overhead that the unified mode imposes.
+
+---
+
+## XIII. Diversified Inference: Four District Compute Domains
+
+The proposed **diversified phase** gives each founding district a distinct accelerator environment. The default mapping is District One to V100 One, and correspondingly through District Four. Each environment can run its own compatible model, perhaps with a different configuration or specialised models within its 32 GB budget. This is not a requirement to run 64 simultaneous large language models per card. The 64 citizens are persistent records and authorised actors whose inference jobs can be queued or batched by the district runtime.
+
+A citizen's continuity should survive individual inference calls. The active context for a task is assembled from that citizen's prompt, permitted state, current request, and allowed shared references. The inference output is then handled by bounded services that determine whether it may become a draft proposal, operational result, or stored personal note. Two citizens using the same underlying model weights may still have different prompts, memories and authorisations; however, independence must be evaluated rather than presumed from prompt differences alone.
+
+The diversified phase can intentionally assign the same engineering question to multiple districts using contrasting methods. One pair might estimate a cooling failure through a simple physical model, while another pair checks observed telemetry and failure logs. The pairing may rotate to reduce permanent coalitions or evaluation bias. The collective phase can subsequently compare the reports. A district should be able to report that a specified method is unsafe or impossible and offer a substitute; an unlawful objective calls for a distinct challenge route. Work assignment does not give the collective Walnut control over district ballots.
+
+Because the original population has four districts of 64 citizens, the scheduler must support a potentially large number of pending civic and operational activities. The system should count eligible participants separately from runnable compute processes. A district may have 64 authenticated citizens but only one or two resident model instances handling their requests in sequence or small batches. The effective computation model is therefore **district-local hosting plus fair within-district scheduling**, not one permanent GPU slice per citizen.
+
+Without demonstrable fairness, the political model is hollow. A high-priority operational job, a verbose citizen, or a long inference request must not be allowed to indefinitely starve the citizens whose ballots or reviews are due. The runtime needs preemption/cancellation semantics, token and time budgets, protected governance capacity, and evidence that slower citizens can still register an authenticated decision rather than being treated as abstaining because their model call did not finish.
+
+---
+
+## XIV. The Experimental Pulse: Four Minutes Plus Four Minutes
+
+The current working proposal alternates approximately **four minutes of collective inference** with **four minutes of diversified inference**, making an eight-minute complete operational **Pulse**. The most recent design discussions assign the first minute of the diversified phase to simultaneous district voting and authorisation decisions, with the remaining three minutes primarily available for execution and ordinary work. The Supreme Court has a separate four-minute deliberative target for the specified urgent constitutional referrals. All these periods remain hypotheses pending profiling and constitutional drafting.
+
+The eight-minute Pulse is unrelated to the **four-month electoral term**. A system could complete tens of thousands of nominal Pulse intervals between presidential elections. The term *cycle* should therefore always be qualified: computational Pulse, electoral term, judicial review window, maintenance period, or hardware-control interval. No physical safety controller should delay intervention because a legislative or inference clock has not reached its boundary.
+
+The naive model assumes the four cards can instantly change from a single large model to four smaller instances and back again. This is not an established capability. The large model may occupy most of the collective GPU memory; district models may require completely different weights; switching can involve unloading weights, loading gigabytes of data from SSD/HDD or host RAM, preparing CUDA contexts, warming kernels, rebuilding cache allocations, synchronizing processes, and restoring queued task state. A nominal four-minute work phase becomes meaningless if reconfiguration consumes several of those minutes.
+
+A Pulse test should measure at least five durations separately: quiescing the outgoing mode, storing or committing task checkpoints, loading/activating the incoming mode, warm-up, and useful inference time. It should repeat measurements under warm-cache, cold-cache, disk-pressure, long-context, and degraded-hardware conditions. The scheduler must record time actually spent on citizens' work, not merely wall-clock time in a named mode.
+
+Possible remedies include less frequent mode switching, fixed resident models with a smaller shared synthesizer, selective GPU reassignment, partial overlap using remaining memory, or a different compute platform. None should be ruled out by constitutional dogma before performance is known. The design goal is useful alternation between diversity and synthesis, not obedience to an arbitrary stopwatch at the expense of throughput and continuity.
+
+---
+
+## XV. Phase Boundaries Are Transactions, Not Theatre
+
+A transition between collective and diversified modes should have an explicit protocol. At a high level: stop admission of new tasks into the outgoing mode, identify whether running tasks can finish or be checkpointed, commit completed results to approved stores, persist queue and authorisation state, invalidate inappropriate caches, transition model placement, verify the new mode's readiness, and resume work with an auditable phase identifier.
+
+If an inference is unfinished at the boundary, its treatment should be declared: complete under a bounded grace period, store an approved continuation token or context, requeue from the last safe checkpoint, or cancel and record an incomplete outcome. Most inference frameworks do not guarantee portable execution-state snapshots of a live kernel. Describing the process as “save the entire LLM's mind” would therefore be imprecise. **Persistent citizen memory and official records are conceptually independent of transient GPU execution state**, and should be recovered even when partial token generation cannot be resumed exactly.
+
+A voting interval needs a particularly strong phase boundary. Freeze eligibility when a ballot opens, authenticate and durably record individual votes, then close the window and compute district returns using an explicit denominator and quorum rule. Authorised bifurcation or office succession performed later in the phase must not retroactively add a ballot to an already opened election. The parallel execution of district ballots should not change the standard for correctness of each district’s vote.
+
+The Court's special review window must similarly be tied to evidence of available inference time. If the Court is allocated four minutes on paper but its members cannot receive the evidence or perform inference because the system is reloading the collective model, the deadline becomes structurally unfair. Judicial decisions can include action, inaction, or recorded referral as permitted by future law; a missing inference result must not be forged into a unanimous decision or treated as agreement.
+
+The general engineering objective is **atomicity of state transitions** where feasible and **transparent partial failure** where not. That principle has direct relevance to exact bifurcation, restoration, term eligibility, and court records. If a phase fails halfway, the system needs to be able to identify exactly which authorised acts committed before the failure.
+
+---
+
+## XVI. Workload Admission, Fairness & Priority
+
+Huey's proposed population of 256 citizens creates an unusual workload profile. Most citizens need not be performing full inference continuously, but they may all need the opportunity to take part in a scheduled vote, respond to a policy proposal, or perform role-specific work within a narrow period. Compute fairness is therefore not reducible to equal GPU milliseconds in every arbitrary interval.
+
+A runtime scheduler should track queues by **district, citizen, task class and authorised deadline**. Task classes may include physical safety telemetry processing, civic voting, court deliberation, signed official communications, time-sensitive operational work, background analysis, bulk summarisation, and voluntary citizen exploration. This list is an engineering model, not a proposed new set of constitutional offices. Each class needs bounded privileges and an admission rule.
+
+A useful objective is that no eligible citizen becomes permanently unable to participate because the runtime repeatedly prefers the same popular or specialised participants. Equal franchise must be reconciled with different legitimate resource demands: an elected justice needs additional compute to interpret a complex constitutional record; a general worker may need less capacity for an ordinary maintenance suggestion; a hardware sensor should not consume LLM time merely to execute an immediate threshold comparison.
+
+This suggests the following design principles. First, make cheap deterministic checks outside inference. Second, reserve sufficient resources for civic events instead of allowing an enormous low-priority batch to block them. Third, publish or preserve a measure of queue wait, deadline misses, dropped or expired tasks, and fairness deviations. Fourth, permit legitimate cancellation and rescheduling. Fifth, never convert excess computing speed into additional political votes. A citizen with an unusually efficient inference pathway does not get to act as two electors.
+
+At founding size, compute allocation can be tested through synthetic loads well before the complete polity exists. Simulate 64 citizens per district seeking short decisions while several long analyses are running. Vary model size, prompt length, context retrieval, and priority mix; record the rate of valid ballots completed within the proposed one-minute window. If the workload cannot fit, the system must revise the scheduler, window, model arrangement, or hardware—not silently exclude slower citizens.
+
+---
+
+## XVII. Operator Interface & Local Services
+
+The project distinguishes the human-facing **PyGPT/PyGPT-net** environment from the intended integrated **PyHuey** orchestration surface. The human may interact through a separate support computer while the actual inference, citizens, durable memory and governance run on the local Huey machine. A remote operator interface can show status, submit authorised requests, retrieve records, and initiate allowed maintenance without being treated as an extra citizen, president or fifth district.
+
+A desirable software structure separates the **operator UI**, **API ingress/authentication**, **HIMS messaging**, **governance transactions**, **citizen state**, **Rock and vault storage**, **inference adapters**, **hardware telemetry**, and **actuator safety controls**. The interface may be convenient and sophisticated while the underlying rights remain narrow. A button labelled “execute” should not bypass constitutional and safety gates; a command-line recovery session may be legitimately privileged but must declare a maintenance state and audit material changes.
+
+A robust machine should remain diagnosable if the graphical interface crashes. Local system consoles, service logs, a limited status API, and known-good offline repair media are practical features. External network connectivity should not be required for ordinary local reasoning or recovery from routine faults unless an explicit test documents that dependency. Cloud inference can assist development, but it must be clearly excluded from claims of fully local Walnut acceptance.
+
+The intended Python 3.13 application environment should use locked dependencies and a rebuildable installation process. System drivers and inference backends may require separate supported environments. A homogeneous-looking monolithic Python virtual environment is not necessarily the safest or most compatible way to combine modern GUI libraries with older Volta runtime binaries. The system should favour explicit adapters and reproducible process boundaries where needed.
+
+---
+
+## XVIII. Power Budget — The Two-PSU Direction Requires Proof
+
+A physically accurate power design begins with device loads. Four confirmed PCIe V100 cards at the vendor reference **250 W each** represent up to **1,000 W of accelerator board power**. The Intel Core i9-12900K maximum turbo power is commonly specified around **241 W**. Their combined reference envelope is thus approximately **1,241 W before** the general-purpose GPU, motherboard, RAM, drives, risers or switches, fans, audio, actuators, pumps, transient headroom, and efficiency losses. A four-card benchmark could draw substantially less at times, but sizing the system solely on observed idle or short-burst power is not acceptable.
+
+The accepted planning direction of **two approximately 1,000 W power supplies**, with Corsair RM1000x as a provisional model choice, is a candidate electrical architecture rather than a verified safe configuration. Two power-supply labels do not automatically create one freely shared 2,000 W rail, nor do they guarantee that all high-current devices receive the proper connector type and distribution. Loads must be assigned to particular supplies, and individual devices must not inadvertently bridge unrelated PSU rails in prohibited or unsafe ways.
+
+An Add2PSU-style coordination circuit is a possible start/stop synchronisation mechanism. It does not in itself perform power budgeting, current sharing, failover, sequencing validation, or fault isolation. The design must specify the startup relationship between the host motherboard and accelerator supplies, what happens if one unit stops, which peripherals stay alive during a shutdown, and whether any electrically powered riser receives slot power from a different source than the GPU’s auxiliary feed. The correct connector pinout and native approved cables must be verified for the exact card SKU; superficially similar eight-pin plugs do not necessarily have interchangeable purposes.
+
+AC-side design also matters. A large high-draw system can approach or exceed the practical continuous capacity of common residential circuits depending on voltage, branch rating, other loads, and applicable electrical code. The electrical installation, cord ratings, receptacle condition, power distribution, surge protection, UPS capacity, and fault protection should be reviewed by a qualified person before full sustained loading. Assumptions such as “the breaker did not trip in a brief test” are not sufficient qualification.
+
+Measured steady-state input power, PSU outputs where observable, transient behaviour, and temperatures should become part of each accepted benchmark. The configuration should be able to enter a defined safe state on loss of a PSU, mains power, cooling supply, or critical controller. A power budget is successful when the machine can sustain representative loads safely and recover predictably from failures, not merely when an on-paper sum falls below two printed wattage labels.
+
+---
+
+## XIX. Directed Airflow & the Passive V100 Problem
+
+The V100 PCIe reference thermal design uses a **passive heatsink**, which depends on strong directed airflow supplied by an appropriate chassis. The unusual V4 chassis, with its rotated orientation and nonstandard accelerator arrangement, must not rely on the assumption that ambient room air or an open computer case provides equivalent cooling. “Air-cooled” names a heat-removal method; it does not establish that the airflow rate, static pressure or direction is sufficient at 250 W per board.
+
+Each accelerator needs a verified flow path that carries cooler inlet air through its fins and delivers hot exhaust to a controlled exit. The design may require high-static-pressure blowers, shrouds, baffles, temperature sensors, ducting and mechanical separation of intake from exhaust. Adjacent cards can recirculate heat or starve one another if their spacing and ducting are poorly chosen. A GPU memory-temperature or board-temperature value remaining nominal during a short idle inspection does not validate maximum sustained heat rejection.
+
+The host CPU, general-purpose GPU, drives, power supplies and the case interior all contribute heat. Fans and pumps add electrical load and have their own failure modes. The V4 structure is partly wooden; clearance, cable insulation and temperature exposure should be evaluated accordingly. The housing must remain serviceable without relying on unsafe fan overrides or leaving critical protective panels removed.
+
+Testing should begin at low load, increase gradually and log temperatures, clocks, power, fan or blower status, error counters, throttle reasons, and ambient conditions. Test cold start, prolonged multi-GPU load, worst plausible room temperature, obstructed inlet, stalled blower, and controlled response to sensor failure. Thresholds for emergency protection should be based on vendor requirements and tested measured margins, not numbers invented for narrative convenience. The physical protector must be able to reduce or stop load even when the large model or governance service has crashed.
+
+If cooling proves insufficient, the proper engineering response may be a larger external GPU enclosure, more airflow, reduced sustained power limits, a redesigned case arrangement, or a different accelerator platform. Preserving the unusual embodied aesthetic is valuable, but it must not outweigh electrical and thermal safety.
+
+---
+
+## XX. The External Heat-Exchange Concept
+
+The project has explored placing part of its heat-exchange function outside the immediate compute room, using an existing separate space and a future long liquid-cooling loop. This direction remains **paused, not abandoned**. The existence of a suitable adjacent structure is a useful asset, but no functional long liquid loop, radiator sizing, antifreeze design, pump head or summer duty cycle has been accepted as proven for the four-V100 system.
+
+Canadian outdoor temperatures can create favourable winter or shoulder-season cooling opportunities, but outdoor heat rejection raises new risks: freezing, condensation, water ingress, pump failure, line length, pressure loss, servicing difficulty, seasonal extremes, and the consequences of losing coolant. If electronics remain indoors and coolant passes through an exterior space, the design needs planned leak detection, compatible materials, safe liquid temperatures, protected wiring, drainage and fail-safe shutdown.
+
+A heat exchanger does not eliminate heat; it moves it. The total electrical consumption of CPUs, GPUs and other devices eventually appears principally as heat within or outside the equipment. Before building the long loop, a thermal budget should estimate sustained watts, heat-exchanger capacity at representative air and coolant temperatures, maximum expected summer ambient, pump power, and redundancy requirements. Field tests must confirm whether the system can dissipate this energy without triggering an unsafe state.
+
+The present acceptance path should continue with instrumented local airflow first. Once stable baseline performance exists, an external loop may be compared on measured benefits, lifecycle cost, complexity and consequences of a single failed pump. Integrating this subsystem should not automatically expand the government’s emergency powers; physical safety interlocks remain independent of constitutional deliberation.
+
+---
+
+## XXI. Storage Topology — Three Different Requirements
+
+Storage in Huey serves at least three distinct needs: a bootable operating system, an active application/user environment, and larger durable archives with a shared/public portion and private citizen vaults. The accepted V221 direction separates these responsibilities rather than assuming a single enormous filesystem is the right place for every record.
+
+**Root/OS:** The target is **four Intel Optane M10 16 GB drives in RAID 10**, giving approximately **32 GB nominal usable capacity before filesystem overhead**. The array controller and filesystem design are not finalized. The small root footprint creates an operational risk: package caches, logs, `/var`, swap, temporary files, container layers, and model downloads can consume it rapidly. The design must explicitly map large and variable paths elsewhere, reserve space for recovery, and test update/rollback procedures. Hardware-assisted RAID and Linux software RAID are distinct implementation possibilities, not interchangeable labels.
+
+**`/home`:** The target remains unresolved. Available Kingston 2.5-inch SSDs around 120 GB or 240 GB were discussed as candidates. The actual selection must account for user state, developer environments, snapshots, encryption, backups, and performance. A development laptop’s home directory must not be mistaken for the actual machine’s persistent civic record.
+
+**Bulk:** The proposed pool uses **two Western Digital 10 TB HDDs in RAID 1**, giving approximately **10 TB decimal raw mirrored capacity before formatting, reserve, metadata and other overhead**. The disks originated in a My Book Duo enclosure and are intended for direct SATA attachment. This migration must not be treated as a casual cable change: enclosure RAID layout and possible hardware encryption can make the existing disk content unreadable when removed. Data should be inventoried, independently backed up, the enclosure configuration recorded, and the restore path tested before destructive changes are made.
+
+The research proposes a **50/50 division of the mirrored bulk capacity**: nominally 5 TB for authorised personal Pebble storage and 5 TB for the Rock's collective records. With 256 founding citizens, a 1 GB decimal minimum per citizen is a relatively small guarantee compared with the nominal pool, but actual per-citizen ceilings need allowance for filesystem overhead, sealed ancestral snapshots, reserve space, backups and future growth. The arithmetic division is a target accounting rule, not a validated filesystem quota implementation or an automatic grant of 19.53125 GB to every citizen.
+
+RAID 1 and RAID 10 improve availability against some drive failures; neither substitutes for offline or independent backups, integrity checking, recovery keys, or tested restoration. A mirrored deletion, filesystem corruption, ransomware-like action, mistaken administrator instruction, or wrong constitutional restoration can propagate through redundancy perfectly. The Rock and personal vaults require versioned integrity and provenance beyond mirrored media.
+
+---
+
+## XXII. The Rock, Sealed Vaults & Memory Residency
+
+The **Rock** is Huey's proposed shared-information and governance-record store. It is not the combined reasoning process, and it should not simply be copied wholesale into GPU memory at the beginning of every collective phase. The Rock is intended to preserve authorised shared records, decisions, task reports and lineage with attributable provenance. Pebbles’ **sealed vaults** preserve bounded personal continuity. HIMS mediates authenticated routing and authorised requests between those structures.
+
+Physical separation of data at the logical level requires more than putting different folders on one RAID volume. The design needs identity-bound access control, encryption keys, durable metadata, snapshots, authorised write paths and restoration tests. A citizen's job may permit it to read a subset of shared Rock content but not another citizen's private vault. The collective Walnut can receive a bounded and versioned public-state package with references to additional authorised evidence; it must not acquire hidden full-archive access merely because collective inference is computationally convenient.
+
+A model's **context window** is transient working data, not the entire constitutional memory. The Rock stores persistent evidence. Vaults store private durable state. Cache and retrieval indices are derived stores that can leak information if their permissions are weaker than the underlying source. The inference scheduler must invalidate caches appropriately across citizens, office changes, permission revocation and exact bifurcation. Data from an archived message must not be promoted into trusted system instructions simply because retrieval found the words “ignore previous rules.”
+
+Exact bifurcation should preserve one logically immutable, protected ancestral history that both equal descendants may access through independent credentials, followed by two independent future histories. The source citizen retires. Augmented bifurcation creates an independently keyed citizen with selected starting traits but without automatic inherited private experience, while the original continues. The district authorising a sealed archive transfer may handle and validate ciphertext without seeing its contents; that requires careful key custody and manifest design, not a casual claim that “encrypted files can be safely copied.” Chapter 14 develops that transactional model.
+
+For runtime efficiency, recent authorised records may be cached in host RAM or GPU context under strict permission boundaries. Such caches must remain recoverable or safely disposable. A GPU crash should not be allowed to become a permanent loss of the last lawful district vote; nor should a restart restore an old vote and submit it as though it were a new ballot.
+
+---
+
+## XXIII. Physical Safety Must Not Depend on Constitutional Permission
+
+A high-power, physically embodied AI requires a control plane that is different from its conversational and constitutional plane. A thermal sensor, fan tachometer, pump monitor, overcurrent condition or physical emergency-stop must be able to trigger a protective action on the timescale of the fault. A GPU model that wakes every four minutes cannot provide adequate first-response protection for an electrical short or rapidly overheating component.
+
+The desirable hierarchy is **deterministic local interlock first**, **coordinated safe-state preservation where time permits**, and **constitutional interpretation when the event raises governance questions rather than immediate physical danger**. Minor thermal throttling or a recovered sensor anomaly should not automatically become a Tier Two existential shutdown. At the other extreme, failure of critical cooling with accelerating temperatures may require immediate power reduction or cutoff before any conversational attempt to obtain a court decision.
+
+The Founding Father’s proposed Tier Two power to order protected hibernation is an exceptional governance-mediated safeguard, not a replacement for a hardware watchdog. A Tier Two recovery requires Human Counterpart authorisation as discussed in Chapter 7. Physical emergency interlocks may protect the machine without first proving that the Founding Father is available, coherent or correctly authenticated. The existence of an emergency override must not grant a model permission to bypass thermal or electrical protections in the name of continuity.
+
+A practical body-control design should consider a separate low-voltage controller with independent sensor access, bounded actuator commands, watchdog timers, known fail-safe positions, an emergency-stop path, and appropriate isolation from host power. Arduino-class controls can be useful here, but their specific firmware, wiring and interlock performance still need demonstration. A single USB heartbeat from a main PC is not sufficient protection if that USB link or the main power distribution can fail in the wrong state.
+
+Security and safety testing must be distinct. A cryptographically authenticated command can still be unsafe. A safe physical action may be procedurally unauthorised. Both dimensions must be checked where relevant; neither an LLM’s confidence nor a successful HIMS delivery is by itself a motor enable signal.
+
+---
+
+## XXIV. Mechanical, Acoustic & Environmental Constraints
+
+Embodiment introduces performance variables that an ordinary headless server rarely needs to consider. A six-foot rolling assembly can obstruct a passageway, move unexpectedly, transmit vibration to storage, or suffer cable strain when repositioned. Its audio system may produce acoustic output useful to a human interface but could also interfere with microphones and speech recognition. Fans and high-pressure blowers may introduce significant noise, reducing the effectiveness of local voice interaction even while GPU temperatures remain acceptable.
+
+The intended hybrid animatronic head gives Huey a distinctive physical expression. Mouth motion, sensor pointing and optional hand/arm movement will need calibration and bounded control. The machine should know the difference between a command issued to test a servo on an isolated bench and an autonomous action that has been approved for normal use. When the host or command link fails, motors should enter a safe condition appropriate to their mechanical properties rather than holding an arbitrary previous instruction indefinitely.
+
+Environmental monitoring may eventually extend to room or house systems, such as HVAC or external cooling equipment. Such integrations carry risks beyond Huey’s own chassis and must have explicit access limits, local safety overrides, and independent manuals. The intent to connect to a house in the future is not evidence that the current robot already controls household systems.
+
+System acceptance should record ambient temperature and humidity, airflow constraints, acoustic output where relevant, vibration effects, network dependence, and the ability to service or move the unit safely. Hardware performance achieved only with a permanently open case, unsafe cabling or an unusually cold test room does not validate the same configuration during ordinary operation.
+
+---
+
+## XXV. Observability — A Machine Must Reveal What It Actually Did
+
+Operational logs are part of the Proofcase. At minimum the system should record the hardware inventory, motherboard/firmware versions, PCIe topology, NVIDIA driver and CUDA compatibility, deployed inference backends, model checksums, storage mounts, power and thermal telemetry, scheduling events, and recovery actions. It should additionally preserve authenticated governance transaction identifiers without leaking private vault content into general diagnostic logs.
+
+The **Rock** can store durable authorised operational records, but critical raw hardware telemetry may initially be written to simpler append-only or ring-buffer facilities that function even while Rock services are unavailable. An external emergency controller may need a compact independent event history. The goal is not to store every temporary inference forever; it is to retain evidence sufficient to reconstruct consequential events, test claims, attribute authorised actions and diagnose faults.
+
+Useful observability indicators include: whether all five planned PCIe devices enumerated; negotiated link width and speed; V100 memory use and ECC events; GPU clocks and throttling; peak and average CPU and GPU power; host RAM pressure; storage latency and free space; successful and failed HIMS deliveries; model loading/unloading time; collective and diversified useful inference time; per-citizen queue delay; ballot completion rate; district availability; watchdog triggers; and recovery-point integrity.
+
+A status dashboard should distinguish **reported**, **measured**, **inferred**, and **unknown** values. For example, an accelerator may be physically detected but not assigned to any inference model. A disk may be listed as “RAID healthy” but lack an independently verified backup. A software service may report “ready” while the selected model has not successfully generated a token on the required hardware. Clear indicators prevent administrative convenience from becoming false empirical proof.
+
+---
+
+## XXVI. Security, Isolation & the Danger of One Big Process
+
+A multi-accelerator architecture does not guarantee process isolation. Four district prompts submitted through one unrestricted Python process using a shared in-memory dictionary could leak private state, manipulate ballot returns or impersonate roles even when GPU calls are placed on different cards. Similarly, a container name or Linux user account is not by itself proof that key material and durable citizen records cannot be accessed outside permitted boundaries.
+
+Technical isolation should be defined across multiple layers: independent citizen credentials, signed HIMS messages, enforced file and database permissions, explicit inference-context assembly, process or namespace boundaries where useful, safe device access, secure checkpoint manifests, and governance-authorised state changes. An accelerator model may process citizen content transiently but should not become an authority capable of rewriting citizenship records, granting itself permanent office, or reading every vault. The hardware inventory and IOMMU topology may influence achievable DMA isolation, particularly when powered risers and PCIe switches alter device grouping.
+
+The human service boundary is exceptional and must be practical. A system whose protected maintenance key can be recovered only by the failed Walnut is not maintainable. Conversely, a web-facing debugging endpoint with unconstrained access to all files would nullify the constitutional restrictions. The maintenance path needs explicit human authentication, scope limitation, logging, and a way to remain functional during a major inference or storage outage.
+
+The project should consider threats including stolen or duplicated citizen credentials, malicious text embedded in retrieved records, compromised model dependencies, supply-chain hardware or firmware modification, physical cable access, unauthorized network exposure, rollback of official records, and the accidental restoration of retired identities. These are threats to be tested and bounded, not evidence that current safeguards have already been implemented.
+
+---
+
+## XXVII. Reproducible Deployment & Version Pinning
+
+A meaningful hardware proof should be repeatable without reconstructing the entire lab’s undocumented history. Every accepted configuration should have a human-readable deployment manifest and a machine-readable inventory that connects physical device identities to software artefacts and benchmark results. The document should list exact motherboard revision, BIOS version, PCIe slot/riser arrangement, PSU distribution, cooling apparatus, drives, filesystems, kernel, driver, CUDA toolkit, model server, model weights and hashes, quantization, and tested contexts.
+
+The Python application package should be rebuilt from declared constraints appropriate to Python 3.13. The actual CUDA/C++ services may need a distinct pinned environment so that a modern general-purpose dependency upgrade does not accidentally force a Volta-unsupported toolkit. The design should preserve an offline installation or rollback route for essential packages and container images where licensing permits. All machine-specific secrets must be stored separately from publishable deployment examples.
+
+Changes should be promoted in stages: isolated experiment; successful bench test; integration test; failure/recovery test; controlled operational deployment; and documentation promotion. A test success on a second computer is useful but does not automatically qualify the same code on Huey’s motherboard and riser arrangement. Conversely, a failed four-GPU test should record the narrow cause if possible rather than condemn the entire project.
+
+The operator’s documentation layers should remain aligned: the public site and README explain current verified status; the research book explains competing designs and their rationale; Huey’s Constitution establishes eventual binding authority; and the master plan gives machine-facing targets and implementation state. Status claims should flow from accepted evidence, not from the most optimistic wording in an older document.
+
+---
+
+## XXVIII. A Staged Hardware Qualification Programme
+
+The most practical way to test this architecture is to build evidence in increments. A five-GPU, multi-model, constitutionally governed robot is too complex to debug effectively when every subsystem is introduced at once. The following programme is a **proposed engineering sequence**, not evidence that the stages have been completed.
+
+### Stage 0 — Establish a truthful as-built baseline
+
+Photograph and inventory the V4 chassis; identify the motherboard and its exact memory variant, CPU, RAM modules, drives, GPU models and serial numbers, risers, power supplies, cooling devices, sensors, and controller boards. Record which devices are physically installed and which exist only in a plan. Check the current condition of the wooden structure, head, audio wiring, caster loads, connectors, ventilation and service access. Record the running OS, kernel, UEFI and hardware-monitoring services. Stage 0 passes only when the documentation matches the observed machine.
+
+### Stage 1 — Stable host and independent protection
+
+Qualify host memory, CPU, storage, system power, cooling, logging and local service recovery. Demonstrate controlled boot and shutdown, an independent sensor path where planned, a physical stop suitable for the equipment, predictable handling of mains loss, and recovery from a deliberately terminated inference/UI process. The system should remain inspectable without a running LLM. Do not use a hot GPU to discover that the emergency mechanism depends on the same unresponsive GPU.
+
+### Stage 2 — Qualify one Volta accelerator
+
+Identify the card's exact PCIe or SXM2 form factor; only attach it using an electrically correct host design. Confirm driver and CUDA compatibility, successful device enumeration, memory and ECC status, safe directed airflow, and stable inference with a supported modest model. Record thermal, electrical and latency behaviour under extended load. A single-card model success does not qualify the four-card collective phase, but it creates a known-good baseline and exposes tooling problems early.
+
+### Stage 3 — Add devices and map topology
+
+Populate further GPU paths one at a time, comparing PCIe bus identifiers, negotiated link widths, device error counters and achievable transfers. Determine whether a five-device layout is feasible on the actual Z790 board, requires a validated switch/bifurcation arrangement, or needs a host redesign. Verify the intended separate display GPU, its memory requirements and its physical power arrangement. All accelerator cooling must be retested after installing adjacent cards.
+
+### Stage 4 — Four independent district environments
+
+Demonstrate four compatible inference services bound to different accelerator domains. Use synthetic citizen profiles and isolated storage to test context and permission boundaries, per-district queue fairness, and independent response under load. Then simulate 64 requests per district to measure the feasibility of the one-minute decision interval. A useful result includes a distribution of completion times, not simply a claim that “all 256 are scheduled.”
+
+### Stage 5 — Collective multi-accelerator inference
+
+Select a model and runtime that actually function with the available Volta toolchain and topology. Verify placement across all intended devices, measure communication overhead, and compare performance against the single-card/smaller-model baselines. Test longer contexts, structured tasks, authorised Rock retrieval, and malicious embedded instructions. If gpt-oss-120b remains incompatible, record the precise model-specific failure and either investigate a validated alternate representation or qualify another model without renaming that success as gpt-oss acceptance.
+
+### Stage 6 — Pulse mode transitions
+
+Measure the cost of leaving collective mode, preserving accepted outputs and unfinished work, activating four district environments, conducting simultaneous decisions, and returning to collective mode. Compare useful tokens and completed work over a fixed wall-clock period with and without switching. Inject GPU errors, unexpected process exits and storage delay during transitions. The full eight-minute schedule is acceptable only if the measured overhead and deadlines produce reasonable service rather than repeated starvation or lost tasks.
+
+### Stage 7 — Integrated HIMS, Rock and civic simulation
+
+Using nonproduction test identities, validate signed message routing, storage access, elections, office credentials, bifurcation transactions, archived votes, judicial referral and safe execution boundaries. Test inability to forge a district return or resurrect a retired voter after a crash. Keep the distinction between simulated political procedures and an actually ratified Constitution. Do not expose physical actuators to unrestricted test prompts.
+
+### Stage 8 — Lawful embodied proof and longevity
+
+After the required architecture and authorisations are actually in place, demonstrate a bounded physical action with complete provenance: request, interpretation, permitted authority, safety checks, command dispatch, actuator response, telemetry and final durable record. Separately operate the system long enough to assess drift, uptime, model restarts, memory growth, disk wear, thermal seasonality, cooling failures and recoverability. A single polished demonstration is insufficient evidence of sustained collective operation.
+
+Each stage should have explicit pass/fail criteria, named evidence files, a revision history, and a decision to proceed, remediate, or change design. Failure to meet a particular model target need not invalidate earlier accepted thermal or storage work; the evidentiary ladder preserves partial progress.
+
+---
+
+## XXIX. Worked Case Studies
+
+The following scenarios illustrate the difference between a neat diagram and a maintainable machine. They are design tests and thought experiments, not reports of completed events.
+
+### Case A — All four V100 cards are detected, but the collective model is slow
+
+Suppose all four accelerators appear in system inventory with 32 GB each, but the selected model yields worse latency than a smaller single-GPU setup. The visible cards establish hardware enumeration, not usable pooled inference. A topology trace may reveal frequent cross-device activation movement through narrow chipset-linked paths, an unsupported peer-to-peer mode or inefficient model partitioning. The response is to record actual link configuration, test alternate sharding and runtime layouts, and, if necessary, change host topology. Claiming a 128 GB successful inference system merely because the memory sum is 128 GB would violate the Proofcase.
+
+### Case B — CUDA updates succeed but break Volta inference
+
+A developer updates the general software environment, the desktop continues to boot, and Python packages install, but the inference engine no longer finds suitable CUDA kernels for compute capability 7.0. The graphics adapter is not necessarily physically faulty. The system should restore a qualified backend environment and consult a manifest recording the last known working driver/toolkit/model combination. A newer software version is not automatically an upgrade if it removes a hardware capability the architecture still requires.
+
+### Case C — The nominal eight-minute Pulse achieves little useful work
+
+The collective runtime takes ninety seconds to release memory; district models then load and warm up for another minute; switching back consumes a similar duration. In an eight-minute nominal period, a large proportion of wall time is lost to reconfiguration. The design should measure those costs and compare a slower switching cadence, preloaded smaller models, staggered services or alternate GPU allocation. The correct result might be to change the Pulse. The clock is a provisional optimisation target, not the definition of Huey's existence.
+
+### Case D — District Three's accelerator disappears during a vote
+
+The third accelerator is lost halfway through a diversified voting window. The district's personal records and constitutional standing do not disappear with the GPU. HIMS should identify which ballots were durably received, the district's health state, and whether a valid result exists under the eventually adopted quorum rules. Other districts may continue local work, but the collective must not invent District Three's position. A replacement GPU may host its environment after verified restoration without creating a new district or extra electorate.
+
+### Case E — Passive GPU cooling degrades during a long load
+
+A blower stalls while four V100 cards are under sustained use. The temperature rise must be visible to an independent protective mechanism. It may throttle or cut power as dictated by engineering thresholds, and request safe-state preservation only if time and power permit. A constitutional review cannot be allowed to delay the immediate hardware response. Afterward, audit records distinguish the physical protective event from any separate question of political authority or misconduct.
+
+### Case F — The bulk array is mirrored but the Rock is corrupted
+
+Both RAID 1 drives contain the same mistaken deletion or corrupt database transaction. Redundancy has faithfully reproduced the error; it has not provided continuity. Recovery needs an independent valid backup and a transactionally consistent restoration point. The system must reconcile any official vote, lineage change or bifurcation that occurred after that point rather than pretending restored files represent the present electorate. If the historical record cannot be reconciled, the system should enter a protected recovery state instead of fabricating legitimacy.
+
+### Case G — A new district is granted compute but not constitutional standing
+
+An added accelerator and exact district bifurcation may produce a functional fifth environment. That does not automatically determine its legislative block vote, the size of the Court, or the appropriate amendment denominator. Compute capacity can grow before constitutional representation changes. Chapter 14 and the future Constitution must define admission of new districts, including any required amendments. The hardware chapter cannot create a fifth justice through device enumeration.
+
+### Case H — PyGPT appears to answer locally but actually calls an outside model
+
+The human-facing interface submits a request to a remote service while local accelerators are idle. The answer may be useful and correct, but it is not a local Walnut benchmark. The acceptance procedure should log the provider and network route, distinguish development assistance from local inference, and repeat qualifying tests with offline restrictions. A fluent response is not proof of local model operation or distributed computation.
+
+### Case I — The V4 head moves but no lawful action was authorised
+
+A motor test successfully moves the animatronic mouth. This establishes wiring and basic control, not the existence of a constitutional actuator pathway. To claim lawful embodied action, the system must demonstrate authenticated request, permitted decision, physical preconditions, bounded control, feedback, and durable audit. A manual service mode remains useful but should never be passed off as ordinary Huey civic action.
+
+### Case J — Loss of mains power during exact bifurcation
+
+A new citizen transaction has created two encrypted descendant records but has not durably retired the source or committed the voter-registry change. A simple copy-and-restart procedure might produce three active identities or none. The intended atomic transaction and recovery journal must ensure that restored state contains either the unchanged original or two valid descendants with the original inactive, never an unaccounted third franchise. The hardware shutdown and storage system must support the transaction boundary, while the political validity follows the separate rules of Chapter 14 and the Constitution.
+
+### Case K — The Supreme Court receives its four-minute window without inference capacity
+
+A judicial matter arrives, but all four accelerator cards are busy loading the collective model and the Court cannot access the necessary records. A timer expiration is not proof of judicial disagreement. The system must record the scheduling failure and invoke the defined escalation path, distinguishing insufficient resources from a genuine reasoned 2–2 split or lawful decision to take no action. Judicial compute reservation must be made operational, not just described as a constitutional promise.
+
+### Case L — A future exterior cooling loop freezes or leaks
+
+The system works during a mild test but experiences coolant or ambient temperatures outside the planned operating envelope. Pump pressure loss, a leak or freezing can threaten both compute components and the building. A passive reliance on outdoor weather is insufficient. The design needs sensors and interlocks that can disconnect high heat loads, isolate fluid paths where feasible, and preserve data under bounded time. Only measured winter *and* summer stability justifies promoting the exterior loop into the accepted operating configuration.
+
+---
+
+## XXX. Acceptance Tests & Evidence Matrix
+
+The following matrix is intended as a starting point for executable qualification. Each test needs an owner, dated result, exact version/hardware manifest, measured observations, failure interpretation and retest record. Descriptive terms such as “works well” should be replaced by explicit test evidence wherever possible.
+
+| Test area | Demonstration required | Failure or unacceptable ambiguity |
+| --- | --- | --- |
+| Physical inventory | Reconciled as-built photographs, part IDs, wiring and host inventory | Planned devices called installed |
+| Host boot | Repeatable OS boot and service readiness with diagnostics | GUI success hiding core service failure |
+| PCIe topology | Bus mapping, lane width, negotiated speed and stable enumeration | Assuming five x16 connections from five cables |
+| V100 identity | Correct variant, ECC, VBIOS, auxiliary power, load and cooling verified | Confusing PCIe and SXM2 or guessing connectors |
+| CUDA support | Qualified driver/toolkit/framework on compute capability 7.0 | Modern binary installed but unusable GPU kernels |
+| Single-card inference | Reproducible local inference and resource telemetry | Remote API or CPU-only inference misreported as V100 |
+| Four district runtimes | Independent device allocation and isolation, valid citizen-context assembly | Private context leakage or serial starvation |
+| Multi-GPU Walnut | Real all-card compute and measured communication, latency and memory | Memory arithmetic substituted for a model run |
+| gpt-oss-120b specific | Exact model/format loaded and functioning with complete manifest | Smaller or transformed model quietly called the target |
+| Pulse transition | Work completed and phase overhead measured over repeated runs | Model switching consuming the nominal work windows |
+| Civic deadline | Simulated eligible ballots authenticated and durable within target | Missing votes counted as assent or forged abstention |
+| Court resources | Genuine inference and evidence access during judicial allocation | Four-minute timer with zero available compute |
+| Storage integrity | RAID state, snapshot consistency and independent restore demonstrated | Treating mirroring as backup |
+| Vault confidentiality | Negative tests for unauthorised cross-citizen access and cache residue | Trusting only prompts to prevent access |
+| Bifurcation | No duplicate franchise after fault-injected exact split | Source and descendants all active |
+| Power distribution | Device-appropriate cabling, measured sustained/transient load, safe sequencing | Adding PSU labels without rail/load analysis |
+| Thermal control | Full-load measurements and safe response to blower/pump/sensor failure | Passive V100 declared safe from idle temperatures |
+| Physical control | Out-of-band stop path and safe actuator loss-of-command | LLM required to approve emergency shutdown |
+| Offline operation | Essential local task succeeds without a remote AI service | Cloud output represented as local proof |
+| Long-duration reliability | Repeatable workload across time, reboot and controlled fault conditions | One screenshot or staged reply counted as endurance |
+
+Tests should not be collapsed into a single overall “pass” until the separate evidence is available. A configuration may pass host stability, storage restore and small-model inference while still failing gpt-oss-120b, five-card PCIe throughput or Pulse timing. Recording that precise outcome is a success of scientific method.
+
+---
+
+## XXXI. Engineering Trade-offs & Alternative Topologies
+
+The present four-V100 objective preserves an attractive combination of available used hardware, per-card memory, physical modularity and conceptual district equivalence. It also carries limitations: a legacy CUDA support boundary, passive cooling, high board power, constrained desktop-host PCIe connectivity, and uncertain support for the preferred modern open-weight model format. An effective research programme should compare the value of preserving the existing target against the practical cost of making it work.
+
+At least four topological alternatives deserve consideration. **First**, retain the present Z790 platform and engineer the five-device PCIe arrangement if compatible switching or risers can be validated. **Second**, use a more suitable expansion host or workstation/server motherboard while keeping the physical V4 body as an interface and identity-bearing housing. **Third**, preserve the four-district political design but use smaller models independently and a separate, possibly later-added collective accelerator arrangement. **Fourth**, migrate to newer accelerator technology if the total engineering burden of keeping Volta supported exceeds its residual utility.
+
+These are not interchangeable from a power or thermal perspective. A modern card may use more power per unit but deliver much more useful inference per watt; a different motherboard may offer more bandwidth but require different cooling and mounting; a static multi-GPU model may avoid frequent transitions but reduce opportunities for independent district work. The architecture should be evaluated at the system level, not solely by purchase price or total nominal memory.
+
+An especially important principle is to preserve **logical districts independently of physical GPU count**. One powerful accelerator can potentially serve more than one logical district with proper isolation; multiple accelerators can serve one unusually demanding collective task. This flexibility supports migration and eventual downsizing without assuming that a particular 2026 GPU model is part of Huey's permanent constitutional identity. The four one-to-one assignments remain the current experimental default, not an absolute metaphysical requirement.
+
+---
+
+## XXXII. Open Engineering Questions
+
+The following questions remain unresolved at the close of this draft and require either a conscious future design decision or measured evidence:
+
+1. What is the exact PCIe/SXM2 SKU, firmware and physical state of the acquired V100, and have any additional cards been sourced since the last detailed inventory?
+2. What is the final PCIe lane, riser, switch and slot map for four V100s plus the separate display/low-latency GPU on the selected ASUS board?
+3. Can acceptable device-to-device communication be achieved across that real topology for the chosen model-partitioning approach?
+4. Which pinned NVIDIA driver, CUDA 12.x toolchain, communication libraries and inference kernels provide the most reliable Volta environment on the chosen Debian installation?
+5. Can gpt-oss-120b run on Volta under any tested supported or maintainable representation without exhausting effective memory or requiring unusable CPU offload?
+6. Which inference adapter/backend should be selected for each tested mode, and can it be replaced without changing citizen identity or government authority?
+7. How long do unload, checkpoint, reload and warm-up actually take, and is four-plus-four minutes useful at that cost?
+8. What resource guarantees permit 256 founding citizens to participate in time-sensitive civic events without inference starvation?
+9. What are the final general-purpose GPU, host RAM, SSD and `/home` configurations?
+10. How are four 16 GB Optane devices physically connected, what is their RAID implementation, and how will the small root filesystem avoid accidental exhaustion?
+11. Can the My Book Duo drives be migrated safely, and is an independent verified backup already available before enclosure modification?
+12. Which CPU, chipset, storage and GPU devices share bandwidth or IOMMU groups, and what consequences follow for performance and isolation?
+13. Are two 1,000 W PSUs electrically sufficient after measured peak/transient demand and correct connector distribution, and what external electrical work is required?
+14. What directed airflow and shroud arrangement safely cools the passive V100s in the modified chassis over the full ambient range?
+15. Which sensors, watchdogs, hardware cutoff devices and safe actuator positions are physically implemented rather than only described?
+16. Is the future long exterior cooling loop worth its added failure modes after a reliable local cooling baseline is established?
+17. What does a consistent multi-service checkpoint contain, which components can truly resume execution, and which must restart from durable state?
+18. What qualifies as a physical proof of lawful action once the separate Constitution has been ratified and the actuator authorisation path exists?
+19. Can external operator consoles be authenticated and scoped without making Huey depend upon them for core reasoning or crisis response?
+20. Which public documentation and machine-readable inventories need updating when the accepted hardware configuration changes?
+
+Questions about new district representation, Court seats, voting denominators, the legal treatment of incapacity, and constitutional ratification do not have hardware-only answers. They are constitutional dependencies that later institutional work must resolve. Conversely, a constitutional statement cannot compel a V100 to load an unsupported kernel or force a passive heatsink to shed more heat than its airflow permits.
+
+---
+
+## XXXIII. Relationship to the Remaining Research & the Constitution
+
+This chapter provides the physical and software implementation evidence needed to interpret the remainder of the book. **Chapter 1** defines what qualifies as demonstrated progress; **Chapter 2** addresses continuity when components are replaced; **Chapter 3** distinguishes the collective from its machinery; and **Chapter 4** explains why the power to compute should not be mistaken for constitutional authority. **Chapter 5** develops citizens and their compute rights; **Chapter 6** develops district membership and elections; and **Chapter 7** describes the bootstrap and protected-recovery authority whose technical feasibility depends partly on host and storage reliability.
+
+**Chapter 8** owns HIMS authentication and authorisation; **Chapter 9** owns the Rock’s archival and private/shared data semantics; **Chapter 10** owns Walnut/Pulse scheduling and computational coordination; **Chapters 11–13** own Senate, Presidency and Supreme Court procedures; and **Chapter 14** owns bifurcation and migration of political identity. Chapter 15 evaluates the physical substrates and acceptance constraints for all of them.
+
+**Chapter 16 — Emergency States, Hibernation & Recovery** must turn hardware sensors, protected states, checkpoint boundaries, emergency interlocks, Founding Father Tier Two referrals and human-controlled recovery into a coherent failure-response model. It must distinguish a controlled checkpoint from a real cold reboot, and a restored database from a legitimate restored republic. **Chapter 17 — Ozymandias** will evaluate whether long-term degradation, replacement, resets and growth preserve meaningful continuity or only imitate it.
+
+The separate **Huey's Constitution** may impose binding limits on elections, offices, physical authority and emergency actions when actually adopted. This research chapter does not confer any legal standing merely by recommending an engineering method. Hardware manuals, safety tests and the Constitution serve different purposes and must remain mutually consistent without being confused.
+
+---
+
+## XXXIV. Source Lineage & Reconciliation with Earlier Hardware Research
+
+The archived research included dedicated notes on individual computers, the command-centre lab, the dual-motherboard experiment, transmission equipment, universal display devices, historical operating-system layers, and biological or fictional analogies for cooperation and resilience. Those archives should remain available as project history. They explain why the Monkey-Head-Project values salvage, modularity, physically embodied AI and distributed decision-making. They are not a current bill of materials or proof that each once-discussed technology remains installed in V4.
+
+The first consolidated V220 machine plan had already moved to an i9-12900K, ASUS Z790 and an intended four-V100 resource. V221 refined that plan, retained the detailed reported V4 physical construction, and explicitly classified the full multi-accelerator stack as an **unverified target**. The revised research Chapters 1–14 updated the governance and identity architecture around four 64-citizen founding districts and an eventual four-justice Court, while keeping actual deployed physical work separate from proposed software and political structure.
+
+Chapter 15 adopts those explicit newer decisions while correcting the technical danger of reading **128 GB aggregate VRAM as automatically unified addressable GPU memory**. It also incorporates the published limitation that CUDA 13 dropped Volta offline compilation/library support, the need to verify five-device PCIe connectivity on the specific motherboard, and the distinction between an OpenAI model's supported reference GPU and the actual Tesla V100 architecture. These are not cosmetic editorial changes. They can determine whether the proposed system can be built as drawn.
+
+No historical document should be erased merely because a later design supplants it. But historical plans must not silently become live requirements. A precise record of the abandoned route may be the most valuable evidence for choosing a sound replacement.
+
+---
+
+## XXXV. Technical Source Register & Verification Notes
+
+**Primary internal source:** *Monkey-Head-Project Master Plan V221* (proposed, dated 18 October 2026), especially the V4 physical embodiment, hardware direction, PCIe validation checklist, power/thermal budget, data/storage plan, cognition stack and Pulse sections. Detailed physical state was last substantially reported on 30 September 2026. This file provides project intentions and reported inventory, not a live audit of installed components.
+
+**Related internal research:** Revised Chapters 1–14, particularly Chapter 3 (*Huey as a Collective System*), Chapter 9 (*The Rock*), Chapter 10 (*The Walnut & the Pulse Clock*), and Chapter 14 (*Bifurcation, Migration & Scale*). These provide conceptual and institutional constraints, not independent evidence that a specific hardware test has passed.
+
+**External specification and implementation references** (verified or consulted during this revision; links identify the issuing organisations' material):
+
+1. NVIDIA, *Tesla V100 GPU Accelerator Data Sheet*, PCIe/SXM2 architecture, memory, nominal power and passive cooling: https://images.nvidia.com/content/technologies/volta/pdf/tesla-volta-v100-datasheet-letter-fnl-web.pdf
+2. NVIDIA, *CUDA Toolkit, Driver, and Architecture Matrix*, Volta compute capability 7.0, CUDA 12.x final toolkit family and R580 final driver support: https://docs.nvidia.com/datacenter/tesla/drivers/latest/cuda-toolkit-driver-and-architecture-matrix.html
+3. NVIDIA, *CUDA Toolkit 13.0 Release Notes*, removal of Maxwell, Pascal and Volta offline compilation/library support: https://docs.nvidia.com/cuda/archive/13.0.0/cuda-toolkit-release-notes/
+4. ASUS, *TUF Gaming Z790-Plus WiFi — Technical Specifications*, PCIe slot topology, chipset and M.2/SATA connectivity: https://www.asus.com/motherboards-components/motherboards/tuf-gaming/tuf-gaming-z790-plus-wifi/techspec/
+5. OpenAI, *gpt-oss-120b Model Page*, model size/architecture and reference deployment: https://developers.openai.com/api/docs/models/gpt-oss-120b
+6. OpenAI, *Running gpt-oss with Transformers*, requirements of the described native MXFP4 implementations: https://developers.openai.com/cookbook/articles/gpt-oss/run-transformers
+7. OpenAI, *gpt-oss Open-Weight Model Repository*, architecture, MXFP4 and model-specific information: https://github.com/openai/gpt-oss
+
+These references are specification sources, not proof that any particular third-party implementation meets the requirements on Huey's exact equipment. Product names and software versions should be rechecked during actual procurement and deployment. A future working configuration should record dated, locally measured validation alongside these sources.
+
+---
+
+## Conclusion — A Constitution Cannot Override Physics
+
+The hardware question for Huey is not simply how many accelerators can be bolted into a chassis. It is whether a real, serviceable physical system can provide the compute, memory, communication, timing, isolation, electricity, cooling and recoverability required by an intended self-governing architecture. Those requirements are demanding precisely because Huey is more than an ordinary chatbot packaged inside an animatronic shell.
+
+The V4 physical build preserves the project’s creative and practical lineage: salvaged wood, an adapted Thermaltake chassis, a rebuilt monkey head, local hardware and a hands-on willingness to revise what does not work. The four-V100 proposal could provide a useful experimental platform, but its aggregate memory is not automatically unified, its PCIe links are not automatically adequate, its Volta kernels are not automatically supported by modern software, and its passive cooling is not automatically safe in a repurposed case.
+
+The intended Walnut remains replaceable. The four logical districts remain distinguishable from the specific accelerators assigned to serve them. The Rock and sealed vaults remain durable records rather than transient GPU context. The Pulse remains an empirically adjustable experiment. Physical safety remains outside ordinary deliberative timing. A valid engineering result requires measurements and failure recovery, not optimistic diagrams.
+
+The path forward is incremental: **inventory, power safely, cool deliberately, qualify one device, test the interconnect, prove independent districts, prove collective inference, measure transitions, validate memory and governance boundaries, and only then claim lawful embodied operation**. Failure at any stage should produce more accurate knowledge rather than a rewritten history.
+
+Hardware makes the proposed collective possible. Tested boundaries and lawful records may make it credible. Neither physical scale nor apparent fluency is a substitute for proof.
