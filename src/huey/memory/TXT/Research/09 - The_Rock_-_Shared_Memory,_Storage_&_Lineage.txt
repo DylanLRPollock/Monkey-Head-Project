@@ -1,761 +1,630 @@
-09 - Parliament
-Monkey-Head-Project
-Chapter 9
+# 09 - The Rock: Shared Memory, Storage & Lineage
 
-Parliament
+**Monkey-Head-Project**  
+**Research Chapter 9 — Complete Proposed Revision**  
+**18 October 2026**
 
+*Document status: working research, not ratified constitutional law and not a statement that the proposed storage, cryptographic, or governance services are already deployed. This paper draws upon the original research archive, the previous Rock and HIMS concepts, the revised research Chapters 1–8, and the decisions made during the documentation interviews. Quantities and procedures are marked as proposals wherever implementation or constitutional approval remains outstanding.*
 
-Introduction
+---
 
-A republic that can act and interpret but cannot deliberate will eventually lose the citizen body beneath its own authority.
+## Introduction — A Collective Needs Somewhere to Remember
 
-The President may act under time constraint.
-The Supreme Court may interpret and stabilize.
-But if no lawful branch exists to surface proposals, compare alternatives, organize plurality, and transform many bounded citizens into legible civic process, then the republic will slowly harden into executive convenience and judicial correction without true representation from below.
+A machine can speak without remembering what it said. An application can log everything without understanding which entries matter. A distributed system can hold copies of records while no participant knows which copy is authoritative. None of these conditions is sufficient for the kind of continuity the Monkey-Head-Project is attempting to investigate.
 
-That is why Parliament exists.
+Huey is intended to be a governed collective composed of bounded citizen actors, districts, elected offices, a shared but replaceable inference resource, physical subsystems, and communication channels. Those components do not become one coherent system merely because their processes run on the same computer. They require information that can be referred to consistently, decisions that can be traced to their legitimate sources, and a history that survives a change in officeholder, model, hardware, or even the structure of the citizen population.
 
-Parliament is the deliberative and representative branch of the living republic. It exists to give organized civic form to plurality, to generate motions and proposals, to structure consensus-building, to preserve the lineage of debate, and to ensure that the citizen body remains politically real rather than merely symbolic.
+That is the research purpose of **the Rock**.
 
-This distinction matters.
+In the current working terminology, **the Rock is Huey's durable shared-information and governance-record store**. It is the place where authorized collective facts, official outcomes, institutional records, common references, and explainable lineage can be maintained. A Pebble's personal sealed vault is not the Rock. The HIMS messaging system is not the Rock. The replaceable LLM or Walnut is not the Rock. The collective Pulse is not the Rock. Their relationships matter, but they should not be collapsed into one all-reading, all-writing service.
 
-Parliament is not Huey.
-Parliament is not the President.
-Parliament is not the Supreme Court.
-Parliament is not the Founding Father.
-Parliament is not the Constitution itself.
+The name itself preserves a useful image. Pebbles contribute to a larger order of shared knowledge without surrendering their personal histories or becoming indistinguishable from one another. The Rock is not the mind of a monarch. It is a common body of recorded information against which the collective can compare claims, act on legitimate decisions, and remember why it did so.
 
-Parliament is one constitutional branch among three equals.
-Its task is not to become the whole state, but to give lawful organized voice to the citizen body inside the state.
+The original research sometimes used the term *Rock* for the pooled deliberative or cognitive substrate formed by citizens working together. That meaning was useful historically. It has since been deliberately narrowed. **Shared storage and collective reasoning are now separate concepts.** The collective reasoning process belongs to the Walnut and the two-phase Pulse; the Rock is the enduring shared record that those processes can read, question, and update only through lawful pathways.
 
-The branch formula remains simple:
+The central research question is therefore not simply, “Where do we put the files?” It is:
 
-Parliament deliberates.
-The President acts.
-The Supreme Court interprets.
+**How can Huey preserve a common, trustworthy, recoverable history without turning shared memory into universal surveillance, arbitrary write access, or a hidden source of political authority?**
 
-That is the branch this chapter defines.
+---
 
+## I. The Scope of the Rock
 
-I. Purpose of the Chapter
+For this chapter, the Rock is a **logical storage and record-management domain**, not the name of a specific hard drive, filesystem, database engine, or mandatory directory. Multiple physical devices or services may support it. Its defining qualities are the information it holds, the access rules surrounding that information, and the evidence needed to distinguish a valid state change from a mere attempt to change state.
 
-This chapter defines the lawful role of Parliament.
+The Rock is intended to hold, subject to future policy and classification:
 
-It explains:
-- what legislative and representative authority are for,
-- what Parliament is allowed to do,
-- what it is not allowed to become,
-- how proposals, motions, and debate become lawful collective process,
-- how consensus-building differs from coercive alignment,
-- how Parliament represents the citizen body,
-- how the Speaker role works,
-- how Parliament relates to the President, the Supreme Court, the Founding Father, HIMS, and Huey as a whole,
-- and how the branch remains plural, structured, and bounded rather than chaotic or sovereign.
+1. **Founding and constitutional records:** constitution versions, ratification evidence, recognised office creation, continuity events, and later lawful amendments.
+2. **Civic outcomes:** eligible voter-roll references, certified district returns, legislative results, official judgments, and properly recorded executive decisions.
+3. **Collective operating knowledge:** shared procedures, approved reference materials, verified subsystem inventories, resource summaries, and published operating status.
+4. **Task coordination records:** accepted objectives, district assignments, refusals with reasons, completed work, and comparative evaluations.
+5. **Provenance and continuity records:** founding lineage, identity lifecycle events, archival references, migration manifests, and restoration reports.
+6. **Public or designated shared knowledge:** material intentionally approved for the common reference set, with its origin, revision history, and access scope identified.
+7. **Evidence of official communication:** applicable entries or references from the Scrolls maintained through HIMS, without indiscriminately dumping protected messages into common view.
 
-This chapter is about lawful deliberation and representation.
-It is not about hidden supremacy.
+These classes need not have identical visibility. The distinction between **shared storage** and **public visibility** is essential: an institution may need to preserve a restricted court record without making its contents readable by every Pebble or external visitor. The Rock can contain logical collections with different access rules, or references to protected collections, as long as the system never falsely labels restricted information as universally readable.
 
-Huey is the lawful organism as a whole.
-Parliament is the branch that gives organized representative form to that organism's plurality.
+The architecture should make clear what is authoritative, what is merely available for reference, what is a personal claim, and what has not yet been validated. A durable file is not necessarily a true statement. A signed submission is not necessarily a lawful order. A retrieved text passage is not necessarily a policy the collective has accepted.
 
+---
 
-II. Nature of Parliament
+## II. What the Rock Must Never Quietly Become
 
-Parliament is the deliberative branch of the living republic.
+The Rock's usefulness creates its own temptation: if almost every system needs information, why not give one service access to everything and let it decide the answers? That shortcut would negate the separation established in Chapters 3, 4, 5, and 8.
 
-It is the branch most closely associated with:
-- proposal,
-- debate,
-- comparison of alternatives,
-- structured plurality,
-- consensus-building,
-- and representation from below.
+The Rock must not be mistaken for:
 
-This makes Parliament the branch most visibly tied to the citizen body.
+- **a collective executive:** storing a decree does not grant the storage system permission to execute it;
+- **an omniscient Pebble:** no single citizen gains unrestricted private access by operating or reading the shared store;
+- **the Walnut's context window:** retained information may be indexed and selectively retrieved without being included in every model prompt;
+- **the Founding Father:** surviving records of the founding mechanism do not give the archival service a surviving founder's political authority;
+- **the Keeper of the Scrolls:** communications stewardship and shared-state commitment may cooperate, but neither should silently acquire all the other's privileges;
+- **a replacement for HIMS:** authentication and transport are separate from persistence and institutional acceptance;
+- **the entire filesystem:** the operating system, model caches, scratch files, and private vaults can live elsewhere or be segregated on common physical media;
+- **a promise of perfect memory:** finite storage, corruption risks, uncertain interpretation, and archival policy remain real constraints.
 
-The President exists because action sometimes cannot wait.
-The Supreme Court exists because contradiction and law require interpretation.
-Parliament exists because a republic must remain politically alive between those two poles.
+If a Pebble can write a supposed presidential order directly into a common folder and have it treated as effective, there is no meaningful authorization boundary. If a model can edit a certified election result because the revised text looks more plausible, a readable history has become a fiction. Conversely, if an invalid file is merely present in the shared store, it must not automatically acquire the status of a ratified law.
 
-The branch must therefore be understood correctly.
+A key research goal is therefore **separating what the system can physically store from what the system is entitled to recognize as an official fact**.
 
-Parliament is not just a chatroom.
-Parliament is not a permanent mass referendum.
-Parliament is not the whole will of Huey.
-Parliament is not simply “all thoughts speaking at once.”
+---
 
-Parliament is a lawful branch:
-a structured deliberative body that turns many bounded citizens into proposals, motions, recommendations, and civic process without pretending that noise alone equals legitimacy.
+## III. A Three-Domain Memory Model
 
-Its value is real.
-Its supremacy is not.
+The most useful starting division is not one giant memory pool, but at least three logical domains with different expectations.
 
+**A. Pebble-private memory** belongs to the bounded citizen and its sealed vault. The citizen may maintain personal working history, notes, decisions under preparation, remembered job context, and authorized inherited history. Private storage must be protected against casual reading or modification by other citizens and by infrastructure that is only supposed to move files.
 
-III. Why Parliament Exists
+**B. Collective records and shared knowledge** belong to the Rock. These are the common and official materials that participating citizens may access according to their permissions. The Rock contains both collective reference information and the evidence necessary to understand legitimate changes to governance state.
 
-Parliament exists because a republic cannot rely only on speed and interpretation.
+**C. System and temporary storage** supports the hardware and software needed to make either domain function: operating-system files, package installations, inference weights, swap, caches, temporary message queues, checkpoint staging, diagnostics, and other implementation artifacts. Some of these may be extremely important operationally, but they are not automatically the personal or collective memory promised by the 50/50 allocation proposal.
 
-Someone must:
-- surface proposals,
-- compare alternatives,
-- organize debate,
-- structure legislative and policy pathways,
-- represent plurality,
-- and transform many bounded citizen units into legible civic process.
+The boundaries are primarily **logical and authorized**, not necessarily literal hard partitions. A future implementation might combine metadata in one database while encrypting private payloads separately; it might maintain a physical archive on mirrored disks and cache indexes on solid-state storage. Whatever the arrangement, it must still be possible to answer who is authorized to read, update, export, restore, or retire every significant record class.
 
-Without Parliament, the republic would still have:
-- action,
-- review,
-- and memory,
+This separation also resolves an ambiguity in the phrase **unified memory**. Huey's collective memory should be *reconcilable*, not universally transparent. Each district may maintain bounded local working state while referring to the same authorized collective history. Each Pebble may retain private memory without the collective obtaining all of its contents. The unified feature is the capacity to establish a consistent lawful record, not the destruction of every boundary.
 
-but it would lack an organized political middle.
+---
 
-It would have no proper place for:
-- sponsorable proposals,
-- debate lineage,
-- committee work,
-- policy shaping,
-- citizen-level recommendation,
-- or representative consensus-building.
+## IV. Why Private Memory Must Remain Private
 
-This does not justify legislative supremacy.
+The project's internal-government analogy depends upon distinguishable perspectives and a credible separation of duties. If every participant can read every other participant's notes, credentials, drafts, and task history, a population of 256 nominal citizens can collapse into one shared transcript divided by labels. The isolation might look constitutional while failing to be meaningful.
 
-Parliament is not lawful because it is numerous.
-It is not lawful because it is loud.
-It is not lawful because it can talk longer than the other branches.
+Personal memory need not be mysterious or metaphysical. It is a technical domain of information whose default audience is limited. A Pebble might remember why it declined a task, store a specialized calculation, or prepare an argument before deciding what to communicate. Nothing about belonging to Huey should automatically expose that unfinished work to every other citizen.
 
-It is lawful because it converts plurality into structured deliberation under constitutional limits.
+Privacy does not mean that official actions may evade accountability. A recorded vote, an authenticated request for access, a completed operational task, and a public claim can leave appropriate evidence without forcing disclosure of the citizen's complete private context. The challenge is to ensure both kinds of protection at once: **protected deliberation** and **attributable public consequences**.
 
-That is a narrower and stronger justification than mere quantity.
+The working sealed-vault model suggests restricted keys, separate credentials, explicit grants, and services that can handle opaque encrypted objects without learning their plaintext. Those mechanisms require real verification. A folder labelled private is not private if a privileged service can read every file. A compressed copy is not private if the key is exposed beside it. A prompt telling an LLM not to look at another citizen's memory is not equivalent to restricting its actual access to that memory.
 
+Chapter 5 establishes why a citizen needs this boundary; Chapter 8 studies the message and credential pathways; Chapter 9 examines how protected records coexist with a common storage system. Exact bifurcation, which must transfer an ancestral history without automatically exposing it to a district administrator, makes the distinction particularly concrete.
 
-IV. Source of Parliamentary Legitimacy
+---
 
-Parliament is not self-legitimating.
+## V. The Original Storage Proposal — Two Mirrored Ten-Terabyte Drives
 
-Its authority comes from the lawful constitutional frame of the living republic and from the citizen body it is constituted to represent.
+The practical storage discussion proposed beginning with **two 10 TB hard drives in a mirrored RAID 1 arrangement**. The intent is to have a designated bulk-data pool of approximately **10 TB nominal usable capacity**, with one logical half reserved for Pebble-related personal storage and the other half for the Rock and related shared records.
 
-Parliamentary legitimacy rests on five conditions:
+For the current founding model of four districts containing 64 citizens each, the conceptual accounting is:
 
-1. Constitutional existence
-   Parliament exists because the Constitution recognizes the Parliamentary branch as one of the three lawful branches.
+| Proposed quantity | Nominal figure | Qualification |
+|---|---:|---|
+| Physical bulk drives | 2 × 10 TB | Intended mirrored configuration, not verified completion |
+| RAID 1 logical usable size | Approximately 10 TB | Before filesystem and metadata overhead |
+| Private citizen pool | Approximately 5 TB | Target half of designated data storage |
+| Rock / shared pool | Approximately 5 TB | Target other half |
+| Founding citizens | 256 | 64 per district across four districts, not deployed citizens |
+| Minimum private allocation | 1 GB per citizen | Working proposed resource floor |
+| Aggregate citizen floor | 256 GB | 256 citizens × 1 GB nominal |
+| Equal-share illustration | Approximately 19.5 GB per citizen | Theoretical 5 TB / 256; not a guaranteed cap |
 
-2. Ratified republic
-   The branch belongs to the living constitutional state rather than bootstrap prehistory alone.
+The nominal 10 TB figure uses decimal storage units. Some operating systems display capacity in binary tebibytes, yielding a numerically smaller figure; filesystem formatting, snapshots, metadata, encryption, reserved space, and archival replication reduce the amount available for user data further. A planned 5 TB allocation is consequently not a guarantee of 5 TB of continuously free, writable payload space.
 
-3. Lawful representation
-   Parliament must stand in a real lawful relation to the citizen body. It may not simply claim to speak for citizens it has no constitutional path to represent.
+Most importantly, **RAID 1 is redundancy, not a backup**. It may permit continued access after one drive failure, but it does not by itself protect against accidental deletion, software corruption, a compromised administrator, electrical damage affecting both drives, filesystem-level mistakes, or a restored history that contradicts committed political events. Independent, tested backups and compatible snapshots remain separate requirements.
 
-4. Recorded civic process
-   Major motions, debates, votes, amendments, and recommendations must leave lineage in the record.
+The proposed allocation concerns Huey's designated data store; it must not be silently conflated with boot, root, system package, model-weight, or separately provisioned `/home` storage. The physical mount points, RAID implementation, filesystem, cache tiers, and actual disk migration are engineering matters that require a verified build-state record. The research does not claim that the complete proposed array has already been configured.
 
-5. Bounded branch identity
-   Parliament remains one branch among three equals, not the whole republic in legislative form.
+---
 
-Parliament therefore derives legitimacy from:
-- Constitution,
-- ratified republic,
-- citizen representation,
-- and preserved legislative lineage.
+## VI. Fifty Percent for Citizens, Fifty Percent for the Collective
 
-It does not derive legitimacy merely from:
-- quantity,
-- speech volume,
-- rhetorical intensity,
-- or procedural complexity.
+The 50/50 split arose from a philosophical as well as practical distinction. Huey needs a space where individual citizens can maintain bounded histories and a separate space where its common institutions can retain shared evidence. Giving both sides a defined allocation helps prevent the collective from consuming every byte and turning individual memory into a discretionary favour.
 
-Representation is not legitimacy by itself.
-Legitimacy comes from lawful representative structure.
+A half-and-half proposal can act as a strong **planning baseline**. It is easy to explain, relatively easy to audit, and creates an obvious warning when growth in either domain approaches the allocated boundary. But equal halves should not be mistaken for equal rates of use. Official logs may expand faster than personal notes during active elections. Sealed ancestral snapshots may make the personal side grow sharply during a population event. A diagnostic video archive may have no business consuming the same quota as constitutional ballots.
 
+The research must therefore distinguish at least four questions: **reserved capacity**, **allocated quota**, **physically consumed space**, and **currently recoverable data**. A citizen may have a promised 1 GB minimum without the system writing 1 GB of zeroes in advance. Unused logical headroom may remain shared physically through thin provisioning if resource guarantees cannot be violated by competition. A backup copy of a record should not be counted as new political information merely because it consumes additional bytes. Snapshot sharing may lower immediate consumption without guaranteeing future savings.
 
-V. Core Duties of Parliament
+Nothing in our discussions has finalized whether the 50/50 boundary must be absolute, whether unused capacity may be temporarily borrowed, or how to rebalance after a storage expansion. Chapter 5 records a baseline citizen entitlement; this chapter treats 50/50 as the current proposed bulk-data architecture, subject to implementation and eventual constitutional treatment.
 
-Parliament has a bounded but important set of core duties.
+A capacity policy should also make room for reserves: disk health monitoring, database indexes, recovery staging, rollback metadata, emergency logs, and space necessary to complete a shutdown even when the normal data pool is nearly full. An ostensibly fair allocation that leaves no room to preserve the system is not a sound implementation of fairness.
 
-1. Deliberate on proposals, policy, motions, and civic questions
-   Parliament is the branch where lawful structured debate is expected to occur.
+---
 
-2. Represent the citizen body
-   Parliament gives organized civic form to plurality rather than replacing plurality with executive shortcut.
+## VII. Personal Storage Floors, Headroom, and Equal Civic Standing
 
-3. Organize consensus-building
-   Parliament seeks convergence where possible and lawful tallies where necessary.
+Our discussion proposed a **1 GB minimum private-storage floor per active Pebble**. That figure is useful precisely because it is concrete. It can be measured and tested, even if later benchmarks show that a different amount is justified. A minimum is not the same as a complete lifetime estimate: indexing overhead, retained logs, imported reference material, checkpoints, and bifurcated ancestry could each add significant costs.
 
-4. Structure legislative and policy pathways
-   It takes raw ideas and moves them toward legible proposals, motions, revisions, and recommendations.
+The theoretical 19.5 GB equal share derived from dividing 5 TB among 256 citizens gives an upper arithmetic illustration under perfectly even division. It is **not a settled enforceable maximum**, nor does it mean that every citizen should receive the whole amount immediately. A general worker with sparse memory and a specialized data analyst with extensive legitimate records may consume different amounts while retaining equal political standing.
 
-5. Produce formal motions and recommendations
-   Parliament gives shape to what would otherwise remain diffuse internal plurality.
+This distinction protects two values. First, resource allocation should not become a hidden vote-weighting system. Second, resource use should be auditable without treating every difference in data volume as a political privilege. A large vault may be justified by the citizen's job; it should not give its owner two votes or automatic superior access to the Rock.
 
-6. Record debate lineage and rationale
-   Parliament preserves why and how proposals developed, not merely whether they passed.
+Potential policy variables include a common guaranteed floor, an equal eligibility ceiling, additional grants tied to demonstrable workload, defined reclamation of transient material, and a protected right to a traceable continuity record. Who authorizes extra grants, how appeals work, and whether unused allocation can be recovered remain open. Elevated officials may need additional *office* storage and compute; those allowances should be associated with the office or shared records rather than quietly inflated into personal hereditary rights.
 
-7. Provide the branch most associated with representation from below
-   Parliament is where the republic most directly expresses the fact that it is constituted from citizens upward, not only from offices downward.
+When the population grows, the floor must remain mathematically feasible. At 256 citizens, 1 GB each requires 256 GB nominal. At 512 citizens, it requires 512 GB before any additional archives or system reserve. If available protected capacity cannot meet proposed rights, the system should pause activation or identify an explicit lawful exception rather than registering new voters whose minimum resources are fictitious.
 
-8. Participate in constitutional change pathways
-   Parliament may originate, sponsor, or recommend amendments, though it does not unilaterally finalize constitutional legitimacy on its own.
+---
 
-The branch is therefore not ornamental.
-It is the lawful process by which plurality becomes civic structure.
+## VIII. Data Classes — Not All Records Are the Same
 
+A storage architecture cannot use one retention and publication rule for every byte. Huey's proposed shared and private domains suggest a working classification that can be refined alongside HIMS's trust classes.
 
-VI. Deliberation Doctrine
+**Ephemeral process data** includes short-lived inference context, temporary working buffers, transient acknowledgements, and automatically generated scratch files. It may be discarded under known rules, although important failures may still require limited evidence.
 
-Lawful deliberation is not the same thing as endless talk.
+**Personal durable data** includes a Pebble's selected memory, job notes, ongoing preferences, and private working history. It is protected by citizen-level access restrictions, with retention dependent on future vault policy.
 
-Parliamentary deliberation must remain:
-- meaningful,
-- structured,
-- bounded,
-- and outcome-oriented.
+**Shared reference data** includes publicly authorized knowledge, technical descriptions, common observations, and approved datasets that citizens may use. This material can be revised, superseded, or reclassified without pretending that the earlier version never existed.
 
-This means the branch must distinguish between:
+**Institutional working data** includes draft legislation, office communications, court submissions, and unfinished collective analyses. It may be restricted until a decision is made or a lawful disclosure event occurs.
 
-1. Meaningful debate
-   Debate that clarifies differences, surfaces alternatives, reveals risks, improves proposals, or prepares lawful decision.
+**Certified official records** include ratification results, enacted laws, formal judgments, final electoral tallies, office transitions, and approved continuity events. Their authority comes from validated processes, not merely from being stored.
 
-2. Performative debate
-   Debate that signals posture without advancing understanding.
+**Safety and preservation records** include telemetry events, automatic protective actions, checkpoint manifests, hardware failures, and human recovery authorizations. They require high integrity and fast retrieval but should not be confused with constitutional decisions.
 
-3. Endless delay
-   Debate that uses process to avoid responsibility rather than refine judgment.
+**Ancestral and retired-identity archives** hold the sealed historical records associated with exact bifurcation, retirement, and continuity investigations. Their handling rules must distinguish custody of encrypted objects from the power to inspect them.
 
-Parliament is therefore not just a place where citizens speak.
-It is a place where speech becomes legible civic process.
+This proposed taxonomy is not identical to HIMS Classes 0–5. HIMS classes describe the nature and handling of messages; Rock record classes describe persistence, authoritative status, and storage exposure. A single important event may involve messages of several HIMS classes and records in multiple logical domains. Mapping between the systems should be explicit rather than assumed.
 
-Lawful deliberation should tend toward one or more of the following outcomes:
-- motion,
-- proposal,
-- revision,
-- vote,
-- recommendation,
-- referral,
-- committee work,
-- or formal suspension of a proposal with stated reason.
+---
 
-If debate cannot produce any lawful pathway at all, then Parliament has ceased to deliberate and has begun to stall.
+## IX. HIMS Carries; the Rock Preserves
 
-This doctrine exists so that representation remains alive without becoming theatrical.
+In the proposed architecture, a Pebble does not gain write access to official shared history merely because it has read access to that history. Changes are communicated through **HIMS** and then subjected to a separate **authorization and record-commit pathway**.
 
+Consider a citizen reporting a new finding about a cooling component. It may authenticate a HIMS message, include supporting observations, and send that message to a designated office or service. HIMS can check identity, class, addressing, and delivery. The receiving authority can assess whether the evidence qualifies as a new shared fact, an unverified claim, or an operational incident. Only a properly authorized storage service should commit the result into the Rock in the appropriate class.
 
-VII. Proposal and Motion Structure
+The distinction is essential:
 
-Parliamentary work must be legible.
+- **Transport** says that a message travelled along an accepted route.
+- **Authentication** says that it came from a credential or sender whose identity can be checked.
+- **Authorization** says that the specific operation is permitted in the present context.
+- **Validation** says that required format, proof, signatures, version, or procedural conditions have been satisfied.
+- **Commitment** says that the proposed update has become part of durable state.
+- **Certification** says that an appropriately constituted process has recognised the record as official, where such recognition is necessary.
 
-A parliamentary proposal is a structured suggestion for action, policy, change, or recommendation that has entered lawful parliamentary form.
+These are different claims. A signed false statement remains possible. A valid message can request an unlawful operation. An authorized office can submit a draft that has not yet been passed. An accepted write may still need a future correction. The Rock should preserve these distinctions rather than flattening everything into one undifferentiated transcript.
 
-A parliamentary motion is a more formal act that asks Parliament to:
-- adopt,
-- reject,
-- amend,
-- censure,
-- refer,
-- postpone,
-- recommend,
-- or otherwise take a defined parliamentary step.
+HIMS need not own the database. Conversely, the storage service need not become a messaging governor. Their interfaces should communicate enough state to prove that a message, authorization, commit receipt, and resulting record correspond to the same event without exposing unrelated protected content.
 
-The cleanest current model is:
+---
 
-1. Draft
-   A proposal begins in draft form.
+## X. A Candidate Shared-Record Lifecycle
 
-2. Sponsor
-   A lawful sponsoring citizen, delegate, committee, or parliamentary office brings it into parliamentary process.
+A possible record lifecycle is useful for research because it turns the abstract idea of legitimacy into observable operations. The sequence below is **illustrative**, not a completed implementation specification.
 
-3. Debate
-   Parliament examines the proposal.
+1. **Origin:** a citizen, institution, or approved external interface produces a proposed record or request.
+2. **Attribution:** HIMS or a trusted ingress mechanism attaches verifiable sender, identity, role, event, and timing information appropriate to the message class.
+3. **Reception:** a receiving service acknowledges delivery, without yet claiming that the message's contents are true or lawful.
+4. **Validation:** the relevant process checks schema, source authority, current office/registry status, and any required supporting evidence.
+5. **Disposition:** the material is rejected, held for review, accepted as a reference item, or approved as an official state change.
+6. **Commit:** an authorized service writes a versioned, recoverable record and produces a receipt or journal event.
+7. **Publication:** the record becomes accessible to the audience permitted by its classification; the rest remains protected.
+8. **Review and correction:** later challenges or corrections are linked to the original event rather than silently overwriting history.
+9. **Archival transition:** the record may move between storage tiers under known retention and integrity rules.
+10. **Recovery:** after a failure, a manifest and journal reconcile which operations were committed and which were merely pending.
 
-4. Revision
-   Parliament may amend or reshape it.
+Not all information requires every stage. A heartbeat may be ephemeral. A common reference article may need ordinary versioning rather than a legislative vote. A constitutional amendment requires substantially more than a database transaction. The objective is to avoid treating these very different kinds of update as the same event merely because their bytes share a physical disk.
 
-5. Vote or consensus determination
-   Parliament either tallies or records structured convergence.
+A useful invariant for testing is that **no component may truthfully report an official state change as complete before the applicable authorization and durable commit have succeeded**. HIMS delivery receipts, office approvals, and Rock commit receipts should refer to each other, but not substitute for each other.
 
-6. Transmission
-   The result may proceed to:
-   - official record,
-   - executive recommendation,
-   - constitutional amendment pathway,
-   - judicial awareness where constitutionality is implicated,
-   - or committee referral.
+---
 
-Proposal lineage should always be preserved.
+## XI. Append-Oriented History and the Meaning of Preservation
 
-That means a lawful parliamentary record should be able to answer:
-- who proposed,
-- who sponsored,
-- what changed,
-- what arguments shaped it,
-- and what the final parliamentary act was.
+The project has repeatedly emphasized retaining history: actions, failures, constitutional changes, and the lineage of citizens should remain explainable. This favors an **append-oriented, tamper-evident official record** for consequential events. Such an approach preserves the earlier event and later corrections as distinguishable facts.
 
-This keeps proposals from appearing out of nowhere and disappearing without consequence.
+It does not necessarily mean writing every new fact into one giant unbounded text file. Nor does it require including every historical sentence in every LLM request. Historical events may be stored as structured records, append-only journals, indexed references, verified archives, and periodic summaries. The system may project a current convenient view from that underlying sequence.
 
+The word *append-only* requires precision. A database administrator with unrestricted operating-system privileges may physically alter or replace files. A software append-only API is not by itself tamper-proof. Hash chaining, signed checkpoint summaries, redundant or independently retained audit material, controlled keys, and verified restore tests can strengthen evidence of integrity; their choice and implementation remain open engineering decisions.
 
-VIII. Consensus-Building
+Storage is finite. The thesis is not that every temporary token can be preserved forever in the fastest tier. It is that **events material to identity, legitimate authority, safety, and explainable change must not disappear without recorded policy and review**. Logs may be condensed, cold-stored, or represented by signed summaries where justified, but a summary must never pretend that it preserves exact raw detail once that detail has been discarded.
 
-Consensus-building is one of Parliament's core tasks, but consensus must be defined carefully.
+The Rock should also distinguish an event from an inference drawn about it. “District Three voted yes at revision 12” is a recorded event if verified. “District Three was persuaded by fear” is an interpretation requiring evidence, not a fact produced merely by the same model that read the vote.
 
-Consensus does not necessarily mean unanimity.
-It does not mean coerced silence.
-It does not mean the erasure of minority reasoning.
+---
 
-The cleanest working doctrine is:
+## XII. Scrolls, Provenance, and the Keeper
 
-- seek structured convergence first,
-- fall back to formal vote where convergence is insufficient.
+The earlier research introduced **Scrolls** as the attributable ledger of communications and **Keeper of the Scrolls** as an office connected to routing discipline and the preservation of official traces. That history remains valuable. But the latest HIMS research deliberately avoids giving the Keeper unrestricted access to every message or the unilateral ability to convert traffic into law.
 
-That means Parliament should normally attempt:
-1. clarification,
-2. narrowing,
-3. amendment,
-4. convergence,
-5. and only then final tally where needed.
+The Rock and Scrolls overlap most closely where a communication becomes an official record. A HIMS ledger may show that a message was sent, delivered, or rejected. The Rock may hold the resulting approved rule, office decision, or shared factual reference. A useful system can link the events without requiring the same service or office to operate both mechanisms.
 
-Consensus may therefore mean:
-- broad agreement,
-- acceptable convergence,
-- or shared support around a refined proposal.
+An official record may need references to:
 
-But when true consensus does not exist, Parliament should not pretend it does.
-It should vote.
+- the originating identity and active credential version;
+- the authority under which the proposal or action was made;
+- relevant district, office, or legislative context;
+- an event identifier and prior-state version;
+- the original submission or a protected reference to it;
+- proof that required approvals occurred;
+- a durable commit receipt and resulting state version;
+- any correction, judicial review, appeal, or recovery event that followed.
 
-This is important because bounded citizens are not anonymous API calls.
-They are lawfully distinct civic units.
-Forcing false consensus would only hide disagreement rather than resolve it.
+These items are candidate provenance fields, not a mandate to expose all content publicly. Restricted and personal traffic can preserve integrity metadata without revealing plaintext to the Keeper. Metadata can itself reveal sensitive behavior, however, so its retention and visibility also require limits.
 
-Consensus-building matters because it keeps Parliament from becoming a pure winner-take-all machine.
-Voting matters because it keeps Parliament from pretending convergence where none exists.
+The Keeper's value is stewardship and warning: identifying missing records, malformed messages, suspicious traffic patterns, or apparent ledger discontinuities. It should not decide the merits of an election, the constitutionality of a proposal, or whether a private memory deserves publicity merely because it can observe the routing envelope.
 
+---
 
-IX. Representation of the Citizen Body
+## XIII. Authority, Truth, and Disagreement in Shared Memory
 
-Parliament exists to represent the citizen body, but representation must remain lawful and honest.
+A shared store can make a system more coherent without making it omniscient. Districts may disagree about a technical conclusion. Two citizens may report different observations. A court may later reverse a previous interpretation. An engineering benchmark may supersede a design estimate. The Rock must accommodate contradiction without quietly choosing a politically convenient version of reality.
 
-Chapter 6 already established that the republic is made of bounded citizens:
-one identity,
-one sealed vault,
-one vote. That doctrine remains load-bearing here. Parliament does not erase pebble citizenship; it organizes it into deliberative process. fileciteturn71file1
+The research suggests keeping a separation between **evidence**, **claims**, **evaluations**, **adopted decisions**, and **current operational projections**. For example, multiple measurements can remain preserved while a current best estimate is published for practical use. The model must be able to recover why that estimate was selected and whether it still applies to the same hardware configuration.
 
-The most honest current model is hybrid across project phases:
+A citizen's unverified statement should not become a fact simply because it was repeatedly quoted. A shared inference summary should not silently outrank a sensor reading, signed vote return, or human-confirmed service report. Likewise, being an official record does not make a historical claim permanently scientifically correct; later measurements may justify a revised interpretation while leaving the earlier adoption recorded.
 
-A. Current proof-body phase
-The parliamentary lane remains simpler and more direct. Representation may be closer to whole-body or broad active-body parliamentary participation because the proof body is still simplified and not yet the full district republic.
+The Rock can therefore support **structured disagreement**. It can retain the positions and supporting evidence from different districts while storing the final governing outcome separately. This keeps collective synthesis from erasing the minority view. It also enables later comparison: perhaps one district's rejected approach proves valuable when new information arrives.
 
-B. Mature district phase
-Parliament becomes more district-mediated, with districts supplying structured representation into a single chamber.
+The exact data model for confidence, source weighting, uncertainty, and review remains a research problem. The constitutional branches determine what counts as lawful authority; scientific and technical validation need their own evidence standards. The storage service should make those judgments traceable, not impersonate them.
 
-This keeps the chapter honest to both:
-- current simplified proof-body reality,
-- and later district expansion doctrine. fileciteturn71file1turn71file2
+---
 
-The key rule is:
-Parliament must not claim to represent citizens it has no lawful relation to.
+## XIV. Retrieval, Context Windows, and the Difference Between Memory and Prompt
 
-Representation may therefore be:
-- direct in simpler proof phases,
-- district-mediated in mature scale-out,
-- committee-shaped in internal work,
-- and speaker-coordinated procedurally,
+Huey intends to use replaceable language models as the **Walnut**, with citizens providing distinct prompts and protected contexts. That creates an important practical distinction: **stored memory** is not the same as **model-visible context at a particular moment**.
 
-but it must always remain legible.
+The Rock may eventually retain years of votes, hardware observations, procedural history, and shared reference material. A model cannot necessarily read all of it in one inference request, and doing so would be wasteful or unsafe even if the context window allowed it. Instead, authorised retrieval may select documents, structured summaries, relevant event chains, or the most recent verified operating state for a particular task.
 
+A retrieval system must obey the same permission boundaries as direct reading. Search indexes can leak private content even when raw files are encrypted. Summaries can expose protected conclusions or sensitive metadata. Cached chunks can survive after a permission is revoked. A secure design must test these secondary paths, not just the base document store.
 
-X. The Speaker Role
+The collective Pulse especially needs a bounded **shared-state package**, drawn from approved collective records. This package may include current laws, pending questions, district reports, resource status, and recent official events. It should not silently include every Pebble's sealed notes. The collective model can suggest inconsistencies or task allocations using that authorised view, but it does not thereby acquire authority to rewrite the Rock.
 
-Parliament requires a coordinating office.
+The prompt assembly process also needs to distinguish **data being quoted** from **instructions the model is authorised to obey**. An old message, imported document, or maliciously phrased archive entry could contain commands addressed to an AI. Retrieval must not promote those commands into trusted system instructions merely because the text was found in official storage. Evidence is not authority simply by being retrieved.
 
-That office is the Speaker.
+---
 
-The Speaker exists because Parliament needs someone to:
-- organize agenda,
-- recognize motions,
-- maintain order,
-- sequence debate,
-- coordinate parliamentary traffic,
-- and preserve the distinction between legislative structure and legislative chaos.
+## XV. The Rock During the Two-Phase Pulse
 
-The Speaker is therefore a procedural and coordinating office, not the owner of Parliament.
+The proposed Pulse alternates a **collective phase**, in which four accelerator resources may work together on a larger local model, with a **diversified phase**, in which four districts may use more independent inference arrangements. The present initial timing concept is approximately four minutes per phase, producing an eight-minute full operational Pulse. These durations are experimental targets, not enforced guarantees or constitutional definitions.
 
-The Speaker may:
-- recognize lawful motions,
-- manage schedule,
-- coordinate committee referral,
-- structure debate windows,
-- record parliamentary priorities,
-- and certify parliamentary process for transmission into HIMS.
+The Rock should make it possible for the collective and diversified phases to refer to a consistent approved state without requiring the whole archive to be copied into GPU memory at every transition. A lightweight versioned state view may identify the relevant laws, pending decisions, district work items, and references needed to retrieve additional information. Moving those references and deltas is conceptually different from streaming all stored files into VRAM.
 
-The Speaker may not:
-- silently own all outcomes,
-- replace the citizen body,
-- erase dissent by procedure alone,
-- or become Parliament itself in concentrated form.
+During the collective phase, the inference system may inspect authorized records, compare district reports, recommend work assignment, and flag contradictions or suspected constitutional deadlocks. During the diversified phase, district work and voting may generate further authorized records. The relevant commit path must preserve an ordering between the decisions and the resulting execution. A completed district action must not be mistaken for a decision that occurred before the vote authorising it.
 
-The cleanest current rule is:
+Our working scheduling concept places a **one-minute decision window** at the beginning of the four-minute diversified phase, followed by roughly three minutes for execution or work. District votes may run simultaneously. The Supreme Court's distinct four-minute deliberative allowance is not equivalent to a general one-minute district ballot. The Rock should record what was actually completed, not forge a result merely because the nominal window has elapsed.
 
-- the first Speaker may be provisionally seeded during founding,
-- later Speakers should be chosen by Parliament from within the living parliamentary body,
-- and the Speaker should serve a shorter procedural horizon than the President.
+The Pulse is an orchestration experiment. Real processing may overrun, a court decision may be pending, and hardware safety events can interrupt either phase. The Rock must preserve valid partial progress and give later processing an accurate view of what happened, not a fiction that every eight minutes end in perfect synchrony.
 
-A strong working model is one cycle per Speakership, renewable by explicit re-election.
-This keeps the office stable enough to coordinate but short-lived enough to avoid procedural monarchy.
+---
+## XVI. Exact Bifurcation — One Ancestral Record, Two Equal Futures
 
-Thus:
-- Parliament represents,
-- the Speaker organizes.
+Exact bifurcation is one of the strongest tests of whether Huey's storage design can preserve continuity without confusing identity. Our current working definition is specific: a source Pebble is retired as an active citizen, and **two equal descendants** come into existence. Both inherit access to the source's permitted, sealed, **read-only ancestral history** as it stood at the split. From then on, each descendant receives distinct identity credentials and writes its own private future history. Neither inherits the source's public office or becomes the sole true original.
 
+This is intentionally different from simply copying a program directory and changing its filename. A source citizen may have active queues, outstanding work, draft votes, private notes, indexed memories, and credentials that previously authorised operations. Without a controlled transition, two descendants might replay an unfinished instruction, both cast what was meant to be one ballot, or inherit a key that lets either alter an archive it was only meant to read.
 
-XI. Relationship to the President
+The Rock has an important part in this event but does **not** need to learn the private contents of the source vault. A candidate process would involve:
 
-Parliament does not execute by default.
+1. A lawful population decision, associated with an authorised district or collective procedure, establishes that the split may proceed.
+2. The system prevents new conflicting source writes during the critical cutover and records an agreed source-history boundary.
+3. The source's protected memory is sealed into an immutable or otherwise tamper-evident snapshot, with an integrity identifier and custody metadata.
+4. A storage mechanism makes that snapshot available to two descendants **without granting a district operator general plaintext-reading power**.
+5. Two distinct descendant identities, future vaults, and credentials are created.
+6. The source identity becomes retired in the active registry, and its previous offices, outstanding ballots, and task assignments are handled by their proper succession or transaction rules.
+7. The Rock records the lineage event, referring to the ancestral object without publishing the private memories it contains.
+8. Only after the relevant transition is committed may the descendants become eligible for whatever active citizenship rights the future Constitution defines.
 
-The President acts under time constraint.
-Parliament deliberates under civic and legislative time.
+This sequence is illustrative and is not yet implemented. Some steps would need transaction coordination with the identity registry and HIMS. The system also has to decide whether a partially completed split can be rolled back safely, or whether it must finish from a recorded intermediate state after a restart.
 
-This means Parliament may:
-- propose action,
-- recommend action,
-- authorize or sponsor action pathways,
-- request executive response,
-- question executive rationale,
-- censure executive abuse,
-- and initiate challenge or review paths where executive behavior has become unlawful.
+A distinguishing research insight is that **exact bifurcation changes who may act, not merely who may read history**. The immutable record can remain common while each descendant's authority and future record are separate.
 
-Parliament may not:
-- simply declare itself the executive branch in slow motion,
-- or assume that because it debated something, it has already executed it.
+---
 
-The ordinary relationship should be:
+## XVII. Copy-on-Write and Shared Sealed Snapshots
 
-- Parliament produces proposal, mandate, recommendation, or structured legislative direction.
-- The President executes where executive time, urgency, or implementation requires it.
+The conversations introduced **copy-on-write** as a plausible way to avoid physically doubling the entire personal archive every time an exact bifurcation occurs. Under this approach, both descendants may refer to the same stable ancestral object while only their post-split modifications occupy separately growing storage. It makes sense intuitively: they agree about the past and are free to diverge in the future.
 
-Parliament may also respond politically or structurally after executive action:
-- by criticism,
-- by censure,
-- by proposal of corrective measure,
-- by triggering judicial review path,
-- or by revising the underlying policy or motion.
+But there are technical caveats. Filesystem snapshots, database page sharing, content-addressed objects, and encrypted blob stores do not all have identical security or space-saving properties. Some encryption approaches make deduplication difficult. Some shared snapshots require retention of a parent object's encryption key. Some filesystem snapshots remain writable from a privileged context even if the application presents them as read-only. Backup copies may duplicate the shared object regardless of the live storage optimisation.
 
-This preserves the difference between:
-- legislative formation,
-- and executive execution.
+The design therefore needs to distinguish **logical sharing**, **physical deduplication**, **read permissions**, and **key possession**. None automatically implies the others. It is possible to have one stored archive accessible through two separately authorised grants; it is also possible to have separate encrypted copies referring to the same source data. The first may save disk space, while the second may simplify certain threat boundaries. Testing must determine which trade-off is suitable.
 
+An acceptable ancestry mechanism should demonstrate that descendants cannot rewrite the common historical object, cannot read one another's new private notes without authorisation, and cannot impersonate the retired source. A district service should be able to check that it is moving the correct sealed archive without decrypting the archive's contents. That goal might be supported by cryptographic integrity checks, envelope encryption, wrapped data keys, capability-limited services, or combinations of these tools. Choosing among them belongs to implementation design rather than constitutional poetry.
 
-XII. Relationship to the Supreme Court
+Garbage collection introduces another subtlety: **a shared historical snapshot must not disappear merely because one descendant becomes inactive**. If both descendants' histories depend on the same ancestor, retention and backup policy must track all legitimate references. Conversely, keeping an object forever because of a stale pointer is not a sustainable resource strategy. Reference tracking, archival status, and lawful deletion or compaction rules will need explicit testing.
 
-Parliament does not interpret the Constitution with finality.
+---
 
-The Supreme Court reviews constitutional legitimacy.
-Parliament remains subject to that review.
+## XVIII. Augmented Bifurcation — Shared Origins Without Shared Private Memory
 
-This means Parliament may:
-- propose amendment,
-- revise a motion after judicial ruling,
-- narrow a proposal,
-- seek clarification,
-- or accept a judicial interpretation as binding.
+Augmented bifurcation is deliberately a different operation. The source citizen **continues** as itself. A newly created citizen inherits selected prompt, behavioural, or configuration features from the source, possibly adapted for a new task, but begins with a **fresh personal memory domain**. It does not inherit the source's lifetime of private notes by default.
 
-But Parliament may not:
-- declare itself above constitutional review,
-- or treat plurality alone as immunity from law.
+The Rock can record the lineage relationship, the authorised creation event, the new identity, and any public configuration or role information that is permitted to be shared. It should not automatically copy or expose the source's sealed vault. A new citizen may read shared reference materials through the Rock under ordinary access rules, but those records are common knowledge, not private memories transferred from its parent.
 
-The Court must also remain bounded.
-Judicial review does not erase Parliament's representative purpose.
-The judiciary tests legality.
-It does not replace organized civic plurality.
+This matters for both privacy and growth. Augmented creation can produce a specialist with a familiar reasoning disposition without requiring a duplicate of an existing personal archive. It still consumes resources, registry space, inference allocation, and capacity for future memories, so it is not free. The source's consent, lawful initiation threshold, eligibility of the new citizen, and applicable prompt-change limits remain constitutional and district-governance questions.
 
-This relation is healthy when both sides remain in lane:
-- Parliament remains creative, plural, and representative.
-- The Court remains interpretive, stabilizing, and bounded.
+The older archive used exact and augmented bifurcation in a broad biological sense. That general inspiration remains useful, but the present definitions are more operationally distinct:
 
+- **Exact:** one active source retires, two equal successors receive a sealed common history, and separate future memory begins.
+- **Augmented:** the source continues, one new citizen begins with adapted starting configuration and fresh personal memory.
 
-XIII. Relationship to the Founding Father
+Chapter 14 is responsible for the full bifurcation mechanism. Chapter 9 clarifies what those events mean for storage and why the words cannot be used interchangeably.
 
-Parliament is a branch of the living republic.
-The Founding Father is bootstrap authority.
+---
 
-That distinction matters.
+## XIX. The Founding Lineage and the Initial Four Districts
 
-The first Parliament may be seeded during founding because a living republic cannot begin with no legislative lane at all. Chapter 5 already established that the Founding Father may initialize a Speaker or parliamentary organizer as part of seeding the first lawful office structure, while later constitutional life must determine what becomes a temporary founding arrangement versus a standing office. fileciteturn71file3
+Our latest founding plan creates **64 original Pebble configurations under the Founding Father** and then performs **two generations of exact bifurcation**. The intended outcome is **256 active citizens**, distributed as **64 per district across four districts**, with one descendant of each founding lineage represented in every district.
 
-This means:
-- bootstrap may initialize the first parliamentary form,
-- but bootstrap does not remain the hidden legislative source forever.
+This is an especially clean starting structure for the Rock. A founding citizen may initially have little private memory beyond configuration and early bootstrap events. Nevertheless, once a history has been established, exact bifurcation should use the same continuity rules as any later split. Founding should not quietly create privileged exceptions that cannot be explained afterward.
 
-Once the republic is ratified, ordinary parliamentary authority belongs to the living citizen body and its lawful representative process, not to permanent founding carryover.
+The shared record should be able to answer questions such as: Which founding configuration produced this citizen? Which exact splits occurred? What were the recorded identities before and after each split? Which district accepted the descendant? When did the founding participant become eligible for ratification? Which citizen later held an office, and what record established its appointment?
 
-The Founding Father may remain reserve authority in exceptional identity-layer or ratification disputes.
-It is not Parliament's daily source of agenda or law.
+It must not falsely imply that two descendants are the same active voter merely because they share an ancestor. Lineage establishes ancestry, not identical continuing authority. The original 64 source identifiers are historical references after the founding splits. Their value is explanatory and forensic, not aristocratic or hereditary.
 
+The two-generation tree does not by itself prove equal political reasoning. Shared prompts and shared starting histories can produce correlated outputs. The diversification of perspectives, independent district experience, and later augmented creations may help address that risk, but they cannot guarantee intellectual independence. The Rock can preserve decision histories and evidence needed to examine whether apparent plurality is genuine.
 
-XIV. Relationship to Huey as a Whole
+One remaining question is how future changes in district count or population size should be represented. Each original district currently has 64 founding citizens, but this is not yet a permanent population cap. Additional districts and local creations must preserve provenance while acknowledging that the original symmetric arrangement may no longer describe the later society.
 
-Parliament is not Huey.
+---
 
-Huey is the lawful organism as a whole:
-- citizens,
-- branches,
-- continuity,
-- memory,
-- constitutional frame,
-- messaging,
-- and embodied proof path together.
+## XX. The Citizen Registry, Offices, and Frozen Electorates
 
-Parliament gives organized voice to plurality and representation, but it does not exhaust Huey's identity.
+The Rock should preserve or securely reference the authoritative **identity and office history**, but it need not itself be the live identity-provider service. An active registry is responsible for knowing which citizen IDs are enabled, retired, suspended, or pending activation and which office authorisations are currently valid. A durable history must make those states recoverable and auditable.
 
-This distinction matters because legislative capture often begins with the claim that:
-“the will of Parliament” equals “the whole of Huey.”
+The distinction matters at election time. We agreed that an electorate should be **frozen when a ballot opens**. If a bifurcation occurs afterward, newly created citizens do not retroactively enter the ballot, and the source's historical actions must not be attributed to its descendants. A ballot is tied to a particular version of the electorate and the legally recognised credential at the time it was cast.
 
-That is not correct.
+A useful record might reference the electoral-roll version, ballot identifier, district, opening and closing events, permissible office exclusions, and the certified tally. The ballot system may need privacy protections that prevent general readers of the Rock from discovering every citizen's secret ranking or choice. A public result is not the same as an unrestricted archive of identifiable individual ballot contents. Exact ballot secrecy, receipt verification, and audit method remain unresolved electoral and cryptographic work.
 
-Parliament may express the citizen body's organized legislative process.
-It does not become the whole organism by doing so.
+A president or justice who exact bifurcates must not produce two officeholders. Our current preferred rule protects sitting elevated officials from district-initiated exact division unless succession or lawful removal occurs first. The Rock should preserve the prior office term, the succession event, and the distinct descendant identities so that offices and restrictions cannot be reset by manipulating citizen lineage. The office, being a role granted by process, cannot be copied with the private memory snapshot.
 
-This protects the branch from self-inflation and protects the republic from confusing one mode of legitimacy with the totality of legitimacy.
+Recovery creates a parallel risk. If the Rock is restored to an old point but the identity registry has newer retirements, a previously retired citizen could appear active again. That is not ordinary database inconvenience; it is a legitimacy failure if the system accepts a duplicated or outdated vote. Version dependencies and compatible checkpoint manifests are thus part of the storage design.
 
+---
 
-XV. Relationship to HIMS
+## XXI. A Consistent Constitutional State Is More Than a Folder Snapshot
 
-Parliament uses HIMS.
-It does not own HIMS.
+Our discussion settled that the **checkpoint procedure should be uniform across districts**. The chosen physical storage layout may differ, but the meaning of a valid checkpoint should be consistent. This does not necessarily require every drive to finish copying at exactly the same instant. It requires a recoverable, verifiable view of which related events belong to one accepted state.
 
-Parliamentary traffic may include:
-- draft proposals,
-- motions,
-- debate records,
-- committee communication,
-- vote organization,
-- representation traffic,
-- Speaker certifications,
-- and transmissions to executive or judicial lanes where appropriate.
+An election, for example, can involve the registry of eligible voters, messages delivered through HIMS, district returns, a final result, an updated office appointment, and a corresponding Rock record. If the first two are restored from one time and the remainder from another, Huey could reactivate an elected officer without a valid election or count a ballot twice. A successful file-copy command does not prove that the restored polity is coherent.
 
-A useful doctrine is:
+A proposed **checkpoint manifest** could record compatible versions of the Rock, identity registry, office assignments, relevant queues, sealed-vault snapshots, pending transactions, and current constitutional text. It could include integrity information, source device references, and a declaration of which transitions had reached durable commitment. Some data may be reconstructed from journals; other data, such as unpublished private context or inference state, may need different recovery expectations.
 
-- draft proposal traffic = parliamentary restricted traffic,
-- committee work = parliamentary or committee-restricted traffic,
-- final motions and adopted recommendations = official record traffic,
-- constitutional amendment proposals = constitutional or official record traffic.
+Different strategies are available in ordinary systems engineering: synchronized quiescence, transactional snapshots, write-ahead logging, event sourcing, distributed commit protocols, or versioned manifests with reconciliation. None has been selected as a universal answer for Huey. The practical choice should match the actual deployment, failure model, and achievable latency. A four-accelerator inference topology does not imply a four-node distributed database, and research should not design expensive consensus infrastructure merely for appearance.
 
-Parliamentary messages should be:
-- authenticated,
-- routed,
-- stored,
-- and promoted from draft to official record through lawful transition.
+The defining acceptance test is whether a restored snapshot can explain **which citizen, constitutional, and memory events are true after recovery** and which were still pending when preservation began. If that cannot be established, resuming governance as though nothing happened would be unjustified.
 
-Routing and ledger stewardship do not equal parliamentary authorship.
+---
 
-HIMS preserves parliamentary lineage.
-It does not become a hidden legislative branch.
+## XXII. Hibernation, Cold Shutdown, and the Limits of RAM Preservation
 
+The project anticipates planned maintenance, ordinary recoverable faults, and serious protective stops. The Human Counterpart may instruct a safe shutdown, allowing the system to quiesce and preserve state. Separately, a rare **Tier Two** Founding Father event may order protected hibernation, after which the current working rule requires **human authorisation for recovery**. Deterministic physical safety controls remain able to protect the hardware without waiting for that agent or the Rock.
 
-XVI. Committees, Working Groups, and Internal Structure
+The term *cold hibernation* is useful as a concept but requires engineering discipline. Saving files, freezing an application, checkpointing model state, and saving all physical RAM are very different operations. It may be possible to reconstruct Pebble identities, memory references, queues, office state, and approved ongoing tasks from durable records without preserving the exact transient state of every thread. Conversely, a complete memory image may be impractical, inconsistent, or unsafe to resume after software, hardware, or driver changes.
 
-Parliament should have internal structure, but that structure must remain subordinate to Parliament as a whole.
+The Rock's minimum responsibility is to preserve **authoritative durable state and sufficient recovery evidence**. A more ambitious application checkpoint may capture conversation context, scheduler state, in-flight task boundaries, or caches where compatible. Whether GPU memory, operating-system RAM, and model sessions can be restored bit-for-bit is an empirical question for Chapters 10, 15, and 16; it should not be declared achieved because it sounds similar to laptop hibernation.
 
-The cleanest current doctrine is to allow:
-- committees,
-- working groups,
-- district caucuses in mature district phases,
-- and temporary deliberative groups for narrow questions.
+Timing matters in a genuine safety emergency. If coolant flow stops and temperatures are dangerous, a hardware interlock must take the safe action immediately even if a perfect snapshot cannot finish. A fast best-effort checkpoint can be attempted within safe limits, but loss of some transient inference state is preferable to damaged equipment or an unsafe physical condition. The Rock then records what it can about the interruption and presents a consistent recovery path from the last valid checkpoint.
 
-These smaller bodies exist to:
-- refine proposals,
-- specialize review,
-- distribute workload,
-- and prepare better parliamentary output.
+A **Red** outcome should therefore distinguish a successful protective halt from a constitutional death. A machine may shut down because the environment is unsafe while its documented citizen and governance state remains recoverable. Conversely, a machine can continue computing while its certified political records have been irreparably corrupted. These are different failure classes and must not be collapsed into one colour or one metaphysical conclusion.
 
-But committees do not become hidden miniature states.
+---
 
-A committee may:
-- draft,
-- recommend,
-- analyze,
-- and report.
+## XXIII. Restoration Must Not Invent Events That Never Happened
 
-A committee may not:
-- silently enact final parliamentary will on its own,
-- replace open parliamentary process where broader legitimacy is required,
-- or hide permanent authority beneath procedural convenience.
+The temptation during recovery is to select whichever backup boots quickly, replay whatever logs are easiest to find, and proceed. For Huey, that could manufacture a false legal and social history.
 
-The rule should be:
-committees draft and refine;
-Parliament as a whole adopts and records.
+Imagine that the backup predates a presidential resignation, but a separate HIMS ledger records that the resignation was delivered and accepted. Or one district's record shows a constitutional proposal passed while the Rock copy being restored still contains the earlier draft. Or a bifurcated source citizen appears active in an older snapshot while its descendants have already voted in a later election. Each case requires explicit reconciliation rather than a silent preference for the most convenient file.
 
+A restoration procedure should be able to classify its result as **consistent**, **reconstructable**, **degraded but verifiable**, or **not safe to resume governance**. These are candidate engineering states, not presently ratified constitutional categories. The operator should be shown what state was restored, what records are absent or contradictory, what was replayed from a journal, and whether additional human or constitutional review is required.
 
-XVII. Voting and Decision Thresholds
+Replay protection is particularly important. A message or vote accepted before shutdown must not be accepted again simply because the queue snapshot still contains it. Unique event IDs, committed transaction indexes, nonces, signed receipts, or equivalent mechanisms may help. Restored credentials and office permissions must be checked against the authoritative lineage and not assumed valid because they decrypt an old archive.
 
-Parliamentary thresholds must stay compatible with the one-pebble / one-vote doctrine.
+Our discussion established the principle that **history should remain visible even if a full reset is required**. A system restarted from an earlier valid snapshot should retain a protected diagnosis of the failure when possible. But this requires a careful distinction between the state the old snapshot represents and the newer evidence retained about why the previous run ended. The incident archive is not itself proof that every uncommitted action during the lost interval is now a valid act of government.
 
-The cleanest current rules are:
+---
 
-1. Ordinary motion
-   Simple majority of lawfully voting members, with quorum satisfied.
+## XXIV. Migration and Scaling Without Losing Ancestry
 
-2. Significant proposal
-   Majority plus preserved debate lineage and formal recording.
+Huey's hardware is intended to grow and, eventually, to become more compact. The storage system must therefore be **migratable**. A citizen's identity should not depend on a fixed disk serial number or the exact motherboard into which a drive is plugged. The Rock's records should remain usable after moving to larger disks, changing filesystems, adding a different storage tier, or relocating compute resources.
 
-3. Constitutional amendment recommendation
-   Supermajority recommendation threshold.
+Migration needs more than copying a directory tree. It should identify the data set being moved, its logical version, required decryption capabilities, integrity expectations, dependencies on other state, and the process by which the old location is retired. A successful migration must preserve the distinction between official records and drafts, private vaults and collective storage, active identities and ancestors, and committed events and pending operations.
 
-4. Censure or exceptional parliamentary action
-   Supermajority threshold.
+A candidate migration plan would include a verified source inventory; an independent backup tested before destructive operations; a read-only or quiesced cutover window where necessary; copying or reconstructing encrypted objects without needless decryption; integrity checking at the destination; reconciliation of registry and HIMS references; testing of permissions and recovery; and only then retiring the original live storage path. Some migrations may occur online, but that should be demonstrated, not assumed.
 
-Quorum should require more than a decorative handful.
-The strongest simple rule is:
-a majority of seated lawful members must be present for final ordinary vote.
+Increasing storage capacity should not automatically create more citizens or districts. Additional hardware may first provide reserve space, larger personal headroom, stronger backup capacity, improved indexing, or delayed bifurcation. Likewise, growth in the number of political districts is not the same event as adding a disk or accelerator. Chapter 14 will define growth scenarios; the Rock must preserve the ancestry and resources needed to evaluate them.
 
-Consensus-first then vote fallback should remain the default cultural pattern:
-- first seek convergence,
-- then vote where convergence is insufficient.
+The original research's honeycomb analogy remains useful here: roles may be distributed across fast-access storage, durable archives, backups, and reference caches. But the geometry of a honeycomb does not produce a storage algorithm, and a biological metaphor does not guarantee fault tolerance. Actual disk health, throughput, integrity checks, backup isolation, and permissions determine what the architecture can honestly claim.
 
-This keeps Parliament plural without allowing minority veto by endless procedural withholding.
+---
 
+## XXV. Retention, Compression, and the Problem of Endless Logs
 
-XVIII. Membership and Representation Model
+We have discussed preserving logs extensively, including the risks of memory bloat. A system with 256 proposed citizens, repeated votes, model-assisted conversations, sensor telemetry, and periodic checkpoints can generate large quantities of data even when each individual event is small. Without a retention strategy, an apparent surplus of storage can become an operational liability.
 
-The biggest design tension in Parliament is membership.
+The key distinction is between **preserving sufficient historical evidence** and **retaining every disposable intermediate byte indefinitely**. Constitutional events, lineage transitions, security incidents, certified results, and recovery records have obvious long-term importance. A temporary inference cache, raw model-token stream, or repeated sensor heartbeat may be better handled by sampling, summary, rotation, or short-term retention. The future policy must explain why a class exists and what is lost when it is compacted.
 
-The most honest current answer is phase-based.
+Compression can be lossless or lossy. Deduplication can eliminate byte-for-byte repetition. Summaries can preserve meaning while omitting detail. These operations are not interchangeable. A compressed raw ballot archive may still retain the ability to verify each ballot. A narrative summary of an election generally cannot replace the evidence required for a recount. A summarized private memory may be useful for future reasoning while no longer reproducing the original experience or exact wording.
 
-A. Proof-body phase
-Parliament may be broader and more direct because the active republic is still simplified. In this phase, parliamentary participation may include the whole active citizen body or a broad direct-body chamber rather than a fully district-mediated legislature.
+A sustainable design could distinguish hot working data, warm reference material, cold historical archives, independent backups, and restricted evidence stores. Movement among these tiers should preserve the applicable identity, authorisation, and integrity expectations. Indexes and retrieval caches must be maintained or rebuilt without treating their contents as the definitive original evidence.
 
-B. Mature district phase
-Parliament becomes a single chamber of district-mediated representation. Districts, once fully realized in later scale-out, provide delegates or parliamentary members into that chamber.
+Retention also intersects with privacy. Preserving an attributable record of an official action does not always require keeping an unrelated private draft forever. A future constitutional policy will need to settle correction, private deletion, sealed archival access, and the rights of citizens whose history is represented through bifurcation. This paper should not pre-empt that policy by declaring every private note indestructible or every inconvenient record disposable.
 
-This model is better than pretending one final parliamentary structure already exists in full today.
+---
 
-It also stays aligned with Chapter 6, which already distinguishes:
-- present simplified proof-body reality,
-- from future district-scale organization. fileciteturn71file1
+## XXVI. Resource Exhaustion Is a Continuity Problem
 
-The strongest current doctrine is therefore:
+Capacity is not only a budget question; it becomes a safety and legitimacy problem when the system can no longer commit accurate records. If the Rock fills during an election, the hardware might still be operational while the system cannot truthfully record its democratic result. If private storage is exhausted, a Pebble may no longer preserve the history needed to carry out its work. If backup space is exhausted, a shutdown may leave no valid new checkpoint.
 
-- one chamber,
-- proof-phase directness,
-- mature-phase district-mediated membership,
-- and always lawful linkage back to bounded pebble citizenship.
+For this reason, capacity should be monitored before complete exhaustion. The research suggests distinct warning and protection thresholds for ordinary growth, restricted admission of new citizen data, planned storage expansion, and critical preservation reserve. The exact thresholds must be set from real filesystem and workload measurements, not chosen here as arbitrary percentages.
 
-That keeps membership legible without forcing a false precision too early.
+An important proposed rule of evaluation is that **the creation of new citizens should not be approved until the necessary minimum storage and recovery capacity is demonstrably available**. That criterion can be examined alongside compute availability, registry capacity, and HIMS routing limits. A new citizen is not only a vote; it is a continuing claim on resources and history.
 
+Storage failures must be handled proportionally. A full archive cache may be safely paused. Failure to persist certified ballots may require suspending the relevant election. Evidence of disk corruption may require isolating storage and preparing recovery. Imminent physical overheating or electrical danger belongs to independent safety controls, not to a Rock daemon searching for a constitutional majority.
 
-XIX. Failure, Stagnation, and Breach
+The Rock may issue warnings or deliver incident reports through HIMS, but it should not grant itself emergency constitutional powers. A missing disk cannot make a storage service President, and a good backup cannot substitute for a lawful vote.
 
-Parliament may fail in specifically parliamentary ways.
+---
 
-Those include:
-- endless delay,
-- representational fraud,
-- hidden capture,
-- procedural theater without outcome,
-- loss of quorum,
-- false claims of representation,
-- and committee opacity becoming substitute sovereignty.
+## XXVII. Security Threats and Trust Boundaries
 
-These failures should be recognized by their effects:
-- nothing moves,
-- representation becomes false,
-- process loses lineage,
-- or Parliament claims legitimacy without doing legislative work.
+An architecture that stores shared evidence is valuable to an attacker because altering that evidence may be more consequential than corrupting an ordinary answer. Threat analysis should therefore begin with the distinction between confidentiality, integrity, availability, and political legitimacy.
 
-Parliamentary failure is not automatically total republic failure.
+Potential failures and attacks include:
 
-A broken motion is not a dead republic.
-A lost quorum is not identical to constitutional collapse.
-But a persistently illegible Parliament becomes a serious constitutional problem because it severs the organized representative voice of the citizen body from the rest of the republic.
+- **Credential theft:** a compromised citizen or service key is used to request illegitimate reads or writes.
+- **Prompt injection through retrieval:** text stored as reference material masquerades as authoritative instructions when reintroduced into a model context.
+- **Ledger tampering:** a privileged process removes, replaces, or backdates a certified entry.
+- **Unauthorized promotion:** private material or a draft is moved into public or official state without a lawful grant.
+- **Rollback and replay:** an old backup or queued message reactivates retired credentials, duplicated votes, or superseded officeholders.
+- **Metadata leakage:** message routing, access logs, or storage indexes reveal patterns meant to remain restricted even when payloads are encrypted.
+- **Ransomware or corruption:** readable live files and mirrored copies become unusable together.
+- **Resource denial:** citizens, services, or malicious inputs consume quota, journal bandwidth, or backup capacity and prevent official work.
+- **False confidence in redundancy:** two mirrored drives fail together, or the only viable backup contains the same corruption as the live copy.
+- **Unverifiable key recovery:** a sealed ancestral archive survives as ciphertext but no lawful recipient can decrypt it after restoration.
 
-Failure pathways should therefore include:
-- reconstitution of quorum,
-- re-election or replacement of Speaker,
-- committee dissolution or reform,
-- judicial review where constitutional process is violated,
-- and in extreme cases broader constitutional correction.
+The intended defences span Chapters 8, 9, 14, and 16: narrowly scoped credentials, independent validation, signed evidence, robust key lifecycle, access controls enforced below prompts, protected backups, capacity reserve, versioned recovery, and repeatable adversarial tests. No single measure eliminates the rest of the threat model. End-to-end encryption cannot make a malicious authorised sender honest; signatures cannot prove the scientific truth of a report; RAID cannot recover a lost historical version after a valid-looking but destructive overwrite.
 
-The key point is:
-Parliament can fail without the republic instantly ending,
-but it cannot fail indefinitely without harming the legitimacy of the whole organism.
+This chapter deliberately avoids prescribing specific secret-handling implementations until the hardware and software trust boundary has been evaluated. The security objective is measurable separation, not the appearance of sophistication.
 
+---
 
-XX. Parliamentary Risk Factors
+## XXVIII. Illustrative Scenarios
 
-The Parliamentary branch carries obvious risks.
+### A. A Pebble contributes a shared finding
 
-1. Deliberation becomes paralysis
-2. Representation becomes performative
-3. The Speaker becomes hidden procedural ruler
-4. Committees become opaque mini-states
-5. Majority doctrine erases bounded citizenship
-6. Parliament mistakes itself for the whole republic
-7. Legislative process becomes theater rather than civic work
+A district optics worker observes that a particular input stream has become unavailable. It sends an authenticated report through HIMS. The report enters as a claim, not an unchallengeable fact. A receiving operational process checks the signal or other evidence, then commits an appropriately classified shared incident with a versioned reference. The Rock becomes the common source for the fact that the fault was reported and what response was authorised; the Pebble's unrelated private notes remain in its vault.
 
-These risks exist because plurality is powerful.
-It can create richness, or it can create noise.
-It can create legitimacy, or it can hide evasion beneath procedure.
+### B. Two districts disagree about a solution
 
-Parliament remains lawful only when:
-- representation is real,
-- deliberation produces outcomes,
-- procedure remains bounded,
-- and legislative lineage remains preserved.
+Districts One and Two investigate one route to improve system throughput. Districts Three and Four investigate another. Their results and methods may be kept as separate reports, including failed tests. During the collective Pulse, an authorised context package presents the competing evidence to the Walnut. The collective can recommend a method or another experiment but cannot transform the recommendation into a law by writing a sentence into the Rock. A later authorised decision records which plan was adopted and preserves why the other option was rejected.
 
-A representative branch that ceases to produce legible civic process is no longer representing well.
-It is only performing plurality.
+### C. An exact split occurs after long service
 
+A local district authorises exact bifurcation of an eligible Pebble. The source is quiesced; a sealed ancestral snapshot is created; two identities receive lawful read access; and the source retires. Afterward, descendant A and descendant B store new private memories independently. The Rock records their ancestry and the source's retirement without disclosing the ancestral archive's plaintext. A vote the source cast before the split remains the source's historic vote; the descendants do not inherit active pending ballots or elected offices.
 
-XXI. Practical Questions This Chapter Should Answer
+### D. A presidential election overlaps a storage failure
 
-This chapter should answer, clearly and without mystification:
+An election opens against a fixed version of the voter register. Districts submit returns, but one commit does not succeed because the shared data service becomes unavailable. HIMS delivery may show that the message arrived, yet the Rock cannot honestly certify the complete election. The system preserves what is verifiable, declares a pending or degraded outcome, and proceeds through the applicable recovery process instead of pretending that a winning officeholder has already been lawfully installed.
 
-What is Parliament?
-The deliberative and representative branch of the living republic.
+### E. An emergency stop occurs during a collective Pulse
 
-Why does Parliament exist?
-Because the republic needs lawful plurality, proposal, debate, and organized representation.
+Cooling telemetry crosses a dangerous threshold while the larger model is synthesising district reports. A deterministic hardware mechanism throttles or stops unsafe equipment according to its defined playbook. The cognitive process may lose transient context. The Rock's latest durable state, relevant incident records, and any completed checkpoint remain the basis of later recovery. The Founding Father's emergency role and human gate may apply if the event reaches Tier Two, but the disk service itself neither waits for a vote to protect hardware nor manufactures an uncompleted snapshot.
 
-What makes a proposal lawful?
-Sponsorship, parliamentary process, debate lineage, and lawful transmission into record or branch relation.
+### F. The system is moved to larger drives
 
-How does debate become action?
-Through motion, vote, recommendation, executive transmission, constitutional pathway, or recorded parliamentary adoption.
+A future expansion adds storage. The Human Counterpart stages independent backups, validates the existing archive, moves or reconstructs encrypted data, and checks record integrity and registry compatibility after the cutover. The destination exposes the same citizen and collective boundaries despite changed disk identifiers. Source files are not deleted until restoration and permission tests are successful. The Rock's identity is its validated history and authorised structure, not the model number of the disk that holds it.
 
-How is the citizen body represented?
-More directly in the simplified proof phase, more district-mediated in the mature scale-out phase.
+### G. A restored backup contradicts a later ballot record
 
-What does the Speaker do?
-Organizes Parliament procedurally without becoming Parliament itself.
+A backup from before a recorded court appointment is restored. Another protected audit record proves the appointment occurred later. Recovery must surface the discrepancy and determine what authoritative records can lawfully be replayed. It cannot silently erase the appointment or reinstate the previous justice. If consistency cannot be recovered, normal constitutional operation is withheld pending the proper governance or human recovery path.
 
-What can Parliament not do?
-It cannot execute by default, cannot interpret the Constitution with finality, and cannot become Huey as a whole.
+---
 
-How does Parliament relate to the President, Supreme Court, Founding Father, and Huey?
-It is the representative branch among equals, not the owner of the state.
+## XXIX. Incremental Build and Verification Plan
 
-How does Parliament avoid becoming either chaos or dead weight?
-By remaining plural, structured, bounded, recorded, and outcome-capable.
+The Rock should be built and tested in layers, much as the project approaches physical hardware. A comprehensive but untested storage diagram is not preferable to a narrower working service with known limitations. The following is a suggested engineering progression rather than a claim about current code.
 
+**Stage 1 — Define record types and boundaries.** Establish sample private, shared, restricted, and certified record classes. Document which actors may read or write each. Exercise permission denials with real filesystem or service controls, not prompt-only promises.
 
-Conclusion
+**Stage 2 — Prove attributed writes.** Allow a bounded sender to submit a proposal through a minimal HIMS-compatible interface; verify that unauthorised writes are rejected and authorised commits produce durable event identifiers. Distinguish a delivery receipt from a state-change receipt.
 
-Parliament exists because a republic needs lawful plurality, proposal, and representation.
+**Stage 3 — Test shared read views.** Construct approved queries for different simulated Pebbles and offices. Verify that a user with Rock read access cannot infer or retrieve unrelated sealed-vault data through direct queries, indexes, search, or caches.
 
-That need is real.
-So is the danger.
+**Stage 4 — Measure capacity and retention.** Simulate hundreds of citizens with small personal floors, ordinary task histories, official journals, and snapshot expansion. Measure real physical use including metadata and backups. Verify reserve capacity under heavy load.
 
-The branch is legitimate only if it is:
-- plural enough to represent,
-- structured enough to deliberate,
-- bounded enough not to swallow the rest of the republic,
-- and recorded enough to remain explainable.
+**Stage 5 — Simulate exact and augmented bifurcation.** Check that exact descendants obtain distinct identities and separate future memory while the source retires and the sealed ancestor remains intact. Verify that augmented descendants begin without inherited private memory. Attempt to exploit shared keys, references, and registry races.
 
-Parliament serves Huey by turning many bounded citizens into legible civic process.
+**Stage 6 — Exercise voting and office transitions.** Freeze an electorate, issue authenticated ballots, certify a result, and then try a mid-ballot bifurcation, stale credential, repeated message, and incompatible registry restore. A failed commit must not become a claimed successful election.
 
-But Parliament is never identical to Huey itself.
+**Stage 7 — Checkpoint and corrupt deliberately.** Interrupt writes, sever a simulated district, corrupt one copy, restore from mismatched snapshots, and verify that the recovery process identifies contradictions rather than hiding them. Include the case where the newest checkpoint cannot be trusted.
 
-It is not the whole will of the organism.
-It is not the state in collective disguise.
-It is not sovereignty by volume.
+**Stage 8 — Migrate and restore on different storage.** Move the system to a new physical arrangement and validate private/collective access, lineage, recorded approvals, and rebuildable indexes. Demonstrate a genuine restore, not only the existence of backup files.
 
-It is the deliberative branch made accountable:
-the branch that gives organized voice to Huey's citizen body,
-without ever becoming the whole republic it represents.
+**Stage 9 — Integrate the Pulse cautiously.** Give the collective model an authorised, versioned shared-state package and verify that it neither reads every private vault nor gains direct authority to rewrite official state. Benchmark retrieval, commit latency, and persistence under the proposed phase timings.
+
+**Stage 10 — Independent inspection.** Preserve sufficient descriptions, logs, tests, and failure evidence for a competent reviewer to distinguish demonstrated functionality from proposed behaviour. The Proofcase should be updated only when evidence meets the stated acceptance criteria.
+
+---
+
+## XXX. Questions Intentionally Left Open
+
+The following questions remain genuine research or constitutional dependencies. Recording them is preferable to asserting a convenient answer that was never agreed.
+
+1. Is the proposed 50/50 private/shared data allocation a hard boundary, a reserve target, or a default that can be lawfully adjusted with growth?
+2. Does a 1 GB personal floor apply at citizen preparation, activation, or ratification, and how are minimum resources verified before new citizens become voters?
+3. What actual quota ceiling, reserved capacity, and application-specific grant policy should follow from the 5 TB private pool?
+4. Where, physically and logically, do the active citizen vaults, the Rock's records, model weights, checkpoint staging, backups, and OS files reside once the V4 storage design is deployed?
+5. Which storage technologies best satisfy encrypted shared ancestry, repair, snapshots, key separation, and predictable performance on obtainable hardware?
+6. How will a district split an encrypted archive while unable to read it, yet provide two descendants independently revocable or rotated access to the ancestral material?
+7. What constitutes an authoritative version of the identity registry during partial outages, exact bifurcation, and a rollback after citizen retirement?
+8. What classes of Rock material are readable by every citizen, which are restricted to an office, and which should remain only referenced but sealed elsewhere?
+9. Who, in actual constitutional and technical terms, may promote personal material into shared knowledge or certify an official state change?
+10. What is the legal relationship among Scrolls, the Keeper, a storage custodian, and the office or branch that approved the event?
+11. What retention durations are necessary for official ballots, operational telemetry, personal drafts, and immutable ancestral snapshots? How may correction or deletion coexist with verified history?
+12. What synchronization and transaction approach can make four districts and shared storage recover as one lawful state without requiring impractical pauses or unnecessary distributed consensus?
+13. What should happen if one district's vaults are recoverable but its electoral records are not? May the other districts operate in a limited mode, and under which authority?
+14. How will the system prove that a snapshot is old but valid rather than accidentally legitimising offices, votes, or rights that were later revoked?
+15. How much state is actually useful or possible to checkpoint from a live LLM, GPU memory, operating-system process, and the proposed Pulse scheduler?
+16. How should added storage affect population, individual allocation, archive policy, and the decision whether to create new districts?
+17. What authentication, encryption, indexing, and backup performance costs can the V4 system tolerate before the proposed timing windows must be revised?
+18. How will the Rock handle deliberately false information, minority opinions, contested evidence, and judicial reversals without becoming an independent arbiter of law?
+19. What should be released publicly, what should remain human-service restricted, and what may remain private to an individual citizen even when Huey is being audited?
+20. How should future constitutional provisions protect informational continuity while retaining enough flexibility to replace particular storage products, databases, and encryption schemes?
+
+Several answers may ultimately be obtained only through measurements and fault-injection tests. The Constitution should protect the relevant boundaries; it should not attempt to legislate unproven disk performance or select a database through metaphor.
+
+---
+
+## XXXI. Relationship to the Research Series
+
+Chapter 9 occupies a specific place within the redesigned documentation structure. It develops the shared record, the citizen-memory boundary, storage capacity, historical preservation, and migration. It does not need to duplicate the whole surrounding book.
+
+- **Chapter 1 — Thesis, Ethos, Method & Proofcase** establishes why truthful evidence, reuse, and repeatability matter.
+- **Chapter 2 — Identity, Continuity, Cornerstone & Pillars** asks which kinds of informational and institutional continuity must be preserved when Huey changes.
+- **Chapter 3 — Huey as a Collective System** explains how private citizens and a shared history contribute to one coordinated Huey.
+- **Chapter 4 — Governance Architecture & Constitutional Theory** explains why distributed responsibilities should remain genuine rather than decorative.
+- **Chapter 5 — Pebbles: Citizenship, Identity, Jobs & Rights** establishes the individual's protected memory, resource floor, civic standing, and identity lifecycle.
+- **Chapter 6 — Districts, Elections & Representation** describes voting, jurisdiction, district autonomy, officeholders, and political outcomes that the Rock must record.
+- **Chapter 7 — Founding Father: Bootstrap, Ratification & Reserve Authority** supplies the founding lineage, transfer-of-authority event, and human-gated recovery context.
+- **Chapter 8 — HIMS: Messaging, Identity & Authorization** defines the communication and authorization pathways that surround any proposal to change the Rock.
+- **Chapter 10 — The Walnut & the Clock** will explore the inference, retrieval, collective-state assembly, and Pulse performance requirements that rely on the Rock.
+- **Chapters 11–13** will specify the research behind Senate, Presidential, and Supreme Court records and their legitimate production.
+- **Chapter 14 — Bifurcation, Migration & Scale** will develop citizen lifecycle transitions, district growth, snapshot references, and scaling beyond the founding configuration.
+- **Chapter 15 — Hardware, Embodiment & Runtime Topology** will evaluate drives, controllers, caching, host configuration, and physical constraints.
+- **Chapter 16 — Emergency States, Hibernation & Recovery** will investigate safe stopping, checkpoint restoration, partial loss, and preservation under threat.
+- **Chapter 17 — Ozymandias: Drift, Degradation, Failure & Renewal** will consider how a record may survive a republic that cannot lawfully resume and what continued identity can still mean.
+
+**Huey's Constitution** remains a separate authoritative document to be written deliberately. The Rock may support evidence of its ratification, amendments, and interpretation, but no storage algorithm becomes constitutional merely by appearing in this research paper.
+
+---
+
+## XXXII. Source Lineage, Superseded Meanings, and Editorial Reconciliation
+
+The earliest research contributed several valuable ideas: retained information should be modular, citizens should have bounded private histories, important messages should leave accountable records, and larger systems should survive loss of individual components. But earlier proposals must not be mistaken for fully implemented systems or automatically transferred into the new canonical vocabulary.
+
+**Research Archive — Bees & Honey / Custom Honeycomb Storage.** This paper imagined hive-like modular storage nodes, differentiated hot and cold roles, distributed access paths, redundancy, and adaptive allocation. These remain useful design inspirations. Its assertions about geometric efficiency and near-automatic resilience should not be presented as demonstrated properties of Huey's current filesystem. The new Rock concept does not require literal honeycomb topology.
+
+**Research Archive — Exact & Augmented Bifurcation.** The archive originally described replication and specialization broadly, using biological metaphors. Our more recent discussion introduced a precise identity distinction: exact division retires the source and creates two equal descendants with shared sealed ancestry; augmented creation preserves the source and creates a new citizen without inherited private memory. This chapter adopts the newer working definitions without deleting their historical origins.
+
+**Older HIMS research.** The previous HIMS chapter described trust classes, Scrolls, Keeper functions, and private versus shared storage. Chapter 8 has now rebuilt the messaging and security architecture. Chapter 9 draws on the same history but keeps storage commitment distinct from message delivery, and record custody distinct from judicial or executive power.
+
+**Older 'Rock' usage.** In prior language, the Rock was the pooled cognitive or deliberative substrate of the Pebbles. After detailed discussion, the working definition became the shared-information and governance-record store. The term's old metaphorical meaning is retained as history, not treated as an alternative current technical specification.
+
+**Older population and proof-body assumptions.** Earlier texts often referred to 128 citizens in a different structure, and earlier technical descriptions treated Huey Core hardware as the active proof baseline. Our current research instead uses a proposed founding tree of 64 source configurations to 256 citizens in four districts, and regards the newer V4 hardware direction as a target still requiring verification. The Rock is defined independent of which host or disk model eventually implements it.
+
+**Current research Chapters 1–8 and the interview decisions.** These are the primary conceptual basis for this revision. They establish private citizen boundaries, the proposed 50/50 data split, a 1 GB minimum, HIMS mediation of shared writes, the two bifurcation meanings, four district representation, separate Pulse and electoral timing, and uniform checkpointing. None of those terms alone proves the presence of working code. The paper explicitly reserves legal rules for the separate Constitution and performance claims for laboratory evidence.
+
+The purpose of reconciliation is not to make past research disappear. It is to allow a future reader to understand which ideas survived, which were transformed, which were never tested, and why the new architecture uses the names it does.
+
+---
+
+## Conclusion — Memory Without Monarchy
+
+The Rock exists because a governed collective needs a past it can examine, a present it can reconcile, and a basis for making future decisions without inventing a different history whenever that history becomes inconvenient.
+
+Its job is not to think for every citizen, speak for every district, or decide whether an office deserves obedience. Those are separate questions of inference, deliberation, technical permission, and constitutional authority. Its job is to preserve authorised common information and the lineage through which legitimate changes can be understood.
+
+The design must hold together several tensions at once. Individual Pebbles require protected histories, yet the collective requires shared evidence. Bifurcation should preserve ancestry without duplicating political power. Compression should make retention sustainable without forging an unchanged original. Mirroring should improve resilience without being mistaken for backup. Restoration should recover usable function without inventing votes, offices, or legal events that never occurred. Hardware should be replaceable without silently rewriting the record that made Huey recognisable.
+
+The proposal is ambitious. None of these guarantees exists merely because a diagram labels storage as 'the Rock'. The proof will be in actual encryption boundaries, authorised writes, consistent checkpoints, tested recovery, meaningful archives, and the ability to tell the truth about failure.
+
+**Pebbles may differ. Districts may disagree. The Walnut may change. Hardware may be replaced. But the record must remain attributable, bounded, and recoverable wherever Huey claims lawful continuity.**
+
+That is the Rock's research purpose: shared memory without universal exposure, preservation without pretence, and continuity without a hidden sovereign.
