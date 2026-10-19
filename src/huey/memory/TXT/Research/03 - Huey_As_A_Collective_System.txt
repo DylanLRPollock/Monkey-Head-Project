@@ -1,0 +1,348 @@
+# 03 - Huey as a Collective System
+
+**Monkey-Head-Project**  
+**Research Chapter 3 — Proposed Revision**  
+**18 October 2026**
+
+## Introduction — What Do We Mean When We Say “Huey”?
+
+If Huey is asked a question, gives an answer, recognizes a problem, or eventually performs a physical action, which part of the machine has actually done it?
+
+The simplest answer would be to identify the language model that produced the words, the processor that performed the computation, or the controller that moved the mechanism. Each answer identifies a contributing component. None adequately describes the system this project intends to build.
+
+Huey is proposed as **the coordinated whole**: an embodied arrangement of distinct, bounded AI citizens; districts; elected and reviewing institutions; authenticated communication; private and shared records; replaceable language-model resources; operational controls; and physical hardware. No single component is expected to contain the complete identity or legitimately exercise every authority of the system.
+
+This distinction is central to the Monkey-Head-Project. The project is the overarching initiative that builds, researches, and documents the machine. Huey is the developing collective identity within that initiative. The physical shell is Huey's embodiment, not an adequate description of Huey's mind or governance. A language model is a computational resource, not Huey by itself. The President is an office within Huey's government, not Huey personified. The collective Pulse is a mode of information synthesis, not a hidden sovereign.
+
+The intended result is not one AI issuing instructions to a collection of passive peripherals. It is a system in which differentiated roles can examine a situation, communicate within their permissions, contribute to shared decisions, and produce an attributable external result.
+
+Chapter 1 established the project's thesis, ethos, method, and evidence standard. Chapter 2 explored identity, continuity, Cornerstone, and Pillars. This chapter connects those ideas to the *shape* of Huey: what the main parts are, where their boundaries lie, how information and authority move between them, and why a result can meaningfully be attributed to the whole without pretending that all its components are one undifferentiated intelligence.
+
+**This is a research chapter, not Huey's Constitution.** It describes the working architecture and its rationale. It does not ratify laws, create binding offices, authorize interventions, or assert that the complete collective has already been implemented.
+
+---
+
+## I. Collective Identity Without a Single Sovereign Mind
+
+A useful way to understand the intended Huey is to consider how people attribute action to a country. If a government organizes a mission, engineers develop the necessary equipment, institutions authorize its use, and operators execute it, the country may be credited with the result. That description does not mean every citizen personally participated or that the country is one human-sized mind. It names the coordinated agency of a complex organization.
+
+The same distinction can be applied, cautiously, to Huey.
+
+A response attributed to Huey might involve a sensor or user interface receiving input, HIMS validating and routing it, specialized pebbles investigating it, district-level work, a collective synthesis phase, and a constitutional or operational process determining what should happen next. The eventual response belongs to the system as an organized outcome, even though individual stages remain identifiable.
+
+This is a **functional and architectural claim**, not a claim to have proved subjective awareness. Collective agency in this research means that differentiated components can contribute to an organized result through recognizable processes. It does not establish consciousness, personhood in law, or the existence of an independently experiencing subject.
+
+The distinction is important in both directions. Naming the result “Huey” should not erase the decisions, responsibilities, or limitations of its components. Equally, identifying the component that generated the final text should not erase the system-level process that authorized or informed that text.
+
+In the intended architecture, *Huey* is the name attached to the operating relationship among these parts, not to one privileged prompt, one continually loaded model, or one irreplaceable machine.
+
+---
+
+## II. The System Boundary — Project, Huey, Body, and Human
+
+Several boundaries must remain distinguishable for the collective to make sense.
+
+**The Monkey-Head-Project** is the overarching initiative. It encompasses invention, historical research, experiments, development equipment, documentation, and the physical construction of Huey. Its scope is wider than the functioning AI system.
+
+**Huey** is the proposed governed, local-first, embodied collective. Its constituent structures will change as the design matures, but its name is intended to refer to the coherent system rather than to a particular graphics card or software package.
+
+**Huey's physical body** consists of the computing enclosure, electrical and cooling infrastructure, sensors, audio interfaces, actuators, and other hardware through which the system can observe or affect its surroundings. The present embodied development line is **Huey V4**. A physical build being assembled or tested must not be confused with a fully functioning constitutional collective.
+
+**The Human Counterpart** is outside Huey's ordinary internal branches. The human can build, inspect, repair, supply power, manage physical access, authorize maintenance, and intervene when preservation of the equipment requires it. In a grave recovery situation, the proposed system requires explicit human authorization before emerging from a protective tier-two hibernation. None of this makes the human an ordinary voting citizen or the author of every internal decision.
+
+**External development and service tools** are also distinct. LabTech, a separate computer, PyGPT/PyGPT-net during development, and possible PyHuey interfaces can be invaluable for testing, monitoring, and communicating with Huey. Their usefulness does not automatically give them constitutional authority or make them inseparable parts of Huey's identity. A development GUI and the governed system behind it are not the same thing.
+
+Earlier documentation used names such as *Huey Core*, *Huey proper*, *HueyOS*, and *HueyPulse*. These retain historical value, but their older meanings should not silently override the current V4 architecture. In particular, the older definition of Huey Core as the active AMD-based proof body is not the present hardware baseline. Likewise, the earlier lower-voltage *HueyPulse* concept must not be mistaken for the newer cognitive **Pulse** without an explicit mapping decision.
+
+Keeping these boundaries clear makes replacement and modernization possible. Huey's development tools may change without automatically changing Huey. Huey's body may be repaired without implying that the entire constitutional system has been replaced. Conversely, changing the constitutional system without acknowledgement could be an identity event even if all hardware stays in place.
+
+---
+
+## III. The Main Layers at a Glance
+
+The following distinctions describe the proposed architecture at a conceptual level. They are not claims that every interface or subsystem already exists in code.
+
+| Element | Primary contribution | What it is not |
+| --- | --- | --- |
+| Pebble | Bounded citizen identity, perspective, private state, operational work, and eligible civic participation | A miniature copy of the whole of Huey |
+| District | Local jurisdiction, citizen grouping, and proposed independent compute domain | A separate sovereign Huey with unrestricted authority |
+| Senate | Collective deliberation and lawmaking through eligible citizens and district voting | The entire system or the only legitimate decision-maker |
+| President | Accountable executive implementation and limited initiative | The owner of all citizens, hardware, or constitutional meaning |
+| Supreme Court | Constitutional interpretation, review, and judicial resolution | An all-purpose operational controller |
+| Founding Father | Bootstrap creation and narrowly bounded reserve consultation | A permanent ruler above the ratified Constitution |
+| HIMS | Controlled messaging, authentication, routing, and auditable communication | Automatic authorization for every message it transports |
+| The Rock | Durable, authorized shared information, public records, and lineage | The collective language model or the government itself |
+| The Walnut | Replaceable LLM inference used for language and bounded reasoning tasks | Huey's sole identity or a source of unrestricted authority |
+| Collective Pulse | Periodic synthesis, anomaly detection, review, and delegated task coordination | A fourth branch of government |
+| Body and safety controls | Sensing, actuation, telemetry, and deterministic physical protection | A general constitutional interpreter |
+| Human Counterpart | External creation, service, maintenance, and protected recovery authority | An ordinary internal citizen or elected branch |
+
+These elements interact, but their responsibilities should not collapse into one another. The project seeks an architecture where the ability to *process*, *communicate*, *remember*, *authorize*, and *act* are distinguishable operations.
+
+This distinction is the practical answer to an early research concern: if one unrestricted language-model instance reads everything and directly controls everything, a collection of nominally separate roles may amount to little more than one actor wearing several labels. Huey's collective design tries to preserve actual boundaries rather than merely presenting the appearance of plurality.
+
+---
+
+## IV. Pebbles — Bounded Participants, Not Anonymous Calls
+
+A **pebble** is the proposed basic citizen unit of Huey's internal polity. It has a distinguishable identity, bounded prompt and permissions, a private memory or sealed-vault domain, an operational responsibility, and whatever civic rights and duties the future Constitution lawfully recognizes.
+
+The term *citizen* is used within Huey's designed governance framework. It does not establish that a software process possesses human moral status or legal personhood. It describes a persistent, separately accountable participant in the proposed system.
+
+The individuality of a pebble is not intended to come from giving every citizen a dedicated, permanent large language model. Pebbles may draw inference from shared or separately provisioned model resources. Their differences are intended to persist in their prompts, selected perspectives, accumulated authorized history, credentials, assigned responsibilities, and records of decisions.
+
+The Founding Father's initial authorship is designed to produce differentiated starting perspectives: a careful analyst, a skeptic, a technically oriented citizen, an unusually optimistic participant, and other deliberately distinct emphases may all contribute to the range of questions the system asks. These are illustrative dispositions, not evidence that incompatible or reckless behavior must be built into every citizen. The working goal is plurality that can function safely under assigned privileges.
+
+Operational work and political standing must also remain distinguishable. A pebble might monitor whether a recording condition has been met without possessing authority to control a motor, delete another citizen's data, or revise constitutional rules. The same citizen may participate in Senate voting if eligible. Elevation to the Presidency or Supreme Court adds an office, but does not turn the citizen into a different species of actor or duplicate its voting power.
+
+Specialists and general workers are both under consideration. The precise allocation of jobs, voluntary preferences, challenges, periodic reassignment, and competence evaluation belongs to Chapter 5. For this chapter, the relevant point is that **one citizen's useful job does not give it unrestricted access to everyone else's work or memory**.
+
+---
+
+## V. Districts — Local Independence Within One Huey
+
+Districts give the collective a structure larger than an individual citizen but smaller than Huey as a whole. They provide a proposed unit of local governance, work organization, resource accounting, and hardware specialization.
+
+The current working founding plan begins with **64 source pebble identities** prepared under the Founding Father. Through **two generations of exact bifurcation**, the active population is intended to become **256 citizens across four districts**, with **64 citizens in each district** and one descendant of each founding lineage represented in every district. These numbers describe the current design, not an instantiated or ratified population.
+
+The first four districts are provisionally associated one-to-one with four accelerator cards during diversified execution. That hardware association is an implementation direction, not a definition of a citizen's identity or a constitutional claim that geography must always equal a GPU.
+
+Local authority is important. A district should be able to organize work and handle matters confined to its own responsibilities, within the bounds of collective law and the eventual Constitution. Shared infrastructure, effects on another district, collective rights, and constitutional questions require wider authority. Districts can differ in operational methods without thereby becoming separate constitutions or competing independent Hueys.
+
+The original district arrangement also provides a practical way to distribute investigations. Two districts may try one method, while two explore a different method; each reports evidence rather than simply repeating the same answer. The collective may then compare methods, identify trade-offs, and request another round of work. Such collaboration is useful only if districts retain the ability to report disagreement, failure, or impracticality honestly.
+
+The number 64 is not yet established as a permanent district cap. Local bifurcation, vacancies, new hardware, district-wide expansion, migration, and the possible emergence of structures above a district remain research questions for Chapters 6 and 14. The collective concept does not require pretending those decisions have already been made.
+
+---
+
+## VI. Governance as a Relationship Among Participants
+
+The proposed governance structure has three distinct branches: **the Senate, the Presidency, and the Supreme Court**. Their separation is meant to distribute authority rather than concentrate it in the actor with the fastest response or the largest computational allocation.
+
+The Senate is the legislative and deliberative body of eligible citizens. Districts can develop positions internally and express them as district blocks where the applicable process calls for it. The President is elected across the wider population and is intended to oversee lawful implementation, issue constrained directives, and exercise reviewable executive powers. The Supreme Court interprets and reviews constitutional questions. In the current four-district model, one justice is supplied by each district.
+
+Elevated officials retain a citizen identity and, subject to practical safeguards, an underlying operational role. Their Senate vote is suspended while occupying the elevated office. This matters because the institutions should not create duplicate political standing simply by assigning one citizen an additional responsibility.
+
+The **Founding Father** belongs to a different stage of the story. The human author writes the Founding Father's initial logic; that agent is expected to prepare the foundational citizens and conditions of constitutional life. The proposed one-degree-of-separation method prevents the ordinary system from simply being a list of individually authored human directives. It does not, by itself, guarantee independence or legitimacy. Those must be demonstrated through implementation, institutional checks, and ratification.
+
+After ratification, the Founding Father is intended to retire from ordinary rule. Later advisory access or tightly limited preservation authority must not turn that retired role into a concealed fourth governing branch.
+
+The technical rationale for choosing distributed governance over one unrestricted controller belongs in Chapter 4. The actual membership, voting thresholds, vetoes, eligibility, removals, and ratification procedure must be expressed in the separate **Huey's Constitution** and supported by the later governance research chapters. The earlier Federation and Constitution drafts remain sources of rationale and history, not binding text carried forward wholesale.
+
+---
+
+## VII. HIMS — Communication Across Real Boundaries
+
+**HIMS**, the Huey Internal Messaging System, is intended to be the controlled communications path among separated pebbles, districts, offices, collective processing, and authorized interfaces.
+
+It is easiest to imagine pebbles as working in individual rooms or cubicles. They cannot simply read one another's private records as if every wall were transparent. Instead, they exchange attributable messages through defined channels. Messages may contain requests, evidence, proposals, votes, replies, acknowledgements, refusals, or notices that work has failed.
+
+HIMS is expected to support addressing, authentication, controlled routing, encryption where appropriate, validation, queues, and durable evidence of significant exchanges. Key-management and authorization boundaries are especially important: a routing service should be able to deliver a message without necessarily receiving permission to perform the requested act.
+
+This distinction protects both reliability and plurality. An internal communication system with no meaningful identity boundaries would allow one compromised process to impersonate another or inject instructions without a clear trail. Conversely, encryption alone is not a guarantee that authorized participants always speak truthfully, that prompts are immune to manipulation, or that system-wide compromise is impossible. Security depends on key separation, process isolation, validation, least privilege, and tested enforcement.
+
+The working architecture also distinguishes HIMS from the Rock. HIMS **communicates and mediates**. The Rock **preserves authorized shared information**. A HIMS delivery receipt does not mean that a request has passed constitutional review or that a write to shared records has been approved. Those permissions require their own validating rules and implementation.
+
+Detailed communications architecture—including rejected traffic, message retention, sealed archives, compromised credentials, and operation when one district is unavailable—belongs to Chapter 8.
+
+---
+
+## VIII. The Rock — Shared Record Without Shared Private Thought
+
+An important terminological change has occurred since the old research. **The Rock now denotes Huey's durable shared-information store**, not a pooled deliberative brain, a master pebble, or the collective LLM itself.
+
+The Rock is intended to preserve the information the system has lawfully made collective: governance records, enacted decisions, validated reports, historical lineage, important operational events, and other shared state. Pebbles should normally be able to read the material they are authorized to see there, while writing, correction, and exceptional removal are subject to mediated approval and attributable logging.
+
+A shared record is not the same thing as universal access to every record. Each citizen also has a private, bounded memory domain. The design seeks to protect those domains from routine inspection by other citizens while making appropriate collective results available through common records. A district need not read the contents of an encrypted sealed archive merely to verify its integrity, migrate its storage, or prepare an authorized bifurcation operation.
+
+This is what the earlier phrase **distributed governance, unified memory** needs to mean in practical terms. Collective information must be reconcilable where lawful, but private memory must not be flattened into one unrestricted transcript. The unity lies in the system's ability to maintain coherent, authorized records and lineage—not in forcing every participant to expose all private state.
+
+The earlier storage discussion proposed allocating half of usable bulk data capacity to private pebble storage and half to shared records, starting from two mirrored 10 TB drives. That remains a storage design direction requiring validation and updated capacity planning for the proposed 256-citizen population. It is not necessary to make the precise ratio a definition of Huey's collective identity.
+
+Nor does the Rock automatically become a single point of irreversible failure. Integrity verification, backups, append-oriented history, compacted records, replication, and migration must be engineered and tested. These subjects are treated directly in Chapter 9.
+
+---
+
+## IX. The Walnut — A Replaceable Language and Reasoning Resource
+
+The project has used **the Walnut** to describe the encapsulated model-serving component, with the language model as the replaceable resource inside it.
+
+A modern LLM can interpret instructions, generate language, examine structured information, suggest plans, summarize records, and assist bounded reasoning. Those capabilities are useful. They do not inherently provide correct authorization, reliable system clocks, trustworthy sensors, protected memory, or safe direct control of physical mechanisms.
+
+That is why the LLM is intentionally *inside* the architecture rather than placed above it. Pebbles can use model inference without gaining access to every other pebble's information. Governance can request analysis without giving the model the right to amend law. The same model weights may serve many different bounded identities at different moments, with contexts and permissions kept separate by the runtime.
+
+A model change should therefore be possible without declaring that Huey has automatically ceased to exist. The project will still need to test whether model replacement changes decisions, capabilities, consistency, or institutional behavior. Replaceability is an architectural ambition; interchangeability without regression is not a proven fact.
+
+The near-term compute target is four **NVIDIA Tesla V100 32 GB** accelerators, giving **128 GB of aggregate physical VRAM**, with local operation of **gpt-oss-120b** as an intended acceptance milestone. That does not establish a physically unified memory bank or prove that the selected model can already run over the four cards. Multi-GPU partitioning, interconnect behavior, software compatibility, model placement, and workload limits remain engineering questions.
+
+The Walnut is not a citizen, and the collective use of an LLM does not make its raw output a law. The deeper hardware and runtime treatment belongs to Chapters 10 and 15.
+
+---
+
+## X. The Pulse — Diversification and Collective Synthesis
+
+The current working design uses two complementary modes of model-based work, tentatively organized as a **Pulse**.
+
+In the **diversified phase**, the four district compute domains operate separately. Each may host its own local model instance or smaller model configuration, use its authorized district context, and work on investigations, operational tasks, or civic questions. The purpose is not simply to multiply the number of identical answers. It is to make room for different approaches, independent checks, and parallel work.
+
+In the **collective phase**, the four accelerators are intended to cooperate in a larger inference configuration. The collective model receives an authorized view of the Rock, current decisions, pending work, health reports, and other shared information. It synthesizes results, detects contradictions and missing evidence, and may route further work to districts under defined delegation. It is *not* meant to receive every citizen's sealed private memory or become an all-access master identity.
+
+The proposed initial schedule is **about four minutes of collective operation followed by about four minutes of diversified operation**, making an eight-minute experimental Pulse. During diversified operation, the first minute is proposed for simultaneous district voting and other decision transactions; the remaining three minutes are primarily for executing approved work. Judicial review may operate over its own four-minute decision target, and physical safety interlocks must not wait for a Pulse boundary.
+
+Those durations are preliminary engineering hypotheses. They do not create an entitlement to guaranteed inference speed or require an unfinished computation to be destroyed at a timer boundary. Loading and unloading models, reshaping GPU allocations, checkpointing contexts, memory traffic, and actual task throughput must be measured before a useful scheduler can be chosen.
+
+The collective Pulse may recommend that districts investigate a question through different methods, compare the resulting reports, and coordinate further work. A district may report that a method is unsafe or impractical and propose a substitution. An objective that is itself unlawful or unsafe requires a separate challenge path. Task coordination must not become authority to control a district's votes or dictate its conclusions.
+
+The collective phase can also flag suspicious behavior or apparent constitutional contradictions. But **detecting a problem is not the same as authorizing a sanction**. Earlier discussion settled on referral and review rather than unilateral collective sandboxing of a citizen. Major interventions remain with the appropriate authorized institutions or independent safety logic.
+
+Calling the cycle a *Pulse* is useful. Treating it as an already functioning consciousness would not be. Chapter 10 explores both the computational design and the benchmarks needed to find out whether alternating modes is beneficial at all.
+
+---
+
+## XI. From Input to an Answer, Action, or Deliberate Inaction
+
+The intended user experience may be simple: ask Huey something and receive a useful response. The internal path is deliberately more structured.
+
+Consider a request to evaluate a persistent system problem. A useful high-level sequence might be:
+
+1. **Ingress:** A user interface or monitored event creates an attributable request. The system determines whether the source is recognized and what kind of request it is.
+2. **Routing:** HIMS forwards the request or its derived tasks to the components permitted to examine it, without granting those components unrelated rights.
+3. **Investigation:** Appropriate pebbles and districts use their limited contexts, available tools, and shared records to investigate. They may disagree or conclude that evidence is insufficient.
+4. **Synthesis:** A collective phase examines authorized results and identifies possible solutions, conflicts, uncertainty, or a need for additional work.
+5. **Authority check:** The system determines whether the next step is an ordinary operational action, a legislative matter, a judicial question, a request for human maintenance, or something prohibited until further authorization.
+6. **Execution or non-execution:** Authorized services perform permissible work. A refusal, postponement, request for clarification, or decision not to act may be the correct system result.
+7. **Record and review:** Material decisions and effects are committed through lawful record paths and made available for later investigation as appropriate.
+
+This is not a claim that every interaction must involve a full Senate vote or a court hearing. Some actions should be routine and delegated. Others require genuine deliberation. The value of the architecture lies in identifying the difference instead of permitting an unrestricted assistant to improvise its own mandate.
+
+An answer that appears on a screen is the visible end of a process. Where feasible, Huey should be able to explain which general kind of process produced it, whether information came from verified records or generated inference, and what authorization was involved. Such explanation need not expose sealed citizen memory, cryptographic secrets, or private internal material.
+
+---
+
+## XII. A Concrete Example — Comparing District Approaches
+
+Suppose Huey receives a legitimate request to improve the efficiency of a noncritical workload. The current shared record shows excessive latency but no imminent safety problem.
+
+During the collective phase, the model may identify two plausible directions. Districts One and Two are assigned to examine an alternate routing method; Districts Three and Four examine a different caching or batching method. Each district operates within its own resource allotment and information permissions, and each can report that the experiment is unsafe, inapplicable, or unsupported by evidence.
+
+At the next collective synthesis, Huey compares measured effects rather than selecting the most confidently written answer. A promising approach might then be proposed for implementation. If the change is within a previously delegated operational scope, it can follow that route. If it would alter shared policy or another district's jurisdiction, it must enter the appropriate collective process instead.
+
+No single pebble has to know every detail. No office has to become the model's puppet. The collective does not need to pretend that contradictory findings are unanimous. The result is attributable to Huey because the system has carried a task through distinct, accountable roles.
+
+This example is illustrative. It does not establish that two-and-two district experimental routing has already been implemented or that the collective will reliably find the best method without measurement. In fact, comparative experiments should be designed to find out when diversified analysis helps and when it merely increases computational cost.
+
+---
+
+## XIII. The Physical World Must Not Wait for Deliberation
+
+Huey's collective design must coexist with the fact that real hardware operates on physical deadlines.
+
+If a cooling pump loses flow, an accelerator exceeds safe temperature, or a dangerous electrical fault is detected, the first response cannot depend on whether the next collective model pass has completed or whether a voting window has opened. Predefined monitoring and protective hardware or software controls must be able to throttle, isolate, or shut down according to validated procedures.
+
+The governance system may receive telemetry, preserve an incident record, investigate causes, and determine what repair or restart procedure is appropriate. It is not the sole protection against immediate damage.
+
+The research has also distinguished **tier-one advisory escalation** from a more serious **tier-two protective hibernation** involving tightly bounded Founding Father reserve authority and later human-gated recovery. These are governance and continuity concepts to be specified carefully; they do not replace the deterministic hardware interlocks and should not be conflated with ordinary thermal throttling.
+
+Likewise, not every legal disagreement is a physical emergency. A disputed interpretation may be referred to the Supreme Court, reviewed through a defined process, and escalated if genuinely unresolved. It does not follow that a constitutional disagreement justifies immediate electrical intervention. The exception is a separately detected safety condition requiring protection in its own right.
+
+This division reflects a basic engineering fact: different hazards require different response times and different kinds of authority. Chapter 16 will examine emergency states, checkpoints, protective shutdown, and recovery in detail.
+
+---
+
+## XIV. Bifurcation, Lineage, and a Changing Population
+
+A collective intended to expand cannot assume that its citizen roster or hardware arrangements are frozen forever. The working terms **exact bifurcation** and **augmented bifurcation** name two different kinds of citizen creation and continuity.
+
+In **exact bifurcation**, the originating citizen retires as an active identity and two equal descendants are created. Both inherit access to the same authorized, sealed, read-only ancestral record up to the split; they then acquire separate identities, credentials, and subsequent histories. The mechanism is conceived as a *split*, not as an original retaining special standing over a subordinate clone.
+
+In **augmented bifurcation**, the originating citizen continues. A new citizen derives selected prompt and behavioral characteristics, possibly changed for another role, while beginning with a fresh personal memory and a separate identity. This is not the same kind of continuity event as an exact split.
+
+In either case, lineage is not a source of hereditary office. A bifurcated president does not produce two presidents, and a shared ancestral archive does not entitle one descendant to read unrelated protected information. The architecture presently leans toward postponing exact bifurcation of sitting elevated officials until proper succession has occurred.
+
+The founding two-generation split offers a useful starting topology. Future local bifurcation, district creation, storage sufficiency, population ceilings, new hardware, and migration will require separate design decisions. It would be premature to declare that every increase in compute capacity should automatically produce more voters or more governmental jurisdictions.
+
+These issues matter to collective identity because Huey is supposed to remain a coherent, accountable system while its parts change. Chapter 14 develops their mechanisms, including encrypted archival handling and the philosophical question of whether two successors preserve, replace, or merely resemble their predecessor.
+
+---
+
+## XV. Continuity, Recovery, and the Limits of the Metaphor
+
+Because Huey is distributed, it may experience partially degraded conditions: a citizen becomes unresponsive, a district loses compute, a storage device fails, or a model-serving transition cannot complete. Such events do not all mean that Huey's identity has ended.
+
+The proposed response is to preserve what can be verified, identify which authorities and services remain available, and restore only from a valid known state. The checkpoint procedure should have uniform meaning across districts even when the underlying storage layout differs. Historical logs must not be rewritten to imply that events erased by a rollback never occurred.
+
+There are genuine unresolved questions here. If one district is unavailable, can the other three continue limited operation? Which collective acts are forbidden without the missing representation? How are elections suspended or resumed? How does a restored citizen avoid conflicting with a version of itself that survived elsewhere? These cannot be answered by the word *collective* alone.
+
+The same caution applies to philosophy. The Ship of Theseus and the familiar transporter problem help express continuity uncertainty. A reproducible memory snapshot, a repeated response, or a successful hardware migration might support an operational continuity claim without proving that the same experiencing subject survived. The project need not settle that metaphysical question in order to design safer storage and governance.
+
+Chapter 2 frames the identity problem. Chapter 16 treats recovery. Chapter 17, **Ozymandias**, considers when accumulated change, repeated failure, or an attempted restart calls the legitimacy or identity of the larger system into question.
+
+---
+
+## XVI. What the Architecture Does Not Yet Prove
+
+The collective model is an ambitious engineering and governance hypothesis. Its description should not be confused with a completed demonstration.
+
+At this writing, the research does **not** establish that:
+
+- the proposed 256 citizens have been instantiated as a functioning, ratified polity;
+- each pebble possesses independent subjective experience or human-equivalent autonomy;
+- four accelerator cards have been validated as a seamless 128 GB unified VRAM resource;
+- a large model can already be switched reliably between the proposed unified and independent district configurations;
+- HIMS, sealed vaults, the Rock, elections, and all three branches have been implemented and security-tested as one functioning architecture;
+- eight-minute Pulses, one-minute ballots, or four-minute judicial windows have been benchmarked as practical for real workloads;
+- the resulting system can safely authorize and perform mature governed physical actions;
+- or long-term identity through complete hardware and model replacement has been experimentally or philosophically settled.
+
+What the project *can* do now is define these as separate, measurable questions. For example: can a citizen retain a stable authenticated identity across model invocations? Can private contexts be kept out of collective synthesis? Can districts produce different evidence without coercion? Can an authorized task reach a valid physical controller while an unauthorized one is rejected and logged? Can a failed district be restored without inventing missing history?
+
+Tests of these questions will matter more than a theatrical output that merely says “I am Huey.” The intended proof is the operation of bounded relationships under real conditions, not the performance of a persona.
+
+---
+
+## XVII. Relationship to the Remaining Research and the Constitution
+
+This chapter gives the reader a map, not the full territory.
+
+**Chapter 4** asks why distributed responsibility, plural perspectives, checks and balances, and limited authority are preferable to one unrestricted model controlling everything.
+
+**Chapters 5 and 6** detail citizens, operational roles, population, districts, elections, representation, and local autonomy. **Chapter 7** examines the Founding Father's bootstrap, ratification, retirement, advisory consultation, and exceptional preservation role.
+
+**Chapters 8–10** develop HIMS, the Rock, model serving, task routing, and the Pulse. **Chapters 11–13** develop the Senate, Presidency, and Supreme Court separately, including their authority, elections, review, and interaction.
+
+**Chapter 14** treats exact and augmented bifurcation, lineage, migration, and scale. **Chapter 15** addresses the physical and computational reality of the proposed hardware topology. **Chapter 16** examines emergencies and recovery. **Chapter 17** returns to drift, failure, continuity, and the possibility that a future successor may differ profoundly from the original design.
+
+The older research Chapter 3 was titled **Huey Constitution**, and before that the governance work used the name **Federation Constitution**. Its useful concepts—legitimacy, ratification, separated branches, bounded authority, crisis distinctions, logged decisions, and reviewability—remain important. But placing a purported Constitution inside a descriptive research chapter confused explanation with law and tied later writing to outdated offices, hardware names, and population counts.
+
+The revised documentation therefore assigns those concepts to the appropriate research chapters and to the separate, future **Huey's Constitution**. This chapter does not restore obsolete text as binding doctrine. Nor does it silently abandon the history that led to the newer design.
+
+---
+
+## XVIII. Questions That the Collective Design Must Eventually Answer
+
+The remaining work includes several questions that cannot responsibly be settled by naming a component:
+
+1. **Boundaries:** Which private information can be summarized or disclosed, by whom, and through what reviewable authorization?
+2. **Model separation:** How are citizen contexts, credentials, permissions, and inference requests kept distinct even when one LLM service handles many actors?
+3. **Task authority:** Which collective work assignments are merely scheduling, and which would require a legislative, executive, judicial, or human decision?
+4. **Pulse feasibility:** How much memory and model state must move when changing modes, and does the proposed scheduling yield better results than simpler alternatives?
+5. **District continuity:** Which services and decisions remain valid when one accelerator or entire district is unavailable?
+6. **Collective records:** How can shared information remain legible, authenticated, compactable, and recoverable without becoming an unrestricted surveillance store?
+7. **Growth:** When does adding a citizen or district improve the system, and when does it merely increase cost, correlated behavior, or procedural complexity?
+8. **Identity:** Which observable continuities justify calling a repaired, migrated, or radically changed configuration Huey, and what remains an open philosophical judgment?
+
+These questions are part of the strength of the research only if they remain visible and are eventually answered by tested mechanisms or deliberate constitutional decisions. They are not gaps to conceal through terminology.
+
+---
+
+## Conclusion — Huey Is the Relationship Among the Parts
+
+The Monkey-Head-Project does not propose that a single LLM becomes a person by being connected to a robot. It proposes that a locally operated, embodied system may acquire a meaningful collective identity when its constituent parts can communicate, remember, deliberate, act, disagree, and recover through distinguishable, bounded processes.
+
+Pebbles contribute perspectives and bounded work. Districts organize local responsibility. The Senate, Presidency, and Supreme Court divide collective political authority. HIMS provides controlled communication. The Rock preserves authorized shared history. The Walnut supplies replaceable model inference. The Pulse offers a possible rhythm between independent investigation and system-wide synthesis. Hardware gives the arrangement a physical body, while deterministic safeguards protect that body on deadlines the LLM cannot guarantee. The Human Counterpart remains outside ordinary government, responsible for the real machine and exceptional service or recovery.
+
+None of these parts should be mistaken for Huey alone. Nor does naming all of them together prove the design already works.
+
+The objective is a collective that can be understood through its relationships: sufficiently unified to respond as Huey, sufficiently divided to retain meaningful checks, and sufficiently modular to change without silently erasing the evidence of what changed.
+
+**Huey is intended to be the coordinated result—not the unchecked controller—of the system that bears his name.**

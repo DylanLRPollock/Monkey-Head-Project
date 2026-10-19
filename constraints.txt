@@ -1,55 +1,37 @@
-# Monkey-Head-Project / HueyOS
-# Global constraints for reproducible installs.
+# Monkey-Head-Project / HueyOS — global constraints
+# Python 3.13.x primary runtime; Python 3.12 is legacy, 3.14 testing only.
+# Aligned to requirements.txt and the supplied PyGPT 2.9.1 baseline.
 #
-# Consumed by requirements.txt via:
-#   -c constraints.txt
+# `requirements.txt` imports this file with `-c constraints.txt`.
+# All anchors also present in requirements.txt MUST have identical versions;
+# pip constraints are additive rather than overrides.
+# Constraints DO NOT install packages, enforce the Python version, or enable
+# optional extras. The project's pyproject.toml must set requires-python.
+# The installer pip itself, PyGPT and faster-whisper are intentionally
+# constraint-only; PyGPT and faster-whisper belong in optional project extras.
+# The pip pin is constraint-only to avoid pip pin/self-upgrade conflicts.
 #
-# Intent:
-# - Keep build tooling and anchor runtime packages aligned across editable
-#   installs and extras.
-# - Stay minimal; requirements.txt remains the authoritative full pin set.
-# - Every pin in this file MUST match the corresponding pin in
-#   requirements.txt — pip treats constraints as additive, so a mismatch
-#   causes a resolver conflict (not a silent override).
-# - Package markers stay in requirements.txt; this file carries plain pins
-#   for shared anchors only.
-#
-# Target Python:
-#   3.13.x only (>=3.13,<3.14); Python 3.14.x is testing-only
-#
-# Extras-only anchors (pygpt-net, faster-whisper, transformers) are pinned
-# here so editable installs and optional extras resolve to the same versions
-# the repo tests against. They are intentionally NOT listed in the core
-# requirements.txt because they belong to the ml/local-model extras declared
-# in pyproject.toml.
-
 # --- Packaging / installer toolchain ---
-# pip pin lives here only. Exact self-pins in requirements.txt break
-# pip-compile-based dependency submission when the runner uses a different
-# pip version.
 pip==26.2.1
 setuptools==84.0.0
 wheel==0.48.0
-uv==0.13.0
+uv==0.12.15
 
 # --- Core API / runtime anchors ---
 fastapi==0.143.0
-starlette==1.7.0
-uvicorn==0.54.0
-pydantic==2.14.1
+starlette==1.6.0
+uvicorn==0.52.1
+pydantic==2.13.4
 pydantic-settings==2.15.0
-orjson==3.13.0
+orjson==3.11.9
 aiosqlite==0.22.1
-cryptography==50.0.2
+cryptography==50.0.0
 
-# --- Local model / orchestration anchors (extras) ---
-ollama==0.6.3
+# --- Local model / orchestration anchors (optional extras) ---
+ollama==0.6.2
 pygpt-net==2.9.1
 faster-whisper==1.2.1
-# NOTE: transformers was previously pinned to 5.17.0 here, which conflicts
-# with requirements.txt (4.56.2). Because constraints are additive, that
-# mismatch causes a hard resolver conflict. Aligned to requirements.txt.
-transformers==5.19.0
+transformers==4.56.2
 
 # --- Developer / QA anchors ---
 pytest==9.1.1
