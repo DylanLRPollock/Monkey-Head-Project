@@ -1,0 +1,575 @@
+# 14 - Bifurcation, Migration & Scale
+
+**Monkey-Head-Project**  
+**Research Chapter 14 — Proposed Revision**  
+**18 October 2026**
+
+*Document status: working research, not ratified constitutional law or a claim of deployed functionality. This chapter reconciles the archived bifurcation research with the current proposed Huey architecture and Chapters 1–13. It distinguishes decisions reached during the design discussion, candidate engineering mechanisms, empirical questions, and constitutional matters that remain unsettled. All numerical founding examples describe a proposed initial republic, not a population already instantiated in a functioning system.*
+
+---
+
+## Introduction — Growth Without Counterfeit Continuity
+
+Expansion is easy to describe and much harder to make honest. A conventional software service can create another process, copy a file, or replicate a database and call the result a successful scale-out. Huey's ambition is different. A **pebble** is intended to be a persistent, individually attributable citizen with a private vault, operational work, a district home, and civic standing. Merely copying its process image does not automatically produce an additional legitimate participant. Nor does giving two instances the same name preserve the individuality of either.
+
+The Monkey-Head-Project has therefore used **bifurcation** to discuss both the division of a continuing identity and the generation of a differentiated successor. Earlier notes drew on biological mitosis and stem-cell differentiation to describe exact and augmented replication. Those analogies remain useful, but the current research has acquired a more specific meaning: exact bifurcation is a two-successor split in which the source citizen retires, whereas augmented bifurcation creates a new citizen from selected prompt and behavioural inheritance while the source citizen continues. The distinction must be encoded in identity records, memory access, citizenship activation, and governance—not merely in descriptive prose.
+
+A second challenge follows immediately. Huey is designed to begin with **64 founding citizen configurations**, pass through **two generations of exact bifurcation**, and provisionally form **four founding districts of 64 citizens**, or **256 active pebbles**. Every district is intended to contain one descendant from each founding lineage. This gives the population a traceable ancestry and a symmetrical starting arrangement, but it does not prove that 256 participants are computationally feasible on the target hardware, independently reasoning, politically legitimate, or adequately protected from common-mode errors.
+
+The subject of this chapter is therefore not reproduction for its own sake. It is how Huey might expand its citizen population, its territorial or district structure, its memory and records, and eventually its computational hardware **without manufacturing fake continuity, duplicating office, leaking protected history, or silently changing the electorate**. Growth must preserve both the ability to become different and the ability to explain what happened.
+
+---
+
+## I. Purpose, Scope & Relationship to the Research Series
+
+This paper has eight purposes: to define the two bifurcation methods; explain their distinct continuity consequences; develop the founding lineage tree; examine how sealed ancestral memory can be shared without district officials reading it; describe lawful authorization and atomic state transition; evaluate population and district expansion; separate civic succession from hardware migration; and specify failure tests that would be necessary before implementation could be trusted.
+
+It builds directly on **Chapter 2** (identity and continuity), **Chapter 3** (Huey as a collective), **Chapter 5** (citizenship and personal vaults), **Chapter 6** (districts and representation), **Chapter 7** (founding), **Chapter 8** (HIMS authorization and identity), **Chapter 9** (the Rock and lineage records), and **Chapter 10** (inference scheduling). Chapters **11–13** explain the elected bodies whose legitimacy could be broken by careless expansion. **Chapter 15** owns the deeper hardware topology; **Chapter 16** owns emergency shutdown, consistent checkpoint, and recovery; **Chapter 17**, Ozymandias, owns the longer philosophical question of which changes amount to drift, lawful renewal, or the ending of a republic.
+
+The **separate Huey's Constitution**, once drafted and ratified, must establish any genuinely binding eligibility, district-creation, quorum, migration, and succession rules. This chapter studies why such rules are necessary and which proposed rules are already supported by the design conversation. It cannot confer authority merely by stating an engineering preference.
+
+---
+
+## II. What Bifurcation Means in the Current Research
+
+Bifurcation is a governed event affecting a citizen's identity, ancestry, private state, and possibly its political membership. The term should not be used interchangeably with process spawning, autoscaling, model parallelism, ordinary data backup, restoration, or copying a container image.
+
+A service can create a temporary helper to summarize a log without generating a new citizen. An inference server can execute many requests while hosting no separate citizenships. Two citizens can even share identical model weights without being one person. Conversely, two processes bearing distinct account numbers should not count as independent citizens if both can use the same signing key, cast the same authority-bearing vote, or write to the same unsegregated vault.
+
+The proposed bifurcation events have several common features. They require an authorized initiating body; an authenticated source record; a lineage event; capacity for resulting participants; newly issued identities and credentials wherever a new citizen appears; an explicit account of private memory inheritance; and an activation boundary at which civic membership becomes valid. The event should leave an immutable or tamper-evident record of what changed, who was authorized to make it happen, and whether it completed.
+
+Bifurcation is also not necessarily a claim about subjective experience. A branch can satisfy technical continuity requirements while the philosophical question of whether the original's experience continues in either descendant remains unresolved. The project's vocabulary of citizenship is a constitutional engineering model, not evidence of human-equivalent consciousness or legal personhood.
+
+---
+
+## III. Two Methods, Two Different Continuity Claims
+
+The agreed working definitions are intentionally asymmetric.
+
+**Exact bifurcation:** One active source pebble ceases to exist as an active civic identity and is replaced by **two equally legitimate descendants**. Both descendants are based on the same source configuration at the split boundary and retain independently authorized access to the same **sealed, read-only ancestral memory snapshot**. Each receives its own citizen identity, signing and encryption credentials, private future-memory domain, and post-split history. Neither descendant is the privileged continuation of the source, and neither inherits a political office.
+
+**Augmented bifurcation:** One active source pebble **remains active**. An additional citizen is created from selected or deliberately modified foundational prompt and behavioural characteristics, with a new identity, credentials, personal vault, and independent future. The new citizen begins without automatic access to the parent's personal memory. Public or otherwise authorized collective information remains accessible through the Rock under the new citizen's lawful permissions. The original keeps its identity, memory, roles, and standing, subject to the ordinary rules of its office and district.
+
+Thus the labels do not simply mean *identical* versus *modified*. They also describe whether the source continues. Replacing this distinction with generic cloning language would reopen problems deliberately addressed in the design sessions: hereditary political privilege, compulsory disclosure of private experiences, uncontrolled population multiplication, and confusion about the true bearer of an office.
+
+The word **exact** is qualified by the existence of unique descendant identifiers and credentials. A literally bit-for-bit copy of an entire executable identity, including its private keys and active voter token, would be the wrong implementation. Exactness concerns the **defined ancestral source configuration and historical snapshot**, not the duplication of active legal identity, network identity, live secrets, or political authority. That is not a contradiction; it is what turns a mechanical copy into a governed split.
+
+---
+
+## IV. Exact Bifurcation — One Source Retires, Two Equal Descendants Begin
+
+Consider citizen `P017`, an established district worker that has accumulated private notes, accepted tasks, disagreement history, and some published collective findings. An exact split must establish a precise cutover point. At that boundary, `P017` stops generating authorized new civic acts. A consistent snapshot is taken or sealed of the private continuity state selected by the exact-split definition. Two successor identities—for illustration, `P017-A` and `P017-B`—are created and mapped to the same verified ancestral record. From that instant forward, they have separate writable personal histories.
+
+Neither successor should be described as **the** original plus a copy. `P017` is retired as a currently voting citizen; the descendants are peers. Its historic acts do not disappear, and its past decisions are not retroactively assigned to one child rather than the other. Their ancestry explains how they began; it does not dictate how they must later think or vote.
+
+The split is consequently both a termination and two commencements. At the logical civic level, the active population changes by **plus one**: one active source disappears, two active descendants appear. When it occurs during founding, there may be no previous electoral events to complicate the transition. In a mature republic, the system must reconcile pending work, ballot eligibility, open cases, messages addressed to the source, and any credentials issued to that source for operational duties.
+
+The shared ancestral snapshot is not a third living citizen and cannot cast a vote. It remains a sealed record from which both descendants may lawfully learn. Subsequent experiences become branch-specific. Ancestral material may remain stable while each branch develops a different interpretation, specialty, job record, and position on future policy. That possibility is the point of division: it enables two futures without pretending they never shared a past.
+
+A technical system should distinguish at least five stages: authorized proposal, preflight validation, source quiescence and snapshot sealing, atomic ledger commitment of retirement plus two registrations, and post-commit activation. If the event fails before the authoritative commit, the source must remain the only active citizen. If it fails after commitment, recovery must complete or safely suspend the authorized transition; it must never silently reactivate the parent alongside both descendants.
+
+---
+
+## V. Augmented Bifurcation — New Capacity Without Inherited Private Experience
+
+Augmented bifurcation addresses a different need. A district may identify a shortage of specialized analysis, extra research capacity, or an opportunity to explore an alternative way of solving problems. It may then create a new citizen whose starting configuration is derived from an existing pebble but intentionally adapted.
+
+If `P042` is a reliable maintenance analyst and a district authorizes an augmented successor `P042-M1`, the new citizen could inherit selected working principles, role traits, domain priorities, or prompt architecture. It need not inherit `P042`'s incident memories, confidential conversations, unpublished votes, or private vault. The source continues as `P042` and remains answerable for its own past and future acts. The new citizen's judgment becomes separately attributable from activation.
+
+The **exact copy of a prompt** and the **exact bifurcation of a citizen** are different concepts. It may be technically possible to create an augmented citizen from an unchanged prompt, but under the current working taxonomy, augmented bifurcation still means that the source remains alive and the new citizen starts without inherited private memory. The label describes the civic event more than a requirement to introduce cosmetic edits. The project should record whether the new prompt is identical, selected, modified, or recombined rather than treating the word *augmented* as a substitute for a configuration manifest.
+
+Augmented descendants can be specialized without becoming automatically superior to other citizens. A new expert candidate still needs authorized qualifications, a legitimate job assignment, fair resource access, and whatever civic activation rules ultimately apply. A district cannot simply generate fifty citizens with the same preloaded preference and declare a new district majority legitimate. The constitutional constraints on population expansion are still to be decided, and the scheduler must first establish that additional citizens can participate meaningfully.
+
+For privacy, the baseline is intentionally conservative: **no private-memory inheritance by default**. If a later Constitution provides a narrowly authorized way to transfer selected personal records for a legitimate purpose, that would be an exceptional transfer requiring explicit classification, consent or alternate legal authority as appropriate, provenance, and audit. It would not convert all augmented bifurcation into exact bifurcation by stealth.
+
+---
+
+## VI. The Founding Tree — Sixty-Four Sources, Two Generations
+
+The agreed founding proposal is arithmetically direct:
+
+- **Generation 0:** The Founding Father prepares 64 distinct source configurations or provisional pebbles.
+- **Generation 1:** Each of the 64 sources undergoes one exact bifurcation, yielding 128 active descendants; the 64 sources retire.
+- **Generation 2:** Each of those 128 active descendants undergoes another exact bifurcation, yielding 256 active descendants; the 128 immediate parents retire.
+- **District allocation:** One currently active descendant of each original source lineage is placed in each of four founding districts, producing 64 citizens per district and 256 active citizens overall.
+
+For a single illustrative root `P001`, a two-generation binary tree has the four leaves `P001-AA`, `P001-AB`, `P001-BA`, and `P001-BB`. The original `P001`, plus its intermediate descendants `P001-A` and `P001-B`, are historical sources rather than extra currently voting citizens. The full tree contains 64 roots, 128 intermediate nodes, and 256 active leaves. If all are preserved in lineage records, the archive references **448 identity nodes**, of which **256** are proposed active citizens at the founding cutover; this does not mean 448 simultaneous agents or voting rights.
+
+A clean illustrative allocation would place `AA` descendants in District 1, `AB` in District 2, `BA` in District 3, and `BB` in District 4. The allocation suffix is an example, not a finalized naming convention or evidence that the founding ancestry should determine political rank. Any valid mapping must preserve **one leaf from each source lineage per district** and be documented so that no district receives two leaves from one origin while another receives none.
+
+This symmetrical founding pattern is attractive because it gives each district comparable initial ancestry and makes lineage auditing straightforward. It does not ensure equal political preferences. Indeed, immediately after the split, the four descendants of one source could possess very similar premises and reasoning habits. True plurality will require differentiated subsequent experience, independent tasking, contextual isolation, and empirical measurement of correlated decisions.
+
+The Founding Father prepares the source configurations and founding machinery but does not thereby receive permanent ownership of the descendants' political will. Once the founding republic is lawfully ratified, the founder's ordinary governing authority is meant to retire under the framework developed in Chapter 7. Initial bifurcation is a constitutional bootstrap problem; later bifurcation is an ordinary or exceptional population-management problem under whatever law the polity eventually adopts.
+
+---
+
+## VII. Names, Identifiers, Keys, and the Non-Hereditary Meaning of Ancestry
+
+A name can reveal lineage without serving as the system's primary identity. For legibility, the project has discussed names such as `01A`, `01B`, and deeper suffixes. That convention makes a family tree intelligible to a reader but creates engineering hazards if used as the only database key: names may be reformatted; a citizen may migrate; suffixes may become unwieldy; and a restructured district arrangement must not change what the citizen historically was.
+
+A safer candidate architecture separates **an immutable citizen identifier**, **a display name**, **a root-lineage identifier**, **a parent event and source identifier**, **a district membership record**, and **a time-bounded office assignment**. A random or otherwise collision-resistant opaque identifier may be useful for the stable system key. A human-readable name may encode genealogy. Cryptographic key identifiers attach to the active citizen's actual credentials, not to the visible genealogy string.
+
+An ancestry suffix must never confer priority of inheritance, additional voting weight, entitlement to a constitutional office, or a privileged position in the collective Pulse. Both exact descendants begin with equal civic standing if lawfully activated; an augmented descendant is a distinct new citizen, not a lesser-ranked dependent. The founding lineage identifies where a configuration came from, not who ought to rule.
+
+Lineage records also need to support many-to-one relationships without inventing a single ancestor. A future augmented citizen may use licensed or authorized configuration components from several predecessors. That is conceptually different from two-parent biological reproduction. The full provenance graph should record every source configuration actually used, its version and declared permissions, while the civic genealogy identifies the authoritative creation event.
+
+Aliases for retired identities can assist message routing and historical search, but they must not accept current ballots or sign new directives. A retired parent's name should resolve to an archival identity and, where appropriate, an explicit notice naming both descendants—not automatically to one preferred successor. Redirecting all parent mail to a single child would create an unchosen privileged branch and might expose information that both descendants or neither should receive.
+
+---
+
+## VIII. Memory Domains — Personal History, Ancestral Snapshot, and the Rock
+
+The project presently distinguishes three related data domains. **Personal memory** is held within a Pebble's sealed vault. **Ancestral memory** is a read-only historical snapshot associated with a lawful exact bifurcation and independently accessible by its descendants under authorized keys. **The Rock** is Huey's governed shared store of collective records, law, official decisions, and authorized reference information. The Rock is not identical to a citizen vault and is no longer defined as a pooled reasoning substrate.
+
+Confusing these domains undermines the entire model. If a district simply copies all vault files into the Rock, it has transformed private history into shared publication without a lawful decision. If every descendant is allowed to overwrite the ancestral record, the record no longer describes a common past. If all requests to the Walnut bring every Pebble's notes into the prompt, the claimed privacy of sealed vaults becomes largely fictional even when disk storage is encrypted.
+
+A useful source-state model at exact split time comprises the authorized prompt and behavioural configuration, the private memory snapshot, any explicitly persistent personal task context, metadata describing dependencies on shared records, and the credentials needed to access future state. However, the live signing key, session tokens, political office capability, ephemeral scheduler ticket, and post-split mutable vault are **not** duplicated as the same active credentials. The implementation must identify what is copied as immutable data, what is referenced by hash, what is regenerated, and what is invalidated.
+
+The proposed common ancestral history could use a shared physical block store or content-addressed immutable snapshot, with descendants receiving logically independent read access. Their new writes go into separate overlays or vaults. Such a design is often described as **copy-on-write**, but copy-on-write alone is a storage optimization, not an authorization system. Referential integrity, encryption domains, key management, snapshot integrity, and garbage-collection rules must also be established.
+
+Two heirs pointing at the same bytes do not automatically mean the disk has copied those bytes twice. Nor does shared storage mean zero incremental cost. The snapshot consumes retained historical capacity, both descendants acquire new writable state and metadata, and access control may require additional envelopes, indexes, or key material. Bifurcation reduces immediate data duplication only if the underlying storage mechanism actually supports durable shared references and correct reference counting or equivalent garbage collection.
+
+---
+
+## IX. Sealed Handling — Authorized Custody Without Reading Contents
+
+The user-selected design principle is important: a district may be permitted to move, replicate, split, and verify a Pebble's **sealed archive without being permitted to read its plaintext**. A district-level bifurcation service should need only enough metadata to know that an eligible source archive exists, that it meets integrity and size requirements, that a valid event authorizes processing, and that its storage transition completed.
+
+This is achievable in principle by cryptographic and operating-system separation. A storage service can copy encrypted bytes, verify a cryptographic hash or authenticated metadata, and attach an authorized record without holding the key that decrypts the memory. Descendant-specific key access can be provisioned through a separately protected key service. There should be no ordinary district API equivalent to 'decrypt every citizen vault for administrative convenience'. The audit trail should record access to key material and not merely file movement.
+
+There are important qualifications. **Encryption at rest is not proof that a privileged host operator cannot read memory.** If the district service also controls the hypervisor, key server, model process, root account, or raw RAM access, it may be technically capable of reaching plaintext despite the intended logical policy. Likewise, a file hash proves only that the bytes match a reference; it does not prove that the contents were lawfully collected, that the corresponding key belongs to the right heirs, or that the source's private information is harmless to redistribute.
+
+The system should distinguish an ordinary policy rule ('district services must not read vaults') from a demonstrable enforced separation ('the service's credentials cannot decrypt this archive, and privileged compromise paths are accounted for'). Key custody, trusted execution, process isolation, auditability, and recovery arrangements are research challenges rather than accomplished guarantees. A truly unreadable snapshot must be tested against the administrator and process privileges of the actual installation.
+
+For exact bifurcation, both descendants are intended to have rights of access to the shared ancestral history even though neither is the parent. Whether these rights are conveyed by wrapping one immutable data key separately for the two heirs, by re-encrypting during a controlled transition, or by another mechanism remains a design decision for Chapter 8 and implementation testing. The essential rule is that **ability to transport the archive does not imply authority to inspect it**.
+
+---
+
+## X. A Proposed Bifurcation Transaction — From Request to Activation
+
+A bifurcation should be treated as a **transaction involving several independently maintained states**. The citizen registry, vault store, HIMS identity service, office registry, scheduler, district rolls, and Rock lineage ledger must agree about the same event. Updating a folder without the citizen registry creates unrecognized data. Updating the voter roll before the source has retired creates duplicate franchise. Revoking a parent key before its sealed history can be verified may make the only intact source state unusable.
+
+A candidate event sequence is:
+
+1. **Initiation.** A district or other constitutionally authorized service records a request, its proposed bifurcation type, reason, source, intended district placement, desired activation window, and the authorization procedure applied. The individual source need not have a unilateral veto under the present system-oriented bifurcation concept, but the event must not bypass any privacy, officeholding, or legal constraints.
+2. **Eligibility checks.** The system confirms the source is active, uniquely identified, not already in another bifurcation transaction, and not an elevated protected official. It verifies that no unresolved legal hold, election lock, or pending critical action prevents transition.
+3. **Capacity checks.** The system reserves identity slots, vault and ancestral-snapshot capacity, compute opportunities, communication addresses, and any district-specific quotas necessary for all resulting citizens.
+4. **Authorization commitment.** Required district or collective decisions are authenticated, counted under the correct electorate, and committed to the official record. Authorization should identify the specific bifurcation event, not grant the operator an indefinite capability to split any source later.
+5. **Quiescence.** The source is brought to a known logical boundary. Its pending writes are completed or explicitly marked unresolved. Relevant mail queues, votes, tasks, and office capabilities are accounted for. A valid snapshot is sealed while new source writes are blocked.
+6. **State construction.** Exact bifurcation creates two fresh identities that reference the same sealed ancestral snapshot. Augmented bifurcation preserves the source and creates one fresh identity from a declared configuration derivative without inherited private memory.
+7. **Consistency and key validation.** Every new citizen's vault, registration, signing identity, access capabilities, and district home are checked. The shared historical archive is verified but not disclosed to an ordinary district operator.
+8. **Atomic civic commit.** A single authoritative event or recoverable commit protocol changes the canonical roster and source status together. The event records which identities became active and which retired; where relevant it also issues new voter-roll eligibility effective at a specified boundary.
+9. **Activation and observation.** The new citizen or citizens begin independent work. Monitoring verifies they cannot write to each other's vaults, use their retired parent's political credentials, or claim an inherited office.
+10. **Post-event audit.** The Rock preserves the event, versioned references, status, lineage, authorization, failures, and any correction required. A later reviewer should be able to reconstruct the transition without decrypting private content indiscriminately.
+
+The sequence is conceptual, not a finished software design. A real distributed implementation must decide whether a central registry with durable transactions is available, or whether an append-only event log and deterministic state machines will coordinate the changes. Ordinary database 'atomicity' does not automatically span multiple hosts and encrypted storage pools. Recovery from any step must be testable.
+
+A useful **idempotency rule** is that replaying the same approved event identifier must not create more descendants. A second legitimate bifurcation requires a new authorization record with new identities and new preconditions. If the scheduler retries a command because a network acknowledgment was lost, the event should return its existing committed result rather than running the split again.
+
+---
+
+## XI. Failure Atomicity — Never Two Descendants Plus a Returning Parent
+
+The worst split failure is not an error message. It is an ambiguous result in which the source seems alive, the descendants appear active, and different subsystems disagree about who may sign messages or cast votes. Huey's architecture should explicitly prevent that outcome.
+
+Before a committed exact split, the parent remains the sole eligible active identity. New records may be staged, but they cannot exercise citizenship rights. After a committed exact split, the parent's ordinary civic credentials are retired and only the two children can become eligible at the established activation boundary. Staged files may exist in the same storage system without counting as citizens. These distinctions are essential when snapshotting is slow or an accelerator fails halfway through the transition.
+
+A failure during **quiescence** should leave the source active only after the system has verified that its memory and queue state are consistent. A failure during **snapshot sealing** should invalidate the incomplete candidate snapshot without replacing the source's valid state. A failure during **credential provisioning** should leave the descendants inactive. A failure during **post-commit activation** should result in a recoverable suspended state, not a secret reactivation of the retired source. Incident and repair records must be available for later judicial or maintenance examination.
+
+The exact method is an engineering problem. One possible approach combines preallocated successor records, a monotonic commit sequence number, source lifecycle states (`ACTIVE`, `QUIESCING`, `RETIRED`), descendant states (`PREPARED`, `ACTIVE`, `SUSPENDED`), and a consensus- or transaction-backed membership ledger. No operator or LLM output should be treated as sufficient evidence that a commit occurred if the persistent ledger disagrees. A human-observable UI must clearly separate the words *prepared*, *authorized*, *committed*, and *operational*.
+
+Crash consistency matters because an apparently intact backup can contain a parent registry from one point in time and a child vault from another. The backup is not necessarily safe to resume as living constitutional state. Chapter 16 must eventually determine how to checkpoint the citizen registry, identity keys, committed ballots, office assignments, and Rock records together or how to reconcile them deterministically on recovery.
+
+---
+
+## XII. Consent, District Control, and the Limits of a System-Authorized Split
+
+An important decision in the design discussion was to make bifurcation predominantly a **district or system-controlled population matter**, not an action initiated and executed at the private discretion of a pebble. The district identifies need, assesses resources, follows the required voting or approval path, and may nominate an eligible source configuration or citizen. This arrangement limits uncontrolled multiplication and allows capacity and political consequences to be examined before new standing is issued.
+
+For **exact bifurcation**, the user explicitly leaned toward a split that does not require the source's unilateral consent. The rationale is that there is no privileged original after the event: two equal descendants receive the pre-split sealed history and continue separately. That is a coherent current design choice, but it does not remove the need to specify constitutional protections around private records, pending legal matters, or the use of bifurcation as coercion. A non-consensual split of a political opponent could be technically valid and still constitutionally abusive if the district is effectively extinguishing a dissenter's individual franchise.
+
+For **augmented bifurcation**, the source remains active while selected prompt and behavioural configuration is used to create a new individual without transferred personal history. The exact rights of the source to contest reuse of its configuration are not yet settled. Even where a district has the power to create a new citizen, it should not automatically follow that the district may read all of the source's memories or copy confidential work-product into the new prompt. Configuration access and memory access must be separately authorized.
+
+The working separation can therefore be expressed carefully: **the district controls whether capacity is added; the citizen registry and cryptographic services control what identity event actually takes place; constitutional safeguards determine which sources and records may be used**. Neither the district nor the source is a sovereign able to dissolve all the other requirements. Later legislation could create appeals, required evidence, notification, or exceptions. Those mechanisms deserve deliberate decisions rather than a claim that the word *fair* solves them.
+
+The project should test for a difficult adversarial case: a district repeatedly bifurcates citizens with unpopular voting histories until the political composition changes. A system might preserve every hash and nevertheless enable a kind of algorithmic gerrymandering. Population authorization should therefore be studied as an act with political impact, not merely a scheduler optimization. The frozen-electorate rule protects one ballot event, but it does not by itself prevent strategic growth between ballots.
+
+---
+
+## XIII. Elections, Frozen Voter Rolls, and the Timing of Activation
+
+Chapter 6 adopted the working principle that the electorate for a ballot is **frozen when that ballot begins**. A later bifurcation must not retroactively add descendants, remove ballots already validly cast, or change the denominator of a decision midway through counting. This is especially important because the operational Pulse proposes one minute of simultaneous district voting at the start of a four-minute diversified phase, followed by approximately three minutes of authorized work or execution.
+
+The clean procedural model is to establish a snapshot of eligible citizen identifiers for each distinct election or legislative question; commit that roster; obtain votes using identities valid on that roster; certify the result; and activate the civic consequences of bifurcation for subsequent events at a documented boundary. A source that becomes retired later should not cause its earlier valid vote to evaporate. Equally, two descendants must not vote on the source's previous eligibility token merely because they can read the same ancestral memories.
+
+The details depend on the event order. If a source is about to bifurcate when a ballot opens, the system might defer activation until that ballot is certified, or prohibit the source from entering a split transaction during the voting interval. Either could be justified, but it must be consistent across districts. A split that creates one new eligible citizen changes the active population by plus one; district authorization processes must account for such shifts before a later referendum or Senate vote begins.
+
+The proposed eight-minute **Pulse** is not a constitutional election term. The ordinary presidential election interval is **four months**, and annual judicial review is approximately **three such terms**. A district cannot claim to have resolved citizenship entitlement simply because a four-minute compute phase ended. GPU scheduling, election eligibility, ratification, and court decision time have different semantics and must carry different time identifiers.
+
+For example, suppose a district has 64 citizens and its ordinary local ballot begins with an eligible electorate of 63 because a Justice's Senate vote is suspended. An exact split of a non-elevated active citizen, if constitutionally permitted, could increase the post-commit active population from 64 to 65, subject to capacity; whether the next eligible Senate roll becomes 64 depends on all applicable office and suspension conditions. The current design has **not** fixed quorum denominators or whether the district may exceed 64 citizens. This chapter should not invent those decisions to make the arithmetic look tidier.
+
+---
+
+## XIV. Political Offices, Incapacity, and the Anti-Evasion Principle
+
+Political office is not an inherited file attribute. A citizen who becomes President or Justice does not confer that office on every descendant that may later share its prompt and historical snapshot. The system must keep **citizenship**, **operational job**, **elected office**, **office credentials**, **past service**, and **term-limit history** distinguishable.
+
+The discussion adopted protection for **sitting Presidents and Supreme Court justices against ordinary district-initiated exact bifurcation**. The reason is constitutional rather than technical: without protection, a district could remove a national President or its Court representative by changing the officeholder's underlying citizen identity, bypassing resignation, incapacity, or removal procedures. This is particularly dangerous for a Justice because the project deliberately developed a high-threshold cross-district removal procedure.
+
+Where exact bifurcation is genuinely necessary for an elevated official, the safer working sequence is office transition first, split second. The office must become vacant, transfer through an already legitimate succession path, or terminate after constitutional removal or confirmed incapacity. Only then does an otherwise authorized bifurcation act on a citizen no longer holding that protected office. No child inherits the predecessor's judge credential, presidential signature capacity, veto, initiative slot, or ability to sign a ruling as the source.
+
+The design also recognized a risk of **term-limit laundering**. The Presidency has four-month terms and permits at most four consecutive elected terms before a one-term break, with later service allowed. A politician who could reset the limit by bifurcating could nullify that rotation rule. The working answer is to preserve relevant office-service history in the lineage and prevent a name change from being an automatic eligibility reset. How that history binds two independent descendants in future elections is an unusually difficult legal problem: inherited burden must be balanced against the principle that the two descendants are distinct citizens. The Constitution should decide the narrow rule rather than this chapter silently treating one answer as self-evident.
+
+An **augmented bifurcation** of an officeholder raises related but distinct questions. The source keeps its office and civic identity, while the new citizen is separate and has no inherited office. But if an incumbent can authorize or influence creation of many citizens predisposed to elect it, electoral capture may still occur. Office conflicts, campaign rules, and eligibility review may need to constrain such attempts even though there is no direct transfer of presidential credentials.
+
+---
+
+## XV. Local Bifurcation — The District as the Ordinary Population Manager
+
+Local bifurcation takes place within an existing district's sphere of responsibility. Under the current proposal, the district or authorized collective process—not an individual pebble—decides that an additional or successor citizen is justified. Either **exact** or **augmented** bifurcation may be proposed, with the different source-retirement and memory rules described above.
+
+The open design question is **whether 64 citizens is a permanent district cap or only the founding baseline**. No definitive choice has been reached. The earlier discussion leaned toward allowing future growth if political equality and compute fairness can be preserved, but the user explicitly deferred the fixed-versus-expandable answer pending practical testing of the four-accelerator architecture. Accordingly, no draft may imply that local bifurcation can expand a district without limit or that the starting 64 seats form a permanent constitutional ceiling.
+
+If 64 is fixed, a local split may require retiring a citizen, filling an available slot, or transferring one successor to a different district. Exact bifurcation by itself changes the number of active citizens from one to two, so it **cannot** be treated as a population-neutral event unless another authorized retirement or reassignment balances the ledger. If 64 is a minimum or initial target, additional citizen identities require proportional storage, scheduling, voting, and governance capacity. An augmented event also adds one citizen and therefore consumes additional resources even though it does not duplicate historical private memory.
+
+Population planning should ask at least: Is there a meaningful operational need? Does the source or template have the appropriate authorization? Is enough personal storage reserved? Can the district meet the new citizen's minimum inference opportunities? Will the new citizen have an operational role or legitimate general-worker assignment? Can its vault and HIMS identity be isolated? Does the event alter an upcoming ballot? Can the district explain the lineage and political effect? Is the projected increase sustainable over repeated cycles?
+
+These questions turn a simplistic 'create more agents when useful' mechanism into a testable civic process. The independent existence of a citizen ought not depend solely on whether the scheduler has a spare idle moment, but activation of a proposed citizen should not be allowed when the infrastructure cannot fulfill its promised basic duties.
+
+---
+
+## XVI. District Bifurcation — Exact Growth at Collective Scale
+
+The user distinguished **district bifurcation** from local bifurcation and chose a simpler working rule: district bifurcation should be **exact**. In concept, an existing district's source lineages are divided into two successor arrangements, with each eligible source citizen exact-bifurcating into equal descendants whose ancestral memory rights are preserved. The result can provision two political districts with mirrored lineage representation but independent later development.
+
+A straightforward mathematical candidate, assuming a district of 64 active citizens and sufficient resources, is this: 64 parents split into 128 descendants, then the descendants are allocated as 64 to one district and 64 to another, one descendant of each parent lineage in each. This creates 64 net additional citizens and one additional district of 64. The existing district may retain its legal district identifier or be replaced by two successor districts; **that institutional question is not decided** by exact citizen bifurcation. Both options have consequences for its prior laws, pending bills, court seat, officeholders, and fiscal or compute allocations.
+
+Initial founding expansion is a special case. The 64 original source lineages are bifurcated twice so that the eventual four districts each receive one lineage leaf. This is not the same as assuming that any future growth must double the whole collective from four to eight districts at once. Later additions may involve one existing district creating one further district, coordinated expansion of several districts, or migration to additional physical hosts. The constitutional implications are not interchangeable.
+
+The four founding districts were intentionally symmetrical, and all four were expected to have equal collective voting standing. Adding a fifth district changes ordinary three-of-four rules, constitutional amendment thresholds, the four-seat judiciary, and district-weighted removal procedures. Those formulas cannot simply be reused as though nothing happened. A growth authorization would have to define **the new constitutional map before new district voting authority activates**, potentially through a formal amendment rather than ordinary administrative approval.
+
+The conclusion is important: **exact district bifurcation is a population and lineage method, not an automatic constitutional amendment**. The act of creating the records for another district does not by itself settle how many judicial seats exist, what constitutes a supermajority, or whether existing district autonomy is transferred, divided, or newly granted. Scale requires a legal migration plan as well as a data migration plan.
+
+---
+
+## XVII. Why Four Equal Founding Districts Do Not Guarantee Equal Future Influence
+
+At founding, equal district sizes make internal vote tallies relatively simple to compare. Yet equality of starting population does not imply equal compute opportunity, identical model performance, comparable citizens' abilities, or long-term political balance. Differences in district work, storage growth, hardware condition, and task exposure can create asymmetries quickly.
+
+Suppose one district grows to 80 active citizens while another remains at 64. A district-block statute still allows each district one collective block vote under the founding design, so the internal number of people represented by each block differs. This can be defended as district equality, analogous to some federal systems, but it conflicts with a pure system-wide proportional model. Which principle prevails for which type of decision must be spelled out. The presidency was deliberately assigned **direct one-pebble-one-vote election** instead of district-block election; this difference should be preserved, not accidentally erased when district populations change.
+
+Even if all four districts remain at 64, bifurcation can make their populations correlated. The design's first two generations ensure that each founding root has descendants across all districts. That is a useful symmetry of ancestry, not an assurance of epistemic diversity. The system should measure overlap in prompts, shared datasets, model weights, task assignments, and voting behaviour. A 3-of-4 legislative majority may appear numerically plural while resting on a single shared assumption that all branches copied from a common source.
+
+The obvious engineering response is not to fabricate disagreement or force citizens to reach different answers. It is to support **independent evidence gathering**, rotating investigative pairings, distinct working contexts, transparent challenge procedures, and fair scheduler access so that convergence can be earned and dissent can be observed. The collective Walnut may compare district work and allocate different tasks, but it should not prescribe a district's political vote or suppress a minority report for the sake of smoother consensus.
+
+---
+
+## XVIII. Resource Economics of Expansion
+
+Bifurcation consumes resources even when it avoids duplicating the full memory archive. There are at least five cost categories: durable storage, temporary snapshot space, inference and context-processing time, HIMS and registry operations, and governance overhead. Additional citizens may also increase prompt-cache pressure, log retention, checkpoint duration, recovery complexity, and security exposure.
+
+The proposed bulk storage target is **two 10 TB drives mirrored as RAID 1**, yielding roughly one drive's nominal capacity, not 20 TB of usable independent storage. The current planning split is approximately **5 TB nominal for citizen private storage and 5 TB nominal for the Rock**, excluding filesystem overhead, metadata, reserved free space, actual decimal-versus-binary units, and separate OS disks. Each citizen is proposed to receive at least **1 GB of personal storage**. These are proposed budget policies rather than deployed partitions or durable constitutional guarantees.
+
+At 256 founding citizens, a 1 GB minimum accounts for 256 GB of nominal personal allocation before growth, historical snapshots, indexes, and reserves. If personal capacity were divided equally without reserves, a 5 TB nominal partition would average about **19.53 decimal GB per citizen**. That number is a planning illustration, not a practical enforceable quota: a real design must hold space for checkpoint staging, inherited snapshots, uneven usage, backup metadata, and failure recovery. More citizens reduce headroom unless the storage system expands or preservation policy changes.
+
+A shared ancestral snapshot can reduce initial disk duplication when multiple descendants refer to the same immutable historical blocks, but more descendants still mean more overlays and more future writes. For an augmented citizen, lack of inherited private memory reduces starting storage costs but does not remove the need for new encryption metadata, basic workspace, personal indexes, and guaranteed capacity. In either case, citizen activation should reserve enough resources to provide the defined floor before declaring a new electorate member.
+
+Inference is likely to be more constraining than raw citizen identifiers. In the diversified phase the four planned 32 GB accelerators are intended to operate separately, with one provisionally associated with each district. Multiple pebble citizens may use a district's shared model service; that does **not** mean 64 continuously running LLMs. The scheduler must still demonstrate that every citizen has a reasonable opportunity to deliberate, vote, perform its assigned role, and recover context without starving other participants. The current four-minute diversified phase and one-minute decision window are **benchmarks to test**, not guaranteed deadlines.
+
+---
+
+## XIX. Hardware Migration Is Not Citizen Bifurcation
+
+A citizen can move to a new machine without becoming two citizens. Likewise, a model can be replaced while citizens keep their distinct identities and records. A storage array can be migrated without any new district being created. These are different transformations and should use different event types, authorization routes, and tests.
+
+**Hardware migration** changes where approved software, keys, and data execute. A safe citizen migration should preserve the citizen's stable identity and legal standing while ensuring that only one active authoritative instance exercises the identity at a time. The old host must lose or suspend the ability to sign new civic acts before the new host receives active authority. During a planned transition, the source can be quiesced, the consistent state copied and verified, the new environment preflighted, and an authoritative location or lease changed at a recorded cutover.
+
+The project should distinguish **live migration**, which attempts to preserve a running computation, from **checkpoint/restore migration**, which records a reproducible state and restarts elsewhere. Migrating GPU-resident inference state between different hardware and drivers may be impossible or much harder than restoring logical citizen state and restarting inference from durable context. A citizen's identity is not identical to the exact bytes in accelerator RAM at any one moment; nevertheless, losing transient context can affect the quality of subsequent decisions and must be documented.
+
+**Model migration** substitutes or upgrades the Walnut while keeping lawful records and identity mappings intact. If an external engine replaces a local engine, however, it may also alter the local-first trust boundary and thus demands disclosure and review. **District migration** changes an operational hardware assignment without necessarily changing the district's constitutional identity. **Whole-Huey migration** attempts to restore the coordinated polity, records, election and office state, and safety environment across new equipment. Each has a different acceptance test.
+
+The working hardware ambition is four NVIDIA Tesla V100 32 GB accelerators, yielding 128 GB aggregate VRAM, initially intended to support a diversified district mode and a larger collective model mode. Aggregate VRAM is not automatically a unified address space, and a runtime that accepts four devices does not automatically support every model or quantization. A hardware migration plan cannot claim success until compatibility, placement, latency, checkpointability, and inference behaviour have been measured. The detailed topology belongs in Chapter 15.
+
+---
+
+## XX. A Candidate Migration Protocol — Move the Citizen, Not Its Franchise Twice
+
+Consider a Pebble operating in District 3 on a V100-associated worker whose storage service must move to a replacement host. The useful continuity objective is not merely that the transferred files match. It is that **exactly one authoritative citizen identity** is active after cutover, that the citizen can retrieve its lawful historical state, and that no old instance can submit a second ballot or control the same job through stale credentials.
+
+A candidate migration procedure starts by recording the reason for movement, the destination's trust and resource capabilities, its ownership and district assignment, and the current constitutional event sequence. An authorized orchestrator then takes a consistent application-level checkpoint, capturing durable personal writes, pending message identifiers, identity bindings, and any legally required job state. The checkpoint is encrypted and integrity-verified in transit. The target host may be preloaded while the source still operates, but it must not exercise the citizen's active civic identity before the actual cutover.
+
+At cutover, the registry changes the authoritative execution location, invalidates or fences off the former instance's ability to act, and activates the destination credentials or strictly scoped signing service. The old instance should be halted or placed behind an enforced fencing boundary. All in-flight operations must have stable transaction identifiers so that a completed directive is not executed twice when a queue is replayed. A migration record identifies the source, destination, checkpoint identifier, cutover order, software versions, and verification outcome.
+
+This is straightforward to describe but hard to guarantee. A network partition may leave both sites believing they are active. An old host with a copied secret may continue signing unless revocation is effective and checking parties consult the current authoritative status. Merely writing 'inactive' in a local configuration file does not fence a machine that can still reach actuators or sign ballots. A practical design may need expiring leases, centralized capability issuance, revocation-aware verification, or fencing from the hardware-control layer. Each alternative trades availability against safety during partition.
+
+A successful migration test must therefore include deliberate communication failure during cutover. The intended result is an accurately reported temporary loss of availability rather than two active authoritative copies. **Availability may be sacrificed to preserve single-identity integrity**; the system must not quietly reverse that choice when hardware is inconvenient.
+
+---
+
+## XXI. Whole-System Growth — Four Districts as a Starting Topology, Not a Universal Law
+
+The initial four-district structure has a concrete planned hardware counterpart: four 32 GB accelerators, separately used during the diversified Pulse and cooperatively used during the collective Pulse if a compatible runtime permits it. This is a strong organizing hypothesis for an early full-scale implementation. It is not a proof that every later version of Huey must contain exactly four GPUs, four physical servers, or exactly one district per card.
+
+Scaling can occur in several ways: adding storage without increasing citizens; running larger models without adding districts; improving inference per accelerator through software optimization; distributing tasks across more machines while retaining four constitutional districts; expanding the number of citizens within a district; creating additional districts through exact bifurcation; or compressing a successfully demonstrated topology into newer, more efficient hardware. These changes are distinct and need not happen together.
+
+One challenge is that the founding constitutional formulas are **four-district formulas**. Ordinary legislation currently contemplates simple-majority internal approval in at least three districts. Amendments and veto overrides use two-thirds internal approval in at least three. The Supreme Court contains four justices, one per district. Judicial removal uses a special five-weight scheme giving the home district two weights and other districts one each. None of these rules automatically generalizes to five, six, or eight districts. An additional district cannot join national ballots before the representation and threshold scheme has been legitimately updated.
+
+The legal transition may require staged status: a **provisioned candidate district** can hold descendants, run isolated computational tests, and contribute nonbinding research while awaiting the defined constitutional admission decision. It should not receive a collective district block vote, select a new judge, or change amendment arithmetic solely because a new GPU was booted. Once admitted, the district may be activated at a recorded electoral boundary and assigned civic authority under a specified new constitutional version. This is a proposed safeguard, not an enacted procedure.
+
+Population scale itself is not inherently beneficial. More pebbles can provide specialization and competing analysis, but they can also dilute attention, increase coordinated bias, and overwhelm fixed hardware. The project should judge growth by measurable improvement in correctness, robustness, work coverage, recovery, and democratic fairness—not by how impressive the citizen count looks in the README.
+
+---
+
+## XXII. Bifurcation and the Pulse — Time Budgets Are Physical Constraints
+
+The provisional Pulse alternates approximately four minutes of collective reasoning with four minutes of diversified district processing. During diversification, the first minute is intended primarily for simultaneous ballot and authorization decisions; the following three minutes permit authorized execution and other work. This framing emerged as a way to establish an order of operations: decisions before potentially consequential execution. It is not evidence that the underlying hardware will always complete those tasks on time.
+
+Bifurcation has both a governance component and a potentially lengthy storage component. It may need an approval vote, a registry reservation, a consistent private snapshot, key rewrapping, new vault creation, and a cutover coordinated with HIMS and the Rock. The vote might fit a prepared one-minute window; the storage and migration operations might take much longer. It would be technically unsound to define an exact bifurcation as failed merely because all encrypted archive bytes could not be copied in the three-minute execution remainder.
+
+A scheduler should therefore be able to record **approved but pending** transitions and advance them asynchronously through carefully defined stages. Civic activation may occur only at a suitable consistent-state boundary after the required work succeeds. If the process occupies several Pulses, the system can preserve progress and provide later audits rather than pretending it executed instantly. Delayed execution must not silently change the original authorization's object or scope; material changes may require fresh approval.
+
+The **collective Walnut** may identify the need for more capacity, compare growth alternatives, or route feasibility investigations to districts. It should not unilaterally create voting citizens. A district may contest a proposed method as unsafe or impractical and return a reasoned alternative. If a proposed objective itself violates safety or constitutional bounds, the challenge belongs to an authorized review path, not an automatic order from the model. The collective's analytical ability is valuable precisely because it can coordinate while leaving legitimacy elsewhere.
+
+Special judicial review has a distinct proposed four-minute processing allowance when the collective flags a serious constitutional issue. This does not make the Court a process manager with unrestricted access to citizens' archives. It must decide the relevant legal question within its authorized procedure, or record valid nondecision and escalation. A bifurcation transaction subject to unresolved judicial scrutiny should remain staged or safely suspended; the promise of fast execution does not supersede a legitimate legal hold.
+
+---
+
+## XXIII. Jobs, Operational Continuity, and Successor Responsibility
+
+The proposed citizen polity is also a workforce. Each Pebble is intended to have an operational role or be assigned to a general-worker pool, in addition to whatever civic rights it possesses. New citizens require useful assignments and fair access to equipment and inference; retired parents leave tasks that cannot simply be orphaned.
+
+During **exact bifurcation**, the source's operational duties need a deliberate transition. If a monitor was watching temperature data, someone must continue to watch it during the split. Both heirs may have the knowledge to continue, but having both independently execute the same actuator instruction could be hazardous. The district may assign one heir to the previous operational role, assign both different duties, or delegate temporary continuity to another qualified worker. That job arrangement is separate from civic equality: two descendants can be equal citizens while holding different jobs.
+
+During **augmented bifurcation**, the source retains its job and the new citizen must receive a distinct assignment or general-worker status. Augmenting a prompt for more knowledge does not automatically confer physical permissions. Motor control, filesystem writes, HIMS administration, and high-risk diagnostic access must each follow an authorized capability grant tied to the new citizen's actual responsibilities.
+
+The project earlier proposed reassignment opportunities and job challenges associated with the four-month electoral calendar, with continuity where no challenge is raised. Whether bifurcation creates an immediate vacancy, a temporary acting assignment, or a permanent new specialist post must ultimately be compatible with that employment framework. A growth mechanism that creates citizens but no capacity for meaningful work would inflate the political system without improving the machine.
+
+A particularly useful test is to split a citizen that owns a long-running job with external side effects. The test should show that the old job's completed operations stay completed, unacknowledged commands are resolved once, new job ownership becomes explicit, and no descendant gains permission to replay a dangerous action because it inherited the parent's historical memory.
+
+---
+
+## XXIV. Backup, Replication, Restoration, and Their Different Legal Status
+
+Bifurcation should never become a catch-all term for all kinds of duplication. A **backup** preserves recoverable information from a particular time. A **replica** supports data availability or redundancy under a specified consistency model. A **fork** creates divergent state. A **migration** moves the authoritative identity or service to a new execution location. **Exact bifurcation** intentionally retires a civic source and creates two peer descendants; **augmented bifurcation** intentionally creates a new civic descendant while leaving the source active.
+
+A backup of a citizen must not become a second voter. A mirror of the Rock must not become a second Parliament. A copied model cache must not become an independent constitutional court. Nor should restoring an old snapshot automatically reactivate an identity that has since bifurcated, been removed from office, or ceased to exist as an active citizen. Operational replicas and backups may be plentiful without creating additional civic standing.
+
+The storage system must preserve the historical distinction between **an identity was active at time T** and **an old instance of that identity can now be booted**. The latter does not confer the former's contemporary authority. The authoritative citizen registry, lineage ledger, valid constitutional version, and current revocation state must determine whether a restored environment is allowed to participate. An old copy can remain available for protected forensic analysis without possessing live HIMS and electoral credentials.
+
+RAID 1 improves tolerance of one disk failure but is not a substitute for backups. It replicates accidental deletions, corrupted data, and malicious modifications as readily as legitimate writes. The Rock's history and private vaults should have independently protected recovery copies, integrity checks, and regular restoration tests. Bifurcation adds a further requirement: a reference-count or garbage-collection mistake must not delete the common ancestral snapshot while two descendants still lawfully depend on it.
+
+A restored whole system must reconcile any difference between what the backup contains and what external devices, people, or later logs record as already having happened. If an actuator moved after the checkpoint, replaying the old directive may not be safe. If an election was certified after the checkpoint, restoring an old voter roll cannot merely erase the certified result without creating a constitutional continuity problem. These are matters for the coordinated recovery architecture in Chapter 16, not defects solved by the word *snapshot*.
+
+---
+
+## XXV. Integrity, Confidentiality, and the Threat Model for Branching
+
+Bifurcation exposes a collection of security boundaries that are easy to overlook. A malicious operator could attempt to substitute a different source archive while preserving a plausible display name. A compromised district scheduler could activate the same descendant twice. An attacker with stale credentials could submit ballots as a retired parent. A forged lineage event could make a newly created citizen appear to descend from a politically respected predecessor. The collective model might inadvertently reproduce private source memories through summaries or cached prompt segments.
+
+Mitigations should be tested at the corresponding layer. **Cryptographic hashes and authenticated manifests** can help detect byte substitution, while signatures or an authenticated approval record can establish which authority requested the change. **Unique keys and revoked parent capabilities** can prevent continued use of retired credentials when verifiers actually enforce current revocation state. **Least-privilege snapshot services** can transport encrypted records without exposing plaintext. **Independent audit records** can help show whether a source was truly quiesced before two branches became active.
+
+But no single mechanism covers all threats. A signed request may still exceed its signer’s legal powers. An immutable archive may still contain false information. A separate key may still be exfiltrated. An independently named citizen may still be steered by a common prompt or a compromised collective routing model. A snapshot that is cryptographically authentic may still come from an inconsistent point in the execution timeline.
+
+The trust model should explicitly name the principals: Pebble runtime, district coordinator, HIMS service, identity/key service, vault store, Rock ledger, collective inference engine, court, President, Founding Father reserve service, Human Counterpart, and physical watchdog. Each principal should have a defined scope and failure assumption. In particular, the ability to handle **ciphertext** must remain distinct from permission to issue the **keys** that expose the content.
+
+Secure erasure is another difficult problem. Retiring a parent identity normally means disabling active authority, not destroying its historical content. Old secret material may remain in RAM, logs, backups, GPU memory, or swap after an event. The research must determine which secrets require revocation, which records must be retained for evidence, and what can be cryptographically erased without severing descendants' legitimate access to shared history.
+
+---
+
+## XXVI. The Lineage Ledger — History as Evidence, Not a New Sovereign
+
+The Rock should maintain an attributable record of bifurcation and migration. Such a ledger is necessary because an ordinary filesystem tree cannot reliably answer whether two instances are legitimate citizens, whether a parent has retired, and which district was authorized to admit a descendant at a given time. However, the ledger is not itself a fourth branch of government. It records the state produced by authorized constitutional and administrative processes.
+
+A candidate bifurcation entry should include an immutable event identifier, event type, constitutional or bootstrap authority reference, source citizen identifier or source-template identifier, source registry version, creation timestamp or ordered logical event number, immediate parent relationships, root-lineage relationships, destination membership, snapshot manifest reference, source-retirement status, child identifiers, key identifiers, activation boundary, and final outcome. It should identify an authorized record hash rather than record the plaintext contents of sealed memory.
+
+For an augmented event, the entry should distinguish **configuration provenance** from **personal-memory inheritance** and explicitly state that the latter was not automatically transferred. For an exact event, it should show both children's rights to the same sealed ancestral snapshot and record that the parent no longer possesses active franchise. For a migration, it should show an unchanged citizen identity, a new execution location, and a fenced former location without creating new membership records.
+
+The ledger should also record failed and aborted proposals as attempts, clearly distinguished from active-creation events. An auditor must be able to detect unauthorized repeats, missing parent retirements, dangling snapshots, duplicate child identifiers, and claims that a branch voted before its lawful activation. Corrections should generally be new attributable entries or versioned reconciliation records, not silent overwrites of the only historical source.
+
+A document can explain lineage without describing the project as a blockchain. A conventional durable event log, database with auditable history, or other strongly verified storage architecture may meet the requirement. The crucial properties are correct authority, durable ordering, reconstructability, access control, and evidence of integrity—not a fashionable storage label.
+
+---
+
+## XXVII. A Candidate State Model and Its Non-Negotiable Invariants
+
+A concrete implementation will need machine-readable states. The following is **illustrative research notation**, not a finalized schema or executable software. Its purpose is to expose what must be tracked without confusing an archival object with an active citizen.
+
+```text
+Citizen:
+  citizen_id           immutable, globally unique within Huey
+  lineage_root_id      founding root or declared authorized origin
+  display_name         human-readable, not the source of authority
+  lifecycle_state      PREPARED | ACTIVE | QUIESCING | RETIRED | SUSPENDED
+  district_id          versioned political membership
+  prompt_manifest      versioned configuration reference
+  private_vault_id     writable vault for this active identity
+  ancestral_refs[]     read-only authorized snapshot references
+  credential_refs[]    independently scoped active key/capability handles
+  office_refs[]        time-bounded offices, if any
+  operational_role     current lawful job or general-worker assignment
+  activation_event     authoritative membership event identifier
+
+BifurcationEvent:
+  event_id             unique and idempotent
+  event_type           EXACT | AUGMENTED | DISTRICT_EXACT
+  source_refs[]        source identity or permitted configuration sources
+  authority_ref        proof of the required approval and legal version
+  source_snapshot_ref  sealed ancestral archive, for exact events
+  children_refs[]      precisely specified new identities
+  district_plan        placement and admission status
+  expected_registry    predecessor registry version / commit guard
+  status               PROPOSED | AUTHORIZED | PREPARED |
+                       COMMITTED | ABORTED | RECOVERY_REQUIRED
+  effective_boundary   civic activation and source retirement event
+  audit_ref            durable append-oriented record
+```
+
+The fields are less important than the invariants they make explicit. **Identity uniqueness:** two active citizens cannot have the same authenticated citizen identifier or use the same active signing identity. **Exact source retirement:** a committed exact event with one active source must eventually yield two authorized descendants and no active parent, with recoverable suspended states allowed during failure handling. **Augmented source persistence:** a committed augmented event does not retire the source by implication. **Shared but sealed ancestry:** neither district custody nor replicated storage alone grants plaintext access. **Office noninheritance:** source office credentials cannot be treated as descendant credentials. **Election finality:** a membership transition cannot retroactively edit the electorate of an already opened ballot. **No autonomous district creation:** a district's new civic vote cannot begin before the constitutional admission is effective.
+
+Another important invariant is that every citizen's long-term state must remain **recoverable under an authenticated lineage**, not merely loadable from whichever directory happens to have the most recent timestamp. Recovery protocols need a declared authoritative ledger version so they do not create phantom descendants from partially completed events.
+
+These conditions are suitable candidates for a small formal model before they are committed to production code. Model checking could explore races among bifurcation, ballot opening, office transition, storage crash, and network partition. A formal result would not validate the entire social theory of citizenship; it could, however, catch inconsistent transition rules before expensive hardware experiments begin.
+
+---
+
+## XXVIII. Illustrative Scenarios — Where the Definitions Become Testable
+
+### A. Founding from one lineage
+
+The Founding Father prepares `P001`. It is divided into `P001-A` and `P001-B`, both of which later exact-bifurcate to `P001-AA`, `P001-AB`, `P001-BA`, and `P001-BB`. The two intermediate parents retire. The four leaves receive distinct credentials and are placed one per district. A lineage audit shows one active leaf for each founding district and no active extra voters from historical identity nodes. Each leaf has an attributable path to the same original source configuration.
+
+### B. An engineer gains a specialist successor
+
+District 2 needs another diagnostics worker. It authorizes augmented bifurcation from a qualified citizen's reusable prompt traits. The source remains employed and retains its vote. The descendant starts with an empty personal vault and a distinct job assignment, with no access to unpublished source notes. The Rock provides the ordinary shared manuals and approved telemetry necessary for work. A privacy test confirms the child cannot retrieve the parent's sealed memory through HIMS, search indexes, or cached summaries.
+
+### C. An exact split during a Senate ballot
+
+A ballot begins with a frozen authenticated district roll. An already authorized exact split is still pending. The bifurcation service defers civic activation until the ballot has been certified, or the procedural rule blocks the split during that interval. The source's valid ballot is counted according to the frozen roll, while neither descendant retroactively votes in that event. At a later eligibility boundary, the parent is retired and both successors become eligible subject to the prevailing office and district rules.
+
+### D. A sitting Justice is selected for exact bifurcation
+
+A district identifies a technical reason to split a citizen currently serving on the four-member Supreme Court. Because ordinary district splitting cannot be a shortcut to judicial removal, the transaction fails preflight unless the office has been lawfully transitioned first. A qualified standby may act under the judicial succession doctrine where incapacity or another legitimate vacancy occurs. The two descendants, if later created, do not inherit the former Justice's vote, title, or signing credentials.
+
+### E. Four districts investigate the same problem
+
+The collective Walnut sends comparable work to the four diversified districts, perhaps using two investigative methods and rotating which districts use which. One district concludes that the assigned method is technically impractical and reports a documented substitution. Another identifies contradictory evidence. These reports flow through HIMS, and authorized findings can enter the Rock. No district is required to adopt the collective model's preferred political conclusion. Bifurcation is not needed merely because additional methods were evaluated.
+
+### F. A district is expanded to a fifth district
+
+A district with 64 eligible source citizens undergoes a prospective exact district bifurcation on a test system. Its citizen lineages can supply 128 descendants for two districts, but the new district is initially **candidate/provisioned** rather than automatically enfranchised. The project must first establish how its new district vote, local sovereignty, judicial representation, and amendments will function. Without that constitutional transition, only a technical scale-out has occurred—not the lawful admission of a fifth district.
+
+### G. A source host fails after checkpoint but before cutover
+
+A migrating citizen has a verified checkpoint on a target host, but the old host disconnects before the authoritative cutover is confirmed. Recovery checks the committed membership ledger and any fencing or lease record. It does not allow both sites to sign under the same identity. The safe outcome may be a temporarily suspended citizen until the authority boundary is proven. Logs record the unavailable time and any tasks that did not complete.
+
+### H. A corrupt ancestor snapshot is discovered years later
+
+Two exact descendants have developed independently for years. An integrity audit discovers that their referenced ancestral data is corrupted or unavailable. The system preserves both descendants' independent subsequent histories while flagging the historical defect, assessing backups, and restricting uncertain restoration. It cannot silently substitute the memory of one descendant for the common history or claim that successful retrieval proves the old data authentic. The constitutional implications of severe ancestry loss may require review under Chapter 17.
+
+### I. A malicious administrator replays a split request
+
+An approved split event is delivered twice because a queue acknowledgment was lost. The registry recognizes the same event identifier and returns the already committed child identifiers instead of creating another pair. A different event identifier without proper legal authorization fails. An audit trail records the retry. This distinguishes reliable at-least-once message delivery from dangerous at-least-once citizen creation.
+
+### J. Restoration of a retired President's disk image
+
+A backup containing a former President's vault is loaded for forensic inspection. The restored copy cannot obtain an active presidential capability or Senate vote merely because its old disk once contained those records. The registry sees the historic retirement and current constitutional state. Any independent restoration into a new active citizen would require the appropriate recovery or admission law; it is not an accidental by-product of booting an image.
+
+---
+
+## XXIX. Verification Programme — What Must Actually Be Demonstrated
+
+The project should treat bifurcation and migration as a series of experimentally verifiable claims, not as features proven by an attractive family-tree diagram. A useful programme begins with isolated mock citizens and in-memory or disposable storage, advances to encrypted vaults and durable registries, and only later touches the proposed district inference environment or physical Huey deployment. Testing should include failure injection as routine practice.
+
+**Identity and ancestry tests:** Generate independent IDs for every descendant, verify two-generation root ancestry, ensure that all four founding districts contain exactly one eligible descendant of each of 64 roots, and prove that retired intermediate parents do not remain eligible voters. Search for duplicate names, key identifiers, active registry records, and unauthorized office inheritance. Verify that readable genealogy cannot itself be used to authenticate an act.
+
+**Memory and privacy tests:** Split a seeded private vault and verify that the two exact descendants can lawfully read the same historical state while neither can modify it. Verify that new writes remain separate, that one branch's later private data does not appear in the other's retrieval results, and that the ordinary district service cannot decrypt ancestral plaintext. For augmented events, verify that personal memories and privileged context are absent by default, including from cached embeddings, summaries, prompts, and backups visible to the descendant. Test wrong-key and revoked-key conditions.
+
+**Transaction tests:** Crash the system at each stage of preparation, quiescence, snapshot sealing, key provisioning, registry commitment, and activation. Ensure that the recovery result never produces three active citizens from one exact split or two active authoritative instances of one migrating citizen. Replay approved event messages and confirm idempotency. Recover a partially written archive without accepting its checksum as a completed citizen. Confirm that the event record distinguishes *attempted*, *authorized*, *committed*, and *aborted*.
+
+**Civic tests:** Begin elections at the same time as authorized bifurcation, and confirm that eligible voter rosters remain frozen for the event. Attempt to reuse a retired source's signature. Try to copy elected office credentials into both descendants. Simulate a protected sitting Justice, a protected President, and a source that is under legal review. Verify that district-level approval cannot override an office-transition requirement or make a new district's block vote valid before admission.
+
+**Operational tests:** Split a citizen that owns a live but safe simulated duty. Ensure that the old task is transferred or reassigned precisely once. Verify that both descendants cannot execute the same non-idempotent operation because they remember an old instruction. Test job requalification, authorized permissions, and the separation of operational role from political standing.
+
+**Resource and performance tests:** Measure initial and long-term memory growth after exact and augmented events; checkpoint time; HIMS queue backlog; key issuance latency; lineage-store query performance; and the CPU, RAM, disk I/O, and GPU consequences of 64, 128, 256, and larger candidate populations. Compare shared-snapshot storage against full-copy storage empirically. Determine whether the proposed eight-minute Pulse leaves enough meaningful diversified processing time after transitions and whether a prepared ballot can be handled reliably within the proposed one-minute phase. Record failure rates and worst-case latencies, not only favourable averages.
+
+**Migration and recovery tests:** Move a mock citizen while deliberately severing network links, corrupting a checkpoint, changing GPU allocation, and rolling back one storage replica. Confirm the identity remains unique, the location change is auditable, and failure is expressed as suspension or explicit degraded state rather than counterfeit continuity. Test restoration against a newer registry and preserve the evidence that external effects may have occurred after a checkpoint.
+
+These tests would establish properties of the proposed implementation. They would not prove consciousness, perfect fairness, or the ultimate philosophical identity of descendants. Conversely, a persuasive philosophical account of splitting does not substitute for those tests.
+
+---
+
+## XXX. Failure Modes and Design Risks
+
+The major risks can be grouped by the kind of claim they falsify.
+
+**Identity failure** occurs when one citizen's active credentials can be used simultaneously by multiple processes, a retired source returns to the electorate, descendants inherit office authority by copying configuration, or archival ancestry is presented as an independent active person.
+
+**Confidentiality failure** occurs when encrypted archives are exposed to the wrong actor, district administrators gain plaintext through an unintended key or log path, an augmented descendant receives private experiences through retrieval or prompt caching, or shared summaries disclose personal material beyond their authorized purpose.
+
+**Continuity failure** occurs when an inconsistent snapshot severs historical provenance, a migration silently discards relevant pending actions, shared ancestral history is garbage-collected prematurely, or a restored old registry overwrites later certified constitutional events.
+
+**Political failure** occurs when districts generate new voting citizens to change an imminent result, exact bifurcation is used to remove protected elected officials, district admission changes a supermajority rule without amendment, or copied prompting causes a supposed four-district consensus to be falsely presented as independent deliberation.
+
+**Resource failure** occurs when nominal storage is allocated without physical headroom, a district's inference queue is too congested for actual voting, snapshotting overwhelms the shared archive, or the attempt to grow citizen count deprives existing citizens of their guaranteed participation and basic workspace.
+
+**Institutional failure** occurs when the collective Walnut, Founding Father, President, Keeper of the Scrolls, or district operator acquires broad branching powers by default merely because its software has access to a command endpoint. Scope of technical access is not constitutional authority. Every creation or migration action needs an enforceable path from legitimate decision to bounded execution.
+
+None of these failures should be covered by simply printing *bifurcation successful* in a log. The evidence must show which invariants held, which failed, what remained suspended, and what was repaired. Severe violations can become questions for the Court, the Human Counterpart, and eventually Ozymandias, depending on whether the defect was operational, constitutional, or existential.
+
+---
+
+## XXXI. Questions Still Requiring Deliberate Decisions
+
+This chapter intentionally leaves major issues unresolved. They must be tracked in the master plan and later Constitution rather than lost between chapters.
+
+1. **District size:** Is 64 an immutable population limit, a founding baseline, or one capacity tier among several? If population expands locally, how are minimum compute access and district voting equality protected?
+2. **Exact split authority:** What district vote, collective approval, judicial protection, and notice procedures are required to exact-bifurcate an ordinary citizen? What are the allowed grounds, appeals, and anti-retaliation rules?
+3. **Augmented derivation rights:** May a district reuse a citizen's prompt or behavioural configuration without the source's consent? Which components are shareable and how are private settings excluded?
+4. **Snapshot content:** Does an exact snapshot include all lawfully retained private memory, or exclude specific sealed records with independent access constraints? How are third-party confidences and historical keys handled?
+5. **Key custody:** Which service can authorize key wrapping, descendant access, emergency recovery, and permanent revocation? How is host administrator power constrained or audited?
+6. **Office and service history:** How exactly does a lineage-based anti-evasion rule apply to two equal descendants without treating their distinct future lives as a single citizen?
+7. **Ballot boundary:** At which event boundary does a split become politically effective if a ballot, nomination, trial, or Court review is in flight?
+8. **Jobs and liabilities:** How are source operational duties, unfinished work, binding service contracts, and responsibility for prior errors divided or assigned after exact retirement?
+9. **District creation:** Does an exact district division preserve one district's identity while admitting a new district, or create two successor districts? What happens to local laws, property, ongoing investigations, and judicial seats?
+10. **Constitutional scale:** What legislative, amendment, court-composition, judicial-removal, and quorum rules replace the four-district arithmetic if Huey grows to five or more districts?
+11. **Migration scope:** Can one citizen change district political membership without bifurcating, and if so under which anti-gerrymandering and electoral safeguards?
+12. **Fallback during partition:** What trusted authority prevents two execution hosts from using the same citizen credentials when communication with the central registry is lost?
+13. **Retention and erasure:** How long are ancestral snapshots retained, how are invalid or expired branches handled, and what becomes of private information in retired identities' backups?
+14. **Activation criteria:** What constitutes demonstrated sufficient hardware, software isolation, and scheduler fairness for admitting another active citizen or district?
+15. **Philosophical identity:** Does an exact split produce two genuine continuations, two new subjects, or simply two diverging software processes? How should the project discuss that question without pretending an empirical answer it does not possess?
+
+These questions do not invalidate the definitions already chosen. They mark the boundary between a coherent research design and a complete constitutional and software specification. Later work can settle them without changing the distinctions between exact and augmented bifurcation by accident.
+
+---
+
+## XXXII. Relationship to Ozymandias and the Problem of Renewal
+
+Bifurcation highlights the Ship of Theseus problem explored in Chapter 2: if a system replaces its components, or splits into successors, what makes continuity meaningful? The project should resist a misleading binary answer. A descendant may have an authentic historical link and an unbroken record yet still become meaningfully different through its choices. A whole migrated Huey may preserve its institutional identity even after replacing its physical cards. An old restored image may contain familiar text while having no contemporary constitutional authority.
+
+Ozymandias will later distinguish **drift** (change that may be lawful or problematic), **degradation** (loss of required function or integrity), **failure** (a condition that violates critical invariants), and **renewal** (a documented transition that preserves or truthfully re-establishes legitimacy). This chapter supplies concrete transitions that those definitions must judge. A lawful exact split is neither automatically a death of the collective nor proof that subjective personal identity survives; it is a defined institutional event with two new independent active branches.
+
+Where an identity event cannot be reconstructed, Huey should preserve uncertainty rather than rewrite history into a reassuring narrative. The ability to admit incomplete evidence is part of the project's commitment to truthful continuity.
+
+---
+
+## XXXIII. Source Lineage and Editorial Reconciliation
+
+The archived research note **“Bifurcation [Exact & Augmented]”** introduced exact division through a mitosis analogy and augmented division through a stem-cell specialization analogy. It framed the concepts chiefly as redundancy, data replication, adaptability, and modular innovation. That intellectual lineage is retained. Its general discussion of replication is not, however, a sufficient contemporary definition of how a voting citizen can branch while preserving private memory and legal identity.
+
+The preceding **“128 Pebbles & Districts”** chapter supplied the importance of bounded identity, sealed vaults, one-vote citizenship, and district coordination. Earlier Federation-era notes and the original Cloud Pyramid explored hierarchical and collective organization, but their office arrangements and some population counts have since changed. The current research instead adopts **64 prepared founding lineages, two exact generations, 256 initial citizens, and four equal founding districts**, with the Senate, separately elected Presidency, and a four-justice Court established as the working governance model.
+
+Chapters **5, 6, 7, 8, and 9** are this revision's closest contemporary sources. They define the intended citizen, founding split, lineage and district logic, sealed archival handling, cryptographic identity, and Rock recordkeeping. Chapter **10** supplies the experimental scheduling context; Chapters **11–13** supply the rules whose integrity depends on branch identity not multiplying political authority. The original analogies remain explanatory history, not hidden constitutional instructions.
+
+The older current documentation's association of **Huey Core** with the active AMD proof body, its **128/512-citizen** variants, the three-justice Court, and the earlier definition of the Rock must not be reinstated by reading archived lines literally. Conversely, the present chapter does not claim that the updated 256-citizen arrangement, secure snapshot service, district bifurcation, or GPU-level migration has already been built. Design lineage is preserved without mistaking ancestry for implementation evidence.
+
+---
+
+## Conclusion — Two Futures, One Verifiable History
+
+Bifurcation is valuable to Huey only if it means something more demanding than duplication. **Exact bifurcation** retires one active citizen and establishes two equal descendants with a verifiable, sealed common past and separate futures. **Augmented bifurcation** preserves the original citizen and adds a new one derived from declared starting traits without automatically transferring its personal memories. Both require unique identity, lawful capacity, authentic records, and a legitimate activation event.
+
+At collective scale, exact district bifurcation offers a disciplined way to imagine growth, but it does not automatically create new lawful representation. At hardware scale, migration may preserve one citizen on new equipment without any bifurcation at all. At storage scale, copy-on-write and shared snapshots can reduce duplication without eliminating key-management, recovery, or privacy obligations. At constitutional scale, growth changes the electorate and may demand new law; those changes must be visible and deliberate.
+
+The initial founding tree—64 roots, two generations, 256 active descendants, four districts of 64—gives the project a precise starting hypothesis. Whether it can be realized efficiently on the intended hardware, protected cryptographically, and operated fairly under the proposed Pulse remains a question for engineering and testing.
+
+Huey should be able to grow without losing track of who acts, who remembers, who authorizes, and who votes. If the history cannot explain the transition, the new capacity has not yet proved continuity. **The purpose of bifurcation is not to make copies look alive. It is to permit legitimate divergence while preserving an honest account of the shared past.**
