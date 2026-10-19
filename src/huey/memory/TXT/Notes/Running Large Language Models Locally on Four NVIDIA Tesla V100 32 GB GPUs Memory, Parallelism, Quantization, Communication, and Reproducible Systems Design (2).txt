@@ -1,0 +1,804 @@
+# Running Large Language Models Locally on Four NVIDIA Tesla V100 32 GB GPUs: Memory, Parallelism, Quantization, Communication, and Reproducible Systems Design
+
+## Executive Summary
+
+A machine containing **4× NVIDIA Tesla V100 32 GB GPUs** provides **128 GB of aggregate HBM2**, but aggregate capacity must not be confused with a single 128 GB address space. Each accelerator has 32 GB, so models larger than one device require tensor parallelism, pipeline/layer placement, fully sharded execution, or offloading. A V100 supplies 900 GB/s HBM2 bandwidth; the PCIe model is rated at 112 Tensor TFLOPS, 250 W, and a 32 GB/s interconnect/system interface, whereas the SXM2 model is rated at 125 Tensor TFLOPS, 300 W, and up to 300 GB/s NVLink interconnect bandwidth. Thus a four-GPU system has an arithmetic peak of roughly **448–500 Tensor TFLOPS**, **3.6 TB/s aggregate HBM bandwidth**, and **1.0–1.2 kW GPU-only maximum board power**. citeturn20view1
+
+The principal conclusion is that such a system remains surprisingly capable for **local inference and parameter-efficient experimentation**, but it is no longer a sensible platform for full pretraining of contemporary 30B–175B dense models. It can run approximately 7B and 13B models directly in FP16; a 30B FP16 model naturally fits with model parallelism; a 70B model requires roughly INT8 or lower precision because its FP16 weights alone occupy about 140 GB; and a 175B model requires approximately **4-bit or lower weights, or CPU/NVMe offload**. These are parameter-only figures; KV cache, quantization metadata, CUDA/NCCL workspaces, temporary activations, and allocator fragmentation require additional headroom.
+
+| Nominal model size | FP16 weights | INT8 | INT4 | INT3 ideal | INT2 ideal | Practical conclusion on 4×32 GB |
+|---|---:|---:|---:|---:|---:|---|
+| 7B | 14 GB | 7 GB | 3.5 GB | 2.63 GB | 1.75 GB | Easy inference; usually keep on one GPU |
+| 13B | 26 GB | 13 GB | 6.5 GB | 4.88 GB | 3.25 GB | One GPU is possible but tight; 2-way split is safer |
+| 30B | 60 GB | 30 GB | 15 GB | 11.25 GB | 7.5 GB | FP16 feasible with TP2/TP4 |
+| 70B | 140 GB | 70 GB | 35 GB | 26.25 GB | 17.5 GB | FP16 does not fit; INT8/INT4 practical |
+| 175B | 350 GB | 175 GB | 87.5 GB | 65.63 GB | 43.75 GB | 4-bit is capacity-feasible in principle but tight; 3-bit/offload gives safer headroom |
+
+These figures are the ideal expression \(M=P\times b/8\), excluding metadata and runtime memory. GPTQ demonstrated one-shot 3- and 4-bit quantization as far as 175B and also investigated 2-bit/ternary operation; AWQ provides activation-aware INT3/INT4 weight-only quantization and found that protecting a small fraction of salient weight channels markedly reduces quantization error. GPTQ's published acceleration results were obtained on A100/A6000-class hardware, while AWQ's optimized kernels likewise target particular hardware/software combinations. Therefore, **on V100, low-bit compression should first be regarded as a memory-capacity optimization; speedup must be demonstrated with the actual kernel rather than assumed from nominal bit width**. citeturn18search3turn19search0turn19search1
+
+For full mixed-precision Adam training, memory is much more restrictive. ZeRO-Infinity analyzes a mixed-precision training state requiring approximately **20 bytes per parameter** under its accounting of FP16 and FP32 model states. That corresponds to approximately 140 GB for 7B, 260 GB for 13B, 600 GB for 30B, 1.4 TB for 70B, and 3.5 TB for 175B before activation storage. Even ideal four-way ZeRO-3 sharding gives about 35, 65, 150, 350, and 875 GB per GPU respectively. Consequently, even 7B full fine-tuning is tight enough to benefit strongly from CPU optimizer offload, activation checkpointing, or parameter-efficient tuning; 13B and above require substantial offload or a different training objective. ZeRO, ZeRO-Offload, ZeRO-Infinity, and PyTorch FSDP exist precisely to partition or externalize these states. citeturn20view2turn20view3turn16search9turn17search2
+
+For this particular four-GPU platform, the recommended hierarchy is:
+
+**Interactive inference:** one GPU for 7B; one or two GPUs for 13B; tensor parallelism across two or four GPUs for 30B; TP4 plus INT8/INT4 for 70B; TP4 plus approximately 4-bit weights, preferably with generous headroom or selective CPU offload, for 175B.
+
+**High-throughput small-model serving:** replicate 7B or compact 13B models independently rather than tensor-parallelizing them. Four independent 7B replicas avoid paying an inter-GPU collective on every transformer layer.
+
+**Training/fine-tuning:** PyTorch FSDP or DeepSpeed ZeRO-3, FP16, activation checkpointing, micro-batch 1, gradient accumulation, and CPU optimizer offload. DeepSpeed's documented ZeRO stages shard optimizer state, gradients, and finally parameters; Hugging Face Accelerate exposes the same DeepSpeed/offload mechanisms. citeturn21view1turn17search2
+
+**Interconnect:** an SXM2/NVLink V100 system is much more attractive than four loosely connected PCIe V100 cards for TP-heavy workloads. Megatron's tensor parallelism partitions individual transformer layers and performs communication between the shards, so repeated collectives make fast GPU-to-GPU links particularly important. Pipeline parallelism reduces some bandwidth pressure but introduces pipeline bubbles and is generally less attractive for batch-one autoregressive latency. citeturn20view1turn14search28turn21view0
+
+**Multi-node expansion:** use NCCL over InfiniBand/RDMA where possible. GPUDirect RDMA lets compatible network devices directly access GPU memory rather than staging all traffic through host memory; NCCL exposes interface/HCA selection through variables such as `NCCL_SOCKET_IFNAME` and `NCCL_IB_HCA`. Before trusting any distributed benchmark, run `nccl-tests`. citeturn8search2turn8search6turn20view6turn15search3
+
+The report below treats throughput figures as **analytical planning estimates, not measurements performed on a physical four-V100 machine**. The proposed benchmark suite is designed specifically to turn those estimates into reproducible measurements.
+
+## Abstract
+
+This study examines the feasibility and engineering trade-offs of running dense large language models locally on a distributed accelerator system centered on four NVIDIA Tesla V100 GPUs with 32 GB HBM2 each. The target parameter ranges are 7B, 13B, 30B, 70B, and 175B. The analysis distinguishes inference from full training because the two workloads have radically different memory structures: inference is dominated by model weights, KV cache, temporary activation storage, and memory bandwidth, while training additionally requires gradients, optimizer state, saved activations, and often higher-precision master states.
+
+The V100 baseline provides 128 GB aggregate HBM2 and 3.6 TB/s aggregate HBM bandwidth. Depending on card form factor, four accelerators provide 448–500 peak Tensor TFLOPS and consume up to 1.0–1.2 kW GPU-only. NVLink-equipped SXM2 V100s offer a much stronger model-parallel platform than independent PCIe cards because NVIDIA specifies up to 300 GB/s V100 NVLink interconnect bandwidth versus a 32 GB/s interface figure for the PCIe card. citeturn20view1
+
+A parameter-capacity model shows that FP16 inference requires approximately 14, 26, 60, 140, and 350 GB for 7B through 175B models. Consequently, 7B–30B models are straightforward on the four-GPU configuration, 70B requires at least modest compression, and 175B requires aggressive low-bit quantization and/or host offload. GPTQ and AWQ establish 3–4-bit post-training weight quantization as technically credible approaches, but kernel efficiency is architecture-specific; compression ratio and execution speed must therefore be evaluated separately on Volta. citeturn18search3turn19search0
+
+For training, ZeRO, FSDP, activation checkpointing, gradient accumulation, and offloading change the limiting resource from simple aggregate HBM to a hierarchy of HBM, host DRAM, NVMe bandwidth, and inter-GPU/network communication. ZeRO's stages progressively shard optimizer states, gradients, and parameters; PyTorch FSDP follows the fully sharded model-state concept; ZeRO-Offload and ZeRO-Infinity further extend model state into CPU and NVMe storage. citeturn20view2turn20view3turn16search9turn17search2
+
+The resulting recommendation is to treat four 32 GB V100s primarily as a **high-capacity inference and fine-tuning workstation** rather than a modern large-scale pretraining node: TP2/TP4 for models that do not fit per device, independent data-parallel replicas for small-model serving, ZeRO-3/FSDP plus CPU offload for training, and measurement-driven selection between FP16, INT8, GPTQ, and AWQ. A reproducible benchmarking procedure is supplied for memory, prefill throughput, autoregressive decode throughput, time-to-first-token, inter-token latency, NCCL bandwidth, power, and quantization quality.
+
+## Introduction and Related Work
+
+Large language model deployment is constrained by a simple physical fact: parameter counts have grown faster than the capacity of individual accelerators. Distributed execution therefore combines several fundamentally different techniques. **Data parallelism** duplicates a complete model while partitioning examples; **tensor parallelism** partitions tensors within individual layers; **pipeline parallelism** assigns different layer ranges to different devices; and **fully sharded data parallelism** partitions persistent model state associated with training. NVIDIA's current Megatron Core documentation explicitly distinguishes these strategies and characterizes TP as appropriate when layers or activations create GPU-memory constraints, PP for deep models, and fully sharded execution for model state. citeturn21view0
+
+Megatron-LM was a foundational implementation of efficient intra-layer tensor parallelism. Shoeybi et al. showed that model parallelism could be implemented through a small number of communication operations in native PyTorch, and reported an 8.3B transformer operating across 512 GPUs with 76% scaling efficiency relative to its single-GPU baseline. The significance here is not the historical benchmark itself but the architecture: transformer matrix multiplications can be partitioned across devices while strategically placing reductions between operations. citeturn14search28
+
+ZeRO attacks a different problem. Conventional data parallel training replicates optimizer state, gradients, and parameters. Rajbhandari et al. proposed progressively eliminating this redundancy: Stage 1 partitions optimizer state; Stage 2 additionally partitions gradients; Stage 3 additionally partitions model parameters. DeepSpeed and current Megatron/FSDP documentation retain essentially this hierarchy. citeturn20view2turn21view0turn21view1
+
+ZeRO-Offload moves memory pressure from the GPU to host CPU memory and computation. Its USENIX results included a 10B-parameter experiment reaching 40 TFLOPS/GPU on a V100, demonstrating that V100-era hardware can in fact train models well above what ordinary unsharded PyTorch permits when state placement is reorganized. ZeRO-Infinity extends this idea to CPU and NVMe and treats the system as a heterogeneous memory hierarchy rather than assuming the entire training state resides in HBM. citeturn16search9turn20view3
+
+PyTorch FSDP provides a native PyTorch counterpart. Zhao et al. describe FSDP as an industry-oriented fully sharded training system co-designed with PyTorch's tensor, dispatcher, and CUDA memory allocator components, and report comparable performance to DDP while supporting substantially larger models and near-linear scaling in their evaluated configurations. citeturn17search2
+
+Activation checkpointing or rematerialization attacks another component of memory: intermediate activations. Chen et al. established the computation-for-memory trade-off formally, giving a method with \(O(\sqrt n)\) activation memory for an \(n\)-layer network at approximately an extra forward-pass cost per mini-batch in their construction. Modern frameworks expose variants of this technique as activation checkpointing or recomputation. citeturn18search0
+
+Low-bit quantization attacks inference parameter memory and memory traffic. GPTQ uses approximate second-order information for one-shot post-training quantization and reported quantizing a 175B model to 3 or 4 bits in approximately four GPU-hours, while exploring 2-bit and ternary cases as more aggressive operating points. Its published inference speedups—about 3.25× on A100 and 4.5× on A6000 in the paper's tested cases—should **not** be transferred numerically to V100, because those results incorporate architecture-specific kernels. citeturn18search3
+
+AWQ instead uses activation statistics to identify salient weight channels and derives scaling transformations that improve low-bit weight quantization without backpropagating through the model. Its authors report effective INT3/INT4 compression and provide custom CUDA kernels through the official implementation. Again, the important result for V100 is that 3–4-bit model representations can retain useful accuracy, not that a specific speedup from another GPU is guaranteed on Volta. citeturn19search0turn19search1
+
+Hugging Face Accelerate occupies a different layer of the stack. Its Big Model Inference implementation can initialize a parameterless model and dispatch checkpoint layers across GPUs, CPU RAM, and ultimately disk. Importantly, the documentation states that its simple `device_map="auto"` model dispatch may have only one GPU active at a time. It is therefore an excellent **capacity baseline** but not equivalent to tensor-parallel execution. citeturn20view5
+
+That distinction is critical. A configuration that “runs a 175B model” is not necessarily an efficient configuration. Capacity, latency, throughput, and energy are separate dimensions.
+
+## Methods
+
+**Hardware assumptions.** The reference machine is one Linux host with four Tesla V100 32 GB GPUs, x86-64 CPUs, at least 256 GB host RAM for ordinary inference experiments, preferably 512 GB or more for heavy CPU offload, and fast NVMe storage. Two hardware variants are considered: four PCIe V100s and four SXM2 V100s connected through an NVLink-capable baseboard. The analysis assumes CUDA/NCCL versions that continue to support Volta and that all software is built with the appropriate `sm_70` target. Actual driver/framework/kernel compatibility must be verified because software support changes independently of the immutable V100 hardware specification.
+
+The underlying V100 specification is fixed: 32 GB or 16 GB HBM2 variants, 900 GB/s memory bandwidth, 5120 CUDA cores, 640 Tensor Cores, 112/125 Tensor TFLOPS for PCIe/SXM2 respectively, 250/300 W maximum power, PCIe Gen3 for the PCIe card, and NVLink on SXM2. NVIDIA specifies up to 300 GB/s V100 NVLink interconnect bandwidth. citeturn20view1
+
+```mermaid
+flowchart TB
+    Client["Local client / API"] --> CPU["CPU + system RAM\n256–512+ GB recommended"]
+    CPU --> TOK["Tokenizer / scheduler"]
+    TOK --> G0
+
+    subgraph HOST["Single 4-GPU host"]
+        subgraph FABRIC["GPU communication fabric"]
+            G0["V100 0\n32 GB HBM2"]
+            G1["V100 1\n32 GB HBM2"]
+            G2["V100 2\n32 GB HBM2"]
+            G3["V100 3\n32 GB HBM2"]
+
+            G0 <--> |"NCCL"| G1
+            G1 <--> |"NCCL"| G2
+            G2 <--> |"NCCL"| G3
+            G3 <--> |"NCCL"| G0
+        end
+
+        RAM["Host RAM\nparameters / optimizer /\nactivation offload"]
+        NVME["NVMe\ncheckpoint / ZeRO-Infinity\nlast-resort inference offload"]
+        NIC["InfiniBand / RDMA NIC\nwhen multi-node"]
+    end
+
+    RAM <--> G0
+    RAM <--> G1
+    RAM <--> G2
+    RAM <--> G3
+    NVME <--> RAM
+    NIC <--> FABRIC
+    NIC -. "NCCL + GPUDirect RDMA" .-> REMOTE["Optional remote GPU node"]
+```
+
+For SXM2 the preferred GPU fabric is NVLink; with PCIe cards, communication follows the actual PCIe/P2P topology exposed by the server. NVIDIA's GPUDirect RDMA mechanism can provide direct communication between compatible PCIe devices and GPU memory in multi-node systems, reducing reliance on staging through CPU memory. citeturn20view1turn8search2turn8search6
+
+**Inference memory model.** For \(P\) parameters stored at \(b\) bits per parameter,
+
+\[
+M_\text{weights}=\frac{Pb}{8}.
+\]
+
+Thus a dense 70B checkpoint is approximately 140 GB at FP16, 70 GB at INT8, 35 GB at INT4, 26.25 GB at three bits, and 17.5 GB at two bits. Quantized checkpoints actually require somewhat more than the ideal value because scales, zero points, grouping metadata, packing alignment, unquantized layers, CUDA workspaces, and temporary dequantization buffers must also exist. GPTQ and AWQ both use structured/grouped quantization machinery rather than literally representing the complete runtime state at exactly \(P\times b\) bits. citeturn18search3turn19search0
+
+The other important inference allocation is the **KV cache**. For a decoder layer with \(n_{kv}\) key/value heads, head dimension \(d_h\), \(L\) layers, cache element width \(s\) bytes, sequence length \(S\), and batch \(B\),
+
+\[
+M_\text{KV}\approx 2L\,n_{kv}d_h\,S\,B\,s.
+\]
+
+The factor of two represents K and V. This formula also explains why parameter count alone is insufficient for predicting context capacity: multi-query or grouped-query attention can use far less KV memory than classic multi-head attention at the same overall model size.
+
+Attention working storage, logits, CUDA graphs, NCCL buffers, and allocator fragmentation consume additional VRAM. Accordingly, using all nominal 32 GB for checkpoint weights is poor practice. A design should retain several gigabytes per device as operating margin.
+
+**Training memory model.** A conservative full-training estimate uses approximately 20 bytes/parameter for mixed-precision Adam-style model states, consistent with the model-state accounting analyzed in ZeRO-Infinity; this is not a universal constant, because implementations differ in whether gradients, master parameters, and optimizer states are held at FP16, FP32, or another representation. citeturn20view3
+
+| Model | Conservative 20 B/parameter state | Ideal four-way ZeRO-3 share | Conclusion before activations |
+|---|---:|---:|---|
+| 7B | 140 GB | 35 GB/GPU | Already over 32 GB; offload/compression required |
+| 13B | 260 GB | 65 GB/GPU | Offload required |
+| 30B | 600 GB | 150 GB/GPU | Heavy CPU/NVMe use required |
+| 70B | 1.40 TB | 350 GB/GPU | Four V100s unsuitable for ordinary full tuning |
+| 175B | 3.50 TB | 875 GB/GPU | Not practically trainable as a full dense model here |
+
+A less conservative accounting sometimes produces approximately 16 B/parameter, in which case 7B is about 112 GB total or 28 GB per rank after perfect four-way sharding. Even that leaves little space for activations and transient all-gathers. The important scientific conclusion is unchanged: **parameter-only inference and Adam training have completely different feasibility boundaries**.
+
+**Compute model.** For first-order dense-transformer analysis, this paper models forward inference cost as approximately
+
+\[
+F_\text{forward}\approx 2P
+\]
+
+floating-point operations per token and full forward/backward training as roughly
+
+\[
+F_\text{train}\approx 6P
+\]
+
+per training token, neglecting the sequence-dependent attention term, embeddings, logits, and miscellaneous operators. These are accounting approximations rather than measured hardware throughput.
+
+A more informative limit for batch-one autoregressive decoding is often **weight bandwidth**, because the model repeatedly streams weights while producing tokens sequentially. With 3.6 TB/s aggregate HBM bandwidth, the impossible-to-exceed FP16 weight-streaming ceilings, assuming perfect four-GPU aggregation and ignoring communication, are:
+
+| Model | FP16 bytes of weights | Ideal four-V100 HBM ceiling |
+|---|---:|---:|
+| 7B | 14 GB | 257 tokens/s |
+| 13B | 26 GB | 138 tokens/s |
+| 30B | 60 GB | 60 tokens/s |
+| 70B | 140 GB | 25.7 tokens/s |
+| 175B | 350 GB | 10.3 tokens/s |
+
+These numbers are **upper bounds, not predictions**. The 7B and 13B cases would normally reside on fewer than four GPUs, so the relevant bandwidth ceiling is correspondingly lower. Real generation loses bandwidth to kernel launches, incomplete HBM utilization, KV reads/writes, layer normalization, attention, dequantization, communication, and synchronization. The 3.6 TB/s figure itself is simply four times NVIDIA's 900 GB/s per-V100 specification. citeturn20view1
+
+```mermaid
+xychart-beta
+    title "Ideal parameter-memory requirement"
+    x-axis ["7B", "13B", "30B", "70B", "175B"]
+    y-axis "GB" 0 --> 700
+    line [28, 52, 120, 280, 700]
+    line [14, 26, 60, 140, 350]
+    line [7, 13, 30, 70, 175]
+    line [3.5, 6.5, 15, 35, 87.5]
+```
+
+From top to bottom at a given model size, the plotted series are FP32, FP16, INT8, and ideal INT4. The horizontal capacity of the entire four-GPU installation is 128 GB, but an individual unsharded allocation still encounters the 32 GB/device boundary.
+
+**Parallelization strategy.**
+
+| Strategy | What is partitioned? | Memory effect | Communication | Best role on 4×V100 | Principal drawback |
+|---|---|---|---|---|---|
+| Data parallel / DDP | Batch | None for model weights | Gradient all-reduce during training | Independent 7B inference replicas; small-model training | Full model/state replicated |
+| Tensor parallel | Matrix/tensor dimensions inside layers | Roughly divides selected layer weights/activations | Frequent all-reduce/reduce-scatter | 30B–175B inference | Highly interconnect-sensitive |
+| Pipeline parallel | Layer depth | Divides layers across ranks | Activations between stages | Memory fit; training with many micro-batches | Pipeline bubbles; poor batch-1 latency |
+| ZeRO-1 | Optimizer state | Training reduction | Optimizer synchronization | Moderate training memory pressure | Params/gradients remain replicated |
+| ZeRO-2 | Optimizer + gradients | Larger reduction | Reduce-scatter/all-gather | 7B training | Parameters replicated |
+| ZeRO-3 | Params + gradients + optimizer | Maximum DP-state reduction | Parameter all-gather + gradient reduce-scatter | 7B–13B full fine-tuning with offload | Communication and gather overhead |
+| PyTorch FSDP | Params/gradients/optimizer by unit | ZeRO-3-like principle | Gather/reduce-scatter | Native-PyTorch training | Wrapping/prefetch configuration matters |
+| HF `device_map` | Whole layers | Excellent inference capacity | Device-to-device layer transfer | Quick capacity baseline | Not true simultaneous TP |
+| CPU/NVMe offload | State to slower memory | Can exceed aggregate VRAM | PCIe/NVMe movement | Last resort for oversized models | Large latency/throughput penalty |
+
+ZeRO staging follows the original ZeRO work and current DeepSpeed documentation; Megatron Core likewise maps its optimizer-only, optimizer+gradient, and optimizer+gradient+parameter sharding to ZeRO-1/2/3 semantics. FSDP was developed around full model-state sharding in PyTorch. citeturn20view2turn21view0turn21view1turn17search2
+
+Megatron's current guidance exposes four-way tensor parallelism as:
+
+```bash
+--tensor-model-parallel-size 4 \
+--sequence-parallel
+```
+
+and recommends sequence parallelism alongside TP because it also shards selected activation dimensions. Pipeline parallelism uses `--pipeline-model-parallel-size`. citeturn21view0
+
+For this machine, TP should normally remain **inside the fastest interconnect domain**. A 30B FP16 model under TP4 has about 15 GB of ideal parameter storage per GPU, leaving substantial capacity for KV cache and workspaces. A 70B INT8 model uses about 17.5 GB/GPU, while a 70B INT4 model uses only 8.75 GB/GPU. A 175B INT4 model is approximately 21.9 GB/GPU before quantization metadata and runtime allocations.
+
+| Suggested inference layout | Ideal weights per active GPU | Relative headroom | Recommended use |
+|---|---:|---|---|
+| 7B FP16, 1×GPU | 14 GB | High | Lowest-complexity interactive use |
+| 13B FP16, 1×GPU | 26 GB | Low/moderate | Shorter contexts, batch 1 |
+| 13B FP16, TP2 | 13 GB | High | Longer context / safer runtime |
+| 30B FP16, TP2 | 30 GB | Extremely low | Only with careful memory control |
+| 30B FP16, TP4 | 15 GB | High | Preferred |
+| 70B INT8, TP4 | 17.5 GB | High | Conservative quality/capacity choice |
+| 70B INT4, TP4 | 8.75 GB | Very high | Best capacity; benchmark kernel |
+| 175B INT4, TP4 | 21.9 GB | Moderate | Possible only with efficient implementation |
+| 175B INT3, TP4 | 16.4 GB | High | More capacity, greater quantization risk |
+| 175B INT2, TP4 | 10.9 GB | Very high | Experimental quality regime |
+
+GPTQ's paper specifically demonstrates the feasibility of 3–4-bit quantization at 175B and describes 2-bit/ternary operation as an extreme regime rather than a free quality-preserving reduction. AWQ's official implementation targets INT3/INT4. citeturn18search3turn19search1
+
+**Memory optimization.** Activation checkpointing should be enabled for full fine-tuning because it trades additional forward computation for much lower saved-activation memory. Gradient accumulation is complementary: a physical micro-batch of one sequence can be accumulated over \(K\) steps so that the optimizer observes an effective batch
+
+\[
+B_\text{global}
+=B_\text{micro}\times N_\text{data-parallel}\times K.
+\]
+
+It lowers instantaneous activation memory but does not eliminate the compute associated with the effective batch. Chen et al. provide the theoretical foundation for rematerialization, while Accelerate and DeepSpeed directly expose gradient accumulation and sharded/offloaded training. citeturn18search0turn21view1
+
+Parameter and optimizer offloading should be distinguished. DeepSpeed/Accelerate documents optimizer offload beginning with ZeRO-2 and parameter offload with ZeRO-3; targets include CPU and NVMe. ZeRO-Infinity generalizes this into a multi-tier memory system. citeturn20view3turn21view1
+
+Offloading is not free. A V100 provides 900 GB/s local HBM bandwidth, while a PCIe V100 uses PCIe Gen3 and NVIDIA specifies a 32 GB/s interconnect/interface figure for the board. Repeatedly streaming entire transformer layers across that boundary therefore changes the bottleneck from GPU HBM to host-device transport. This is why offload is exceptionally useful for **capacity**, but often harmful to low-latency generation. citeturn20view1
+
+**Quantization policy.** A practical hierarchy is:
+
+| Precision | Ideal bytes/parameter | Model-memory reduction vs FP16 | Recommended interpretation on V100 |
+|---|---:|---:|---|
+| FP16 | 2.0 | baseline | Native baseline and training datatype |
+| INT8 | 1.0 | 2× | Conservative inference compression |
+| INT4 | 0.5 | 4× | Strong default for 70B/175B if kernel works well |
+| INT3 | 0.375 | 5.33× | Capacity-oriented, evaluate quality carefully |
+| INT2 | 0.25 | 8× | Experimental; quality loss increasingly likely |
+
+The V100 datasheet specifies FP32, FP64, and Tensor performance but does not specify the later-generation low-bit Tensor Core peak metrics commonly associated with newer accelerators. Consequently, it would be methodologically unsound to infer that INT4 storage automatically implies a 4× speed increase over FP16 on V100. This report therefore treats sub-8-bit quantization's **memory gain as deterministic but its speed gain as empirical**. citeturn20view1turn18search3
+
+## Experiments and Reproducibility
+
+A scientifically useful V100 study must distinguish four questions:
+
+1. **Does the model fit?**
+2. **How fast is prompt prefill?**
+3. **How fast is autoregressive decoding?**
+4. **What accuracy and energy penalty accompanies the selected precision and parallelism?**
+
+NCCL performance should be measured separately from model throughput, otherwise poor topology can be mistaken for a bad inference engine. NVIDIA's `nccl-tests` repository provides correctness and performance tests for collectives such as all-reduce. citeturn15search3
+
+**Experimental matrix.** A manageable benchmark suite is:
+
+| Variable | Test values |
+|---|---|
+| Model scale | approximately 7B, 13B, 30B, 70B, 175B |
+| Precision | FP16, INT8, INT4; INT3/2 where implementation supports it |
+| Parallelism | 1 GPU, TP2, TP4; layer dispatch; selected PP |
+| Prompt lengths | 128, 512, 2048, 4096 tokens |
+| Generated length | 128 and 512 tokens |
+| Batch | 1, 2, 4, 8 where memory permits |
+| Training sequence | 512, 1024, 2048 |
+| Training micro-batch | 1, then 2 if it fits |
+| Gradient accumulation | 8, 16, 32 |
+| Runs | warm-up followed by at least 30–100 timed samples |
+| Metrics | TTFT, decode tok/s, ITL p50/p95, peak VRAM, power, energy/token, NCCL GB/s |
+
+Prompt prefill and token decode must be reported separately. A single “tokens per second” statistic can conceal radically different behavior because prompt processing is highly parallel while autoregressive generation has a sequential dependency between output tokens.
+
+**Preflight script.** First establish topology and communication health.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "=== GPU inventory ==="
+nvidia-smi \
+  --query-gpu=index,name,memory.total,memory.used,power.limit,temperature.gpu \
+  --format=csv
+
+echo
+echo "=== PCIe/NVLink topology ==="
+nvidia-smi topo -m
+
+echo
+echo "=== NVLink state, if available ==="
+nvidia-smi nvlink -s || true
+
+echo
+echo "=== PyTorch view ==="
+python - <<'PY'
+import torch
+print("torch:", torch.__version__)
+print("CUDA runtime:", torch.version.cuda)
+print("CUDA available:", torch.cuda.is_available())
+print("GPU count:", torch.cuda.device_count())
+
+for i in range(torch.cuda.device_count()):
+    p = torch.cuda.get_device_properties(i)
+    print(
+        i,
+        p.name,
+        f"{p.total_memory / 2**30:.2f} GiB",
+        f"compute capability {p.major}.{p.minor}"
+    )
+PY
+```
+
+Then test NCCL directly:
+
+```bash
+git clone https://github.com/NVIDIA/nccl-tests.git
+cd nccl-tests
+make MPI=0 -j"$(nproc)"
+
+# Large-message single-node all-reduce.
+NCCL_DEBUG=INFO \
+./build/all_reduce_perf \
+    -b 8M \
+    -e 1G \
+    -f 2 \
+    -g 4
+```
+
+`NCCL_DEBUG=INFO` is a documented NCCL troubleshooting mode, and the current NCCL environment documentation supports explicitly selecting network interfaces and InfiniBand HCAs through variables such as `NCCL_SOCKET_IFNAME` and `NCCL_IB_HCA`. citeturn15search6turn20view6
+
+For a multi-node InfiniBand configuration, a typical diagnostic environment is:
+
+```bash
+export NCCL_DEBUG=INFO
+
+# Examples only: names must match the actual machine.
+export NCCL_SOCKET_IFNAME='=ib0'
+export NCCL_IB_HCA='=mlx5_0:1'
+
+torchrun \
+  --nnodes=2 \
+  --nproc_per_node=4 \
+  --node_rank="${NODE_RANK}" \
+  --master_addr="${MASTER_ADDR}" \
+  --master_port=29500 \
+  train.py
+```
+
+NCCL documentation recommends exact-match prefixes such as `=` when selecting HCAs to avoid unintentionally matching similarly named devices. citeturn20view6
+
+**Minimal inference benchmark.** The following script deliberately uses Hugging Face layer dispatch because it creates a reproducible, framework-neutral memory baseline. It is not presented as optimal TP. Accelerate explicitly states that Big Model Inference can place layers across GPUs, CPU, and disk and that its basic multi-GPU dispatch can leave only one GPU active at a time. citeturn20view5
+
+```python
+# bench_infer.py
+from __future__ import annotations
+
+import argparse
+import statistics
+import time
+
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+
+def sync_all() -> None:
+    if torch.cuda.is_available():
+        for dev in range(torch.cuda.device_count()):
+            torch.cuda.synchronize(dev)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model", required=True)
+    parser.add_argument("--prompt", default="Explain tensor parallelism in two paragraphs.")
+    parser.add_argument("--new-tokens", type=int, default=128)
+    parser.add_argument("--repeats", type=int, default=10)
+    args = parser.parse_args()
+
+    tokenizer = AutoTokenizer.from_pretrained(args.model)
+
+    model = AutoModelForCausalLM.from_pretrained(
+        args.model,
+        torch_dtype=torch.float16,
+        device_map="auto",
+        low_cpu_mem_usage=True,
+    )
+    model.eval()
+
+    first_device = next(model.parameters()).device
+    encoded = tokenizer(args.prompt, return_tensors="pt")
+    encoded = {k: v.to(first_device) for k, v in encoded.items()}
+
+    # Warm-up
+    with torch.inference_mode():
+        model.generate(
+            **encoded,
+            max_new_tokens=16,
+            do_sample=False,
+            use_cache=True,
+        )
+    sync_all()
+
+    samples = []
+    for _ in range(args.repeats):
+        sync_all()
+        t0 = time.perf_counter()
+
+        with torch.inference_mode():
+            output = model.generate(
+                **encoded,
+                max_new_tokens=args.new_tokens,
+                do_sample=False,
+                use_cache=True,
+            )
+
+        sync_all()
+        elapsed = time.perf_counter() - t0
+
+        generated = output.shape[-1] - encoded["input_ids"].shape[-1]
+        samples.append(generated / elapsed)
+
+    print(f"mean decode-equivalent rate: {statistics.mean(samples):.2f} tok/s")
+    print(f"median: {statistics.median(samples):.2f} tok/s")
+
+    for i in range(torch.cuda.device_count()):
+        peak = torch.cuda.max_memory_allocated(i) / 2**30
+        print(f"GPU {i}: peak allocated {peak:.2f} GiB")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Run it as:
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 \
+python bench_infer.py \
+    --model '<MODEL_ID_OR_LOCAL_PATH>' \
+    --new-tokens 128 \
+    --repeats 20
+```
+
+For a research paper, this baseline should then be compared against genuine TP implementations rather than reported as the final result.
+
+**Megatron TP4 skeleton.** Current Megatron Core documentation defines `--tensor-model-parallel-size 4` as four-way tensor parallelism and recommends sequence parallelism alongside TP. citeturn21view0
+
+```bash
+torchrun --standalone --nproc_per_node=4 pretrain_gpt.py \
+    --tensor-model-parallel-size 4 \
+    --pipeline-model-parallel-size 1 \
+    --sequence-parallel \
+    --seq-length 2048 \
+    --micro-batch-size 1 \
+    --global-batch-size 32 \
+    --fp16 \
+    <MODEL_ARCHITECTURE_ARGS> \
+    <DATA_ARGS>
+```
+
+The placeholder arguments are intentional: hidden size, number of layers, attention heads, vocabulary, tokenizer, checkpoint format, and dataset must exactly match the selected model. Pretending that one fixed command describes all “30B” or “70B” architectures would make the experiment less reproducible, not more.
+
+**DeepSpeed ZeRO-3 configuration for four V100s.** For 7B full fine-tuning and exploratory 13B work, a conservative configuration is FP16 + ZeRO-3 + CPU optimizer/parameter offload + micro-batch one.
+
+```json
+{
+  "train_micro_batch_size_per_gpu": 1,
+  "gradient_accumulation_steps": 16,
+  "gradient_clipping": 1.0,
+
+  "fp16": {
+    "enabled": true,
+    "loss_scale": 0,
+    "initial_scale_power": 16
+  },
+
+  "zero_optimization": {
+    "stage": 3,
+
+    "offload_optimizer": {
+      "device": "cpu",
+      "pin_memory": true
+    },
+
+    "offload_param": {
+      "device": "cpu",
+      "pin_memory": true
+    },
+
+    "overlap_comm": true,
+    "contiguous_gradients": true
+  }
+}
+```
+
+Launch:
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 \
+deepspeed --num_gpus=4 train.py \
+    --deepspeed ds_zero3_v100.json \
+    --sequence_length 1024 \
+    --micro_batch_size 1
+```
+
+Accelerate exposes the same general topology through an interactive DeepSpeed configuration; its official documentation explicitly shows four GPU processes, FP16, ZeRO-3, CPU optimizer offload, and CPU parameter offload as configurable concepts. citeturn21view1
+
+A comparable Accelerate launch is:
+
+```bash
+accelerate config
+accelerate launch --mixed_precision fp16 train.py
+```
+
+Accelerate's documented DeepSpeed plugin understands `zero_stage`, `gradient_accumulation_steps`, `offload_optimizer_device`, `offload_param_device`, and NVMe paths. citeturn21view1
+
+**Recommended starting configurations.**
+
+| Task | Model | Precision | GPUs | Parallelism | Seq. | Micro-batch | Grad accumulation |
+|---|---|---|---:|---|---:|---:|---:|
+| Interactive inference | 7B | FP16 | 1 | none | 2K–4K | 1–4 requests | n/a |
+| Throughput serving | 7B | FP16 | 4 | four replicas | 2K–4K | 1–4/replica | n/a |
+| Interactive inference | 13B | FP16 | 1–2 | none/TP2 | 2K | 1 | n/a |
+| Inference | 30B | FP16 | 4 | TP4 | 2K–4K | 1–2 | n/a |
+| Inference | 70B | INT8 | 4 | TP4 | 2K–4K | 1–2 | n/a |
+| Inference | 70B | GPTQ/AWQ INT4 | 4 | TP4 | 4K+ if KV allows | 1–4 | n/a |
+| Inference | 175B | INT4 | 4 | TP4 / hybrid offload | 1K–2K initially | 1 | n/a |
+| Full fine-tune | 7B | FP16 | 4 | ZeRO-3/FSDP | 1K–2K | 1 | 16–32 |
+| Full fine-tune | 13B | FP16 | 4 | ZeRO-3 + CPU offload | 512–1K initially | 1 | 32+ |
+| Fine-tune | 30B+ | low-bit base + adapters | 4 | sharding/offload | 512–2K | 1 | 16–64 |
+
+The last row is deliberately parameter-efficient rather than full dense fine-tuning because the training-state table shows why 30B+ full Adam training on four 32 GB V100s becomes an offload-dominated experiment rather than an efficient training platform. ZeRO-Offload proves such heterogeneous training can extend capacity substantially, but capacity feasibility does not imply economically useful throughput. citeturn16search9turn20view3
+
+**Dataflow during full training.**
+
+```mermaid
+flowchart LR
+    D["Tokenized training data"] --> MB["Micro-batch = 1"]
+    MB --> FG["Forward pass"]
+
+    FG --> TP["TP/FSDP-sharded layer"]
+    TP --> C["NCCL collective"]
+    C --> CK["Checkpoint selected activations"]
+    CK --> LOSS["Loss"]
+
+    LOSS --> BW["Backward pass"]
+    BW --> RM["Rematerialize\ncheckpointed layers"]
+    RM --> RS["Reduce-scatter gradients"]
+
+    RS --> OPT["Sharded optimizer"]
+    OPT <--> CPU["CPU optimizer / parameter offload"]
+    CPU <--> NVME["Optional NVMe tier"]
+
+    OPT --> ACC["Gradient accumulation"]
+    ACC --> |"after K micro-batches"| UPDATE["Parameter update"]
+```
+
+The benchmark record should save, at minimum: GPU model and form factor, topology output, driver, CUDA, NCCL, PyTorch, Transformers, DeepSpeed/Megatron/Accelerate versions, Git commit IDs, exact checkpoint hash, quantization algorithm/configuration, prompt dataset, random seed, environment variables, ambient/power limits, and full command line.
+
+## Results
+
+Because no physical four-V100 server was attached to this analysis, this section separates **deterministic capacity results**, **published external results**, and **engineering estimates**. Nothing below labeled “expected” should be represented as a newly measured benchmark.
+
+**Capacity results are decisive.** FP16 model weights fit into aggregate four-GPU HBM through roughly 60B parameters in the ideal limit:
+
+\[
+P_{\max,\;FP16} \approx \frac{128\ \text{GB}}{2\ \text{bytes}}
+=64\text{B parameters}.
+\]
+
+Real usable capacity is below that because runtime state needs memory. This is why 70B FP16 fails the capacity test even before KV cache: its ideal parameter footprint is already 140 GB.
+
+With INT8, the ideal aggregate boundary becomes approximately 128B parameters. Hence 70B is comfortable while 175B does not fit.
+
+At four bits, the ideal parameter-only boundary is approximately 256B parameters. Consequently a 175B checkpoint occupies about 87.5 GB and leaves approximately 40.5 GB aggregate nominal capacity for scales, KV cache, workspaces, kernels, and imbalance. It is therefore plausible but implementation-sensitive.
+
+At three bits, 175B consumes about 65.6 GB, leaving much greater operating margin. GPTQ's 175B experiments establish that 3- and 4-bit compression is algorithmically credible, while the same paper treats 2-bit operation as a more extreme quantization regime. citeturn18search3
+
+```mermaid
+xychart-beta
+    title "Ideal four-GPU weight-memory utilization"
+    x-axis ["7B", "13B", "30B", "70B", "175B"]
+    y-axis "% of 128 GB" 0 --> 300
+    line [10.9, 20.3, 46.9, 109.4, 273.4]
+    line [5.5, 10.2, 23.4, 54.7, 136.7]
+    line [2.7, 5.1, 11.7, 27.3, 68.4]
+```
+
+The series are respectively FP16, INT8, and INT4. Values above 100% cannot fit in aggregate GPU memory even before runtime overhead.
+
+**Why four GPUs do not always make a model four times faster.** For 7B, keeping the model on one V100 has an ideal weight bandwidth ceiling of about
+
+\[
+900/14 \approx 64\ \text{tokens/s}.
+\]
+
+Splitting it across four GPUs theoretically supplies four times as much HBM bandwidth, but now each transformer layer pays communication and synchronization overhead. At such a small model size the collective cost can outweigh the bandwidth benefit. The better use of four V100s for throughput is often four independent 7B replicas.
+
+For 30B FP16, by contrast, distributed execution is required for comfortable memory capacity, so TP4's communication expense is accepted in exchange for 15 GB of model weights per rank.
+
+For 70B, compression and parallelism reinforce one another: an INT8 TP4 arrangement stores about 17.5 GB/rank; INT4 stores only 8.75 GB/rank. This leaves enough memory to increase context or concurrent sequences substantially relative to FP16.
+
+For 175B, TP4 INT4 leaves about 10.1 GB/device of nominal capacity beyond ideal packed weights. Whether that is enough depends strongly on quantization grouping, KV architecture, context length, temporary scratch space, and load imbalance.
+
+**Analytical batch-one decode planning estimates.** The following are deliberately broad **pre-benchmark priors**, computed from the V100 HBM budget and conservative assumed effective utilization rather than claimed measurements. They should be replaced by measured numbers from the supplied harness.
+
+| Model/configuration | Suggested topology | Planning decode rate | Equivalent average inter-token latency |
+|---|---|---:|---:|
+| 7B FP16 | 1×V100 | ~13–26 tok/s | ~38–77 ms |
+| 13B FP16 | 1 GPU or TP2 | ~7–20 tok/s | ~50–143 ms |
+| 30B FP16 | TP4 | ~9–18 tok/s | ~56–111 ms |
+| 70B INT8 | TP4 | ~8–15 tok/s | ~67–125 ms |
+| 70B INT4 | TP4 | ~8–21 tok/s | ~48–125 ms |
+| 175B INT4 | TP4 | ~2–6 tok/s | ~167–500 ms |
+
+These intervals should not be mistaken for guarantees. They encode an assumed fraction of theoretical memory-bandwidth utilization, and the assumed fraction is deliberately reduced for large low-bit configurations where dequantization and communication can dominate. The V100's documented raw HBM bandwidth provides the physical starting point; GPTQ's published speedups on other GPUs demonstrate why kernel implementation matters enough that no universal “4-bit = four times faster” rule exists. citeturn20view1turn18search3
+
+A useful experimental model is therefore
+
+\[
+T_\text{decode}
+\approx
+\eta
+\frac{\sum_i B_{\mathrm{HBM},i}}
+{M_\text{effective weights/token}},
+\]
+
+where \(\eta\) is **measured**, not assumed, after NCCL communication, kernel efficiency, attention, and runtime overhead are included.
+
+Prompt prefill should be modeled separately:
+
+\[
+t_\text{TTFT}
+\approx
+t_\text{tokenize}
++
+\frac{F_\text{prefill}}{C_\text{effective}}
++
+t_\text{communication}
++
+t_\text{scheduling}.
+\]
+
+Long prompts add the attention term and therefore cannot be predicted from parameter count alone.
+
+**Parallel strategy ranking on the reference machine.**
+
+| Workload | Best-first strategy | Expected utilization behavior | Rationale |
+|---|---|---|---|
+| 7B, one user | 1 GPU | One GPU busy; three idle | Avoid unnecessary collectives |
+| 7B, many users | 4 independent replicas | High aggregate utilization | Scale request dimension |
+| 13B interactive | 1 GPU, then TP2 if needed | Good on one; TP2 adds communication | 26 GB FP16 nearly fills one device |
+| 30B FP16 | TP4 | All GPUs active | Weight capacity + bandwidth benefit |
+| 70B quantized | TP4 | All GPUs active | Natural model-parallel workload |
+| 175B quantized | TP4/hybrid | All GPUs plus possible CPU traffic | HBM capacity is tight |
+| 7B full fine-tune | FSDP/ZeRO-3 + offload | GPUs + CPU heavily active | Training state exceeds comfortable HBM |
+| 13B+ full fine-tune | aggressive ZeRO/offload | Increasing CPU/NVMe stalls | Capacity becomes heterogeneous |
+| Layer `device_map` | layer dispatch | Frequently only one GPU computes | Memory technique, not TP performance |
+
+The final row follows directly from Accelerate's Big Model Inference documentation, which notes that its simple model-parallel layer dispatch executes through GPUs sequentially rather than keeping every GPU concurrently active. citeturn20view5
+
+**Communication results expected from topology.** V100 SXM2's NVLink bandwidth is an order of magnitude larger than the board's listed PCIe interface figure, so TP4 is expected to scale much better on a properly connected SXM2/NVLink topology than on four cards whose communication must traverse constrained PCIe paths. Actual server wiring matters: `nvidia-smi topo -m` and `nccl-tests` are therefore part of the experiment, not optional diagnostics. NVIDIA specifies the V100 bandwidths, while `nccl-tests` is NVIDIA's own correctness/performance test suite. citeturn20view1turn15search3
+
+For four GPUs, a ring all-reduce communicates substantial data per participant, and TP performs collectives repeatedly through the forward pass. ZeRO-3 additionally needs parameter gathering and gradient reduction during training. This is why increasingly aggressive memory sharding can paradoxically reduce arithmetic utilization when the interconnect cannot keep pace. The original ZeRO paper describes the communication consequences of Stage 3 as modest relative to its memory savings at large scale, but on only four older GPUs with PCIe links, communication should be measured rather than presumed negligible. citeturn20view2
+
+**Software stack comparison.**
+
+| Stack | Strength | Best use here | Caveat |
+|---|---|---|---|
+| PyTorch DDP | Simple replicated distributed training | Small models / independent replicas | No model-state memory savings |
+| PyTorch FSDP | Native fully sharded training | 7B–13B full fine-tuning | Configuration-sensitive |
+| DeepSpeed ZeRO | Mature state partitioning + CPU/NVMe offload | Memory-constrained full tuning | More moving pieces |
+| Megatron Core | Strong TP/PP implementation | 30B–175B distributed transformer work | Model/checkpoint integration work |
+| HF Accelerate | Convenient orchestration; FSDP/DeepSpeed integrations | Experiment management | Abstraction can obscure low-level behavior |
+| HF Big Model Inference | Extremely easy GPU/CPU/disk dispatch | Capacity validation | Sequential layer placement is not TP |
+
+FSDP's design and scaling goals are documented in the PyTorch FSDP paper; DeepSpeed's ZeRO/offload hierarchy is documented by DeepSpeed and Accelerate; Megatron Core formally exposes TP, PP, DP and fully sharded approaches. citeturn17search2turn21view1turn21view0
+
+## Discussion
+
+The central systems lesson is that **“Can it run?” and “Should it run this way?” are different questions**.
+
+A 175B INT4 model has an ideal 87.5 GB weight footprint and therefore passes the aggregate-capacity test. But distributing it over four Volta GPUs requires every layer to execute through a model-parallel scheme, while low-bit weights must be unpacked or dequantized through kernels whose efficiency may be substantially less mature on V100 than on more recent architectures. A CPU-offloaded variant can expand capacity further, but then PCIe or NVMe becomes part of the critical token-generation path. The 175B scenario is therefore technically interesting and potentially usable at modest interactive rates, but it is not the sweet spot of the platform.
+
+A 30B or quantized 70B model is much more balanced. The GPU memory is large enough to avoid continuous CPU swapping, the four devices can participate meaningfully in TP, and enough HBM remains for KV cache. For a local private assistant, engineering/model experiments, RAG, or robotics integration, this is likely the most productive operating region.
+
+**Tensor versus pipeline parallelism.** Megatron Core defines TP as splitting individual layer tensors and PP as splitting the model vertically by depth. TP is usually preferable inside a fast NVLink domain because all devices contribute to each layer; PP lowers some collective pressure but introduces idle “bubble” time unless enough micro-batches are simultaneously in flight. citeturn21view0
+
+For batch-one autoregressive inference, there is little opportunity to fill a deep pipeline with independent micro-batches from a single request. Consequently TP tends to be a better latency-oriented fit. PP becomes more interesting for training or high-concurrency serving, where many independent sequences can occupy pipeline stages.
+
+**Data parallelism remains underrated for local serving.** Suppose a 7B FP16 model already fits comfortably on one 32 GB V100. Tensor-parallelizing it forces four cards to cooperate on every token. Running four replicas instead permits four independent generation streams and almost eliminates cross-GPU traffic from the critical inference loop. Thus model parallelism is not the default simply because multiple GPUs exist.
+
+**ZeRO versus tensor parallelism.** ZeRO/FSDP and TP solve orthogonal problems. ZeRO primarily removes replication in the **data-parallel training state**. TP splits the computation and parameters **inside individual layers**. Modern distributed training systems frequently combine them because neither dominates all dimensions. Megatron Core explicitly supports composition of multiple parallelism strategies. citeturn21view0turn20view2
+
+For inference there is no optimizer state and no backward gradient, so much of ZeRO's advantage disappears. Tensor parallelism or efficient layer placement usually gives a cleaner inference execution model; DeepSpeed notes that ZeRO-2 is primarily training-oriented, while ZeRO-3 remains relevant to inference specifically because parameter partitioning can load oversized models. citeturn21view1
+
+**Checkpointing, rematerialization, and accumulation.** Activation checkpointing trades additional FLOPs for VRAM, while gradient accumulation trades wall-clock update frequency for a smaller physical micro-batch. They address different memory terms and should usually be combined on V100 full fine-tunes. The fundamental memory/computation trade-off of checkpointing has been established since Chen et al.'s sublinear-memory work. citeturn18search0
+
+**Quantization should be evaluated on two axes: quality and systems performance.** GPTQ uses second-order information to minimize quantization error; AWQ uses activation statistics and salient channels. Neither theorem says a given V100 kernel will execute an INT4 GEMM four times faster than an FP16 GEMM. Accuracy experiments should therefore report perplexity and downstream task scores, while systems experiments separately report decode throughput, prefill throughput, peak memory, and energy/token. citeturn18search3turn19search0
+
+INT8 is the lower-risk bridge from FP16 when capacity permits. INT4 is the most compelling capacity point for 70B and possibly 175B. INT3 can turn a marginal 175B configuration into a comfortable capacity configuration, but validation becomes increasingly important. INT2 is best treated as a research setting rather than a default production choice; GPTQ reports reasonable results in extreme low-bit regimes but does not establish universal equivalence to FP16. citeturn18search3
+
+**NCCL, RDMA, and InfiniBand.** On a single node, InfiniBand is irrelevant to GPU-to-GPU traffic unless communication leaves the host; NVLink or PCIe is the relevant fabric. Once two or more machines participate, NIC and topology become first-class variables. GPUDirect RDMA is valuable because the compatible network adapter can interact directly with GPU memory, avoiding unnecessary host-memory staging. citeturn8search2turn8search6
+
+NCCL should normally discover a reasonable topology, but the current documentation gives controls for explicitly selecting sockets or IB HCAs. Those controls are valuable when machines have management Ethernet interfaces, multiple HCAs, complex NUMA placement, or a fabric that is accidentally falling back to TCP. citeturn20view6
+
+**Failure modes and debugging.**
+
+| Symptom | Likely cause | First corrective action |
+|---|---|---|
+| OOM while loading | Checkpoint + duplicate loading buffers | Empty/meta initialization; sharded checkpoint; lower precision |
+| Loads, then OOM on first generation | KV cache or attention scratch space | Reduce sequence length/batch; increase weight compression |
+| OOM during backward | Saved activations | Enable activation checkpointing; micro-batch 1 |
+| ZeRO still OOMs | Transient gathers/activations exceed margin | Increase offload, reduce bucket sizes/sequence, checkpoint more |
+| Very low TP scaling | PCIe/NCCL bottleneck | Inspect topology; benchmark NCCL; prefer NVLink |
+| One GPU busy, others mostly idle | HF layer dispatch rather than true TP | Use Megatron/another TP engine |
+| GPU utilization oscillates | Pipeline bubble or CPU offload stall | More micro-batches; reduce PP; profile PCIe/CPU |
+| NCCL hangs | Bad route/interface/HCA or topology issue | `NCCL_DEBUG=INFO`; `nccl-tests`; verify interfaces |
+| INT4 slower than FP16 | Poor Volta low-bit kernel/dequant cost | Benchmark another backend or use INT8/FP16 |
+| Quantized model quality collapses | Too few bits / bad calibration | Compare FP16 perplexity; GPTQ/AWQ recalibration |
+| FP16 loss becomes NaN/Inf | Overflow/unstable training | Dynamic loss scaling, gradient clipping, lower LR |
+| CPU offload is unexpectedly slow | NUMA, paging, unpinned memory | Pin RAM, bind CPU/NUMA, monitor page faults |
+| NVMe offload stalls | SSD bandwidth/queue depth bottleneck | Measure actual NVMe throughput/IOPS |
+| Checkpoint save OOM | Gathering full ZeRO-3 state | Save sharded state or use offline consolidation |
+
+DeepSpeed/Accelerate specifically warns that gathering a complete 16-bit state under ZeRO-3 can itself be slow and memory-intensive because partitioned weights must be consolidated. citeturn21view1
+
+**Security and privacy.** Local hosting materially changes the privacy boundary because prompts and generated content need not be sent to a third-party inference API. AWQ itself identifies local/on-device execution as one route to reducing cloud cost and protecting user privacy. But “local” does not mean “secure.” citeturn19search0
+
+The most immediate supply-chain risk is model deserialization. Current PyTorch documentation explicitly warns never to load data from an untrusted source because `torch.load` uses Python unpickling machinery, even though newer `weights_only` behavior reduces some attack surface. citeturn14search3
+
+A security-oriented local deployment should therefore prefer static tensor formats such as Safetensors where available, hash and provenance-check downloaded checkpoints, avoid executing unreviewed model repository code, run the model process under a non-privileged account or container, avoid unnecessary outbound network access, and bind inference APIs to localhost or an authenticated private interface. Prompt logging should be disabled or access-controlled when prompts contain confidential material. Model files, prompt archives, swap, crash dumps, and offloaded parameters on NVMe should be covered by the same disk-encryption and retention policy as the private data being processed.
+
+A local server can also accidentally recreate a cloud exposure if an unauthenticated web interface is bound to `0.0.0.0`, reverse-proxied publicly, or exposed through a poorly configured VPN. Privacy depends on the entire serving perimeter, not just GPU ownership.
+
+**Cost and energy.** The immutable part of the power budget is straightforward. Four PCIe V100s have a combined specified maximum of approximately 1,000 W; four SXM2 V100s approximately 1,200 W. citeturn20view1
+
+Assuming another 200–400 W for CPUs, DRAM, NVMe, fans, NICs, and conversion losses yields an engineering wall-power budget around **1.2–1.6 kW under heavy sustained load**. The host figure is an explicit planning assumption rather than an NVIDIA specification.
+
+At an example electricity price of US$0.15/kWh:
+
+\[
+1.2\text{ kW}\times24\text{ h}\times0.15
+=\$4.32/\text{day}
+\]
+
+and
+
+\[
+1.6\text{ kW}\times24\text{ h}\times0.15
+=\$5.76/\text{day}.
+\]
+
+Thirty continuous days therefore correspond to approximately **US$130–173/month** in electricity at that illustrative rate. At 50% average load, the compute-related energy component falls substantially, although idle server power is not zero.
+
+Energy efficiency should be reported more scientifically as
+
+\[
+E_\text{token}=
+\frac{P_\text{wall}}{\text{tokens/s}}.
+\]
+
+For example, a machine drawing 1.2 kW while generating 20 tokens/s consumes
+
+\[
+1200/20=60\text{ J/token}.
+\]
+
+This metric makes the trade-off between an inexpensive older GPU and a newer, faster but costlier accelerator explicit.
+
+Acquisition cost is much less stable. Marketplace search results available during this research showed individual U.S. 32 GB V100 listings around roughly **US$285 to US$500+**, implying about US$1,140–2,000 for four GPUs at those particular asking prices, but used-market pricing varies sharply with PCIe versus SXM2 form factor, adapters, cooling assemblies, seller provenance, warranty, and geography. These should be viewed as contemporaneous listing examples, not authoritative transaction values. citeturn10search0
+
+For SXM2 cards especially, inexpensive accelerator modules can conceal the cost of the compatible baseboard, server chassis, power delivery, cooling, or PCIe/SXM adapters. A four-V100 system should therefore be budgeted as an integrated machine rather than “four eBay GPUs.”
+
+**Cost-performance interpretation.** Used V100s can be compelling when the objective is acquiring a large amount of ECC HBM cheaply. Their weakness is not raw memory capacity but age: lower compute efficiency, higher joules/token, older Tensor Core functionality, and weaker compatibility with inference kernels increasingly optimized around newer architectures. For 30B–70B experimentation, however, four 32 GB units provide an unusually useful 128 GB aggregate memory pool at a potentially low capital cost.
+
+## Conclusion and References
+
+A four-GPU NVIDIA Tesla V100 32 GB machine occupies an interesting point in the contemporary LLM hardware landscape. It is too small and too communication/energy constrained to be a credible substitute for modern large-scale training clusters, yet its **128 GB aggregate HBM2** remains enough to perform serious local LLM work when memory is managed systematically. Each V100 provides 900 GB/s HBM bandwidth, and an SXM2 configuration additionally offers a substantially stronger NVLink fabric than ordinary PCIe placement. citeturn20view1
+
+For **7B**, FP16 inference should normally use one GPU, with the remaining cards used for independent replicas. For **13B**, one V100 is nominally sufficient at FP16 but leaves much less context/workspace margin, making TP2 useful when latency permits. For **30B**, FP16 TP4 is a strong match: approximately 15 GB of weights per device leaves enough VRAM for inference state. For **70B**, FP16 cannot fit into 128 GB even before runtime overhead; INT8 or INT4 TP4 is the natural configuration. For **175B**, FP16 and INT8 are out of range, whereas INT4 is approximately 87.5 GB parameter-only and therefore technically feasible if the quantized kernels, per-rank layout, KV cache, and scratch allocations remain inside the remaining capacity. INT3 increases safety margin; INT2 should be treated as experimental. GPTQ and AWQ supply the primary research basis for the low-bit configurations. citeturn18search3turn19search0
+
+Training presents a much harsher boundary. Mixed-precision Adam model state can require on the order of tens of bytes per parameter; under ZeRO-Infinity's approximately 20-byte accounting, even 7B corresponds to around 140 GB before activations. FSDP/ZeRO-3, activation checkpointing, gradient accumulation, and CPU offload are therefore not marginal optimizations on four V100s—they are what makes meaningful full fine-tuning possible. Models at 30B–175B should generally be adapted through parameter-efficient methods rather than fully optimized on this hardware. citeturn20view3turn17search2turn18search0
+
+Among parallel strategies, **tensor parallelism is the main inference mechanism**, **data-parallel replication is the main throughput mechanism for models that already fit on one GPU**, and **ZeRO/FSDP is the main full-training memory mechanism**. Pipeline parallelism remains useful for model-depth partitioning and high-concurrency workloads but is comparatively unattractive for a single autoregressive stream because of pipeline bubbles. NVIDIA's modern Megatron documentation explicitly supports composition of these strategies rather than treating any one as universally optimal. citeturn21view0
+
+Offloading changes what is possible but not the physics of bandwidth. CPU and NVMe can extend capacity far beyond 128 GB, as demonstrated by ZeRO-Offload and ZeRO-Infinity, yet every byte introduced into the critical computation path must traverse slower memory/interconnect tiers. Hugging Face's own Big Model Inference documentation makes this explicit by describing GPU→CPU→disk placement and sequential layer movement; it is an excellent way to make a model execute, but not a replacement for true TP when throughput matters. citeturn16search9turn20view3turn20view5
+
+The most defensible implementation path for a real four-V100 installation is consequently:
+
+**First**, characterize the actual machine with `nvidia-smi topo -m` and `nccl-tests`; do not assume “four V100s” implies one particular topology. NVIDIA's NCCL tooling and environment controls make communication a directly measurable variable. citeturn15search3turn20view6
+
+**Second**, establish FP16 capacity/performance baselines at 7B, 13B, and 30B before introducing quantization.
+
+**Third**, benchmark INT8 and GPTQ/AWQ INT4 at 70B, reporting memory savings and generation speed independently. GPTQ/AWQ quality should be validated against the same FP16 checkpoint rather than inferred from bit width alone. citeturn18search3turn19search0
+
+**Fourth**, attempt 175B only after TP4 communication and low-bit kernels are validated. INT4's theoretical capacity feasibility does not guarantee acceptable latency.
+
+**Fifth**, for training, begin with 7B, sequence length 1024–2048, micro-batch 1, activation checkpointing, FP16, and ZeRO-3/FSDP plus CPU optimizer offload. Scale sequence length and physical micro-batch only after memory traces are stable. DeepSpeed's documented ZeRO hierarchy and FSDP's sharded design provide the appropriate foundations. citeturn21view1turn17search2
+
+**Finally**, publish results as a multidimensional system profile rather than one tokens/s number: prefill tokens/s, batch-one decode tokens/s, TTFT, p50/p95 inter-token latency, peak HBM, host-RAM usage, NCCL all-reduce bandwidth, wall power, joules/token, and model-quality delta. That procedure would turn the analytical estimates in this paper into an experimentally reproducible characterization of the particular four-V100 system.
+
+**Primary references.** Rajbhandari, S., Rasley, J., Ruwase, O., and He, Y., *ZeRO: Memory Optimizations Toward Training Trillion Parameter Models*, SC 2020. citeturn20view2 Ren, J. et al., *ZeRO-Offload: Democratizing Billion-Scale Model Training*, USENIX ATC 2021. citeturn16search9 Rajbhandari, S. et al., *ZeRO-Infinity: Breaking the GPU Memory Wall for Extreme Scale Deep Learning*, 2021. citeturn20view3 Shoeybi, M. et al., *Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism*, 2019. citeturn14search28 Zhao, Y. et al., *PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel*, 2023. citeturn17search2 Chen, T., Xu, B., Zhang, C., and Guestrin, C., *Training Deep Nets with Sublinear Memory Cost*, 2016. citeturn18search0 Frantar, E., Ashkboos, S., Hoefler, T., and Alistarh, D., *GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers*, ICLR-era work, arXiv 2022. citeturn18search3 Lin, J. et al., *AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration*, MLSys 2024. citeturn19search0turn19search1 NVIDIA, *Tesla V100 GPU Accelerator Data Sheet*. citeturn20view1 NVIDIA, *Megatron Core Parallelism Strategies Guide*. citeturn21view0 NVIDIA, *NCCL Environment Variables* and *NCCL Tests*. citeturn20view6turn15search3 Hugging Face, *Accelerate Big Model Inference* and *DeepSpeed Integration*. citeturn20view5turn21view1 PyTorch, `torch.load` security documentation. citeturn14search3
