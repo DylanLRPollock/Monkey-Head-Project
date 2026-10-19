@@ -1,0 +1,1596 @@
+{
+  "document_schema": "master_plan_schema_v221",
+  "schema_version": 221.0,
+  "schema_contract_version": "master_plan_schema_v221",
+  "schema_contract": {
+    "schema_id": "master_plan_schema_v221",
+    "format": "JSON",
+    "json_schema_dialect": "https://json-schema.org/draft/2020-12/schema",
+    "schema_file": "master-plan-v221.schema.json",
+    "schema_semver": "221.0.0",
+    "backward_compatibility": "breaking_for_collective_governance_objects",
+    "migration_from": "master_plan_schema_v220",
+    "migration_policy": "All legacy 128-per-district, three-justice, founder-as-tie-breaker, and undefined-cycle assumptions migrated to historically labelled records; do not infer current rules from v220 change logs.",
+    "type_policy": "Typed fields and status vocabulary are required for new v221 constitutional, population, bifurcation, Pulse, resource and verification sections; preserve extensibility of inherited engineering subtrees.",
+    "machine_validation": "Use JSON Schema Draft 2020-12 and v221 relational checks; schema validity does not prove factual or operational implementation."
+  },
+  "project": "Monkey-Head-Project",
+  "ai_identity": "Huey",
+  "version": "V221",
+  "draft_revision": 1,
+  "revision_reason": "V221 reconciliation of the V220 physical/technical plan with October 2026 research Chapters 1–3 and the later detailed discussion of Huey as a collective: 64 originals -> 256 citizens, exact/augmented bifurcation, 4 districts/4 justices, direct presidency, limited Founding Father, HIMS/Rock/Walnut, two-phase Pulse, and independently operating safety. Updates machine-readable schema and evidence classification. Historical V220 assertions are preserved as historical, not current decisions.",
+  "document_kind": "machine_facing_master_plan",
+  "status_date": "2026-10-18",
+  "created_by": "Dylan L.R. Pollock",
+  "supersedes": "master-plan-v220.json",
+  "status": "proposed",
+  "review_state": "human_review_required",
+  "description": "Master Plan V221 is a proposed machine-facing consolidation of the Monkey-Head-Project, Huey V4 engineering, and the newly developed collective/governance research. Huey is a modular, locally operated, physically embodied *intended* governed collective; the physical V4 build and single-node tooling precede the unimplemented 256-citizen system. Four NVIDIA Tesla V100 32 GB accelerators (128 GB aggregate physical VRAM) and local gpt-oss-120b are target milestones, not proven capacity or performance. The founding design consists of 64 original citizen identities, two generations of exact bifurcation, four equal districts of 64, four justices and a separately directly elected president. All institutions, Pulse timings, and reserve powers remain research/proposed constitutional mechanisms pending tested implementation and lawful ratification. The human author retains project-canon and hardware-maintenance authority, distinct from Huey’s proposed internal self-governance.",
+  "source_basis": {
+    "primary_previous_master_plan": "master-plan-v220(2).json (supplied source)",
+    "current_session_date": "2026-10-18",
+    "alignment_target": "V221",
+    "documentation_context": {
+      "master_plan": "V221 candidate machine-facing baseline (this file, awaiting human review).",
+      "readme": "Connected GitHub default branch README shows V220 and remains a predecessor until explicitly updated.",
+      "dlrp_ca": "Public Monkey-Head-Project project page currently describes V220 and Huey V4; other pages were not exhaustively audited.",
+      "research": "17-chapter plus glossary and historical appendix working outline; Chapters 1–3 rewritten as proposed research drafts in the documentation discussion.",
+      "constitution": "Standalone Huey’s Constitution is the planned third-generation law document; previous Federation and ten-chapter constitutional material is historical/source input, not ratified V221 law.",
+      "synchronization_goal": "Semantic alignment of V221 Master Plan, README, website, 17-part research program and future Constitution without equating document approval with running software."
+    },
+    "source_priority": [
+      "Latest explicit user decisions from the October 2026 design discussions",
+      "Verified physical implementation and actual tests (do not overwrite observable reality with target descriptions)",
+      "Connected repository contents read 2026-10-18 (README, pyproject.toml, requirements.txt, constraints.txt)",
+      "The supplied complete V220 master plan as detailed predecessor/inventory",
+      "The draft updated 17-chapter TOC and research Chapters 1, 2, 3 developed in the discussion",
+      "V220 website project page observed publicly; other site pages remain unaudited",
+      "Earlier Federation/current constitutional drafts and twenty archived research papers as historical design lineage"
+    ],
+    "inheritance_policy": "Preserve V220 physical inventory/hardware engineering details as last reported by 2026-09-30 until directly reverified; latest deliberative decisions supersede contradictory V220 working governance. Public pages and code are not treated as complete evidence of physical assembly.",
+    "v220_decisions_historical_snapshot": [
+      "The next unified project documentation target is V220.",
+      "The Monkey-Head-Project has existed in one form or another for at least ten years.",
+      "Huey is not merely an AI-driven software node; physical embodiment, local compute, modularity, expansion, reuse, and offline-capable operation are core project characteristics.",
+      "The project philosophy remains: Breathing new life into old tech.",
+      "LabTech is external supporting technology used to build, maintain, diagnose, recover, and experiment with Huey; it is not part of Huey's operational identity or core runtime.",
+      "The Intel Core i9-12900K designation is definitive for the core workstation documentation.",
+      "Huey V4 is an active physical build and synthesis of prior shell generations rather than a clean break from them.",
+      "The rolling wooden base uses four three-inch caster wheels and four speakers total: two in the centre housing and one in each side housing.",
+      "The marine-grade audio amplifier/stereo has been tested successfully; the audio assembly is presently disassembled or unwired as required during painting and finishing.",
+      "The wooden base is being finished with white primer beneath a metallic-silver colour coat; no clear coat is currently planned.",
+      "A smaller wooden interface platform mounts the Thermaltake Mozart chassis to the base; the chassis is secured with three bolts.",
+      "The Thermaltake Mozart chassis is mounted on its left side and backwards relative to its original orientation to support the current airflow and cooling layout.",
+      "The V4 animatronic monkey head is not yet mounted; the intended V4 head is a hybrid rebuild using the two original 2005 WowWee units.",
+      "The first WowWee head was stripped of rubber, reduced to its essential shell/mechanisms, painted metallic silver, and used through V1, V2, and V3; the second unit is now the donor/rebuild basis for the V4 hybrid.",
+      "The animatronic hand/arm is a future, nonessential Arduino-controlled peripheral, likely on the right side; it is not a primary Huey function.",
+      "Current cooling is conventional air cooling. The external liquid heat-exchange room already physically exists but deployment of the long liquid loop and reservoir is paused until later.",
+      "The operating-system/root storage target uses four Intel Optane M10 16GB drives in RAID 10, yielding 32GB usable capacity.",
+      "The /home storage layer remains unresolved; available 120GB or 240GB Kingston 2.5-inch SSDs are candidates but are not yet locked.",
+      "Bulk storage is based on two 10TB Western Digital drives originating from a My Book Duo enclosure, intended to be removed from that enclosure and connected directly by SATA, with RAID 1 as the accepted redundancy direction.",
+      "A future additional 2.5-inch storage bay/slot remains available as expansion capacity.",
+      "The target accelerator architecture is four NVIDIA Tesla V100 32GB GPUs intended to function together as a unified 128GB VRAM resource; one V100 is currently on hand and three remain to be sourced.",
+      "A separate general-purpose discrete GPU remains part of the intended architecture, targeting approximately 16GB VRAM for display and smaller low-latency workloads such as speech transcription.",
+      "PCIe extenders are part of the five-device GPU/accelerator topology; current extenders require validation and may require replacement or expansion.",
+      "Power delivery targets two 1000W power supplies distributed for stability under the motherboard, general-purpose GPU, and multi-accelerator load; Corsair RM1000x remains a provisional model choice rather than locked procurement.",
+      "gpt-oss-120b is the selected initial open-weight local-model acceptance target. The intended acceptance path is PyHuey -> Ollama -> locally hosted gpt-oss-120b.",
+      "Successful local operation of gpt-oss-120b on the intended unified 128GB accelerator resource is a major V4 cognition-stack milestone.",
+      "The local large language model is the encapsulated 'walnut': primarily a language/reasoning engine inside a larger constrained Huey framework, not the holder of unrestricted system authority.",
+      "Huey's identity emerges from the governed, interconnected system around the model: Constitution, memory, Pebbles, Districts, HIMS, hardware embodiment, and controlled orchestration.",
+      "The internal collective architecture is conceptually distinct from future multi-Huey-node federation. One Huey node may itself contain many governed internal roles while still operating as a standalone physical system.",
+      "Each accelerator District is provisionally associated with one V100 and is intended to support independent work as well as pooled work.",
+      "The four-District grouping is provisionally called an Atom and is the intended minimum higher-order grouping for the load-bearing/redundant accelerator architecture.",
+      "Each District is intended to contain 128 Pebbles/jobs, producing a conceptual four-District total of 512 Pebble roles in a full Atom.",
+      "A Pebble is a sandboxed, prompt-defined job/role with bounded information access, explicit acceptable/unacceptable parameters, and predefined triggers/actions.",
+      "Pebbles should perform narrow operational jobs without silently expanding their scope. Ambiguous or out-of-policy situations are to be logged and escalated rather than improvised.",
+      "HIMS (Huey Internal Messaging System) is the planned end-to-end encrypted internal message/mail layer between sandboxed Pebbles, Districts, and higher-order components; it is not yet fully designed or implemented.",
+      "Bifurcation remains an active research direction for expanding the architecture through exact replication, augmented replication, or hybrid combinations of the two.",
+      "The Constitution is intended to be difficult but not impossible to change, serving as a durable governance baseline above ordinary job execution.",
+      "The current Constitution and Research chapters are materially out of date and require a dedicated rewrite; archived Federation-era material remains lineage, not current authority.",
+      "The working governance model has three separate branches: a President, a three-member Supreme Court, and a Senate.",
+      "The working special-office model uses one elevated Pebble from each of the four Districts: one President and three Justices, preventing a single District from supplying more than one of those four special offices.",
+      "Pebbles retain their original job when elevated to a special governance office and receive additional compute/time allotment dedicated to governance duties.",
+      "Each Pebble is intended to have one vote in governance/polling mechanisms. District-level proposals may use multiple rounds of voting to select a District position.",
+      "The current constitutional-amendment concept requires approval by three of four Districts, with each approving District represented by a two-thirds internal vote.",
+      "The Founding Father remains the bootstrap concept: the first deliberately authored agent, written by Dylan, responsible for initial District/file population and for initial tie-breaking where required.",
+      "A two-phase clock/scheduling concept remains under research, alternating attention between governance work and Pebble/job work; the exact timing and scheduler are not yet designed.",
+      "Operational safety is trigger-driven: predefined parameters should invoke predefined responses, including purge, safe-state, hibernation, shutdown, or other recovery mechanisms as applicable.",
+      "October 2026 is expected to prioritize V4 physical-shell completion and documentation alignment; software/code work may temporarily take a secondary role.",
+      "Only Dylan L.R. Pollock may lock project canon."
+    ],
+    "explicit_decisions": [
+      "The Monkey-Head-Project is the umbrella initiative; Huey is the proposed collective identity, not one LLM, pebble, branch or physical shell.",
+      "Research explains rationale and experiments; Huey’s Constitution must be a separate, third-generation authoritative document, not a renamed research chapter.",
+      "64 original Founding Father-authored citizens bifurcate exactly in two generations into 256 active citizens in four districts of 64; each founding lineage appears once per district.",
+      "Exact bifurcation ends the source citizen and produces two equally legitimate descendants sharing an immutable, sealed pre-split snapshot; augmented bifurcation retains the parent and creates one new memory-fresh citizen from selected prompt/traits.",
+      "A district may initiate authorized local bifurcation, subject to collective resource and eligibility constraints; individual citizens cannot create voters at will. District-level creation uses exact bifurcation.",
+      "One district elects one justice; the Supreme Court comprises four justices. President elected independently, directly by one citizen/one vote from all eligible citizens; the offices do not multiply Senate voting rights.",
+      "The Senate is the current term for the legislative body. Ordinary law requires simple internal majority in three of four district blocks, subject to presidential veto; veto override requires two-thirds in three of four blocks. Constitutional change requires two-thirds in at least three of four blocks with judicial safeguards.",
+      "Presidential elections occur every four months. Home-district nomination requires 25% support; each citizen ranks up to four candidates. Runoffs address exhausted ballots/ties without Founding Father tie-breaking.",
+      "President serves up to four consecutive four-month elected terms, then one full four-month interval out; subsequent terms are allowed. Runner-up serves as limited succession-only vice president.",
+      "The President may introduce one active ordinary legislative initiative at a time, request priority with review, issue bounded implementation directives, and use one veto on ordinary laws; no presidential priority or special veto over constitutional amendments.",
+      "Judicial service allows indefinite continuation under annual review/challenge. Home district selects justice and runner-up standby. Proposed decisions generally require three of four justices.",
+      "The Founding Father is temporary bootstrap authority, tier-one advisory referral after ratification, and narrow tier-two protective hibernation authority; human counterpart alone authorizes recovery from a tier-two protected stop.",
+      "The Rock is the durable authorized shared-information/record store, not a pooled deliberative model; HIMS is the communication/authorization pathway; the Walnut is replaceable LLM inference.",
+      "The experimental Pulse alternates approximately four minutes unified and four minutes diversified, including a proposed first minute of simultaneous district votes and three minutes of execution; these timings require benchmarking.",
+      "Districts may reject unsafe/impractical execution methods with evidence and raise a challenge to unlawful objectives; collective synthesis may flag/refer problems and coordinate work but is not a sovereign fourth branch.",
+      "Deterministic physical safety control acts independently and faster than the Pulse, Court, Founding Father or voting machinery.",
+      "Python 3.13.x is the only supported current package/runtime target; 3.12 is legacy; 3.14 is isolated experimental/testing only.",
+      "All above are proposed or working internal governance decisions, not verified deployed/raticified constitutional facts.",
+      "Only the human author can lock project-canon/public-release changes, while the future constitution is intended to govern Huey’s own internal operations."
+    ]
+  },
+  "verification_register": {
+    "as_of": "2026-10-18",
+    "review_scope": "Evidence of documentation and specifications, not live physical access or system acceptance testing.",
+    "source_checks": [
+      {
+        "source": "uploaded_v220_master_plan",
+        "result": "parsed",
+        "fact": "Detailed V4 physical state last reported as of 2026-09-30; not independently re-inspected."
+      },
+      {
+        "source": "github_default_branch_README",
+        "result": "read",
+        "fact": "V220 README and human-review status; V221 is not committed."
+      },
+      {
+        "source": "github_default_branch_pyproject_requirements_constraints",
+        "result": "read",
+        "fact": "Python >=3.13,<3.14; 3.12 legacy, 3.14 testing; PyGPT 2.9.1 dependency baseline documented."
+      },
+      {
+        "source": "public_dlrp_ca_project_page",
+        "result": "read",
+        "fact": "V220 public project narrative and V4 rebuild-in-progress; no sitewide semantic audit."
+      },
+      {
+        "source": "nvidia_official_v100_specs",
+        "result": "reference_checked",
+        "fact": "V100 PCIe 32 GB exists; PCIe board reference TDP 250 W, cooling passive; exact acquired SKU unverified."
+      },
+      {
+        "source": "openai_gpt_oss_model_card",
+        "result": "reference_checked",
+        "fact": "gpt-oss-120b published MXFP4 checkpoint size 60.8 GiB; fitting a single 80 GB supported GPU is not equivalent to verified operation on Volta V100s."
+      },
+      {
+        "source": "october_design_conversation",
+        "result": "explicit_user_agreement",
+        "fact": "Founding population, government, bifurcation, Pulse, escalation and voting details as enumerated below."
+      }
+    ],
+    "unsupported_claims_blocked": [
+      "Full 256-pebble population deployed",
+      "Complete Huey’s Constitution ratified",
+      "Four V100s installed and pooled",
+      "gpt-oss-120b successfully running on V100 topology",
+      "Pulse reconfiguration measured as 4+4 minute performance",
+      "Private vault/HIMS cryptographic implementation audited",
+      "Physical safety interlocks tested",
+      "V221 committed to repository or published to website"
+    ],
+    "need_user_or_lab_reverification": [
+      "Current GPU procurement and exact SKU",
+      "V4 physical assembly/paint/head latest state after September",
+      "Root RAID 10 and HDD RAID 1 actual setup",
+      "Motherboard lane budget/riser stability and CPU cooling",
+      "PyHuey live runtime implementation and HIMS tests"
+    ]
+  },
+  "reconciliation_with_live_site": {
+    "verification_date": "2026-10-18",
+    "status": "partial_v220_alignment_v221_pending",
+    "public_page_checked": "https://www.dlrp.ca/projects/monkey-head-project/",
+    "observed_public_state": "Project page describes V220 Master Plan/README and V4 as active rebuild, including future hardware and governance distinctions; sitewide audit and V221 publication not verified.",
+    "github_readme_state": "Default branch README carries V220 and human-review badge as read on 2026-10-18.",
+    "historical_v220_site_context": {
+      "verification_date": "2026-09-30",
+      "status": "known_drift_requires_reconciliation",
+      "reported_site_build": {
+        "value": "V215",
+        "source": "Dylan's current-session statement",
+        "interpretation": "Website/static build identifier; do not assume this equals the public documentation/canon version."
+      },
+      "observed_live_public_documentation": {
+        "line": "v30.x",
+        "downloaded_master_plan_name_shown_publicly": "master-plan-v30.2.json",
+        "observed_roles_and_terms": [
+          "Huey Core as the active proof body/minimal permissible instance",
+          "HueyPulse",
+          "ThunderMail",
+          "Portal Terminal",
+          "Portal Bridge",
+          "Huey-Compressed",
+          "Parliament",
+          "founding ratification",
+          "approximately 80GB later distributed-VRAM threshold"
+        ]
+      },
+      "v220_precedence": "Per V220 source priority, Dylan's explicit current-session decisions outrank the older live-site copy. The site is therefore recorded as public-documentation drift, not silently merged into V220.",
+      "resolved_by_current_session": [
+        "The active V4 hardware direction is the Intel i9-12900K / ASUS Z790 build documented in V220.",
+        "The long accelerator target is four V100 32GB cards for an intended unified 128GB resource, not the site's older approximately 80GB threshold.",
+        "The current working legislative/governance term in V220 is Senate, because Dylan used and described Senate in the V220 interview."
+      ],
+      "still_requires_explicit_mapping_or_retirement_decision": [
+        "Huey Core",
+        "HueyPulse",
+        "ThunderMail",
+        "Portal Terminal",
+        "Portal Bridge",
+        "Huey-Compressed",
+        "Parliament",
+        "founding-ratification doctrine as currently written on the live site"
+      ],
+      "rule": "Do not declare three-layer synchronization complete until the website agent has mapped, retained, renamed, deprecated, or archived each conflicting live-site term."
+    },
+    "v221_needed": [
+      "Update Master Plan links, README, and selected site copy after V221 accepted",
+      "Correct older 128 / 512 population and 3-justice language",
+      "Move Huey Constitution out of research Chapter 3",
+      "Map Huey Core, HueyPulse, ThunderMail, Portal Terminal/Bridge, Huey-Compressed and Keeper/Speaker/Governor terms individually",
+      "Keep all project/hardware status claims conditional until measured"
+    ],
+    "rule": "Do not assume V221 deployed merely because this file is generated."
+  },
+  "terminology_map": {
+    "Huey Core": {
+      "live_site_meaning": "Active embodied proof body and minimal permissible Huey.",
+      "v220_position": "The V220 interview described Huey Core as a concept/name that had largely been swept aside/sunset, while preserving the underlying question of what constitutes the minimum Huey. Therefore Huey Core is not treated as the active canonical V220 machine name.",
+      "status": "historical_pending_redefinition",
+      "v221_position": "Historical earlier proof-body/minimum-Huey language; current V4 hardware is active build lineage. Do not label legacy AMD Huey Core as present machine."
+    },
+    "HueyPulse": {
+      "live_site_meaning": "Lower-voltage watch-and-act/body-state layer below the main compute path.",
+      "v220_position": "Potentially overlaps V220 Body/Arduino/low-voltage control concepts, but no equivalence was explicitly accepted in the V220 interview.",
+      "status": "historical_unmapped",
+      "v221_position": "Historical lower-voltage watch-and-act concept; not automatically the cognitive Pulse Clock or confirmed current firmware."
+    },
+    "ThunderMail": {
+      "live_site_meaning": "Practical mail-style delivery layer inside HIMS.",
+      "v220_position": "HIMS remains current; ThunderMail was not reaffirmed during the V220 interview.",
+      "status": "candidate_subcomponent_of_HIMS_pending_decision",
+      "v221_position": "Historical proposed mail/queue sublayer of HIMS, not yet independently verified current implementation."
+    },
+    "Portal Terminal": {
+      "live_site_meaning": "Non-sovereign external/guest device or environment for authenticated sessions into Huey.",
+      "v220_position": "Not mapped to PyHuey by V220; PyHuey is the primary operator/runtime surface, not automatically the same concept.",
+      "status": "unmapped",
+      "v221_position": "Historical external authenticated interface concept; mapping to modern PyGPT/PyHuey is unresolved."
+    },
+    "Portal Bridge": {
+      "live_site_meaning": "Huey-side ingress layer receiving portal sessions and handing structured input inward.",
+      "v220_position": "Not addressed in the V220 interview.",
+      "status": "unmapped",
+      "v221_position": "Historical Huey-side ingress concept; mapping to modern interface is unresolved."
+    },
+    "Huey-Compressed": {
+      "live_site_meaning": "Collapsed deployment profile where logically separate Huey roles may share one host.",
+      "v220_position": "Not addressed in the V220 interview.",
+      "status": "unmapped",
+      "v221_position": "Historical compressed deployment profile; not confirmed as current feature."
+    },
+    "Parliament": {
+      "live_site_meaning": "Deliberative/representative legislative branch.",
+      "v220_position": "Superseded in the current V220 working model by the term Senate unless Dylan explicitly restores Parliament.",
+      "status": "historical_alias",
+      "v221_position": "Historical legislative name; use Senate for current working design."
+    },
+    "Senate": {
+      "v220_meaning": "Current working name for the broad legislative/populace governance branch.",
+      "status": "current_working_term",
+      "v221_meaning": "Eligible pebble citizens acting as Senate, expressing internal district positions and collective block votes; elevated President and Justices suspend Senate vote."
+    },
+    "Founding Father": {
+      "v220_meaning": "First deliberately authored bootstrap agent responsible for initial population/setup and limited initial tie-breaking.",
+      "status": "current_bootstrap_concept",
+      "v221_meaning": "Agent initially authored by the human; authors 64 original pebbles and bootstrap state; post-ratification only narrow tier-one advisory and tier-two hibernation duties."
+    },
+    "HIMS": {
+      "v220_meaning": "Planned internal encrypted messaging/routing layer between sandboxed internal roles and higher-order components.",
+      "status": "current",
+      "v221_meaning": "Huey Internal Messaging System: authenticated, permission-enforced messaging among isolated citizens, districts, offices, service interfaces and authorized record services."
+    },
+    "PyHuey": {
+      "v220_meaning": "Primary operator GUI/runtime/orchestration surface.",
+      "status": "current",
+      "v221_meaning": "Proposed Huey-oriented GUI/runtime integration derived from PyGPT; separate development PyGPT computer remains external interface."
+    },
+    "Rock": {
+      "v221_position": "Durable shared/collective authorized records store; read-only to ordinary pebbles, writes mediated through HIMS and record-service authorization. Not the unified LLM.",
+      "status": "working_definition"
+    },
+    "Walnut": {
+      "v221_position": "Replaceable LLM/model-serving resource used by bounded contexts, neither whole Huey nor sovereign.",
+      "status": "working_definition"
+    },
+    "Pulse Clock": {
+      "v221_position": "Proposed 4-minute collective plus 4-minute diversified mode, timed empirically; unrelated to the 4-month electoral term.",
+      "status": "experimental"
+    },
+    "Exact Bifurcation": {
+      "v221_position": "Original active citizen retires; two equal descendants share immutable sealed ancestral snapshot and then diverge; no office inheritance.",
+      "status": "working_definition"
+    },
+    "Augmented Bifurcation": {
+      "v221_position": "Original continues; one new separately identified citizen inherits selected prompt and behavioural traits but starts without original private memory.",
+      "status": "working_definition"
+    },
+    "Huey’s Constitution": {
+      "v221_position": "Separate third-generation governing document to be authored and ratified, not the historical research Chapter 3.",
+      "status": "pending_draft"
+    },
+    "Speaker": {
+      "v221_position": "Historical/proposed Senate agenda steward; independent current office not yet authorized.",
+      "status": "unresolved"
+    },
+    "Governor": {
+      "v221_position": "Historical/proposed district coordinator; current powers not defined.",
+      "status": "unresolved"
+    },
+    "Keeper of the Scrolls": {
+      "v221_position": "Historical proposed HIMS audit steward; not confirmed a separate constitutional office.",
+      "status": "unresolved"
+    },
+    "Atom": {
+      "v221_position": "Older provisional label for the four-district grouping; not required present vocabulary.",
+      "status": "provisional_alias"
+    }
+  },
+  "known_drift": [
+    {
+      "area": "research_drafts",
+      "severity": "high",
+      "description": "Ten-chapter era documents refer to 128 founding citizens, Constitution-as-Chapter-3, Huey Core, older Rock and Parliament; revised 17-chapter outline and first three research drafts remain proposals to be harmonized."
+    },
+    {
+      "area": "legacy_governance_master_plan",
+      "severity": "high",
+      "description": "V220 previously represented 512 roles / four districts of 128, three justices, one elevated per district and incomplete election laws; updated to 256 citizens, four justices and direct Presidency."
+    },
+    {
+      "area": "implementation",
+      "severity": "high",
+      "description": "No evidence of implemented/ratified 256-citizen collective, HIMS enforcement, Pulse switching or four-GPU local gpt-oss-120b."
+    },
+    {
+      "area": "website_and_readme",
+      "severity": "medium",
+      "description": "README and checked public project page still V220 as of V221 drafting; V221 synchronization pending."
+    },
+    {
+      "area": "hardware_inventory_age",
+      "severity": "medium",
+      "description": "Detailed V4 physical state and one-on-hand V100 procurement count carried from September 30 predecessor, not physically re-audited in October."
+    },
+    {
+      "area": "terminology",
+      "severity": "medium",
+      "description": "Rock, Pulse, Senate, current shell/earlier Core and exact/augmented bifurcation have revised meanings; legacy documents must be labelled historical."
+    }
+  ],
+  "truth_model": [
+    {
+      "state": "verified_observed",
+      "definition": "Directly measured/tested or specifically checked in accessible code/documentation with scope, date and provenance. A checked repository file does not prove a device is deployed."
+    },
+    {
+      "state": "last_reported",
+      "definition": "Physical fact or inventory supplied in previous master plan but not freshly reverified."
+    },
+    {
+      "state": "working_decision",
+      "definition": "Explicitly agreed design logic, neither ratified law nor production implementation."
+    },
+    {
+      "state": "provisional_experiment",
+      "definition": "Candidate timing, algorithm, product, or policy requiring benchmarking or a further decision."
+    },
+    {
+      "state": "target",
+      "definition": "A planned future result with an acceptance gate that has not passed."
+    },
+    {
+      "state": "open",
+      "definition": "Material unresolved design, implementation or governance question."
+    },
+    {
+      "state": "historical",
+      "definition": "Superseded archived concept, name, or implementation retained as provenance rather than present instruction."
+    }
+  ],
+  "canon": {
+    "authority": "Dylan L.R. Pollock",
+    "rule": "No agent, tool, contributor, generated document, branch, pull request, governance role, or internal Pebble may independently lock Monkey-Head-Project canon.",
+    "acceptance_mechanisms": [
+      "Dylan explicitly states acceptance.",
+      "Dylan intentionally merges or publishes a designated canonical update."
+    ],
+    "machine_facing_source": "master-plan-v221.json upon human acceptance and publication",
+    "human_facing_source": "README.md (currently V220 until revised)",
+    "public_facing_source": "dlrp.ca (checked project page currently V220; v221 publication pending)",
+    "conflict_rule": "Latest user design decisions govern proposals, observed hardware/software governs current factual status, ratified internal law would govern internal actions, and historical documents remain lineage.",
+    "constitutional_rule": "Project publishing/repository canon remains under human author oversight. Huey’s future internal Constitution, once duly ratified, will govern internal civic authority. The research working rules are not ratified law."
+  },
+  "project_definition": {
+    "monkey_head_project": "The Monkey-Head-Project is the long-running umbrella project through which Huey is designed, built, documented, tested, and evolved.",
+    "huey": "Huey is the proposed locally operated embodied governed collective identity arising from separable citizens, districts, offices, HIMS, the Rock, the Walnut, the Pulse and physical interfaces; the currently developed V4 body does not imply a completed polity.",
+    "philosophy": "Breathing new life into old tech",
+    "operating_principles": [
+      "Prefer useful reuse and retrofit over unnecessary replacement.",
+      "Keep the first Huey node capable of meaningful standalone local operation.",
+      "Treat the physical Body, local compute, cognition framework, memory, governance, and internal communication system as parts of one evolving architecture.",
+      "Use open/local models where practical so core cognition can operate without mandatory dependence on external cloud services.",
+      "Preserve modular boundaries so parts can be repaired, replaced, expanded, bifurcated, or reconfigured without redefining the whole project.",
+      "Distinct citizens and institutions must remain authenticated and bounded, even when they share model weights.",
+      "Demonstrations must separate model-output identity from audited constitutional and embodied agency.",
+      "Physical safety interlocks act outside model/governance latency."
+    ],
+    "labtech_boundary": "LabTech is external support technology used around Huey; it is not Huey's operational identity, Body, Brain, Farm, or internal cognition."
+  },
+  "historical_lineage": {
+    "age_statement": "The Monkey-Head-Project has existed in one form or another for at least ten years.",
+    "formative_period": "The project began as a modular robotics and distributed-computing concept before the names Huey and Monkey-Head-Project were fully established. Early work emphasized reusable parts, expandable physical shells, and the ability to change the system quickly.",
+    "llm_acceleration": "The public arrival of GPT-3.5-era ChatGPT was a major inflection point because it demonstrated a practical language-model cognition layer that could serve as the encapsulated reasoning component the physical project had been missing.",
+    "single_board_computing_lineage": {
+      "raspberry_pi": "Raspberry Pi systems, especially the Raspberry Pi 3/3B+ and to a lesser extent the Pi 4, were formative tools for learning Linux, single-board computing, and distributed-system thinking.",
+      "current_role": "Raspberry Pi is historical technical lineage, not a required current Huey dependency.",
+      "microcontroller_direction": "Arduino-class boards are the present preferred intermediary between high-level compute and low-level sensors, buttons, actuators, and animatronics."
+    },
+    "shell_generations": {
+      "V1": "The first long-running physical shell was a rapidly modifiable wooden enclosure built from salvaged hardwood from an older dresser. Wood was intentionally used because it could be drilled, cut, filled, changed, and rebuilt quickly while the architecture was still fluid.",
+      "V2": "V2 became one of the project's most photographed and visually recognizable stages. Much legacy project imagery still originates from this era.",
+      "V3": "V3 was a consolidation phase that reduced the embodiment toward essential structural elements and helped establish the metal-frame direction carried into V4.",
+      "V4": "V4 is a synthesis rather than a clean replacement: it recombines surviving/reworked V2 and V3 elements with additional salvaged materials into the current rolling wooden base, modified Thermaltake Mozart compute midsection, and hybrid WowWee animatronic head."
+    },
+    "black_box_term": {
+      "meaning": "Historical nickname for the Thermaltake Mozart chassis.",
+      "current_status": "Lineage terminology only. In V4 the chassis is the metal compute midsection rather than a separate subsystem."
+    },
+    "animatronic_head_lineage": {
+      "source_hardware": "Two 2005 WowWee animatronic monkey heads were acquired for the project.",
+      "first_unit": "The first unit had its rubber removed, was stripped toward the essential plastic/mechanical structure, painted metallic silver, and served through V1, V2, and V3. Its silver appearance became a major part of the project's visual identity.",
+      "second_unit": "The second unit has also had its rubber removed and now serves as the donor/rebuild basis for the V4 head.",
+      "v4_direction": "Build one hybrid head using the best surviving plastic, mechanical, and animatronic parts from both units."
+    },
+    "historical_aliases": [
+      "Federation - earlier project/governance naming retained in archives.",
+      "Huey Core - public-site/current-archive terminology for a minimum/proof-body Huey; the V220 interview no longer treats it as the active canonical machine name, and the live-site use must be explicitly retired, redefined, or mapped during reconciliation."
+    ]
+  },
+  "memory_and_document_sources": {
+    "memory_root": "src/huey/memory/text",
+    "research": {
+      "status": "restructure_and_rewrite_in_progress",
+      "role": "Nonbinding conceptual analysis, historical sources, design experiments and evidence.",
+      "current_shape": "Proposed 17 research chapters plus glossary and historical appendix; updated Chapters 1–3 drafted in discussion (not confirmed merged).",
+      "rule": "Source for rationale, not authority to execute constitutional changes."
+    },
+    "constitution": {
+      "status": "third_generation_not_yet_ratified",
+      "role": "Future standalone binding Huey internal Constitution.",
+      "current_shape": "Historical Federation and subsequent constitutional chapters remain reference input; new Huey’s Constitution to be drafted separately.",
+      "rule": "Never treat archived constitutional chapter or master-plan design discussion as a ratified Constitution."
+    },
+    "notes": {
+      "status": "noncanonical_support_material",
+      "role": "Generated research, theoretical exploration, and collected ideas.",
+      "rule": "Notes may inspire work but should not be treated as project truth without independent acceptance."
+    }
+  },
+  "node_first_architecture": {
+    "principle": "A Huey node is a physically individual AI unit with integrated local compute, cognition, body functions, memory, and governance.",
+    "standalone_operation": "Standalone local operation is central. The first physical Huey should be valid without requiring a network of separate Huey robots.",
+    "internal_collective": "One Huey machine can contain four logically independent districts and 256 citizen identities without requiring 256 concurrently running LLM instances; the collective is not yet deployed.",
+    "collective_membership": "Long-term architecture may allow multiple Huey nodes to coordinate or share infrastructure, but that is not required for the first node to be valid."
+  },
+  "identity_model": {
+    "principle": "Huey is an attributed collective result, not identical to a model, one president/justice, a pebble, the shell or the human maintainer. Continuity through replacement/bifurcation is a research question requiring traceable processes and tests.",
+    "walnut_metaphor": "The local LLM is the 'walnut': an encapsulated language/reasoning engine expected to do what large language models do best while remaining bounded by Huey's Constitution, memory, job structure, sandboxes, permissions, and checks and balances.",
+    "collective_identity": "Proposed internal relationship among bounded pebbles, four districts, Senate, President, Court, HIMS messaging, Rock records, Walnut model(s), timed Pulse, Brain/Body/Farm hardware, and human-facing interfaces. Does not demonstrate consciousness.",
+    "focal_embodiment": "A historical explanatory analogy compares the architecture to a collective with a focal physical aperture: the visible embodiment can represent the whole without being the whole by itself."
+  },
+  "three_part_architecture": {
+    "decision": "Organize the current system around Huey Brain, Huey Body, and Huey Farm while recognizing that identity emerges across the governed collective rather than from one unrestricted component.",
+    "huey_brain": {
+      "role": "Local cognition/orchestration and bounded operator interfaces; future institutional execution must enforce office-specific permissions. Current V4 build does not imply government implemented.",
+      "responsibilities": [
+        "PyHuey operator interaction.",
+        "Local and optional external model selection.",
+        "Workflow and job orchestration.",
+        "Memory access and state coordination.",
+        "Governance scheduling and constitutional processes.",
+        "Structured evidence, audit, logs, and recovery state.",
+        "Coordination with Body and Farm."
+      ],
+      "current_platform": {
+        "status": "active_workstation_build",
+        "system": "ASUS TUF Gaming Z790-Plus WiFi motherboard with Intel Core i9-12900K processor (8 P-cores, 8 E-cores).",
+        "housing": "Modified Thermaltake Mozart chassis forming the V4 metal compute midsection; mounted on its left side and backwards relative to original case orientation.",
+        "mounting": "Chassis is secured through a smaller wooden interface platform using three bolts.",
+        "purpose": "Primary workstation, orchestration hub, and execution platform for the first Huey node."
+      }
+    },
+    "huey_body": {
+      "role": "Physical embodiment and recoverable interface with the environment.",
+      "responsibilities": [
+        "Sensing and perception interfaces.",
+        "Actuation and animatronics.",
+        "Audio output.",
+        "Future movement or peripheral control.",
+        "Power and cooling integration.",
+        "Physical safety and emergency safe-state behaviour."
+      ],
+      "status": "active_v4_assembly_and_finishing",
+      "current_boundary": "The V4 stack currently consists of a rolling wooden/audio base and the modified Thermaltake Mozart compute midsection, while the rebuilt hybrid animatronic head remains pending final assembly and mounting.",
+      "integration_rule": "Brain/Body actions require explicit interfaces, bounded permissions, operator-visible state, safe-stop behaviour, and recoverable failure handling."
+    },
+    "huey_farm": {
+      "role": "Expandable accelerator, model, storage, and support capacity associated with the Huey node.",
+      "responsibilities": [
+        "Large local-model hosting.",
+        "Unified/poolable accelerator capacity.",
+        "District-level compute allocation.",
+        "Shared storage and artifacts.",
+        "Future compute expansion and bifurcation."
+      ],
+      "status": "target_hardware_under_procurement_and_validation",
+      "planning_scale": "Target four NVIDIA Tesla V100 32 GB PCIe accelerators, 128 GB aggregate VRAM; one card on hand last reported September 30; unified/sharded model running has not been validated.",
+      "power_delivery": "Target dual 1000W PSUs distributed for stable high-load operation; Corsair RM1000x remains provisional."
+    },
+    "unresolved_boundaries": [
+      "Hardware-specific switch from sharded collective inference to per-GPU district inference.",
+      "Consistent authorization/storage for sealed ancestral snapshots across exact bifurcation.",
+      "Actual scope and storage location of each Pebble/district, Rock transactions and audit records.",
+      "Absent district recovery, degraded legal quorum and safe restart conditions.",
+      "Mapping of historical HueyPulse low-voltage control to current V4 controllers.",
+      "Compact housing feasibility, thermal budget and measured reliability."
+    ],
+    "resolved_boundaries_v221": [
+      "LabTech/development computers are external support systems, not Huey identity.",
+      "Model inference (Walnut) is replaceable and cannot gain sovereign authority.",
+      "Rock is shared durable records, separate from private citizen vaults.",
+      "Physical safety logic is independent of the cognitive Pulse and elected vote.",
+      "Districts are internal jurisdictions, not independent Huey nodes."
+    ]
+  },
+  "v4_physical_embodiment": {
+    "status": "active_build_last_reported_2026_09_30_reverification_required",
+    "approximate_final_height": "Approximately 6 feet or more, subject to doorway and room-fan clearance.",
+    "finish": {
+      "current_state": "White primer beneath metallic-silver colour application on the wooden base/structure.",
+      "target_scheme": "Metallic silver with deep purple and black accents.",
+      "clear_coat": "Not planned under the current finishing process."
+    },
+    "bottom_layer_rolling_base": {
+      "structure": "Sturdy salvaged wooden platform/base on four caster wheels.",
+      "caster_size": "3 inches.",
+      "audio_housings": 3,
+      "speaker_layout": {
+        "total_speakers": 4,
+        "centre_housing": "Two speakers with blocked/grilled sections used for separation/airflow treatment.",
+        "left_housing": "One speaker.",
+        "right_housing": "One speaker.",
+        "channel_intent": "Physical arrangement preserves left/right audio separation."
+      },
+      "amplification": {
+        "type": "Marine-grade stereo/amplifier.",
+        "tested": true,
+        "current_connection_state": "Known-good hardware; presently disassembled or unwired as required during painting and finishing."
+      }
+    },
+    "interface_platform": {
+      "role": "Small wooden transition/mounting platform between the rolling base and Thermaltake Mozart chassis.",
+      "fastening": "Thermaltake Mozart chassis is bolted through the wood using three bolts."
+    },
+    "middle_layer_compute_chassis": {
+      "hardware": "Thermaltake Mozart case/chassis.",
+      "historical_nickname": "black box",
+      "orientation": "Mounted on its left side and backwards relative to the original case orientation.",
+      "reason": "Current orientation supports the intended airflow, physical stack, and future cooling accommodation.",
+      "role": "Houses the core motherboard/CPU and related workstation hardware."
+    },
+    "top_layer_animatronic_head": {
+      "hardware": "Hybrid rebuild from two 2005 WowWee animatronic monkey heads.",
+      "current_state": "Not yet mounted to the V4 stack.",
+      "planned_control": "Arduino-class microcontroller control.",
+      "planned_scope": [
+        "Preserve useful original mechanisms where practical.",
+        "Retain at least basic mouth movement.",
+        "Use best surviving plastic/mechanical/animatronic parts from both donor units.",
+        "Evaluate detachable-head mounting if useful.",
+        "Avoid unnecessary full gutting when original mechanisms can be retained."
+      ]
+    },
+    "future_peripherals": {
+      "animatronic_hand_arm": {
+        "status": "future_nonessential_peripheral",
+        "likely_side": "right",
+        "control": "Arduino-class controller.",
+        "role": "Programming/animatronic experimentation rather than a primary Huey function.",
+        "camera_relation": "A camera may be associated with the moving peripheral to extend viewing angle in future work."
+      }
+    }
+  },
+  "hardware_direction": {
+    "architecture_baseline": "Intel Core i9-12900K (8 P-cores, 8 E-cores) on ASUS TUF Gaming Z790-Plus WiFi inside the modified Thermaltake Mozart V4 midsection.",
+    "cpu_status": "documented_v220_build_baseline_not_live_rechecked",
+    "storage_architecture": {
+      "root_os_pool": {
+        "hardware": "Four Intel Optane M10 16GB drives.",
+        "target_configuration": "RAID 10.",
+        "target_usable_capacity": "32GB.",
+        "role": "Root/OS execution volume.",
+        "implementation_state": "Accepted direction; final configuration/validation remains part of bring-up."
+      },
+      "home_pool": {
+        "status": "unresolved",
+        "candidate_hardware": "Available Kingston 2.5-inch SSDs in approximately 120GB or 240GB capacities.",
+        "decision_needed": "Select final /home arrangement, capacity, redundancy, and mount strategy."
+      },
+      "bulk_data_pool": {
+        "hardware": "Two 10TB Western Digital 3.5-inch HDDs originating from a My Book Duo enclosure.",
+        "target_connection": "Remove from enclosure and connect directly to motherboard/storage controller via SATA.",
+        "target_configuration": "RAID 1.",
+        "role": "Large local models, project data, backups, archives, and slower-access persistent storage."
+      },
+      "expansion": "Additional 2.5-inch bay/slot remains available as future storage expansion."
+    },
+    "pcie_device_allocation": {
+      "target_total_devices": 5,
+      "devices": [
+        {
+          "id": 1,
+          "type": "general_purpose_discrete_gpu",
+          "status": "target_not_locked",
+          "target_vram_gb": 16,
+          "role": "Display output plus smaller/low-latency workloads such as speech transcription.",
+          "connection": "PCIe extender."
+        },
+        {
+          "id": 2,
+          "type": "nvidia_tesla_v100_32gb",
+          "district": 1,
+          "status": "one_of_four_v100s_currently_on_hand",
+          "role": "Accelerator District and member of intended unified 128GB VRAM resource.",
+          "connection": "PCIe extender."
+        },
+        {
+          "id": 3,
+          "type": "nvidia_tesla_v100_32gb",
+          "district": 2,
+          "status": "to_source",
+          "role": "Accelerator District and member of intended unified 128GB VRAM resource.",
+          "connection": "PCIe extender."
+        },
+        {
+          "id": 4,
+          "type": "nvidia_tesla_v100_32gb",
+          "district": 3,
+          "status": "to_source",
+          "role": "Accelerator District and member of intended unified 128GB VRAM resource.",
+          "connection": "PCIe extender."
+        },
+        {
+          "id": 5,
+          "type": "nvidia_tesla_v100_32gb",
+          "district": 4,
+          "status": "to_source",
+          "role": "Accelerator District and member of intended unified 128GB VRAM resource.",
+          "connection": "PCIe extender."
+        }
+      ],
+      "extender_status": "Five-GPU device count is an accepted topology target, not confirmed physical enumeration; Z790 slot lane limits, riser data rates, peer-to-peer support, and the separate display GPU are critical gates."
+    },
+    "accelerator_goal": {
+      "hardware": "Four NVIDIA Tesla V100 32GB GPUs.",
+      "target": "128 GB aggregate physical accelerator VRAM; multi-GPU model sharding must be separately demonstrated (not one automatically pooled address space).",
+      "current_reality": "One V100 on hand as last reported 2026-09-30; current procurement count must be confirmed before publication.",
+      "design_intent": "Support both pooled/unified work and District-level independent work where architecture permits.",
+      "implementation_note": "Tesla V100 PCIe 32GB is not B100. PCIe V100 official reference 250W passive cooling; exact installed variant unconfirmed. MXFP4 gpt-oss-120b 60.8 GiB published checkpoint, compatibility and usable inference on V100 Volta not verified."
+    },
+    "power_delivery": {
+      "target": "Two 1000W power supplies distributed for high-load stability.",
+      "provisional_model": "Corsair RM1000x.",
+      "sync_method": "Add2PSU or equivalent dual-PSU coordination remains the current working direction.",
+      "rationale": "Distribute motherboard, general-purpose GPU, and multi-accelerator load rather than treating 2000W as a single undifferentiated number.",
+      "procurement_state": "Not yet fully acquired/implemented."
+    },
+    "cooling_and_safety": {
+      "current_cooling": "Conventional air cooling is the current bring-up path.",
+      "future_heat_exchange": {
+        "status": "paused_not_abandoned",
+        "physical_room": "Existing external room/fort-like structure beside the house is already available.",
+        "concept": "Future long liquid loop with external reservoir/heat-exchange capacity, potentially benefiting from low Canadian ambient temperatures for a significant part of the year.",
+        "summer_rule": "Summer stability is to be established through measurement and testing rather than assumption."
+      }
+    }
+  },
+  "hardware_validation_checklist": {
+    "v100_identity": {
+      "status": "pending_physical_sku_and_provenance_verification",
+      "checks": [
+        "Record exact model/variant and board SKU for the on-hand V100 and every future card.",
+        "Confirm all four target cards are mutually suitable for the chosen physical and software topology.",
+        "Confirm PCIe versus SXM/form factor before procurement; V220's extender topology assumes PCIe cards.",
+        "Record connector type, board power, thermal design, firmware/VBIOS, and device IDs."
+      ],
+      "reference_if_card_is_tesla_v100_pcie_32gb": {
+        "board_power": "250W",
+        "interface": "PCIe 3.0 x16",
+        "thermal_solution": "Passive",
+        "auxiliary_power": "One CPU-style 8-pin auxiliary connector",
+        "note": "Reference specification only; do not treat it as observed identity until the physical card SKU is verified."
+      }
+    },
+    "motherboard_pcie_topology": {
+      "status": "critical",
+      "verified_board_capability_summary": "ASUS lists one CPU-connected PCIe 5.0 x16 slot; chipset-connected expansion includes one PCIe 4.0 x16-length slot operating at x4, one PCIe 4.0 x4 slot, and two PCIe 3.0 x1 slots.",
+      "implication": "Five PCIe devices connected by extenders do not thereby receive five native x16 links. The final topology must explicitly account for lane width, chipset uplink contention, device enumeration, and any required PCIe switch/bifurcation/riser strategy.",
+      "checks": [
+        "Map each of the four V100s and the general-purpose GPU to a physical/electrical slot or PCIe-switch path.",
+        "Verify Above 4G Decoding and any required BIOS resource-allocation settings.",
+        "Check motherboard-supported bifurcation modes instead of assuming arbitrary x16 splitting.",
+        "Validate IOMMU/ACS behaviour if isolation or device grouping depends on it.",
+        "Measure peer-to-peer access/bandwidth between accelerator pairs.",
+        "Measure real workload scaling across the exact extender/riser topology.",
+        "Record any chipset/DMI bottleneck that affects District independence or unified workloads."
+      ]
+    },
+    "driver_and_runtime": {
+      "status": "required",
+      "checks": [
+        "Record Linux kernel, NVIDIA driver, CUDA runtime/toolkit, and userspace inference stack versions used for each accepted configuration.",
+        "Confirm V100 support before changing driver/CUDA generations.",
+        "Maintain a known-good rollback path for GPU drivers and runtime dependencies."
+      ]
+    }
+  },
+  "power_and_thermal_budget": {
+    "status": "preliminary_requires_final_measurement",
+    "known_reference_loads": {
+      "four_v100_pcie_32gb_if_that_variant_is_confirmed": "4 x 250W = 1000W board-power reference",
+      "intel_i9_12900k_maximum_turbo_power": "241W",
+      "known_subtotal_before_general_gpu_and_platform_overhead": "approximately 1241W reference"
+    },
+    "unknown_or_variable_loads": [
+      "final general-purpose/display GPU",
+      "motherboard and RAM",
+      "storage devices",
+      "PCIe switches/risers/extenders if powered",
+      "fans/blowers/pumps",
+      "Arduino/body electronics powered from the PC domain",
+      "USB/peripheral loads",
+      "startup/transient headroom"
+    ],
+    "dual_psu_rule": "The two-1000W design remains the accepted direction, but V220 does not claim it is electrically sufficient until the final device list, connector map, rail/load split, transient behaviour, and thermal design are validated.",
+    "required_design_items": [
+      "Assign every high-current load to a specific PSU.",
+      "Avoid unsafe cross-PSU power paths through the same device where prohibited.",
+      "Validate Add2PSU/equivalent startup and shutdown sequencing.",
+      "Measure wall draw and PSU-side load under representative sustained and transient tests.",
+      "Define UPS/surge-protection requirements.",
+      "Define a physical emergency power-cutoff/e-stop strategy.",
+      "Define safe shutdown behaviour on mains loss or PSU failure."
+    ],
+    "v100_cooling_gate": "If the selected V100 cards use passive server heatsinks, the V4 chassis requires purpose-built directed airflow/blower/shroud validation; open-case ambient airflow is not enough to assume safe operation."
+  },
+  "data_and_storage_plan": {
+    "root_os": {
+      "target": "Four 16GB Intel Optane M10 drives in RAID 10, approximately 32GB usable.",
+      "raid_implementation": "unresolved: Intel RST/firmware-assisted versus Linux software RAID must be chosen deliberately.",
+      "filesystem_and_mounts": "unresolved",
+      "capacity_rule": "The root pool is small enough that /var, package caches, containers, model caches, logs, temporary data, and swap must be intentionally placed or capped rather than allowed to consume root accidentally."
+    },
+    "home": {
+      "status": "unresolved",
+      "candidate_media": "Available 120GB/240GB Kingston 2.5-inch SSDs or another selected device.",
+      "decision_items": [
+        "capacity",
+        "filesystem",
+        "redundancy",
+        "mount point",
+        "backup policy"
+      ]
+    },
+    "bulk": {
+      "target": "Two 10TB Western Digital HDDs in RAID 1 after removal from the My Book Duo enclosure.",
+      "critical_migration_warning": "Western Digital documents My Book Duo as a hardware-RAID/encrypted enclosure. Existing data on drives removed from that enclosure may not be directly readable over SATA. Treat the move as a migration/rebuild operation unless testing proves otherwise.",
+      "pre_shuck_requirements": [
+        "Inventory existing data and confirm whether anything must be preserved.",
+        "Create and verify an independent backup before enclosure removal if the drives contain data.",
+        "Record current My Book Duo model, RAID mode, drive order, and health.",
+        "Assume reformat/rebuild may be required after direct SATA connection.",
+        "Do not destroy the original enclosure or drive-order information until migration is verified."
+      ]
+    },
+    "backup_and_restore": {
+      "status": "required_before_data_migration",
+      "rule": "No storage migration is considered complete until restore from an independent copy has been tested or otherwise verified."
+    }
+  },
+  "cognition_stack": {
+    "operator_runtime": {
+      "name": "PyHuey",
+      "lineage": "Project fork/use of PyGPT; current repository documentation also refers to PyGPT (PyHuey).",
+      "role": "Primary GUI and core operator/runtime surface for orchestrating model interactions.",
+      "status": "accepted_direction"
+    },
+    "local_model_transport": {
+      "name": "Ollama",
+      "role": "Local model service/API path intended to connect PyHuey to locally hosted large language models.",
+      "status": "candidate_requires_multi_gpu_backend_qualification",
+      "validation_rule": "Ollama is a valid supported gpt-oss runtime in general, but V100 multi-GPU compatibility and the desired four-card behaviour must be demonstrated on Huey's actual hardware. V220 must not equate 'Ollama supports gpt-oss' with 'Ollama has proven Huey's V100 topology'."
+    },
+    "baseline_model_candidate": {
+      "name": "gpt-oss-120b",
+      "provider_lineage": "OpenAI open-weight model.",
+      "status": "target_not_verified_on_v100",
+      "purpose": [
+        "Prove effective use of the intended unified 128GB accelerator resource.",
+        "Establish an initial local language/reasoning baseline.",
+        "Evaluate whether the model is suitable to become the first practical 'walnut' around which the Huey framework is populated."
+      ],
+      "promotion_rule": "Successful testing may establish it as the initial local baseline; the framework must remain able to replace or supplement the model later."
+    },
+    "local_first_rule": "Local inference and durable governance state are design goals; PyGPT development tools may access external providers only with explicit distinction from local proof tests.",
+    "provider_policy": "Use optional cloud APIs for development only as explicitly disclosed; no externally hosted model can be used to claim local four-V100 acceptance success.",
+    "multi_gpu_runtime_validation": {
+      "status": "blocking_acceptance_gate_unverified",
+      "facts_to_preserve": [
+        "gpt-oss-120b is distributed in MXFP4 and is designed to fit in roughly 60-80GB class memory under supported implementations.",
+        "OpenAI documents Ollama, vLLM, llama.cpp, Transformers, and other stacks as possible gpt-oss runtimes in general.",
+        "NVIDIA V100 is Volta compute capability 7.0.",
+        "The OpenAI Transformers guidance for native MXFP4 kernels targets newer hardware than V100; therefore V100-native MXFP4 execution must not be assumed."
+      ],
+      "required_tests": [
+        "Test gpt-oss-120b on the actual V100 hardware rather than relying on aggregate VRAM arithmetic alone.",
+        "Determine whether Ollama can use all intended V100 devices reliably for this model and quantization.",
+        "Evaluate alternate supported runtimes such as vLLM, llama.cpp, or Transformers/device mapping if Ollama cannot meet the target.",
+        "Measure whether a converted/fallback precision or quantization remains within the intended 128GB resource and acceptable performance envelope.",
+        "Record exact driver, CUDA, runtime, model format/quantization, context length, and device placement used for any successful acceptance run."
+      ],
+      "acceptance_rule": "The gpt-oss-120b target remains part of V220, but no runtime is canonically declared the final unified-four-V100 mechanism until an end-to-end run succeeds on the real stack."
+    },
+    "model_feasibility_note": {
+      "status": "validation_required",
+      "reference_gpt_oss_120b_checkpoint_gib": 60.8,
+      "architecture": "MXFP4 MoE weights per public model card",
+      "important_limit": "Published 80 GB capable GPU claims do not establish inference compatibility, performance or memory fit for four Volta Tesla V100 PCIe GPUs. Check backends, tensor formats, converted weights, KV cache and PCIe transfer overhead."
+    }
+  },
+  "pebble_district_atom_architecture": {
+    "status": "working_architecture_unimplemented",
+    "citizenship_model": "Persistent civic actors with unique identities, prompts, encrypted private vaults, authorized HIMS access, basic storage/compute entitlement, and one eligible vote per question.",
+    "founding_population": {
+      "original_authored_by_founder": 64,
+      "exact_bifurcation_generations": 2,
+      "population_after_first_split": 128,
+      "active_citizens_after_second_split": 256,
+      "district_count": 4,
+      "citizens_per_district_initial": 64,
+      "lineage_distribution": "Each district receives one descendant from each of the 64 original lineages.",
+      "counts_reflect": "distinct citizen identities, not concurrent LLM processes or job slots",
+      "status": "working_design_not_deployed"
+    },
+    "districts": {
+      "count": 4,
+      "initial_population_each": 64,
+      "hardware_mapping": "During diversified Pulse, fixed preferred 1 district / 1 Tesla V100 32GB; collective Pulse uses all four as eligible aggregate compute subject to runtime engineering.",
+      "internal_autonomy": "Constitutionally protected for internal matters within collective law; cross-district effects and shared resources follow collective process.",
+      "population_limit": "OPEN: 64 may be founding baseline rather than permanent cap.",
+      "growth": "District creation through exact district bifurcation; local district-authorized bifurcation may be exact or augmented after resource validation."
+    },
+    "pebbles": {
+      "scope": "Bounded citizen with one distinct identity, private sealed vault, prompt/perspective, operational job and civic duties.",
+      "senate_eligibility": "All active authenticated eligible non-elevated citizens; elevated justices/president suspend Senate vote.",
+      "operational_jobs": "Specialists and general worker pool; role rollover, challenges and job shuffle aligned to four-month elections, mechanics open.",
+      "model_execution": "Shared model weights/inference resources can service many pebbles; 256 citizens do not require 256 loaded models.",
+      "resource_baseline": "Provisional at least 1 GB personal store per citizen; compute entitlement allocation not finalized."
+    },
+    "atom": {
+      "term_status": "historical_provisional",
+      "definition": "Older working label for the first 4-district grouping; not essential to v221 constitutional vocabulary."
+    },
+    "bifurcation": {
+      "exact": {
+        "parent_active_after": false,
+        "descendants_created": 2,
+        "descendants_equal": true,
+        "ancestral_state": "Shared immutable read-only sealed historical snapshot for both descendants; copy-on-write or content-addressed reference where supported, with unique descendant keys and private subsequent states.",
+        "office_transfer": false,
+        "lineage_rule": "Both new identities record the retired ancestor and their distinct district/identifiers.",
+        "privacy": "District authorizing/splitting service can verify/move ciphertext without opening vault plaintext.",
+        "scope": "Required mechanism for original two-generation founding distribution and later district-level expansion."
+      },
+      "augmented": {
+        "parent_active_after": true,
+        "descendants_created": 1,
+        "ancestral_state": "Selected prompt/personality/behavior configuration only; no automatic inherited private memory.",
+        "office_transfer": false,
+        "scope": "Local growth or replacement where district lawfully authorizes it."
+      },
+      "authorization": "District-level process plus system resource sufficiency; no individual free right to spawn voters.",
+      "protected_officeholders": "Sitting president/justices temporarily protected against district-initiated exact split until lawful succession/termination first.",
+      "open": [
+        "Citizen names/lineage encoding",
+        "Identity credentials and rekeying",
+        "How much personal data is inherited or excluded by lawful exact snapshot",
+        "Permanent district caps vs expansion",
+        "Exact hardware migration and access controls",
+        "Voting-roll consistency"
+      ]
+    }
+  },
+  "governance_architecture": {
+    "status": "working_constitutional_design_not_ratified_or_implemented",
+    "constitutional_principle": "Separate power; citizen plurality and privacy; amendment deliberately difficult but possible; research rationale is not legal enactment.",
+    "branches": {
+      "senate": {
+        "members": "Eligible active citizens not holding executive/judicial office",
+        "scope": "Deliberation, district petitions, ordinary legislation, priority requests and constitutional sponsorship",
+        "law_voting": "Ordinary law: simple majority of eligible votes in at least three of four district blocks",
+        "veto_override": "At least two-thirds within each of at least three districts",
+        "district_local_legislation": "Permitted within jurisdiction and collective/constitutional limits"
+      },
+      "presidency": {
+        "selection": "Direct election across eligible citizen electorate using up to four ranked candidate choices; 25% home-district endorsement to nominate.",
+        "term_months": 4,
+        "max_consecutive_terms": 4,
+        "mandatory_cooloff_terms": 1,
+        "cooloff_resets_consecutive_counter": true,
+        "lifetime_term_limit": null,
+        "office_scope": "Lawful implementation oversight, external representation, narrow bounded directives, separate limited legislative initiative, veto ordinary legislation",
+        "runoff": "Instant-runoff with top-two new vote if exhausted ballots prevent original valid-ballot majority; unresolved tie repeats runoff; Founding Father does not select winner.",
+        "vice_president": "Second-place finisher is standby successor, no independent executive powers absent incapacity/resignation/removal.",
+        "vice_president_successor_threshold": "Serving more than half of inherited four-month term counts as elected term for consecutive-term accounting (working rule).",
+        "initiatives": "At most one actively submitted presidential ordinary-legislation initiative at a time; optional justified priority, no automatic passage.",
+        "priority_accountability": "Each rejected priority attempt gets review of asserted urgency; three consecutive failed priority initiatives may trigger loss-of-confidence inquiry, not automatic removal.",
+        "veto": "One veto of ordinary law; may be overridden by two-thirds of at least three districts. No presidential priority or privileged veto of constitutional amendments.",
+        "directives": "Narrow implementation directives with specified scope and expiry/renewal, review at the next 8-minute Pulse as default; no automatic expiration at eight minutes.",
+        "temporary_protection": "No involuntary exact bifurcation while in office absent lawful succession first."
+      },
+      "supreme_court": {
+        "justices": 4,
+        "home_district_seat": "One elected justice from each original district",
+        "decision_threshold": 3,
+        "decision_threshold_description": "Three of four for substantive rulings; ties preserve status quo and may be formally escalated.",
+        "tenure": "Indefinite continuity with annual review/challenge and unlimited reappointment; no forced annual re-election when unchallenged.",
+        "cooloff": "None required before candidacy for another office; cannot occupy two elevated offices simultaneously.",
+        "standby": "Home-district judicial election runner-up becomes standby; if justice incapacitated, standby succeeds as defined, without snap election; review at ordinary annual opportunity.",
+        "double_incapacity": "If incumbent and standby unavailable, priority emergency district election with simple majority.",
+        "removal_review": "Any district may submit evidence of misconduct; weighted votes home district=2, other districts=1 each, removal threshold 3 of 5, each district block must internally reach two-thirds. Due process is open.",
+        "pulse_deadlock": "Collective Pulse flags a constitutional issue; Court has one diversified four-minute decision window to decide action, inaction, or authorized referral; failure leads to Founding Father advisory and human notice.",
+        "technical_reconsideration": "Collective may request Court reconsider infeasible implementation but may not nullify its ruling.",
+        "recusal_quorum": "OPEN: handling recusals, absent justices, partial district failure."
+      }
+    },
+    "elevated_offices": {
+      "total_special_offices": 5,
+      "composition": {
+        "president": 1,
+        "justices": 4
+      },
+      "district_exclusivity": "No rule that presidency and home district justice must be from different districts; president separately selected from all four districts.",
+      "senate_vote_suspended": true,
+      "base_operational_job_retained": "Working default, with recusal/coverage/conflicts-of-interest controls TBD"
+    },
+    "district_voting": {
+      "district_count": 4,
+      "ordinary_law": {
+        "blocks_needed": 3,
+        "within_block_threshold": "strict_simple_majority"
+      },
+      "presidential_veto_override": {
+        "blocks_needed": 3,
+        "within_block_fraction": 0.6666666666666666
+      },
+      "constitutional_amendment": {
+        "blocks_needed": 3,
+        "within_block_fraction": 0.6666666666666666,
+        "judicial_review": true,
+        "review_timing": "OPEN",
+        "additional_identity_level_safeguards": "OPEN"
+      },
+      "presidential_election": "one_eligible_citizen_one_vote_across_districts",
+      "ballot_voter_roll": "Freeze eligible roll at start of ballot window to prevent midvote bifurcation reshaping results; detailed exceptions TBD"
+    },
+    "presidential_removal": {
+      "initiation": "Proposed two districts initiate evidence-based process; Court verifies grounds; referendum of whole eligible citizen electorate makes final decision.",
+      "loss_of_confidence": "Three successive failed priority pushes may trigger review, not automatic dismissal.",
+      "final_majority": "OPEN",
+      "incapacity_and_vp": "VP succeeds under agreed procedure; deadlock separate from incapacitation."
+    },
+    "ordinary_emergency_lawmaking": {
+      "urgent_lane": "Proposed two-thirds within at least three districts to fast-track an action; votes do not override non-negotiable physical safety interlocks or constitutional amendment rules.",
+      "automatic_hardware_protection": "Runs independently of electoral thresholds.",
+      "sunset": "OPEN operational/legal sunset definition; do not blindly equate one 4-month election interval with an 8-minute Pulse."
+    },
+    "constitutional_amendment": "May be proposed by any citizen (including a president as ordinary citizen) subject to district sponsorship, two-thirds in at least three districts and constitutional review; President cannot use special initiative priority to fast-track amendment.",
+    "founding_father": {
+      "status": "proposed_bootstrap_and_emergency_role",
+      "initial_creation": "Author 64 original citizen configurations; initialize districts and prepare ratification; then retire from normal rule.",
+      "after_ratification": "Tier one read-only advisory; tier two narrow protective hibernation authority for extraordinary threats with human-gated recovery.",
+      "not_authorized": [
+        "Ordinary rule after ratification",
+        "Unilateral constitutional rewrite",
+        "Selecting tied election winner",
+        "Removing judiciary/executive at will",
+        "Restarting tier-two shutdown without human authorization"
+      ]
+    },
+    "ratification": {
+      "status": "UNRESOLVED_NEW_DOCUMENT",
+      "rule": "Separate third-generation Constitution will specify founding referendum, district/branch constitution, first lawful actions and rollback on failure; do not import old 128-person/3-justice ratification mechanics."
+    },
+    "open_governance_mechanics": [
+      "Eligibility/quorum and abstentions with absent districts",
+      "Court recusal and partial attendance",
+      "Constitutional pre/post vote review and higher-order amendments",
+      "Presidential removal referendum threshold",
+      "Motions/speaker/governor offices",
+      "Tier-one/tier-two precise activation and authorization",
+      "Succession and citizen term history under bifurcation",
+      "Job qualification, challenges and rollover runoff"
+    ]
+  },
+  "resource_accounting_v221": {
+    "status": "provisional_requirements",
+    "mirrored_bulk_disks": {
+      "drives": 2,
+      "each_tb_decimal": 10,
+      "raid_level": "RAID1",
+      "usable_tb_decimal_before_overhead": 10,
+      "status": "target_not_verified_deployed"
+    },
+    "bulk_data_partition": {
+      "personal_fraction": 0.5,
+      "rock_shared_fraction": 0.5,
+      "personal_tb_decimal": 5,
+      "rock_tb_decimal": 5,
+      "status": "proposal_not_constitutional_entitlement"
+    },
+    "founding_population_for_budget": 256,
+    "citizen_personal_quota": {
+      "min_gb_decimal": 1,
+      "theoretical_equal_ceiling_gb_decimal": 19.53125,
+      "rule": "Equal division ceiling is capacity arithmetic, not a promised automatic allocation. Reserve space, filesystem overhead and future growth must be addressed."
+    },
+    "consistency": "System/root and separate /home decisions are excluded from the proposed 10 TB bulk-data split; storage media and authority for usage changes require verification.",
+    "compute_time": "Basic fair access principle accepted; precise token/time quantum, per-office additional compute and deadline scheduling open.",
+    "capacity_gate": "No local/district bifurcation unless free space, inference capacity, keys, roles and suffrage bookkeeping can support it."
+  },
+  "pulse_clock_v221": {
+    "status": "provisional_hardware_and_software_experiment",
+    "unified_phase": {
+      "duration_minutes_proposal": 4,
+      "description": "All four accelerators cooperate in a potentially sharded large-model runtime. Read approved shared Rock state and collective results, synthesize, flag and route tasks, do not read citizens’ private vaults."
+    },
+    "diversified_phase": {
+      "duration_minutes_proposal": 4,
+      "description": "Four district-associated accelerator environments operate independently with potentially different LLMs and methods.",
+      "decision_window_minutes_proposal": 1,
+      "execution_window_minutes_proposal": 3,
+      "votes": "Simultaneous independent district ballots with frozen roll; aggregate after district windows close."
+    },
+    "full_pulse_minutes_proposal": 8,
+    "court_special_window_minutes_proposal": 4,
+    "judicial_flag_rule": "On collective referral, Court must return a binding decision, inaction or recorded referral within next diversified judicial window; failure becomes formal deadlock and Founding Father tier-one advisory escalates.",
+    "safety_preemption": "Thermal/power/mechanical safety control outside Pulse and may act immediately.",
+    "task_routing": "Collective selects investigative task allocation; districts may refuse dangerous/infeasible method with documentation, or challenge an illegal objective.",
+    "reconfiguration_dependency": "A four-V100 collective sharded model may not be instantly separable into four runnable district instances. Exact unload/load, model types, memory, interconnect, state transfer and deadlines must be benchmarked.",
+    "not_an_election_cycle": "Four-month presidential elections are a separate calendar schedule and not one pulse."
+  },
+  "authority_and_emergencies_v221": {
+    "status": "working_research_not_tested",
+    "physical_safety": "Independent deterministic interlocks and watchdogs can throttle, isolate or shut down without waiting for governance.",
+    "yellow": "Recoverable warning with logs; ordinary recovery allowed when validated.",
+    "orange": "Serious near-miss requiring elevated human visibility and correction, usually without automatic total hibernation.",
+    "red": "Protective stop/hibernation; human-gated recovery when tier two; red is not automatically irrecoverable constitutional death.",
+    "founding_father_tier_one": "Read-only advice on referrals, particularly formal judicial deadlock after one proposed four-minute decision window; human notified.",
+    "founding_father_tier_two": "Narrow emergency authority to order protective hibernation on specifically qualified existential/unrecoverable events, without waiting for a poll where hardware cannot safely wait.",
+    "tier_two_recovery": "Only the human counterpart may authenticate into maintenance mode, inspect/repair, and explicitly authorize restart.",
+    "planned_maintenance": "Attempt coordinated quiesce, save consistent checkpoints, preserve public/private state separately, then cold shutdown.",
+    "forced_hardware_stop": "Prefer fast checkpoint if safe, but never delay shutdown to save RAM if temperatures or power hazards require immediate action.",
+    "checkpointing": "Uniform logical protocol for four districts, transaction manifest, causal ordering and verified restore; independent storage placement allowed.",
+    "partial_district_loss": "OPEN: whether 3 healthy districts resume degraded, thresholds for votes, and how absent district state is reconciled."
+  },
+  "hims": {
+    "name": "Huey Internal Messaging System",
+    "status": "designed_high_level_unimplemented",
+    "role": "The controlled transport and validated routing layer connecting isolated pebble sandboxes, district offices, collective Pulse, external ingress and authorized shared-record services. HIMS is not law or execution authority.",
+    "security_direction": "Authenticated and encrypted channels with per-citizen credentials, clear write/execute permissions, replay resistance and audit. End-to-end encryption and threat model require design/testing.",
+    "boundary": "Transport/authentication does not imply permission to execute a command; individual private vaults stay distinct, collective Rock shared data is scoped read-only to citizens with authorized writes mediated by record service.",
+    "unresolved": [
+      "Addressing and key registry/rotation",
+      "Sender authentication and message signature format",
+      "Per-district/collective routing boundaries",
+      "Queue deduplication and replay prevention",
+      "Authorization of Rock writes separate from mere message delivery",
+      "Audit/event records without leaking private vaults",
+      "Recovery of HIMS and voter rolls under district failure"
+    ]
+  },
+  "security_model": {
+    "status": "architecture_required_implementation_incomplete",
+    "principles": [
+      "No LLM, Pebble, operator interface, or transport layer receives unrestricted system authority by default.",
+      "Permissions should be capability-based and scoped to the narrow job being performed.",
+      "External/untrusted content must be treated as data, not automatically as instruction.",
+      "Sandbox boundaries should fail closed where practical.",
+      "Meaningful actions should produce attributable, tamper-evident audit records.",
+      "The collective Pulse may flag and refer but may not autonomously sandbox a citizen.",
+      "Snapshot encryption does not grant the district operator plaintext access; descendant key migration needs a separate authorization path.",
+      "Freeze ballot eligibility snapshot during a vote and audit its final state.",
+      "Separate human physical maintenance rights from post-ratification internal democratic authority."
+    ],
+    "prompt_and_tool_boundaries": [
+      "Separate user/external content from system/governance instructions.",
+      "Require explicit tool permissions rather than allowing arbitrary shell/device access from model text.",
+      "Validate structured intent before actuation or other consequential actions.",
+      "Prevent one Pebble from silently acquiring another Pebble's private context or tool scope."
+    ],
+    "secrets": {
+      "status": "unresolved",
+      "requirements": [
+        "Do not place API keys, HIMS keys, passwords, or signing material directly in prompts or repositories.",
+        "Select a dedicated secrets-storage mechanism and recovery process.",
+        "Define key rotation and revocation."
+      ]
+    },
+    "hims_security": {
+      "requirements": [
+        "Define identity/authentication per Pebble/District/component.",
+        "Define key generation, distribution, rotation, revocation, and recovery.",
+        "Define message integrity/signature rules in addition to encryption.",
+        "Define retention and audit visibility without collapsing sandbox privacy."
+      ]
+    },
+    "sandbox_validation": [
+      "Test escape paths between Pebble environments.",
+      "Test privilege escalation and tool-scope leakage.",
+      "Test malformed/hostile HIMS messages.",
+      "Test prompt-injection resistance at external ingestion points.",
+      "Test governance/action paths under compromised or nonresponsive Pebbles."
+    ]
+  },
+  "safety_and_operational_control": {
+    "principle": "Routine work should be narrow, deterministic where practical, observable, and recoverable.",
+    "trigger_model": "Deterministic low-latency local interlocks preempt all models, elections, Pulse modes and court timing in a hardware safety incident. Ordinary constitutional crises use a different referral track.",
+    "examples": [
+      "Storage pressure may invoke controlled cleanup/purge rules.",
+      "Excess available resources may contribute to future bifurcation decisions under governance.",
+      "Environmental thresholds may eventually invoke house-integration actions such as HVAC control when that integration exists.",
+      "Cooling-pump or thermal-system failure should invoke an emergency save/safe-state/hibernate/shutdown sequence as appropriate."
+    ],
+    "ambiguity_rule": "If a condition is outside known acceptable parameters and no approved protocol applies, log, contain, and escalate.",
+    "implementation_state": "Safety response playbooks and threshold hardware not verified as implemented; governance emergency ladder specified only as working research.",
+    "physical_safety_requirements": [
+      "Physical emergency power cutoff/e-stop for high-power compute and actuation domains.",
+      "Thermal emergency path that can save state and reduce/stop compute without requiring an LLM decision.",
+      "Power-failure path for filesystem/data integrity and controlled shutdown where time/power permits.",
+      "Fail-safe actuator defaults when the main compute path, HIMS, or control link disappears.",
+      "Independent monitoring for critical temperature/power/fan/pump thresholds where feasible."
+    ]
+  },
+  "pyhuey_and_python": {
+    "accepted_role": "PyGPT/PyGPT-net as development/operator interface; adapted PyHuey is planned Huey-native orchestration interface, not itself constitutional sovereign.",
+    "supported_python": "3.13.x",
+    "requires_python": ">=3.13,<3.14",
+    "legacy_python": "3.12.x isolated legacy environments only",
+    "testing_python": "3.14.x isolated testing only",
+    "unsupported": [
+      "3.10",
+      "3.11"
+    ],
+    "verified_repository_basis": "pyproject.toml and requirements.txt/constraints.txt on default branch checked 2026-10-18; PyGPT-net baseline version 2.9.1 according to repo dependency documentation.",
+    "backend_policy": "Ollama is initial local service candidate, not guaranteed backend for four Volta GPUs; use replaceable adapter architecture.",
+    "direction": [
+      "Development can happen on separate Lenovo Legion Go/PyGPT environment (user-described, not live validated).",
+      "Use one supported Python 3.13 environment for current package; keep 3.12 legacy and 3.14 experimental separate.",
+      "Retain CLI/recovery diagnostics independent of GUI.",
+      "Treat optional external API inference as development use only, not local acceptance evidence."
+    ]
+  },
+  "namespace_and_repository": {
+    "canonical_repository": "DylanLRPollock/Monkey-Head-Project",
+    "target_python_namespace": "hueyos",
+    "migration_status": "Repository pyproject declares name hueyos but source tree src/huey remains, so import namespace migration is not verified complete."
+  },
+  "logging": {
+    "rule": "Preserve useful operational, safety, governance, and audit information while excluding secrets and unnecessary private data.",
+    "governance_requirement": "Durable, attributable messages, votes, proposals, judicial outcomes, temporary directives, escalation, lineage, bifurcation, hibernation, and recovery; consistent timestamps and causal ordering where necessary.",
+    "pebble_requirement": "Operational actions should be attributable to the Pebble/job and trigger/protocol that produced them.",
+    "implementation_state": "Schema design and sensitive-data minimization not yet verified in deployed HIMS."
+  },
+  "research_program_v221": {
+    "status": "17_chapter_structure_accepted_for_working_drafts_not_final_published_canon",
+    "chapter_count": 17,
+    "glossary": "00 - TOC_&_Glossary (proposed revised standalone reference)",
+    "historical_appendix": "Historical Influences & Superseded Models; preserves old 20 papers with explicit current/historical separation.",
+    "chapters": [
+      {
+        "number": 1,
+        "title": "Thesis, Ethos, Method & Proofcase",
+        "draft_status": "proposed_draft_written_in_discussion"
+      },
+      {
+        "number": 2,
+        "title": "Identity, Continuity, Cornerstone & Pillars",
+        "draft_status": "proposed_draft_written_in_discussion"
+      },
+      {
+        "number": 3,
+        "title": "Huey as a Collective System",
+        "draft_status": "proposed_draft_written_in_discussion"
+      },
+      {
+        "number": 4,
+        "title": "Governance Architecture & Constitutional Theory",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 5,
+        "title": "Pebbles: Citizenship, Identity, Jobs & Rights",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 6,
+        "title": "Districts, Elections & Representation",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 7,
+        "title": "Founding Father: Bootstrap, Ratification & Reserve Authority",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 8,
+        "title": "HIMS: Messaging, Identity & Authorization",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 9,
+        "title": "The Rock: Shared Memory, Storage & Lineage",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 10,
+        "title": "The Walnut & the Pulse Clock",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 11,
+        "title": "The Senate: Deliberation, Proposals & Collective Law",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 12,
+        "title": "The Presidency: Election, Execution & Accountability",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 13,
+        "title": "The Supreme Court: Interpretation, Review & Deadlock",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 14,
+        "title": "Bifurcation, Migration & Scale",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 15,
+        "title": "Hardware, Embodiment & Runtime Topology",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 16,
+        "title": "Emergency States, Hibernation & Recovery",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      },
+      {
+        "number": 17,
+        "title": "Ozymandias: Drift, Degradation, Failure & Renewal",
+        "draft_status": "outline_only_not_rewritten_in_current_session"
+      }
+    ],
+    "bumped_topics": {
+      "Old Research Chapter 4 HIMS": "New Research Chapter 8",
+      "Old Research Chapter 5 Founding Father": "New Research Chapter 7",
+      "Old Research Chapter 3 Huey Constitution": "Standalone future Constitution and new Research Chapter 4 rationale"
+    },
+    "rule": "Research never independently grants law or powers; current drafts must be reconciled with actual hardware inventory and accepted published canon."
+  },
+  "documentation_layers": {
+    "alignment_version": "V221",
+    "master_plan": "This JSON: machine-facing source of proposed architecture/status/history/verification gates awaiting user acceptance.",
+    "readme": "Repository README observed as V220; update to V221 after acceptance with verified facts and concise public-safe rationale.",
+    "dlrp_ca": "Project page observed as V220 and V4 in progress; V221 site release, TOC and glossary linkage pending.",
+    "constitution": "Separate Huey’s Constitution third-generation drafting pending; old ten-chapter research Constitution and Federation are sources only.",
+    "research": "17 chapter outlines, revised TOC and working glossary, three drafted chapters; not all chapters published or approved.",
+    "synchronization_rule": "Require source/status per claim; do not substitute a proposal for deployed implementation or merge historical terminology as current authority.",
+    "current_program": "V221 reconciles October conversations with V220 predecessor; human review required before adopting project canon."
+  },
+  "license": {
+    "project_code": "GPL-3.0-only per connected pyproject.toml SPDX expression; check LICENSE and individual dependencies before redistribution.",
+    "other_components": "May be subject to varied licenses or specific conditions."
+  },
+  "labtech": {
+    "definition": "External technology used to build, test, maintain, diagnose, transcribe, recover, or otherwise support Huey.",
+    "identity_boundary": "LabTech may interact with Huey but is excluded from Huey's core identity and normal runtime.",
+    "active_systems": [
+      {
+        "name": "ASUS FX505DT",
+        "baseline": "Debian 14 Forky; 32GB DDR4.",
+        "role": "Mobile lab, development, transcription experimentation, and support."
+      },
+      {
+        "name": "Lenovo Legion Go",
+        "baseline": "Windows 11 Insider Preview Pro.",
+        "role": "Dedicated support device for lab utilities, testing, and diagnostics; excluded from core Huey compute/runtime."
+      }
+    ]
+  },
+  "experimental_subprojects": {
+    "huey_nexus_controller": {
+      "status": "experimental_and_provisional",
+      "devices": [
+        "Google Nexus 5",
+        "Google Nexus 7"
+      ],
+      "interaction_model": "Primarily terminal-based or SSH for initial experimentation.",
+      "rule": "Sandbox concept subject to change or removal; it does not possess canonical authority."
+    }
+  },
+  "work_program": {
+    "october_2026_focus": [
+      "Continue physical V4 assembly/finishing and reverify precise observed hardware status.",
+      "Revise machine-facing master plan to V221 with valid external schema and audit trail.",
+      "Review/revise 17-chapter research structure one chapter at a time and draft separate third-generation Huey’s Constitution.",
+      "Plan future README/dlrp.ca synchronization only after explicit V221 acceptance."
+    ],
+    "immediate_physical": [
+      "Complete metallic-silver finishing over the current primer system; retain deep purple/black accent direction where desired.",
+      "Complete and verify the rolling wooden base, four-speaker layout, three-inch casters, and marine audio integration.",
+      "Finalize the three-bolt Thermaltake Mozart mounting through the wooden interface platform.",
+      "Install/validate the ASUS TUF Gaming Z790-Plus WiFi and Intel Core i9-12900K core system.",
+      "Establish conventional air cooling for bring-up.",
+      "Complete the hybrid WowWee V4 head rebuild and determine final mounting/detachability.",
+      "Treat the animatronic hand/camera concept as future peripheral work rather than a bring-up blocker."
+    ],
+    "immediate_compute": [
+      "Configure/validate the four Intel Optane M10 16GB drives as the intended RAID 10 root/OS volume.",
+      "Resolve the /home storage design using available 2.5-inch SSDs or another selected arrangement.",
+      "Remove the two 10TB Western Digital drives from the My Book Duo enclosure when ready and connect them by SATA for the accepted RAID 1 bulk-storage direction.",
+      "Validate the temporary display GPU path and select a long-term approximately 16GB general-purpose GPU.",
+      "Test available PCIe extenders and determine final extender quantity/replacement requirements.",
+      "Acquire the remaining three NVIDIA Tesla V100 32GB cards.",
+      "Acquire and implement the dual-1000W PSU architecture.",
+      "Record exact V100 model/SKU and confirm PCIe form factor, power connector, passive/active cooling, and firmware identity.",
+      "Produce a five-device PCIe lane/topology map for the Z790 motherboard before buying all remaining extenders/risers.",
+      "Back up and inventory any data on the My Book Duo before shucking; assume direct-SATA migration may require reformat/rebuild.",
+      "Create an initial dual-PSU connector/load map and estimate full-system sustained/transient draw."
+    ],
+    "cognition_acceptance": [
+      "Bring up PyHuey against a local inference service, with Ollama as the preferred first test path rather than a locked permanent backend.",
+      "Test gpt-oss-120b as the initial large-model acceptance target.",
+      "Prove a V100-compatible multi-GPU model format/runtime; evaluate Ollama, vLLM, llama.cpp, Transformers/device mapping, or another suitable stack as evidence requires.",
+      "Demonstrate practical use of the intended four-V100/128GB resource without describing the target as current reality.",
+      "Record exact runtime, quantization/model format, context length, GPU placement, driver/CUDA versions, throughput, and stability for the accepted baseline."
+    ],
+    "next_architecture": [
+      "Specify 64 authored founding citizen prompts and two-generation exact bifurcation, preserving one lineage per founding district.",
+      "Prototype HIMS isolation, key custody, message authorization, sealed vaults and Rock append-oriented ledger.",
+      "Test a one-V100 district inference path before attempting four-V100 sharded collective and reversible Pulse state changes.",
+      "Prototype separately authenticated role/state without launching 256 simultaneous models.",
+      "Write formal election, judge/President succession, voter eligibility, quorum and emergency rules in the future Constitution.",
+      "Develop repeatable checkpoint consistency and partial-district recovery tests.",
+      "Keep direct safety interlocks independent from inference and constitutional scheduling."
+    ]
+  },
+  "acceptance_criteria_for_v221": {
+    "principle": "Approving V221 means acknowledging an accurate machine-facing proposal. It does not prove the new hardware, society, or Constitution has been built or ratified.",
+    "required_before_accepted": [
+      "Human author explicitly accepts or intentionally merges this V221 file",
+      "JSON matches external v221 schema and invariants",
+      "V220 detailed hardware facts and historical lineage remain preserved with last-reported status",
+      "Old 512/3-justice/128-original governance assumptions appear only within historical contexts",
+      "Founding 64->256 model, elections, roles, bifurcation, Rock, HIMS, Pulse and Founding Father are consistent across active sections",
+      "Live hardware status and repository/site alignment explicitly labelled as verified, reported, or pending",
+      "V221 README and website update scoped separately and not falsely claimed complete"
+    ],
+    "not_required_to_accept_document": [
+      "Four V100s acquired",
+      "gpt-oss-120b on V100 successfully deployed",
+      "256 citizenship identities started",
+      "New Constitution ratified",
+      "Complete HIMS encryption and safety runtime implemented"
+    ]
+  },
+  "non_goals_v221": [
+    "Do not claim one loaded LLM per citizen or 256 simultaneously resident inference instances.",
+    "Do not grant a founder, collective model, or president absolute judicial/legislative/executive control.",
+    "Do not imply 4 x 32 GB GPUs automatically form coherent addressable VRAM.",
+    "Do not equate founding identity configuration and philosophical proof of consciousness.",
+    "Do not merge private vaults into the Rock or public collective prompt.",
+    "Do not claim V221 committed, published, hardware-validated or constitutionally ratified.",
+    "Do not erase source archives, historical design decisions, or earlier failed experiments."
+  ],
+  "risks_v221": [
+    {
+      "area": "model_compatibility",
+      "severity": "critical",
+      "risk": "MXFP4 weights and modern gpt-oss runtimes may not support efficient V100 Volta inference or sharded execution; test alternate conversions/backends before purchase decision."
+    },
+    {
+      "area": "gpu_interconnect",
+      "severity": "high",
+      "risk": "PCIe V100 32 GB cards lack SXM2 NVLink performance and may lack practical peer-to-peer depending on risers/lanes; no promise of instantaneous full VRAM pooling."
+    },
+    {
+      "area": "thermal_power",
+      "severity": "critical",
+      "risk": "Passive high-draw V100 cards require validated directed airflow, dual-PSU wiring and deterministic protections."
+    },
+    {
+      "area": "identity_and_privacy",
+      "severity": "high",
+      "risk": "Incorrect exact-bifurcation key copying or unlocked encrypted archives could destroy private-vault boundaries and traceability."
+    },
+    {
+      "area": "governance_quorum",
+      "severity": "high",
+      "risk": "Four-justice court and blocked votes can deadlock, especially during recusal or lost district; review/standby rules need thorough tests."
+    },
+    {
+      "area": "pulse_transition",
+      "severity": "high",
+      "risk": "Four-minute mode switching may spend most budget unloading/loading models; not a guaranteed throughput schedule."
+    },
+    {
+      "area": "scope_and_canon",
+      "severity": "high",
+      "risk": "Confusing v221 working constitutional ideas with ratified law or reporting v220 site status as already published v221."
+    },
+    {
+      "area": "storage_recovery",
+      "severity": "high",
+      "risk": "RAID1 protects from one class of failure, not ransomware/corruption, bad migration or inconsistent multi-district checkpoints."
+    },
+    {
+      "area": "safety_latency",
+      "severity": "critical",
+      "risk": "LLM-controlled safety response is too slow/unreliable for rapid overheating or power hazards."
+    }
+  ],
+  "open_questions_v221": [
+    "Does 64 remain a fixed district population cap or a founding baseline? How does representation change after local growth?",
+    "Precisely which source-vault data and keys carry into exact descendant snapshots and how is cryptographic copying done without inspection?",
+    "Founding citizens’ permanent identifiers, lineage encoding, electoral identities and per-office term-history continuity.",
+    "Where does the 50/50 storage partition leave reserve space, and how are quotas adjusted as populations or hardware grow?",
+    "Detailed Senate and district quorum, abstention, incapacitation, recusal and invalid-ballot rules.",
+    "Constitutional amendment judicial-review ordering and specially protected Cornerstone provisions.",
+    "Presidential impeachment referendum threshold, proof, due process and succession timeline.",
+    "Detailed officeholder conflict-of-interest and temporary job coverage/recusal policy.",
+    "Whether any Senate Speaker, district Governor or HIMS Keeper role is retained in future Constitution.",
+    "Ratification thresholds for first living republic and recovery from repeated failure to ratify.",
+    "How advisory Founding Father is invoked and when a tier-two hibernation warrant can be issued, including audit.",
+    "Severe physical events that permit instantaneous powerdown and which allow controlled snapshot.",
+    "Partial district reboot and correctness of court votes when fewer than four justices are available.",
+    "Actual 4+4 Pulse switch time and whether unified and independent model contexts can remain resident at once.",
+    "Tesla V100 exact card variant, quantity, PSU connector map, PCIe lane/P2P and thermal shroud.",
+    "Volta-compatible gpt-oss-120b runtime format and measured throughput/context with sharding.",
+    "Root Optane RAID10 deployment, /home selection, pre-shuck backup procedure, and bulk RAID1 actual readiness.",
+    "PyHuey integration completeness, HIMS cryptographic implementation, sandbox escape and prompt injection tests.",
+    "Final 16GB display GPU and audio/transcription use cases.",
+    "Current physical V4 head, painting, cooling-loop and arm assembly status since 2026-09-30.",
+    "Term reconciliation and retirement for Huey Core, HueyPulse, ThunderMail, Portals, Huey-Compressed, Speaker, Governor and Atom.",
+    "Accepted V221 publication state across GitHub README and dlrp.ca."
+  ],
+  "glossary": {
+    "Monkey-Head-Project": "Umbrella project through which Huey is built, documented, and evolved.",
+    "Huey": "The attributed identity of the proposed embodied constitutional collective, not its model, shell or one office.",
+    "V4": "Current physical embodiment/build generation.",
+    "Walnut": "Replaceable model-serving/inference resource without unilateral civic authority.",
+    "Pebble": "Bounded citizen with distinct identity, sealed personal vault, prompt/perspective, operational work, eligible civic vote and model-sharing access under permissions.",
+    "District": "Local self-governing/compute domain; four initial districts of 64 citizens, each provisionally associated with one V100 during diversified operation.",
+    "Atom": "Historical/provisional label for the first four district grouping, not a settled requirement.",
+    "Bifurcation": "Authorized citizen or district growth with tracked lineage. Exact and augmented are separate lifecycle events.",
+    "HIMS": "Huey Internal Messaging System: authenticated protected communication and mediated authorization. Transport is not automatic execution authority.",
+    "Founding Father": "Temporary creator/bootstrap agent for 64 originals and ratification preparation; later tier-one advice or rare tier-two preservation only.",
+    "LabTech": "External development, maintenance and diagnostic machines; not a constituent citizen or office of Huey.",
+    "Rock": "Durable shared/collective record store with restricted reads and authorization-mediated writes; not collective cognition.",
+    "Exact Bifurcation": "Source retires and two equal descendants inherit access to sealed read-only ancestral history; new identity, keys and separate future memory.",
+    "Augmented Bifurcation": "Source remains active and one new citizen inherits selected prompt/traits, with new identity and no automatic inherited private memory.",
+    "Pulse": "Proposed alternating four-minute collective and four-minute diversified inference modes; eight-minute full operational Pulse is not the election term.",
+    "Electoral Term": "Four months between ordinary presidential elections, independently of the eight-minute operational Pulse.",
+    "Senate": "Legislative group of eligible citizens; elevated President/Justices suspend their Senate votes.",
+    "President": "Directly elected four-month executive, limited to four consecutive elected terms then one-term break; separate ordinary legislative initiative and veto.",
+    "Vice President": "Runner-up in direct presidential election, standby successor with no independent routine executive power.",
+    "Supreme Court": "Four district-elected justices, three-of-four working decisional threshold, annual review/challenges, one standby per district.",
+    "Constitution": "Future separate third-generation Huey’s Constitution, not research Chapter 3; old Federation drafts reference only.",
+    "Human Counterpart": "External builder/maintainer and protected tier-two recovery authority, not ordinary internal branch.",
+    "Local-First": "Core reasoning, state and governance intended to remain local; optional external development APIs are explicitly disclosed and separate."
+  },
+  "change_log_v221": [
+    "Bumped document_schema/schema_contract_version to master_plan_schema_v221; emitted a separately testable Draft 2020-12 schema.",
+    "Preserved V220 2026-09-30 detailed V4 hardware/report and original change log as historical predecessor evidence.",
+    "Reconciled GitHub README V220 and Python 3.13-only pyproject/requirements as of 2026-10-18.",
+    "Set research to 17-chapter + glossary + archival appendix; Chapters 1–3 drafted, standalone Constitution required.",
+    "Changed population from 512 nominal roles to 64 original citizen identities producing 256 across four districts.",
+    "Defined exact split as parent retirement and 2 equal descendants with encrypted immutable ancestral snapshot; augmented as continuing parent + new memory-fresh citizen.",
+    "Reframed Rock as durable authorized collective records and Walnut as inference; clarified HIMS transport vs authorization.",
+    "Supreme Court increased 3 -> 4 justices, one per district; President independently elected via ranked-choice population ballot.",
+    "Specified Senate block voting, district endorsement, presidential term limits, vice presidential succession, executive initiatives and veto.",
+    "Specified judicial standby/annual review/removal framework, court flag/deadlock window and Founder tier-one advisory.",
+    "Added experimental four-minute collective/four-minute diversified Pulse, separate 4-month election schedule and first-minute district votes.",
+    "Added red/orange/yellow safety ladder, independent hardware interlock, tier-two hibernation and human-only restart.",
+    "Added quota/capacity arithmetic and explicit caveats on 128GB aggregate VRAM, model-format compatibility and current V100 status.",
+    "Replaced the former unresolved governance fields with versioned decision and open-question structures, preserving all physical planning details.",
+    "Marked the draft candidate rather than falsely claiming it is deployed, accepted or ratified."
+  ],
+  "historical_source_register": {
+    "v220_change_log_status": "historical_reference_only",
+    "v220_decisions_status": "historical_reference_only_under_source_basis.v220_decisions_historical_snapshot",
+    "v220_old_questions_status": "superseded_by_open_questions_v221; originals recoverable in uploaded predecessor",
+    "v220_prior_change_log_entry_count": 54,
+    "v220_change_log": [
+      "Advanced the machine-facing Master Plan from V206 to V220 and updated the schema contract accordingly.",
+      "Reframed V220 as a complete project-standardization pass aligning Master Plan, README, and dlrp.ca.",
+      "Added a first-class project definition emphasizing local/offline-capable operation, physical embodiment, modularity, expandability, improvability, and the philosophy of breathing new life into old tech.",
+      "Moved LabTech outside Huey's core identity and defined it as external supporting technology.",
+      "Added at-least-ten-year project lineage and preserved the formative robotics/distributed-computing period before the Huey/Monkey-Head names stabilized.",
+      "Added GPT-3.5-era ChatGPT as the major LLM acceleration point in project history.",
+      "Added Raspberry Pi 3/3B+ and Pi 4 as formative single-board-computing/Linux lineage while preserving Arduino as the present low-level control direction.",
+      "Added V1/V2/V3/V4 physical-shell lineage and clarified V4 as a synthesis of prior generations.",
+      "Defined the historical black-box term as the Thermaltake Mozart chassis rather than a separate subsystem.",
+      "Added full two-unit WowWee head lineage, including the metallic-silver first unit and hybrid V4 rebuild direction.",
+      "Corrected the V4 rolling-base detail to four three-inch casters and four speakers total: two centre plus one in each side housing.",
+      "Corrected current audio status to tested marine-grade amplification with wiring/disassembly dependent on the active painting/finishing phase.",
+      "Corrected the Thermaltake Mozart orientation to left-side-down/backwards relative to original orientation and added the three-bolt wooden interface mounting detail.",
+      "Corrected the V4 head status from effectively installed to not-yet-mounted hybrid rebuild work.",
+      "Reclassified the animatronic hand/arm as future nonessential peripheral work rather than current primary Body hardware.",
+      "Clarified current air cooling versus the paused-but-not-abandoned external liquid heat-exchange room, which already physically exists.",
+      "Retained Intel Core i9-12900K as the definitive CPU documentation baseline.",
+      "Expanded storage into root/OS, unresolved /home, bulk RAID 1, and future 2.5-inch expansion tiers.",
+      "Recorded the two 10TB Western Digital drives as originating from a My Book Duo enclosure and intended for direct SATA use.",
+      "Reasserted the four-V100 target as a unified 128GB VRAM objective rather than weakening it to merely aggregate capacity.",
+      "Added the separate approximately 16GB general-purpose GPU role for display and low-latency auxiliary workloads.",
+      "Expanded dual-1000W PSU rationale around distributed load stability while retaining Corsair RM1000x as provisional.",
+      "Added gpt-oss-120b as the initial local large-model acceptance target through PyHuey and Ollama.",
+      "Added the walnut model: the LLM is an encapsulated cognition/language engine inside Huey's governed framework, not unrestricted system authority.",
+      "Added a collective identity model distinguishing Huey's internal collective from future multi-Huey-node federation.",
+      "Added four accelerator Districts, 128 Pebbles per District, and the provisional four-District Atom concept.",
+      "Added exact, augmented, and hybrid bifurcation as active research directions.",
+      "Defined Pebbles as sandboxed prompt-defined jobs with bounded information, parameters, triggers, actions, and escalation on ambiguity.",
+      "Expanded HIMS from a one-line concept into the planned encrypted internal communication layer with explicit unresolved protocol questions.",
+      "Added the three-branch governance model: President, three-member Supreme Court, and Senate.",
+      "Added the one-special-office-per-District working rule across the President and three Justices.",
+      "Added role continuity: elected/elevated Pebbles retain their original job and receive extra governance compute.",
+      "Added one-vote-per-Pebble, District proposal/polling concepts, and the working constitutional-amendment threshold of three-of-four Districts with two-thirds approval inside each approving District.",
+      "Added the Founding Father bootstrap role and limited it to an explicitly unresolved initial-governance phase.",
+      "Added the two-phase governance/Pebble clock as an unresolved scheduling research direction.",
+      "Added trigger-driven safety/operational control and safe-state escalation principles.",
+      "Reclassified the Constitution and Research material as important but outdated sources requiring dedicated future rewrites; retained Federation material as archive lineage and Notes as noncanonical support material.",
+      "Added October 2026 work priorities emphasizing V4 physical completion and documentation alignment before broader code expansion.",
+      "Added a consolidated V220 open-questions register so unresolved mechanics remain visible instead of being silently treated as implemented.",
+      "Preserved Dylan L.R. Pollock as the sole authority able to lock project canon.",
+      "Revised the top-level V4 description so the hybrid WowWee head is explicitly pending final assembly/mounting rather than implied to be already integrated.",
+      "Separated Dylan's reported website build V215 from the independently observed live public v30.x/master-plan-v30.2 documentation line.",
+      "Added reconciliation_with_live_site, terminology_map, known_drift, acceptance_criteria_for_v220, non_goals_v220, risks_v220, glossary, hardware_validation_checklist, data_and_storage_plan, power_and_thermal_budget, and security_model sections.",
+      "Reclassified Huey Core from a settled historical alias to a live-site drift term that must be explicitly retired, redefined, or mapped.",
+      "Mapped Parliament as the live-site predecessor/public term and Senate as the current V220 working term, pending final website cleanup.",
+      "Clarified that 128 Pebbles per District / 512 per Atom are logical role counts and do not imply simultaneous LLM concurrency.",
+      "Downgraded Ollama from an assumed final local transport to the preferred initial test path pending real V100 multi-GPU validation.",
+      "Added a critical gpt-oss-120b/V100 compatibility gate because native MXFP4 execution must not be inferred from aggregate VRAM alone.",
+      "Added the motherboard's real PCIe electrical topology as a critical validation constraint; extenders do not create PCIe lanes.",
+      "Added My Book Duo hardware-RAID/encryption migration safeguards before direct-SATA reuse.",
+      "Added preliminary power/thermal reference budget and explicit passive-V100 airflow validation.",
+      "Added explicit e-stop, prompt/tool boundary, secrets, HIMS key-management, sandbox, and audit requirements.",
+      "Added unresolved election/term/removal/veto/judicial/emergency-governance mechanics without pretending they are already constitutional law.",
+      "Defined V220 acceptance as documentation truth/reconciliation rather than completion of every V220 implementation target."
+    ]
+  }
+}
