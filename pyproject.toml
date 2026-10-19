@@ -160,7 +160,7 @@ ml = [
   "standard-aifc==3.13.0; python_version >= '3.13' and python_version < '3.14'",
   "tiktoken==0.11.0",
   "traitlets==5.16.1",
-  "transformers==4.56.2",
+  "transformers==5.10.1",
 ]
 
 data = [
@@ -210,7 +210,7 @@ dev = [
   "ruff==0.17.0",
   "types-PyYAML==6.0.12.20260724",
   "types-requests==2.33.0.20260906",
-  "uv==0.12.15",
+  "uv==0.12.18",
 ]
 
 audio = [
