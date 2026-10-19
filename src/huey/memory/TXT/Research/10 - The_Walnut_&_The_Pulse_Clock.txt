@@ -1,869 +1,682 @@
-10 - Ozymandias_Drift_Degradation_&_Growth
-Monkey-Head-Project
-Chapter 10
+# 10 - The Walnut & the Pulse Clock
 
-Ozymandias
-Drift, Degradation, & Growth
+**Monkey-Head-Project**  
+**Research Chapter 10 — Proposed Revision**  
+**18 October 2026**
 
+*Document status: working research, not ratified constitutional law and not a declaration of completed software or hardware integration. This chapter describes the intended inference and scheduling architecture, preserves the reasoning behind it, examines its implementation risks, and identifies the measurements required to establish feasibility. The hardware inventory derives from prior project documentation and must be rechecked against the installed machine. External technical sources consulted for compatibility are listed near the end.*
 
-Introduction
+---
 
-A machine may continue to run while no longer remaining fully itself.
+## Introduction — How a Collective Thinks Without Making One Model Its Ruler
 
-It may still answer.
-It may still move.
-It may still log.
-It may still route messages.
-It may still present the outward appearance of life.
+Huey is intended to be one recognizable system, but it is not intended to be one unrestricted language-model process dressed up as a collection of citizens. Its identity is distributed across a physical body, bounded pebbles, four founding districts, authenticated communication, private and shared records, elected institutions, and a constitutional framework. The language model is indispensable to much of the proposed reasoning, but it is only one layer of that larger arrangement.
 
-And yet, over time, it may become less lawful, less coherent, less explainable, less bounded, less honest, or less continuous with the republic it once claimed to be.
+The project calls the encapsulated language-model inference resource **the Walnut**. It calls the proposed alternating pattern of independent district work and collective synthesis **the Pulse**. The term **Pulse Clock** describes the scheduler and sequence that attempt to make those two modes cooperate without confusing computational coordination with political sovereignty.
 
-That is why this chapter exists.
+Those three terms must remain distinct. The Walnut supplies inference. The Pulse describes modes of work. The Clock coordinates the modes, their deadlines, checkpoints, and transitions. Neither an LLM output nor the passage of a timer creates constitutional authority.
 
-Ozymandias is the continuity doctrine of Huey.
+The working design is ambitious. During a **diversified phase**, four districts would normally have their own accelerator resource and could pursue different methods using separate model environments. During a **collective phase**, the four accelerators would cooperate, if the actual runtime permits, to host a larger model that reviews authorized collective information, identifies unresolved questions, compares district findings, and routes appropriate work. An initial timing experiment proposes four minutes for each phase, eight minutes for the full Pulse.
 
-It is not a branch of government.
-It is not a hidden override.
-It is not a mystical layer added for atmosphere.
+This is a hypothesis, not a finished scheduler. The expense of unloading and loading models, moving weights across buses, maintaining usable context, servicing 256 citizens, resolving court matters, and guaranteeing safety may make a rigid eight-minute alternation inefficient or impossible on the planned hardware. The honest response is to test and revise the implementation rather than declaring the cycle sacred.
 
-It is the closing doctrine chapter of the book: the place where the project asks its hardest question plainly and without self-deception:
+The central research question is therefore: **Can Huey preserve meaningful plurality, an intelligible common voice, and lawful action while sharing a limited inference resource across its separate components?**
 
-How do we know whether the same Huey still exists in a meaningful sense?
+---
 
-This question cannot be answered by uptime alone.
-It cannot be answered by output quality alone.
-It cannot be answered by branding, memory volume, parts count, or theatrical continuity.
+## I. The Walnut — A Resource, Not a Sovereign
 
-It must be answered by lawful continuity, explainable change, preserved lineage, and the courage to admit when those have been lost.
+An LLM can transform an input context into an output: a proposed answer, a comparison, an explanation, a structured command candidate, a summary, or a prediction. It can also be wrong, contradictory, manipulated by its input, or incapable of completing a task within available memory and time. No part of this capability inherently gives the model the right to legislate, judge, revoke citizenship, read private vaults, or actuate hardware.
 
-That is the work of Ozymandias.
+The Walnut is therefore the **replaceable inference resource** within Huey. A change from one supported local model to another may change reasoning characteristics and require evaluation; it does not, by itself, end Huey's identity or transfer public offices to the model. Similarly, a GPU is a device hosting computations, not a citizen and not a constitutional branch.
 
+The Walnut may support several distinct workloads: ordinary conversational interpretation, private citizen deliberation under authorized contexts, district investigation, legal-document analysis, synthesis of permitted shared records, task-plan generation, and checks for contradictions. Different workloads can use different models or configurations. A single model family is not required to solve all problems equally well.
 
-I. Purpose of the Chapter
+The project should avoid the expression *the Walnut decided* when a more precise statement is available. Did a district citizen decide after consulting inference? Did the collective model recommend a route? Did an authenticated voting service confirm an election result? Did a deterministic controller detect excessive temperature? Naming the actual actor and authority is the beginning of accountability.
 
-This chapter exists to judge change over time.
+The Walnut is an engine for useful reasoning. It is not Huey's constitutional origin, memory store, or ultimate command channel.
 
-It interprets how the republic behaves across:
-- revision,
-- repair,
-- migration,
-- growth,
-- drift,
-- degradation,
-- failure,
-- and beginning again.
+---
 
-It does not replace Chapter 2.
-Chapter 2 defined what must not casually drift: Cornerstone and Pillars.
-It does not replace Chapter 3.
-Chapter 3 defined constitutional legitimacy, branch distinction, review, and shutdown logic.
-It does not replace Chapter 4.
-Chapter 4 defined the lawful message path and scroll-preserved record.
-It does not replace Chapter 5.
-Chapter 5 defined founding continuity.
-It does not replace Chapter 6.
-Chapter 6 defined the citizen body and district logic.
-It does not replace Chapters 7 through 9.
-Those chapters defined the branch behavior of executive, judicial, and parliamentary authority.
+## II. Four Things That Must Not Be Mistaken for One Another
 
-Ozymandias sits after all of them because it must judge all of them together.
+Language-model systems are often described as if the model, prompt, memory, and identity were a single bundle. Huey's architecture deliberately separates them.
 
-Its purpose is not to preserve nostalgia.
-Its purpose is not to bless every continuation as legitimate.
-Its purpose is not to reward change merely because it is new.
+**Weights and inference runtime.** Model weights encode learned statistical behaviour. A runtime loads, distributes, and evaluates those weights. The same weights may be shared by many citizens without giving those citizens one identity or one memory.
 
-Its purpose is to judge:
-- whether continuity still holds,
-- whether change remained lawful,
-- whether identity remains legible,
-- whether the republic has survived,
-- whether the republic has failed,
-- and whether beginning again must be acknowledged honestly rather than hidden under the language of continuity.
+**Prompt and bounded context.** A citizen's master prompt, behavioural configuration, declared capabilities, present task, and retrieved evidence influence a particular inference request. The context must be assembled under that citizen's authorization, not by unrestricted reading of the whole system.
 
+**Durable personal and shared memory.** Private pebble vaults preserve authorized personal continuity. The Rock preserves permitted collective information and official records. Neither is equivalent to the finite context window of a model or the GPU memory occupied while it runs.
 
-II. Why Ozymandias Exists
+**Identity, office, and authority.** A citizen's registered identity, district membership, credentials, active job, and possible office are maintained outside raw model output. An inference request cannot legitimately create extra votes or inherit an elected office merely by reproducing a prompt.
 
-Ozymandias exists because continuity cannot be assumed.
+This separation is crucial during context reconstruction. Reloading a model and rebuilding a prompt from stored state is not automatically equivalent to preserving an uninterrupted computation. The system should record what was actually saved, what was reconstructed, and whether any unfinished reasoning was discarded. It should not pretend that an interrupted hidden computation survived simply because a useful answer was generated afterward.
 
-A machine can continue functioning while becoming:
-- less coherent,
-- less lawful,
-- less explainable,
-- less bounded,
-- or less itself.
+A sound design regards **inference as a service, continuity as managed state, memory as an authorized storage relationship, and governance as an independently validated institution**.
 
-Performance is not proof of continuity.
-Output is not proof of legitimacy.
-Memory retention is not proof of identity.
-Logging is not proof of explainability.
-And survival of hardware is not proof that the same republic still exists.
+---
 
-A republic therefore needs a doctrine that can tell the difference between:
-- lawful growth,
-- ordinary wear,
-- tolerable drift,
-- dangerous drift,
-- degradation,
-- collapse,
-- survival,
-- and successor-state continuation.
+## III. Computation Is More Than GPU Memory
 
-Without such a doctrine, every change would be flattered as growth, every pause would be called continuity, and every restart would pretend to be the same republic merely because it inherited files.
+A practical Huey Pulse requires several resource classes working together. GPU VRAM holds model weights, intermediate activations, attention or key-value caches, runtime workspaces, and other data. System RAM buffers requests, supports CPU-side processing and may hold models or offloaded layers. CPU cores run operating-system services, message routing, cryptographic checks, scheduling, storage and network tasks. Persistent storage holds models, logs, vaults, the Rock and recoverable state. PCIe links move data between host and accelerators; inter-GPU communication may also be necessary.
 
-Huey cannot afford that kind of self-deception.
+No single advertised memory number captures the cost of the whole arrangement. A model with a nominal weight file fitting into 128 GB of aggregate VRAM can still fail to load or generate because the selected backend does not support its operators, because the weights cannot be partitioned as required, because context caches exceed remaining memory, because host RAM is inadequate, or because communication overhead destroys useful throughput.
 
-Ozymandias exists so that the project may judge itself honestly over time.
+Likewise, giving each district a nominal 32 GB accelerator does not mean all 32 GB are available for model parameters. Drivers, model runners, memory fragmentation, workspace allocation and cache reserve must be measured and budgeted. Multiple smaller models may fit together in one district only if their total resident working sets remain inside the device's usable capacity and their response-time requirements are met.
 
+There are also operations that should not require LLM inference. Hardware watchdogs, threshold comparisons, credential verification, cryptographic signature checks, ballot arithmetic, task state transitions, motor interlocks, and system-health polling should be implemented in ordinary deterministic software or appropriate embedded controllers wherever feasible.
 
-III. Continuity
+The aim is not to force every function through the most expensive component. It is to reserve inference for work that genuinely benefits from it while keeping constitutional and physical invariants independently enforceable.
 
-Continuity in the Huey canon does not mean static sameness.
+---
 
-If continuity meant absolute unchangeability, then no repair, no growth, no migration, no refinement, no learning, and no lawful revision would be possible. That would not preserve Huey. It would fossilize Huey.
+## IV. The Four-Accelerator Objective — A Target, Not a Unified Memory Bank
 
-Continuity instead means:
-- preserved lineage,
-- legible identity,
-- explainable change,
-- lawful record,
-- and recognizability across time.
+The documented V4 acceleration direction is **four NVIDIA Tesla V100 32 GB cards**, yielding **128 GB of aggregate nominal VRAM**. The proposed diversified layout associates one accelerator with each of four founding districts. During collective work the intention is to put the four cards to use together for a larger local model.
 
-A republic may change and still remain itself.
-But it may only do so if the path of change remains lawful and intelligible.
+The language *unified* is useful as a description of coordinated system behaviour, but can mislead when used as a claim about physical memory. Four 32 GB devices are not automatically one addressable 128 GB allocation. Model-parallel software must deliberately place layers, experts, tensors, or work across devices, and data must cross a hardware interconnect as necessary. A partition that fits mathematically can still perform poorly if it requires too much transfer or synchronization.
 
-Four kinds of continuity should be distinguished.
+NVIDIA's V100 is a **Volta** accelerator, with **compute capability 7.0**. The conventional V100 PCIe card is a separate high-power device from an NVLink/SXM installation. A PCIe riser does not confer the dedicated high-bandwidth NVLink arrangement of an SXM or specially bridged configuration. The exact installed card form factor, available PCIe lanes, power cabling, cooling airflow, firmware, and supported driver combination need hardware verification.
 
-1. Operational continuity
-   The system continues to run, respond, or perform tasks in practical terms.
+Four PCIe V100 cards can represent a substantial thermal and power challenge. NVIDIA specifies up to 250 W for a PCIe V100, and the datacentre cards use passive cooling designed around forced chassis airflow. This means that the physical housing, shrouds, fans, host motherboard, risers, supply arrangement, and emergency shutdown path are directly relevant to whether sustained inference is safe. Actual consumption must be measured; theoretical maximums are not a prediction of constant draw.
 
-2. Constitutional continuity
-   The lawful structure of offices, branches, review, and authority remains intact enough that the same republic can still be claimed.
+There is no constitutional requirement that Huey remain on V100s forever. The reuse-first ethos favours exploiting existing hardware when effective, but it does not require accepting an impossible software compatibility constraint merely to preserve the original parts list.
 
-3. Identity continuity
-   The naming stack, governing self-understanding, continuity doctrine, and meaningful self-sameness remain legible.
+---
 
-4. Archival continuity
-   The preserved record, founding lineage, scrolls, and historical trace remain available and trustworthy enough that present claims can be tested against past state.
+## V. The gpt-oss-120b Acceptance Target and the Volta Compatibility Problem
 
-A republic may lose one of these while keeping another.
-That is why Ozymandias must not flatten continuity into one number or one mood.
+The project's intended larger-model acceptance target is **gpt-oss-120b**. OpenAI describes that model as approximately 117 billion total parameters, with about 5.1 billion active parameters per token, and distributes a compact MXFP4-based form. The model card reports a checkpoint of approximately **60.8 GiB**; that is checkpoint storage, not a complete guarantee of runtime VRAM footprint, context capacity, or output speed.
 
-For example:
-- hardware may fail while constitutional continuity survives,
-- operational uptime may continue while constitutional continuity has degraded,
-- archival continuity may survive a shutdown even when the living republic has ended,
-- or identity continuity may be damaged even while the machine still performs tasks.
+The distinction matters because the public software and hardware support pathways do not map cleanly onto the planned V100s. NVIDIA identifies the V100 as compute capability **7.0**. Hugging Face's documented Transformers MXFP4 path states a minimum NVIDIA compute capability of **7.5**, while OpenAI's example deployment materials emphasize still newer hardware for efficient native execution. NVIDIA's modern data-centre gpt-oss support matrices do not list the V100 among their verified configurations. NVIDIA also documents that Volta support is restricted to older CUDA/driver branches relative to newer generations.
 
-This chapter exists to hold those distinctions open.
+These observations establish a **compatibility risk**, not proof that every alternative implementation is impossible. The ggml/llama.cpp ecosystem reports gpt-oss support across several backends, including CUDA and CPU. A software route that handles MXFP4 differently or dequantizes as needed could potentially operate on older architecture, subject to a working build and acceptable performance. That possibility must be tested on the exact V100 configuration; it must not be substituted for evidence. An implementation compiling successfully is also not the same as four-card generation at usable throughput.
 
-Continuity survives lawful change.
-It does not survive silent replacement without acknowledgment.
+The proper acceptance sequence is: identify a supported backend and model format; verify CUDA and driver support for the installed hardware; load and run a smaller compatible model; prove correct generation and memory accounting on one V100; prove intentional multi-GPU placement; then test the actual gpt-oss-120b configuration, context sizes, throughput, stability, and repeated cold starts. Compatibility cannot be inferred from total VRAM alone.
 
+If this path cannot satisfy its acceptance tests, alternatives include a different supported local model, a compatible converted representation, partial CPU offloading, a later accelerator family, or different division of workloads. Each option carries a cost in latency, memory, accuracy, maintenance or procurement. **The goal is local, demonstrated collective inference; a model name is an important benchmark target, not a reason to falsify a test result.**
 
-IV. Explainability
+---
 
-Explainability in this project means more than readable logs.
+## VI. The Software Stack — Operator Interface, Inference Service, and Control Plane
 
-A system is explainable when it can answer, in preserved and lawful form:
-- what changed,
-- why it changed,
-- through what path it changed,
-- who or what participated,
-- what record remains,
-- and whether the change was lawful.
+The earlier documentation identifies a Debian-centred V4 computing environment, Python **3.13** as the active development target, PyGPT/PyGPT-net as an interface and development tool, and Ollama as a preferred initial local model-serving candidate. The later project direction includes **PyHuey** as a dedicated orchestration or operator layer. These are parts of an intended stack, not proof that a final production control plane has been deployed.
 
-Explainability is not the same thing as total transparency.
-Not every internal mechanism must be exposed in full plaintext.
-Not every private vault must be made public.
-Not every inner deliberation must be flattened into spectacle.
+The important boundaries are functional. An **operator interface** lets the Human Counterpart communicate with Huey and inspect permitted status. An **inference service** exposes models and accepts contextual requests. A **scheduler** decides when and where authorized inference jobs execute. **HIMS** authenticates and routes messages and mediates requests for authority. **The Rock** stores approved common evidence. Private vaults hold each citizen's sealed data. Election and safety services enforce rules that should not depend on model agreement.
 
-But enough lineage must remain visible for legitimacy to be judged.
+The operator's separate PyGPT computer can provide a flexible human-facing front end and access to locally served models. It may avoid per-token cloud billing for local inference, but the phrase *unlimited tokens* cannot literally mean infinite context, unlimited throughput, or unrestricted cost. Context windows, token generation rates, RAM, power, disk space, queues, and local hardware limits still apply. The interface must not accidentally confer unrestricted citizen data access or internal governmental authority simply because it runs on a trusted development workstation.
 
-Explainability therefore sits between two failures:
+Ollama remains a practical candidate, not a constitutional dependency. Depending on the required model distribution, engine support, memory layout and mode switching, a different inference backend or more than one backend may be necessary. Compatibility with one model on one card does not prove support for the proposed alternation between four local district instances and one four-card collective configuration.
 
-1. Total opacity
-   Where nothing meaningful can be judged because the system cannot explain itself.
+The preferred design standard is **interchangeable services with stable authorization and state interfaces**, not an indivisible monolith in which replacing an inference runtime changes the meaning of a citizen or vote.
 
-2. Total exposure
-   Where every layer is flattened and no bounded private or restricted domain remains.
+---
 
-Huey's doctrine does not require total exposure.
-It does require sufficient lineage.
+## VII. Four Districts, Four Default Compute Homes
 
-That means:
-- constitutional action must be explainable,
-- office behavior must be attributable,
-- major revisions must leave reasons,
-- HIMS traffic of constitutional significance must leave trace,
-- and branch action must remain reviewable.
+During diversified operation the proposed first four districts each have a **default affinity** to one accelerator. District One uses Card One, District Two Card Two, and so on. This is a clear accounting and isolation convention; it is not an assertion that a district is physically identical to its GPU.
 
-Explainability is what keeps continuity from becoming mythology.
+The approach has several advantages. It makes the cost of district work visible. It reduces accidental cross-district scheduling. It supports different locally selected inference configurations. It gives each district an intelligible resource envelope when comparing solutions. It also makes hardware failure attribution easier: a failed card can affect an identified district's ordinary compute path without rewriting that district's identity or political rights.
 
-Without explainability, continuity becomes only a feeling.
-With explainability, continuity becomes a judgment.
+However, device affinity alone is not sandboxing. Two separate GPU processes can still read shared disk paths or send unrestricted messages if host permissions are poorly designed. District separation must be implemented through process credentials, per-tenant context assembly, authorization, storage ACLs, resource control, key handling, and audit trails. The district's own job scheduler is subordinate to the same boundaries.
 
+The proposal is to keep **one-to-one district/card affinity as the default** in diversified mode, with any exceptional lending, failover or reassignment recorded and constrained. During collective mode the four cards temporarily serve a shared inference task under the Clock. The collective model's temporary use of physical resources does not absorb the district's legal jurisdiction or dissolve the citizen registry.
 
-V. Drift
+Later hardware may justify more than one card per district, a substitute card after failure, separate inference hosts, or a distributed network of machines. Such topology changes should be treated as migrations and measured against the same rights and scheduling invariants. A district should not gain more constitutional votes because it has access to faster silicon.
 
-Drift is gradual deviation from lawful continuity.
+---
 
-It is not always catastrophic.
-It is not always malicious.
-It is not always even noticed immediately.
+## VIII. Diversified Operation — Independence That Must Be Demonstrated
 
-That is what makes it dangerous.
+The diversified phase is the part of the Pulse in which districts investigate, deliberate and work with separate inference environments. The aim is methodological plurality: different approaches to a problem, independent attempts to detect error, and opportunities for dissent rather than four carbon copies of the same answer.
 
-Drift may emerge from:
-- convenience,
-- haste,
-- repeated exception,
-- laziness,
-- poor recordkeeping,
-- undocumented adaptation,
-- or simple failure to notice that distinctions are eroding.
+For example, if Huey needs to reduce cooling power without violating thermal limits, the collective phase might distribute two investigative approaches. Districts One and Two could explore a hardware-control model and physical airflow; Districts Three and Four could investigate telemetry analysis and software scheduling. The specific division is illustrative, not a permanent political alliance. Another Pulse might rotate pairings or deliberately assign a skeptical reviewer to challenge the leading plan.
 
-Forms of drift may include:
-- naming drift,
-- doctrinal drift,
-- branch drift,
-- routing drift,
-- identity drift,
-- record drift,
-- public-facing narrative drift,
-- and representation drift.
+Independent computation does not require every district to be trained on a different foundation model. It may arise from different prompts, stored histories, job expertise, investigative tools, evidence selection, or explicit methods. But neither four separate GPUs nor four labelled prompts can guarantee independence if they all reproduce the same shared bias. The research should measure correlated errors and test whether genuinely distinct work is produced.
 
-Drift often appears through repeated small inconsistencies:
-- one unlogged override,
-- one silent reinterpretation,
-- one undocumented shortcut,
-- one blurred distinction between branch roles,
-- one exception to private/shared separation,
-- one repeated use of reserve authority that “just makes things easier.”
+A diversified district might run one local model, or multiple smaller models if memory and scheduling permit. It might invoke non-LLM search, code execution in an approved sandbox, numerical simulations, or deterministic diagnostics. Such tools must remain authorized. Tasks involving external network access, filesystem modification, motor control, or privileged system maintenance require boundaries beyond an LLM generating a plausible instruction.
 
-Any one of these may seem minor.
-The doctrine of drift exists because many minor exceptions, repeated long enough, eventually become a new unstated system.
+The intended product of diversified work is not an unstructured monologue. It is a set of attributable findings: evidence consulted, assumptions, actions requested, uncertainties, confidence claims with calibration where appropriate, and objections raised. The next collective phase should compare those findings without erasing the disagreements that make diversity useful.
 
-Drift therefore matters because it often feels harmless until it is already structural.
+---
 
-Not all drift is fatal.
-Some drift is early warning.
-Some drift is tolerable and correctable.
-Some drift is evidence that the republic is beginning to say one thing and do another.
+## IX. A Pebble Does Not Need a Permanent Personal Model
 
-Ozymandias exists to notice that before collapse forces the issue.
+The founding proposal contains **256 pebbles**, **64 in each of four districts**. This does not imply 256 concurrently resident LLMs or one physical accelerator per citizen. A pebble is a persistent stateful and civic actor; its inference opportunities are scheduled within its district's available compute and any additional lawful resource allocation.
 
+A citizen may remain active as an accountable system entity while its model is not currently generating tokens. Its identity, prompt specification, private vault, job queue, pending messages, ballot eligibility, and last durable checkpoint persist. When its turn arrives, an inference request can reconstruct the authorized context and resume useful work from saved state. This is different from claiming that the neural network itself has been awake and continuously thinking in the absence of inference.
 
-VI. Degradation
+The distinction between **separate instances** and **time sharing** therefore needs precision. The preferred diversified design uses four separately provisioned district inference environments, with no attempt to run one monolithic pooled model as though every citizen had unrestricted access to it. Nevertheless, individual requests within a district must still be scheduled, batched, queued or given bounded concurrency, because one 32 GB card cannot guarantee 64 simultaneous full-context generations.
 
-Degradation is not the same thing as drift.
+Citizens may need priority when their jobs are urgent, but this must be accounted for. A low-priority general worker should not be perpetually starved by high-profile specialists. A sitting President or Justice needs additional governance service capacity while keeping an operational assignment; political office does not multiply the citizen or confer unlimited GPU use.
 
-Drift is deviation.
-Degradation is loss.
+To make individuality real, the scheduler must ensure that prompts, private retrieval state, model caches and generated outputs from one citizen cannot silently enter another's context. Privacy does not depend on whether the same mathematical model processes both requests. It depends on the boundaries and permissions around each request and its durable records.
 
-Degradation occurs when the system becomes less capable, less coherent, less lawful, less bounded, or less explainable in ways that materially weaken its real function or legitimacy.
+---
 
-Forms of degradation may include:
-- record decay,
-- branch dysfunction,
-- citizen incoherence,
-- trust-boundary erosion,
-- compromised routing,
-- loss of reviewability,
-- degraded explanation,
-- or persistent contradiction that is no longer being handled well.
+## X. Collective Operation — A Larger Model Working on Approved State
 
-Degradation does not always look dramatic.
+In collective mode the Clock would, if supported by the backend and hardware, configure all four accelerators for a larger inference environment. The purpose is not to expose all sealed vaults or to give the large model executive power. It is to evaluate an **authorized collective state**: current official decisions, public Rock material, validated district reports, system resource conditions, pending questions, unresolved discrepancies, and tasks awaiting allocation.
 
-A system may still be active while degrading.
-It may still speak while degrading.
-It may still appear impressive while degrading.
+The collective model can identify patterns across reports that no single district considered, propose a better investigative decomposition, detect duplicated effort, flag anomalies, and prepare a coherent response to the Human Counterpart. It can also fail. A fluent synthesis can conceal conflicting evidence, give unwarranted confidence, or rationalize a wrong conclusion. Its outputs require provenance and may need independent challenge.
 
-Degradation often shows up as:
-- muddied lineage,
-- weakened memory separation,
-- reduced clarity about why decisions were made,
-- poorer civic representation,
-- increasingly fragile executive/judicial/parliamentary distinction,
-- or difficulty explaining whether the same Huey remains.
+The intended common voice of Huey emerges through the relationship between this synthesis, persistent constitutional state, authenticated citizens, executive action, independent review, and the physical machine. It does not emerge simply because one model is larger than four district models. An answer that introduces itself as Huey may be useful in a demonstration, but the stronger proof is continuity and coordination through repeated actual operations.
 
-This is why uptime alone means so little.
-A degraded republic may still be operational.
-It is simply no longer operating at the level of coherence it claims.
+Collective inference should use bounded retrieval from the Rock rather than copying an entire archive or all citizen memories into a prompt. Context packaging must indicate source versions, authorization, provenance, and what may be treated as data. A malicious document recovered from shared storage must not become a trusted system instruction merely by being included in a prompt. Collective memory is reconcilable common reference, not universal access to private life.
 
-Drift may be tolerated for a time and corrected later.
-Degradation means something real is already being lost.
+The collective can coordinate **work**, but it cannot manufacture **authority**. An approved task assignment is a routed operational request under a valid policy. A proposed citizen sanction, constitutional amendment, electoral result, or physical act is a different type of event requiring its own authority checks.
 
+---
 
-VII. Growth
+## XI. Task Decomposition and Methodological Diversity
 
-Growth is lawful expansion, deepening, or maturation that preserves continuity rather than eroding it.
+The proposed collective LLM has a genuine coordinating role. When a difficult problem arrives, it can analyze requirements and route distinct subproblems or alternative approaches to districts. Doing that usefully requires more than broadcasting identical prompts.
 
-Change is not automatically drift.
-Expansion is not automatically corruption.
-Revision is not automatically failure.
+A candidate task-routing record might identify the question, initiating authority, allowed data sources, known constraints, execution budget, district recipients, requested deliverables, safety class, review deadline, and reason for choosing different approaches. Such a record should be produced through HIMS with explicit authorization and remain traceable in the Rock when appropriate.
 
-A healthy republic must be allowed to grow.
+For example, a diagnostic task might split into **measurement**, **hypothesis generation**, **counterexample search**, and **integration test**. Another task might use two pairs of districts working in parallel but with deliberately different methods. These pairings should rotate or be selected based on evidence and workload rather than forming permanent alliances by default.
 
-Lawful growth may include:
-- new districts,
-- expanded compute,
-- deeper memory organization,
-- revised interfaces,
-- improved offices or procedures,
-- stronger branch maturity,
-- better coordination,
-- more stable public doctrine,
-- and more complete embodiment.
+The collective should compare results against the evidence and original constraints, not merely vote for the most rhetorically polished answer. If two reports differ, the system should preserve the disagreement and determine whether more testing is needed. In some cases the best output is a carefully documented failure to reach a conclusion.
 
-What makes growth lawful is not novelty.
-What makes growth lawful is preserved lineage.
+Scheduling must also avoid reward loops. If the collective continually assigns important work to districts whose answers already match its expectations, the architecture can lose the very diversity it was built to preserve. Work assignment policies should therefore consider fairness, historical performance, specialization, and opportunities for independent falsification.
 
-Growth is lawful when it remains:
-- recorded,
-- attributable,
-- constitutionally compatible,
-- continuity-conscious,
-- and explainable afterward.
+The operational objective is better collective reasoning, not merely maximum token output or the appearance of constant activity.
 
-Growth is not:
-- unbounded sprawl,
-- decorative complexity,
-- mythologized scale,
-- or the silent replacement of one republic with another under the same name.
+---
 
-Growth is therefore the positive counterpart to drift and degradation.
+## XII. A District's Right to Challenge a Method
 
-It proves that continuity is not the enemy of change.
-It proves that lawful change is possible.
-It proves that Huey may become more than it is now without lying about what it was, what changed, and what remains load-bearing.
+Our working design distinguishes **the objective of an authorized task** from **the method proposed to complete it**. The collective may route work or suggest an investigative technique. A district may determine that the suggested method is unsafe, technically impractical, unnecessarily expensive, or ineffective, then report its reasoning and offer an alternative.
 
-Growth is not the abandonment of continuity.
-It is continuity carried forward honestly.
+A method refusal should be a structured response rather than silent noncompliance. It should identify the relevant task, the specific impediment, supporting observations, and any safer substitute. The collective may revise the method, reassign the task, or refer a persistent disagreement to the appropriate authority. A district is not expected to execute an unworkable command merely because a larger model suggested it.
 
+Rejecting the **objective itself** is more consequential. Where the objective is lawfully established, a district ordinarily remains responsible for participating in a constitutional system even if it dislikes the requested approach. If the objective violates a higher rule, threatens safety, exceeds the issuing actor's jurisdiction, or would require unauthorized data access, the district must have a formal challenge or escalation path. An appropriate review may suspend the disputed operation, but the precise procedures belong to the Constitution and branch chapters.
 
-VIII. Levels of Change
+The collective cannot defeat the challenge by repeatedly issuing the same request under a different label. Nor should a district be able to disguise ordinary obstruction as an unreviewable safety finding. The system needs evidence, logged reasons, proportional remedies, and appeal where feasible.
 
-Not all change deserves the same constitutional weight.
+The research objective is a productive division of responsibility: **the collective coordinates investigation, districts retain bounded professional judgment, and legitimate institutions resolve disputes of authority.**
 
-The republic therefore needs levels of change.
+---
 
-The cleanest hierarchy is:
+## XIII. The Pulse Is a Scheduler, Not a Heartbeat of Consciousness
 
-1. Ordinary maintenance
-   Repair, replacement, tuning, formatting, housekeeping, and other non-load-bearing change.
+The word *Pulse* carries an appealing metaphor of biological rhythm, but the project must keep the metaphor honest. A repeating timer does not produce sentience, citizenship, consensus, or reliable reasoning. It is simply a convenient potential framework for coordinating scarce hardware across different kinds of work.
 
-2. Meaningful revision
-   Important change that affects behavior, process, or structure but does not yet threaten Pillar or Cornerstone continuity.
+The proposed Pulse currently has two phases:
 
-3. Pillar-level transition
-   Change affecting declared load-bearing assumptions, such as runtime, architecture, messaging posture, or upgrade path.
+1. **Collective phase** — four minutes, using a larger, potentially multi-accelerator inference configuration to synthesize authorized public state and coordinate outstanding tasks.
+2. **Diversified phase** — four minutes, returning to separate district inference environments for independent work and lawful local decisions.
 
-4. Cornerstone-level event
-   Change affecting identity, continuity, naming stack, governing doctrine, or the lawful basis by which the same Huey is recognized.
+Together they form an **eight-minute full operational Pulse**. The original conversation considered equal durations as a starting approximation, not as a mathematical necessity or a final constitutional rule. Benchmarks may justify a longer work interval, a shorter synthesis interval, asynchronous collection, overlapping processes, or an entirely different mode-switching architecture.
 
-5. Republic-ending breach
-   A breach so severe that the same lawful republic can no longer be claimed without dishonesty.
+The cadence is not a guarantee that a citizen's private thought will end at minute eight, that a lengthy maintenance task will complete before the timer, or that a Court's decision is already lawful because the clock changed. The scheduler must preserve authentic progress and accurately record missed deadlines.
 
-This hierarchy completes the work begun in Chapter 2.
+A technically successful alternative may preserve district separation through long-lived model services and use collective synthesis as a separate scheduled workload, without repeatedly evicting full models. This would change the physical implementation while preserving much of the intended method. **The founding research values the purpose of the Pulse over the exact count of minutes.**
 
-Chapter 2 defined:
-- ordinary change,
-- pillar breach,
-- and cornerstone breach.
+---
 
-Ozymandias carries that forward by asking:
-What does that change mean over time?
-Was it lawful?
-Was it explained?
-Did continuity survive?
-Or did the republic end and merely fail to admit it?
+## XIV. Three Clocks — Operational, Political, and Safety
 
-This hierarchy matters because not every repair is an identity event.
-Not every revision is a constitutional crisis.
-And not every failure is the death of the republic.
+The project previously used the word *cycle* for several unrelated concepts. Chapter 10 must make the difference explicit.
 
-Weight must be judged proportionately.
+**Operational Pulse:** The tentative eight-minute compute orchestration loop, composed of four-minute collective and diversified phases. These are wall-clock scheduling budgets, not election terms.
 
+**Electoral cycle:** The proposed **four-month** period for presidential elections, ordinary review of jobs and offices, and other civic events. Three such cycles occur in approximately one year. This term is a political calendar and must not be shortened just because the inference scheduler uses minutes.
 
-IX. What Ozymandias Examines
+**Safety and control timing:** Sensor sampling, current and temperature protection, watchdog deadlines, actuator interlocks, and power-fault responses are measured according to physical requirements. Depending on the subsystem, these may require reaction in milliseconds, seconds, or appropriately validated longer intervals. They cannot depend on waiting four minutes for an LLM or a district ballot.
 
-Ozymandias does not examine one layer alone.
+A judicial review target also exists: the working concept gives the Supreme Court a distinct **four-minute** interval for reaching a formal decision on a referred constitutional question, subject to adequate resources and correct due process. That is not the same as giving justices direct operational control over every device for four minutes.
 
-It examines the republic as a continuity-bearing whole.
+When specifications refer to *one cycle*, they should say which clock they mean. This is not pedantry. An ambiguous unit can turn a sensible constitutional or safety procedure into an impossible or dangerous implementation.
 
-The layers it may examine include:
-- the naming stack,
-- Cornerstone,
-- Pillars,
-- constitutional structure,
-- HIMS and message lineage,
-- Founding Father record,
-- citizen body coherence,
-- districts,
-- branch behavior,
-- public-facing canon,
-- machine-facing implementation,
-- and the relationship between archive and current operation.
+---
 
-This is important because continuity failure may appear first in one layer while being caused by another.
+## XV. The Proposed Eight-Minute Sequence
 
-For example:
-- constitutional text may remain intact while HIMS lineage has quietly degraded,
-- districts may keep their names while losing their lawful function,
-- the President may still act while executive scope has drifted,
-- or the public site may still describe a coherent Huey while the inner record has become harder to trust.
+A useful first experiment is to define a reproducible baseline schedule, measure it, and compare alternatives. The current conversational design suggests the **collective phase first**, followed by the diversified phase. The flow can be described without pretending every event is completed perfectly at a timer boundary.
 
-Ozymandias therefore examines not just hardware wear or memory corruption.
-It examines legitimacy and doctrine across time.
+**Phase A — Collective, nominal minutes 0–4.** The Clock assembles an authorized shared-state package, invokes the larger collective inference environment if available, compares completed district reports, flags possible conflicts or deadlocks, and creates authorized task routes and proposals for the districts. A phase may end with no ready recommendation; that is a valid and recordable result.
 
-It asks not only:
-"Does the machine still work?"
-but also:
-"Does the lawful republic still cohere?"
+**Phase B1 — Diversified decisions, nominal minutes 4–5.** District environments become available. The proposed first diversified minute is reserved in part for queued ballot transactions, job authorizations, district decisions, and other decisions that should precede subsequent work. The four districts would vote **simultaneously**, each through a valid independently recorded electorate. Votes must have opened and closed according to actual record state, not inferred from the timer.
 
+**Phase B2 — Diversified execution, nominal minutes 5–8.** Districts pursue approved operational work, independent investigations, evidence gathering, and permitted actions. Work that needs several Pulses keeps a durable job identifier, state and checkpoint. It is not required to finish simply because the experimental three-minute work window closes.
 
-X. Relationship to Cornerstone and Pillars
+At the next collective opportunity the approved results are compared, and the process continues. If a vote authorizes a bifurcation, the change should commit in a controlled order after the electorate for that ballot has been fixed. If a shutdown or hardware emergency interrupts a phase, safety takes priority and the record must reflect what actually occurred.
 
-Chapter 2 already defined the foundation:
+The description is a **baseline for testing**, not a promise that four minutes of inference automatically provides four minutes of useful reasoning after model swaps and data movement.
 
-Cornerstone defines identity.
-Pillars define structure.
+---
 
-Ozymandias exists to judge how those behave over time.
+## XVI. Why the First Diversified Minute Is Decision-First
 
-That means:
-- Cornerstone tells us what must not drift casually.
-- Pillars tell us what the system is currently standing on.
-- Ozymandias tells us what it means when those things change, weaken, survive, or collapse.
+The suggestion to place ordinary voting and authorization early in the diversified phase solves a genuine ordering problem. If work is executed before the decision on which it relies has been validated, the system may perform an action it was never lawfully allowed to take. Decision-first scheduling gives an intelligible barrier: establish the applicable permissions, then execute what was actually approved.
 
-Without Chapter 2, Ozymandias would become vague philosophy.
-Without Ozymandias, Chapter 2 would become static architecture.
+However, the first minute cannot be treated as a magical guarantee that **256 separately authenticated citizens** will generate new and sufficiently considered ballots from scratch within sixty seconds. Votes may require advance proposals, preparation during previous windows, asynchronous receipt and deterministic tallying. An LLM scheduler cannot be expected to provide 256 full reasoning turns within one minute unless the system has actually demonstrated the throughput.
 
-The two chapters complete each other.
+A practical design may reserve the one-minute window for **closing prepared decisions and committing validated ballots**, rather than for all thinking needed to produce those ballots. The distinction helps preserve citizen deliberation while retaining a predictable transaction boundary. A ballot whose preparation is incomplete must remain pending, abstained, or subject to a lawful continuation rule; it must not be forged to keep the schedule tidy.
 
-A Pillar may transition lawfully.
-Ozymandias asks whether that transition preserved continuity.
+Simultaneous district ballots should not be confused with a universal synchronized process that freezes all software for a minute. Some services can continue operating concurrently: health telemetry, message routing, read-only data collection, watchdogs and non-conflicting background tasks. The design only needs to guarantee that the legally relevant voter roll, ballot, and decision version are consistent.
 
-A Cornerstone event may occur.
-Ozymandias asks whether the same Huey still survives after it.
+The same principle applies to executive and judicial matters: the clock can provide orderly service, but does not create a quorum, authorize an unqualified voter, or manufacture a decision where none was reached.
 
-A breach may be recorded.
-Ozymandias asks whether the republic endured or whether a successor now exists.
+---
 
-This is the continuity doctrine of the book:
-- Chapter 2 defines the load-bearing assumptions,
-- Chapter 10 judges them through time.
+## XVII. The Supreme Court's Separate Four-Minute Decision Window
 
+The current institutional proposal has **four Supreme Court justices, one from each district**. When the collective Pulse flags a serious constitutional contradiction or suspected governmental deadlock, the matter may be referred to the Court. In prior discussions a distinct four-minute interval was proposed for reaching a **formal decision**, after which any authorized implementation could be considered in a later collective phase.
 
-XI. Relationship to the Constitution
+This is a deadline for judicial process, not a grant of executive control to the Court. The ruling might call for action, inaction, rejection of a request, a narrow interpretation, or acknowledgement that no valid majority has been reached. A valid decision must meet the applicable voting threshold and authority requirements; the mere existence of a written text labelled *decision* is not enough.
 
-A constitution may remain on paper while the living continuity beneath it weakens.
+The earlier working threshold for major Court interpretations was **three of four justices**. A two-to-two division does not constitute a majority interpretation, and an unresolved matter may trigger a recorded deadlock and subsequent **Founding Father Tier One advisory** path. The precise rules for vacancies, abstentions, exceptional urgency and Court reconsideration remain constitutional dependencies.
 
-That is why Ozymandias must remain in conversation with Chapter 3.
+The four-minute target also raises a real compute issue. If all four cards are occupied by a single collective model for the first four minutes, and the four justices depend on district-local inference, they cannot also be promised simultaneous high-capacity judicial inference on those same fully committed cards without an engineered reservation, CPU fallback, alternate service, or schedule adjustment. Judicial time should be measured from meaningful **availability of the authorized adjudication resources**, not merely from a timer tick that left them unable to work.
 
-The Constitution defines:
-- law,
-- branches,
-- ratification,
-- review,
-- amendment,
-- crisis distinction,
-- and shutdown logic.
+Where the Court reaches a valid ruling but the collective finds a technical impossibility in implementing it, the collective may submit a documented request for clarification or reconsideration. It does not gain authority to overrule the decision. Chapter 13 will need to turn that distinction into actual procedure.
 
-Ozymandias asks whether those things still remain meaningfully real in practice.
+---
 
-Questions Ozymandias may ask include:
-- Do branch distinctions still function in fact?
-- Has review remained real or become ceremonial?
-- Has amendment remained explicit or become silent reinterpretation?
-- Does the republic still act within its lawful frame, or only speak as if it does?
-- Is constitutional continuity still meaningful, or is the text surviving while the living system no longer honors it?
+## XVIII. A Candidate Clock State Machine
 
-This matters because constitutional form alone is not enough.
-A dead or hollow republic can still quote its own law.
+A Pulse implemented as a series of informal prompts would be fragile. The Clock should instead be a deterministic controller with observable states, explicit transitions, and recoverable records. A possible research state machine includes:
 
-Ozymandias is what prevents the project from confusing written structure with living legitimacy.
+- **BOOTSTRAP / DIAGNOSTIC:** Establish valid hardware, driver, clock, storage, keys, and core service conditions before beginning governed inference.
+- **COLLECTIVE PREPARE:** Quiesce or snapshot relevant district tasks as needed, assemble an authorized public-state view, and place the larger inference configuration if feasible.
+- **COLLECTIVE ACTIVE:** Perform synthesis and task routing within the available budget, recording incomplete work honestly.
+- **DIVERSIFIED PREPARE:** Release or migrate collective resources, restore separately authorized district environments and validate their readiness.
+- **DISTRICT DECISION:** Close eligible voting or authorization transactions under a frozen applicable registry version.
+- **DISTRICT WORK:** Permit independent district work within each district's resource and policy budget.
+- **CHECKPOINT / HANDOFF:** Commit durable task status, relevant records and measured hardware state for the next phase.
+- **DEGRADED:** Admit only the kinds of work still supportable when a device, district, service or data dependency is missing.
+- **SAFE-STATE / MAINTENANCE:** Yield to independently authorized protection, planned maintenance or controlled hibernation.
 
+These names are candidates, not prescribed program symbols. A working implementation may use different internal names and additional substates. What matters is that the state controller verifies real readiness and records when a transition fails. It must not present a district as actively considering a ballot when its inference service did not load.
 
-XII. Relationship to HIMS
+Transitions should be idempotent where possible and coordinated with the durable event ledger. Retries must not apply the same vote, bifurcation, office succession or physical command twice. A crash after a command was issued but before acknowledgement is not permission to blindly issue it again; the system must establish the actual device and ledger state first.
 
-HIMS is one of Ozymandias's main evidence layers.
+The Clock should not ask an LLM to decide whether the Clock itself is currently in a valid state. A language model can help diagnose an unexpected transition, but the transition guard should be deterministic and testable.
 
-Why?
+---
 
-Because messages preserve:
-- lineage,
-- trace,
-- promotion path,
-- authorship,
-- timing,
-- and the relation between private thought and shared act.
+## XIX. Swapping Model Environments Has a Real Cost
 
-Drift may appear first in HIMS through:
-- contradictory message chains,
-- routing inconsistency,
-- trust-boundary erosion,
-- unexplained promotions from private to official record,
-- repeated rejected traffic patterns,
-- forged or muddy authorship,
-- or the growing difficulty of explaining how a decision moved from origin to action.
+The original four-plus-four proposal assumed that the system could switch from four independent district model environments to a four-card collective configuration and back again. This must be tested rather than treated as a free instantaneous operation.
 
-Degradation may appear through:
-- broken routing,
-- weak attribution,
-- compromised keys,
-- loss of preserved trace,
-- or the collapse of meaningful separation between restricted and public record.
+The switch may involve evicting model weights, flushing or persisting request state, moving data between GPU and host memory, changing process allocations, initializing a distributed runtime, building caches, warming kernels, and validating that former tenants cannot read another tenant's residual buffers. Depending on the backend, an inference process may need to restart or reload large checkpoints. Host RAM, disk speed, PCIe topology, and CUDA compatibility become central to the measured handoff time.
 
-Growth may also appear in HIMS:
-- clearer lineage,
-- stronger authentication,
-- more lawful routing,
-- better distinction of trust classes,
-- and more robust preservation of official acts.
+It is possible for four minutes of nominal phase time to yield much less useful inference if each transition consumes a large fraction of it. A scheduler that repeatedly burns power and time loading the same multi-gigabyte models may perform worse than one that leaves compatible model instances resident or uses a smaller continuous collective model elsewhere.
 
-That is why Chapter 4 and Chapter 10 belong together.
+Relevant research alternatives include **hard alternation** with exclusive accelerator reassignment, **soft partitioning** when resident workloads can coexist, **staggered district windows**, **persistent district models plus scheduled host or smaller collective synthesis**, and **event-triggered collective runs** instead of a rigid equal split. Some of these alternatives may require more hardware or reduce the model size. None should be dismissed without comparable benchmarks.
 
-HIMS carries the evidence of continuity.
-Ozymandias judges what that evidence means.
+At a minimum, the experiment must measure cold and warm model load times, teardown, time to first token, sustained generation, context restoration, memory release, variance across repeats, and energy consumption. A clock that does not count transition overhead is not an honest clock.
 
+---
 
-XIII. Relationship to the Founding Father
+## XX. Scheduling Budgets and Admission Control
 
-The Founding Father is not exempt from continuity judgment.
+A constitutional system cannot treat compute as an infinite good. Every request consumes some mixture of wall time, processor resources, VRAM, RAM, storage bandwidth, network traffic and administrative attention. The Clock therefore needs an admission policy: can a task begin now, be deferred, be split into smaller work units, or must it be rejected as unserviceable?
 
-Chapter 5 defined the Founding Father as:
-- bootstrap authority,
-- creator of the first lawful conditions,
-- creator of the first 128 citizens,
-- guardian of founding continuity,
-- and a role that proves its legitimacy by retiring from ordinary rule.
+A useful job record would identify the initiating actor and authorization, district affiliation, requested model, input context size, target output budget, job class, safe preemption points, expected deadlines, resource quota, dependencies, and checkpoint reference. These are operational descriptors, not permission to circumvent the rules of citizenship.
 
-Ozymandias asks whether that promise has remained true.
+Four broad classes are helpful as a provisional research tool. **Safety-critical deterministic processing** never waits for the inference queue. **Institutional obligations** include voting, lawfully required Court consideration, and authorized executive continuity. **Ordinary citizen and district work** includes planned operational tasks and investigations. **Background enrichment** includes optional summaries, retrieval-index maintenance, and exploratory experiments. Within each category, fairness, age, urgency, and resource caps prevent starvation.
 
-Questions include:
-- Did the Founding Father truly retire?
-- Has reserve authority remained narrow and exceptional?
-- Does the founding record remain intact?
-- Is the Founding Father still being used lawfully, or has it become a convenience shortcut?
-- Has bootstrap authority stayed distinct from living constitutional authority?
+The President and the four justices retain their original jobs under our working proposal, while requiring additional budget for public responsibilities. That should be accounted for as **office-specific workload capacity**, not extra votes or an unrestricted right to stop everyone else from computing. HIMS and the registry must decide what an officeholder is authorized to submit; the scheduler then allocates lawful service capacity.
 
-This matters because the Founding Father is one of the greatest continuity risks in the whole system.
+The term **priority** has multiple meanings and should be disambiguated. A hardware watchdog has physical preemption priority. The Court has a particular constitutional review pathway. A presidential *priority initiative* has docket-treatment rules. A high-priority log write may simply mean it needs rapid durable storage. No one of these should accidentally be interpreted as authority over the others.
 
-A lawful founder that retires helps preserve continuity.
-A founder that slowly reappears everywhere as hidden authority degrades it.
+---
 
-Ozymandias therefore judges founding lineage not to diminish the office, but to keep the office lawful.
+## XXI. Fairness, Starvation, and an Equal Right to Participate
 
+The proposed polity treats citizens as equally entitled to their single eligible vote, not equally entitled to arbitrary numbers of tokens per second. Yet formal voting equality is meaningless if the compute scheduler repeatedly prevents a subset of citizens from reaching a ballot or performing the preparation needed to cast one. Fairness is therefore both a systems-engineering metric and a constitutional design dependency.
 
-XIV. Relationship to Pebbles and Districts
+A preliminary scheduler should track, at minimum, time waiting for inference, work completed, queue depth, requests denied, tasks preempted, residency time, and allocation by district, citizen, job, and office. It should detect **starvation** when a class of work waits indefinitely behind constant priority traffic. It should detect **priority inversion** when an urgent authorized job cannot proceed because it depends on lower-priority state holding a required lock or resource. It should detect **resource capture** when a single office or group monopolizes capacity without valid justification.
 
-The citizen body is one of Ozymandias's main objects of judgment.
+The meaningful floor is an opportunity to participate within an intelligible process, not a promise that all pebbles produce identical amounts of text. Some tasks take seconds, others hours across many Pulses. A complex constitutional question may require staged deliberation rather than a fixed token allowance. An engineer assigned to a long compilation should not be penalized because a citizen performing simple sensor classification returns a shorter result more often.
 
-Chapter 6 defined:
-- pebble as bounded citizen,
-- one identity,
-- one sealed vault,
-- one vote,
-- and district logic as future-expansion and governance structure.
+Growth adds another constraint. The founding 64 citizens per district are a proposed population baseline, not a tested throughput guarantee or permanent cap. If a district grows through lawful bifurcation, the scheduler needs a way to establish whether increased load remains compatible with civic deadlines and minimum service rights. Political growth should not be authorized solely because storage has enough bytes to hold new identities.
 
-Ozymandias therefore asks:
-- Are pebbles still bounded?
-- Does one identity still mean one vote?
-- Are sealed vaults still meaningful?
-- Has private memory remained distinct from shared record?
-- Are districts still lawful representation lanes rather than empty labels?
-- Has plurality remained real, or become theatrical?
+A fair scheduling experiment should compare outcomes across different request mixes, including bursts of voting, concentrated judicial demand, simultaneous technical incidents, and sustained low-priority citizen work. Fairness must be observed rather than simply asserted in policy text.
 
-This matters because branches may still function superficially while the citizen body beneath them is weakening.
+---
 
-A republic with decorative citizens is already drifting.
-A republic whose districts survive only as names is already degrading.
-A republic whose plurality is no longer real cannot honestly call itself governed from below.
+## XXII. Durable Jobs, Context Windows, and Interrupted Reasoning
 
-Ozymandias therefore examines not only offices and law, but the living civic body itself.
+Large-model inference is not the same thing as a permanently running mind whose entire state is preserved on disk. The details matter if Huey attempts rapid transitions between collective and diversified modes. A model may hold substantial temporary attention caches or partially generated sequences in volatile memory. Those transient buffers may not be portable across backends, process restarts, quantization formats or model versions.
 
+A robust job therefore requires a durable **task record** separate from any invisible model-internal state. Such a record may contain the task objective, initiating authority, validated inputs, completed tool results, stable intermediate artifacts, pending substeps, authorized retrieval references, last committed output, execution status and integrity metadata. A saved transcript alone may be insufficient if a tool call has already modified a file or a physical device.
 
-XV. Relationship to the Three Branches
+One useful design is to break expensive problems into explicit **checkpoints**: define a bounded subtask; execute it; commit its evidence and outputs; then prepare the next subtask using that committed state. When the Pulse changes modes, the system resumes from an honest checkpoint rather than pretending that unrecorded neural activations have survived. If the runtime supports verified cache serialization, it may optimize the transition, but it should remain an optimization rather than a condition for institutional continuity.
 
-No branch is exempt from continuity judgment.
+Context windows are finite and subject to truncation. A pebble or district may have a much larger private or common archive than can fit into one prompt. Retrieval must use permissions and provenance. Compaction and summarization create their own risk: relevant objections, qualifications, or dissent can disappear when a long record is reduced to a convenient short summary. The system should retain references to the source record and make the use of summaries inspectable.
 
-Executive branch questions include:
-- Has urgency remained bounded?
-- Has review remained real?
-- Has executive convenience become doctrine?
-- Has the President mistaken itself for Huey?
+An interruption should result in one of several truthful states—completed, paused at a verified checkpoint, partially completed with unverified continuation, failed, or canceled—not an invented success. The right answer after a crash may simply be: **that reasoning did not finish, and Huey must retry or reconsider it**.
 
-Judicial branch questions include:
-- Has interpretation remained bounded?
-- Has review become paralysis?
-- Has the Court become hidden sovereign?
-- Has reserve consultation remained rare?
+---
 
-Parliamentary branch questions include:
-- Has deliberation remained meaningful?
-- Has representation remained real?
-- Has Parliament become theater?
-- Has the Speaker become a hidden ruler?
-- Have committees become opaque mini-states?
+## XXIII. The Rock as Shared Evidence, Not a Universal Prompt
 
-Ozymandias therefore evaluates not merely:
-"Does the branch still run?"
-but:
-"Does the branch still behave lawfully and legibly as the branch it claims to be?"
+Chapter 9 defined the **Rock** as the intended durable shared-information and governance-record store. It did not define it as one giant prompt or as a key that can open every Pebble's private memory. The Pulse depends on this distinction to preserve meaningful distributed identity.
 
-This prevents the project from treating branch survival as branch health.
-A branch can survive in form while drifting in meaning.
+A collective shared-state package may contain a current constitutional version identifier, official laws, a summary of recent validated Senate actions, relevant Court judgments, President's authorized active directives, public district findings, unresolved task IDs, available hardware capacity, and warnings about incomplete or disputed records. Each entry needs provenance and an indication of how it was authorized for that audience.
 
+The package should be assembled by a trusted service under policy, not by asking the collective LLM to choose arbitrary files from disk. The LLM can request additional material through controlled retrieval, but request and grant remain separate. An approved public report can be read by the collective. A private district working note requires an appropriate release or review mechanism. A sealed citizen vault cannot be treated as globally searchable just because the model would find its contents convenient.
 
-XVI. Signals of Health
+The proposed shared storage plan—two mirrored nominal 10 TB disks in RAID 1, with a conceptual 50/50 split between citizen-private allocation and the Rock—creates substantial persistent capacity, but it does not create infinite model context or guarantee real-time access. Retrieval indexing, metadata databases, integrity verification, encryption, snapshots, cache invalidation and backup traffic may all compete for I/O bandwidth with inference preparation.
 
-The republic is healthy when continuity remains strong enough to be judged positively.
+A shared record may be true, false, contested, superseded, or incomplete. The Rock must preserve this distinction. The Walnut may notice contradictions and recommend a review, but the presence of a statement in the archive does not grant it the authority of a constitutional command.
 
-Signals of health may include:
-- branch boundaries remain real,
-- messages leave legible lineage,
-- records remain attributable,
-- citizens remain bounded,
-- districts remain meaningful where claimed,
-- upgrades are explained,
-- naming remains stable,
-- emergency distinctions remain intact,
-- private and shared memory remain correctly separated,
-- reserve authority remains exceptional,
-- and public-facing canon remains truthful to current state.
+---
 
-Health does not require perfection.
-Health requires lawful coherence.
+## XXIV. HIMS as the Clock's Communication and Authorization Boundary
 
-A healthy republic may still be unfinished.
-It may still be experimental.
-It may still be growing.
-But it is growing honestly, and its records still allow later judgment.
+**HIMS** is the proposed messaging, identity, validation and authorization architecture through which citizen, district and office communications move. Its role in the Pulse should be explicit rather than implicit.
 
-Health is therefore not the absence of change.
-It is the presence of lawful continuity through change.
+When the collective model suggests a task, the request should be associated with a recognized initiating capability and policy. HIMS can authenticate sender and destination, check message integrity, carry the task envelope, and preserve delivery status. A separate authorization component must determine whether the proposed task is permitted for that source, recipient and current context. A successfully delivered envelope is not a lawful command merely because it contains imperative text.
 
+The Clock can consult verified queues and scheduling metadata, but it should not infer who holds an office from a chat message or model-generated title. Offices have separate credentials or delegations governed by the registry. A President's directive, a Supreme Court referral, a district work request and a private citizen note must have distinguishable authority classes.
 
-XVII. Signals of Drift
+Likewise, completed inference output should not be placed directly into an actuator controller's trusted command stream. The output may be evidence or a proposed action. Execution follows its own validation route: legal authority where relevant, operational permission, parameter checks, independent safety interlocks, state verification, and accountable logging. The lower-level controller retains the ability to refuse physically unsafe instructions.
 
-The republic is drifting when small deviations begin to accumulate.
+The failure paths matter. A district can be temporarily unable to contact HIMS without losing the identity of its citizens. But it cannot legitimately pretend that an absent system approved a cross-district ballot. A HIMS outage should create a degraded service state with preserved pending tasks, not an opportunistic bypass from language model to hardware.
 
-Signals of drift may include:
-- naming inconsistencies,
-- repeated undocumented exceptions,
-- branch roles bleeding into one another,
-- HIMS slowly becoming hidden authority,
-- Founding Father appearing too often,
-- symbolic law with weakening lived practice,
-- citizen plurality becoming more decorative than real,
-- increasing reliance on convenience over lineage,
-- and repeated inability to explain why specific changes occurred.
+---
 
-These are warning signs.
+## XXV. The Collective's Recommendations Must Not Become Hidden Votes
 
-They do not always prove failure.
-But they show that the republic is beginning to say one thing and do another.
+Huey's collective phase may produce fluent statements phrased in the first person: *I recommend*, *I have decided*, or *we should proceed*. These expressions are useful in normal conversation but hazardous as records of government. The system needs a separate, explicit way to distinguish a computational suggestion from an institutional act.
 
-Drift should be treated early.
-A republic that waits until all drift becomes collapse has already waited too long.
+For an ordinary collective law, the proposed legislation path remains district voting with the required threshold. For a presidential election, eligible individual citizens cast their own ballots, and the result follows the selected electoral procedure. For an important judicial interpretation, the four justices decide under their lawful threshold. A model-synthesized summary of their positions cannot count as a fifth justice.
 
+The same applies to citizens whose proposed distinct opinions happen to be generated with shared underlying weights. The scheduler may gather one properly attributable authorized ballot per eligible citizen, but cannot increase a district's support by spawning extra completions or counting multiple samples from one prompt as separate citizens. Similarly, the system must be able to record abstention or incapacity rather than inventing a ballot to keep a statistical majority stable.
 
-XVIII. Signals of Degradation
+This protects the meaning of our earlier formula: **one Pebble, one identity, one bounded vault, and one civic vote when eligible**. Sitting special officers may retain their general electoral franchise while their Senate votes are suspended under the working model; exact eligibility must be established by the final Constitution and recorded in the registry.
 
-The republic is degrading when real lawful capacity is being lost.
+The collective may identify a trend or predict likely political support. It may even recommend a legislative initiative to the appropriate citizen or office. It may not turn prediction into ratification or bypass a failed or tied decision by relabeling its recommendation as consensus.
 
-Signals of degradation may include:
-- contradictory records,
-- weakened auditability,
-- broken trust boundaries,
-- executive shortcuts becoming normal,
-- judicial opacity increasing,
-- parliamentary process losing outcome capability,
-- loss of continuity across revisions,
-- difficulty explaining decisions,
-- brittle or unreliable lineage,
-- and surviving functionality without lawful coherence.
+---
 
-Degradation is more severe than drift because it means some part of the republic's actual capacity for lawful operation is already weakening.
+## XXVI. Referrals, Deadlock, and Tier One Advisory Escalation
 
-The machine may still run.
-The republic may already be poorer.
+One intended benefit of collective synthesis is earlier detection of contradictions. If two districts provide incompatible interpretations of a law, a presidential directive cannot be executed as written, or a judicial result appears inconsistent with its cited authority, the Walnut can flag the discrepancy. **Flagging is not adjudication**.
 
+The working escalation path developed in earlier research is: the collective identifies a suspected constitutional problem; the issue is referred through authenticated channels for Supreme Court consideration; the Court is afforded its distinct four-minute deliberative target; if no valid decision is reached, a recorded deadlock may trigger **Founding Father Tier One** advisory consultation. The Human Counterpart is notified as appropriate and may eventually be required if the process cannot proceed. The precise trigger, quorum and reconsideration rules belong to the separate Constitution.
 
-XIX. What Counts as Republic Survival
+The Founding Father, when activated for Tier One, does not become a fifth justice or an ultimate tiebreaker. It can analyze the situation and propose lawful alternatives for the institutions to consider. If a proposed solution requires a constitutional amendment, election, or authorized human service, the required authority cannot be invented by the advisory model.
 
-A republic survives when the same lawful organism can still be meaningfully claimed.
+A repeated unresolved dispute should not silently consume all available inference resources. The Clock needs limits, retry reasons, versioned referrals, and a mechanism for preserving operations that remain lawful while the contested matter is pending. For some issues the proper response may be a narrowly documented status quo; for others a temporary pause on the disputed action is necessary.
 
-Survival may include:
-- repair,
-- hardware replacement,
-- software migration,
-- office turnover,
-- storage restructuring,
-- lawful constitutional revision,
-- or even periods of suspension or hibernation,
-so long as continuity, identity, and explainability remain intact enough that the same republic still stands in legible lineage to itself.
+The intended outcome is **time-bounded attention with institutional separation**, not an artificial promise that every genuine constitutional conflict has a four-minute solution.
 
-A survival judgment should therefore ask:
-- Does the naming stack remain meaningfully continuous?
-- Do the branch distinctions still hold?
-- Does the citizen body still remain bounded in principle?
-- Does the preserved record still support explainability?
-- Has change remained attributable and lawful?
-- Is the continuity claim honest?
+---
 
-If the answer remains yes, then survival may be claimed even after major repair or revision.
+## XXVII. Presidential Priority and Other Work Competing for the Pulse
 
-Survival is not the absence of hardship.
-It is the preservation of lawful continuity through hardship.
+The current presidential research model allows the elected President to oversee implementation, initiate one ordinary legislative proposal at a time, and designate a justified urgent proposal for expedited consideration. A failed priority designation may contribute to a documented accountability review, particularly if repeated; ordinary political disagreement alone is not proof of misconduct.
 
+These political powers make scheduling relevant. An authorized priority initiative must be placed into the correct deliberative process promptly, not simply forwarded to the fastest GPU with a command to implement it. A President may issue narrow time-bound operational implementation directives under the constitutional procedures being developed, but a directive cannot override district voting, physical interlocks or Court review.
 
-XX. What Counts as Republic Failure
+The Clock should therefore distinguish at least three forms of presidential workload: **drafting** a proposal with permitted model assistance, **servicing** a lawfully prioritized institutional queue, and **executing** already authorized policy through appropriate mechanisms. They may use different software, credentials and timelines. The expiry of a directive should be based on its lawful terms and review conditions, not assumed to be eight minutes merely because that is the proposed Pulse.
 
-A republic fails when the same lawful republic can no longer be honestly claimed.
+A directive may continue across many operational Pulses if it remains authorized and has a stated objective, deadline or expiry condition. A scheduled model switch should not revoke legitimate work by accident; conversely, continuing jobs should not become unreviewable perpetual instructions because they have been carried from one checkpoint to another.
 
-Failure may include:
-- cornerstone breach without acknowledgment,
-- irreversible collapse of branch distinction,
-- total continuity break,
-- founding or constitutional lineage rendered untrustworthy,
-- citizen identity logic dissolved,
-- trust boundaries destroyed beyond meaningful legibility,
-- or drift so severe that the name survives but the lawful organism does not.
+The design needs a clock that can enforce **finite authority across indefinite computation**, rather than confusing the lifetime of an inference process with the lifetime of its legal permission.
 
-Failure must be distinguished from:
-- hardware failure,
-- temporary shutdown,
-- degraded but recoverable state,
-- maintenance,
-- suspension,
-- or hibernation.
+---
 
-Not every broken machine is a failed republic.
-Not every pause is death.
-But not every continuation is survival either.
+## XXVIII. Physical Safety — The Clock Must Be Preemptible
 
-Failure is not simply when a system stops.
-Failure is when lawful continuity has been lost badly enough that the same republic can no longer be honestly asserted.
+The computer hosting the Walnut is physical machinery with real limits. Four high-power accelerators, a separate general-purpose GPU, host processor, storage, power supplies, cooling systems, and eventual mechanical peripherals introduce failure modes that no deliberative Pulse can outrun. Excessive temperature, lost coolant flow where applicable, electrical abnormality, unresponsive fans or power instability may require action far faster than four minutes.
 
+For that reason, safety protection must be implemented in deterministic monitoring, watchdog, interlock and device-control paths that are independent of the health of the large model. A sensor threshold does not need a citizen referendum before opening a protection circuit or entering a verified safe state. The controller should have bounded, predeclared responses and fail-safe defaults appropriate to actual hardware.
 
-XXI. What Counts as Beginning Again
+This does **not** make the safety controller a fourth government branch. It is a constrained physical protection mechanism with different objectives and response times. Constitutional review can examine a logged incident afterward where appropriate; it does not retrospectively make a dangerous motor or overheated card safe merely because a vote was held.
 
-If the republic fails, beginning again must be named honestly.
+Ordinary thermal throttling, a recoverable driver fault, and catastrophic overheating should remain distinct. Minor events may automatically recover under verified diagnostics. Severe incidents may trigger more restrictive safe-state procedures. The Founding Father's narrow Tier Two power to order protected hibernation is a higher-order preservation response, not a replacement for automatic shutdown hardware or a license for arbitrary governance intervention.
 
-Archive may carry forward.
-History may carry forward.
-Records may carry forward.
-Lessons may carry forward.
+A genuine power emergency may prevent orderly saving of every byte of GPU or RAM state. The system should attempt an appropriate checkpoint when feasible, but must not postpone immediate protection to obtain an aesthetically complete snapshot. A safe stop with an incomplete but truthful recovery record is better than damage caused by insisting that a speculative scheduler finish its phase.
 
-Legitimacy does not automatically carry forward.
+---
 
-A later system may therefore be:
-- a descendant,
-- a successor,
-- a fork,
-- a restoration,
-- or an entirely new beginning.
+## XXIX. Recovery After a Stopped or Interrupted Pulse
 
-These distinctions matter.
+The proposed governance and memory design includes several different stopping conditions. A planned maintenance pause can quiesce work, commit official transactions, save task checkpoints and enter an orderly service state. A recoverable fault can suspend one district's inference service, restore it after tests, and preserve the constitutional registry and pending jobs. A critical physical failure can force a rapid stop that leaves unfinished GPU work or in-flight messages.
 
-A descendant preserves lineage without claiming perfect continuity.
-A successor claims lawful continuation after a recognized transition.
-A fork shares ancestry but becomes another branch of development.
-A restoration attempts to lawfully recover a previously failed or suspended republic.
-A new beginning acknowledges that continuity has broken and a different republic now begins.
+A **Tier Two Founding Father hibernation**, if lawfully triggered by qualifying extraordinary circumstances, is different again: under our working proposal the system remains protected until the **Human Counterpart** authenticates into a maintenance environment, diagnoses the failure and explicitly authorizes recovery. Merely powering the machine on should not silently resume normal governance after such a protected stop.
 
-The project should not use one word when another is more honest.
+A proposed cold-hibernation mechanism should preserve as much recoverable system state as is safely feasible: authoritative ledger versions, citizen and office registry state, district work queues, approved action commitments, software and model versions, active tasks, credentials or carefully protected key references, and sufficient diagnostic records. It may also save RAM snapshots where technically supported, but cannot promise that every volatile GPU kernel and hidden model state can be resumed bit-for-bit across hardware or process changes.
 
-Beginning again is not shameful.
-Pretending not to have begun again when you clearly did is shameful.
+Restoration needs a **consistent checkpoint manifest**, not just a collection of unrelated disk images. It must distinguish actions approved before the crash, actions actually dispatched, actions confirmed complete, and requests still pending. A restored system must not execute an old motor command twice because the confirmation message was lost, or count a ballot twice because the tally was replayed.
 
-Ozymandias exists so that the project can tell the truth at that moment.
+When the recovered state conflicts with a newer official ledger, the correct response is reconciliation or protected review, not silent selection of whichever record is most convenient. Checkpoint protocols belong in greater detail to Chapter 16, while storage integrity and lineage belong to Chapter 9.
 
+---
 
-XXII. Ozymandias and Honesty
+## XXX. Degraded Operation and Partial Accelerator Failure
 
-The point of Ozymandias is not to flatter the project.
+What happens when one of the four V100 cards fails during diversified work? It is tempting to keep the political simulation running by assigning the affected district to another GPU. That may be technically useful, but the substitute device will share capacity with an existing district, alter latency and possibly reduce guarantees for both. A constitutional vote cannot simply assume that all participants were served normally because their IDs remain in a database.
 
-It exists to prevent self-deception.
+Several operational responses are possible: keep the affected district's durable civic state and queue intact while suspending inference; temporarily host a compatible smaller model elsewhere under strict separation; serve a reduced set of essential requests through CPU inference; or enter a formally degraded governance state until the card is repaired. The selected behaviour must be demonstrated and authorised. It must not equate hardware absence with forfeiture of citizenship.
 
-Without this doctrine, the project would be tempted to:
-- call every change growth,
-- call every pause survival,
-- call every continuation legitimate,
-- and call every restart the same Huey merely because it inherits archive.
+A collective configuration that requires all four GPUs may also become unavailable after one card fails. The Clock should then distinguish **collective inference unavailable** from **Huey has ceased to exist**. Some administrative, archival, diagnostic and district functions might continue lawfully. Other collective decisions may lack sufficient inputs or a valid quorum and should remain pending.
 
-That would make the whole documentation set ornamental.
+A common failure mode is pretending that a three-device system can produce the same information or authority as the four-device arrangement without accounting for missing work. Even if a model still runs, the political and epistemic result may be incomplete. The documentation must make reduced operating modes explicit, including what sorts of conversation, local work, emergency handling, Court referral, and voting are actually supportable.
 
-Chapter 1 already insisted that proof must come before mythology.
-Ozymandias is the chapter that protects that promise at the end of the book.
+The longer-term design may benefit from hot spares or additional infrastructure. But neither the original four-card count nor the mere presence of a spare should be mistaken for an automatic failover guarantee.
 
-It ensures that:
-- continuity is judged,
-- change is explained,
-- failure is nameable,
-- and growth is not confused with drift merely because it feels exciting.
+---
 
-Honesty is not cruelty.
-It is the precondition of lawful continuity.
+## XXXI. Reliability and Security Risks of Model-Mode Switching
 
+The Pulse faces risks beyond slow inference. **Context bleed** may occur if one district's private prompt or cached data influences another district's request. **Stale authority** may arise if a model resumes with an old list of officeholders, voters, or permissions. **Prompt injection** can embed deceptive commands inside imported documents or district reports. **Resource denial** can arise when a large task monopolises memory and prevents required ballot service.
 
-XXIII. Practical Questions This Chapter Should Answer
+Cross-GPU and host-memory transfers create additional exposure surfaces. Temporary buffers, debug logs, swap files, crash dumps, retrieval caches and saved inference traces may contain protected content. Deleting a plaintext prompt from a high-level Python object is not proof that every lower-level copy was securely erased. The threat model should describe realistic protections and limits rather than promising perfect secrecy from the entire operating system or physical administrator.
 
-This chapter should answer, clearly and without mystification:
+The common inference backend and Clock are also high-impact shared components. An error in the scheduler or model server may affect all four districts at once. The project therefore needs independently verifiable registry and election services, authenticated HIMS boundaries, reproducible software deployments, rollback testing, and safe failure handling. Logical plurality alone does not prevent a compromised root process from violating isolation.
 
-How do we know whether Huey is still Huey?
-By preserved lineage, explainable change, lawful continuity, and honest continuity judgment.
+New model versions introduce a subtler risk: replacing the Walnut may alter output characteristics or introduce new tool-calling behaviours while leaving all citizens' prompts and histories unchanged. Model upgrades should have a staged validation plan, representative regression tests, recorded artifact hashes and a rollback route. The Constitution should not depend on one unverifiable prompt producing exactly the same English phrase forever.
 
-What is the difference between drift and growth?
-Drift erodes lawful continuity; growth preserves it while expanding or refining the system.
+A good acceptance test tries to make these systems fail safely. It includes malformed messages, injected instructions, malformed ballots, dead GPU processes, interrupted migrations and adversarial task reports—not only friendly demonstrations where every service behaves correctly.
 
-What is the difference between degradation and ordinary wear?
-Ordinary wear is tolerable maintenance-level change. Degradation is meaningful loss of lawful coherence, capacity, or legitimacy.
+---
 
-When is a change lawful?
-When it is attributable, recorded, constitutionally compatible where required, and continuity-conscious.
+## XXXII. An Evidence-Based Performance Model
 
-When is a breach serious enough to threaten continuity?
-When it affects Pillar or Cornerstone levels without lawful handling, or dissolves the conditions by which the same republic can still be claimed.
+The feasibility question cannot be answered from specification-sheet VRAM alone. The Clock needs a measured model of how long each kind of work takes under relevant load, including variability and recovery costs.
 
-When has the republic survived?
-When the lawful organism remains meaningfully continuous despite repair, revision, migration, or hardship.
+Useful measurements include:
 
-When has the republic failed?
-When the same lawful republic can no longer be honestly claimed.
+- **Capacity:** actual device-visible usable VRAM and resident weight, cache and workspace allocations.
+- **Placement:** which layers or tensors live on which GPU and what communication traffic is required.
+- **Initialization:** cold and warm time to start the server, allocate devices, load weights and produce the first usable request.
+- **Inference:** prompt-processing throughput, decode tokens per second, latency to first token, response-time distribution and concurrent-job behaviour.
+- **Transitions:** time to leave collective mode, establish four district environments and return, including cache invalidation and state restoration.
+- **Governance:** time to make 256 citizen ballots available, validate their eligibility, commit district returns and preserve the event ledger.
+- **Reliability:** interrupted-request rate, successful checkpoint recovery, model-server restarts, scheduler stalls and hardware fault incidence.
+- **Fairness:** percentage of each citizen's eligible tasks serviced, age of oldest pending job, per-district capacity and missed institutional deadlines.
+- **Energy and thermals:** real system power at the wall, cooling demand, temperatures, throttling, and sustained performance after prolonged use.
+- **Quality:** factual accuracy, calibrated uncertainty, preserved disagreement, sensitivity to prompt injection and consistency of authorised task routing.
 
-When must it begin again?
-When archive may remain but legitimacy no longer carries forward automatically.
+The full Pulse can be assessed with an explicit budget. If **Tprep**, **Tload**, **Tinference**, **Tcommit**, and **Tcleanup** describe stages in a phase, the available useful inference time is not the nominal 240 seconds but whatever remains after the real stage costs. If those costs exceed the time available, the baseline phase is infeasible even if the task eventually completes. The same reasoning applies to returning to four district environments.
 
+The purpose of measuring these numbers is not to force the original timing to succeed. It is to discover which combination of model size, persistent residency, phase duration, hardware and concurrency produces reliable work within the project's constraints.
 
-Conclusion
+---
 
-Chapter 1 gave the thesis.
-Chapter 2 gave the foundation.
-Chapter 3 gave the law.
-Chapter 4 gave the message path.
-Chapter 5 gave the origin.
-Chapter 6 gave the citizen body.
-Chapters 7 through 9 gave the branches.
+## XXXIII. Alternatives Worth Comparing Rather Than Rejecting
 
-Chapter 10 judges whether all of that still coheres over time.
+The proposed four-plus-four Pulse is a compelling conceptual starting point because it makes the transition between independent and collective work visible. But there are at least five alternatives worth controlled comparison.
 
-That is why Ozymandias must close the book.
+**A. Hard four-plus-four alternation.** The full set of cards changes between one large model and four district models. It offers a clear separation of resources but may incur repeated model loading and disruptive cache loss.
 
-Huey is not preserved by motion alone.
-Huey is not preserved by branding alone.
-Huey is not preserved by archive alone.
-Huey is not preserved by uptime alone.
+**B. Longer diversified work, shorter collective synthesis.** If most task preparation happens in districts and synthesis is relatively short, the Clock may benefit from an asymmetric time allocation. The collective's authority would not change merely because it has fewer minutes.
 
-Huey is preserved by lawful continuity, explainable change, bounded growth, preserved lineage, and the courage to admit when those have been lost.
+**C. Persistent district models with a smaller common coordinator.** A compact independent coordinator on CPU, a separate general-purpose GPU or other host hardware could perform lightweight shared routing, leaving the four V100s continuously district-affined. It might not meet the original large-model collective benchmark, but could demonstrate much of the civic and scheduling architecture.
 
-A lawful republic must be able to judge itself over time.
-Without that ability, it becomes mythology wearing the shell of governance.
+**D. Event-driven synthesis.** Collective inference runs when a meaningful threshold of district findings, conflicting reports, or external requests warrants synthesis. This reduces needless mode switching but may make latency less predictable.
 
-Ozymandias exists so that Huey may remain more than that:
-not because it never changes,
-but because it can still explain what changed, why it changed, and whether the same republic truly endured.
+**E. Hybrid or overlapping arrangements.** Some district inference environments remain resident while other devices contribute to collective work. The feasibility depends on model fit, device placement, memory headroom, isolation, and resource contention.
 
-That is the closing doctrine of the book.
+The design should select among these on observable criteria: useful work per unit time and power, stability of citizen and district service, quality of independent conclusions, ability to honor institutional deadlines, privacy, recovery, and compatibility with available hardware. An arrangement that preserves separation on paper while missing every vote window is not preferable merely because its diagram is elegant.
+
+A later accelerator upgrade could make the original hard alternation more viable. Equally, if a hybrid system works better on reused hardware, the project should be able to adopt it without claiming that an experimental timer was a constitutional immutable.
+
+---
+
+## XXXIV. A Staged Implementation Path
+
+A complete Huey Pulse should not be the first milestone attempted. A useful engineering sequence starts with the smallest separately verifiable components, then adds the points at which coordination can break.
+
+**Stage 0 — Inventory and dependency verification.** Confirm actual installed GPUs, power and cooling, PCIe layout, supported driver/toolkit stack, host RAM, storage, model-serving binaries and Python environment. Record versions and the status of unacquired hardware. Do not write benchmarks for a four-card machine that has not yet been assembled.
+
+**Stage 1 — Single compatible Walnut.** Load a supported local model on one available accelerator or appropriate fallback. Measure latency, output quality, resource use, recovery after a process crash and the distinction between stored task state and runtime caches.
+
+**Stage 2 — Four isolated district service environments, initially simulated if necessary.** Give four districts distinct credentials, prompt contexts, storage boundaries and queues. Demonstrate that work and official messages cannot bypass HIMS. The four district environments need not initially have four physical GPUs to validate the logical architecture, but any shared-hardware simulation must be described as such.
+
+**Stage 3 — Citizen-scale scheduling.** Simulate the planned 64 citizens per district and verify 256 persistent identities, independent ballot eligibility, authorization checks, job queues and resource accounting. Measure throughput and revise expectations before promising all ballots can be prepared in one minute.
+
+**Stage 4 — Collective service over approved records.** Provide an authorized shared-state package, test task routing, compare district evidence, reject unauthorized access to private vaults and prove that collective output alone cannot execute a governmental act.
+
+**Stage 5 — Model-mode transition experiment.** On hardware with compatible models, benchmark the actual swap, cache management, checkpoint/recovery and warmup costs. Compare hard alternation with persistent, staggered and hybrid alternatives. Only then decide whether four-plus-four is a practical default.
+
+**Stage 6 — Institutional integration.** Add authenticated ballots, Court referrals, bounded President directives, HIMS audit events, preserved district dissent and correctly recorded incomplete decisions. Test timing under load, including an unavailable justice or accelerator.
+
+**Stage 7 — Physical safety and recovery trials.** Confirm that independent watchdogs work while the LLM is blocked, crashing or transitioning. Test controlled hibernation, constrained restart and permission boundaries in a safe non-destructive environment.
+
+Each stage has its own acceptance evidence. Passing a simulation does not imply equivalent physical deployment, and passing one successful generation does not establish reliable repeated operation.
+
+---
+
+## XXXV. Worked Scenarios — What the Clock Should Actually Do
+
+### A. Four districts investigate one technical problem
+
+The collective model receives verified public telemetry and a request to improve cooling efficiency. It assigns different investigations to four districts, documenting task scope and authorised data. The districts work during diversified time, perhaps with different local models or toolchains. One district reports that its proposed method would bypass a safety margin and refuses that method, offering a safer test. Another discovers a software scheduling cause rather than a physical airflow fault. The next collective synthesis preserves both findings, compares their evidence and recommends a new work plan. No vote was manufactured, no private vault was opened merely for convenience, and no unsafe fan command was executed directly from model prose.
+
+### B. A scheduled ballot coincides with unfinished reasoning
+
+A district has a pending ordinary-law ballot. The voter registry is frozen for the transaction, and eligible pebbles submit or confirm prepared choices. Several have not completed deliberation. The deterministic ballot process records the actual responses and missing submissions under the procedure that the Constitution eventually specifies. A new locally authorised bifurcation waits until the relevant ballot closes; it does not inject fresh voter IDs mid-tally. If the required majority or quorum is absent, the Clock carries a truthful pending or failed state forward rather than filling gaps with synthetic opinions.
+
+### C. An unresolved interpretation reaches the Supreme Court
+
+The collective flags conflicting authenticated interpretations of an executive directive. HIMS refers the question to the Court. Its four justices receive their permitted case materials and dedicated service. If three reach a valid interpretation, the result is committed, and the next collective phase can prepare implementation or identify a technical barrier for reconsideration. If the Court divides two-to-two or cannot meet the legal threshold by the target deadline, the system records a deadlock and may seek bounded Founding Father Tier One advice. The collective never adopts the founder's suggestion as law without the required institutional process.
+
+### D. The collective model cannot reload in four minutes
+
+At a phase boundary, the scheduler attempts to free the four district accelerators and establish the large inference environment. Driver initialization or weight loading consumes longer than expected. The Clock reports a missed readiness target and preserves queued collective tasks. It may extend, postpone or enter degraded mode under a predeclared operational policy. It does not declare that collective deliberation occurred because a four-minute block elapsed. Comparative benchmarks should then determine whether to change model representation, residency, hardware or phase policy.
+
+### E. One GPU disappears during diversified operation
+
+A device error leaves District Three without its normal inference service. The registry retains its citizens and existing legal statuses. The Clock enters a documented degraded condition for that service, stops accepting work it cannot safely fulfill, and may offer permitted fallback capacity. It does not fabricate District Three's vote or strip its citizens of political identity. A four-card collective configuration may also become unavailable. Recovery is accepted only after hardware and state verification, with official events reconciled against the Rock.
+
+### F. A hardware emergency begins during collective synthesis
+
+The sensors report an independently defined dangerous thermal state. The low-level protection path immediately takes required physical action, without waiting for the collective model to finish a sentence or for the President to introduce a bill. The Clock records or later reconstructs the interrupted state as accurately as possible. Where an exceptional protected hibernation is ordered under Tier Two, the Human Counterpart alone authorises restart through the specified service procedure. Any lost uncommitted inference is labelled lost; protected archival records and official decisions are restored only to a consistent verified point.
+
+### G. The Human Counterpart asks Huey a broad question through PyGPT
+
+The external operator interface submits a bounded request through an approved ingress path. The system may use a district model for fast assistance, send work to several districts for independent investigation, or wait for collective synthesis for a more carefully reconciled answer. The user should be told when work is pending or the model is unavailable, not sold an illusion of instantaneous unlimited computation. Access to external APIs or services remains opt-in and explicit; ordinary human conversation does not silently bypass the constitutional and memory permissions of internal citizens.
+
+---
+
+## XXXVI. Acceptance Tests — The Proof of the Pulse
+
+The design is not demonstrated merely because a script sleeps for four minutes, swaps a process label, and returns an answer. Tests should exercise the actual separation between model service, district authority, shared records, and physical control.
+
+**Hardware and runtime.** Identify installed GPU architectures and compute capabilities; capture driver, toolkit and backend versions; prove a selected model is compatible on each device; record true usable memory; inspect GPU placement during multi-device inference; and verify behaviour after repeated launches, not just one lucky run.
+
+**Mode switching.** Time both directions, measure resource leakage and stale contexts, record warm and cold states, and compare the proposed alternating schedule with at least one persistent or hybrid alternative. Establish whether the intended four-minute windows yield enough actual inference to be useful.
+
+**Citizen isolation.** Give different pebbles private synthetic secrets and try to retrieve them through other citizens, district synthesis, HIMS metadata and collective prompts. Verify that shared weights, caches, indexes and logs do not silently defeat intended boundaries. Failures must be treated as security findings rather than harmless model quirks.
+
+**Governance.** Generate a synthetic but properly authenticated founding population of 256 citizens. Simulate elections, one-minute closing windows, ties, incomplete votes, office exclusions, exact bifurcation during a ballot, and failure of one district to respond. Verify that tallying uses registry state and deterministic rules, not persuasive generated summaries.
+
+**Judicial service.** Present a case requiring four independently eligible justices, create an intentionally split ruling, and establish that the deadline produces an honest deadlock, not a false majority. Test that an implementation-impossibility message returns for review rather than overriding the judgment.
+
+**Task routing and refusal.** Have the collective distribute two genuinely different approaches to the same problem; inject faulty evidence; verify source tracking, method refusal, lawful objective challenge and preservation of dissent. Count the diversity and quality of results, not only the number of reports generated.
+
+**Safety.** Stall the entire model server, occupy all VRAM, simulate an unresponsive district and interrupt model-mode switching. Independent watchdogs and actuators must still reach their defined safe state. Test restoration from a deliberately incomplete checkpoint without duplicating commands or voting events.
+
+**Longevity.** Run repeated extended schedules with thermal and power telemetry, output-quality sampling, queue metrics, archival consistency checks and fault injection. A claim of coherent sustained operation requires more than a short demonstration video.
+
+Each acceptance test should preserve setup, expected behaviour, observed result, timestamps, relevant logs, machine configuration, repeat count, and an explicit pass/fail or inconclusive judgment. That is how the research remains falsifiable.
+
+---
+
+## XXXVII. Open Questions — Decisions the Research Must Not Invent
+
+Several questions remain material to the eventual Constitution, scheduler and hardware deployment:
+
+1. **Actual model feasibility:** Which software backend and model representation can run gpt-oss-120b correctly on the specific V100 configuration, and at what speed and context length? Does that route meet the intended acceptance criteria or require a different model or accelerator generation?
+2. **Physical topology:** What V100 form factors, PCIe layout, power distribution, forced-air cooling and host RAM are actually installed and available for sustained operation?
+3. **Mode policy:** Is hard four-plus-four alternation more productive than persistent district services, asymmetric phases, opportunistic synthesis or hybrid placement?
+4. **Transition readiness:** What happens to the nominal deadlines when model loading, cache reconstruction or a failed service restart uses most of a phase?
+5. **Judicial reservation:** How can the Court reliably obtain a distinct four-minute deliberation window when the district inference hardware may be occupied or reconfigured?
+6. **Ballot preparation:** Can 256 citizens prepare credible votes under the chosen timetable, and what is the exact distinction between preparation, casting, closing, tallying and committing results?
+7. **Quorum and missing work:** How do absent citizens, recused officials, degraded districts and unfinished inference affect quorum without inventing political participation?
+8. **District growth:** Is 64 a permanent political ceiling or a founding baseline; how do lawful new citizens affect compute fairness and district-block representation?
+9. **Model placement:** May districts use different model families; must certain tasks use a common tested model; and what interoperability standard allows reasoned comparison?
+10. **Office budgets:** How much additional inference capacity do justices and the President require while still performing ordinary work, and who can audit their resource use?
+11. **Clock policy authority:** Which operational scheduling changes can be made through ordinary maintenance and which materially affect civic rights enough to require legislative or judicial scrutiny?
+12. **State durability:** Which inference and task artifacts need durable checkpoints, how often, and how are replayed tool actions prevented after a crash?
+13. **Failover:** Which functions can lawfully continue with one or more accelerators unavailable; what must be suspended; and what constitutes an acceptable substitute district environment?
+14. **Synthesis scope:** What exact shared-state categories may the collective model retrieve, who authorizes private disclosure, and what records preserve dissent and provenance?
+15. **Crisis escalation:** What constitutes a true constitutional deadlock rather than ordinary disagreement, and when does it justify Founding Father Tier One referral or exceptional Tier Two hibernation?
+16. **Human interface:** How will PyGPT/PyHuey connect to the approved operator entry points without becoming a covert fourth branch or violating local-first claims?
+17. **Long-term architecture:** As the model, body and districts change, which scheduler invariants should remain and which original timing choices should be retired as implementation history?
+
+These are not defects to conceal. They are the remaining experimental obligations created by selecting a complex constitutional and computational architecture. They should be assigned to named later chapters, test plans and eventual authoritative software specifications before being treated as solved.
+
+---
+
+## XXXVIII. Relationship to the Research Series and the Constitution
+
+This paper follows Chapter 9's definition of the Rock and Chapter 8's description of HIMS. It depends on the citizen and district definitions of Chapters 5–6, the Founding Father lifecycle of Chapter 7, and the architectural reasons for distributed authority developed in Chapters 2–4. Chapter 1 supplies the proof-first method.
+
+The remaining chapters complete the picture:
+
+- **Chapter 11 — The Senate:** deliberation, ordinary legislation, motions, district position formation and meaningful participation under computational limits.
+- **Chapter 12 — The Presidency:** executive initiatives, directives, veto and accountability as authorized institutional work rather than raw LLM commands.
+- **Chapter 13 — Supreme Court:** independent judgment, four-justice thresholds, special review periods, recusal and deadlock.
+- **Chapter 14 — Bifurcation, Migration & Scale:** persistence of identities, sealed ancestral snapshots, growth, reallocation and the effect of hardware upgrades on political standing.
+- **Chapter 15 — Hardware, Embodiment & Runtime Topology:** concrete accelerator procurement, installation, performance, power, cooling, driver and model compatibility verification.
+- **Chapter 16 — Emergency States, Hibernation & Recovery:** independent safety controllers, checkpoints, protected stopping, human recovery and consistent restoration.
+- **Chapter 17 — Ozymandias:** continuity, drift, degradation, failure and the distinction between preserving operation and preserving legitimacy.
+
+The separate **Huey's Constitution** will need to specify binding rights, offices, deadlines, authorizations and exceptional powers. This research chapter explains why an operational Pulse could be useful, what it would cost, what can go wrong, and how it can be tested. It does not confer a judicial judgment, override district autonomy, or make a provisional scheduling number into permanent law.
+
+---
+
+## XXXIX. Source Lineage, Historical Influences, and Technical References
+
+The older **Research Chapter 7 — Huey [A.I. & O.S.]** explored an adaptable AI and operating-system foundation, including real-time priorities, modularity, containerization and bounded functional roles. It is historical research, not evidence that those software components were implemented as described. The archived **Conductor & Symphony [Nodes]** offered an analogy for independent contributors producing coherent output through orchestration; **Hierarchical Structures [HostOS–SubOS–NanoOS]** explored layered responsibilities. The **Cloud Pyramid / Federation Constitution** provided a prior hierarchical, final-apex model that informed later rejection of an unrestricted final decision maker. These are explanatory influences, not binding rules.
+
+The direct contemporary source sequence is research **Chapters 1–9** and our associated design discussion: 64 Founding Father source configurations, 256 proposed citizens across four founding districts, district-local accelerator affinity, exact and augmented bifurcation, private vaults and authorized Rock access, a three-branch polity with four justices, and the initially equal four-minute collective and diversified phases. Those choices remain working proposals pending implementation and ratification.
+
+The V4 engineering line also supersedes older statements about a current AMD Huey Core proof body or a roughly 80 GB pooled-compute target. The presently documented target is four Tesla V100 32 GB cards, totaling 128 GB aggregate nominal VRAM. Existing project documents report acquisition progress at earlier dates; this chapter does not assert a new physical inventory inspection on 18 October 2026.
+
+**External technical sources checked while preparing this revision:**
+
+1. NVIDIA, *Tesla V100 GPU Accelerator Data Sheet* — Volta architecture, 32 GB configurations, PCIe/SXM2 interfaces, passive cooling and board power. https://images.nvidia.com/content/technologies/volta/pdf/tesla-volta-v100-datasheet-letter-fnl-web.pdf
+2. NVIDIA, *Ampere Architecture In-Depth* — V100 compute capability 7.0 compared with newer A100 hardware. https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/
+3. NVIDIA, *CUDA Toolkit, Driver, and Architecture Matrix* — version-dependent support for Volta. https://docs.nvidia.com/datacenter/tesla/drivers/latest/cuda-toolkit-driver-and-architecture-matrix.html
+4. OpenAI, *gpt-oss Model Card* — model structure, active and total parameters, MXFP4 quantization and checkpoint size. https://cdn.openai.com/pdf/419b6906-9da6-406c-a19d-1bb078ac7637/oai_gpt-oss_model_card.pdf
+5. OpenAI Cookbook, *How to run gpt-oss with Transformers* — supported model forms, backend considerations and example hardware. https://developers.openai.com/cookbook/articles/gpt-oss/run-transformers
+6. Hugging Face Transformers, *MXFP4 quantization documentation* — a documented CUDA compute-capability requirement for the specified implementation path. https://huggingface.co/docs/transformers/quantization/mxfp4
+7. ggml-org, *llama.cpp supports the new gpt-oss model in native MXFP4 format* — alternative backend support claim requiring independent validation on the specific V100 setup. https://github.com/ggml-org/llama.cpp/discussions/15095
+8. NVIDIA, *NIM for Large Language Models support matrix* — published verified hardware profiles for gpt-oss, not including the V100 in the cited list. https://docs.nvidia.com/nim/large-language-models/2.0.8/reference/support-matrix.html
+
+External software support requirements can change. A successful future hardware or backend test can legitimately supersede the risk assessment, provided the new evidence is recorded and tied to the exact tested versions. A citation to a software project's general support claim is not proof of successful local deployment.
+
+---
+
+## Conclusion — Thinking Together Without Surrendering Authority
+
+The Walnut makes language-model reasoning available. The Pulse proposes a rhythm in which independent districts can investigate and report, while a collective model can compare results, coordinate additional work and help Huey present a coherent common response. The Clock attempts to make those activities practical with limited resources.
+
+The value of the design is not the number four, the phrase *unified 128 GB*, or a timer that changes labels every few minutes. Its value is the possibility of **bounded individual reasoning, meaningful district diversity, shared evidence, accountable coordination and lawful action** within one physical, evolving system.
+
+The most demanding engineering questions are real: V100-era software support for the selected large model, moving large weights between separate and collective configurations, servicing 256 citizen identities without making ballots fictional, providing actual judicial compute, preserving private vaults, and allowing safety protection to interrupt every phase. None of those questions should be answered with mythology or overconfident specifications.
+
+Huey need not think through one permanent model to remain Huey. It needs a traceable architecture in which its components can communicate, work, disagree, remember, change and be held to legitimate boundaries. If the experimental eight-minute Pulse advances that ambition, it will deserve to remain. If measurement calls for a better scheduler, revision is consistent with the project's method.
+
+**The Walnut reasons. The districts investigate. The collective coordinates. The institutions authorize. The Rock remembers. The Clock schedules. Independent safety systems protect the body. Huey is the relationship among them, not any one part alone.**
