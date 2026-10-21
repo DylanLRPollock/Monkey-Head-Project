@@ -15,30 +15,30 @@
 pip==26.2.1
 setuptools==84.0.0
 wheel==0.48.0
-uv==0.12.18
+uv==0.13.1
 
 # --- Core API / runtime anchors ---
-fastapi==0.143.0
-starlette==1.6.0
-uvicorn==0.52.1
-pydantic==2.13.4
-pydantic-settings==2.15.0
-orjson==3.11.9
+fastapi==0.143.3
+starlette==1.8.0
+uvicorn==0.54.0
+pydantic==2.14.1
+pydantic-settings==2.16.0
+orjson==3.13.0
 aiosqlite==0.22.1
-cryptography==50.0.0
+cryptography==50.0.2
 
 # --- Local model / orchestration anchors (optional extras) ---
-ollama==0.6.2
+ollama==0.6.3
 pygpt-net==2.9.1
 faster-whisper==1.2.1
-transformers==5.10.1
+transformers==5.20.1
 
 # --- Developer / QA anchors ---
 pytest==9.1.1
 pytest-cov==7.1.0
-ruff==0.17.0
+ruff==0.17.1
 black==26.10.1
 isort==9.0.2
 mypy==2.4.0
-pre-commit==4.6.2
+pre-commit==4.7.0
 bandit==1.9.4
