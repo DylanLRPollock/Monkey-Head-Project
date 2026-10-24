@@ -234,7 +234,7 @@ huey-command-center = "huey.apps.command_center.cli:main"
 
 [build-system]
 requires = [
-  "setuptools==84.0.0",
+  "setuptools==84.1.0",
   "wheel==0.48.0",
 ]
 build-backend = "setuptools.build_meta"
