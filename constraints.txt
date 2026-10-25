@@ -15,7 +15,7 @@
 pip==26.2.1
 setuptools==84.0.0
 wheel==0.48.0
-uv==0.12.18
+uv==0.13.4
 
 # --- Core API / runtime anchors ---
 fastapi==0.143.0
