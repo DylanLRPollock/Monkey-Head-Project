@@ -10,7 +10,7 @@ from huey.gui.models import dataclass_list_to_dicts, dataclass_to_dict
 from huey.gui.v1_runs import sample_v1_runs
 from huey.integrations.command_center.launcher import get_launcher_support
 from huey.integrations.command_center.serializers import memory_to_json, state_to_json
-from huey.memory.PY.indexing import default_index_path
+from huey.memory.indexing import default_index_path
 from huey.runtime.orchestrator import RuntimeOrchestrator
 from huey.utils.paths import get_memory_path
 from huey.v1.fixture_registry import list_fixtures
@@ -69,8 +69,8 @@ def get_v1_status() -> dict[str, object]:
 def get_memory_status() -> dict[str, object]:
     """Return memory root and index status."""
 
-    memory_root = get_memory_path(create=True)
-    index_path = default_index_path()
+    memory_root = get_memory_path(create=False)
+    index_path = default_index_path(create=False)
     indexed_entries = 0
     if index_path.exists():
         indexed_entries = len(
@@ -83,7 +83,7 @@ def get_memory_status() -> dict[str, object]:
         "indexed_entries": indexed_entries,
         "subdirectories": sorted(
             entry.name for entry in memory_root.iterdir() if entry.is_dir()
-        ),
+        ) if memory_root.is_dir() else [],
     }
     return memory_to_json(payload)
 
