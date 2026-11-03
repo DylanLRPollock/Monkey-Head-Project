@@ -25,6 +25,10 @@ except ImportError:  # pragma: no cover - degrade gracefully
     psutil = None  # type: ignore[assignment]
 
 from huey.os.core.platform_support import detect_host_platform
+from huey.os.core.privileged_operations import (
+    OperatorRole,
+    authorize_privileged_operation,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -84,27 +88,61 @@ class BatteryMonitor:
         return percent <= self.shutdown_threshold
 
     # ------------------------------------------------------------------
-    def initiate_shutdown(self) -> PowerEvent:
-        """Trigger a safe shutdown sequence using available system tools."""
+    def initiate_shutdown(
+        self,
+        *,
+        confirmed: bool = False,
+        actor_role: OperatorRole | None = None,
+        dry_run: bool = False,
+    ) -> PowerEvent:
+        """Trigger a shutdown only with explicit operator authorization."""
 
         return self._execute_power_action(
-            "shutdown", {"threshold": self.shutdown_threshold}
+            "shutdown",
+            {"threshold": self.shutdown_threshold},
+            confirmed=confirmed,
+            actor_role=actor_role,
+            dry_run=dry_run,
         )
 
-    def initiate_hibernate(self) -> PowerEvent:
-        """Put the system into hibernation if supported."""
+    def initiate_hibernate(
+        self,
+        *,
+        confirmed: bool = False,
+        actor_role: OperatorRole | None = None,
+        dry_run: bool = False,
+    ) -> PowerEvent:
+        """Request host hibernation with explicit operator authorization."""
 
-        return self._execute_power_action("hibernate", {})
+        return self._execute_power_action(
+            "hibernate", {}, confirmed=confirmed, actor_role=actor_role, dry_run=dry_run
+        )
 
-    def initiate_sleep(self) -> PowerEvent:
-        """Suspend the system to RAM if supported."""
+    def initiate_sleep(
+        self,
+        *,
+        confirmed: bool = False,
+        actor_role: OperatorRole | None = None,
+        dry_run: bool = False,
+    ) -> PowerEvent:
+        """Request suspend with explicit operator authorization."""
 
-        return self._execute_power_action("sleep", {})
+        return self._execute_power_action(
+            "sleep", {}, confirmed=confirmed, actor_role=actor_role, dry_run=dry_run
+        )
 
-    def initiate_reboot(self) -> PowerEvent:
-        """Reboot the system using the preferred toolchain."""
+    def initiate_reboot(
+        self,
+        *,
+        confirmed: bool = False,
+        actor_role: OperatorRole | None = None,
+        dry_run: bool = False,
+    ) -> PowerEvent:
+        """Request reboot with explicit operator authorization."""
 
-        return self._execute_power_action("reboot", {})
+        return self._execute_power_action(
+            "reboot", {}, confirmed=confirmed, actor_role=actor_role, dry_run=dry_run
+        )
 
     # ------------------------------------------------------------------
     def register_hook(
@@ -322,8 +360,29 @@ class BatteryMonitor:
 
     # ------------------------------------------------------------------
     def _execute_power_action(
-        self, action: str, base_metadata: dict[str, Any]
+        self,
+        action: str,
+        base_metadata: dict[str, Any],
+        *,
+        confirmed: bool = False,
+        actor_role: OperatorRole | None = None,
+        dry_run: bool = False,
     ) -> PowerEvent:
+        # Deny before platform discovery, filesystem access or subprocesses.
+        if not authorize_privileged_operation(
+            f"host.{action}",
+            confirmed=confirmed,
+            actor_role=actor_role,
+            dry_run=dry_run,
+        ):
+            event = PowerEvent(
+                timestamp=time.time(),
+                action=action,
+                metadata={**base_metadata, "dry_run": True},
+            )
+            self._last_event = event
+            return event
+
         timestamp = time.time()
         host = detect_host_platform()
         command = self._resolve_command(action)
@@ -336,7 +395,7 @@ class BatteryMonitor:
         if command:
             metadata["command"] = command
             try:
-                subprocess.Popen(command)  # pragma: no cover - system side effects
+                subprocess.Popen(command, shell=False)  # pragma: no cover - system side effects
             except (OSError, subprocess.CalledProcessError) as exc:
                 LOGGER.exception("Failed to execute %s command %s", action, command)
                 metadata["error"] = str(exc)

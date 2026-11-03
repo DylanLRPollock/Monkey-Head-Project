@@ -17,11 +17,19 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from pathlib import Path
+
+from huey.os.core.platform_support import find_project_root
 
 
 def main() -> int:
-    cmd = [sys.executable, "../run.py", "--cli"]
-    return subprocess.call(cmd)
+    root = find_project_root(Path(__file__).resolve())
+    runner = root / "run.py"
+    if runner.is_symlink() or not runner.is_file():
+        raise FileNotFoundError(f"Project runner not found: {runner}")
+    return subprocess.call(
+        [sys.executable, str(runner.resolve()), "--cli"], cwd=root, shell=False
+    )
 
 
 if __name__ == "__main__":  # pragma: no cover - example script

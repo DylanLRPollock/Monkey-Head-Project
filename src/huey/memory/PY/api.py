@@ -1449,10 +1449,14 @@ def power_should_shutdown() -> Dict[str, Any]:
     }
 
 
-def trigger_shutdown() -> PowerEventResponse:
-    """Initiate a safe shutdown sequence."""
+def trigger_shutdown(
+    *, confirmed: bool = False, actor_role: str | None = None
+) -> PowerEventResponse:
+    """Request shutdown through a separately authenticated ingress."""
 
-    event = BATTERY_MONITOR.initiate_shutdown()
+    event = BATTERY_MONITOR.initiate_shutdown(
+        confirmed=confirmed, actor_role=actor_role
+    )
     return PowerEventResponse(
         timestamp=event.timestamp, action=event.action, metadata=event.metadata
     )

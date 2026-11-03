@@ -14,37 +14,63 @@ import sys
 from pathlib import Path
 
 from huey.os.core.platform_support import find_project_root, resolve_platform_script_paths
+from huey.os.core.privileged_operations import authorize_privileged_operation
 
 PROJECT_ROOT = find_project_root(Path(__file__).resolve())
 
 
-def run_uninstaller(*, dry_run: bool = False, confirmed: bool = True) -> int:
+def run_uninstaller(
+    *, dry_run: bool = False, confirmed: bool = False, actor_role: str | None = None
+) -> int:
+    """Uninstall only on an explicitly authorized, verified local request."""
+    try:
+        should_execute = authorize_privileged_operation(
+            "project.uninstall",
+            dry_run=dry_run,
+            confirmed=confirmed,
+            actor_role=actor_role,
+        )
+    except PermissionError as exc:
+        print(str(exc))
+        return 2
+    if not should_execute:
+        # No path probing, filesystem mutations or subprocess creation in preview.
+        print("[dry-run] Uninstall authorization preview; no host changes.")
+        return 0
+
     paths = resolve_platform_script_paths(PROJECT_ROOT)
     if paths.uninstall is None:
-        host = paths.host
-        print(f"Unsupported operating system: {host.system}")
+        print(f"Unsupported operating system: {paths.host.system}")
         return 1
-    if not paths.uninstall.exists():
+    if paths.uninstall.is_symlink() or not paths.uninstall.is_file():
         print(f"Uninstaller script not found: {paths.uninstall}")
         return 1
 
-    command = paths.command_for("uninstall") or [str(paths.uninstall)]
+    project_root = PROJECT_ROOT.resolve()
+    script = paths.uninstall.resolve()
+    if not script.is_relative_to(project_root):
+        print("Uninstaller script must be inside the project directory.")
+        return 2
 
-    if dry_run:
-        print(f"[dry-run] {' '.join(command)}")
-        return 0
-
-    if not confirmed:
-        print("Confirmation required. Re-run with confirmed=True or --yes.")
+    command = paths.command_for("uninstall")
+    if not command or not all(isinstance(arg, str) and arg for arg in command):
+        print("Invalid uninstaller command.")
         return 2
 
     try:
-        subprocess.run(command, check=True, cwd=PROJECT_ROOT)
+        subprocess.run(
+            command, check=True, cwd=project_root, shell=False, timeout=1200
+        )
+    except subprocess.TimeoutExpired:
+        print("Uninstaller timed out.")
+        return 124
     except subprocess.CalledProcessError as exc:
         print(f"Uninstaller failed with return code {exc.returncode}")
         return exc.returncode
+    except OSError as exc:
+        print(f"Unable to launch uninstaller: {exc}")
+        return 1
     return 0
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the Monkey Head uninstaller.")
@@ -62,7 +88,19 @@ if __name__ == "__main__":
 
     confirmed = arguments.yes or arguments.dry_run
     if not confirmed:
-        reply = input("Run the Monkey Head uninstaller? [y/N]: ").strip().lower()
-        confirmed = reply in {"y", "yes"}
+        if not sys.stdin.isatty():
+            print("Noninteractive use requires --yes.")
+            sys.exit(2)
+        try:
+            reply = input("Run the Monkey Head uninstaller? [y/N]: ")
+        except EOFError:
+            sys.exit(2)
+        confirmed = reply.strip().lower() in {"y", "yes"}
 
-    sys.exit(run_uninstaller(dry_run=arguments.dry_run, confirmed=confirmed))
+    sys.exit(
+        run_uninstaller(
+            dry_run=arguments.dry_run,
+            confirmed=confirmed,
+            actor_role="admin" if confirmed else None,
+        )
+    )
