@@ -8,9 +8,10 @@ import re
 import shlex
 import shutil
 import sys
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, Sequence
+from typing import Literal
 
 try:  # pragma: no cover - optional dependency
     import distro  # type: ignore

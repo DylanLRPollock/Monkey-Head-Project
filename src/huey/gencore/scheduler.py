@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from heapq import heappop, heappush
-from typing import Callable
 
 TaskHandler = Callable[[dict[str, object]], object]
 

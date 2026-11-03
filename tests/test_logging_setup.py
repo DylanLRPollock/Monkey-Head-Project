@@ -14,10 +14,8 @@ def test_configure_logging_creates_log(tmp_path):
     cfg = tmp_path / "cfg.ini"
     log_file = tmp_path / "app.log"
     cfg.write_text(
-        (
-            "[logging]\nlog_level = INFO\nlog_file = {}\nlog_max_bytes = 1024\n"
-            "log_backup_count = 1\n"
-        ).format(log_file)
+        f"[logging]\nlog_level = INFO\nlog_file = {log_file}\nlog_max_bytes = 1024\n"
+        "log_backup_count = 1\n"
     )
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
@@ -50,10 +48,8 @@ def test_critical_error_triggers_gui(monkeypatch, tmp_path):
     cfg = tmp_path / "cfg.ini"
     log_file = tmp_path / "app.log"
     cfg.write_text(
-        (
-            "[logging]\nlog_level = INFO\nlog_file = {}\nlog_max_bytes = 1024\n"
-            "log_backup_count = 1\n"
-        ).format(log_file)
+        f"[logging]\nlog_level = INFO\nlog_file = {log_file}\nlog_max_bytes = 1024\n"
+        "log_backup_count = 1\n"
     )
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
@@ -77,10 +73,8 @@ def test_env_var_overrides_path(monkeypatch, tmp_path):
     cfg = tmp_path / "cfg.ini"
     log_file = tmp_path / "app.log"
     cfg.write_text(
-        (
-            "[logging]\nlog_level = INFO\nlog_file = {}\nlog_max_bytes = 1024\n"
-            "log_backup_count = 1\n"
-        ).format(log_file)
+        f"[logging]\nlog_level = INFO\nlog_file = {log_file}\nlog_max_bytes = 1024\n"
+        "log_backup_count = 1\n"
     )
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):

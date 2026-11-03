@@ -6,7 +6,7 @@
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src"
@@ -26,8 +26,8 @@ except ModuleNotFoundError:  # pragma: no cover - fallback for isolated test run
     class SensorReading:  # type: ignore[override]
         name: str
         value: Any
-        timestamp: Optional[float] = None
-        provenance: Optional[Dict[str, Any]] = None
+        timestamp: float | None = None
+        provenance: dict[str, Any] | None = None
 
 
 from huey.os.utils.persistence import TelemetryStore

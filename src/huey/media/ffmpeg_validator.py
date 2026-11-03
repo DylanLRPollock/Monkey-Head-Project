@@ -6,8 +6,8 @@ import argparse
 import json
 import shutil
 import subprocess
+from collections.abc import Sequence
 from dataclasses import asdict, dataclass, field
-from typing import Sequence
 
 
 @dataclass(frozen=True)
@@ -127,7 +127,7 @@ def validate_ffmpeg_environment(
     ffprobe_version = _version_line(ffprobe_bin) if ffprobe_available else None
     errors = list(ffmpeg_report.errors)
     notes = list(ffmpeg_report.errors)
-    filters: dict[str, bool] = {name: False for name in required_filters}
+    filters: dict[str, bool] = dict.fromkeys(required_filters, False)
 
     if not ffprobe_available:
         message = f"{ffprobe_bin} not found on PATH"

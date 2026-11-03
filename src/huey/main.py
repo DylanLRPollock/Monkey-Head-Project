@@ -11,8 +11,9 @@ importable in minimal environments.
 from __future__ import annotations
 
 import argparse
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, Iterable, Tuple
+from typing import Any
 
 try:
     from monkey_head.pytorch_tools import device_summary
@@ -21,7 +22,7 @@ except ModuleNotFoundError:  # pragma: no cover - source checkout namespace
         from huey.pytorch_tools import device_summary
     except ModuleNotFoundError:  # pragma: no cover - optional torch stack absent
 
-        def device_summary() -> Dict[str, Any]:
+        def device_summary() -> dict[str, Any]:
             return {"available": False, "reason": "torch is not installed"}
 
 
@@ -44,7 +45,7 @@ from .version import VERSION, version_payload
 @dataclass
 class _Route:
     path: str
-    methods: Tuple[str, ...]
+    methods: tuple[str, ...]
     handler: Callable[..., Any]
 
 
@@ -58,7 +59,7 @@ class _StubApp:
     the real Flask dependency.
     """
 
-    routes: Dict[Tuple[str, Tuple[str, ...]], _Route] = field(default_factory=dict)
+    routes: dict[tuple[str, tuple[str, ...]], _Route] = field(default_factory=dict)
 
     def route(
         self, path: str, *, methods: Iterable[str] | None = None
@@ -71,7 +72,7 @@ class _StubApp:
 
         return decorator
 
-    def run(self, host: str, port: int) -> Dict[str, Any]:
+    def run(self, host: str, port: int) -> dict[str, Any]:
         # Mirror Flask's return value shape loosely; tests typically
         # monkeypatch this method, so the body is intentionally simple.
         return {"host": host, "port": port}
@@ -106,7 +107,7 @@ class ApplicationContext:
         }
 
 
-def jsonify(**payload: Any) -> Dict[str, Any]:
+def jsonify(**payload: Any) -> dict[str, Any]:
     """Return a JSON-serialisable payload.
 
     The real Flask helper builds a response object; for testing purposes,
@@ -120,29 +121,29 @@ app = _StubApp()
 
 
 @app.route("/health", methods=["GET"])
-def health_check() -> tuple[Dict[str, str], int]:
+def health_check() -> tuple[dict[str, str], int]:
     return {"status": "healthy"}, 200
 
 
 @app.route("/ready", methods=["GET"])
-def readiness_check() -> tuple[Dict[str, str], int]:
+def readiness_check() -> tuple[dict[str, str], int]:
     return {"status": "ready"}, 200
 
 
 @app.route("/version", methods=["GET"])
-def version_info(version: str = VERSION) -> tuple[Dict[str, str], int]:
+def version_info(version: str = VERSION) -> tuple[dict[str, str], int]:
     payload = version_payload()
     payload["version"] = version
     return payload, 200
 
 
 @app.route("/pytorch/info", methods=["GET"])
-def pytorch_info() -> tuple[Dict[str, Any], int]:
+def pytorch_info() -> tuple[dict[str, Any], int]:
     return device_summary(), 200
 
 
 @app.route("/pyhuey/status", methods=["GET"])
-def pyhuey_status() -> tuple[Dict[str, Any], int]:
+def pyhuey_status() -> tuple[dict[str, Any], int]:
     return get_pyhuey_status(), 200
 
 
@@ -234,17 +235,17 @@ def main() -> None:
 RUNTIME_CONTEXT: ApplicationContext | None = None
 
 __all__ = [
+    "RUNTIME_CONTEXT",
     "ApplicationContext",
     "app",
     "build_application_context",
     "health_check",
-    "readiness_check",
-    "version_info",
-    "pytorch_info",
-    "pyhuey_status",
-    "parse_args",
-    "run_setup",
-    "main",
     "jsonify",
-    "RUNTIME_CONTEXT",
+    "main",
+    "parse_args",
+    "pyhuey_status",
+    "pytorch_info",
+    "readiness_check",
+    "run_setup",
+    "version_info",
 ]

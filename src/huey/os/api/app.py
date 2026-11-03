@@ -12,7 +12,7 @@ app = _legacy_api.app
 main = _legacy_api.main
 SCHEDULER = _legacy_api.SCHEDULER
 
-__all__ = ["app", "main", "SCHEDULER"]
+__all__ = ["SCHEDULER", "app", "main"]
 
 
 def __getattr__(name: str):

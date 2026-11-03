@@ -14,7 +14,7 @@ __all__ = [
     "HoneycombRecord",
     "HoneycombStorage",
     "RetentionPolicy",
-    "perform_rsync_snapshot",
     "parse_duration",
+    "perform_rsync_snapshot",
     "restore_snapshot",
 ]

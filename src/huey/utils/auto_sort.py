@@ -7,13 +7,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping
 
 from ..function_registry import register_function
 from .paths import get_memory_path
 
-_EXTENSION_MAP: Dict[str, str] = {
+_EXTENSION_MAP: dict[str, str] = {
     "bat": "BAT",
     "csv": "CSV",
     "doc": "DOC",
@@ -81,7 +81,7 @@ def auto_sort_memory(
     source_dir: str | Path | None = None,
     destination_root: str | Path | None = None,
     dry_run: bool = False,
-) -> Dict[str, Iterable[str]]:
+) -> dict[str, Iterable[str]]:
     """Organise files from ``source_dir`` into typed folders under ``destination_root``.
 
     Parameters
@@ -114,8 +114,8 @@ def auto_sort_memory(
 
     destination_path = _normalise_destination_root(destination_root)
 
-    moved: List[str] = []
-    skipped: List[str] = []
+    moved: list[str] = []
+    skipped: list[str] = []
 
     for item in sorted(source_path.iterdir()):
         if not item.is_file():

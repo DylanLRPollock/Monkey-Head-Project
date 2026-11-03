@@ -7,7 +7,7 @@
 
 from __future__ import annotations
 
-from huey.core.task_scheduler import (  # noqa: E402  pylint: disable=wrong-import-position
+from huey.core.task_scheduler import (
     Agent,
     ResourceProfile,
     ResourceSnapshot,

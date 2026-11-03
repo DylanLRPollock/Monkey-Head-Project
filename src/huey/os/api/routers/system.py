@@ -2,15 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Dict
-
 from fastapi import APIRouter
 
 router = APIRouter(tags=["System"])
 
 
 @router.get("/healthz")
-def healthz() -> Dict[str, str]:
+def healthz() -> dict[str, str]:
     """Lightweight probe used by orchestrators to ensure the API is responsive."""
 
     return {"status": "ok", "service": "hueyos"}
@@ -26,4 +24,4 @@ def system_status() -> dict:
     return _build_system_status().model_dump()
 
 
-__all__ = ["router", "healthz", "system_status"]
+__all__ = ["healthz", "router", "system_status"]

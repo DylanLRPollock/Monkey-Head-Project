@@ -6,7 +6,6 @@ import shutil
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 
 class BackupError(RuntimeError):
@@ -83,7 +82,7 @@ def perform_rsync_snapshot(
     destination: str | Path,
     *,
     overwrite: bool = False,
-    label: Optional[str] = None,
+    label: str | None = None,
 ) -> BackupResult:
     """Create a Honeycomb snapshot.
 

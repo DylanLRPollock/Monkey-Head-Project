@@ -15,10 +15,10 @@ from warnings import deprecated
 from .memory.PY import cli as _cli
 
 __all__ = [
+    "huey_main",
     "main",
     "parse_arguments",
     "run_cli",
-    "huey_main",
     "run_command_center",
     "run_gui",
 ]

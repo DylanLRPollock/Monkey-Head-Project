@@ -53,9 +53,8 @@ def test_run_cli_invokes_main(tmp_path):
 def test_huey_main_is_deprecated_and_unavailable():
     from huey.cli import huey_main
 
-    with pytest.deprecated_call():
-        with pytest.raises(NotImplementedError):
-            huey_main()
+    with pytest.deprecated_call(), pytest.raises(NotImplementedError):
+        huey_main()
 
 
 # Tests for exception hierarchy

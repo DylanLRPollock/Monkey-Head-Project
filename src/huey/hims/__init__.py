@@ -9,10 +9,10 @@ from huey.hims.thundermail import ThunderMail
 from huey.hims.validation import validate_hims_message, validate_hims_transition
 
 __all__ = [
+    "MAILBOXES",
     "HIMSLedger",
     "HIMSMessage",
     "HIMSStorage",
-    "MAILBOXES",
     "Mailbox",
     "MessageStatus",
     "ShadowHIMS",

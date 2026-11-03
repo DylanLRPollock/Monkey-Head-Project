@@ -397,4 +397,4 @@ class HoneycombStorage:
         return len(payload.encode("utf-8"))
 
 
-__all__ = ["HoneycombRecord", "HoneycombStorage", "SCHEMA_VERSION"]
+__all__ = ["SCHEMA_VERSION", "HoneycombRecord", "HoneycombStorage"]

@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass
-from typing import Iterable
 
 START_RE = re.compile(r"silence_start:\s*(?P<start>[0-9.]+)")
 END_RE = re.compile(

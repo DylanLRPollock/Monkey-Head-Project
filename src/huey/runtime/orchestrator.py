@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
-from typing import Callable
+from collections.abc import Callable
 
 from huey.media.ffmpeg_validator import validate_media_environment
 from huey.runtime.dependency_graph import DependencyGraph

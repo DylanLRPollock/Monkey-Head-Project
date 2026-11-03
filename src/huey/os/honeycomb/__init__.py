@@ -11,6 +11,7 @@ from .retention import RetentionPolicy, parse_duration
 from .storage import SCHEMA_VERSION, HoneycombRecord, HoneycombStorage
 
 __all__ = [
+    "SCHEMA_VERSION",
     "BackupError",
     "BackupResult",
     "HoneycombContentMapping",
@@ -20,7 +21,6 @@ __all__ = [
     "HoneycombStorage",
     "HoneycombUsageTotals",
     "RetentionPolicy",
-    "SCHEMA_VERSION",
     "parse_duration",
     "perform_rsync_snapshot",
     "restore_snapshot",

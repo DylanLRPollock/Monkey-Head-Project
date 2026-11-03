@@ -80,14 +80,14 @@ async def stream_all_sensors():
 
 
 __all__ = [
-    "router",
-    "sensor_plugins",
     "list_sensors",
+    "poll_all_sensors",
+    "poll_sensor",
     "register_sensor",
     "remove_sensor",
-    "poll_sensor",
-    "poll_all_sensors",
+    "router",
     "sensor_history",
-    "stream_sensor",
+    "sensor_plugins",
     "stream_all_sensors",
+    "stream_sensor",
 ]

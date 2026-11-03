@@ -84,18 +84,18 @@ MACOS_REQUIRED_TOOLS: tuple[tuple[str, tuple[str, ...]], ...] = (
 )
 
 __all__ = [
-    "logger",
-    "ensure_admin",
-    "log_error",
     "check_error",
+    "check_kernel_policy",
     "check_os_support",
     "check_python_version",
-    "check_kernel_policy",
-    "system_check",
+    "distro",
+    "ensure_admin",
+    "log_error",
+    "logger",
     "platform",
     "shutil",
     "sys",
-    "distro",
+    "system_check",
 ]
 
 

@@ -41,4 +41,4 @@ def create_user(username: str) -> None:
     )
 
 
-__all__ = ["update_system", "create_user"]
+__all__ = ["create_user", "update_system"]

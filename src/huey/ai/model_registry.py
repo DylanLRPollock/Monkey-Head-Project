@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable
 
 ModelCallable = Callable[[str, dict[str, object]], dict[str, object]]
 

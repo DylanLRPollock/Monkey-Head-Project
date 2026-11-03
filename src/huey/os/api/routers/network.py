@@ -22,4 +22,4 @@ def ensure_network_connectivity(request: Request):
     return legacy_api.ensure_network_connectivity()
 
 
-__all__ = ["router", "network_status", "ensure_network_connectivity"]
+__all__ = ["ensure_network_connectivity", "network_status", "router"]

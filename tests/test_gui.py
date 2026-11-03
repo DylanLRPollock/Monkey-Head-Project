@@ -82,9 +82,9 @@ def test_main_ui_declines_license_before_writing_config():
     with (
         patch.object(main_ui.messagebox, "askyesno", return_value=False),
         patch.object(main_ui, "accept_license") as accept,
+        pytest.raises(PermissionError),
     ):
-        with pytest.raises(PermissionError):
-            MainUI()
+        MainUI()
 
     accept.assert_not_called()
 

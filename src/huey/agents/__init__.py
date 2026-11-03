@@ -24,8 +24,8 @@ from .zap4 import Zap4Agent
 
 __all__ = [
     "ActionProposal",
-    "AgentManager",
     "AgentDecision",
+    "AgentManager",
     "AgentMessage",
     "AgentMessageBus",
     "AgentResponse",
@@ -33,10 +33,10 @@ __all__ = [
     "ConsensusDecision",
     "LLMProvider",
     "PresidentialCouncil",
-    "SparkAgent",
     "Spark4Agent",
+    "SparkAgent",
     "Volt4Agent",
     "Watt4Agent",
-    "ZapAgent",
     "Zap4Agent",
+    "ZapAgent",
 ]

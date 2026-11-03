@@ -29,4 +29,4 @@ def trigger_shutdown(request: Request):
     return legacy_api.trigger_shutdown()
 
 
-__all__ = ["router", "battery_status", "power_should_shutdown", "trigger_shutdown"]
+__all__ = ["battery_status", "power_should_shutdown", "router", "trigger_shutdown"]
