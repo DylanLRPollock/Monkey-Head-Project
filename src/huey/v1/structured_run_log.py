@@ -19,8 +19,10 @@ class StructuredRunLog:
     def append(self, event_type: str, payload: dict[str, Any]) -> dict[str, Any]:
         """Append one event and return the stored record."""
 
-        if not event_type:
+        if not isinstance(event_type, str) or not event_type.strip():
             raise ValueError("event_type is required")
+        if not isinstance(payload, dict):
+            raise TypeError("payload must be a dictionary")
         record = {
             "event_id": str(uuid4()),
             "event_type": event_type,
@@ -44,11 +46,14 @@ class StructuredRunLog:
                 if not line:
                     continue
                 try:
-                    records.append(json.loads(line))
+                    entry = json.loads(line)
                 except json.JSONDecodeError as exc:
                     raise ValueError(
                         f"Invalid JSONL at line {line_number}: {exc}"
                     ) from exc
+                if not isinstance(entry, dict):
+                    raise ValueError(f"Invalid JSONL record type at line {line_number}")
+                records.append(entry)
         return records
 
 

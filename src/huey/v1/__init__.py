@@ -1,6 +1,11 @@
 """Dedicated V1 proof-loop helpers."""
 
-from huey.v1.fixture_registry import list_fixtures, load_fixture, register_fixture
+from huey.v1.fixture_registry import (
+    list_fixtures,
+    load_fixture,
+    register_fixture,
+    verify_fixture,
+)
 from huey.v1.proof_loop import (
     generate_report,
     run_all_fixtures,
@@ -24,4 +29,5 @@ __all__ = [
     "run_all_fixtures",
     "run_fixture",
     "validate_result",
+    "verify_fixture",
 ]
