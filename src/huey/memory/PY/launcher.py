@@ -28,8 +28,10 @@ def main(argv: list[str] | None = None) -> None:
     sub.required = False
     sub.add_parser("run", help="Launch the application")
     sub.add_parser("install", help="Run installer")
-    sub.add_parser("uninstall", help="Run uninstaller")
+    uninstall_parser = sub.add_parser("uninstall", help="Run uninstaller")
+    uninstall_parser.add_argument("--yes", action="store_true")
     fresh_parser = sub.add_parser("fresh-install", help="Uninstall then reinstall")
+    fresh_parser.add_argument("--yes", action="store_true")
     fresh_parser.add_argument(
         "--source",
         choices=["local", "github"],
@@ -49,9 +51,20 @@ def main(argv: list[str] | None = None) -> None:
     if cmd == "install":
         sys.exit(installer.run_installer())
     if cmd == "uninstall":
-        sys.exit(uninstaller.run_uninstaller())
+        sys.exit(
+            uninstaller.run_uninstaller(
+                confirmed=args.yes, actor_role="admin" if args.yes else None
+            )
+        )
     if cmd == "fresh-install":
-        sys.exit(fresh_install.run_fresh_install(args.source, args.repo))
+        sys.exit(
+            fresh_install.run_fresh_install(
+                args.source,
+                args.repo,
+                confirmed=args.yes,
+                actor_role="admin" if args.yes else None,
+            )
+        )
     if cmd == "system-check":
         system_check()
         return
