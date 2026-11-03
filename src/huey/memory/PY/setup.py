@@ -36,7 +36,7 @@ setup(
     install_requires=[
         "requests==2.33.0",
         "httpx==0.28.1",
-        "aiohttp==3.14.3",
+        "aiohttp==3.14.4",
         "websockets==15.0.1",
         "numpy==2.3.0",
         "scipy==1.15.3",
@@ -50,10 +50,10 @@ setup(
         "plotly==6.1.2",
         "openpyxl==3.1.5",
         "sqlalchemy==2.0.41",
-        "pymongo==4.13.1",
+        "pymongo==4.18.3",
         "redis==6.2.0",
         "cryptography==50.0.0",
-        "pyjwt==2.15.0",
+        "pyjwt==2.15.1",
         "bcrypt==4.3.0",
         "paramiko==5.0.0",
         "docker==7.1.0",
@@ -78,7 +78,7 @@ setup(
         "pygpt-net>=2.7.12",
     ],
     extras_require={
-        "dev": ["black==26.3.1", "flake8==6.0.0", "mypy==1.5.1", "pytest==9.0.3"]
+        "dev": ["black==26.10.1", "flake8==6.0.0", "mypy==1.5.1", "pytest==9.0.3"]
     },
     python_requires=">=3.12",
     classifiers=[
