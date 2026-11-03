@@ -52,9 +52,7 @@ class StructuredRunLog:
                         f"Invalid JSONL at line {line_number}: {exc}"
                     ) from exc
                 if not isinstance(entry, dict):
-                    raise ValueError(
-                        f"Invalid JSONL record type at line {line_number}"
-                    )
+                    raise ValueError(f"Invalid JSONL record type at line {line_number}")
                 records.append(entry)
         return records
 

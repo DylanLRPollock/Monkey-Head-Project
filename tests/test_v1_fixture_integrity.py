@@ -44,8 +44,11 @@ def test_duplicate_id_rejected_and_explicit_overwrite_allowed(tmp_path):
     with pytest.raises(ValueError, match="already registered"):
         register_fixture(source, fixture_id="id", registry_path=registry_path)
     updated = register_fixture(
-        source, fixture_id="id", registry_path=registry_path,
-        description="replacement", overwrite=True,
+        source,
+        fixture_id="id",
+        registry_path=registry_path,
+        description="replacement",
+        overwrite=True,
     )
     assert updated["description"] == "replacement"
 
@@ -77,7 +80,9 @@ def test_copy_rejects_same_filename_with_different_content(tmp_path, monkeypatch
     saved = register_fixture(first, registry_path=registry, copy_to_registry=True)
     with pytest.raises(FileExistsError, match="Different fixture"):
         register_fixture(
-            second, fixture_id="second", registry_path=registry,
+            second,
+            fixture_id="second",
+            registry_path=registry,
             copy_to_registry=True,
         )
     assert Path(saved["path"]).read_text() == "first"
@@ -114,9 +119,7 @@ def test_failed_registry_replacement_preserves_old_data(tmp_path, monkeypatch):
 
     monkeypatch.setattr(module.os, "replace", fail_replace)
     with pytest.raises(OSError):
-        register_fixture(
-            source, fixture_id="next", registry_path=registry
-        )
+        register_fixture(source, fixture_id="next", registry_path=registry)
     assert registry.read_bytes() == before
     assert not list(tmp_path.glob("*.tmp"))
 
