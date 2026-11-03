@@ -169,6 +169,9 @@ jobs:
             pip install -c constraints.txt -e ".[dev]"
           fi
 
+      - name: Validate coverage tracer and source mapping
+        run: python scripts/repo/verify_coverage_tracing.py
+
       - name: Run test suite with coverage
         # Verbosity is controlled by `[tool.pytest.ini_options].addopts`
         # in pyproject.toml, not by a CI-only env var. Setting
