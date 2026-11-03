@@ -83,7 +83,7 @@ def test_mcp_notifications_do_not_emit_responses():
 
 def test_mcp_stdio_processes_valid_and_invalid_json():
     source = io.StringIO(
-        'not json\n'
+        "not json\n"
         + json.dumps(request("ping"))
         + "\n"
         + json.dumps(request("tools/list"))
