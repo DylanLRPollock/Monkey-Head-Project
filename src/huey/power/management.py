@@ -395,7 +395,9 @@ class BatteryMonitor:
         if command:
             metadata["command"] = command
             try:
-                subprocess.Popen(command, shell=False)  # pragma: no cover - system side effects
+                subprocess.Popen(
+                    command, shell=False
+                )  # pragma: no cover - system side effects
             except (OSError, subprocess.CalledProcessError) as exc:
                 LOGGER.exception("Failed to execute %s command %s", action, command)
                 metadata["error"] = str(exc)
