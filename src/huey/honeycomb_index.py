@@ -129,10 +129,7 @@ class HoneycombIndex:
     # Classification helpers
     # ------------------------------------------------------------------
     def infer_category(self, path: Path) -> str | None:
-        if path.suffix:
-            extension = path.suffix.lower().lstrip(".")
-        else:
-            extension = ""
+        extension = path.suffix.lower().lstrip(".") if path.suffix else ""
         category = self._extension_map.get(extension)
         if category:
             return category.upper()

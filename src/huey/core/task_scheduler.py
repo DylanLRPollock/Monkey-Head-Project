@@ -441,7 +441,7 @@ class TaskScheduler:
             records = list(self._tasks.values())
         if statuses is None:
             return records
-        allowed = {status for status in statuses}
+        allowed = set(statuses)
         return [record for record in records if record.status in allowed]
 
     # ------------------------------------------------------------------

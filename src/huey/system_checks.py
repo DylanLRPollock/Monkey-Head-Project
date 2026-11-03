@@ -395,7 +395,7 @@ def _python_version_parts(info: object) -> tuple[int, int]:
     """Return the active interpreter's ``(major, minor)`` version tuple."""
 
     if isinstance(info, tuple):  # pragma: no cover - compatibility for patched tuples
-        major, minor = (info + (0, 0))[:2]
+        major, minor = (*info, 0, 0)[:2]
         return int(major), int(minor)
 
     major = getattr(info, "major", 0)

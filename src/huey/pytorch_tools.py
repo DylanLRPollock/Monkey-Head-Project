@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import random
+from itertools import pairwise
 from collections.abc import Iterable, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -71,7 +72,7 @@ def build_mlp(layer_sizes: Sequence[int], dropout: float = 0.0) -> nn.Module:
         raise ValueError("dropout must be non-negative")
 
     layers: list[nn.Module] = []
-    for index, (in_dim, out_dim) in enumerate(zip(layer_sizes, layer_sizes[1:])):
+    for index, (in_dim, out_dim) in enumerate(pairwise(layer_sizes)):
         layers.append(nn.Linear(in_dim, out_dim))
         if index < len(layer_sizes) - 2:
             layers.append(nn.ReLU())
