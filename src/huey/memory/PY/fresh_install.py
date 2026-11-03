@@ -15,6 +15,8 @@ import installer
 import repair
 import uninstaller
 
+from huey.os.core.privileged_operations import authorize_privileged_operation
+
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse command line options."""
@@ -31,6 +33,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=repair.REPO_URL,
         help="Repository URL when using --source github",
     )
+    parser.add_argument(
+        "--yes", action="store_true", help="Explicitly authorize reinstall"
+    )
     return parser.parse_args(argv)
 
 
@@ -43,17 +48,31 @@ def _prompt_source() -> str:
 
 
 def run_fresh_install(
-    source: str | None = None, repo_url: str = repair.REPO_URL
+    source: str | None = None,
+    repo_url: str = repair.REPO_URL,
+    *,
+    confirmed: bool = False,
+    actor_role: str | None = None,
 ) -> int:
-    """Remove existing files and perform a new installation."""
+    """Remove existing files and reinstall only after explicit confirmation."""
+    try:
+        authorize_privileged_operation(
+            "project.uninstall", confirmed=confirmed, actor_role=actor_role
+        )
+    except PermissionError:
+        return 2
     if source is None:
         source = _prompt_source()
     if source == "github":
         # repair.run_repair handles uninstallation internally
-        return repair.run_repair(repo_url)
+        return repair.run_repair(
+            repo_url, confirmed=confirmed, actor_role=actor_role
+        )
 
     print("Starting fresh installation...")
-    uninstall_rc = uninstaller.run_uninstaller()
+    uninstall_rc = uninstaller.run_uninstaller(
+        confirmed=confirmed, actor_role=actor_role
+    )
     if uninstall_rc != 0:
         print(f"Uninstall failed with code {uninstall_rc}")
         return uninstall_rc
@@ -62,7 +81,12 @@ def run_fresh_install(
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    return run_fresh_install(args.source, args.repo)
+    return run_fresh_install(
+        args.source,
+        args.repo,
+        confirmed=args.yes,
+        actor_role="admin" if args.yes else None,
+    )
 
 
 if __name__ == "__main__":
