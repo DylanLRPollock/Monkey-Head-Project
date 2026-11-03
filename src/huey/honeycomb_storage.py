@@ -329,9 +329,7 @@ class HoneycombStorage:
             dt = datetime.fromtimestamp(record.created_at, tz=UTC)
             bucket = dt.strftime("%Y-%m-%d")
             buckets[bucket] = buckets.get(bucket, 0) + 1
-        return [
-            {"date": date, "cells": buckets[date]} for date in sorted(buckets)
-        ]
+        return [{"date": date, "cells": buckets[date]} for date in sorted(buckets)]
 
     # ------------------------------------------------------------------
     # Honeycomb helpers

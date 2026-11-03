@@ -19,13 +19,9 @@ from huey.honeycomb.storage import HoneycombStorage
 def test_python313_public_annotations_are_resolvable() -> None:
     assert get_type_hints(MemoryEntry)["payload"] == dict[str, Any]
     assert get_type_hints(AgentMemory.recall)["limit"] == int | None
-    assert get_type_hints(HoneycombStorage.__init__)["base_dir"] == (
-        Path | str | None
-    )
+    assert get_type_hints(HoneycombStorage.__init__)["base_dir"] == (Path | str | None)
     assert get_type_hints(HoneycombContentMapping)["retention"] == str | None
-    assert get_type_hints(HoneycombMonitor.__init__)["index"] == (
-        HoneycombIndex | None
-    )
+    assert get_type_hints(HoneycombMonitor.__init__)["index"] == (HoneycombIndex | None)
     annotation = get_type_hints(HoneycombIndex.__init__)["mappings"]
     assert annotation == Mapping[str, HoneycombContentMapping] | None
     assert get_type_hints(HoneycombMonitor.usage_totals)["comb_usage"] == (
