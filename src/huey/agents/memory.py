@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from huey.honeycomb.storage import HoneycombRecord, HoneycombStorage
 
@@ -20,7 +20,7 @@ class MemoryEntry:
 
     key: str
     topic: str
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     created_at: float
     updated_at: float
 
@@ -35,7 +35,7 @@ class AgentMemory:
     # ------------------------------------------------------------------
     # General purpose memory helpers
     # ------------------------------------------------------------------
-    def remember(self, topic: str, payload: Dict[str, Any]) -> MemoryEntry:
+    def remember(self, topic: str, payload: dict[str, Any]) -> MemoryEntry:
         """Persist ``payload`` associated with ``topic``."""
 
         key = f"agent/{self._agent_id}/{topic}/{uuid.uuid4().hex}"
@@ -48,12 +48,12 @@ class AgentMemory:
             updated_at=record.updated_at,
         )
 
-    def recall(self, topic: str, *, limit: Optional[int] = None) -> List[MemoryEntry]:
+    def recall(self, topic: str, *, limit: int | None = None) -> list[MemoryEntry]:
         """Return recent entries for ``topic`` ordered from newest to oldest."""
 
         prefix = f"agent/{self._agent_id}/{topic}/"
         records = self._storage.query(prefix, limit=limit)
-        entries: List[MemoryEntry] = []
+        entries: list[MemoryEntry] = []
         for record in records:
             entries.append(
                 MemoryEntry(
@@ -72,7 +72,7 @@ class AgentMemory:
         *,
         role: str,
         content: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> HoneycombRecord:
         """Record a conversational turn for transparency."""
 
@@ -88,7 +88,7 @@ class AgentMemory:
     # ------------------------------------------------------------------
     # Convenience helpers
     # ------------------------------------------------------------------
-    def last_decisions(self, limit: int = 5) -> List[MemoryEntry]:
+    def last_decisions(self, limit: int = 5) -> list[MemoryEntry]:
         """Shortcut for retrieving the most recent decision payloads."""
 
         return self.recall("decision", limit=limit)

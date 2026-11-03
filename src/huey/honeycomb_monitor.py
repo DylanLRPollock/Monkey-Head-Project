@@ -7,8 +7,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Dict, Iterable, List, Optional
 
 from huey.os.honeycomb_index import HoneycombIndex
 from huey.os.honeycomb_storage import HoneycombStorage
@@ -21,7 +21,7 @@ class HoneycombUsageTotals:
     cells: int
     payload_bytes: int
     combs: int
-    last_update: Optional[float]
+    last_update: float | None
 
 
 class HoneycombMonitor:
@@ -31,15 +31,15 @@ class HoneycombMonitor:
         self,
         storage: HoneycombStorage,
         *,
-        index: Optional[HoneycombIndex] = None,
+        index: HoneycombIndex | None = None,
     ) -> None:
         self._storage = storage
         self._index = index
 
-    def _content_type_summary(self) -> List[Dict[str, object]]:
+    def _content_type_summary(self) -> list[dict[str, object]]:
         if self._index is None:
             return []
-        summary: List[Dict[str, object]] = []
+        summary: list[dict[str, object]] = []
         for content_type in self._index.list_content_types():
             aggregates = {
                 "content_type": content_type,
@@ -68,12 +68,12 @@ class HoneycombMonitor:
         return summary
 
     def usage_totals(
-        self, comb_usage: Iterable[Dict[str, object]]
+        self, comb_usage: Iterable[dict[str, object]]
     ) -> HoneycombUsageTotals:
         cells = 0
         payload_bytes = 0
         combs = 0
-        last_update: Optional[float] = None
+        last_update: float | None = None
         for comb in comb_usage:
             cells += int(comb.get("cells", 0))
             payload_bytes += int(comb.get("payload_bytes", 0))
@@ -88,7 +88,7 @@ class HoneycombMonitor:
             last_update=last_update,
         )
 
-    def build_usage_report(self, *, window_days: int = 30) -> Dict[str, object]:
+    def build_usage_report(self, *, window_days: int = 30) -> dict[str, object]:
         comb_usage = self._storage.comb_usage()
         totals = self.usage_totals(comb_usage)
         content_types = self._content_type_summary()
@@ -105,7 +105,7 @@ class HoneycombMonitor:
             "growth": growth,
         }
 
-    def dashboard_payload(self, *, window_days: int = 30) -> Dict[str, object]:
+    def dashboard_payload(self, *, window_days: int = 30) -> dict[str, object]:
         return self.build_usage_report(window_days=window_days)
 
 

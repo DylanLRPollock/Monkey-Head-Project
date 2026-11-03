@@ -9,18 +9,10 @@ from __future__ import annotations
 
 import time
 import uuid
+from collections.abc import Iterable, Mapping, MutableMapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import (
-    Any,
-    Dict,
-    Iterable,
-    List,
-    Mapping,
-    MutableMapping,
-    Optional,
-    Sequence,
-)
+from typing import Any
 
 from huey.os.honeycomb_storage import HoneycombRecord, HoneycombStorage
 from huey.os.utils.auto_sort import get_extension_map
@@ -34,9 +26,9 @@ class HoneycombContentMapping:
     cell_prefix: str
     categories: Sequence[str]
     description: str = ""
-    retention: Optional[str] = None
+    retention: str | None = None
 
-    def prefixes(self) -> List[str]:
+    def prefixes(self) -> list[str]:
         base = f"{self.comb}/{self.cell_prefix}"
         return [f"{base}/"]
 
@@ -47,14 +39,14 @@ class HoneycombIndexRecord:
 
     key: str
     content_type: str
-    payload: Dict[str, Any]
-    metadata: Dict[str, Any]
+    payload: dict[str, Any]
+    metadata: dict[str, Any]
     indexed_at: float
     created_at: float
     updated_at: float
 
 
-_DEFAULT_MAPPINGS: Dict[str, HoneycombContentMapping] = {
+_DEFAULT_MAPPINGS: dict[str, HoneycombContentMapping] = {
     "images": HoneycombContentMapping(
         comb="media",
         cell_prefix="images",
@@ -101,11 +93,11 @@ class HoneycombIndex:
         self,
         storage: HoneycombStorage,
         *,
-        mappings: Optional[Mapping[str, HoneycombContentMapping]] = None,
-        extension_map: Optional[Mapping[str, str]] = None,
+        mappings: Mapping[str, HoneycombContentMapping] | None = None,
+        extension_map: Mapping[str, str] | None = None,
     ) -> None:
         self._storage = storage
-        self._mappings: Dict[str, HoneycombContentMapping] = dict(
+        self._mappings: dict[str, HoneycombContentMapping] = dict(
             mappings or _DEFAULT_MAPPINGS
         )
         self._extension_map: Mapping[str, str] = extension_map or get_extension_map()
@@ -127,7 +119,7 @@ class HoneycombIndex:
         self._mappings[name] = mapping
         self._rebuild_category_index()
 
-    def list_content_types(self) -> List[str]:
+    def list_content_types(self) -> list[str]:
         return sorted(self._mappings.keys())
 
     def get_mapping(self, content_type: str) -> HoneycombContentMapping:
@@ -136,7 +128,7 @@ class HoneycombIndex:
     # ------------------------------------------------------------------
     # Classification helpers
     # ------------------------------------------------------------------
-    def infer_category(self, path: Path) -> Optional[str]:
+    def infer_category(self, path: Path) -> str | None:
         if path.suffix:
             extension = path.suffix.lower().lstrip(".")
         else:
@@ -148,7 +140,7 @@ class HoneycombIndex:
             return extension.upper()
         return None
 
-    def infer_content_type(self, path: Path) -> Optional[str]:
+    def infer_content_type(self, path: Path) -> str | None:
         category = self.infer_category(path)
         if category is None:
             return None
@@ -158,7 +150,7 @@ class HoneycombIndex:
     # Storage integration
     # ------------------------------------------------------------------
     def _build_key(
-        self, mapping: HoneycombContentMapping, *, cell_id: Optional[str] = None
+        self, mapping: HoneycombContentMapping, *, cell_id: str | None = None
     ) -> str:
         cell = cell_id or uuid.uuid4().hex
         return f"{mapping.comb}/{mapping.cell_prefix}/{cell}"
@@ -166,10 +158,10 @@ class HoneycombIndex:
     def store_payload(
         self,
         content_type: str,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         *,
-        metadata: Optional[Dict[str, Any]] = None,
-        cell_id: Optional[str] = None,
+        metadata: dict[str, Any] | None = None,
+        cell_id: str | None = None,
     ) -> HoneycombRecord:
         mapping = self.get_mapping(content_type)
         record_payload = {
@@ -185,8 +177,8 @@ class HoneycombIndex:
         self,
         path: Path,
         *,
-        content_type: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        content_type: str | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> HoneycombRecord:
         resolved = Path(path).resolve()
         inferred = content_type or self.infer_content_type(resolved)
@@ -220,7 +212,7 @@ class HoneycombIndex:
     # ------------------------------------------------------------------
     def _to_index_record(
         self, record: HoneycombRecord
-    ) -> Optional[HoneycombIndexRecord]:
+    ) -> HoneycombIndexRecord | None:
         if not isinstance(record.data, dict):
             return None
         content_type = record.data.get("content_type")
@@ -251,9 +243,9 @@ class HoneycombIndex:
         self,
         content_type: str,
         *,
-        limit: Optional[int] = None,
-    ) -> List[HoneycombIndexRecord]:
-        records: List[HoneycombRecord] = []
+        limit: int | None = None,
+    ) -> list[HoneycombIndexRecord]:
+        records: list[HoneycombRecord] = []
         for prefix in self.prefixes_for_content_type(content_type):
             records.extend(self._storage.query(prefix))
         records.sort(key=lambda rec: rec.updated_at, reverse=True)
@@ -270,16 +262,16 @@ class HoneycombIndex:
         self,
         timestamp: float,
         *,
-        content_type: Optional[str] = None,
-        limit: Optional[int] = None,
-    ) -> List[HoneycombIndexRecord]:
-        prefixes: List[str] = []
+        content_type: str | None = None,
+        limit: int | None = None,
+    ) -> list[HoneycombIndexRecord]:
+        prefixes: list[str] = []
         if content_type is None:
             for mapping in self._mappings.values():
                 prefixes.extend(mapping.prefixes())
         else:
             prefixes.extend(self.prefixes_for_content_type(content_type))
-        seen: Dict[str, HoneycombRecord] = {}
+        seen: dict[str, HoneycombRecord] = {}
         for prefix in prefixes:
             for record in self._storage.query(prefix):
                 if record.updated_at < timestamp:
@@ -298,8 +290,8 @@ class HoneycombIndex:
     # ------------------------------------------------------------------
     # Introspection helpers
     # ------------------------------------------------------------------
-    def describe(self) -> Dict[str, Dict[str, Any]]:
-        description: Dict[str, Dict[str, Any]] = {}
+    def describe(self) -> dict[str, dict[str, Any]]:
+        description: dict[str, dict[str, Any]] = {}
         for name, mapping in self._mappings.items():
             description[name] = {
                 "comb": mapping.comb,
