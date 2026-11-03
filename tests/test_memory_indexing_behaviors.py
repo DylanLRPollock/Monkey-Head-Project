@@ -81,14 +81,16 @@ def test_build_index_does_not_ingest_symlinks_or_index_file(monkeypatch, tmp_pat
     except (OSError, NotImplementedError):
         pass
     observed = []
+
     def fake_ingest(path):
         observed.append(path)
         return {"path": str(path), "kind": "text"}
 
     monkeypatch.setattr(indexing, "_ingest_path", fake_ingest)
-    results = indexing.build_index(
-        [doc, index_file, alias], index_path=index_file
-    )
+    inputs = [doc, index_file]
+    if alias.is_symlink():
+        inputs.append(alias)
+    results = indexing.build_index(inputs, index_path=index_file)
     assert results == [{"path": str(doc), "kind": "text"}]
     assert observed == [doc]
     assert indexing._load_index(index_file) == results
