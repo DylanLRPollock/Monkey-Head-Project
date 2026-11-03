@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import random
-from itertools import pairwise
 from collections.abc import Iterable, Sequence
 from dataclasses import asdict, dataclass
+from itertools import pairwise
 from pathlib import Path
 from typing import Any
 

@@ -17,9 +17,7 @@ except ImportError:  # pragma: no cover - Windows fallback for tests
 
 
 def update_system() -> None:
-    subprocess.run(
-        ["apt-get", "update"], capture_output=True
-    )
+    subprocess.run(["apt-get", "update"], capture_output=True)
     subprocess.run(
         ["apt-get", "upgrade", "-y"],
         capture_output=True,
