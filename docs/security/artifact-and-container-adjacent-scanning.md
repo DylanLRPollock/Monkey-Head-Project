@@ -10,10 +10,12 @@ This repository includes a GitHub Actions workflow at:
    - Enumerates tracked files via `git ls-files`.
    - Produces a size-ranked report and marks files with binary-like extensions (for example `.deb`, `.iso`, `.zip`, `.so`).
 
-2. **Trivy filesystem scan (optional/non-blocking baseline)**
+2. **Trivy filesystem scan (advisory findings, enforced execution)**
    - Runs `trivy fs` against the repository filesystem only.
    - Includes vulnerability, secret, and misconfiguration scanners.
    - Scoped to local repo content only; no external systems are scanned.
+   - Scanner execution failures and missing/malformed SARIF artifacts fail CI.
+   - A valid report with zero findings is accepted; findings remain advisory.
 
 ## Artifacts produced
 
@@ -21,14 +23,14 @@ This repository includes a GitHub Actions workflow at:
   - `large-files-report.md`
   - `large-files-top200.json`
 - `trivy-fs-scan-results`
-  - `trivy-fs.sarif` (if produced)
+  - `trivy-fs.sarif` (required; validated)
   - `trivy-status.md`
 
 ## How to interpret results
 
 - Large-file findings are **triage signals**, not automatic failures.
 - Binary-like extension flags indicate assets that may need policy review (for provenance, licensing, and supply-chain exposure).
-- Trivy findings at this stage are **non-blocking** to establish visibility first.
+- Trivy findings at this stage are **non-blocking** to establish visibility first. A missing or broken scan is **blocking**.
 - Prioritize:
   1. Confirm whether flagged artifacts are expected release assets.
   2. Investigate any CRITICAL/HIGH items with clear package/file attribution.

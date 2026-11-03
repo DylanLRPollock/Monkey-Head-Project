@@ -163,14 +163,10 @@ jobs:
               f.write("\n".join(lines))
           PY
 
-      - name: Run Trivy filesystem scan (non-blocking)
-        # `exit-code: '0'` keeps findings from failing the step.
-        # `continue-on-error: true` keeps a genuine scan failure (DB
-        # download, action crash) from failing the workflow. Together
-        # they make this check purely informational. That is the
-        # policy: findings feed review, not CI.
+      - name: Run Trivy filesystem scan (advisory findings)
+        # Findings are informational (exit-code 0), but scanner execution
+        # errors must fail the job. Never use continue-on-error here.
         id: trivy
-        continue-on-error: true
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           scan-type: fs
@@ -190,6 +186,11 @@ jobs:
           cache: true
           exit-code: '0'
 
+      - name: Validate Trivy SARIF report
+        id: trivy_report
+        if: always()
+        run: python scripts/security/validate_scan_reports.py trivy trivy-fs.sarif
+
       - name: Create Trivy status note
         if: always()
         run: |
@@ -202,8 +203,9 @@ jobs:
             echo "# Trivy FS Scan Status"
             echo
             echo "- Step status: \`${{ steps.trivy.outcome }}\`"
-            echo "- Policy: informational only (\`exit-code: 0\`, \`continue-on-error: true\`)"
+            echo "- Policy: findings advisory; scan execution and report validation enforced"
             echo "- Scope: repository filesystem, dependency and cache directories excluded"
+            echo "- SARIF validation: \`${{ steps.trivy_report.outcome }}\`"
             echo "- Findings: see \`trivy-fs.sarif\` in this artifact"
             echo
             echo "A step status of \`success\` means the scan completed."
@@ -227,10 +229,8 @@ jobs:
           retention-days: 30
 
       - name: Upload Trivy outputs
-        # `ignore` rather than `error`: `trivy-fs.sarif` may legitimately
-        # be missing if Trivy itself failed. `trivy-status.md` is
-        # always written by the previous step, so the artifact is never
-        # empty.
+        # SARIF is required by the validation step; keep the status note
+        # even when the scanner fails for easier debugging.
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
