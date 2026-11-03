@@ -24,22 +24,25 @@ def dependencies(tree: ast.AST) -> set[str]:
         if isinstance(node, ast.Import):
             for item in node.names:
                 if item.name.startswith(dotted):
-                    found.add(item.name[len(dotted):].split(".", 1)[0])
+                    found.add(item.name[len(dotted) :].split(".", 1)[0])
         elif isinstance(node, ast.ImportFrom):
             if node.module == PREFIX:
                 found.update(n.name for n in node.names if n.name != "*")
             elif node.module and node.module.startswith(dotted):
-                found.add(node.module[len(dotted):].split(".", 1)[0])
+                found.add(node.module[len(dotted) :].split(".", 1)[0])
         elif isinstance(node, ast.Call):
             func = node.func
-            label = (func.attr if isinstance(func, ast.Attribute)
-                     else func.id if isinstance(func, ast.Name) else "")
+            label = (
+                func.attr
+                if isinstance(func, ast.Attribute)
+                else func.id if isinstance(func, ast.Name) else ""
+            )
             if label not in {"import_module", "find_spec", "__import__"}:
                 continue
             if node.args and isinstance(node.args[0], ast.Constant):
                 value = node.args[0].value
                 if isinstance(value, str) and value.startswith(dotted):
-                    found.add(value[len(dotted):].split(".", 1)[0])
+                    found.add(value[len(dotted) :].split(".", 1)[0])
     return found
 
 
@@ -52,10 +55,23 @@ def category(name: str) -> str:
         return "scripts/repo/"
     if name.startswith(("honeycomb_", "backup_restore", "storage_", "integrity")):
         return "huey.honeycomb-or-storage"
-    if name.startswith(("media_", "audio_", "speech_", "video_", "ffmpeg_",
-                        "probe_media", "prepare_audio", "silence_", "waveform_")):
+    if name.startswith(
+        (
+            "media_",
+            "audio_",
+            "speech_",
+            "video_",
+            "ffmpeg_",
+            "probe_media",
+            "prepare_audio",
+            "silence_",
+            "waveform_",
+        )
+    ):
         return "huey.media"
-    if name.startswith(("fixture_registry", "proof_loop", "response_bridge", "structured_run_log")):
+    if name.startswith(
+        ("fixture_registry", "proof_loop", "response_bridge", "structured_run_log")
+    ):
         return "huey.v1"
     if name.startswith(("pygpt_", "tool_manifest")):
         return "huey.connectors.pyhuey"
@@ -109,16 +125,18 @@ def build_inventory(root: Path) -> dict[str, Any]:
             error = str(exc)
             errors.append({"file": relative, "error": error})
             has_main = False
-        files.append({
-            "name": path.name,
-            "path": relative,
-            "bytes": path.stat().st_size,
-            "target_family": category(path.name),
-            "static_consumers": sorted(consumers.get(path.stem, ())),
-            "same_named_candidates": same_name.get(path.name, []),
-            "main_guard": has_main,
-            "syntax_error": error,
-        })
+        files.append(
+            {
+                "name": path.name,
+                "path": relative,
+                "bytes": path.stat().st_size,
+                "target_family": category(path.name),
+                "static_consumers": sorted(consumers.get(path.stem, ())),
+                "same_named_candidates": same_name.get(path.name, []),
+                "main_guard": has_main,
+                "syntax_error": error,
+            }
+        )
     return {
         "schema": "huey.legacy_python_inventory.v1",
         "method": "static AST lower-bound; no runtime execution",
@@ -131,7 +149,9 @@ def build_inventory(root: Path) -> dict[str, Any]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[2])
+    parser.add_argument(
+        "--root", type=Path, default=Path(__file__).resolve().parents[2]
+    )
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--fail-on-syntax", action="store_true")
@@ -144,12 +164,16 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(report, indent=2))
     else:
         referenced = sum(bool(f["static_consumers"]) for f in report["files"])
-        print(f"{report['legacy_count']} legacy Python files; "
-              f"{referenced} with direct static consumers; "
-              f"{len(report['errors'])} syntax failures")
+        print(
+            f"{report['legacy_count']} legacy Python files; "
+            f"{referenced} with direct static consumers; "
+            f"{len(report['errors'])} syntax failures"
+        )
         for item in report["files"]:
-            print(f"{item['name']:<42} {item['target_family']:<30} "
-                  f"refs={len(item['static_consumers'])}")
+            print(
+                f"{item['name']:<42} {item['target_family']:<30} "
+                f"refs={len(item['static_consumers'])}"
+            )
     return 1 if args.fail_on_syntax and report["errors"] else 0
 
 

@@ -32,7 +32,8 @@ def main(argv: list[str] | None = None) -> int:
         paths = discover_paths(root, index_path=args.index_path)
         count = (
             len(rebuild_index(root, index_path=args.index_path))
-            if args.write else len(paths)
+            if args.write
+            else len(paths)
         )
     except (OSError, ValueError, RuntimeError) as exc:
         parser.exit(2, f"Memory index error: {exc}\n")
