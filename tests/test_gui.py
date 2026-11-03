@@ -253,7 +253,9 @@ def test_clear_log_invokes_delete():
     ui = MainUI.__new__(MainUI)
     dummy_log = SimpleNamespace(delete=lambda *a, **k: None)
     ui.log_text = dummy_log
-    with patch.object(main_ui, "tk", SimpleNamespace(END="end")):
-        with patch.object(dummy_log, "delete") as delete:
-            MainUI.clear_log(ui)
-            delete.assert_called_once_with("1.0", "end")
+    with (
+        patch.object(main_ui, "tk", SimpleNamespace(END="end")),
+        patch.object(dummy_log, "delete") as delete,
+    ):
+        MainUI.clear_log(ui)
+        delete.assert_called_once_with("1.0", "end")

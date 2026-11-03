@@ -313,6 +313,7 @@ select = [
 ]
 ignore = [
   "E501", # line length is enforced by the formatter
+  "I001", # standalone isort --check remains the canonical import-order gate
 ]
 
 [tool.ruff.lint.per-file-ignores]
@@ -321,13 +322,21 @@ ignore = [
 # Root shim and CLI entry points manipulate sys.path before importing.
 "run.py" = ["E402"]
 "src/huey/cli/*.py" = ["E402"]
+# These enums must preserve str+Enum serialization and stringification semantics.
+"src/huey/agents/llm.py" = ["UP042"]
+"src/huey/core/messaging.py" = ["UP042"]
+"src/huey/core/resilience.py" = ["UP042"]
+"src/huey/core/task_scheduler.py" = ["UP042"]
 # These bootstrap scripts must alter sys.path before importing their legacy
 # dispatch module. The late imports are deliberate, not dependency cycles.
 "scripts/automation/py/*.py" = ["E402"]
 "scripts/check_ffmpeg_environment.py" = ["E402"]
 "scripts/prepare_audio_for_transcription.py" = ["E402"]
+"scripts/probe_media.py" = ["E402"]
 # Tests establish optional dependencies or compatibility state before import.
 "tests/test_api_routes.py" = ["E402"]
+"tests/test_chat_learning.py" = ["E402"]
+"tests/test_convert_png_to_jpeg.py" = ["E402"]
 "tests/test_container_management_new.py" = ["E402"]
 "tests/test_telemetry_store.py" = ["E402"]
 "tests/test_tensorflow_feed.py" = ["E402"]

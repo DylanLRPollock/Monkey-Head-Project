@@ -314,7 +314,7 @@ def export_artifacts(
     artifacts["onnx"] = onnx_path
 
     summary_path = config.output_dir / "training_history.json"
-    summary_path.write_text(json.dumps([row for row in summary.history], indent=2))
+    summary_path.write_text(json.dumps(list(summary.history), indent=2))
     artifacts["history"] = summary_path
 
     return artifacts

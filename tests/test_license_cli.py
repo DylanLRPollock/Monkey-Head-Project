@@ -15,9 +15,11 @@ def test_license_decline(tmp_path):
     cfg = tmp_path / "cfg.json"
     cfg.write_text(json.dumps({"license.accepted": False}))
 
-    with patch("huey.os.license_cli.prompt_response", return_value="no"):
-        with pytest.raises(RuntimeError):
-            show_license_cli(cfg)
+    with (
+        patch("huey.os.license_cli.prompt_response", return_value="no"),
+        pytest.raises(RuntimeError),
+    ):
+        show_license_cli(cfg)
 
     data = json.loads(cfg.read_text())
     assert data.get("license.accepted") is False

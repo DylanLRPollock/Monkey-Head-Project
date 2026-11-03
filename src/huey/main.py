@@ -64,7 +64,7 @@ class _StubApp:
     def route(
         self, path: str, *, methods: Iterable[str] | None = None
     ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-        allowed = tuple(methods) if methods is not None else tuple()
+        allowed = tuple(methods) if methods is not None else ()
 
         def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
             self.routes[(path, allowed)] = _Route(path, allowed, func)
