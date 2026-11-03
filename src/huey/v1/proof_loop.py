@@ -14,7 +14,7 @@ from huey.hims.shadow import ShadowHIMS
 from huey.media.speech_pipeline import prepare_audio_for_transcription
 from huey.os.runtime.v1_loop import run_v1_loop
 from huey.utils.paths import ensure_subdirectory
-from huey.v1.fixture_registry import list_fixtures, load_fixture
+from huey.v1.fixture_registry import list_fixtures, load_fixture, verify_fixture
 from huey.v1.response_bridge import ResponseBridge
 from huey.v1.structured_run_log import StructuredRunLog
 
@@ -140,6 +140,8 @@ def run_fixture(
     """Run the V1 fixture loop for a single source file."""
 
     if isinstance(fixture, dict):
+        if "metadata" in fixture:
+            verify_fixture(fixture)
         source_file = str(fixture["path"])
     else:
         source_file = str(Path(fixture).expanduser().resolve())

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from html import escape
 
 from huey.v1.proof_loop import generate_report
 
@@ -51,10 +52,10 @@ def generate_html_report(run_records: list[dict[str, object]]) -> str:
         status = "success" if record.get("exit_status") == "success" else "failed"
         rows.append(
             "<tr>"
-            f"<td>{record.get('run_id')}</td>"
-            f"<td>{status}</td>"
-            f"<td>{record.get('transcript', '')}</td>"
-            f"<td>{record.get('response', '')}</td>"
+            f"<td>{escape(str(record.get('run_id', '')))}</td>"
+            f"<td>{escape(status)}</td>"
+            f"<td>{escape(str(record.get('transcript') or ''))}</td>"
+            f"<td>{escape(str(record.get('response') or ''))}</td>"
             "</tr>"
         )
     return (

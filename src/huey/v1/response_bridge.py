@@ -58,7 +58,9 @@ class ResponseBridge:
         api_key = os.getenv("HUEY_RESPONSE_API_KEY")
         if not api_key:
             raise RuntimeError("HUEY_RESPONSE_API_KEY is required for api mode")
-        return f"[api placeholder] credential present; prompt length={len(prompt)}"
+        raise RuntimeError(
+            "API-backed V1 responses are not implemented; use mock mode"
+        )
 
 
 def main(argv: list[str] | None = None) -> int:
