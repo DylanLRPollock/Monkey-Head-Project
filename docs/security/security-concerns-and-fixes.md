@@ -1,5 +1,8 @@
 # Security Concerns and Fixes
 
+**Historical snapshot (2026-04-29).** Items below record their state at that date. For November 2026 implemented CI checks and outstanding controls, consult the [current risk register](current-risk-register-2026-11-03.md). In particular, CI now enforces dependency auditing and action SHA pinning; this document's older 'remaining concerns' must not be read as current findings.
+
+
 Updated: 2026-04-29
 
 ## Fixed in this pass
