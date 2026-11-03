@@ -19,9 +19,7 @@ from huey.os.core.platform_support import (
     detect_host_platform,
 )
 from huey.os.core.platform_support import distro as platform_distro
-from huey.os.core.platform_support import (
-    require_admin_privileges,
-)
+from huey.os.core.platform_support import require_admin_privileges
 
 logger = logging.getLogger(__name__)
 distro = platform_distro

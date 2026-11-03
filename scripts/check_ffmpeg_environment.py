@@ -2,6 +2,7 @@
 """Operator command for huey.media.cli_ffmpeg_check."""
 
 from __future__ import annotations
+
 import sys
 from pathlib import Path
 

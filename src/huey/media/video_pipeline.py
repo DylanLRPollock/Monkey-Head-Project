@@ -13,9 +13,7 @@ from huey.media.media_manager import (
     _run_ffmpeg,
 )
 from huey.media.media_manager import extract_frames as _extract_frames
-from huey.media.media_manager import (
-    probe_media,
-)
+from huey.media.media_manager import probe_media
 from huey.media.media_manifest import MediaArtifact, MediaManifest
 
 

@@ -2,6 +2,7 @@
 """Operator command for huey.media.cli_audio_prepare."""
 
 from __future__ import annotations
+
 import sys
 from pathlib import Path
 
