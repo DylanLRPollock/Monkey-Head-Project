@@ -799,7 +799,6 @@ async def test_dashboard_redacts_ai_prompts_and_responses(monkeypatch):
     assert observed["ai_records"][0].metadata == {}
 
 
-
 @pytest.mark.asyncio
 async def test_token_protects_read_only_and_schema_routes(monkeypatch):
     """Bearer middleware must protect more than the dashboard."""
@@ -831,9 +830,7 @@ async def test_forged_local_host_header_cannot_bypass_remote_gate(monkeypatch):
     """The Host header must never make a remote peer appear local."""
     monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
 
-    transport = ASGITransport(
-        app=api_module.app, client=("203.0.113.10", 5300)
-    )
+    transport = ASGITransport(app=api_module.app, client=("203.0.113.10", 5300))
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         result = await client.get("/dashboard", headers={"Host": "localhost"})
 
