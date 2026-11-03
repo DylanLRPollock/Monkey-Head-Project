@@ -12,10 +12,11 @@ import os
 import threading
 import time
 import uuid
+from collections.abc import Iterator
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional
+from typing import Any
 
 SCHEMA_VERSION = 1
 
@@ -51,7 +52,7 @@ class HoneycombStorage:
 
     def __init__(
         self,
-        base_dir: Optional[Path | str] = None,
+        base_dir: Path | str | None = None,
         *,
         record_extension: str = ".json",
     ) -> None:
@@ -74,7 +75,7 @@ class HoneycombStorage:
         with self._lock:
             self._closed = True
 
-    def __enter__(self) -> "HoneycombStorage":
+    def __enter__(self) -> HoneycombStorage:
         return self
 
     def __exit__(self, exc_type, exc, tb) -> None:  # pragma: no cover - passthrough
@@ -160,7 +161,7 @@ class HoneycombStorage:
     # ------------------------------------------------------------------
     # Serialisation helpers
     # ------------------------------------------------------------------
-    def _read_record(self, path: Path) -> Optional[HoneycombRecord]:
+    def _read_record(self, path: Path) -> HoneycombRecord | None:
         try:
             with path.open("r", encoding="utf-8") as handle:
                 payload = json.load(handle)
@@ -203,18 +204,18 @@ class HoneycombStorage:
             self._write_record(path, record)
         return record
 
-    def load(self, key: str) -> Optional[Any]:
+    def load(self, key: str) -> Any | None:
         record = self.get_record(key)
         return record.data if record else None
 
-    def get_record(self, key: str) -> Optional[HoneycombRecord]:
+    def get_record(self, key: str) -> HoneycombRecord | None:
         path = self._record_path(key)
         with self._lock:
             if not path.exists():
                 return None
             return self._read_record(path)
 
-    def list_keys(self, prefix: Optional[str] = None) -> List[str]:
+    def list_keys(self, prefix: str | None = None) -> list[str]:
         with self._lock:
             keys = []
             for path in self._iter_record_paths():
@@ -242,7 +243,7 @@ class HoneycombStorage:
                 break
             current = current.parent
 
-    def count(self, prefix: Optional[str] = None) -> int:
+    def count(self, prefix: str | None = None) -> int:
         return sum(1 for key in self.list_keys(prefix))
 
     def prune(self, prefix: str, *, older_than: float) -> int:
@@ -268,10 +269,10 @@ class HoneycombStorage:
     # ------------------------------------------------------------------
     # Metrics helpers
     # ------------------------------------------------------------------
-    def comb_usage(self) -> List[Dict[str, Any]]:
+    def comb_usage(self) -> list[dict[str, Any]]:
         with self._lock:
             records = list(self._iter_records())
-        aggregates: Dict[str, Dict[str, Any]] = {}
+        aggregates: dict[str, dict[str, Any]] = {}
         for record in records:
             comb, _ = self._split_key(record.key)
             bucket = aggregates.setdefault(
@@ -292,13 +293,13 @@ class HoneycombStorage:
                 bucket["oldest"] = record.created_at
             if newest is None or record.updated_at > float(newest):
                 bucket["newest"] = record.updated_at
-        return [aggregates[key] for key in sorted(aggregates.keys())]
+        return [aggregates[key] for key in sorted(aggregates)]
 
-    def prefix_metrics(self, prefix: str) -> Dict[str, Any]:
+    def prefix_metrics(self, prefix: str) -> dict[str, Any]:
         cells = 0
         payload_bytes = 0
-        oldest: Optional[float] = None
-        newest: Optional[float] = None
+        oldest: float | None = None
+        newest: float | None = None
         with self._lock:
             records = list(self._iter_records())
         for record in records:
@@ -317,19 +318,19 @@ class HoneycombStorage:
             "newest": newest,
         }
 
-    def growth_samples(self, window_days: int = 30) -> List[Dict[str, Any]]:
+    def growth_samples(self, window_days: int = 30) -> list[dict[str, Any]]:
         cutoff = time.time() - (window_days * 86400)
-        buckets: Dict[str, int] = {}
+        buckets: dict[str, int] = {}
         with self._lock:
             records = list(self._iter_records())
         for record in records:
             if record.created_at < cutoff:
                 continue
-            dt = datetime.fromtimestamp(record.created_at, tz=timezone.utc)
+            dt = datetime.fromtimestamp(record.created_at, tz=UTC)
             bucket = dt.strftime("%Y-%m-%d")
             buckets[bucket] = buckets.get(bucket, 0) + 1
         return [
-            {"date": date, "cells": buckets[date]} for date in sorted(buckets.keys())
+            {"date": date, "cells": buckets[date]} for date in sorted(buckets)
         ]
 
     # ------------------------------------------------------------------
@@ -341,7 +342,7 @@ class HoneycombStorage:
         *,
         role: str,
         content: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> HoneycombRecord:
         metadata = metadata.copy() if metadata else {}
         metadata.setdefault("role", role)
@@ -373,8 +374,8 @@ class HoneycombStorage:
         self,
         prefix: str,
         *,
-        limit: Optional[int] = None,
-    ) -> List[HoneycombRecord]:
+        limit: int | None = None,
+    ) -> list[HoneycombRecord]:
         with self._lock:
             records = [
                 record
@@ -398,4 +399,4 @@ class HoneycombStorage:
         return len(payload.encode("utf-8"))
 
 
-__all__ = ["HoneycombStorage", "HoneycombRecord", "SCHEMA_VERSION"]
+__all__ = ["HoneycombRecord", "HoneycombStorage", "SCHEMA_VERSION"]

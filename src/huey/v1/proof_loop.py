@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from huey.audio.transcription_pipeline import transcribe
 from huey.hims.shadow import ShadowHIMS
