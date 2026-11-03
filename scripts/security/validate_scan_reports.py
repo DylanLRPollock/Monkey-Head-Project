@@ -98,7 +98,23 @@ def validate_pip_audit_report(path: Path) -> int:
             raise ReportValidationError("pip-audit dependency has an invalid version")
         vulns = dependency.get("vulns")
         if not isinstance(vulns, list):
-            raise ReportValidationError("pip-audit dependency lacks a vulnerabilities list")
+            # pip-audit --skip-editable marks the local editable distribution
+            # with a skip_reason instead of a version and vulnerabilities.
+            # This narrowly allows that one documented local package.
+            if (
+                dependency["name"] == "hueyos"
+                and version is None
+                and dependency.get("skip_reason") == "distribution marked as editable"
+                and "vulns" not in dependency
+            ):
+                continue
+            raise ReportValidationError(
+                "pip-audit dependency lacks a vulnerabilities list"
+            )
+        if "skip_reason" in dependency:
+            raise ReportValidationError(
+                "pip-audit dependency cannot be both audited and skipped"
+            )
         if any(not isinstance(vuln, dict) for vuln in vulns):
             raise ReportValidationError("pip-audit vulnerability must be an object")
         vulnerabilities += len(vulns)

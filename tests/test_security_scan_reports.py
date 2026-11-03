@@ -135,3 +135,39 @@ def test_cli_accepts_valid_artifact(tmp_path, capsys):
 def test_pip_audit_accepts_null_version_from_installed_metadata(tmp_path):
     data = {"dependencies": [{"name": "unknown-dist", "version": None, "vulns": []}]}
     assert validate_pip_audit_report(_write(tmp_path, data)) == 0
+
+
+def test_pip_audit_accepts_only_expected_local_editable_skip(tmp_path):
+    report = {
+        "dependencies": [
+            {"name": "requests", "version": "2.34.2", "vulns": []},
+            {
+                "name": "hueyos",
+                "skip_reason": "distribution marked as editable",
+            },
+        ],
+        "fixes": [],
+    }
+    assert validate_pip_audit_report(_write(tmp_path, report)) == 0
+
+
+@pytest.mark.parametrize(
+    "skipped",
+    [
+        {"name": "requests", "skip_reason": "distribution marked as editable"},
+        {"name": "hueyos", "skip_reason": "unexpected reason"},
+        {"name": "hueyos", "version": "0.2.0", "skip_reason": "distribution marked as editable"},
+        {"name": "hueyos", "vulns": [], "skip_reason": "distribution marked as editable"},
+        {"name": "hueyos", "version": None},
+        {"name": "hueyos", "skip_reason": 123},
+    ],
+)
+def test_pip_audit_rejects_other_unscanned_dependencies(tmp_path, skipped):
+    report = {
+        "dependencies": [
+            {"name": "requests", "version": "2.34.2", "vulns": []},
+            skipped,
+        ],
+    }
+    with pytest.raises(ReportValidationError):
+        validate_pip_audit_report(_write(tmp_path, report))
