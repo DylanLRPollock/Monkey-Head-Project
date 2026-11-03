@@ -210,9 +210,7 @@ class HoneycombIndex:
     # ------------------------------------------------------------------
     # Retrieval helpers
     # ------------------------------------------------------------------
-    def _to_index_record(
-        self, record: HoneycombRecord
-    ) -> HoneycombIndexRecord | None:
+    def _to_index_record(self, record: HoneycombRecord) -> HoneycombIndexRecord | None:
         if not isinstance(record.data, dict):
             return None
         content_type = record.data.get("content_type")
