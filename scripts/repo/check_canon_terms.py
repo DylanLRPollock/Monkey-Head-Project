@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import re
 import sys
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 ARCHIVE_SEGMENTS = {
     "archive",
@@ -34,6 +34,8 @@ PROVENANCE_MARKERS = (
     "formerly",
     "historical",
     "renamed",
+    "older",
+    "vendored",
 )
 
 
@@ -75,7 +77,11 @@ def _compile_rules() -> tuple[Rule, ...]:
         ),
         Rule(
             "hims-active-runtime",
-            re.compile(r"\bHIMS\b", re.IGNORECASE),
+            re.compile(
+                r"\bHIMS\b\s+(?:is|runs|operates)\s+(?:the\s+|an?\s+)?"
+                r"(?:active|production|live)\b.*\bruntime\b",
+                re.IGNORECASE,
+            ),
             "Do not present HIMS as an active runtime.",
         ),
         Rule(
@@ -139,9 +145,7 @@ def _should_flag_pygpt(line: str) -> bool:
         return False
     if re.search(r"\bPyHuey\b", line):
         return False
-    if _has_provenance_marker(line):
-        return False
-    return True
+    return not _has_provenance_marker(line)
 
 
 def main() -> int:
@@ -165,6 +169,13 @@ def main() -> int:
                 )
 
             for rule in rules:
+                # A stated boundary is not a claim that the feature is active.
+                if rule.name == "live-microphone-v1" and re.search(
+                    r"\b(?:does|do)\s+(?:\*\*)?not\b.*\blive microphone\b",
+                    line,
+                    re.IGNORECASE,
+                ):
+                    continue
                 if rule.name == "huey-core-active" and _has_provenance_marker(line):
                     continue
                 if rule.name == "hims-active-runtime" and _has_provenance_marker(line):

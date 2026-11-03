@@ -109,10 +109,18 @@ jobs:
           echo "--- wheel contents ---"
           python -m zipfile -l dist/*.whl
           echo "--- assertions ---"
-          python -m zipfile -l dist/*.whl | grep -q 'huey/py.typed' \
-            || { echo "FAIL: huey/py.typed missing from wheel"; exit 1; }
-          python -m zipfile -l dist/*.whl | grep -q 'huey/__init__.py' \
-            || { echo "FAIL: huey/__init__.py missing from wheel"; exit 1; }
+          python - <<'PYTHON'
+          from pathlib import Path
+          from zipfile import ZipFile
+
+          wheels = list(Path("dist").glob("*.whl"))
+          if len(wheels) != 1:
+              raise SystemExit(f"Expected one wheel, found {len(wheels)}")
+          with ZipFile(wheels[0]) as wheel:
+              missing = {"huey/py.typed", "huey/__init__.py"} - set(wheel.namelist())
+          if missing:
+              raise SystemExit(f"Missing wheel files: {sorted(missing)}")
+          PYTHON
 
       - name: Generate SHA256 checksums
         run: |

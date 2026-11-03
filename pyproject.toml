@@ -244,12 +244,11 @@ package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-# Vendored / legacy trees are intentionally not installed as importable
-# packages; they exist on disk for source inspection only.
+# Exclude vendored connectors. Legacy runtime modules in huey.memory.PY
+# remain required by the public API and CLI compatibility wrappers.
 exclude = [
   "tests*",
   "huey.connectors.pyhuey*",
-  "huey.memory.PY*",
 ]
 
 [tool.setuptools.package-data]

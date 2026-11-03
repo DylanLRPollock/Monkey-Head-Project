@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from huey.media.media_manifest import MediaArtifact, MediaManifest
-from scripts import prepare_audio_for_transcription as prepare_audio_script
+from huey.memory.PY import prepare_audio_for_transcription as prepare_audio_script
 
 
 def _build_manifest(source: Path, output: Path) -> MediaManifest:

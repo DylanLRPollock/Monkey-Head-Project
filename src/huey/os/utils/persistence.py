@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import sqlite3
 import time
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -50,8 +52,17 @@ class TelemetryStore:
         connection.row_factory = sqlite3.Row
         return connection
 
+    @contextmanager
+    def _connection(self) -> Iterator[sqlite3.Connection]:
+        connection = self._connect()
+        try:
+            with connection:
+                yield connection
+        finally:
+            connection.close()
+
     def _initialize(self) -> None:
-        with self._connect() as connection:
+        with self._connection() as connection:
             connection.executescript("""
                 CREATE TABLE IF NOT EXISTS sensor_readings (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -84,7 +95,7 @@ class TelemetryStore:
         value = reading.value
         timestamp = _coerce_timestamp(getattr(reading, "timestamp", None))
         provenance = _coerce_mapping(getattr(reading, "provenance", None))
-        with self._connect() as connection:
+        with self._connection() as connection:
             connection.execute(
                 """
                 INSERT INTO sensor_readings
@@ -112,7 +123,7 @@ class TelemetryStore:
             params.append(name)
         query += " ORDER BY timestamp DESC, id DESC LIMIT ?"
         params.append(limit)
-        with self._connect() as connection:
+        with self._connection() as connection:
             rows = connection.execute(query, params).fetchall()
         return [
             SensorTelemetry(
@@ -135,7 +146,7 @@ class TelemetryStore:
         metadata: dict[str, Any] | None = None,
         status: str = "success",
     ) -> None:
-        with self._connect() as connection:
+        with self._connection() as connection:
             connection.execute(
                 """
                 INSERT INTO ai_interactions
@@ -156,7 +167,7 @@ class TelemetryStore:
             )
 
     def fetch_recent_ai_results(self, *, limit: int = 25) -> list[AIInteraction]:
-        with self._connect() as connection:
+        with self._connection() as connection:
             rows = connection.execute(
                 """
                 SELECT timestamp, prompt, response, model, backend, instruction,
@@ -182,7 +193,7 @@ class TelemetryStore:
         ]
 
     def log_event(self, event_type: str, payload: dict[str, Any] | None = None) -> None:
-        with self._connect() as connection:
+        with self._connection() as connection:
             connection.execute(
                 """
                 INSERT INTO events (timestamp, event_type, payload_json)
@@ -201,7 +212,7 @@ class TelemetryStore:
             params.append(event_type)
         query += " ORDER BY timestamp DESC, id DESC LIMIT ?"
         params.append(limit)
-        with self._connect() as connection:
+        with self._connection() as connection:
             rows = connection.execute(query, params).fetchall()
         return [
             TelemetryEvent(

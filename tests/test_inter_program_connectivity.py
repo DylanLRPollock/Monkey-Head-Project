@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test Inter Program Connectivity module (tests)
 
-from scripts.check_inter_program_connectivity import (
+from huey.memory.PY.check_inter_program_connectivity import (
     check_inter_program_connectivity as legacy_connectivity_check,
 )
 from scripts.repo.check_inter_program_connectivity import (

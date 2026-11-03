@@ -8,9 +8,8 @@
 #
 # Philosophy: Breathing new life into old tech.
 # ---------------------------------------------------------------------------
-"""
 
-"""Pytest configuration and shared fixtures for the Huey test suite.
+Pytest configuration and shared fixtures for the Huey test suite.
 
 Responsibilities:
 
@@ -26,6 +25,7 @@ Responsibilities:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import inspect
 import sys
 from collections.abc import Generator
@@ -75,10 +75,8 @@ def _install_windows_loop_policy() -> None:
     """
     if not sys.platform.startswith("win"):
         return
-    try:
+    with contextlib.suppress(AttributeError, NotImplementedError):
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    except (AttributeError, NotImplementedError):
-        pass
 
 
 _install_windows_loop_policy()
@@ -112,7 +110,7 @@ def _drain_and_close(loop: asyncio.AbstractEventLoop) -> None:
 
 
 @pytest.fixture
-def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
+def event_loop() -> Generator[asyncio.AbstractEventLoop]:
     """Yield a fresh event loop and tear it down cleanly.
 
     Kept as a project fixture (rather than pulled from ``pytest-asyncio``) so

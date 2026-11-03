@@ -22,7 +22,13 @@ import pytest
 if shutil.which("ffmpeg") is None:
     pytest.skip("ffmpeg not installed", allow_module_level=True)
 
-module_path = Path(__file__).resolve().parents[1] / "hueyos" / "convert_video_to_gif.py"
+module_path = (
+    Path(__file__).resolve().parents[1]
+    / "src"
+    / "huey"
+    / "media"
+    / "convert_video_to_gif.py"
+)
 spec = importlib.util.spec_from_file_location("cvg", module_path)
 module = importlib.util.module_from_spec(spec)
 assert spec.loader is not None
@@ -46,8 +52,7 @@ def _make_mp4(path: Path) -> None:
             "-shortest",
             str(path),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         check=True,
     )
 

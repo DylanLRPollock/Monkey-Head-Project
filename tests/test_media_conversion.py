@@ -26,7 +26,13 @@ if shutil.which("ffmpeg") is None:
 
 spec = importlib.util.spec_from_file_location(
     "media_conversion",
-    str(Path(__file__).resolve().parents[1] / "hueyos" / "media_conversion.py"),
+    str(
+        Path(__file__).resolve().parents[1]
+        / "src"
+        / "huey"
+        / "media"
+        / "media_conversion.py"
+    ),
 )
 mc: ModuleType = importlib.util.module_from_spec(spec)
 assert spec.loader is not None
@@ -62,8 +68,7 @@ def _make_video(path: Path) -> None:
             "-shortest",
             str(path),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         check=True,
     )
 

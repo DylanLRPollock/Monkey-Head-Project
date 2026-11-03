@@ -28,6 +28,7 @@ if not hasattr(fastapi, "Request"):
 # while implementations live under ``huey.core.*`` during v101.1 stabilization.
 import sys
 import types
+import warnings
 
 sys.modules.setdefault(
     "huey.os.core.resilience", importlib.import_module("huey.core.resilience")
@@ -36,7 +37,11 @@ sys.modules.setdefault(
     "huey.os.core.task_scheduler", importlib.import_module("huey.core.task_scheduler")
 )
 
-api_module = importlib.import_module("huey.api")
+with warnings.catch_warnings():
+    warnings.filterwarnings(
+        "ignore", message=r"\[huey-env-validation\]", category=RuntimeWarning
+    )
+    api_module = importlib.import_module("huey.api")
 
 # Import the public API symbols used by these tests directly into the module
 # namespace for convenience and to mirror the FastAPI application's exports.

@@ -90,20 +90,6 @@
 #   Actions are pinned to full commit SHAs. The trailing `# vN`
 #   comment records the upstream major. See `.github/actions-pins.md`.
 #
-#   *** ONE SHA IN THIS FILE NEEDS TO BE RESOLVED BEFORE MERGE ***
-#
-#   `ossf/scorecard-action` is pinned to `<SCORECARD_SHA>`. Resolve
-#   the SHA for the current v2 release before merging:
-#
-#     gh api repos/ossf/scorecard-action/git/refs/tags/v2.4.3 \
-#       --jq '.object.sha'
-#
-#   Replace `<SCORECARD_SHA>` with the returned value and update the
-#   trailing comment to the resolved tag. Add the entry to
-#   `.github/actions-pins.md`.
-#
-#   Every other SHA in this file was resolved during the CI audit and
-#   matches what is already used in other workflows.
 
 name: Scorecard
 
@@ -155,7 +141,7 @@ jobs:
           persist-credentials: false
 
       - name: Run Scorecard analysis
-        uses: ossf/scorecard-action@<SCORECARD_SHA> # v2.4.3 -- RESOLVE BEFORE MERGE
+        uses: ossf/scorecard-action@4eaacf0543bb3f2c246792bd56e8cdeffafb205a # v2.4.3
         with:
           # Where to write the raw SARIF.
           results_file: results.sarif

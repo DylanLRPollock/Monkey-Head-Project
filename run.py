@@ -8,9 +8,8 @@
 #
 # Philosophy: Breathing new life into old tech.
 # ---------------------------------------------------------------------------
-"""
 
-"""Convenience proxy to expose the Huey runtime entry points at the project root.
+Convenience proxy to expose the Huey runtime entry points at the project root.
 
 This module:
 

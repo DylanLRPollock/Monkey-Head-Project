@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from huey.memory.pipeline.ingestion import (
+from huey.memory.PY.ingestion import (
     ingest_audio,
     ingest_json,
     ingest_md,
