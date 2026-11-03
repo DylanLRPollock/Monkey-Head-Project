@@ -156,8 +156,16 @@ def test_pip_audit_accepts_only_expected_local_editable_skip(tmp_path):
     [
         {"name": "requests", "skip_reason": "distribution marked as editable"},
         {"name": "hueyos", "skip_reason": "unexpected reason"},
-        {"name": "hueyos", "version": "0.2.0", "skip_reason": "distribution marked as editable"},
-        {"name": "hueyos", "vulns": [], "skip_reason": "distribution marked as editable"},
+        {
+            "name": "hueyos",
+            "version": "0.2.0",
+            "skip_reason": "distribution marked as editable",
+        },
+        {
+            "name": "hueyos",
+            "vulns": [],
+            "skip_reason": "distribution marked as editable",
+        },
         {"name": "hueyos", "version": None},
         {"name": "hueyos", "skip_reason": 123},
     ],

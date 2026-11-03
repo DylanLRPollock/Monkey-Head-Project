@@ -20,7 +20,9 @@ def _read_report(path: Path) -> dict[str, Any]:
     try:
         report = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
-        raise ReportValidationError(f"Cannot read valid JSON from {path}: {exc}") from exc
+        raise ReportValidationError(
+            f"Cannot read valid JSON from {path}: {exc}"
+        ) from exc
     if not isinstance(report, dict):
         raise ReportValidationError("Security report must be a JSON object")
     return report

@@ -269,14 +269,11 @@ huey = [
 [tool.black]
 target-version = ["py313"]
 line-length = 88
-# Black matches paths relative to the repo root, without a leading slash.
-# The previous `^/src/...` pattern was anchored to a slash that never
-# appears in Black's path strings, so it matched nothing.
+# Match source paths whether the formatter receives a relative or absolute path.
+# Legacy and vendored code are excluded from formatting only, not from
+# security findings in their separately configured scans.
 extend-exclude = '''
-(?x)^(?:
-    src/huey/connectors/pyhuey/
-  | src/huey/memory/PY/
-)
+(?x)(?:^|/)src/huey/(?:connectors/pyhuey|memory/PY)/
 '''
 
 [tool.isort]

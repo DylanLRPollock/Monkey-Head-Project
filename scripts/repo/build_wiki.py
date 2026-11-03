@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Generate and validate the complete v201.x Monkey-Head-Project GitHub Wiki."""
+
 from __future__ import annotations
 
 import argparse
@@ -23,9 +24,7 @@ SOURCES = """## Repository sources
 - [v201.x migration matrix]({r}/blob/main/docs/architecture/v201.x-migration-matrix.md)
 - [Human oversight checklist]({r}/blob/main/docs/review/v201.x-human-oversight-checklist.md)
 - [Security policy]({r}/blob/main/SECURITY.md)
-""".format(
-    r=REPO
-)
+""".format(r=REPO)
 
 TOPIC = {
     "network": "Document actual interfaces, addresses, exposure, authentication, firewalling, degraded operation, logs, and rollback. Old private-address examples are lineage, not current configuratio[...]",
@@ -53,19 +52,53 @@ def topic_text(name: str) -> str:
         return TOPIC["backup"]
     if any(x in n for x in ("model", "llm", "ollama", "api", "external-service")):
         return TOPIC["model"]
-    if any(x in n for x in ("build", "dev", "makefile", "systemd", "cli", "software-stack", "repository")):
+    if any(
+        x in n
+        for x in (
+            "build",
+            "dev",
+            "makefile",
+            "systemd",
+            "cli",
+            "software-stack",
+            "repository",
+        )
+    ):
         return TOPIC["build"]
     if any(x in n for x in ("release", "publishing")):
         return TOPIC["release"]
-    if any(x in n for x in ("privacy", "license", "provenance", "contributing", "style")):
+    if any(
+        x in n for x in ("privacy", "license", "provenance", "contributing", "style")
+    ):
         return TOPIC["privacy"]
-    if any(x in n for x in ("history", "historical", "timeline", "predecessor", "v120", "v200", "migration")):
+    if any(
+        x in n
+        for x in (
+            "history",
+            "historical",
+            "timeline",
+            "predecessor",
+            "v120",
+            "v200",
+            "migration",
+        )
+    ):
         return TOPIC["lineage"]
     if any(x in n for x in ("hardware", "power", "thermal", "battery")):
         return TOPIC["hardware"]
     if any(x in n for x in ("controller", "nexus")):
         return TOPIC["controller"]
-    if any(x in n for x in ("governance", "citizen", "clause", "collective", "bifurcation", "decision")):
+    if any(
+        x in n
+        for x in (
+            "governance",
+            "citizen",
+            "clause",
+            "collective",
+            "bifurcation",
+            "decision",
+        )
+    ):
         return TOPIC["governance"]
     return TOPIC["evidence"]
 
@@ -140,7 +173,9 @@ def build(output: Path):
         if p.is_file():
             p.unlink()
     for name in expected:
-        (output / f"{name}.md").write_text(render(name, specs[name]).strip() + "\n", encoding="utf-8")
+        (output / f"{name}.md").write_text(
+            render(name, specs[name]).strip() + "\n", encoding="utf-8"
+        )
     index = "\n".join(
         f"- [[{n}|{specs[n]['title']}]] — {specs[n]['summary']}" for n in expected
     )
@@ -186,10 +221,16 @@ Continue to [[{target}]]. See [[Historical-2025-Wiki]] and [[Wiki-Migration-Map]
         "framework": FRAMEWORK,
         "current_pages": len(expected),
         "compatibility_pages": len(
-            [p for p in output.glob("*.md") if p.stem not in expected and not p.name.startswith("_")]
+            [
+                p
+                for p in output.glob("*.md")
+                if p.stem not in expected and not p.name.startswith("_")
+            ]
         ),
     }
-    (output / "wiki-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    (output / "wiki-manifest.json").write_text(
+        json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+    )
     (output / "SHA256SUMS").write_text(
         "\n".join(f"{x['sha256']}  {x['file']}" for x in files) + "\n", encoding="utf-8"
     )

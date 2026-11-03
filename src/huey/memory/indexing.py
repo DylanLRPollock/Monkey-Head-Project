@@ -44,8 +44,12 @@ def _load_index(path: Path | None = None) -> list[dict[str, object]]:
     if not selected.exists():
         return []
     records = json.loads(selected.read_text(encoding="utf-8"))
-    if not isinstance(records, list) or not all(isinstance(item, dict) for item in records):
-        raise ValueError(f"Malformed memory index (expected list of objects): {selected}")
+    if not isinstance(records, list) or not all(
+        isinstance(item, dict) for item in records
+    ):
+        raise ValueError(
+            f"Malformed memory index (expected list of objects): {selected}"
+        )
     return records
 
 
@@ -56,8 +60,12 @@ def _save_index(records: list[dict[str, object]], path: Path | None = None) -> P
     temporary: Path | None = None
     try:
         with tempfile.NamedTemporaryFile(
-            mode="w", encoding="utf-8", dir=selected.parent,
-            prefix=f".{selected.name}.", suffix=".tmp", delete=False,
+            mode="w",
+            encoding="utf-8",
+            dir=selected.parent,
+            prefix=f".{selected.name}.",
+            suffix=".tmp",
+            delete=False,
         ) as handle:
             temporary = Path(handle.name)
             handle.write(payload)
@@ -82,7 +90,9 @@ def discover_paths(root: str | Path, *, index_path: Path | None = None) -> list[
     found: list[Path] = []
     for path in base.rglob("*"):
         relative = path.relative_to(base)
-        if any(part in _SKIP_DIRECTORIES or part.startswith(".") for part in relative.parts):
+        if any(
+            part in _SKIP_DIRECTORIES or part.startswith(".") for part in relative.parts
+        ):
             continue
         if path.is_symlink() or not path.is_file():
             continue
@@ -109,7 +119,8 @@ def build_index(
 
     excluded = (
         Path(index_path).expanduser().resolve()
-        if index_path else default_index_path(create=False).resolve()
+        if index_path
+        else default_index_path(create=False).resolve()
     )
     records = []
     for value in paths:
@@ -135,9 +146,12 @@ def rebuild_index(
 
     base = (
         Path(root).expanduser().resolve()
-        if root is not None else get_memory_path(create=False)
+        if root is not None
+        else get_memory_path(create=False)
     )
-    return build_index(discover_paths(base, index_path=index_path), index_path=index_path)
+    return build_index(
+        discover_paths(base, index_path=index_path), index_path=index_path
+    )
 
 
 def update_index(
@@ -173,8 +187,11 @@ def search_index(
             str(record.get("path", "")),
             str(record.get("kind", "")),
             str(record.get("content", "")),
-            str(record.get("metadata", {}).get("summary", ""))
-            if isinstance(record.get("metadata"), dict) else "",
+            (
+                str(record.get("metadata", {}).get("summary", ""))
+                if isinstance(record.get("metadata"), dict)
+                else ""
+            ),
         ]
         if any(needle in haystack.lower() for haystack in haystacks):
             matches.append(record)

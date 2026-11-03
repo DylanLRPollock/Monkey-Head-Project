@@ -68,7 +68,8 @@ def test_media_summary_uses_probe_result(tmp_path, monkeypatch):
     source = tmp_path / "sound.wav"
     source.write_bytes(b"test")
     monkeypatch.setattr(
-        metadata, "probe_media",
+        metadata,
+        "probe_media",
         lambda path: SimpleNamespace(duration_seconds=12.5),
     )
     assert "12.5" in metadata.file_summary(source)
@@ -81,7 +82,7 @@ def test_index_excludes_hidden_code_and_self(memroot):
     (memroot / "PY" / "code.json").write_text('{"x": 1}')
     (memroot / "INDEX").mkdir()
     target = memroot / "INDEX" / "memory-index.json"
-    target.write_text('[]')
+    target.write_text("[]")
     (memroot / "link.txt").symlink_to(memroot / "note.txt")
     assert indexing.discover_paths(memroot, index_path=target) == [memroot / "note.txt"]
     assert len(indexing.rebuild_index(memroot, index_path=target)) == 1
@@ -133,7 +134,9 @@ def test_cli_defaults_to_nonmutating_dry_run(memroot):
     script = Path(__file__).resolve().parents[1] / "scripts" / "memory_index.py"
     result = subprocess.run(
         [sys.executable, str(script), "--root", str(memroot), "--json"],
-        text=True, capture_output=True, check=True,
+        text=True,
+        capture_output=True,
+        check=True,
     )
     assert json.loads(result.stdout)["mode"] == "dry-run"
     assert not (memroot / "INDEX").exists()
@@ -143,7 +146,8 @@ def test_cli_explicit_write_required(memroot):
     script = Path(__file__).resolve().parents[1] / "scripts" / "memory_index.py"
     result = subprocess.run(
         [sys.executable, str(script), "--root", str(memroot), "--write"],
-        text=True, capture_output=True,
+        text=True,
+        capture_output=True,
     )
     assert result.returncode != 0
     assert "--index-path" in result.stderr

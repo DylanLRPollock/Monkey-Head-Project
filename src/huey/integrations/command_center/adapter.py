@@ -81,9 +81,11 @@ def get_memory_status() -> dict[str, object]:
         "exists": memory_root.exists(),
         "index_path": str(index_path),
         "indexed_entries": indexed_entries,
-        "subdirectories": sorted(
-            entry.name for entry in memory_root.iterdir() if entry.is_dir()
-        ) if memory_root.is_dir() else [],
+        "subdirectories": (
+            sorted(entry.name for entry in memory_root.iterdir() if entry.is_dir())
+            if memory_root.is_dir()
+            else []
+        ),
     }
     return memory_to_json(payload)
 
