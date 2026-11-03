@@ -162,10 +162,8 @@ def dispatch(request: object) -> dict[str, object] | None:
     if "id" not in request:
         return None
     request_id = request["id"]
-    if (
-        isinstance(request_id, bool)
-        or not isinstance(request_id, (str, int))
-        and request_id is not None
+    if request_id is not None and (
+        isinstance(request_id, bool) or not isinstance(request_id, (str, int))
     ):
         return _error(None, -32600, "Invalid Request")
 
@@ -179,7 +177,7 @@ def dispatch(request: object) -> dict[str, object] | None:
     result: dict[str, object]
     if method == "initialize":
         version = params.get("protocolVersion")
-        if version not in _PROTOCOL_VERSIONS:
+        if not isinstance(version, str) or version not in _PROTOCOL_VERSIONS:
             version = _DEFAULT_PROTOCOL
         result = {
             "protocolVersion": version,
