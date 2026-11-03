@@ -52,7 +52,9 @@ def test_relocated_tests_and_examples_are_present_without_duplicate_copies() -> 
 
 def test_known_promotions_keep_compatibility_modules() -> None:
     rows = json.loads(MANIFEST.read_text(encoding="utf-8"))["items"]
-    promoted = [row for row in rows if row["disposition"] == "promoted_with_legacy_alias"]
+    promoted = [
+        row for row in rows if row["disposition"] == "promoted_with_legacy_alias"
+    ]
     assert len(promoted) == 11
     for row in promoted:
         assert (ROOT / row["legacy_path"]).is_file()
