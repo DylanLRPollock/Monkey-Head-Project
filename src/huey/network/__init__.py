@@ -15,9 +15,9 @@ from .websocket import WebSocketHub
 __all__ = [
     "ApiRoute",
     "ApiSurface",
-    "MessageQueue",
     "MQTTClient",
     "MQTTProfile",
+    "MessageQueue",
     "NetworkManager",
     "NetworkStatus",
     "ProtocolEnvelope",

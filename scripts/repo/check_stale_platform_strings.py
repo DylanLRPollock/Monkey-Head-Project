@@ -8,7 +8,7 @@ import os
 import re
 import subprocess
 import sys
-from typing import Iterable
+from collections.abc import Iterable
 
 BANNED_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"\btrixie\b", re.IGNORECASE),

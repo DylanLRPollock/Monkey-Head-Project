@@ -14,9 +14,10 @@ import shutil
 import subprocess
 import time
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, DefaultDict, Dict, List, Optional
+from typing import Any
 
 try:  # pragma: no cover - optional dependency
     import psutil  # type: ignore
@@ -34,7 +35,7 @@ class PowerEvent:
 
     timestamp: float
     action: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class BatteryMonitor:
@@ -42,15 +43,15 @@ class BatteryMonitor:
 
     def __init__(self, *, shutdown_threshold: float = 5.0) -> None:
         self.shutdown_threshold = shutdown_threshold
-        self._last_event: Optional[PowerEvent] = None
-        self._listeners: DefaultDict[str, List[Callable[[Dict[str, Any]], None]]] = (
+        self._last_event: PowerEvent | None = None
+        self._listeners: defaultdict[str, list[Callable[[dict[str, Any]], None]]] = (
             defaultdict(list)
         )
-        self._last_status: Optional[Dict[str, Any]] = None
+        self._last_status: dict[str, Any] | None = None
         self._low_battery_triggered = False
 
     # ------------------------------------------------------------------
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Return current battery metrics.
 
         The monitor prefers :mod:`psutil` when available but can fall back to
@@ -107,14 +108,14 @@ class BatteryMonitor:
 
     # ------------------------------------------------------------------
     def register_hook(
-        self, event: str, callback: Callable[[Dict[str, Any]], None]
+        self, event: str, callback: Callable[[dict[str, Any]], None]
     ) -> None:
         """Register ``callback`` to be invoked when ``event`` occurs."""
 
         self._listeners[event].append(callback)
 
     def remove_hook(
-        self, event: str, callback: Callable[[Dict[str, Any]], None]
+        self, event: str, callback: Callable[[dict[str, Any]], None]
     ) -> None:
         listeners = self._listeners.get(event)
         if not listeners:
@@ -122,7 +123,7 @@ class BatteryMonitor:
         with contextlib.suppress(ValueError):
             listeners.remove(callback)
 
-    def observe(self, status: Dict[str, Any]) -> Dict[str, Any]:
+    def observe(self, status: dict[str, Any]) -> dict[str, Any]:
         """Process an externally supplied ``status`` dictionary."""
 
         enriched = dict(status)
@@ -132,7 +133,7 @@ class BatteryMonitor:
         self._last_status = enriched
         return enriched
 
-    def _dispatch_events(self, status: Dict[str, Any]) -> None:
+    def _dispatch_events(self, status: dict[str, Any]) -> None:
         percent = status.get("percent")
         plugged = status.get("power_plugged")
         threshold = status.get("threshold", self.shutdown_threshold)
@@ -156,7 +157,7 @@ class BatteryMonitor:
 
         self._emit("status", status)
 
-    def _emit(self, event: str, status: Dict[str, Any]) -> None:
+    def _emit(self, event: str, status: dict[str, Any]) -> None:
         for callback in list(self._listeners.get(event, [])):
             try:
                 callback(status)
@@ -164,7 +165,7 @@ class BatteryMonitor:
                 LOGGER.exception("Battery event hook '%s' failed", event)
 
     # ------------------------------------------------------------------
-    def _status_from_psutil(self) -> Optional[Dict[str, Any]]:
+    def _status_from_psutil(self) -> dict[str, Any] | None:
         if not psutil or not hasattr(psutil, "sensors_battery"):
             return None
         try:
@@ -192,7 +193,7 @@ class BatteryMonitor:
             "source": "psutil",
         }
 
-    def _status_from_sysfs(self) -> Optional[Dict[str, Any]]:
+    def _status_from_sysfs(self) -> dict[str, Any] | None:
         sysfs_root = Path("/sys/class/power_supply")
         if not sysfs_root.exists():  # pragma: no cover - platform specific
             return None
@@ -236,7 +237,7 @@ class BatteryMonitor:
             "source": "sysfs",
         }
 
-    def _status_from_acpi(self) -> Optional[Dict[str, Any]]:
+    def _status_from_acpi(self) -> dict[str, Any] | None:
         acpi_cmd = shutil.which("acpi")
         if not acpi_cmd:  # pragma: no cover - depends on tooling
             return None
@@ -250,9 +251,9 @@ class BatteryMonitor:
         if not output:
             return None
 
-        percent: Optional[float] = None
-        secs_left: Optional[float] = None
-        power_plugged: Optional[bool] = None
+        percent: float | None = None
+        secs_left: float | None = None
+        power_plugged: bool | None = None
         for line in output.splitlines():
             percent_match = re.search(r"(\d+(?:\.\d+)?)%", line)
             if percent_match:
@@ -276,7 +277,7 @@ class BatteryMonitor:
             "source": "acpi",
         }
 
-    def _empty_status(self) -> Dict[str, Any]:
+    def _empty_status(self) -> dict[str, Any]:
         return {
             "percent": None,
             "secs_left": None,
@@ -286,21 +287,21 @@ class BatteryMonitor:
         }
 
     # ------------------------------------------------------------------
-    def _read_sysfs_text(self, path: Path) -> Optional[str]:
+    def _read_sysfs_text(self, path: Path) -> str | None:
         try:
             value = path.read_text().strip()
         except OSError:
             return None
         return value or None
 
-    def _read_sysfs_float(self, path: Path) -> Optional[float]:
+    def _read_sysfs_float(self, path: Path) -> float | None:
         text = self._read_sysfs_text(path)
         if text is None:
             return None
         with contextlib.suppress(ValueError):
             return float(text)
 
-    def _ac_adapter_online(self, root: Path) -> Optional[bool]:
+    def _ac_adapter_online(self, root: Path) -> bool | None:
         for supply in root.iterdir():
             if not supply.is_dir():
                 continue
@@ -321,12 +322,12 @@ class BatteryMonitor:
 
     # ------------------------------------------------------------------
     def _execute_power_action(
-        self, action: str, base_metadata: Dict[str, Any]
+        self, action: str, base_metadata: dict[str, Any]
     ) -> PowerEvent:
         timestamp = time.time()
         host = detect_host_platform()
         command = self._resolve_command(action)
-        metadata: Dict[str, Any] = {
+        metadata: dict[str, Any] = {
             "action": action,
             "platform": host.display_name,
             "platform_family": host.family,
@@ -346,7 +347,7 @@ class BatteryMonitor:
         self._last_event = event
         return event
 
-    def _resolve_command(self, action: str) -> Optional[List[str]]:
+    def _resolve_command(self, action: str) -> list[str] | None:
         action = action.lower()
         host = detect_host_platform()
         if host.is_windows:
@@ -360,7 +361,7 @@ class BatteryMonitor:
         )
         return None
 
-    def _linux_command(self, action: str) -> Optional[List[str]]:
+    def _linux_command(self, action: str) -> list[str] | None:
         if action == "shutdown":
             if shutil.which("systemctl"):
                 return ["systemctl", "poweroff"]
@@ -378,7 +379,7 @@ class BatteryMonitor:
                 return [legacy]
         return None
 
-    def _darwin_command(self, action: str) -> Optional[List[str]]:
+    def _darwin_command(self, action: str) -> list[str] | None:
         if action == "shutdown":
             return ["osascript", "-e", 'tell app "System Events" to shut down']
         if action == "reboot":
@@ -387,7 +388,7 @@ class BatteryMonitor:
             return ["pmset", "sleepnow"]
         return None
 
-    def _windows_command(self, action: str) -> Optional[List[str]]:
+    def _windows_command(self, action: str) -> list[str] | None:
         if action == "shutdown":
             return ["shutdown", "/s", "/t", "0"]
         if action == "reboot":
@@ -399,7 +400,7 @@ class BatteryMonitor:
         return None
 
     @property
-    def last_event(self) -> Optional[PowerEvent]:
+    def last_event(self) -> PowerEvent | None:
         return self._last_event
 
 

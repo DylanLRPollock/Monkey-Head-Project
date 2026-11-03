@@ -16,7 +16,7 @@ class TrainingRun:
     metadata: dict[str, object] = field(default_factory=dict)
 
     @classmethod
-    def from_record(cls, record: ModelRecord) -> "TrainingRun":
+    def from_record(cls, record: ModelRecord) -> TrainingRun:
         return cls(
             model_name=record.name,
             examples_seen=int(record.metadata.get("examples_seen", 0)),

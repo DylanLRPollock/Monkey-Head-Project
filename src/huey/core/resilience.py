@@ -19,23 +19,24 @@ import socket
 import threading
 import time
 from collections import deque
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, Iterable, List, Optional
+from typing import Any
 
 LOGGER = logging.getLogger(__name__)
 
 __all__ = [
     "CrashEvent",
-    "MonitoredProcess",
-    "SystemdWatchdogClient",
-    "EmergencyState",
-    "RegisteredService",
-    "EmergencyServiceStatus",
-    "EmergencyGovernanceController",
     "CrashRecoveryManager",
+    "EmergencyGovernanceController",
+    "EmergencyServiceStatus",
+    "EmergencyState",
     "HealthCheck",
+    "MonitoredProcess",
+    "RegisteredService",
     "RestartCallback",
+    "SystemdWatchdogClient",
 ]
 
 HealthCheck = Callable[[], bool]
@@ -50,9 +51,9 @@ class CrashEvent:
     timestamp: float
     restarted: bool
     message: str
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Return a serialisable representation of the crash event."""
 
         return {
@@ -73,11 +74,11 @@ class MonitoredProcess:
     restart_callback: RestartCallback
     auto_restart_enabled: bool = True
     last_heartbeat: float = field(default_factory=lambda: time.time())
-    last_restart: Optional[float] = None
+    last_restart: float | None = None
     restart_attempts: int = 0
     healthy: bool = True
-    manual_override_reason: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    manual_override_reason: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def check_health(self) -> bool:
         """Execute the configured health check and update cached state."""
@@ -104,7 +105,7 @@ class MonitoredProcess:
 class SystemdWatchdogClient:
     """Best-effort interface to the systemd watchdog notification socket."""
 
-    def __init__(self, notify_socket: Optional[str] = None) -> None:
+    def __init__(self, notify_socket: str | None = None) -> None:
         self.notify_socket = notify_socket or os.environ.get("NOTIFY_SOCKET")
 
     def _send(self, payload: bytes) -> bool:
@@ -151,7 +152,7 @@ class RegisteredService:
 
     name: str
     stop: Callable[[], None]
-    start: Optional[Callable[[], None]] = None
+    start: Callable[[], None] | None = None
     essential: bool = False
 
 
@@ -163,7 +164,7 @@ class EmergencyServiceStatus:
     essential: bool
     managed: bool = True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "essential": self.essential,
@@ -179,11 +180,11 @@ class EmergencyGovernanceController:
             raise ValueError("required_approvals must be at least 1")
         self.required_approvals = required_approvals
         self.state = EmergencyState.NORMAL
-        self.active_since: Optional[float] = None
-        self.reason: Optional[str] = None
-        self.triggered_by: Optional[str] = None
-        self.approvals: List[str] = []
-        self._services: Dict[str, RegisteredService] = {}
+        self.active_since: float | None = None
+        self.reason: str | None = None
+        self.triggered_by: str | None = None
+        self.approvals: list[str] = []
+        self._services: dict[str, RegisteredService] = {}
         self._lock = threading.RLock()
 
     def register_service(
@@ -191,7 +192,7 @@ class EmergencyGovernanceController:
         name: str,
         *,
         stop: Callable[[], None],
-        start: Optional[Callable[[], None]] = None,
+        start: Callable[[], None] | None = None,
         essential: bool = False,
     ) -> None:
         """Track a service that should be managed during emergency transitions."""
@@ -203,7 +204,7 @@ class EmergencyGovernanceController:
 
     def _validate_approvals(
         self, approvals: Iterable[str], initiator: str
-    ) -> List[str]:
+    ) -> list[str]:
         unique = {initiator}
         for approval in approvals:
             if approval:
@@ -311,7 +312,7 @@ class EmergencyGovernanceController:
             safe_approved_identities,
         )
 
-    def status(self) -> Dict[str, Any]:
+    def status(self) -> dict[str, Any]:
         """Return a serialisable snapshot of the emergency state."""
 
         with self._lock:
@@ -338,14 +339,14 @@ class CrashRecoveryManager:
 
     def __init__(
         self,
-        watchdog: Optional[SystemdWatchdogClient] = None,
+        watchdog: SystemdWatchdogClient | None = None,
         *,
         history_limit: int = 100,
     ) -> None:
         if history_limit < 1:
             raise ValueError("history_limit must be at least 1")
         self._watchdog = watchdog or SystemdWatchdogClient()
-        self._processes: Dict[str, MonitoredProcess] = {}
+        self._processes: dict[str, MonitoredProcess] = {}
         self._lock = threading.RLock()
         self._event_log: deque[CrashEvent] = deque(maxlen=history_limit)
 
@@ -377,16 +378,16 @@ class CrashRecoveryManager:
             safe_name = name.replace("\r", "").replace("\n", "")
             LOGGER.debug("Unregistered monitored process: %s", safe_name)
 
-    def poll(self) -> List[CrashEvent]:
+    def poll(self) -> list[CrashEvent]:
         """Check the health of all processes and restart crashed ones."""
 
-        events: List[CrashEvent] = []
+        events: list[CrashEvent] = []
         with self._lock:
             for process in self._processes.values():
                 healthy = process.check_health()
                 if healthy:
                     continue
-                metadata: Dict[str, Any] = {}
+                metadata: dict[str, Any] = {}
                 restarted = False
                 safe_process_name = process.name.replace("\r", "").replace("\n", "")
                 if process.auto_restart_enabled:
@@ -427,7 +428,7 @@ class CrashRecoveryManager:
 
         return self._watchdog.ping()
 
-    def _serialise_process(self, process: MonitoredProcess) -> Dict[str, Any]:
+    def _serialise_process(self, process: MonitoredProcess) -> dict[str, Any]:
         return {
             "name": process.name,
             "healthy": process.healthy,
@@ -439,8 +440,8 @@ class CrashRecoveryManager:
         }
 
     def toggle_auto_restart(
-        self, name: str, enabled: bool, *, reason: Optional[str] = None
-    ) -> Dict[str, Any]:
+        self, name: str, enabled: bool, *, reason: str | None = None
+    ) -> dict[str, Any]:
         """Enable or disable automatic restarts and return updated status."""
 
         with self._lock:
@@ -464,7 +465,7 @@ class CrashRecoveryManager:
             return self._serialise_process(process)
 
     def set_auto_restart(
-        self, name: str, enabled: bool, *, reason: Optional[str] = None
+        self, name: str, enabled: bool, *, reason: str | None = None
     ) -> None:
         """Compatibility wrapper for :meth:`toggle_auto_restart`."""
 
@@ -481,7 +482,7 @@ class CrashRecoveryManager:
             name_sanitized = name.replace("\r", "").replace("\n", "")
             LOGGER.info("Manual restart executed for process %s", name_sanitized)
 
-    def statuses(self) -> List[Dict[str, Any]]:
+    def statuses(self) -> list[dict[str, Any]]:
         """Return serialisable status information for each process."""
 
         with self._lock:
@@ -495,7 +496,7 @@ class CrashRecoveryManager:
         with self._lock:
             return name in self._processes
 
-    def event_log(self) -> List[CrashEvent]:
+    def event_log(self) -> list[CrashEvent]:
         """Return a copy of the recorded crash events."""
 
         with self._lock:

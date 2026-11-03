@@ -119,7 +119,7 @@ class HIMSMessage:
         return record
 
     @classmethod
-    def from_dict(cls, payload: dict[str, Any]) -> "HIMSMessage":
+    def from_dict(cls, payload: dict[str, Any]) -> HIMSMessage:
         """Build a message from a stored record snapshot."""
 
         return cls(
@@ -159,7 +159,7 @@ class HIMSMessage:
         payload_updates: dict[str, Any] | None = None,
         signature_updates: dict[str, Any] | None = None,
         lineage_updates: dict[str, Any] | None = None,
-    ) -> "HIMSMessage":
+    ) -> HIMSMessage:
         """Return a new message snapshot with an updated status."""
 
         payload = dict(self.payload)

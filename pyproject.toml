@@ -321,6 +321,17 @@ ignore = [
 # Root shim and CLI entry points manipulate sys.path before importing.
 "run.py" = ["E402"]
 "src/huey/cli/*.py" = ["E402"]
+# These bootstrap scripts must alter sys.path before importing their legacy
+# dispatch module. The late imports are deliberate, not dependency cycles.
+"scripts/automation/py/*.py" = ["E402"]
+"scripts/check_ffmpeg_environment.py" = ["E402"]
+"scripts/prepare_audio_for_transcription.py" = ["E402"]
+# Tests establish optional dependencies or compatibility state before import.
+"tests/test_api_routes.py" = ["E402"]
+"tests/test_container_management_new.py" = ["E402"]
+"tests/test_telemetry_store.py" = ["E402"]
+"tests/test_tensorflow_feed.py" = ["E402"]
+"tests/test_utils.py" = ["E402"]
 # Tests are allowed to use asserts, magic numbers, and long lines.
 "tests/**" = ["S101", "PLR2004", "E501"]
 

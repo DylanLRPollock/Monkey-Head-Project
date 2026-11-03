@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import random
+from collections.abc import Iterable, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, Sequence, Tuple
+from typing import Any
 
 import numpy as np
 import torch
@@ -18,9 +19,9 @@ class TorchDeviceInfo:
     torch_version: str
     cuda_available: bool
     cuda_device_count: int
-    cuda_devices: Tuple[str, ...]
+    cuda_devices: tuple[str, ...]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -32,7 +33,7 @@ def get_device(prefer_cuda: bool = True) -> torch.device:
     return torch.device("cpu")
 
 
-def device_summary(prefer_cuda: bool = True) -> Dict[str, Any]:
+def device_summary(prefer_cuda: bool = True) -> dict[str, Any]:
     """Summarize the current PyTorch runtime and device availability."""
 
     cuda_available = torch.cuda.is_available()
@@ -50,7 +51,7 @@ def device_summary(prefer_cuda: bool = True) -> Dict[str, Any]:
     return info.to_dict()
 
 
-def seed_everything(seed: int) -> Dict[str, int]:
+def seed_everything(seed: int) -> dict[str, int]:
     """Seed common RNGs for reproducible PyTorch experiments."""
 
     random.seed(seed)
@@ -79,7 +80,7 @@ def build_mlp(layer_sizes: Sequence[int], dropout: float = 0.0) -> nn.Module:
     return nn.Sequential(*layers)
 
 
-def tensor_stats(tensor: torch.Tensor) -> Dict[str, float]:
+def tensor_stats(tensor: torch.Tensor) -> dict[str, float]:
     """Return basic statistics for a tensor."""
 
     return {
@@ -131,11 +132,11 @@ def load_state_dict_checkpoint(
 
 __all__ = [
     "TorchDeviceInfo",
-    "get_device",
-    "device_summary",
-    "seed_everything",
     "build_mlp",
-    "tensor_stats",
-    "sample_tensor",
+    "device_summary",
+    "get_device",
     "load_state_dict_checkpoint",
+    "sample_tensor",
+    "seed_everything",
+    "tensor_stats",
 ]

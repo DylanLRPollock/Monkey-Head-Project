@@ -5,12 +5,11 @@ from __future__ import annotations
 import re
 import time
 from dataclasses import dataclass
-from typing import Optional
 
 _DURATION_RE = re.compile(r"^\s*(?P<value>\d+(?:\.\d+)?)\s*(?P<unit>[smhdwMy]?)\s*$")
 
 
-def parse_duration(value: str | int | float | None) -> Optional[float]:
+def parse_duration(value: str | int | float | None) -> float | None:
     """Parse a retention duration into seconds.
 
     Supported suffixes:
@@ -57,7 +56,7 @@ class RetentionPolicy:
     max_age: str | int | float | None = None
 
     @property
-    def max_age_seconds(self) -> Optional[float]:
+    def max_age_seconds(self) -> float | None:
         return parse_duration(self.max_age)
 
     def should_retain(self, timestamp: float, *, now: float | None = None) -> bool:

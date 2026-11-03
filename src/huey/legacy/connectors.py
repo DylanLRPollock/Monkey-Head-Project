@@ -21,7 +21,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, Protocol
+from typing import Any, Protocol
 
 LOGGER = logging.getLogger(__name__)
 
@@ -125,7 +125,7 @@ class LegacyConnectorFactory:
     """Factory for instantiating connectors based on configuration."""
 
     @staticmethod
-    def create(config: Dict[str, Any]) -> LegacyConnector:
+    def create(config: dict[str, Any]) -> LegacyConnector:
         mode = config.get("mode", "emulated").lower()
         if mode == "serial":
             return SerialLegacyConnector(

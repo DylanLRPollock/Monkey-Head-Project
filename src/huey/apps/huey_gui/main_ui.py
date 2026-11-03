@@ -120,9 +120,9 @@ class MainUI:
 
 __all__ = [
     "MainUI",
-    "show_license_gui",
-    "run_simple_chat",
-    "run_ai_tools",
     "convert_media",
     "preload_all",
+    "run_ai_tools",
+    "run_simple_chat",
+    "show_license_gui",
 ]

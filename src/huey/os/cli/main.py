@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from typing import Callable
+from collections.abc import Callable
 
 from .commands import (
     register_memory_commands,

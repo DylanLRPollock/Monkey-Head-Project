@@ -8,8 +8,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any
 
 from huey import cli
 from huey.hims.shadow import ShadowHIMS
@@ -22,7 +23,7 @@ def _build_shadow_run_record(
     run_id: str = "cli-run-001",
     exit_status: str = "success",
     error_message: str | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     return {
         "run_id": run_id,
         "timestamp_start": "2026-06-23T00:00:00Z",
@@ -41,9 +42,9 @@ def _build_shadow_run_record(
 
 
 def test_system_check_json(monkeypatch, capsys):
-    called: Dict[str, Any] = {}
+    called: dict[str, Any] = {}
 
-    def fake_system_check() -> Dict[str, bool]:
+    def fake_system_check() -> dict[str, bool]:
         called["done"] = True
         return {"os_supported": True, "python_supported": True}
 
@@ -60,7 +61,7 @@ def test_system_check_json(monkeypatch, capsys):
 
 
 def test_direct_legacy_cli_module_invocation_system_check(monkeypatch, capsys):
-    def fake_system_check() -> Dict[str, bool]:
+    def fake_system_check() -> dict[str, bool]:
         return {"os_supported": True, "python_supported": True}
 
     monkeypatch.setattr(
@@ -121,13 +122,13 @@ class _FakeRecord:
         *,
         task_id: str,
         status: Any,
-        assigned_agent: Optional[Any],
+        assigned_agent: Any | None,
     ) -> None:
         self.task_id = task_id
         self.status = status
         self.assigned_agent = assigned_agent
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "task_id": self.task_id,
             "status": self.status.value,
@@ -139,7 +140,7 @@ class _FakeScheduler:
     def __init__(self, records: Iterable[_FakeRecord]) -> None:
         self._records = list(records)
 
-    def list_tasks(self) -> List[_FakeRecord]:
+    def list_tasks(self) -> list[_FakeRecord]:
         return list(self._records)
 
     def health_provider(self) -> Any:

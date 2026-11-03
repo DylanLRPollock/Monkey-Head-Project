@@ -38,8 +38,8 @@ from .sensors import SensorHub
 from .serial import SerialBus
 
 __all__ = [
-    "ActuatorManager",
     "ActuatorHub",
+    "ActuatorManager",
     "ActuatorPlugin",
     "ActuatorRegistry",
     "CoolingController",
@@ -49,14 +49,14 @@ __all__ = [
     "MotherboardProfile",
     "OptaneManager",
     "PowerController",
-    "SensorManager",
     "SensorHub",
-    "create_default_actuator_manager",
+    "SensorManager",
     "SensorPlugin",
     "SensorReading",
     "SensorRegistry",
     "SerialBus",
+    "create_default_actuator_manager",
+    "create_default_sensor_manager",
     "list_sensor_plugin_metadata",
     "list_sensor_plugins",
-    "create_default_sensor_manager",
 ]

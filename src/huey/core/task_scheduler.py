@@ -10,10 +10,11 @@ from __future__ import annotations
 import logging
 import time
 import uuid
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from enum import Enum
 from threading import RLock
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
+from typing import Any
 
 try:  # pragma: no cover - psutil optional at runtime
     import psutil  # type: ignore
@@ -65,7 +66,7 @@ class ResourceProfile:
     battery: float = 0.1
     gpu: float = 0.0
 
-    def clamp(self) -> "ResourceProfile":
+    def clamp(self) -> ResourceProfile:
         """Return a new profile with values constrained to the 0..1 range."""
 
         return ResourceProfile(
@@ -81,11 +82,11 @@ class ResourceSnapshot:
     """Point-in-time observation of host resource utilisation."""
 
     timestamp: float = field(default_factory=lambda: time.time())
-    cpu_percent: Optional[float] = None
-    memory_available: Optional[float] = None
-    memory_total: Optional[float] = None
-    battery_percent: Optional[float] = None
-    notes: Optional[str] = None
+    cpu_percent: float | None = None
+    memory_available: float | None = None
+    memory_total: float | None = None
+    battery_percent: float | None = None
+    notes: str | None = None
 
 
 @dataclass
@@ -104,20 +105,20 @@ class TaskRecord:
     task_id: str
     command: str
     priority: TaskPriority
-    requested_agent: Optional[Agent]
-    assigned_agent: Optional[Agent]
+    requested_agent: Agent | None
+    assigned_agent: Agent | None
     status: TaskStatus
     created_at: float
     updated_at: float
     attempts: int = 0
-    result: Optional[Any] = None
-    error: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    result: Any | None = None
+    error: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
     resource_profile: ResourceProfile = field(default_factory=ResourceProfile)
-    snapshot: Optional[ResourceSnapshot] = None
-    history: List[TaskLogEntry] = field(default_factory=list)
+    snapshot: ResourceSnapshot | None = None
+    history: list[TaskLogEntry] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialise the record to a JSON compatible mapping."""
 
         return {
@@ -178,7 +179,7 @@ class TaskScheduler:
         cpu_threshold: float = 85.0,
         battery_threshold: float = 20.0,
         min_free_memory: float = 0.15,
-        health_provider: Optional[HealthProvider] = None,
+        health_provider: HealthProvider | None = None,
         max_retries: int = 1,
     ) -> None:
         self.cpu_threshold = cpu_threshold
@@ -187,8 +188,8 @@ class TaskScheduler:
         self.health_provider = health_provider or self._default_health_provider
         self.max_retries = max_retries
         self._lock = RLock()
-        self._tasks: Dict[str, TaskRecord] = {}
-        self._agent_load: Dict[Agent, int] = {Agent.SPARK: 0, Agent.ZAP: 0}
+        self._tasks: dict[str, TaskRecord] = {}
+        self._agent_load: dict[Agent, int] = {Agent.SPARK: 0, Agent.ZAP: 0}
 
     # ------------------------------------------------------------------
     # Health monitoring
@@ -225,12 +226,12 @@ class TaskScheduler:
 
     def _system_ready(
         self, profile: ResourceProfile
-    ) -> Tuple[bool, Optional[str], ResourceSnapshot]:
+    ) -> tuple[bool, str | None, ResourceSnapshot]:
         """Determine whether the host can accept additional load."""
 
         profile = profile.clamp()
         snapshot = self.health_provider()
-        reason: Optional[str] = None
+        reason: str | None = None
 
         cpu_percent = snapshot.cpu_percent
         if cpu_percent is not None:
@@ -267,7 +268,7 @@ class TaskScheduler:
     # ------------------------------------------------------------------
     # Task management helpers
     # ------------------------------------------------------------------
-    def _select_agent(self, requested: Optional[Agent]) -> Agent:
+    def _select_agent(self, requested: Agent | None) -> Agent:
         """Choose an agent based on requested preference and load."""
 
         if requested is not None:
@@ -299,9 +300,9 @@ class TaskScheduler:
         *,
         command: str,
         priority: TaskPriority = TaskPriority.NORMAL,
-        requested_agent: Optional[Agent] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-        resource_profile: Optional[ResourceProfile] = None,
+        requested_agent: Agent | None = None,
+        metadata: dict[str, Any] | None = None,
+        resource_profile: ResourceProfile | None = None,
     ) -> TaskRecord:
         """Register a new task and attempt assignment to an agent."""
 
@@ -342,10 +343,10 @@ class TaskScheduler:
 
         return record
 
-    def reconcile(self) -> List[TaskRecord]:
+    def reconcile(self) -> list[TaskRecord]:
         """Re-evaluate pending tasks to see if they can now be dispatched."""
 
-        dispatched: List[TaskRecord] = []
+        dispatched: list[TaskRecord] = []
         with self._lock:
             for record in sorted(
                 self._tasks.values(),
@@ -370,7 +371,7 @@ class TaskScheduler:
                 dispatched.append(record)
         return dispatched
 
-    def complete_task(self, task_id: str, result: Optional[Any] = None) -> TaskRecord:
+    def complete_task(self, task_id: str, result: Any | None = None) -> TaskRecord:
         with self._lock:
             record = self._require_task(task_id)
             if record.assigned_agent:
@@ -434,8 +435,8 @@ class TaskScheduler:
             return self._require_task(task_id)
 
     def list_tasks(
-        self, statuses: Optional[Iterable[TaskStatus]] = None
-    ) -> List[TaskRecord]:
+        self, statuses: Iterable[TaskStatus] | None = None
+    ) -> list[TaskRecord]:
         with self._lock:
             records = list(self._tasks.values())
         if statuses is None:
@@ -452,7 +453,7 @@ class TaskScheduler:
         except KeyError as exc:
             raise KeyError(f"Unknown task_id {task_id}") from exc
 
-    def _alternate_agent(self, current: Optional[Agent]) -> Agent:
+    def _alternate_agent(self, current: Agent | None) -> Agent:
         if current is None:
             return self._select_agent(None)
         return Agent.ZAP if current is Agent.SPARK else Agent.SPARK
@@ -460,10 +461,10 @@ class TaskScheduler:
 
 __all__ = [
     "Agent",
-    "TaskStatus",
-    "TaskPriority",
     "ResourceProfile",
     "ResourceSnapshot",
-    "TaskScheduler",
+    "TaskPriority",
     "TaskRecord",
+    "TaskScheduler",
+    "TaskStatus",
 ]

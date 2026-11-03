@@ -13,8 +13,9 @@ import logging
 import threading
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Type
+from typing import Any
 
 try:  # pragma: no cover - importlib.metadata name differs pre-3.10
     from importlib import metadata as importlib_metadata
@@ -32,7 +33,7 @@ class SensorReading:
     name: str
     value: Any
     timestamp: float
-    provenance: Dict[str, Any] = field(default_factory=dict)
+    provenance: dict[str, Any] = field(default_factory=dict)
 
 
 class BasePlugin:
@@ -40,7 +41,7 @@ class BasePlugin:
 
     plugin_name: str = ""
 
-    def __init__(self, name: str, config: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(self, name: str, config: dict[str, Any] | None = None) -> None:
         self.name = name
         self.config = config.copy() if config else {}
         self._lock = threading.RLock()
@@ -62,7 +63,7 @@ class BasePlugin:
     # Provenance information
     # ------------------------------------------------------------------
     @property
-    def provenance(self) -> Dict[str, Any]:
+    def provenance(self) -> dict[str, Any]:
         """Metadata describing the plugin implementation."""
 
         return {
@@ -96,7 +97,7 @@ class ActuatorPlugin(BasePlugin, ABC):
     """Base class for actuator plugins."""
 
     @abstractmethod
-    def perform(self, command: str, payload: Optional[Dict[str, Any]] = None) -> Any:
+    def perform(self, command: str, payload: dict[str, Any] | None = None) -> Any:
         """Execute a command against the actuator."""
 
 
@@ -104,11 +105,11 @@ class SensorRegistry:
     """Registry and plugin loader for sensors."""
 
     def __init__(self) -> None:
-        self._plugins: Dict[str, Type[SensorPlugin]] = {}
+        self._plugins: dict[str, type[SensorPlugin]] = {}
         self._loaded_entry_points = False
 
     # ------------------------------------------------------------------
-    def register(self, plugin: Type[SensorPlugin]) -> None:
+    def register(self, plugin: type[SensorPlugin]) -> None:
         """Register ``plugin`` under its :attr:`SensorPlugin.plugin_name`."""
 
         name = getattr(plugin, "plugin_name", None) or plugin.__name__
@@ -119,7 +120,7 @@ class SensorRegistry:
         self._plugins[name] = plugin
 
     # ------------------------------------------------------------------
-    def get(self, name: str) -> Type[SensorPlugin]:
+    def get(self, name: str) -> type[SensorPlugin]:
         """Return the plugin class registered as ``name``."""
 
         self._ensure_entry_points_loaded()
@@ -128,19 +129,19 @@ class SensorRegistry:
         return self._plugins[name]
 
     # ------------------------------------------------------------------
-    def available(self) -> List[str]:
+    def available(self) -> list[str]:
         """Return a sorted list of registered sensor plugin names."""
 
         self._ensure_entry_points_loaded()
         return sorted(self._plugins)
 
     # ------------------------------------------------------------------
-    def describe(self, name: str) -> Dict[str, Any]:
+    def describe(self, name: str) -> dict[str, Any]:
         """Return metadata describing the plugin registered as ``name``."""
 
         plugin_cls = self.get(name)
         description = inspect.cleandoc(plugin_cls.__doc__ or "")
-        config_keys: List[str] = []
+        config_keys: list[str] = []
         try:
             sample = plugin_cls(name="__describe__")
         except Exception:  # pragma: no cover - plugin misbehaviour
@@ -161,7 +162,7 @@ class SensorRegistry:
         }
 
     # ------------------------------------------------------------------
-    def describe_all(self) -> List[Dict[str, Any]]:
+    def describe_all(self) -> list[dict[str, Any]]:
         """Return metadata for every registered plugin."""
 
         self._ensure_entry_points_loaded()
@@ -175,7 +176,7 @@ class SensorRegistry:
 
     # ------------------------------------------------------------------
     def create(
-        self, plugin_name: str, name: str, config: Optional[Dict[str, Any]] = None
+        self, plugin_name: str, name: str, config: dict[str, Any] | None = None
     ) -> SensorPlugin:
         """Instantiate a sensor plugin by symbolic ``plugin_name``."""
 
@@ -222,7 +223,7 @@ class SensorRegistry:
             self.register(plugin_cls)
 
 
-def import_from_string(path: str) -> Type[SensorPlugin]:
+def import_from_string(path: str) -> type[SensorPlugin]:
     """Import a class defined by ``path`` (``package.module:Class``)."""
 
     if ":" in path:
@@ -237,9 +238,9 @@ def import_from_string(path: str) -> Type[SensorPlugin]:
 
 
 def load_plugins_from_definitions(
-    definitions: Iterable[Tuple[str, str, Dict[str, Any]]],
-    registry: Optional[SensorRegistry] = None,
-) -> List[SensorPlugin]:
+    definitions: Iterable[tuple[str, str, dict[str, Any]]],
+    registry: SensorRegistry | None = None,
+) -> list[SensorPlugin]:
     """Instantiate plugins described by ``definitions``.
 
     Parameters
@@ -252,7 +253,7 @@ def load_plugins_from_definitions(
     """
 
     registry = registry or SensorRegistry()
-    instances: List[SensorPlugin] = []
+    instances: list[SensorPlugin] = []
     for plugin_name, instance_name, config in definitions:
         try:
             plugin = registry.create(plugin_name, instance_name, config)
@@ -275,7 +276,7 @@ class DummyTemperatureSensor(SensorPlugin):
         return baseline
 
 
-def list_sensor_plugins(registry: Optional[SensorRegistry] = None) -> List[str]:
+def list_sensor_plugins(registry: SensorRegistry | None = None) -> list[str]:
     """Convenience wrapper returning available sensor plugin identifiers."""
 
     registry = registry or SensorRegistry()
@@ -283,8 +284,8 @@ def list_sensor_plugins(registry: Optional[SensorRegistry] = None) -> List[str]:
 
 
 def list_sensor_plugin_metadata(
-    registry: Optional[SensorRegistry] = None,
-) -> List[Dict[str, Any]]:
+    registry: SensorRegistry | None = None,
+) -> list[dict[str, Any]]:
     """Return metadata for every available sensor plugin."""
 
     registry = registry or SensorRegistry()
@@ -295,24 +296,24 @@ class ActuatorRegistry:
     """Simple registry for actuator plugins."""
 
     def __init__(self) -> None:
-        self._plugins: Dict[str, Type[ActuatorPlugin]] = {}
+        self._plugins: dict[str, type[ActuatorPlugin]] = {}
 
-    def register(self, plugin: Type[ActuatorPlugin]) -> None:
+    def register(self, plugin: type[ActuatorPlugin]) -> None:
         name = getattr(plugin, "plugin_name", None) or plugin.__name__
         if not name:
             raise ValueError("Actuator plugins must define plugin_name")
         self._plugins[name] = plugin
 
-    def get(self, name: str) -> Type[ActuatorPlugin]:
+    def get(self, name: str) -> type[ActuatorPlugin]:
         if name not in self._plugins:
             raise KeyError(f"Unknown actuator plugin: {name}")
         return self._plugins[name]
 
-    def available(self) -> List[str]:
+    def available(self) -> list[str]:
         return sorted(self._plugins)
 
     def create(
-        self, plugin_name: str, name: str, config: Optional[Dict[str, Any]] = None
+        self, plugin_name: str, name: str, config: dict[str, Any] | None = None
     ) -> ActuatorPlugin:
         plugin_cls = self.get(plugin_name)
         return plugin_cls(name=name, config=config)

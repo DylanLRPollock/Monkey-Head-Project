@@ -15,7 +15,7 @@ import subprocess
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 try:  # pragma: no cover - optional dependency
     import psutil  # type: ignore
@@ -36,15 +36,15 @@ MACOS_WIRED_PORT_MARKERS = ("ethernet", "thunderbolt bridge")
 MACOS_WIFI_PORT_MARKERS = ("wi-fi", "airport")
 
 
-InterfaceInfo = Dict[str, Any]
+InterfaceInfo = dict[str, Any]
 
 
 @dataclass
 class NetworkStatus:
     """Status snapshot returned by :class:`NetworkManager`."""
 
-    active_interface: Optional[str]
-    interfaces: Dict[str, InterfaceInfo]
+    active_interface: str | None
+    interfaces: dict[str, InterfaceInfo]
     wired_available: bool
     wifi_available: bool
     connected: bool
@@ -64,16 +64,16 @@ class NetworkManager:
         self.check_host = check_host
         self.check_port = check_port
         self.check_timeout = check_timeout
-        self._last_status: Optional[NetworkStatus] = None
-        self._interface_categories: Dict[str, str] = {}
-        self._macos_device_categories: Dict[str, str] = {}
+        self._last_status: NetworkStatus | None = None
+        self._interface_categories: dict[str, str] = {}
+        self._macos_device_categories: dict[str, str] = {}
 
     # ------------------------------------------------------------------
-    def _interface_stats(self) -> Dict[str, InterfaceInfo]:
+    def _interface_stats(self) -> dict[str, InterfaceInfo]:
         """Gather interface information from :mod:`psutil` or sysfs."""
 
         self._interface_categories = {}
-        info: Dict[str, InterfaceInfo] = {}
+        info: dict[str, InterfaceInfo] = {}
         if psutil is not None:
             stats = psutil.net_if_stats()
         else:  # pragma: no cover - psutil is optional dependency
@@ -127,7 +127,7 @@ class NetworkManager:
             return False
         return value.lower() in {"up", "1", "yes", "true"}
 
-    def _read_sysfs_float(self, path: Path) -> Optional[float]:
+    def _read_sysfs_float(self, path: Path) -> float | None:
         try:
             value = path.read_text().strip()
         except OSError:
@@ -164,7 +164,7 @@ class NetworkManager:
             self._macos_device_categories = self._load_macos_device_categories()
         return self._macos_device_categories.get(name)
 
-    def _load_macos_device_categories(self) -> Dict[str, str]:
+    def _load_macos_device_categories(self) -> dict[str, str]:
         if not shutil.which("networksetup"):
             return {}
 
@@ -182,7 +182,7 @@ class NetworkManager:
         if result.returncode != 0:
             return {}
 
-        categories: Dict[str, str] = {}
+        categories: dict[str, str] = {}
         current_port = ""
         for raw_line in result.stdout.splitlines():
             line = raw_line.strip()
@@ -207,9 +207,7 @@ class NetworkManager:
 
         return categories
 
-    def _preferred_interface(
-        self, interfaces: Dict[str, InterfaceInfo]
-    ) -> Optional[str]:
+    def _preferred_interface(self, interfaces: dict[str, InterfaceInfo]) -> str | None:
         wired = [
             name
             for name, details in interfaces.items()
@@ -222,7 +220,7 @@ class NetworkManager:
         ]
         return wired[0] if wired else (wifi[0] if wifi else None)
 
-    def _attempt_connectivity(self) -> Tuple[bool, Optional[str]]:
+    def _attempt_connectivity(self) -> tuple[bool, str | None]:
         try:
             with socket.create_connection(
                 (self.check_host, self.check_port), timeout=self.check_timeout
@@ -234,9 +232,9 @@ class NetworkManager:
 
     def _detect_active_interface(
         self,
-        interfaces: Dict[str, InterfaceInfo],
-        local_ip: Optional[str],
-    ) -> Optional[str]:
+        interfaces: dict[str, InterfaceInfo],
+        local_ip: str | None,
+    ) -> str | None:
         if psutil is None:
             return self._preferred_interface(interfaces)
 
@@ -313,8 +311,8 @@ class NetworkManager:
         return status
 
     def _find_first_available(
-        self, prefixes: tuple[str, ...], interfaces: Dict[str, InterfaceInfo]
-    ) -> Optional[str]:
+        self, prefixes: tuple[str, ...], interfaces: dict[str, InterfaceInfo]
+    ) -> str | None:
         for name, details in interfaces.items():
             if name.startswith(prefixes) and details.get("isup"):
                 return name
@@ -400,7 +398,7 @@ class NetworkManager:
         LOGGER.debug("No supported Windows network management tool available")
 
     @property
-    def last_status(self) -> Optional[NetworkStatus]:
+    def last_status(self) -> NetworkStatus | None:
         return self._last_status
 
 

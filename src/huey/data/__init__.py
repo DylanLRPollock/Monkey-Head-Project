@@ -14,6 +14,8 @@ from .validator import validate_required_fields, validate_schema
 __all__ = [
     "AudioParseResult",
     "AudioParser",
+    "VideoParseResult",
+    "VideoParser",
     "extract_key_values",
     "extract_sections",
     "load_data",
@@ -25,6 +27,4 @@ __all__ = [
     "transform_records",
     "validate_required_fields",
     "validate_schema",
-    "VideoParseResult",
-    "VideoParser",
 ]

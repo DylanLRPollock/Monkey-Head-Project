@@ -20,7 +20,6 @@ import argparse
 import sys
 import tomllib
 from pathlib import Path
-from typing import Dict
 
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
@@ -40,8 +39,8 @@ def parse_requirement_line(line: str) -> Requirement | None:
         return None
 
 
-def collect_requirements(requirement_strings: list[str]) -> Dict[str, Requirement]:
-    result: Dict[str, Requirement] = {}
+def collect_requirements(requirement_strings: list[str]) -> dict[str, Requirement]:
+    result: dict[str, Requirement] = {}
     for req_text in requirement_strings:
         req = parse_requirement_line(req_text)
         if req is None:
@@ -50,14 +49,14 @@ def collect_requirements(requirement_strings: list[str]) -> Dict[str, Requiremen
     return result
 
 
-def read_requirements_file(path: Path) -> Dict[str, Requirement]:
+def read_requirements_file(path: Path) -> dict[str, Requirement]:
     lines = path.read_text(encoding="utf-8").splitlines()
     return collect_requirements(lines)
 
 
 def load_pyproject_direct_requirements(
     path: Path, optional_groups: list[str]
-) -> Dict[str, Requirement]:
+) -> dict[str, Requirement]:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     project = data.get("project", {})
     deps: list[str] = list(project.get("dependencies", []))

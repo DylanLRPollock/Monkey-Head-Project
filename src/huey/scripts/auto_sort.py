@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from typing import Any, Dict
+from typing import Any
 
 from huey.os.utils.auto_sort import auto_sort_memory
 
@@ -43,7 +43,7 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> Dict[str, Any]:
+def main(argv: list[str] | None = None) -> dict[str, Any]:
     """Execute the auto-sort command and return the summary object."""
 
     parser = _build_parser()

@@ -14,9 +14,9 @@ import re
 import subprocess
 import sys
 from collections import Counter, defaultdict
+from collections.abc import Iterable, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import PurePosixPath
-from typing import Iterable, Sequence
 
 POLICY_VERSION = "120.2"
 REQUIRED_CANONICAL_FILES = ("README.md", "master-plan-v120.2.json")

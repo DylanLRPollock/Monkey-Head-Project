@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
 
 import torch
 from torch import nn, optim
@@ -39,10 +39,10 @@ class TrainingConfig:
 class TrainingSummary:
     best_epoch: int
     best_val_accuracy: float
-    history: List[Dict[str, float]]
+    history: list[dict[str, float]]
 
 
-def build_transforms(image_size: int) -> Dict[str, transforms.Compose]:
+def build_transforms(image_size: int) -> dict[str, transforms.Compose]:
     """Create training and validation transforms for image classification."""
 
     return {
@@ -68,7 +68,7 @@ def build_transforms(image_size: int) -> Dict[str, transforms.Compose]:
 
 def prepare_dataloaders(
     config: TrainingConfig,
-) -> Tuple[Dict[str, DataLoader], List[str]]:
+) -> tuple[dict[str, DataLoader], list[str]]:
     """Create :class:`DataLoader` objects from a train/val folder structure."""
 
     transforms_map = build_transforms(config.image_size)
@@ -145,7 +145,7 @@ def train_one_epoch(
     criterion: nn.Module,
     optimizer: optim.Optimizer,
     device: torch.device,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     model.train()
     running_loss = 0.0
     correct = 0
@@ -172,7 +172,7 @@ def train_one_epoch(
 
 def evaluate(
     model: nn.Module, dataloader: DataLoader, criterion: nn.Module, device: torch.device
-) -> Dict[str, float]:
+) -> dict[str, float]:
     model.eval()
     running_loss = 0.0
     correct = 0
@@ -195,9 +195,9 @@ def evaluate(
 
 def train_model(
     model: nn.Module,
-    dataloaders: Dict[str, DataLoader],
+    dataloaders: dict[str, DataLoader],
     config: TrainingConfig,
-) -> Tuple[nn.Module, TrainingSummary]:
+) -> tuple[nn.Module, TrainingSummary]:
     device = torch.device(config.device)
     model.to(device)
     criterion = nn.CrossEntropyLoss()
@@ -212,7 +212,7 @@ def train_model(
     best_accuracy = 0.0
     best_state = None
     best_epoch = 0
-    history: List[Dict[str, float]] = []
+    history: list[dict[str, float]] = []
     epochs_without_improvement = 0
 
     for epoch in range(1, config.num_epochs + 1):
@@ -257,16 +257,16 @@ def train_model(
 
 def export_artifacts(
     model: nn.Module,
-    class_names: List[str],
+    class_names: list[str],
     config: TrainingConfig,
     summary: TrainingSummary,
-) -> Dict[str, Path]:
+) -> dict[str, Path]:
     config.output_dir.mkdir(parents=True, exist_ok=True)
     device = torch.device(config.device)
     model.to(device)
     model.eval()
 
-    artifacts: Dict[str, Path] = {}
+    artifacts: dict[str, Path] = {}
 
     weights_path = config.output_dir / "model_state.pt"
     torch.save(model.state_dict(), weights_path)
@@ -321,7 +321,7 @@ def export_artifacts(
 
 
 def integrate_model(
-    artifacts: Dict[str, Path],
+    artifacts: dict[str, Path],
     class_names: Iterable[str],
     summary: TrainingSummary,
     registry_dir: Path | None = None,
@@ -330,7 +330,7 @@ def integrate_model(
     registry_dir.mkdir(parents=True, exist_ok=True)
     registry_path = registry_dir / "registry.json"
 
-    registry: List[Dict[str, object]] = []
+    registry: list[dict[str, object]] = []
     if registry_path.exists():
         registry = json.loads(registry_path.read_text())
 
@@ -348,7 +348,7 @@ def integrate_model(
     return registry_path
 
 
-def run_training(config: TrainingConfig) -> Tuple[Dict[str, Path], TrainingSummary]:
+def run_training(config: TrainingConfig) -> tuple[dict[str, Path], TrainingSummary]:
     dataloaders, class_names = prepare_dataloaders(config)
     model = initialise_model(
         config.model_name,
@@ -365,12 +365,12 @@ __all__ = [
     "TrainingConfig",
     "TrainingSummary",
     "build_transforms",
-    "prepare_dataloaders",
-    "initialise_model",
-    "train_one_epoch",
     "evaluate",
-    "train_model",
     "export_artifacts",
+    "initialise_model",
     "integrate_model",
+    "prepare_dataloaders",
     "run_training",
+    "train_model",
+    "train_one_epoch",
 ]

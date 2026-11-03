@@ -15,9 +15,9 @@ from __future__ import annotations
 import logging
 import subprocess
 import time
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Iterable, List, Sequence
 
 LOGGER = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class ReplicationTask:
 
     source: Path
     target: Path
-    command: List[str]
+    command: list[str]
 
 
 @dataclass
@@ -39,11 +39,11 @@ class FailoverPlan:
 
     primary_root: Path
     secondary_root: Path
-    tasks: List[ReplicationTask] = field(default_factory=list)
+    tasks: list[ReplicationTask] = field(default_factory=list)
     hot_swap_delay: float = 5.0
     created_at: float = field(default_factory=lambda: time.time())
 
-    def commands(self) -> List[List[str]]:
+    def commands(self) -> list[list[str]]:
         return [task.command for task in self.tasks]
 
 

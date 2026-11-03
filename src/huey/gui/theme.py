@@ -144,9 +144,9 @@ QListWidget {{
 
 __all__ = [
     "HueyTheme",
-    "as_qt_stylesheet",
     "as_css_variables",
     "as_json",
+    "as_qt_stylesheet",
     "as_tk_palette",
     "get_default_theme",
 ]

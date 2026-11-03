@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import argparse
-from typing import Callable
+from collections.abc import Callable
 
 
 def _legacy_handler(name: str) -> Callable[[argparse.Namespace], int]:

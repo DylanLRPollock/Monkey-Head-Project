@@ -11,10 +11,8 @@ from run import main
 def test_run_sets_config_env(monkeypatch, tmp_path):
     cfg = tmp_path / "cfg.ini"
     cfg.write_text(
-        (
-            "[logging]\nlog_level = INFO\nlog_file = {}/app.log\nlog_max_bytes = 1024\n"
-            "log_backup_count = 1\n"
-        ).format(tmp_path)
+        f"[logging]\nlog_level = INFO\nlog_file = {tmp_path}/app.log\nlog_max_bytes = 1024\n"
+        "log_backup_count = 1\n"
     )
     monkeypatch.setattr("run.launch_gui", lambda: None)
     monkeypatch.setattr("run._load_cli", lambda: lambda: None)

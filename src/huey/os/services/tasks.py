@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -41,12 +41,12 @@ class ResourceProfileModel(BaseModel):
 class ResourceSnapshotModel(BaseModel):
     """Current host health metrics observed during scheduling decisions."""
 
-    timestamp: Optional[float] = None
-    cpu_percent: Optional[float] = None
-    memory_available: Optional[float] = None
-    memory_total: Optional[float] = None
-    battery_percent: Optional[float] = None
-    notes: Optional[str] = None
+    timestamp: float | None = None
+    cpu_percent: float | None = None
+    memory_available: float | None = None
+    memory_total: float | None = None
+    battery_percent: float | None = None
+    notes: str | None = None
 
 
 class TaskHistoryEntry(BaseModel):
@@ -63,21 +63,21 @@ class TaskResponse(BaseModel):
     task_id: str
     command: str
     priority: int
-    requested_agent: Optional[Agent]
-    assigned_agent: Optional[Agent]
+    requested_agent: Agent | None
+    assigned_agent: Agent | None
     status: TaskStatus
     created_at: float
     updated_at: float
     attempts: int
-    result: Optional[Any]
-    error: Optional[str]
-    metadata: Dict[str, Any]
+    result: Any | None
+    error: str | None
+    metadata: dict[str, Any]
     resource_profile: ResourceProfileModel
-    snapshot: Optional[ResourceSnapshotModel]
-    history: List[TaskHistoryEntry]
+    snapshot: ResourceSnapshotModel | None
+    history: list[TaskHistoryEntry]
 
     @classmethod
-    def from_record(cls, record: TaskRecord) -> "TaskResponse":
+    def from_record(cls, record: TaskRecord) -> TaskResponse:
         snapshot = None
         if record.snapshot is not None:
             snapshot = ResourceSnapshotModel(
@@ -129,14 +129,14 @@ class TaskSubmissionRequest(BaseModel):
         TaskPriority.NORMAL,
         description="Relative priority for queue ordering; higher values run sooner.",
     )
-    requested_agent: Optional[Agent] = Field(
+    requested_agent: Agent | None = Field(
         None, description="Preferred agent when coordination requires affinity"
     )
-    metadata: Dict[str, Any] = Field(
+    metadata: dict[str, Any] = Field(
         default_factory=dict,
         description="Arbitrary metadata echoed back in task status queries.",
     )
-    resource_profile: Optional[ResourceProfileModel] = Field(
+    resource_profile: ResourceProfileModel | None = Field(
         None,
         description="Expected resource intensity. Defaults are tuned for general work.",
     )
@@ -145,4 +145,4 @@ class TaskSubmissionRequest(BaseModel):
 class TaskListResponse(BaseModel):
     """Container for multiple tasks."""
 
-    tasks: List[TaskResponse]
+    tasks: list[TaskResponse]

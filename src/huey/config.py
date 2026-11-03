@@ -7,8 +7,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
-from typing import Any, Mapping, Sequence
+from typing import Any
 
 from .constants import DEFAULT_AGENT_NAMES, DEFAULT_POLICY
 from .memory.PY.config import load_config as _legacy_load_config

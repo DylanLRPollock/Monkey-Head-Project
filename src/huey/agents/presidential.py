@@ -11,9 +11,10 @@ import json
 import logging
 import time
 import uuid
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Sequence
+from typing import Any
 
 from huey.honeycomb.storage import HoneycombStorage
 
@@ -22,7 +23,7 @@ from .memory import AgentMemory, MemoryEntry
 
 LOGGER = logging.getLogger(__name__)
 
-_TEMPLATE_CACHE: Dict[str, Any] | None = None
+_TEMPLATE_CACHE: dict[str, Any] | None = None
 _TEMPLATE_PATH = (
     Path(__file__).resolve().parents[2]
     / "huey"
@@ -38,7 +39,7 @@ class AgentMetadata:
 
     uuid: str
     name: str
-    capabilities: List[str]
+    capabilities: list[str]
     provider: LLMProvider
     model: str
     filename: str
@@ -56,7 +57,7 @@ class AgentMetadata:
         model: str,
         capabilities: Iterable[str],
         filename: str,
-    ) -> "AgentMetadata":
+    ) -> AgentMetadata:
         template = _load_template()
         base_uuid = uuid.UUID(template.get("uuid", uuid.uuid4().hex))
         derived_uuid = uuid.uuid5(base_uuid, name)
@@ -76,10 +77,10 @@ class ActionProposal:
 
     action_id: str
     description: str
-    context: Optional[str] = None
+    context: str | None = None
     tags: Sequence[str] = field(default_factory=tuple)
     requested_by: str = "system"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_prompt(self) -> str:
         """Render the proposal as a prompt for LLM analysis."""
@@ -94,7 +95,7 @@ class ActionProposal:
         }
         return json.dumps(prompt, indent=2)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "action_id": self.action_id,
             "description": self.description,
@@ -114,7 +115,7 @@ class AgentDecision:
     confidence: float
     rationale: str
     timestamp: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -124,9 +125,9 @@ class ConsensusDecision:
     proposal: ActionProposal
     approved: bool
     rationale: str
-    votes: Dict[str, AgentDecision]
-    fallback_reason: Optional[str]
-    human_override: Optional[bool]
+    votes: dict[str, AgentDecision]
+    fallback_reason: str | None
+    human_override: bool | None
     timestamp: float
 
 
@@ -207,7 +208,7 @@ class PresidentialAgent:
         proposal: ActionProposal,
         base_score: float,
         history: Sequence[MemoryEntry],
-    ) -> Optional[str]:
+    ) -> str | None:
         """Ask the configured LLM for a short opinion on the proposal."""
 
         try:
@@ -226,7 +227,7 @@ class PresidentialAgent:
             self.logger.warning("LLM feedback failed: %s", exc)
             return None
 
-    def _combine_scores(self, base_score: float, llm_feedback: Optional[str]) -> float:
+    def _combine_scores(self, base_score: float, llm_feedback: str | None) -> float:
         score = base_score
         if llm_feedback:
             text = llm_feedback.lower()
@@ -247,7 +248,7 @@ class PresidentialAgent:
         base_score: float,
         adjusted_score: float,
         approved: bool,
-        llm_feedback: Optional[str],
+        llm_feedback: str | None,
     ) -> str:
         fragments = [
             f"Base score {base_score:.2f} with threshold {self.threshold:.2f}.",
@@ -296,9 +297,9 @@ class SparkAgent(PresidentialAgent):
 
     def __init__(
         self,
-        storage: Optional[HoneycombStorage] = None,
+        storage: HoneycombStorage | None = None,
         *,
-        llm_settings: Optional[Dict[str, Any]] = None,
+        llm_settings: dict[str, Any] | None = None,
     ) -> None:
         storage = storage or HoneycombStorage()
         llm_settings = llm_settings or {}
@@ -343,9 +344,9 @@ class ZapAgent(PresidentialAgent):
 
     def __init__(
         self,
-        storage: Optional[HoneycombStorage] = None,
+        storage: HoneycombStorage | None = None,
         *,
-        llm_settings: Optional[Dict[str, Any]] = None,
+        llm_settings: dict[str, Any] | None = None,
     ) -> None:
         storage = storage or HoneycombStorage()
         llm_settings = llm_settings or {}
@@ -391,9 +392,9 @@ class PresidentialCouncil:
     def __init__(
         self,
         *,
-        storage: Optional[HoneycombStorage] = None,
-        spark: Optional[SparkAgent] = None,
-        zap: Optional[ZapAgent] = None,
+        storage: HoneycombStorage | None = None,
+        spark: SparkAgent | None = None,
+        zap: ZapAgent | None = None,
     ) -> None:
         self.storage = storage or HoneycombStorage()
         self.spark = spark or SparkAgent(storage=self.storage)
@@ -403,7 +404,7 @@ class PresidentialCouncil:
         self,
         proposal: ActionProposal,
         *,
-        human_override: Optional[bool] = None,
+        human_override: bool | None = None,
     ) -> ConsensusDecision:
         """Run the consensus workflow for ``proposal``."""
 
@@ -414,7 +415,7 @@ class PresidentialCouncil:
             self.zap.metadata.name: zap_decision,
         }
         approved = spark_decision.approved and zap_decision.approved
-        fallback_reason: Optional[str] = None
+        fallback_reason: str | None = None
 
         if spark_decision.approved != zap_decision.approved:
             if human_override is not None:
@@ -442,7 +443,7 @@ class PresidentialCouncil:
         return consensus
 
     def _compose_council_rationale(
-        self, votes: Dict[str, AgentDecision], fallback: Optional[str]
+        self, votes: dict[str, AgentDecision], fallback: str | None
     ) -> str:
         fragments = []
         for agent, decision in votes.items():
@@ -479,7 +480,7 @@ class PresidentialCouncil:
         )
 
 
-def _load_template() -> Dict[str, Any]:
+def _load_template() -> dict[str, Any]:
     global _TEMPLATE_CACHE
     if _TEMPLATE_CACHE is not None:
         return _TEMPLATE_CACHE

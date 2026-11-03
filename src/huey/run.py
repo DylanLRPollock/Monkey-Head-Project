@@ -24,17 +24,17 @@ print_pyhuey_info = _run.print_pyhuey_info
 run_custom_function = _run.run_custom_function
 
 __all__ = [
-    "main",
-    "run_module",
-    "minimal_run",
-    "run_sys_code",
-    "launch_manager_ui",
-    "launch_install_gui",
     "launch_gui",
+    "launch_install_gui",
+    "launch_manager_ui",
     "list_custom_functions",
+    "main",
+    "minimal_run",
     "print_custom_functions",
     "print_pyhuey_info",
     "run_custom_function",
+    "run_module",
+    "run_sys_code",
 ]
 
 

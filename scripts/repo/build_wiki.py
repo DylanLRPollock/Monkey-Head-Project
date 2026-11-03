@@ -16,15 +16,15 @@ FRAMEWORK = "v201.x review / Pre-Release #4"
 REPO = "https://github.com/DylanLRPollock/Monkey-Head-Project"
 LINK_RE = re.compile(r"\[\[([^\]|#]+)")
 
-SOURCES = """## Repository sources
+SOURCES = f"""## Repository sources
 
-- [Main repository]({r})
-- [README]({r}/blob/main/README.md)
-- [v201.x standardization plan]({r}/blob/main/docs/architecture/v201.x-standardization-plan.md)
-- [v201.x migration matrix]({r}/blob/main/docs/architecture/v201.x-migration-matrix.md)
-- [Human oversight checklist]({r}/blob/main/docs/review/v201.x-human-oversight-checklist.md)
-- [Security policy]({r}/blob/main/SECURITY.md)
-""".format(r=REPO)
+- [Main repository]({REPO})
+- [README]({REPO}/blob/main/README.md)
+- [v201.x standardization plan]({REPO}/blob/main/docs/architecture/v201.x-standardization-plan.md)
+- [v201.x migration matrix]({REPO}/blob/main/docs/architecture/v201.x-migration-matrix.md)
+- [Human oversight checklist]({REPO}/blob/main/docs/review/v201.x-human-oversight-checklist.md)
+- [Security policy]({REPO}/blob/main/SECURITY.md)
+"""
 
 TOPIC = {
     "network": "Document actual interfaces, addresses, exposure, authentication, firewalling, degraded operation, logs, and rollback. Old private-address examples are lineage, not current configuratio[...]",

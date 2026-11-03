@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Annotated, List, Optional
+from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
 
@@ -51,7 +51,7 @@ def submit_task(request: TaskSubmissionRequest, http_request: Request) -> TaskRe
 def list_tasks_endpoint(
     http_request: Request,
     status_filter: Annotated[
-        Optional[List[TaskStatus]],
+        list[TaskStatus] | None,
         Query(
             alias="status",
             description="Filter results to tasks with the specified status",

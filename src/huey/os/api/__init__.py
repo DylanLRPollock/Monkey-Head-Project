@@ -7,7 +7,7 @@ The concrete ASGI app remains available from ``huey.os.api.app``.
 
 from __future__ import annotations
 
-__all__ = ["app", "main", "SCHEDULER"]
+__all__ = ["SCHEDULER", "app", "main"]
 
 
 def __getattr__(name: str):

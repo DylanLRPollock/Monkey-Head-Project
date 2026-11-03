@@ -7,7 +7,7 @@
 
 from __future__ import annotations
 
-from .memory.PY.exceptions import (  # noqa: F401
+from .memory.PY.exceptions import (
     DataNotFoundError,
     HueyError,
     InvalidInputError,
@@ -43,11 +43,11 @@ class NetworkError(HueyError):
 
 
 __all__ = [
-    "HueyError",
     "DataNotFoundError",
-    "InvalidInputError",
     "GovernanceError",
     "HardwareError",
+    "HueyError",
+    "InvalidInputError",
     "KernelBootError",
     "KernelModuleError",
     "NetworkError",

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 import random
-from typing import Any, Dict, Optional
+from typing import Any
 
 from .plugins import ActuatorPlugin, ActuatorRegistry, SensorPlugin, SensorRegistry
 
@@ -53,7 +53,7 @@ class GPIOZeroDigitalActuator(ActuatorPlugin):
         self._device = DigitalOutputDevice(pin)
         LOGGER.debug("Initialised gpiozero actuator %s on pin %s", self.name, pin)
 
-    def perform(self, command: str, payload: Optional[Dict[str, Any]] = None) -> Any:
+    def perform(self, command: str, payload: dict[str, Any] | None = None) -> Any:
         device = self._device
         if command == "on":
             device.on()
@@ -105,9 +105,9 @@ class SerialCommandActuator(ActuatorPlugin):
         self._serial = serial.Serial(port, baudrate=baudrate, timeout=timeout)
         LOGGER.debug("Opened serial actuator %s on %s @ %s", self.name, port, baudrate)
 
-    def perform(self, command: str, payload: Optional[Dict[str, Any]] = None) -> Any:
+    def perform(self, command: str, payload: dict[str, Any] | None = None) -> Any:
         message = payload.get("message") if payload else command
-        data = f"{message}\n".encode("utf-8")
+        data = f"{message}\n".encode()
         self._serial.write(data)
         return {"written": message}
 
@@ -184,9 +184,9 @@ def register_builtin_actuators(registry: ActuatorRegistry) -> None:
 __all__ = [
     "GPIOZeroDigitalActuator",
     "GPIOZeroDigitalSensor",
+    "SMBusSensor",
     "SerialCommandActuator",
     "SerialLineSensor",
-    "SMBusSensor",
     "VirtualRandomSensor",
     "register_builtin_actuators",
     "register_builtin_sensors",
