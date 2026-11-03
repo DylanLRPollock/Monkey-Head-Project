@@ -1,0 +1,39 @@
+# Branch-scoped, self-deleting formatting job for the CI repair branch.
+name: One-shot finalize Python style
+on:
+  push:
+    branches: [fix/pygpt-ci-residual-20261103]
+permissions:
+  contents: write
+jobs:
+  finalize:
+    if: github.repository == 'DylanLRPollock/Monkey-Head-Project' && github.ref == 'refs/heads/fix/pygpt-ci-residual-20261103'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v6
+        with:
+          python-version: '3.13'
+      - name: Install pinned formatters
+        run: python -m pip install ruff==0.17.2 isort==9.0.2 black==26.10.1
+      - name: Normalize Python sources without unsafe fixes
+        shell: bash
+        run: |
+          python -m ruff check --fix src tests scripts conftest.py || test "$?" -eq 1
+          python -m isort --profile black src tests scripts conftest.py
+          python -m black src tests scripts conftest.py
+          python -m ruff check --fix src tests scripts conftest.py || test "$?" -eq 1
+          python -m isort --profile black src tests scripts conftest.py
+          python -m black src tests scripts conftest.py
+      - name: Commit formatting and remove temporary job
+        shell: bash
+        run: |
+          git rm .github/workflows/one-shot-ci-finalize.yml
+          git add src tests scripts conftest.py
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'style(ci): finalize Python 3.13 Ruff and Black consistency'
+            git push origin HEAD:fix/pygpt-ci-residual-20261103
+          fi
