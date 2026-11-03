@@ -44,7 +44,7 @@ def test_run_repair_success(tmp_path):
     ):
         tmpdir.return_value.__enter__.return_value = str(tmp_path)
         run_mock.side_effect = [DummyCompleted(), DummyCompleted()]
-        rc = repair.run_repair("repo-url")
+        rc = repair.run_repair("repo-url", confirmed=True, actor_role="admin")
         assert rc == 0
         uninst.assert_called_once()
         run_mock.assert_any_call(
@@ -60,4 +60,4 @@ def test_run_repair_success(tmp_path):
 
 def test_run_repair_uninstall_failure():
     with patch("uninstaller.run_uninstaller", return_value=5):
-        assert repair.run_repair("repo-url") == 5
+        assert repair.run_repair("repo-url", confirmed=True, actor_role="admin") == 5
