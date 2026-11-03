@@ -1,5 +1,8 @@
 # Security Hardening Status
 
+**Historical status from May 2026.** See the [current November 2026 risk register](current-risk-register-2026-11-03.md) for verified changes and outstanding gates.
+
+
 _Last updated: 2026-05-03_
 
 ## Scope and intent

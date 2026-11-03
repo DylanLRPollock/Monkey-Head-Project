@@ -15,14 +15,29 @@ from pathlib import Path
 
 import uninstaller
 
+from huey.os.core.privileged_operations import authorize_privileged_operation
+
 REPO_URL = "https://github.com/DylanLRPollock/Monkey-Head-Project.git"
 
 
-def run_repair(repo_url: str = REPO_URL) -> int:
-    """Clone the repository and run a fresh installation."""
+def run_repair(
+    repo_url: str = REPO_URL,
+    *,
+    confirmed: bool = False,
+    actor_role: str | None = None,
+) -> int:
+    """Reinstall only with explicit destructive-action intent."""
+    try:
+        authorize_privileged_operation(
+            "project.uninstall", confirmed=confirmed, actor_role=actor_role
+        )
+    except PermissionError:
+        return 2
     print("Starting repair procedure...")
 
-    uninstall_rc = uninstaller.run_uninstaller()
+    uninstall_rc = uninstaller.run_uninstaller(
+        confirmed=confirmed, actor_role=actor_role
+    )
     if uninstall_rc != 0:
         print(f"Uninstall failed with code {uninstall_rc}")
         return uninstall_rc
@@ -58,4 +73,4 @@ def run_repair(repo_url: str = REPO_URL) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(run_repair())
+    sys.exit(run_repair(confirmed="--yes" in sys.argv[1:], actor_role="admin"))

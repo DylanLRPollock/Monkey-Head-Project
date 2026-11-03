@@ -107,6 +107,18 @@ jobs:
         # step so the CI log matches the local `make lint` output.
         run: make lint PYTHON=python
 
+      - name: Summarize Ruff diagnostics even if formatter fails
+        if: always()
+        run: python scripts/repo/report_ruff_backlog.py
+
+      - name: Upload Ruff diagnostics
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: ruff-diagnostics
+          path: ruff-diagnostics.json
+          if-no-files-found: warn
+
   # -------------------------------------------------------------------------
   # Tests
   # -------------------------------------------------------------------------
@@ -168,6 +180,9 @@ jobs:
             # gets from `make install-dev`.
             pip install -c constraints.txt -e ".[dev]"
           fi
+
+      - name: Validate coverage tracer and source mapping
+        run: python scripts/repo/verify_coverage_tracing.py
 
       - name: Run test suite with coverage
         # Verbosity is controlled by `[tool.pytest.ini_options].addopts`

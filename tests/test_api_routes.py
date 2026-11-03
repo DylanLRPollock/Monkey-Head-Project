@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import importlib
 from typing import Any
+from unittest.mock import Mock
 
 import fastapi
 import pytest
@@ -521,6 +522,21 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
         )
         assert exited.status_code == 200
         assert exited.json()["state"] == "normal"
+
+
+@pytest.mark.asyncio
+async def test_shutdown_rejects_missing_explicit_confirmation_header(monkeypatch):
+    monkeypatch.setenv("HUEY_API_TOKEN", "test-token")
+    legacy_api = importlib.import_module("huey.memory.PY.api")
+    forbidden = Mock(side_effect=AssertionError("unexpected host action"))
+    monkeypatch.setattr(legacy_api, "trigger_shutdown", forbidden)
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post(
+            "/power/shutdown", headers={"Authorization": "Bearer test-token"}
+        )
+    assert response.status_code == 403
+    forbidden.assert_not_called()
 
 
 @pytest.mark.asyncio

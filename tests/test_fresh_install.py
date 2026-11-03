@@ -39,7 +39,7 @@ def test_fresh_install_local_success():
         patch("uninstaller.run_uninstaller", return_value=0) as uninst,
         patch("installer.run_installer", return_value=0) as inst,
     ):
-        rc = fresh_install.run_fresh_install("local")
+        rc = fresh_install.run_fresh_install("local", confirmed=True, actor_role="admin")
         assert rc == 0
         uninst.assert_called_once()
         inst.assert_called_once()
@@ -52,6 +52,8 @@ def test_fresh_install_uninstall_fail():
 
 def test_fresh_install_github_calls_repair():
     with patch("repair.run_repair", return_value=0) as rep:
-        rc = fresh_install.run_fresh_install("github", "repo-url")
+        rc = fresh_install.run_fresh_install(
+            "github", "repo-url", confirmed=True, actor_role="admin"
+        )
         assert rc == 0
-        rep.assert_called_once_with("repo-url")
+        rep.assert_called_once_with("repo-url", confirmed=True, actor_role="admin")

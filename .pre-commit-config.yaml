@@ -8,8 +8,8 @@
 # ---------------------------------------------------------------------------
 #
 # This file is the single source of truth for what runs on every commit.
-# CI runs the same hooks via `pre-commit run --all-files`, so if a check
-# fires here it will also fire there -- fix locally, not in the CI log.
+# CI runs make lint, not this complete hook set. Run
+# pre-commit run --all-files separately for hook-specific verification.
 #
 # Conventions:
 #   * Every `rev:` is a pinned tag, never a branch. Pre-commit won't fetch
@@ -184,7 +184,7 @@ repos:
     hooks:
       - id: pip-audit
         language_version: python3.13
-        args: [--strict, --requirement, requirements-dev.txt]
+        args: [--strict, --requirement, requirements.txt]
         stages: [pre-push]
 
 # ---------------------------------------------------------------------------
@@ -222,7 +222,7 @@ repos:
     rev: v0.44.0
     hooks:
       - id: markdownlint
-        args: [--config, .markdownlint.yaml, --fix]
+        args: [--fix]
 
 # ---------------------------------------------------------------------------
 # Local project hooks
