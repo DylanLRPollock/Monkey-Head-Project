@@ -249,7 +249,6 @@ app = FastAPI(
 )
 
 _PUBLIC_PATHS = {"/healthz"}
-_TOKEN_MIDDLEWARE_PATHS = {"/dashboard"}
 _LOOPBACK_HOSTS = {
     "127.0.0.1",
     "::1",
@@ -284,11 +283,10 @@ def _is_loopback_host(host: str) -> bool:
 def _is_local_request(request: Request) -> bool:
     """Return ``True`` when the caller appears to be local to this host."""
 
+    # The URL hostname is derived from the request Host header and is not a
+    # trustworthy indicator of the peer's network address.
     client = getattr(request, "client", None)
     client_host = getattr(client, "host", "") if client is not None else ""
-    url_host = request.url.hostname or ""
-    if url_host:
-        return _is_loopback_host(url_host)
     return _is_loopback_host(client_host)
 
 
@@ -376,10 +374,7 @@ def _requires_emergency_auth() -> bool:
 
 @app.middleware("http")
 async def require_api_token(request: Request, call_next):
-    """Require a bearer token when HUEY_API_TOKEN is configured."""
-
-    if request.url.path not in _TOKEN_MIDDLEWARE_PATHS:
-        return await call_next(request)
+    """Protect every non-health endpoint when HUEY_API_TOKEN is configured."""
 
     expected_token = _configured_api_token()
     if not expected_token or request.url.path in _PUBLIC_PATHS:

@@ -797,3 +797,44 @@ async def test_dashboard_redacts_ai_prompts_and_responses(monkeypatch):
     assert observed["ai_records"][0].response == "[redacted]"
     assert observed["ai_records"][0].instruction is None
     assert observed["ai_records"][0].metadata == {}
+
+
+
+@pytest.mark.asyncio
+async def test_token_protects_read_only_and_schema_routes(monkeypatch):
+    """Bearer middleware must protect more than the dashboard."""
+    monkeypatch.setenv("HUEY_API_TOKEN", "test-token")
+
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        health = await client.get("/healthz")
+        blocked_schema = await client.get("/openapi.json")
+        blocked_models = await client.get("/ai/models")
+        blocked_memory = await client.get("/memory/pdfs")
+        invalid = await client.get(
+            "/openapi.json", headers={"Authorization": "Bearer wrong-token"}
+        )
+        allowed_schema = await client.get(
+            "/openapi.json", headers={"Authorization": "Bearer test-token"}
+        )
+
+    assert health.status_code == 200
+    assert blocked_schema.status_code == 401
+    assert blocked_models.status_code == 401
+    assert blocked_memory.status_code == 401
+    assert invalid.status_code == 401
+    assert allowed_schema.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_forged_local_host_header_cannot_bypass_remote_gate(monkeypatch):
+    """The Host header must never make a remote peer appear local."""
+    monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
+
+    transport = ASGITransport(
+        app=api_module.app, client=("203.0.113.10", 5300)
+    )
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        result = await client.get("/dashboard", headers={"Host": "localhost"})
+
+    assert result.status_code == 403
