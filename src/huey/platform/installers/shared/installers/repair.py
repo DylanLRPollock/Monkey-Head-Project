@@ -97,8 +97,8 @@ def run_repair(repo_url: str) -> int:
     int
         Exit code suitable for use as a process status:
 
-        * ``0`` – repair succeeded end-to-end.
-        * Non-zero – an error occurred in the uninstaller, clone, or install
+        * ``0`` - repair succeeded end-to-end.
+        * Non-zero - an error occurred in the uninstaller, clone, or install
           phase. In case of clone or install failures, basic diagnostics are
           written to ``sys.stderr`` when available.
     """

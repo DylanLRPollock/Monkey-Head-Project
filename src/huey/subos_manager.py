@@ -17,13 +17,10 @@ except ImportError:  # pragma: no cover - Windows fallback for tests
 
 
 def update_system() -> None:
-    subprocess.run(
-        ["apt-get", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
+    subprocess.run(["apt-get", "update"], capture_output=True)
     subprocess.run(
         ["apt-get", "upgrade", "-y"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
     )
 
 
@@ -36,8 +33,7 @@ def create_user(username: str) -> None:
 
     subprocess.run(
         ["useradd", "-m", username],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
     )
 
 

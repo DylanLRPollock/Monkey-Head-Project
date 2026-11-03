@@ -30,7 +30,7 @@ _config_missing = not (Path(__file__).resolve().parents[1] / "config.yaml").is_f
 
 
 class TestMain(unittest.TestCase):
-    @unittest.skipIf(main is None, "Required dependency missing: %s" % _missing_dep)
+    @unittest.skipIf(main is None, f"Required dependency missing: {_missing_dep}")
     @unittest.skipIf(_config_missing, "config.yaml not found")
     def test_main_runs(self):
         # Test that main() runs without errors and prints the expected sum

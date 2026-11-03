@@ -74,10 +74,8 @@ class NetworkManager:
 
         self._interface_categories = {}
         info: dict[str, InterfaceInfo] = {}
-        if psutil is not None:
-            stats = psutil.net_if_stats()
-        else:  # pragma: no cover - psutil is optional dependency
-            stats = {}
+        # psutil is optional at runtime.
+        stats = psutil.net_if_stats() if psutil is not None else {}
 
         for name, stat in stats.items():
             category = self._interface_category(name)

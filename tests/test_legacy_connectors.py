@@ -25,8 +25,9 @@ async def test_emulated_connector_buffers_messages():
     async def respond():
         await connector.inject_emulator_response(b"READY")
 
-    asyncio.create_task(respond())
+    response_task = asyncio.create_task(respond())
     payload = await connector.receive()
+    await response_task
     assert payload == b"READY"
     await connector.close()
 

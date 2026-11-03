@@ -69,10 +69,7 @@ def _normalise_source(source: str | Path | None) -> Path:
 
 
 def _determine_target_dir(path: Path) -> str:
-    if path.suffix:
-        ext = path.suffix.lower().lstrip(".")
-    else:
-        ext = ""
+    ext = path.suffix.lower().lstrip(".") if path.suffix else ""
     return _EXTENSION_MAP.get(ext, ext.upper() if ext else "MISC")
 
 

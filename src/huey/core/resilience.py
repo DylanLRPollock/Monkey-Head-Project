@@ -13,6 +13,7 @@ powers that require quorum style approval.
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import socket
@@ -123,10 +124,8 @@ class SystemdWatchdogClient:
             LOGGER.debug("Failed to notify systemd watchdog: %s", exc)
             return False
         finally:
-            try:
+            with contextlib.suppress(Exception):  # pragma: no cover - defensive cleanup
                 sock.close()
-            except Exception:  # pragma: no cover - defensive cleanup
-                pass
 
     def ready(self) -> bool:
         """Signal to systemd that the service initialisation completed."""

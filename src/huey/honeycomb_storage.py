@@ -365,8 +365,7 @@ class HoneycombStorage:
                 if record.key.startswith(prefix)
             ]
         records.sort(key=lambda record: record.created_at)
-        for record in records:
-            yield record
+        yield from records
 
     def query(
         self,

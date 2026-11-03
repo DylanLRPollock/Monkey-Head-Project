@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import os
 from typing import Any
 
@@ -45,10 +46,8 @@ def apply_ttk_chrome(root: Any, ttk_module: Any) -> Any:
     """Apply shared ttk styling and return the created ``Style`` object."""
 
     style = ttk_module.Style(root)
-    try:
+    with contextlib.suppress(Exception):
         style.theme_use("clam")
-    except Exception:
-        pass
 
     style.configure(
         "TLabel",
