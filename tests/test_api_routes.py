@@ -440,7 +440,10 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
         def should_shutdown(self) -> bool:
             return False
 
-        def initiate_shutdown(self) -> PowerEvent:
+        def initiate_shutdown(
+            self, *, confirmed: bool = False, actor_role: str | None = None
+        ) -> PowerEvent:
+            assert confirmed and actor_role == "admin"
             return PowerEvent(
                 timestamp=456.0, action="shutdown", metadata={"initiated": True}
             )
@@ -496,7 +499,10 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
         assert should_shutdown.status_code == 200
         assert should_shutdown.json()["should_shutdown"] is False
 
-        shutdown = await client.post("/power/shutdown", headers=auth_headers)
+        shutdown = await client.post(
+            "/power/shutdown",
+            headers={**auth_headers, "X-Huey-Confirm": "shutdown"},
+        )
         assert shutdown.status_code == 200
         assert shutdown.json()["metadata"]["initiated"] is True
 
