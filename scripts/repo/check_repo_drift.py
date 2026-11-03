@@ -56,6 +56,7 @@ NON_CURRENT_FACING_NAMES: tuple[str, ...] = (
 RULE_REFERENCE_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
     {
         ("scripts/repo/audit_v120_assets.py", "integrations-pygpt-path"),
+        ("scripts/repo/check_canon_terms.py", "integrations-pygpt-path"),
     }
 )
 
