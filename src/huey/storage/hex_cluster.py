@@ -12,7 +12,10 @@ class HexClusterIndex:
         self.width = width
 
     def cluster_for(self, key: str) -> str:
-        return sha1(key.encode("utf-8")).hexdigest()[: self.width]
+        # This hash chooses a storage bucket; it is not an integrity/security check.
+        return sha1(key.encode("utf-8"), usedforsecurity=False).hexdigest()[
+            : self.width
+        ]
 
 
 __all__ = ["HexClusterIndex"]

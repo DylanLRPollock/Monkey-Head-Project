@@ -109,7 +109,7 @@ lint: ## Run repo guardrails + black/isort/ruff/flake8 (check-only).
 	$(PYTHON) scripts/repo/check_stale_platform_strings.py
 	$(PYTHON) scripts/repo/check_repo_drift.py
 	$(PYTHON) scripts/repo/check_legacy_hueyos_imports.py
-	$(PYTHON) scripts/check_command_center_contract.py
+	$(PYTHON) -m huey.memory.PY.check_command_center_contract
 	$(PYTHON) scripts/repo/check_dependency_sync.py
 	$(PYTHON) scripts/repo/check_canon_terms.py
 	$(MAKE) format-check
@@ -127,7 +127,7 @@ check-legacy-hueyos: ## Block new legacy hueyos imports.
 	$(PYTHON) scripts/repo/check_legacy_hueyos_imports.py
 
 check-command-center: ## Verify Command Center backend contract.
-	$(PYTHON) scripts/check_command_center_contract.py
+	$(PYTHON) -m huey.memory.PY.check_command_center_contract
 
 check-canon: ## Check canonical naming / terminology.
 	$(PYTHON) scripts/repo/check_canon_terms.py

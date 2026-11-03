@@ -55,7 +55,6 @@ python:
   - changed-files:
     - any-glob-to-any-file:
       - 'src/huey/**'
-      - 'src/hueyos/**'
 
 # The API surface -- FastAPI routers, auth, request/response models.
 # Security-sensitive; pairs with the "security" label below.
@@ -63,7 +62,7 @@ api:
   - changed-files:
     - any-glob-to-any-file:
       - 'src/huey/api.py'
-      - 'src/hueyos/api/**'
+      - 'src/huey/os/api/**'
 
 # The command-line interface.
 cli:
@@ -71,7 +70,7 @@ cli:
     - any-glob-to-any-file:
       - 'src/huey/cli.py'
       - 'src/huey/cli/**'
-      - 'src/hueyos/cli/**'
+      - 'src/huey/os/cli/**'
 
 # Hardware drivers, network management, power management -- anything
 # that talks to the robot.
@@ -164,8 +163,8 @@ security:
       - '.github/workflows/codeql.yml'
       - '.github/workflows/dependency-review.yml'
       - 'src/huey/api.py'
-      - 'src/hueyos/api/auth.py'
-      - 'src/hueyos/api/**'
+      - 'src/huey/os/api/auth.py'
+      - 'src/huey/os/api/**'
 
 # Breaking-change candidates. Changing any of these files has a
 # higher-than-average chance of affecting downstream consumers, so
@@ -175,7 +174,7 @@ breaking-change-candidate:
   - changed-files:
     - any-glob-to-any-file:
       - 'src/huey/__init__.py'
-      - 'src/hueyos/__init__.py'
+      - 'src/huey/os/__init__.py'
       - 'src/huey/cli.py'
-      - 'src/hueyos/cli/main.py'
+      - 'src/huey/os/cli/main.py'
       - 'pyproject.toml'

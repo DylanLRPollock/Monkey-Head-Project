@@ -7,7 +7,7 @@ from pathlib import Path
 from shutil import copy2
 
 from huey.media.media_manager import probe_media
-from huey.memory.pipeline.metadata import generate_metadata
+from huey.memory.PY.metadata import generate_metadata
 from huey.utils.paths import ensure_subdirectory
 
 
