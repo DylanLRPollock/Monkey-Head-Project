@@ -130,3 +130,8 @@ def test_cli_accepts_valid_artifact(tmp_path, capsys):
     }
     assert main(["trivy", str(_write(tmp_path, data))]) == 0
     assert "validated" in capsys.readouterr().out
+
+
+def test_pip_audit_accepts_null_version_from_installed_metadata(tmp_path):
+    data = {"dependencies": [{"name": "unknown-dist", "version": None, "vulns": []}]}
+    assert validate_pip_audit_report(_write(tmp_path, data)) == 0
