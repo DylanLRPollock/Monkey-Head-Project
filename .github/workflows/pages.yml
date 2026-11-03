@@ -67,28 +67,10 @@
 #
 # Action pins:
 #
-#   *** THREE SHAs IN THIS FILE NEED RESOLUTION BEFORE MERGE ***
-#
-#   `actions/configure-pages`, `actions/upload-pages-artifact`, and
-#   `actions/deploy-pages` are pinned to `<PLACEHOLDER>` below.
-#   Resolve all three in one command:
-#
-#     foreach ($a in @(
-#       @{ repo='actions/configure-pages';           tag='v5' },
-#       @{ repo='actions/upload-pages-artifact';     tag='v3' },
-#       @{ repo='actions/deploy-pages';              tag='v4' }
-#     )) {
-#       $sha = gh api "repos/$($a.repo)/git/refs/tags/$($a.tag)" --jq '.object.sha'
-#       "$($a.repo) @ $($a.tag) -> $sha"
-#     }
-#
-#   Replace each `<PLACEHOLDER>` with the returned value, update the
-#   trailing `# vN` comment to the resolved tag, and add three rows to
-#   `.github/actions-pins.md`.
-#
-#   The SHAs for `actions/checkout` and `actions/setup-python` below
-#   were resolved during the CI audit and match what is already used
-#   in the other workflows.
+#   Actions are pinned to immutable commit SHAs. The Pages action tags
+#   and resolved commits are recorded in `.github/actions-pins.md`.
+#   When updating an action, resolve its upstream tag and update both
+#   the workflow pin and the audit record.
 
 name: Deploy docs to Pages
 
@@ -162,14 +144,14 @@ jobs:
         # Reads the Pages configuration from the API and writes the
         # base URL and other values into a file the upload step reads.
         # Fails if Pages is not enabled with Source = GitHub Actions.
-        uses: actions/configure-pages@<PLACEHOLDER> # v5 -- RESOLVE BEFORE MERGE
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
 
       - name: Upload Pages artifact
         # Packages the built HTML into the format the Pages API
         # expects. This is NOT the same as `actions/upload-artifact`;
         # the Pages artifact is signed and versioned for the deploy
         # step, and it does not appear in the workflow's artifact list.
-        uses: actions/upload-pages-artifact@<PLACEHOLDER> # v3 -- RESOLVE BEFORE MERGE
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: docs/_build/html
 
@@ -193,4 +175,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@<PLACEHOLDER> # v4 -- RESOLVE BEFORE MERGE
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
