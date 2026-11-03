@@ -126,12 +126,14 @@ jobs:
         # consumers that parse the JSON do not crash.
         if: always()
         run: |
-          pip-audit --format json --output pip-audit-results.json --skip-editable || true
-          if [ ! -f pip-audit-results.json ]; then
-            printf '{"dependencies": [], "error": "pip-audit did not produce JSON output"}\n' \
-              > pip-audit-results.json
-            echo "::warning::pip-audit did not produce JSON output; wrote empty result set"
-          fi
+          set +e
+          pip-audit --format json --output pip-audit-results.json --skip-editable
+          result=$?
+          set -e
+          # pip-audit uses 1 for known vulnerabilities; scanner errors
+          # and missing or malformed JSON are not acceptable.
+          if [ "$result" -gt 1 ]; then exit "$result"; fi
+          python scripts/security/validate_scan_reports.py pip-audit pip-audit-results.json
 
       - name: Enforce dependency security audit
         # No `|| true`. A vulnerability must fail this step. Accepted

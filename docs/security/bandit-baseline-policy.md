@@ -11,7 +11,7 @@ A baseline does **not** mean the project is secure.
 CI must run Bandit against `src` with the committed baseline:
 
 ```bash
-bandit -r src -b .security/bandit-baseline.json -ll -ii
+bandit -r src -c pyproject.toml -b .security/bandit-baseline.json -ll -ii
 ```
 
 Policy behavior:

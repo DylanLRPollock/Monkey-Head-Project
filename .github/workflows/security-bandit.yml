@@ -116,7 +116,13 @@ jobs:
         # which is what keeps the vendored trees out of the scan.
         if: always()
         run: |
-          bandit -r src -c pyproject.toml -f json -o bandit-results-full.json || true
+          set +e
+          bandit -r src -c pyproject.toml -f json -o bandit-results-full.json
+          result=$?
+          set -e
+          # Bandit uses 1 for findings; other failures are scan errors.
+          if [ "$result" -gt 1 ]; then exit "$result"; fi
+          python scripts/security/validate_scan_reports.py bandit bandit-results-full.json
           if [ ! -f bandit-results-full.json ]; then
             echo "::warning::Bandit did not produce bandit-results-full.json"
           fi
