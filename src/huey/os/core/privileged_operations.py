@@ -42,9 +42,7 @@ def authorize_privileged_operation(
         return False
     if not confirmed:
         raise PermissionError(f"Explicit confirmation required: {operation}")
-    allowed_roles = (
-        {"admin"} if capability == "destructive" else {"operator", "admin"}
-    )
+    allowed_roles = {"admin"} if capability == "destructive" else {"operator", "admin"}
     if actor_role not in allowed_roles:
         raise PermissionError(f"Operator role not authorized: {operation}")
     return True
