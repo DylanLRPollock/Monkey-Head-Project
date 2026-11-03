@@ -1,5 +1,8 @@
 # Security & Maintenance Audit (2026-03-12)
 
+**Historical March 2026 audit.** Its recommendations are not necessarily unimplemented today. Review the [current November 2026 risk register](current-risk-register-2026-11-03.md) before opening new remediation work.
+
+
 This audit summarizes high-priority fixes to reduce security risk and keep the
 repository operationally up to date.
 
