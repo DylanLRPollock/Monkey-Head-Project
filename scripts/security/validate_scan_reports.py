@@ -91,8 +91,11 @@ def validate_pip_audit_report(path: Path) -> int:
             raise ReportValidationError("pip-audit dependency must be an object")
         if not isinstance(dependency.get("name"), str) or not dependency["name"]:
             raise ReportValidationError("pip-audit dependency is missing its name")
-        if not isinstance(dependency.get("version"), str) or not dependency["version"]:
-            raise ReportValidationError("pip-audit dependency is missing its version")
+        # pip-audit may report version=null for installed distributions
+        # whose metadata has no usable version; the audit still ran.
+        version = dependency.get("version")
+        if version is not None and (not isinstance(version, str) or not version):
+            raise ReportValidationError("pip-audit dependency has an invalid version")
         vulns = dependency.get("vulns")
         if not isinstance(vulns, list):
             raise ReportValidationError("pip-audit dependency lacks a vulnerabilities list")
