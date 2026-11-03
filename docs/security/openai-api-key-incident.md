@@ -1,6 +1,8 @@
 # OpenAI API Key Exposure Response
 
-When an OpenAI API key (`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`) is inadvertently exposed, use the following response checklist to contain the leak and prevent reuse.
+When a credential is inadvertently exposed, use this response checklist to contain the leak and prevent reuse. This runbook intentionally omits credential values.
+
+> Historical note: An API key was included in an earlier committed version of this document. Redacting the current file does not remove the value from Git history, copies, caches, or previously published artifacts. Confirm revocation of the exposed credential and assess historical cleanup through an incident-response process.
 
 ## 1. Rotate and Reissue the Key
 - If production workloads still rely on the credential, create a replacement key in the OpenAI dashboard before revoking the compromised one.
