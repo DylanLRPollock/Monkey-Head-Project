@@ -1,5 +1,8 @@
 # Threat Model (v101.1)
 
+**Archived v101.1 snapshot (2026-05-12).** The 'planned' flags below reflect that release, not the current default branch. See the [November 2026 risk register](current-risk-register-2026-11-03.md) for merged controls and unresolved threats.
+
+
 _Last updated: 2026-05-12_
 
 ## Scope
