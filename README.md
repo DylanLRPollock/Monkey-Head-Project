@@ -107,6 +107,11 @@ The external cooling room beside the house already exists, but the long liquid l
 
 ## Cognition Stack
 
+### Upstream PyGPT operator integration
+
+PyHuey can launch the **actual upstream PyGPT 2.9.1** application through the `huey-pygpt gui` command. The accompanying **read-only MCP stdio bridge** exposes HueyOS identity, local API health, FFmpeg availability, and the bridge permission policy to PyGPT without delegating robot actuation or privileged control. The legacy vendored PyHuey tree remains a compatibility/test surface and is not the upstream desktop application. See [installation, connector configuration and security boundaries](docs/integrations/pygpt.md).
+
+
 **PyHuey** — the project's PyGPT-derived operator/runtime environment — is intended to be Huey's primary human-facing GUI and orchestration surface. A recovery-capable command-line path remains important for diagnostics, automation, and hardware recovery.
 
 The software baseline is:
