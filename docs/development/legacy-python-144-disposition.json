@@ -1,0 +1,2120 @@
+{
+  "schema": "huey.legacy_python_disposition.v1",
+  "baseline_main_commit": "d52f92b5f982847f3dd7bb35f309a5f6d8577647",
+  "method": "Repository Git tree plus initial file-content review. Candidate destinations are design decisions, not evidence of runtime integration.",
+  "dynamic_usage_warning": "huey and huey.os package fallbacks and scripts/automation/py/_dispatch.py can load legacy modules dynamically; static zero references never proves a module unused.",
+  "initial_count": 144,
+  "physically_moved_in_this_change": 16,
+  "retained_after_this_change": 128,
+  "status_counts": {
+    "legacy_namespace_required": 1,
+    "new_owner_requires_integration": 21,
+    "implementation_parity_review": 57,
+    "safety_review_before_promotion": 29,
+    "promoted_with_legacy_alias": 11,
+    "legacy_test_pending_parity": 5,
+    "ownership_review_required": 3,
+    "moved_opt_in_example": 9,
+    "distinct_schema_reconciliation_required": 1,
+    "moved_test_collected": 7
+  },
+  "owner_counts": {
+    "compatibility": 1,
+    "repository_tool": 12,
+    "runtime_api": 16,
+    "gui": 12,
+    "media": 17,
+    "operator_privileged": 19,
+    "data_memory": 8,
+    "maintained": 11,
+    "utilities": 9,
+    "tests": 12,
+    "unclassified": 3,
+    "examples": 9,
+    "integrations": 7,
+    "honeycomb": 6,
+    "training": 2
+  },
+  "items": [
+    {
+      "name": "__init__.py",
+      "legacy_path": "src/huey/memory/PY/__init__.py",
+      "source_blob_sha": "8383d1b9e15e6ad06855fddc5ad44dca5f38241d",
+      "source_bytes": 934,
+      "owner": "compatibility",
+      "proposed_destination": "src/huey/memory/PY/__init__.py",
+      "disposition": "legacy_namespace_required",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "dynamic legacy package import exposure"
+    },
+    {
+      "name": "add_project_headers.py",
+      "legacy_path": "src/huey/memory/PY/add_project_headers.py",
+      "source_blob_sha": "6dcb5e7ff94461550445378741f796d29aef3139",
+      "source_bytes": 4995,
+      "owner": "repository_tool",
+      "proposed_destination": "scripts/repo/add_project_headers.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "ai_processor.py",
+      "legacy_path": "src/huey/memory/PY/ai_processor.py",
+      "source_blob_sha": "80a4274e5c57669d25da73a40d37ad8cf67acd7f",
+      "source_bytes": 13574,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/ai/processor.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/ai_processor.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "ai_tools_gui.py",
+      "legacy_path": "src/huey/memory/PY/ai_tools_gui.py",
+      "source_blob_sha": "8ee2da02e3ef372a3faf34df240fda6a8b104f8b",
+      "source_bytes": 17839,
+      "owner": "gui",
+      "proposed_destination": "src/huey/gui/ai_tools_gui.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "api.py",
+      "legacy_path": "src/huey/memory/PY/api.py",
+      "source_blob_sha": "a6e3eee574b5800d01e0264c83639e23f3efcbb4",
+      "source_bytes": 60267,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/os/api/app.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/api.py",
+        "src/huey/api.py",
+        "src/huey/network/api.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "audio_analysis.py",
+      "legacy_path": "src/huey/memory/PY/audio_analysis.py",
+      "source_blob_sha": "9179a64b1a93c25f6d5bf470dcf99775a3d67240",
+      "source_bytes": 126,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/audio_analysis.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/audio/audio_analysis.py",
+        "src/huey/media/audio_analysis.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "auto-sort.py",
+      "legacy_path": "src/huey/memory/PY/auto-sort.py",
+      "source_blob_sha": "9b319dea943ad9d2102bebf8ecfdf018c600dd45",
+      "source_bytes": 1967,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/auto_sort.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "backup_restore.py",
+      "legacy_path": "src/huey/memory/PY/backup_restore.py",
+      "source_blob_sha": "78057f3e3425468d7343401f6b8e723d657b73da",
+      "source_bytes": 1406,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/backup_restore.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "chapter_splitter.py",
+      "legacy_path": "src/huey/memory/PY/chapter_splitter.py",
+      "source_blob_sha": "59d2c392a02aaf14ab91e31269ce8ae1c9cdd463",
+      "source_bytes": 11734,
+      "owner": "repository_tool",
+      "proposed_destination": "scripts/repo/chapter_splitter.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/chapter_splitter.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "chat_learning.py",
+      "legacy_path": "src/huey/memory/PY/chat_learning.py",
+      "source_blob_sha": "253197aecb8328dcc583d06d3defbdea0d03f74f",
+      "source_bytes": 2940,
+      "owner": "data_memory",
+      "proposed_destination": "src/huey/memory/chat_learning.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "check_api_surface.py",
+      "legacy_path": "src/huey/memory/PY/check_api_surface.py",
+      "source_blob_sha": "71f5ba7a3514e33e4a2421eb4aba20db32dd5141",
+      "source_bytes": 2176,
+      "owner": "repository_tool",
+      "proposed_destination": "scripts/repo/check_api_surface.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "check_canon_terms.py",
+      "legacy_path": "src/huey/memory/PY/check_canon_terms.py",
+      "source_blob_sha": "cca3fc7121774049d0c96fcef29ebbc2952ecf26",
+      "source_bytes": 448,
+      "owner": "repository_tool",
+      "proposed_destination": "scripts/repo/check_canon_terms.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/repo/check_canon_terms.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "check_command_center_contract.py",
+      "legacy_path": "src/huey/memory/PY/check_command_center_contract.py",
+      "source_blob_sha": "b21b6bfe8927d81cd0c5007bb77fbe4ddb830549",
+      "source_bytes": 2719,
+      "owner": "repository_tool",
+      "proposed_destination": "scripts/repo/check_command_center_contract.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "check_dependency_sync.py",
+      "legacy_path": "src/huey/memory/PY/check_dependency_sync.py",
+      "source_blob_sha": "ec1c0ef15bed0f7c37f780f1e7fea3647258f8d8",
+      "source_bytes": 460,
+      "owner": "repository_tool",
+      "proposed_destination": "scripts/repo/check_dependency_sync.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/repo/check_dependency_sync.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "check_ffmpeg_environment.py",
+      "legacy_path": "src/huey/memory/PY/check_ffmpeg_environment.py",
+      "source_blob_sha": "59aa60dcff52fc67e6a20759b95c9491397774e4",
+      "source_bytes": 296,
+      "owner": "maintained",
+      "proposed_destination": "src/huey/media/cli_ffmpeg_check.py",
+      "disposition": "promoted_with_legacy_alias",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/check_ffmpeg_environment.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "previous migration with compatibility import path"
+    },
+    {
+      "name": "check_inter_program_connectivity.py",
+      "legacy_path": "src/huey/memory/PY/check_inter_program_connectivity.py",
+      "source_blob_sha": "ed27fd10c1a24404f11573487e89ac56f35e5402",
+      "source_bytes": 470,
+      "owner": "repository_tool",
+      "proposed_destination": "scripts/repo/check_inter_program_connectivity.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/check_inter_program_connectivity.py",
+        "scripts/repo/check_inter_program_connectivity.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "check_legacy_hueyos_imports.py",
+      "legacy_path": "src/huey/memory/PY/check_legacy_hueyos_imports.py",
+      "source_blob_sha": "eb4ba85d3487c8a2db6f85ee60d58c18d87b4627",
+      "source_bytes": 478,
+      "owner": "repository_tool",
+      "proposed_destination": "scripts/repo/check_legacy_hueyos_imports.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/repo/check_legacy_hueyos_imports.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "check_repo_drift.py",
+      "legacy_path": "src/huey/memory/PY/check_repo_drift.py",
+      "source_blob_sha": "e8db9505fae2dd4099372fd78ef7ff895d490bf1",
+      "source_bytes": 445,
+      "owner": "repository_tool",
+      "proposed_destination": "scripts/repo/check_repo_drift.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/repo/check_repo_drift.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "check_stale_platform_strings.py",
+      "legacy_path": "src/huey/memory/PY/check_stale_platform_strings.py",
+      "source_blob_sha": "40eba7df346f718858dfd69fc2bec5269686ac31",
+      "source_bytes": 481,
+      "owner": "repository_tool",
+      "proposed_destination": "scripts/repo/check_stale_platform_strings.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/repo/check_stale_platform_strings.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "cli_print.py",
+      "legacy_path": "src/huey/memory/PY/cli_print.py",
+      "source_blob_sha": "37fba7e77836384e7be32a036ee3a349bb38c156",
+      "source_bytes": 4267,
+      "owner": "utilities",
+      "proposed_destination": "src/huey/utils/cli_print.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/cli_print.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "cli.py",
+      "legacy_path": "src/huey/memory/PY/cli.py",
+      "source_blob_sha": "704c1f5abfa058ae79b91eb3255387a695ee4f7e",
+      "source_bytes": 19451,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/cli.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/cli.py",
+        "src/huey/apps/command_center/cli.py",
+        "src/huey/cli.py",
+        "src/huey/ui/cli.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "cloud_pyramid.py",
+      "legacy_path": "src/huey/memory/PY/cloud_pyramid.py",
+      "source_blob_sha": "da66a0614784f8bb80c5b93a5b32ad5df1ecd656",
+      "source_bytes": 1620,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/cloud_pyramid.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/cloud_pyramid.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "commands.py",
+      "legacy_path": "src/huey/memory/PY/commands.py",
+      "source_blob_sha": "95c674c2ad49911e3785c6a11f505e6babb5837b",
+      "source_bytes": 797,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/commands.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "config_manager.py",
+      "legacy_path": "src/huey/memory/PY/config_manager.py",
+      "source_blob_sha": "ab17ac58525c3928b0b12eadb1f4bc255820344d",
+      "source_bytes": 4947,
+      "owner": "data_memory",
+      "proposed_destination": "src/huey/memory/config_manager.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/config_manager.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "config_toggle_gui.py",
+      "legacy_path": "src/huey/memory/PY/config_toggle_gui.py",
+      "source_blob_sha": "cc8ec232461ce5d1f2154e7d5bb056c7db736356",
+      "source_bytes": 5325,
+      "owner": "gui",
+      "proposed_destination": "src/huey/gui/config_toggle_gui.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/config_toggle_gui.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "config.py",
+      "legacy_path": "src/huey/memory/PY/config.py",
+      "source_blob_sha": "c54891aac5948d5c91f07fec72d19917922a2827",
+      "source_bytes": 1128,
+      "owner": "data_memory",
+      "proposed_destination": "src/huey/memory/config.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/config.py",
+        "src/huey/connectors/pyhuey/plugin/agent/config.py",
+        "src/huey/connectors/pyhuey/plugin/base/config.py",
+        "src/huey/connectors/pyhuey/plugin/huey_tools/config.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "conftest.py",
+      "legacy_path": "src/huey/memory/PY/conftest.py",
+      "source_blob_sha": "968ea711a4e45847e02b8a8e2ab7d4059914e834",
+      "source_bytes": 213,
+      "owner": "tests",
+      "proposed_destination": "tests/conftest.py",
+      "disposition": "legacy_test_pending_parity",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "currently outside pytest testpaths; API assertions may be obsolete"
+    },
+    {
+      "name": "container_management.py",
+      "legacy_path": "src/huey/memory/PY/container_management.py",
+      "source_blob_sha": "d1c362c1bbe01e0d0204d76b1204e71af091ae76",
+      "source_bytes": 6127,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/container_management.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/services/container_management.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "convert_files.py",
+      "legacy_path": "src/huey/memory/PY/convert_files.py",
+      "source_blob_sha": "6e7c1d5a854043f6d5e7a8558372f899d568179e",
+      "source_bytes": 17035,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/convert_files.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "custom_launcher.py",
+      "legacy_path": "src/huey/memory/PY/custom_launcher.py",
+      "source_blob_sha": "1b022616a9ba0393cb7ecb1cbc912de00f1c6180",
+      "source_bytes": 796,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/custom_launcher.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "dashboard.py",
+      "legacy_path": "src/huey/memory/PY/dashboard.py",
+      "source_blob_sha": "84a8c9f4fd2137e50b9d1edba28af7c52d1528f3",
+      "source_bytes": 17044,
+      "owner": "gui",
+      "proposed_destination": "src/huey/gui/dashboard.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/ui/dashboard.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "decompress_audio_to_flac.py",
+      "legacy_path": "src/huey/memory/PY/decompress_audio_to_flac.py",
+      "source_blob_sha": "bf5d082d9865b2adc492f082c9ed263a1313eba8",
+      "source_bytes": 454,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/decompress_audio_to_flac.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/media/decompress_audio_to_flac.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "env_validation.py",
+      "legacy_path": "src/huey/memory/PY/env_validation.py",
+      "source_blob_sha": "975b9484bcdaa491343548e3fcb36c0c440d64b0",
+      "source_bytes": 2121,
+      "owner": "unclassified",
+      "proposed_destination": "src/huey/legacy/env_validation.py",
+      "disposition": "ownership_review_required",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "environment_setup.py",
+      "legacy_path": "src/huey/memory/PY/environment_setup.py",
+      "source_blob_sha": "515b25e8be19ab03614a696070a37a764187c02b",
+      "source_bytes": 4962,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/environment_setup.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/environment_setup.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "error_handler.py",
+      "legacy_path": "src/huey/memory/PY/error_handler.py",
+      "source_blob_sha": "d45a6f42ac4497f366e1cdf3cca30d9567f9f46e",
+      "source_bytes": 2733,
+      "owner": "utilities",
+      "proposed_destination": "src/huey/utils/error_handler.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/error_handler.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "example_audio_input.py",
+      "legacy_path": "src/huey/memory/PY/example_audio_input.py",
+      "source_blob_sha": "eb547b78e66be0714832d6216d6efde6f2123d7b",
+      "source_bytes": 1459,
+      "owner": "examples",
+      "proposed_destination": "examples/example_audio_input.py",
+      "disposition": "moved_opt_in_example",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "not executed by runtime; opt-in demonstration"
+    },
+    {
+      "name": "example_audio_output.py",
+      "legacy_path": "src/huey/memory/PY/example_audio_output.py",
+      "source_blob_sha": "216944b9742edc3e8bf963cbe24616a91ea2bbd1",
+      "source_bytes": 1684,
+      "owner": "examples",
+      "proposed_destination": "examples/example_audio_output.py",
+      "disposition": "moved_opt_in_example",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "not executed by runtime; opt-in demonstration"
+    },
+    {
+      "name": "example_data_loader.py",
+      "legacy_path": "src/huey/memory/PY/example_data_loader.py",
+      "source_blob_sha": "667f3bf4fdeff1e75fc82c6fa01da177ab1fe868",
+      "source_bytes": 1226,
+      "owner": "examples",
+      "proposed_destination": "examples/example_data_loader.py",
+      "disposition": "moved_opt_in_example",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "not executed by runtime; opt-in demonstration"
+    },
+    {
+      "name": "example_llm.py",
+      "legacy_path": "src/huey/memory/PY/example_llm.py",
+      "source_blob_sha": "96fd1cd01275084881a80e7304e7b56922beddac",
+      "source_bytes": 1108,
+      "owner": "examples",
+      "proposed_destination": "examples/example_llm.py",
+      "disposition": "moved_opt_in_example",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "not executed by runtime; opt-in demonstration"
+    },
+    {
+      "name": "example_plugin.py",
+      "legacy_path": "src/huey/memory/PY/example_plugin.py",
+      "source_blob_sha": "799a4e3a913c440843098bb93f084117ccb73d17",
+      "source_bytes": 963,
+      "owner": "examples",
+      "proposed_destination": "examples/example_plugin.py",
+      "disposition": "moved_opt_in_example",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "not executed by runtime; opt-in demonstration"
+    },
+    {
+      "name": "example_tool.py",
+      "legacy_path": "src/huey/memory/PY/example_tool.py",
+      "source_blob_sha": "0eea51b273f4d30fc0a2b9aba423b0d7279c1335",
+      "source_bytes": 1314,
+      "owner": "examples",
+      "proposed_destination": "examples/example_tool.py",
+      "disposition": "moved_opt_in_example",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "not executed by runtime; opt-in demonstration"
+    },
+    {
+      "name": "example_vector_store.py",
+      "legacy_path": "src/huey/memory/PY/example_vector_store.py",
+      "source_blob_sha": "bf4105baaad831705c394084172dca9e0d54e511",
+      "source_bytes": 1905,
+      "owner": "examples",
+      "proposed_destination": "examples/example_vector_store.py",
+      "disposition": "moved_opt_in_example",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "not executed by runtime; opt-in demonstration"
+    },
+    {
+      "name": "example_web_search.py",
+      "legacy_path": "src/huey/memory/PY/example_web_search.py",
+      "source_blob_sha": "3d936eab2a7011b430154c982552342106f3ba8c",
+      "source_bytes": 1393,
+      "owner": "examples",
+      "proposed_destination": "examples/example_web_search.py",
+      "disposition": "moved_opt_in_example",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "not executed by runtime; opt-in demonstration"
+    },
+    {
+      "name": "exceptions.py",
+      "legacy_path": "src/huey/memory/PY/exceptions.py",
+      "source_blob_sha": "bb2a989133d96d586bd15a10f7d8732d593e1989",
+      "source_bytes": 780,
+      "owner": "utilities",
+      "proposed_destination": "src/huey/utils/exceptions.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/exceptions.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "export_command_center_seed.py",
+      "legacy_path": "src/huey/memory/PY/export_command_center_seed.py",
+      "source_blob_sha": "c40529e45283542a2de19afaf2d0ede2bfa9ddfa",
+      "source_bytes": 2133,
+      "owner": "integrations",
+      "proposed_destination": "src/huey/connectors/export_command_center_seed.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "ffmpeg_validator.py",
+      "legacy_path": "src/huey/memory/PY/ffmpeg_validator.py",
+      "source_blob_sha": "d9f0f2b61957650d644282850cad93b82a0e8347",
+      "source_bytes": 232,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/ffmpeg_validator.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/media/ffmpeg_validator.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "file_manager.py",
+      "legacy_path": "src/huey/memory/PY/file_manager.py",
+      "source_blob_sha": "4f8a6fe34e99f879e8a5e43d7a7f9f0ea7bce155",
+      "source_bytes": 1665,
+      "owner": "data_memory",
+      "proposed_destination": "src/huey/memory/file_manager.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/file_manager.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "fixture_registry.py",
+      "legacy_path": "src/huey/memory/PY/fixture_registry.py",
+      "source_blob_sha": "78ab9f3f8fcbb2566af5fe894b226b5c58d8b97c",
+      "source_bytes": 5432,
+      "owner": "data_memory",
+      "proposed_destination": "src/huey/v1/legacy_fixture_registry.py",
+      "disposition": "distinct_schema_reconciliation_required",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/v1/fixture_registry.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "formatter_temp.py",
+      "legacy_path": "src/huey/memory/PY/formatter_temp.py",
+      "source_blob_sha": "7a456165adbd70b68c66edbd9706a6d2787f7985",
+      "source_bytes": 5989,
+      "owner": "utilities",
+      "proposed_destination": "src/huey/utils/formatter_temp.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "formatter.py",
+      "legacy_path": "src/huey/memory/PY/formatter.py",
+      "source_blob_sha": "dcd885188b451832e3fdb7280066f78d52b52e6a",
+      "source_bytes": 1655,
+      "owner": "utilities",
+      "proposed_destination": "src/huey/utils/formatter.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/formatter.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "fresh_install.py",
+      "legacy_path": "src/huey/memory/PY/fresh_install.py",
+      "source_blob_sha": "cd4d09195a6cae1f1ff697ea4e06aa4995b0b093",
+      "source_bytes": 1871,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/fresh_install.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/platform/installers/shared/installers/fresh_install.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "function_registry.py",
+      "legacy_path": "src/huey/memory/PY/function_registry.py",
+      "source_blob_sha": "ee81f229b1910fd03af38d745cf880826ed9185b",
+      "source_bytes": 5124,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/function_registry.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/function_registry.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "generate_repo_map.py",
+      "legacy_path": "src/huey/memory/PY/generate_repo_map.py",
+      "source_blob_sha": "c129c4e8b27049e533aecf22e15cf4a3575cc861",
+      "source_bytes": 2188,
+      "owner": "repository_tool",
+      "proposed_destination": "scripts/repo/generate_repo_map.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "gui_scaling.py",
+      "legacy_path": "src/huey/memory/PY/gui_scaling.py",
+      "source_blob_sha": "d1f190491a2982409ae35159fcd141f93f1b2d52",
+      "source_bytes": 2138,
+      "owner": "gui",
+      "proposed_destination": "src/huey/gui/gui_scaling.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/gui_scaling.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "hardware_interface.py",
+      "legacy_path": "src/huey/memory/PY/hardware_interface.py",
+      "source_blob_sha": "10172d8b600e05b1fa3d4cbc145eca70df3ad602",
+      "source_bytes": 1089,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/hardware_interface.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "home_assistant.py",
+      "legacy_path": "src/huey/memory/PY/home_assistant.py",
+      "source_blob_sha": "dce7502b4418d49b540af1a5b01a5c755509b233",
+      "source_bytes": 1690,
+      "owner": "integrations",
+      "proposed_destination": "src/huey/connectors/home_assistant.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "honeycomb_backup.py",
+      "legacy_path": "src/huey/memory/PY/honeycomb_backup.py",
+      "source_blob_sha": "53738ef6dcc9e4b8408c3d0987eb37c887c32600",
+      "source_bytes": 318,
+      "owner": "honeycomb",
+      "proposed_destination": "src/huey/honeycomb/honeycomb_backup.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/honeycomb_backup.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "honeycomb_index.py",
+      "legacy_path": "src/huey/memory/PY/honeycomb_index.py",
+      "source_blob_sha": "21419812b82d52837483a5ea2cc0611d48636c0f",
+      "source_bytes": 235,
+      "owner": "honeycomb",
+      "proposed_destination": "src/huey/honeycomb/honeycomb_index.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/honeycomb_index.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "honeycomb_monitor.py",
+      "legacy_path": "src/huey/memory/PY/honeycomb_monitor.py",
+      "source_blob_sha": "f7995095df0429f17dbcea74aee8c234418ea7f2",
+      "source_bytes": 237,
+      "owner": "honeycomb",
+      "proposed_destination": "src/huey/honeycomb/honeycomb_monitor.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/honeycomb_monitor.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "honeycomb_retention.py",
+      "legacy_path": "src/huey/memory/PY/honeycomb_retention.py",
+      "source_blob_sha": "a0b4843cf1447fff9898f7a491402a541266e0c3",
+      "source_bytes": 227,
+      "owner": "honeycomb",
+      "proposed_destination": "src/huey/honeycomb/honeycomb_retention.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/honeycomb_retention.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "honeycomb_storage.py",
+      "legacy_path": "src/huey/memory/PY/honeycomb_storage.py",
+      "source_blob_sha": "47bc287cd353416f87db29dc4b00fd78827dd7ec",
+      "source_bytes": 227,
+      "owner": "honeycomb",
+      "proposed_destination": "src/huey/honeycomb/honeycomb_storage.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/honeycomb_storage.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "huey_checks.py",
+      "legacy_path": "src/huey/memory/PY/huey_checks.py",
+      "source_blob_sha": "fc764c2b1cd5e0f35539803a1616540838a3dc25",
+      "source_bytes": 1706,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/huey_checks.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/huey_checks.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "huey_core_data.py",
+      "legacy_path": "src/huey/memory/PY/huey_core_data.py",
+      "source_blob_sha": "34ac2f49a60cbfca51d50f99a11b5c42db08b9e6",
+      "source_bytes": 1497,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/huey_core_data.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/huey_core_data.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "huey_core.py",
+      "legacy_path": "src/huey/memory/PY/huey_core.py",
+      "source_blob_sha": "19a0d81e7e05a7f59baff1d9d2d1f8bf7dfe1ef0",
+      "source_bytes": 1539,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/huey_core.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/huey_core.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "huey_disk_manager_temp.py",
+      "legacy_path": "src/huey/memory/PY/huey_disk_manager_temp.py",
+      "source_blob_sha": "7212a508dcf5789b7eb81a4bc8e8f91b1b1f2574",
+      "source_bytes": 2205,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/huey_disk_manager_temp.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/huey_disk_manager_temp.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "huey_linux.py",
+      "legacy_path": "src/huey/memory/PY/huey_linux.py",
+      "source_blob_sha": "5e0d43d2e9191c1def0372f3c7a67a0feb3f380d",
+      "source_bytes": 1823,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/huey_linux.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/huey_linux.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "huey_remover.py",
+      "legacy_path": "src/huey/memory/PY/huey_remover.py",
+      "source_blob_sha": "9b937a9d6288d901211d55d4b51d0cad661bc6d8",
+      "source_bytes": 2802,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/huey_remover.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/huey_remover.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "huey_tkinter.py",
+      "legacy_path": "src/huey/memory/PY/huey_tkinter.py",
+      "source_blob_sha": "6dbf1d69d96a81decf08a45fb2aa1500b18a600b",
+      "source_bytes": 1270,
+      "owner": "gui",
+      "proposed_destination": "src/huey/gui/huey_tkinter.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/huey_tkinter.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "Huey.py",
+      "legacy_path": "src/huey/memory/PY/Huey.py",
+      "source_blob_sha": "81f7241f1266cc9c6711ed8a8c5a72f37908e4d1",
+      "source_bytes": 4344,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/Huey.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "indexing.py",
+      "legacy_path": "src/huey/memory/PY/indexing.py",
+      "source_blob_sha": "ce766e3fd2c367fc307c90f7d9493a173a2e1ffb",
+      "source_bytes": 327,
+      "owner": "maintained",
+      "proposed_destination": "src/huey/memory/indexing.py",
+      "disposition": "promoted_with_legacy_alias",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/memory/indexing.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "previous migration with compatibility import path"
+    },
+    {
+      "name": "ingestion.py",
+      "legacy_path": "src/huey/memory/PY/ingestion.py",
+      "source_blob_sha": "3ee964f5d9218555379edad5eec391e6fbba7565",
+      "source_bytes": 389,
+      "owner": "maintained",
+      "proposed_destination": "src/huey/memory/ingestion.py",
+      "disposition": "promoted_with_legacy_alias",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/memory/ingestion.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "previous migration with compatibility import path"
+    },
+    {
+      "name": "install_gui.py",
+      "legacy_path": "src/huey/memory/PY/install_gui.py",
+      "source_blob_sha": "972261d2c9d5c57a693402dd507322985816b355",
+      "source_bytes": 10348,
+      "owner": "gui",
+      "proposed_destination": "src/huey/gui/install_gui.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/install_gui.py",
+        "src/huey/os/install_gui.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "installations.py",
+      "legacy_path": "src/huey/memory/PY/installations.py",
+      "source_blob_sha": "cba40eaf264c31713eab087692d3f70218a36aa5",
+      "source_bytes": 1803,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/installations.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "installer.py",
+      "legacy_path": "src/huey/memory/PY/installer.py",
+      "source_blob_sha": "e8ebb45f32f8931376ab0a9b5b559ab8f3051024",
+      "source_bytes": 6355,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/installer.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/installer.py",
+        "src/huey/platform/installers/shared/installers/installer.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "integrity.py",
+      "legacy_path": "src/huey/memory/PY/integrity.py",
+      "source_blob_sha": "bd372ba8a3f3e78cf67564f4cdd7fdb27485445e",
+      "source_bytes": 2039,
+      "owner": "honeycomb",
+      "proposed_destination": "src/huey/honeycomb/integrity.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "launcher.py",
+      "legacy_path": "src/huey/memory/PY/launcher.py",
+      "source_blob_sha": "f77040b17ce08fa6f223dee81e003d38b2629eca",
+      "source_bytes": 1804,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/launcher.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/launcher.py",
+        "src/huey/integrations/command_center/launcher.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "license_cli.py",
+      "legacy_path": "src/huey/memory/PY/license_cli.py",
+      "source_blob_sha": "ce5cfcef2b617efdc3e8d774a0145263ddf427f2",
+      "source_bytes": 2280,
+      "owner": "gui",
+      "proposed_destination": "src/huey/gui/license_cli.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/license_cli.py",
+        "src/huey/os/license_cli.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "license_gui.py",
+      "legacy_path": "src/huey/memory/PY/license_gui.py",
+      "source_blob_sha": "3bbbdd38678da7a6e7bb00e04fdfef26ef10459f",
+      "source_bytes": 6421,
+      "owner": "gui",
+      "proposed_destination": "src/huey/gui/license_gui.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/license_gui.py",
+        "src/huey/os/license_gui.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "list_by_mtime.py",
+      "legacy_path": "src/huey/memory/PY/list_by_mtime.py",
+      "source_blob_sha": "3a045e3b336b327064a38dcbf086ace2a41cfd76",
+      "source_bytes": 1057,
+      "owner": "data_memory",
+      "proposed_destination": "src/huey/memory/list_by_mtime.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "list_registered_functions.py",
+      "legacy_path": "src/huey/memory/PY/list_registered_functions.py",
+      "source_blob_sha": "aa511528cdab6c29478fd2c82f3d400cfb9723e4",
+      "source_bytes": 479,
+      "owner": "integrations",
+      "proposed_destination": "src/huey/connectors/list_registered_functions.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "llm.py",
+      "legacy_path": "src/huey/memory/PY/llm.py",
+      "source_blob_sha": "064ef3d8ed8d98d772c765438107e601b047ca61",
+      "source_bytes": 7608,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/llm.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/agents/llm.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "logger.py",
+      "legacy_path": "src/huey/memory/PY/logger.py",
+      "source_blob_sha": "8d8d5f425a49d35015b4030bd2aa203f2a86bcf6",
+      "source_bytes": 833,
+      "owner": "utilities",
+      "proposed_destination": "src/huey/utils/logger.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/logger.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "logging_setup.py",
+      "legacy_path": "src/huey/memory/PY/logging_setup.py",
+      "source_blob_sha": "4b8ce02f083d3180d90e2b90995113fada6732a8",
+      "source_bytes": 4856,
+      "owner": "utilities",
+      "proposed_destination": "src/huey/utils/logging_setup.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/logging_setup.py",
+        "src/huey/os/logging_setup.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "main_ui.py",
+      "legacy_path": "src/huey/memory/PY/main_ui.py",
+      "source_blob_sha": "a5c184fe5a3e2325c4882e749bcfdf829d1a8837",
+      "source_bytes": 55624,
+      "owner": "gui",
+      "proposed_destination": "src/huey/gui/main_ui.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/apps/huey_gui/main_ui.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "main.py",
+      "legacy_path": "src/huey/memory/PY/main.py",
+      "source_blob_sha": "39d36fd750fc2993acd91ea5ef7cae3a815d7af7",
+      "source_bytes": 1471,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/main.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/main.py",
+        "src/huey/main.py",
+        "src/huey/os/cli/main.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "media_conversion.py",
+      "legacy_path": "src/huey/memory/PY/media_conversion.py",
+      "source_blob_sha": "fe67cf4609dfaa01eb9fa47e1f509fad05839f58",
+      "source_bytes": 126,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/media_conversion.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/media_conversion.py",
+        "src/huey/media/media_conversion.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "media_manager.py",
+      "legacy_path": "src/huey/memory/PY/media_manager.py",
+      "source_blob_sha": "b350096a3921b32a34415531fecf1ea013e9a6e2",
+      "source_bytes": 124,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/media_manager.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/media/media_manager.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "media_manifest.py",
+      "legacy_path": "src/huey/memory/PY/media_manifest.py",
+      "source_blob_sha": "042a89d6b3ab44a3265afb2b95923a307b429d64",
+      "source_bytes": 126,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/media_manifest.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/media/media_manifest.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "metadata.py",
+      "legacy_path": "src/huey/memory/PY/metadata.py",
+      "source_blob_sha": "ca2a8e01bfa2ae9c377e6f61238ba54a28e4ad59",
+      "source_bytes": 387,
+      "owner": "maintained",
+      "proposed_destination": "src/huey/memory/metadata.py",
+      "disposition": "promoted_with_legacy_alias",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/memory/metadata.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "previous migration with compatibility import path"
+    },
+    {
+      "name": "mini-chat-gui.py",
+      "legacy_path": "src/huey/memory/PY/mini-chat-gui.py",
+      "source_blob_sha": "a4ad0a115dac0eca2c4f5296fd737fab32ffa826",
+      "source_bytes": 1102,
+      "owner": "gui",
+      "proposed_destination": "src/huey/gui/mini_chat_gui.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "pdf_chat.py",
+      "legacy_path": "src/huey/memory/PY/pdf_chat.py",
+      "source_blob_sha": "b0a01a84e3139c45d2c85e63b13594f88e8b65f1",
+      "source_bytes": 2782,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/pdf_chat.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/pdf_chat.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "pdf_pre_digestion.py",
+      "legacy_path": "src/huey/memory/PY/pdf_pre_digestion.py",
+      "source_blob_sha": "27bb16b43e4a9b7d31ed143c03f8eaf1ec70326a",
+      "source_bytes": 3528,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/pdf_pre_digestion.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/pdf_pre_digestion.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "pdf_utils.py",
+      "legacy_path": "src/huey/memory/PY/pdf_utils.py",
+      "source_blob_sha": "fd396bc80d9df1eafcc03f67ad2644976aab19c6",
+      "source_bytes": 2927,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/pdf_utils.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/os/pdf_utils.py",
+        "src/huey/pdf_utils.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "preload_data.py",
+      "legacy_path": "src/huey/memory/PY/preload_data.py",
+      "source_blob_sha": "ca5b90ddb55198d12a714d530bafe372c3951161",
+      "source_bytes": 286,
+      "owner": "maintained",
+      "proposed_destination": "src/huey/memory/preload_data.py",
+      "disposition": "promoted_with_legacy_alias",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/memory/preload_data.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "previous migration with compatibility import path"
+    },
+    {
+      "name": "prepare_audio_for_transcription.py",
+      "legacy_path": "src/huey/memory/PY/prepare_audio_for_transcription.py",
+      "source_blob_sha": "c49ef6225bc2260a25a4647b95dcf18fa344fe7f",
+      "source_bytes": 298,
+      "owner": "maintained",
+      "proposed_destination": "src/huey/media/cli_audio_prepare.py",
+      "disposition": "promoted_with_legacy_alias",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/prepare_audio_for_transcription.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "previous migration with compatibility import path"
+    },
+    {
+      "name": "probe_media.py",
+      "legacy_path": "src/huey/memory/PY/probe_media.py",
+      "source_blob_sha": "4b1de19110ec06d50f6d939142b42cab57bc9d79",
+      "source_bytes": 282,
+      "owner": "maintained",
+      "proposed_destination": "src/huey/media/cli_probe.py",
+      "disposition": "promoted_with_legacy_alias",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/probe_media.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "previous migration with compatibility import path"
+    },
+    {
+      "name": "proof_loop.py",
+      "legacy_path": "src/huey/memory/PY/proof_loop.py",
+      "source_blob_sha": "1c7bff71ff64ed3ff31763cce0c2bf9c1c34a0cd",
+      "source_bytes": 301,
+      "owner": "maintained",
+      "proposed_destination": "src/huey/v1/proof_loop.py",
+      "disposition": "promoted_with_legacy_alias",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/v1/proof_loop.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "previous migration with compatibility import path"
+    },
+    {
+      "name": "pygpt_custom_cli.py",
+      "legacy_path": "src/huey/memory/PY/pygpt_custom_cli.py",
+      "source_blob_sha": "aaf5571ed8686e193be6561f13155d4470e19ab9",
+      "source_bytes": 2619,
+      "owner": "gui",
+      "proposed_destination": "src/huey/gui/pygpt_custom_cli.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/os/pygpt_custom_cli.py",
+        "src/huey/pygpt_custom_cli.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "pygpt_integration.py",
+      "legacy_path": "src/huey/memory/PY/pygpt_integration.py",
+      "source_blob_sha": "93021b1c9fd1ecdec6e3c9cb4c0512565f145448",
+      "source_bytes": 9640,
+      "owner": "integrations",
+      "proposed_destination": "src/huey/connectors/pygpt_integration.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/pygpt_integration.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "pygpt_memory.py",
+      "legacy_path": "src/huey/memory/PY/pygpt_memory.py",
+      "source_blob_sha": "37675298b594844a76d5fa0724814559ea6c6523",
+      "source_bytes": 1086,
+      "owner": "data_memory",
+      "proposed_destination": "src/huey/memory/pygpt_memory.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/pygpt_memory.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "repackage_files.py",
+      "legacy_path": "src/huey/memory/PY/repackage_files.py",
+      "source_blob_sha": "2f27c1d6b519099efb70a0a5e2937abaa535f5c7",
+      "source_bytes": 424,
+      "owner": "repository_tool",
+      "proposed_destination": "scripts/repo/repackage_files.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/repo/repackage_files.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "repair.py",
+      "legacy_path": "src/huey/memory/PY/repair.py",
+      "source_blob_sha": "e69c4784d2e9580fda505def7bdd8255076f6245",
+      "source_bytes": 1644,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/repair.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/repair.py",
+        "src/huey/platform/installers/shared/installers/repair.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "resources.py",
+      "legacy_path": "src/huey/memory/PY/resources.py",
+      "source_blob_sha": "e94f772f77e432fd8532d49756d69687719dde2b",
+      "source_bytes": 2558,
+      "owner": "utilities",
+      "proposed_destination": "src/huey/utils/resources.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "response_bridge.py",
+      "legacy_path": "src/huey/memory/PY/response_bridge.py",
+      "source_blob_sha": "ba33a699031e3d8f6a1f54f24ff54219d54e3f97",
+      "source_bytes": 311,
+      "owner": "maintained",
+      "proposed_destination": "src/huey/v1/response_bridge.py",
+      "disposition": "promoted_with_legacy_alias",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/v1/response_bridge.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "previous migration with compatibility import path"
+    },
+    {
+      "name": "run_command_center.py",
+      "legacy_path": "src/huey/memory/PY/run_command_center.py",
+      "source_blob_sha": "1ec8ff527298da2c9b0183a83b52d3bcd26a7cb8",
+      "source_bytes": 337,
+      "owner": "integrations",
+      "proposed_destination": "src/huey/connectors/run_command_center.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "run.py",
+      "legacy_path": "src/huey/memory/PY/run.py",
+      "source_blob_sha": "1fb3734a76c013c3eb82db24ef6d2cdde13cdc36",
+      "source_bytes": 12450,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/run.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/run.py",
+        "src/huey/run.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "seed.py",
+      "legacy_path": "src/huey/memory/PY/seed.py",
+      "source_blob_sha": "df0e2181945b5f05d12edc67828dbdd02eedea31",
+      "source_bytes": 238,
+      "owner": "unclassified",
+      "proposed_destination": "src/huey/legacy/seed.py",
+      "disposition": "ownership_review_required",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/apps/command_center/seed.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "set_api_keys.py",
+      "legacy_path": "src/huey/memory/PY/set_api_keys.py",
+      "source_blob_sha": "053b05c2210a20cd6126905347f1ac560df613cd",
+      "source_bytes": 2905,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/set_api_keys.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "setup.py",
+      "legacy_path": "src/huey/memory/PY/setup.py",
+      "source_blob_sha": "4848426e2e47895bdac547e7b6729f08ebf2f4b0",
+      "source_bytes": 2967,
+      "owner": "unclassified",
+      "proposed_destination": "src/huey/legacy/setup.py",
+      "disposition": "ownership_review_required",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "silence_parser.py",
+      "legacy_path": "src/huey/memory/PY/silence_parser.py",
+      "source_blob_sha": "278964bcc8402476ca9b8f1cbfed8de8dff286db",
+      "source_bytes": 126,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/silence_parser.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/media/silence_parser.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "simple_chat_gui.py",
+      "legacy_path": "src/huey/memory/PY/simple_chat_gui.py",
+      "source_blob_sha": "e370fa3f908b4ec70b0724feeaa4364c6fdb55c4",
+      "source_bytes": 221,
+      "owner": "gui",
+      "proposed_destination": "src/huey/gui/simple_chat_gui.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/simple_chat_gui.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "sorting.py",
+      "legacy_path": "src/huey/memory/PY/sorting.py",
+      "source_blob_sha": "b371b3197f4436b9a027a8f21c0675b4159ace0c",
+      "source_bytes": 1554,
+      "owner": "data_memory",
+      "proposed_destination": "src/huey/memory/sorting.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "speech_pipeline.py",
+      "legacy_path": "src/huey/memory/PY/speech_pipeline.py",
+      "source_blob_sha": "a7032f8ec246bd9ccc477b030006679bb074a8f6",
+      "source_bytes": 128,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/speech_pipeline.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/media/speech_pipeline.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "startup.py",
+      "legacy_path": "src/huey/memory/PY/startup.py",
+      "source_blob_sha": "86bc92bced69842b84f0c34c377532256d430d0d",
+      "source_bytes": 1962,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/startup.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/startup.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "storage_management.py",
+      "legacy_path": "src/huey/memory/PY/storage_management.py",
+      "source_blob_sha": "6ea0944395a728e4501a7bbc9e916822e0907282",
+      "source_bytes": 8178,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/storage_management.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/storage_management.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "structured_run_log.py",
+      "legacy_path": "src/huey/memory/PY/structured_run_log.py",
+      "source_blob_sha": "dfcf2eb51fadaa4e49132cd84ba04749b70fa19b",
+      "source_bytes": 317,
+      "owner": "maintained",
+      "proposed_destination": "src/huey/v1/structured_run_log.py",
+      "disposition": "promoted_with_legacy_alias",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/v1/structured_run_log.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "previous migration with compatibility import path"
+    },
+    {
+      "name": "subos_manager.py",
+      "legacy_path": "src/huey/memory/PY/subos_manager.py",
+      "source_blob_sha": "6b1dcc8d054f4d3ce42ac8a5ce8c3a9bc3e77e75",
+      "source_bytes": 2844,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/subos_manager.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/subos_manager.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "sync_pygpt_structure.py",
+      "legacy_path": "src/huey/memory/PY/sync_pygpt_structure.py",
+      "source_blob_sha": "51c3067de47b422bacc5ce0a77cc41cdc521a92f",
+      "source_bytes": 2928,
+      "owner": "integrations",
+      "proposed_destination": "src/huey/connectors/sync_pygpt_structure.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/sync_pygpt_structure.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "system_checks.py",
+      "legacy_path": "src/huey/memory/PY/system_checks.py",
+      "source_blob_sha": "016f580f934d145437da71ffd02d5dce64f6b6ea",
+      "source_bytes": 186,
+      "owner": "runtime_api",
+      "proposed_destination": "src/huey/system_checks.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/core/system_checks.py",
+        "src/huey/os/system_checks.py",
+        "src/huey/system_checks.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "tensorflow_feed.py",
+      "legacy_path": "src/huey/memory/PY/tensorflow_feed.py",
+      "source_blob_sha": "dc2344b77a703a3560de9cef86882b6b5c1e8122",
+      "source_bytes": 3040,
+      "owner": "training",
+      "proposed_destination": "src/huey/training/tensorflow_feed.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/tensorflow_feed.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "test_command_center_seed.py",
+      "legacy_path": "src/huey/memory/PY/test_command_center_seed.py",
+      "source_blob_sha": "71513fcd3f3b9035ce3b03398d696c375d147e16",
+      "source_bytes": 546,
+      "owner": "tests",
+      "proposed_destination": "tests/test_command_center_seed.py",
+      "disposition": "moved_test_collected",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "moved to configured pytest testpaths; requires CI"
+    },
+    {
+      "name": "test_ffmpeg_validator.py",
+      "legacy_path": "src/huey/memory/PY/test_ffmpeg_validator.py",
+      "source_blob_sha": "2bc8fcf21a0f4ba70e7f999be25982f5f11277a1",
+      "source_bytes": 689,
+      "owner": "tests",
+      "proposed_destination": "tests/test_ffmpeg_validator.py",
+      "disposition": "moved_test_collected",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "moved to configured pytest testpaths; requires CI"
+    },
+    {
+      "name": "test_media_manager.py",
+      "legacy_path": "src/huey/memory/PY/test_media_manager.py",
+      "source_blob_sha": "fe9ef86c04d31ab2021b5b593e4ab80c57a73efd",
+      "source_bytes": 995,
+      "owner": "tests",
+      "proposed_destination": "tests/test_media_manager.py",
+      "disposition": "legacy_test_pending_parity",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "tests/test_media_manager.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "currently outside pytest testpaths; API assertions may be obsolete"
+    },
+    {
+      "name": "test_media_manifest.py",
+      "legacy_path": "src/huey/memory/PY/test_media_manifest.py",
+      "source_blob_sha": "bfb1a2edf4f643f9e394eb8cb0ec751e29f70d26",
+      "source_bytes": 1343,
+      "owner": "tests",
+      "proposed_destination": "tests/test_media_manifest.py",
+      "disposition": "moved_test_collected",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "moved to configured pytest testpaths; requires CI"
+    },
+    {
+      "name": "test_pyhuey_tool_manifest.py",
+      "legacy_path": "src/huey/memory/PY/test_pyhuey_tool_manifest.py",
+      "source_blob_sha": "3ee6f593e6a5794e42a94d5edf025b983d3b803b",
+      "source_bytes": 339,
+      "owner": "tests",
+      "proposed_destination": "tests/test_pyhuey_tool_manifest.py",
+      "disposition": "moved_test_collected",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "moved to configured pytest testpaths; requires CI"
+    },
+    {
+      "name": "test_response_bridge.py",
+      "legacy_path": "src/huey/memory/PY/test_response_bridge.py",
+      "source_blob_sha": "0089f433ef69049c29aa16b9521700ec9541081d",
+      "source_bytes": 478,
+      "owner": "tests",
+      "proposed_destination": "tests/test_response_bridge.py",
+      "disposition": "moved_test_collected",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "moved to configured pytest testpaths; requires CI"
+    },
+    {
+      "name": "test_silence_parser.py",
+      "legacy_path": "src/huey/memory/PY/test_silence_parser.py",
+      "source_blob_sha": "b5353533095d8e0be83cebd92dbaff64b238f237",
+      "source_bytes": 611,
+      "owner": "tests",
+      "proposed_destination": "tests/test_silence_parser.py",
+      "disposition": "moved_test_collected",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "moved to configured pytest testpaths; requires CI"
+    },
+    {
+      "name": "test_speech_pipeline.py",
+      "legacy_path": "src/huey/memory/PY/test_speech_pipeline.py",
+      "source_blob_sha": "37c2407e8cb3db0b9a8de7cb9c896389d6807910",
+      "source_bytes": 1393,
+      "owner": "tests",
+      "proposed_destination": "tests/test_speech_pipeline.py",
+      "disposition": "legacy_test_pending_parity",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "tests/test_speech_pipeline.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "currently outside pytest testpaths; API assertions may be obsolete"
+    },
+    {
+      "name": "test_structured_run_log.py",
+      "legacy_path": "src/huey/memory/PY/test_structured_run_log.py",
+      "source_blob_sha": "1dc463413df5cec68a5646be1acfbd94211665f2",
+      "source_bytes": 405,
+      "owner": "tests",
+      "proposed_destination": "tests/test_structured_run_log.py",
+      "disposition": "moved_test_collected",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "moved to configured pytest testpaths; requires CI"
+    },
+    {
+      "name": "test_v1_fixture_registry.py",
+      "legacy_path": "src/huey/memory/PY/test_v1_fixture_registry.py",
+      "source_blob_sha": "43c8b169693cc6c46bfb6d8d7b00d610d33b8e58",
+      "source_bytes": 818,
+      "owner": "tests",
+      "proposed_destination": "tests/test_v1_fixture_registry.py",
+      "disposition": "legacy_test_pending_parity",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "currently outside pytest testpaths; API assertions may be obsolete"
+    },
+    {
+      "name": "test_v1_proof_loop.py",
+      "legacy_path": "src/huey/memory/PY/test_v1_proof_loop.py",
+      "source_blob_sha": "8b1c180f240e4bdd396fbc43311ecf73a6ea3a5c",
+      "source_bytes": 1681,
+      "owner": "tests",
+      "proposed_destination": "tests/test_v1_proof_loop.py",
+      "disposition": "legacy_test_pending_parity",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "tests/test_v1_proof_loop.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "currently outside pytest testpaths; API assertions may be obsolete"
+    },
+    {
+      "name": "tool_manifest.py",
+      "legacy_path": "src/huey/memory/PY/tool_manifest.py",
+      "source_blob_sha": "6d4ce8c2af2670ee4b81fe9f40a85fe830eb1adb",
+      "source_bytes": 298,
+      "owner": "maintained",
+      "proposed_destination": "src/huey/connectors/pyhuey/tool_manifest.py",
+      "disposition": "promoted_with_legacy_alias",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/connectors/pyhuey/tool_manifest.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "previous migration with compatibility import path"
+    },
+    {
+      "name": "train_image_model.py",
+      "legacy_path": "src/huey/memory/PY/train_image_model.py",
+      "source_blob_sha": "cfeff02ccfa98587aa6c6b90eb4d675083070f77",
+      "source_bytes": 2847,
+      "owner": "training",
+      "proposed_destination": "src/huey/training/train_image_model.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "transcribe-lecture.py",
+      "legacy_path": "src/huey/memory/PY/transcribe-lecture.py",
+      "source_blob_sha": "4d96aac2c831a96bf2da4ab08b7f29cd62ce4dcf",
+      "source_bytes": 1558,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/transcribe_lecture.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "uninstaller.py",
+      "legacy_path": "src/huey/memory/PY/uninstaller.py",
+      "source_blob_sha": "a470d191d7439ae040ce29ac157a50c3b7c3a816",
+      "source_bytes": 2059,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/uninstaller.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/uninstaller.py",
+        "src/huey/platform/installers/shared/installers/uninstaller.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "update_memory_pdfs.py",
+      "legacy_path": "src/huey/memory/PY/update_memory_pdfs.py",
+      "source_blob_sha": "6bd0bdf72fb9c75969ff84b2d6251f7b18d67e8e",
+      "source_bytes": 1191,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/update_memory_pdfs.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "update_prompts.py",
+      "legacy_path": "src/huey/memory/PY/update_prompts.py",
+      "source_blob_sha": "ccbebdcfb68aa6aef07da8156a2728a5786aa0db",
+      "source_bytes": 3320,
+      "owner": "integrations",
+      "proposed_destination": "src/huey/connectors/update_prompts.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "update_sources_to_forky.py",
+      "legacy_path": "src/huey/memory/PY/update_sources_to_forky.py",
+      "source_blob_sha": "9a51d2df794f6d337f18dacd40c3a4a06771dcd6",
+      "source_bytes": 2219,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/update_sources_to_forky.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "update_sources_to_trixie.py",
+      "legacy_path": "src/huey/memory/PY/update_sources_to_trixie.py",
+      "source_blob_sha": "dcddb9af3b6adabe71d590cec6471bd2cce61a49",
+      "source_bytes": 2300,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/update_sources_to_trixie.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "updates.py",
+      "legacy_path": "src/huey/memory/PY/updates.py",
+      "source_blob_sha": "795487795d6bfdc7b1432fd8d113de9f919e83dc",
+      "source_bytes": 1472,
+      "owner": "operator_privileged",
+      "proposed_destination": "scripts/platform/updates.py",
+      "disposition": "safety_review_before_promotion",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "scripts/automation/py/updates.py"
+      ],
+      "requires_operator_security_review": true,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "utils.py",
+      "legacy_path": "src/huey/memory/PY/utils.py",
+      "source_blob_sha": "8e80860ab5805c6ff67c679924d8ceffd8b9d552",
+      "source_bytes": 5547,
+      "owner": "utilities",
+      "proposed_destination": "src/huey/utils/utils.py",
+      "disposition": "new_owner_requires_integration",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "vic2_demo.py",
+      "legacy_path": "src/huey/memory/PY/vic2_demo.py",
+      "source_blob_sha": "a1c10edc41a17976786e932c89cdfdf58591daee",
+      "source_bytes": 2319,
+      "owner": "examples",
+      "proposed_destination": "examples/hardware/vic2_demo.py",
+      "disposition": "moved_opt_in_example",
+      "retained_in_legacy": false,
+      "other_same_named_paths": [],
+      "requires_operator_security_review": false,
+      "evidence": "not executed by runtime; opt-in demonstration"
+    },
+    {
+      "name": "video_pipeline.py",
+      "legacy_path": "src/huey/memory/PY/video_pipeline.py",
+      "source_blob_sha": "54bd84cc2709897a1178a736a43713b16f1243dd",
+      "source_bytes": 126,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/video_pipeline.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/media/video_pipeline.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    },
+    {
+      "name": "waveform_manifest.py",
+      "legacy_path": "src/huey/memory/PY/waveform_manifest.py",
+      "source_blob_sha": "64a62191db8bf63cd9199988b50fb586b2a76f5c",
+      "source_bytes": 132,
+      "owner": "media",
+      "proposed_destination": "src/huey/media/waveform_manifest.py",
+      "disposition": "implementation_parity_review",
+      "retained_in_legacy": true,
+      "other_same_named_paths": [
+        "src/huey/media/waveform_manifest.py"
+      ],
+      "requires_operator_security_review": false,
+      "evidence": "candidate only; import/CLI usage and behavioral parity not yet verified"
+    }
+  ]
+}
