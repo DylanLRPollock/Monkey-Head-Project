@@ -114,7 +114,8 @@ jobs:
           # Licenses incompatible with GPL-3.0-only. The action fails if
           # any introduced dependency carries one of these.
           #
-          # SPDX identifiers, comma-separated. See:
+          # SPDX identifiers, comma-separated. Custom/non-SPDX license names
+          # must use LicenseRef- identifiers to pass action validation. See:
           #   https://spdx.org/licenses/
           #
           # This list covers the common copyleft and proprietary
@@ -125,10 +126,10 @@ jobs:
             SSPL-1.0,
             BUSL-1.1,
             Elastic-2.0,
-            Commons-Clause,
+            LicenseRef-Commons-Clause,
             JSON,
-            Proprietary,
-            UNLICENSED
+            LicenseRef-Proprietary,
+            LicenseRef-UNLICENSED
 
           # Post a summary comment on the PR showing what was checked
           # and what (if anything) failed. This is what makes the check
