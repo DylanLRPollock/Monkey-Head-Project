@@ -162,7 +162,9 @@ def main() -> int:
             continue
 
         for lineno, line in enumerate(content.splitlines(), start=1):
-            # This one document names the separately installed upstream product.\n            # Preserve all other terminology rules for the same document.\n            if path != Path("docs/integrations/pygpt.md") and _should_flag_pygpt(line):
+            # This document names the separately installed upstream product.
+            # Preserve all other terminology rules for the same document.
+            if path != Path("docs/integrations/pygpt.md") and _should_flag_pygpt(line):
                 violations.append(
                     f"{path}:{lineno}: Use PyHuey as the active cockpit name; "
                     "keep PyGPT for provenance only."
