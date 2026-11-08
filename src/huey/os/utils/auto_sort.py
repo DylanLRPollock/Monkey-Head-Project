@@ -1,7 +1,8 @@
 """Compatibility shim exposing legacy huey.utils.auto_sort via huey.os.utils.auto_sort."""
 
-from huey.utils import auto_sort as _implementation
+from importlib import import_module as _import_module
 
+_implementation = _import_module("huey.utils.auto_sort")
 __all__ = list(
     getattr(
         _implementation,

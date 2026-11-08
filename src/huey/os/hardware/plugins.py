@@ -1,7 +1,8 @@
 """Compatibility shim exposing legacy huey.hardware.plugins via huey.os.hardware.plugins."""
 
-from huey.hardware import plugins as _implementation
+from importlib import import_module as _import_module
 
+_implementation = _import_module("huey.hardware.plugins")
 __all__ = list(
     getattr(
         _implementation,

@@ -1,8 +1,9 @@
 """Compatibility shim exposing legacy huey.core.task_scheduler
 via huey.os.core.task_scheduler."""
 
-from huey.core import task_scheduler as _implementation
+from importlib import import_module as _import_module
 
+_implementation = _import_module("huey.core.task_scheduler")
 __all__ = list(
     getattr(
         _implementation,

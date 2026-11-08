@@ -1,7 +1,8 @@
 """Compatibility shim exposing legacy huey.pdf_utils via huey.os.pdf_utils."""
 
-from huey import pdf_utils as _implementation
+from importlib import import_module as _import_module
 
+_implementation = _import_module("huey.pdf_utils")
 __all__ = list(
     getattr(
         _implementation,

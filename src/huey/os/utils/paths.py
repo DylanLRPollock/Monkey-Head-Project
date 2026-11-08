@@ -1,7 +1,8 @@
 """Compatibility shim exposing legacy huey.utils.paths via huey.os.utils.paths."""
 
-from huey.utils import paths as _implementation
+from importlib import import_module as _import_module
 
+_implementation = _import_module("huey.utils.paths")
 __all__ = list(
     getattr(
         _implementation,

@@ -1,7 +1,8 @@
 """Compatibility shim exposing legacy huey.core.resilience via huey.os.core.resilience."""
 
-from huey.core import resilience as _implementation
+from importlib import import_module as _import_module
 
+_implementation = _import_module("huey.core.resilience")
 __all__ = list(
     getattr(
         _implementation,
