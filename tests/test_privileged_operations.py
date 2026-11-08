@@ -14,15 +14,19 @@ from huey.power import management
 
 @pytest.mark.parametrize(
     "operation",
-    ["host.shutdown", "host.reboot", "host.sleep", "host.hibernate", "project.uninstall"],
+    [
+        "host.shutdown",
+        "host.reboot",
+        "host.sleep",
+        "host.hibernate",
+        "project.uninstall",
+    ],
 )
 def test_privileged_operation_requires_confirmation_and_authority(operation):
     with pytest.raises(PermissionError, match="confirmation"):
         authorize_privileged_operation(operation)
     with pytest.raises(PermissionError, match="role"):
-        authorize_privileged_operation(
-            operation, confirmed=True, actor_role="operator"
-        )
+        authorize_privileged_operation(operation, confirmed=True, actor_role="operator")
     assert authorize_privileged_operation(operation, dry_run=True) is False
 
 
@@ -40,7 +44,9 @@ def test_power_denied_and_dry_run_never_touch_host(monkeypatch, method, action):
     launch = Mock(side_effect=AssertionError("unexpected subprocess"))
     monkeypatch.setattr(management.subprocess, "Popen", launch)
     monkeypatch.setattr(
-        management, "detect_host_platform", Mock(side_effect=AssertionError("host touched"))
+        management,
+        "detect_host_platform",
+        Mock(side_effect=AssertionError("host touched")),
     )
     with pytest.raises(PermissionError, match="confirmation"):
         getattr(monitor, method)()
@@ -77,7 +83,11 @@ def test_power_confirmed_admin_executes_argv_not_shell(monkeypatch):
         ("windows", "hibernate", ["shutdown", "/h"]),
         ("linux", "shutdown", ["systemctl", "poweroff"]),
         ("linux", "sleep", ["systemctl", "suspend"]),
-        ("macos", "shutdown", ["osascript", "-e", 'tell app "System Events" to shut down']),
+        (
+            "macos",
+            "shutdown",
+            ["osascript", "-e", 'tell app "System Events" to shut down'],
+        ),
     ],
 )
 def test_platform_command_construction(monkeypatch, platform, action, expected):
@@ -116,9 +126,7 @@ def test_uninstaller_confirmed_executes_only_project_script(monkeypatch, tmp_pat
         host=SimpleNamespace(system="Linux"),
     )
     monkeypatch.setattr(module, "PROJECT_ROOT", tmp_path)
-    monkeypatch.setattr(
-        module, "resolve_platform_script_paths", lambda root: paths
-    )
+    monkeypatch.setattr(module, "resolve_platform_script_paths", lambda root: paths)
     run = Mock(return_value=SimpleNamespace(returncode=0))
     monkeypatch.setattr(module.subprocess, "run", run)
     assert module.run_uninstaller(confirmed=True, actor_role="admin") == 0
