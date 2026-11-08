@@ -49,8 +49,8 @@ def authorize_privileged_operation(
 
 
 __all__ = [
-    "Capability",
     "OPERATIONS",
+    "Capability",
     "OperatorRole",
     "authorize_privileged_operation",
 ]
