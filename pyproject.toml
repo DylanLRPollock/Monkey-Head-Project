@@ -358,6 +358,7 @@ docstring-code-format = true
 
 [tool.pytest.ini_options]
 minversion = "8.0"
+asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
