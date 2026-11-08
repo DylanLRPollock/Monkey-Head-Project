@@ -47,10 +47,15 @@ class RunError(SystemExit):
     """Exit with a clear, actionable message instead of a bare traceback."""
 
     def __init__(self, message: str, hint: str | None = None) -> None:
-        lines = [f"error: {message}"]
-        if hint:
-            lines.append(f"hint:  {hint}")
-        super().__init__("\n".join(lines))
+        self.message = message
+        self.hint = hint
+        super().__init__(message, hint)
+
+    def __str__(self) -> str:
+        lines = [f"error: {self.message}"]
+        if self.hint:
+            lines.append(f"hint:  {self.hint}")
+        return "\n".join(lines)
 
 
 # --- sys.path bootstrap ----------------------------------------------------
@@ -145,15 +150,8 @@ def _resolve_entry() -> Callable[[], object]:
     )
 
 
-def _main() -> int:
-    """Entry point when executing ``python run.py``.
-
-    Delegates to ``huey.run.main()`` if present, otherwise ``huey.run.cli()``.
-    Normalises the return value to an integer exit status and translates
-    common failure modes into clean diagnostics.
-    """
-    entry = _resolve_entry()
-
+def _invoke_entry(entry: Callable[[], object]) -> int:
+    """Invoke the runtime entry and translate expected process conditions."""
     try:
         result = entry()
     except KeyboardInterrupt:
@@ -175,7 +173,12 @@ def _main() -> int:
             "Re-run with `python -X dev run.py` for the full traceback.",
         ) from exc
 
-    # Convention: None -> 0, bool -> 0/1, int -> as-is, anything else -> 0.
+    return _normalize_exit_code(result)
+
+
+def _normalize_exit_code(result: object) -> int:
+    """Convert a runtime return value into a conventional shell status."""
+
     if result is None:
         return 0
     if isinstance(result, bool):
@@ -183,6 +186,12 @@ def _main() -> int:
     if isinstance(result, int):
         return result
     return 0
+
+
+def _main() -> int:
+    """Resolve and execute the runtime entry point."""
+
+    return _invoke_entry(_resolve_entry())
 
 
 if __name__ == "__main__":  # pragma: no cover - script entry

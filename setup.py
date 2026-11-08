@@ -39,10 +39,15 @@ class SetupError(SystemExit):
     """Exit with a clear, actionable message instead of a traceback."""
 
     def __init__(self, message: str, hint: str | None = None) -> None:
-        lines = [f"error: {message}"]
-        if hint:
-            lines.append(f"hint:  {hint}")
-        super().__init__("\n".join(lines))
+        self.message = message
+        self.hint = hint
+        super().__init__(message, hint)
+
+    def __str__(self) -> str:
+        lines = [f"error: {self.message}"]
+        if self.hint:
+            lines.append(f"hint:  {self.hint}")
+        return "\n".join(lines)
 
 
 # --- Checks ----------------------------------------------------------------

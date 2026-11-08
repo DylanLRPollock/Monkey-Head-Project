@@ -4,6 +4,7 @@
 # HueyOS: Orchestrator Utils module (docker)
 
 """Shared helpers for the HostOS/SubOS/NanoOS orchestrators."""
+
 from __future__ import annotations
 
 import logging
@@ -73,20 +74,8 @@ def _read_os_release() -> dict[str, str]:
     return data
 
 
-def ensure_system_requirements(
-    *,
-    logger: logging.Logger,
-    skip_os_check: bool = False,
-    allowed_distros: Iterable[str] | None = None,
-    min_free_gib: float = 5.0,
-    ping_hosts: Iterable[str] = _DEFAULT_PING_HOSTS,
-    required_commands: Iterable[str] | None = None,
-) -> None:
-    """Perform common system validations for orchestrators."""
-
-    logger.info("Performing system checks…")
-    os_release = _read_os_release()
-    descriptor = " ".join(
+def _os_descriptor(os_release: dict[str, str]) -> str:
+    return " ".join(
         filter(
             None,
             (
@@ -100,6 +89,15 @@ def ensure_system_requirements(
         )
     ).lower()
 
+
+def _validate_os(
+    logger: logging.Logger,
+    os_release: dict[str, str],
+    *,
+    skip_os_check: bool,
+    allowed_distros: Iterable[str] | None,
+) -> None:
+    descriptor = _os_descriptor(os_release)
     if allowed_distros and not skip_os_check:
         allowed = [token.lower() for token in allowed_distros]
         if not descriptor:
@@ -112,10 +110,11 @@ def ensure_system_requirements(
             )
     elif skip_os_check:
         logger.info("Skipping OS validation per user request.")
-
-    if descriptor:
+    elif descriptor:
         logger.info("Detected host OS: %s", os_release.get("pretty_name", descriptor))
 
+
+def _check_free_space(logger: logging.Logger, min_free_gib: float) -> None:
     usage = shutil.disk_usage("/")
     free_gib = usage.free / (1024**3)
     logger.info("Free space on /: %.2f GiB", free_gib)
@@ -126,12 +125,14 @@ def ensure_system_requirements(
             free_gib,
         )
 
+
+def _check_connectivity(logger: logging.Logger, ping_hosts: Iterable[str]) -> None:
     for host in ping_hosts:
         try:
             proc = run(["ping", "-c", "1", "-W", "2", host], logger, check=False)
             if proc.returncode == 0:
                 logger.info("Internet connectivity verified via %s", host)
-                break
+                return
         except (
             OSError,
             ValueError,
@@ -139,17 +140,42 @@ def ensure_system_requirements(
             subprocess.TimeoutExpired,
         ) as exc:  # pragma: no cover - defensive
             logger.warning("Ping to %s failed: %s", host, exc)
-    else:
-        raise RuntimeError(
-            "Internet connectivity check failed (ping targets exhausted)."
-        )
+    raise RuntimeError("Internet connectivity check failed (ping targets exhausted).")
 
+
+def _warn_missing_commands(
+    logger: logging.Logger, required_commands: Iterable[str] | None
+) -> None:
     for command in required_commands or ():
         if shutil.which(command) is None:
             logger.warning(
                 "Required command '%s' not found; it will be installed if possible.",
                 command,
             )
+
+
+def ensure_system_requirements(
+    *,
+    logger: logging.Logger,
+    skip_os_check: bool = False,
+    allowed_distros: Iterable[str] | None = None,
+    min_free_gib: float = 5.0,
+    ping_hosts: Iterable[str] = _DEFAULT_PING_HOSTS,
+    required_commands: Iterable[str] | None = None,
+) -> None:
+    """Perform common system validations for orchestrators."""
+
+    logger.info("Performing system checks…")
+    os_release = _read_os_release()
+    _validate_os(
+        logger,
+        os_release,
+        skip_os_check=skip_os_check,
+        allowed_distros=allowed_distros,
+    )
+    _check_free_space(logger, min_free_gib)
+    _check_connectivity(logger, ping_hosts)
+    _warn_missing_commands(logger, required_commands)
 
 
 def apt_install(packages: Sequence[str], logger: logging.Logger) -> None:
@@ -269,14 +295,21 @@ def check_virtualization(logger: logging.Logger) -> None:
 
     platform_hint = platform.system()
     guidance = (
-        "Hardware virtualization was not detected. Ensure that VT-x/AMD-V is enabled in BIOS/UEFI. "
-        "If you are running inside a macOS hypervisor or unsupported cloud VM, enable nested virtualization or "
+        "Hardware virtualization was not detected. Ensure that VT-x/AMD-V "
+        "is enabled in BIOS/UEFI. If you are running inside a macOS hypervisor "
+        "or unsupported cloud VM, enable nested virtualization or "
         "consider using a QEMU/KVM capable host."
     )
     if platform_hint.lower() == "darwin":
-        guidance += " macOS hosts require a hypervisor that exposes /dev/kvm (for example via UTM or QEMU)."
+        guidance += (
+            " macOS hosts require a hypervisor that exposes /dev/kvm "
+            "(for example via UTM or QEMU)."
+        )
     elif virt_env and virt_env != "bare-metal":
-        guidance += f" Detected virtualization layer: {virt_env}. Ensure it supports nested virtualization."
+        guidance += (
+            f" Detected virtualization layer: {virt_env}. Ensure it supports "
+            "nested virtualization."
+        )
 
     missing_bits: list[str] = []
     if not ({"vmx", "svm"} & flags):
