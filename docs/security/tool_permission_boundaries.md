@@ -5,9 +5,9 @@ This note describes the current implementation and remaining boundaries for
 
 ## Current implementation
 
-The checked-in MonkeyManager module is currently a minimal PyGPT stub with no
+The checked-in MonkeyManager module is currently a minimal cockpit stub with no
 script, container, Kubernetes, browser, or provider execution methods. Older
-notes about `_run_script()` and `HUEY_TOOL_ALLOW_DESTRUCTIVE` describe a
+notes about `_run_script()` and `HUEY_TOOL_ALLOW_DESTRUCTIVE` describe an
 previous implementation and must not be treated as current enforcement.
 
 Core HueyOS host power and project uninstall operations use
