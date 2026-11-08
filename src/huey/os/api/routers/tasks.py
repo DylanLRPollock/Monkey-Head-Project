@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from types import ModuleType
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
@@ -15,11 +16,21 @@ from huey.os.services.tasks import (
 
 router = APIRouter(tags=["Task Management"])
 
+_api_module: ModuleType | None = None
 
-def _legacy_api_module():
-    from huey.memory.PY import api as legacy_api
 
-    return legacy_api
+def configure_api_module(api_module: ModuleType) -> None:
+    """Inject the owning API module after its router imports are complete."""
+
+    global _api_module
+    _api_module = api_module
+
+
+def _legacy_api_module() -> ModuleType:
+    if _api_module is None:
+        raise RuntimeError("Task API router has not been configured")
+
+    return _api_module
 
 
 @router.post(
