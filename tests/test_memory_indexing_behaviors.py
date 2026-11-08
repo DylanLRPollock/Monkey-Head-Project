@@ -100,3 +100,63 @@ def test_atomic_save_replaces_existing_payload(tmp_path):
     assert indexing._save_index(results, path) == path
     assert indexing._load_index(path) == results
     assert not list(tmp_path.glob("*.tmp"))
+
+
+def test_atomic_save_failure_preserves_previous_payload_and_cleans_temp(
+    monkeypatch, tmp_path
+):
+    path = tmp_path / "index.json"
+    original = [{"path": "old.txt", "kind": "text"}]
+    path.write_text(json.dumps(original), encoding="utf-8")
+
+    def fail_replace(source, destination):
+        raise OSError("simulated replace failure")
+
+    monkeypatch.setattr(indexing.os, "replace", fail_replace)
+    with pytest.raises(OSError, match="simulated replace failure"):
+        indexing._save_index([{"path": "new.txt", "kind": "text"}], path)
+
+    assert indexing._load_index(path) == original
+    assert not list(tmp_path.glob(".index.json.*.tmp"))
+
+
+def test_discovery_excludes_explicit_index_and_directories_with_supported_suffix(
+    tmp_path,
+):
+    base = tmp_path / "memory"
+    base.mkdir()
+    document = base / "keep.txt"
+    document.write_text("kept", encoding="utf-8")
+    index_file = base / "memory-index.json"
+    index_file.write_text("[]", encoding="utf-8")
+    directory = base / "folder.md"
+    directory.mkdir()
+
+    assert indexing.discover_paths(base, index_path=index_file) == [document]
+
+
+def test_build_index_ingestion_error_does_not_replace_existing_index(
+    monkeypatch, tmp_path
+):
+    index_file = tmp_path / "index.json"
+    original = [{"path": "existing.txt", "kind": "text"}]
+    indexing._save_index(original, index_file)
+    source = tmp_path / "broken.txt"
+    source.write_text("broken", encoding="utf-8")
+
+    def fail_ingest(_path):
+        raise OSError("simulated ingest failure")
+
+    monkeypatch.setattr(indexing, "_ingest_path", fail_ingest)
+    with pytest.raises(OSError, match="simulated ingest failure"):
+        indexing.build_index([source], index_path=index_file)
+
+    assert indexing._load_index(index_file) == original
+
+
+def test_load_index_surfaces_invalid_json(tmp_path):
+    index_file = tmp_path / "index.json"
+    index_file.write_text("{invalid", encoding="utf-8")
+
+    with pytest.raises(json.JSONDecodeError):
+        indexing._load_index(index_file)
