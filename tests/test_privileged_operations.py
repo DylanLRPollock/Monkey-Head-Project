@@ -146,9 +146,7 @@ def test_uninstaller_rejects_symlink(monkeypatch, tmp_path):
         pytest.skip("symlink support unavailable")
     paths = SimpleNamespace(uninstall=script, host=SimpleNamespace(system="Linux"))
     monkeypatch.setattr(module, "PROJECT_ROOT", tmp_path)
-    monkeypatch.setattr(
-        module, "resolve_platform_script_paths", lambda root: paths
-    )
+    monkeypatch.setattr(module, "resolve_platform_script_paths", lambda root: paths)
     run = Mock(side_effect=AssertionError("unexpected subprocess"))
     monkeypatch.setattr(module.subprocess, "run", run)
     assert module.run_uninstaller(confirmed=True, actor_role="admin") == 1
