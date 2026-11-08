@@ -39,7 +39,9 @@ def test_fresh_install_local_success():
         patch("uninstaller.run_uninstaller", return_value=0) as uninst,
         patch("installer.run_installer", return_value=0) as inst,
     ):
-        rc = fresh_install.run_fresh_install("local", confirmed=True, actor_role="admin")
+        rc = fresh_install.run_fresh_install(
+            "local", confirmed=True, actor_role="admin"
+        )
         assert rc == 0
         uninst.assert_called_once()
         inst.assert_called_once()
