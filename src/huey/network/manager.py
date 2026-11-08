@@ -39,6 +39,15 @@ MACOS_WIFI_PORT_MARKERS = ("wi-fi", "airport")
 InterfaceInfo = dict[str, Any]
 
 
+def _macos_port_category(port: str) -> str:
+    lowered = port.casefold()
+    if any(marker in lowered for marker in MACOS_WIFI_PORT_MARKERS):
+        return "wifi"
+    if any(marker in lowered for marker in MACOS_WIRED_PORT_MARKERS):
+        return "wired"
+    return "other"
+
+
 @dataclass
 class NetworkStatus:
     """Status snapshot returned by :class:`NetworkManager`."""
@@ -196,12 +205,7 @@ class NetworkManager:
             device = line.partition(":")[2].strip()
             if not device:
                 continue
-            if any(marker in current_port for marker in MACOS_WIFI_PORT_MARKERS):
-                categories[device] = "wifi"
-            elif any(marker in current_port for marker in MACOS_WIRED_PORT_MARKERS):
-                categories[device] = "wired"
-            else:
-                categories.setdefault(device, "other")
+            categories.setdefault(device, _macos_port_category(current_port))
 
         return categories
 

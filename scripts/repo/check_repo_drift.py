@@ -169,11 +169,7 @@ def should_check_rule(path: str, rule: DriftRule) -> bool:
     return True
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--base", help="Git base ref/commit to diff against")
-    args = parser.parse_args()
-
+def _active_rules() -> list[DriftRule]:
     rules = list(RULES)
     if _is_pyhuey_canonical():
         rules.append(
@@ -183,22 +179,21 @@ def main() -> int:
                 message="Use src/huey/connectors/pyhuey as the canonical connector path.",
             )
         )
+    return rules
 
-    base_ref = resolve_base_ref(args.base)
-    strict_violations: list[str] = []
-    warnings: list[str] = []
 
-    for path, line, line_number in iter_added_lines(base_ref):
+def _classify_violations(lines, rules):
+    strict_violations = []
+    warnings = []
+    for path, line, line_number in lines:
         for rule in rules:
-            if not should_check_rule(path, rule):
-                continue
-            if rule.pattern.search(line):
+            if should_check_rule(path, rule) and rule.pattern.search(line):
                 entry = f"{path}:{line_number}: {rule.message}"
-                if rule.strict:
-                    strict_violations.append(entry)
-                else:
-                    warnings.append(entry)
+                (strict_violations if rule.strict else warnings).append(entry)
+    return strict_violations, warnings
 
+
+def _report_violations(strict_violations, warnings) -> int:
     if warnings:
         print("Repo drift warnings:")
         for warning in warnings:
@@ -209,9 +204,18 @@ def main() -> int:
         for violation in strict_violations:
             print(f"- {violation}")
         return 1
-
     print("Repo drift check passed.")
     return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--base", help="Git base ref/commit to diff against")
+    args = parser.parse_args()
+
+    base_ref = resolve_base_ref(args.base)
+    violations = _classify_violations(iter_added_lines(base_ref), _active_rules())
+    return _report_violations(*violations)
 
 
 if __name__ == "__main__":

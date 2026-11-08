@@ -75,6 +75,59 @@ def exact_pin(req: Requirement) -> str | None:
     return spec.version
 
 
+def _compare_dependency_maps(pyproject_reqs, requirements_reqs, constraints_reqs):
+    missing = []
+    pyproject_conflicts = []
+    constraint_conflicts = []
+    for name, py_req in sorted(pyproject_reqs.items()):
+        req_req = requirements_reqs.get(name)
+        if req_req is None:
+            missing.append(py_req.name)
+            continue
+        py_pin = exact_pin(py_req)
+        req_pin = exact_pin(req_req)
+        if py_pin and req_pin and py_pin != req_pin:
+            pyproject_conflicts.append(
+                f"{py_req.name}: pyproject={py_pin} requirements={req_pin}"
+            )
+
+    shared = sorted(set(constraints_reqs).intersection(requirements_reqs))
+    for name in shared:
+        con_pin = exact_pin(constraints_reqs[name])
+        req_pin = exact_pin(requirements_reqs[name])
+        if con_pin and req_pin and con_pin != req_pin:
+            constraint_conflicts.append(
+                f"{constraints_reqs[name].name}: constraints={con_pin} requirements={req_pin}"
+            )
+    return missing, pyproject_conflicts, constraint_conflicts
+
+
+def _report_mismatches(missing, pyproject_conflicts, constraint_conflicts) -> bool:
+    groups = (
+        (
+            missing,
+            "Tracked pyproject dependencies missing from requirements.txt:",
+        ),
+        (
+            pyproject_conflicts,
+            "Conflicting exact pins between tracked pyproject deps and requirements.txt:",
+        ),
+        (
+            constraint_conflicts,
+            "Conflicting exact pins between constraints.txt and requirements.txt:",
+        ),
+    )
+    failed = False
+    for issues, heading in groups:
+        if not issues:
+            continue
+        failed = True
+        print(heading)
+        for issue in issues:
+            print(f"  - {issue}")
+    return failed
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--pyproject", default="pyproject.toml")
@@ -102,53 +155,10 @@ def main() -> int:
     requirements_reqs = read_requirements_file(Path(args.requirements))
     constraints_reqs = read_requirements_file(Path(args.constraints))
 
-    missing_from_requirements: list[str] = []
-    pyproject_req_conflicts: list[str] = []
-    constraints_conflicts: list[str] = []
-
-    for name, py_req in sorted(pyproject_reqs.items()):
-        req_req = requirements_reqs.get(name)
-        if req_req is None:
-            missing_from_requirements.append(py_req.name)
-            continue
-        py_pin = exact_pin(py_req)
-        req_pin = exact_pin(req_req)
-        if py_pin and req_pin and py_pin != req_pin:
-            pyproject_req_conflicts.append(
-                f"{py_req.name}: pyproject={py_pin} requirements={req_pin}"
-            )
-
-    shared = sorted(set(constraints_reqs).intersection(requirements_reqs))
-    for name in shared:
-        con_pin = exact_pin(constraints_reqs[name])
-        req_pin = exact_pin(requirements_reqs[name])
-        if con_pin and req_pin and con_pin != req_pin:
-            constraints_conflicts.append(
-                f"{constraints_reqs[name].name}: constraints={con_pin} requirements={req_pin}"
-            )
-
-    had_issue = False
-    if missing_from_requirements:
-        had_issue = True
-        print("Tracked pyproject dependencies missing from requirements.txt:")
-        for dep in missing_from_requirements:
-            print(f"  - {dep}")
-
-    if pyproject_req_conflicts:
-        had_issue = True
-        print(
-            "Conflicting exact pins between tracked pyproject deps and requirements.txt:"
-        )
-        for conflict in pyproject_req_conflicts:
-            print(f"  - {conflict}")
-
-    if constraints_conflicts:
-        had_issue = True
-        print("Conflicting exact pins between constraints.txt and requirements.txt:")
-        for conflict in constraints_conflicts:
-            print(f"  - {conflict}")
-
-    if had_issue:
+    mismatches = _compare_dependency_maps(
+        pyproject_reqs, requirements_reqs, constraints_reqs
+    )
+    if _report_mismatches(*mismatches):
         return 1
 
     print("Dependency sync check passed.")

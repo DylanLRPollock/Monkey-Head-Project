@@ -17,32 +17,42 @@ ROOTS = ("src/huey", "scripts", "tests")
 PREFIX = "huey.memory.PY"
 
 
+def _dynamic_dependency(node: ast.Call, dotted: str) -> str | None:
+    func = node.func
+    label = (
+        func.attr
+        if isinstance(func, ast.Attribute)
+        else func.id if isinstance(func, ast.Name) else ""
+    )
+    if label not in {"import_module", "find_spec", "__import__"} or not node.args:
+        return None
+    value = node.args[0]
+    if not isinstance(value, ast.Constant) or not isinstance(value.value, str):
+        return None
+    if not value.value.startswith(dotted):
+        return None
+    return value.value[len(dotted) :].split(".", 1)[0]
+
+
 def dependencies(tree: ast.AST) -> set[str]:
     found: set[str] = set()
     dotted = PREFIX + "."
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
-            for item in node.names:
-                if item.name.startswith(dotted):
-                    found.add(item.name[len(dotted) :].split(".", 1)[0])
+            found.update(
+                item.name[len(dotted) :].split(".", 1)[0]
+                for item in node.names
+                if item.name.startswith(dotted)
+            )
         elif isinstance(node, ast.ImportFrom):
             if node.module == PREFIX:
                 found.update(n.name for n in node.names if n.name != "*")
             elif node.module and node.module.startswith(dotted):
                 found.add(node.module[len(dotted) :].split(".", 1)[0])
         elif isinstance(node, ast.Call):
-            func = node.func
-            label = (
-                func.attr
-                if isinstance(func, ast.Attribute)
-                else func.id if isinstance(func, ast.Name) else ""
-            )
-            if label not in {"import_module", "find_spec", "__import__"}:
-                continue
-            if node.args and isinstance(node.args[0], ast.Constant):
-                value = node.args[0].value
-                if isinstance(value, str) and value.startswith(dotted):
-                    found.add(value[len(dotted) :].split(".", 1)[0])
+            dependency = _dynamic_dependency(node, dotted)
+            if dependency:
+                found.add(dependency)
     return found
 
 
@@ -82,11 +92,7 @@ def category(name: str) -> str:
     return "review"
 
 
-def build_inventory(root: Path) -> dict[str, Any]:
-    root = root.resolve()
-    source = root / LEGACY
-    if not source.is_dir():
-        raise FileNotFoundError(source)
+def _consumer_paths(root: Path, source: Path) -> set[Path]:
     all_files: set[Path] = set()
     for folder in ROOTS:
         directory = root / folder
@@ -95,10 +101,50 @@ def build_inventory(root: Path) -> dict[str, Any]:
     for name in ("run.py", "setup.py", "conftest.py"):
         if (root / name).is_file():
             all_files.add(root / name)
+    return {path for path in all_files if not path.is_relative_to(source)}
+
+
+def _legacy_record(
+    path: Path,
+    root: Path,
+    consumers: dict[str, set[str]],
+    same_name: dict[str, list[str]],
+    errors: list[dict[str, str]],
+) -> dict[str, Any]:
+    relative = path.relative_to(root).as_posix()
+    error = None
+    body = path.read_text(encoding="utf-8-sig")
+    try:
+        tree = ast.parse(body, filename=relative)
+        has_main = any(
+            isinstance(n, ast.If) and "__main__" in ast.unparse(n.test)
+            for n in tree.body
+        )
+    except SyntaxError as exc:
+        error = str(exc)
+        errors.append({"file": relative, "error": error})
+        has_main = False
+    return {
+        "name": path.name,
+        "path": relative,
+        "bytes": path.stat().st_size,
+        "target_family": category(path.name),
+        "static_consumers": sorted(consumers.get(path.stem, ())),
+        "same_named_candidates": same_name.get(path.name, []),
+        "main_guard": has_main,
+        "syntax_error": error,
+    }
+
+
+def build_inventory(root: Path) -> dict[str, Any]:
+    root = root.resolve()
+    source = root / LEGACY
+    if not source.is_dir():
+        raise FileNotFoundError(source)
     consumers: dict[str, set[str]] = {}
     same_name: dict[str, list[str]] = {}
     errors: list[dict[str, str]] = []
-    scanned = sorted(p for p in all_files if not p.is_relative_to(source))
+    scanned = sorted(_consumer_paths(root, source))
     for path in scanned:
         relative = path.relative_to(root).as_posix()
         same_name.setdefault(path.name, []).append(relative)
@@ -110,33 +156,10 @@ def build_inventory(root: Path) -> dict[str, Any]:
         for name in dependencies(tree):
             consumers.setdefault(name, set()).add(relative)
 
-    files = []
-    for path in sorted(source.glob("*.py")):
-        relative = path.relative_to(root).as_posix()
-        error = None
-        body = path.read_text(encoding="utf-8-sig")
-        try:
-            tree = ast.parse(body, filename=relative)
-            has_main = any(
-                isinstance(n, ast.If) and "__main__" in ast.unparse(n.test)
-                for n in tree.body
-            )
-        except SyntaxError as exc:
-            error = str(exc)
-            errors.append({"file": relative, "error": error})
-            has_main = False
-        files.append(
-            {
-                "name": path.name,
-                "path": relative,
-                "bytes": path.stat().st_size,
-                "target_family": category(path.name),
-                "static_consumers": sorted(consumers.get(path.stem, ())),
-                "same_named_candidates": same_name.get(path.name, []),
-                "main_guard": has_main,
-                "syntax_error": error,
-            }
-        )
+    files = [
+        _legacy_record(path, root, consumers, same_name, errors)
+        for path in sorted(source.glob("*.py"))
+    ]
     return {
         "schema": "huey.legacy_python_inventory.v1",
         "method": "static AST lower-bound; no runtime execution",

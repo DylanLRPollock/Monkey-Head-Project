@@ -79,6 +79,48 @@ async def test_api_token_is_required_when_configured(monkeypatch):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("method", "path", "payload"),
+    [
+        ("POST", "/sensors/register", {}),
+        ("DELETE", "/sensors/example", None),
+        ("POST", "/network/ensure", None),
+        ("POST", "/memory/auto-sort", {}),
+        ("POST", "/admin/services/example/start", None),
+        ("POST", "/resilience/poll", None),
+    ],
+)
+async def test_configured_bearer_auth_covers_mutating_routes(
+    monkeypatch, method, path, payload
+):
+    monkeypatch.setenv("HUEY_API_TOKEN", "audit-token")
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.request(
+            method,
+            path,
+            json=payload,
+            headers={"Authorization": "Bearer wrong-token"},
+        )
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_unauthenticated_remote_write_is_denied_but_health_is_public(
+    monkeypatch,
+):
+    monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
+    monkeypatch.delenv("HUEY_API_OPERATOR_TOKEN", raising=False)
+    monkeypatch.delenv("HUEY_API_ADMIN_TOKEN", raising=False)
+    transport = ASGITransport(app=api_module.app, client=("203.0.113.8", 43123))
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        health = await client.get("/healthz")
+        write = await client.post("/admin/services/example/start")
+    assert health.status_code == 200
+    assert write.status_code == 403
+
+
+@pytest.mark.asyncio
 async def test_dashboard_requires_token_when_configured(monkeypatch):
     monkeypatch.setenv("HUEY_API_TOKEN", "test-token")
     monkeypatch.setattr(
@@ -556,6 +598,14 @@ async def test_shutdown_requires_admin_scoped_token(monkeypatch):
     assert admin_without_confirmation.status_code == 403
     assert admin.status_code == 200
     trigger.assert_called_once_with(confirmed=True, actor_role="admin")
+
+
+def test_admin_token_cannot_reuse_operator_credential(monkeypatch):
+    monkeypatch.setenv("HUEY_API_TOKEN", "same-secret")
+    monkeypatch.setenv("HUEY_API_ADMIN_TOKEN", "same-secret")
+    legacy_api = importlib.import_module("huey.memory.PY.api")
+    with pytest.raises(RuntimeError, match="must be distinct"):
+        legacy_api._configured_api_tokens()
 
 
 @pytest.mark.asyncio

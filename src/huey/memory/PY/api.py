@@ -30,9 +30,7 @@ from pydantic import BaseModel, Field
 
 from .env_validation import DEVELOPMENT_ENVS as _DEVELOPMENT_ENVS
 from .env_validation import configured_environment as _configured_environment
-from .env_validation import (
-    validate_security_sensitive_environment,
-)
+from .env_validation import validate_security_sensitive_environment
 
 # ``AIProcessor`` pulls in a large number of optional runtime dependencies from
 # the legacy ``huey`` tree. When those modules are unavailable (for example in
@@ -281,6 +279,16 @@ def _configured_api_tokens() -> dict[str, list[str]]:
     legacy_token = _configured_api_token()
     if legacy_token:
         tokens.setdefault("operator", []).append(legacy_token)
+    admin_tokens = tokens.get("admin", [])
+    operator_tokens = tokens.get("operator", [])
+    if any(
+        hmac.compare_digest(admin, operator)
+        for admin in admin_tokens
+        for operator in operator_tokens
+    ):
+        raise RuntimeError(
+            "HUEY_API_ADMIN_TOKEN must be distinct from operator-scoped tokens"
+        )
     return tokens
 
 
@@ -393,11 +401,23 @@ def _requires_emergency_auth() -> bool:
 
 @app.middleware("http")
 async def require_api_token(request: Request, call_next):
-    """Protect non-health endpoints whenever any API token is configured."""
+    """Protect non-health endpoints with a token or local-only fallback."""
 
     configured_tokens = _configured_api_tokens()
-    if not configured_tokens or request.url.path in _PUBLIC_PATHS:
+    if request.url.path in _PUBLIC_PATHS:
         return await call_next(request)
+    if not configured_tokens:
+        if _is_local_request(request):
+            return await call_next(request)
+        return JSONResponse(
+            status_code=status.HTTP_403_FORBIDDEN,
+            content={
+                "detail": (
+                    "Local access is required when API token authentication "
+                    "is not configured"
+                )
+            },
+        )
 
     scheme, _, supplied_token = request.headers.get("authorization", "").partition(" ")
     authenticated = scheme.lower() == "bearer" and any(
@@ -1218,9 +1238,7 @@ from huey.os.api.routers.tasks import (
     list_tasks_endpoint,
 )
 from huey.os.api.routers.tasks import router as tasks_router
-from huey.os.api.routers.tasks import (
-    submit_task,
-)
+from huey.os.api.routers.tasks import submit_task
 from huey.os.services.tasks import (
     ResourceProfileModel,
     ResourceSnapshotModel,

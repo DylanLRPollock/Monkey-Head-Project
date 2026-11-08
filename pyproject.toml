@@ -382,11 +382,6 @@ filterwarnings = [
 [tool.coverage.run]
 branch = true
 source = ["src/huey"]
-omit = [
-  "src/huey/connectors/pyhuey/*",
-  "src/huey/memory/PY/*",
-  "*/tests/*",
-]
 
 [tool.coverage.report]
 show_missing = true

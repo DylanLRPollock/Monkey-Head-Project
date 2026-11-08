@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hmac
 import os
 import warnings
 
@@ -66,6 +67,17 @@ def validate_security_sensitive_environment() -> None:
         checks.append("VNC_PASSWORD")
 
     issues: list[str] = []
+    admin_token = os.getenv("HUEY_API_ADMIN_TOKEN", "").strip()
+    operator_tokens = (
+        os.getenv("HUEY_API_OPERATOR_TOKEN", "").strip(),
+        os.getenv("HUEY_API_TOKEN", "").strip(),
+    )
+    if admin_token and any(
+        token and hmac.compare_digest(admin_token, token) for token in operator_tokens
+    ):
+        issues.append(
+            "HUEY_API_ADMIN_TOKEN must differ from operator-scoped API tokens"
+        )
     for key in checks:
         value = os.getenv(key, "")
         if not value.strip() or _looks_like_placeholder(value):

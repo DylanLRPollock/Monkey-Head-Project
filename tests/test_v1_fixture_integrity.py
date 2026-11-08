@@ -130,6 +130,73 @@ def test_registry_rejects_wrong_shape(tmp_path):
         list_fixtures(registry_path=target)
 
 
+@pytest.mark.parametrize("content", ["{", '{"entry": []}'])
+def test_registry_rejects_invalid_json_or_record_values(tmp_path, content):
+    target = tmp_path / "registry.json"
+    target.write_text(content, encoding="utf-8")
+    with pytest.raises((ValueError, __import__("json").JSONDecodeError)):
+        list_fixtures(registry_path=target)
+
+
+def test_register_rejects_missing_source_and_blank_id(tmp_path):
+    with pytest.raises(FileNotFoundError):
+        register_fixture(tmp_path / "absent.wav", registry_path=tmp_path / "r.json")
+    source = tmp_path / "fixture.wav"
+    source.write_bytes(b"fixture")
+    with pytest.raises(ValueError, match="nonempty"):
+        register_fixture(source, fixture_id="   ", registry_path=tmp_path / "r.json")
+
+
+def test_copy_to_registry_rejects_symlink_destination(tmp_path, monkeypatch):
+    from huey.v1 import fixture_registry as module
+
+    memory = tmp_path / "memory"
+    monkeypatch.setenv("MEMORY_PATH", str(memory))
+    fixtures = module.ensure_subdirectory("V1", "fixtures")
+    source = tmp_path / "source.wav"
+    source.write_bytes(b"fixture")
+    destination = fixtures / source.name
+    destination.symlink_to(source)
+    with pytest.raises(FileExistsError, match="symlink"):
+        register_fixture(
+            source, copy_to_registry=True, registry_path=tmp_path / "r.json"
+        )
+
+
+@pytest.mark.parametrize(
+    "metadata",
+    [
+        None,
+        {},
+        {"sha256": "bad", "size_bytes": 1},
+        {"sha256": "0" * 64, "size_bytes": True},
+        {"sha256": "0" * 64, "size_bytes": -1},
+    ],
+)
+def test_verify_fixture_rejects_malformed_integrity_metadata(tmp_path, metadata):
+    fixture = tmp_path / "fixture.wav"
+    fixture.write_bytes(b"x")
+    with pytest.raises((ValueError, TypeError)):
+        verify_fixture({"path": str(fixture), "metadata": metadata})
+
+
+def test_verify_fixture_rejects_size_mismatch(tmp_path):
+    fixture = tmp_path / "fixture.wav"
+    fixture.write_bytes(b"x")
+    with pytest.raises(ValueError, match="integrity"):
+        verify_fixture(
+            {
+                "path": str(fixture),
+                "metadata": {"sha256": "0" * 64, "size_bytes": 2},
+            }
+        )
+
+
+def test_load_fixture_reports_unknown_id(tmp_path):
+    with pytest.raises(KeyError, match="Unknown fixture"):
+        load_fixture("missing", registry_path=tmp_path / "empty.json")
+
+
 def test_proof_loop_rejects_tampered_registered_record_before_logging(tmp_path):
     source = tmp_path / "fixture.txt"
     source.write_text("original")

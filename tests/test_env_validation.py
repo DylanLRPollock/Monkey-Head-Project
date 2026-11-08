@@ -10,6 +10,8 @@ def _clear_env(monkeypatch):
     for key in (
         "HUEY_ENV",
         "HUEY_API_TOKEN",
+        "HUEY_API_OPERATOR_TOKEN",
+        "HUEY_API_ADMIN_TOKEN",
         "DB_PASSWORD",
         "DATABASE_PASSWORD",
         "POSTGRES_PASSWORD",
@@ -56,3 +58,14 @@ def test_production_passes_with_required_values(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "openai-key")
 
     validate_security_sensitive_environment()
+
+
+def test_admin_and_operator_tokens_must_be_distinct(monkeypatch):
+    monkeypatch.setenv("HUEY_ENV", "production")
+    monkeypatch.setenv("HUEY_API_TOKEN", "same-token")
+    monkeypatch.setenv("HUEY_API_ADMIN_TOKEN", "same-token")
+    monkeypatch.setenv("DB_PASSWORD", "db-pass")
+    monkeypatch.setenv("OPENAI_API_KEY", "openai-key")
+
+    with pytest.raises(RuntimeError, match="must differ"):
+        validate_security_sensitive_environment()

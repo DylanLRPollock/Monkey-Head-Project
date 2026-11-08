@@ -1,4 +1,4 @@
-# Tooling configuration ownership (2026-11-03)
+# Tooling configuration ownership (2026-11-08)
 
 This map records entrypoints. It deliberately does not delete historical or
 alternate files without dependency and reference auditing.
@@ -16,10 +16,12 @@ alternate files without dependency and reference auditing.
 
 The canonical automatic entrypoints are `pyproject.toml`, `.editorconfig`,
 `.flake8` and `.pre-commit-config.yaml`. The root alternates `editorconfig`,
-`flake8.ini` and `pre-commit.yaml` remain tracked pending a broader audit of
-external scripts and local developer tooling. They are not loaded automatically
-by the corresponding tools. Historical references are retained as historical
-context; no files are moved or deleted solely because their names overlap.
+`flake8.ini` and `pre-commit.yaml` remain tracked as historical alternates.
+The repository-wide reference audit found no active script or CI consumer and
+no explicit `-c` / `--config` selection for them. External maintainer-local
+automation cannot be searched from this checkout, so removal remains a
+separate maintainer decision. See
+[`config-reference-audit-2026-11-08.md`](config-reference-audit-2026-11-08.md).
 
 ## Change policy
 

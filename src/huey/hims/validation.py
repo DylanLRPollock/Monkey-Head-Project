@@ -58,19 +58,40 @@ _ALLOWED_TRANSITIONS: dict[str, dict[MessageStatus, set[MessageStatus]]] = {
 }
 
 
+def _validate_required_fields(message: HIMSMessage) -> None:
+    required_fields = (
+        ("sender", message.sender),
+        ("recipient", message.recipient),
+        ("role_context", message.role_context),
+        ("intent_type", message.intent_type),
+        ("authority_requirement", message.authority_requirement),
+    )
+    for name, value in required_fields:
+        if not value.strip():
+            raise ValueError(f"message {name} is required")
+
+
+def _validate_lineage(message: HIMSMessage) -> None:
+    root_lineage_id = str(message.lineage_metadata.get("root_lineage_id", "")).strip()
+    if not root_lineage_id:
+        raise ValueError("lineage_metadata.root_lineage_id is required")
+
+    if message.intent_type == "external_interface_packet":
+        return
+
+    parent_message_id = str(
+        message.lineage_metadata.get("parent_message_id", "")
+    ).strip()
+    if not parent_message_id:
+        raise ValueError(
+            "lineage_metadata.parent_message_id is required for non-root messages"
+        )
+
+
 def validate_hims_message(message: HIMSMessage) -> None:
     """Raise when a shadow-mode HIMS message is malformed."""
 
-    if not message.sender.strip():
-        raise ValueError("message sender is required")
-    if not message.recipient.strip():
-        raise ValueError("message recipient is required")
-    if not message.role_context.strip():
-        raise ValueError("message role_context is required")
-    if not message.intent_type.strip():
-        raise ValueError("message intent_type is required")
-    if not message.authority_requirement.strip():
-        raise ValueError("message authority_requirement is required")
+    _validate_required_fields(message)
     if not message.route:
         raise ValueError("message route must contain at least one step")
 
@@ -82,18 +103,7 @@ def validate_hims_message(message: HIMSMessage) -> None:
             f"status {message.status.value} is not valid for {message.intent_type}"
         )
 
-    root_lineage_id = str(message.lineage_metadata.get("root_lineage_id", "")).strip()
-    if not root_lineage_id:
-        raise ValueError("lineage_metadata.root_lineage_id is required")
-
-    if message.intent_type != "external_interface_packet":
-        parent_message_id = str(
-            message.lineage_metadata.get("parent_message_id", "")
-        ).strip()
-        if not parent_message_id:
-            raise ValueError(
-                "lineage_metadata.parent_message_id is required for non-root messages"
-            )
+    _validate_lineage(message)
 
 
 def validate_hims_transition(previous: HIMSMessage, current: HIMSMessage) -> None:

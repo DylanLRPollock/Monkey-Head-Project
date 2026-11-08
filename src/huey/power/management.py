@@ -33,6 +33,25 @@ from huey.os.core.privileged_operations import (
 LOGGER = logging.getLogger(__name__)
 
 
+def _parse_acpi_line(line: str) -> tuple[float | None, float | None, bool | None]:
+    percent: float | None = None
+    secs_left: float | None = None
+    power_plugged: bool | None = None
+    percent_match = re.search(r"(\d+(?:\.\d+)?)%", line)
+    if percent_match:
+        with contextlib.suppress(ValueError):
+            percent = float(percent_match.group(1))
+    time_match = re.search(r"(\d+):(\d+):(\d+)", line)
+    if time_match:
+        hours, minutes, seconds = map(int, time_match.groups())
+        secs_left = float(hours * 3600 + minutes * 60 + seconds)
+    if "Charging" in line or "Full" in line:
+        power_plugged = True
+    elif "Discharging" in line:
+        power_plugged = False
+    return percent, secs_left, power_plugged
+
+
 @dataclass
 class PowerEvent:
     """Represents a power management action."""
@@ -289,22 +308,15 @@ class BatteryMonitor:
         if not output:
             return None
 
-        percent: float | None = None
-        secs_left: float | None = None
-        power_plugged: bool | None = None
+        percent = None
+        secs_left = None
+        power_plugged = None
         for line in output.splitlines():
-            percent_match = re.search(r"(\d+(?:\.\d+)?)%", line)
-            if percent_match:
-                with contextlib.suppress(ValueError):
-                    percent = float(percent_match.group(1))
-            time_match = re.search(r"(\d+):(\d+):(\d+)", line)
-            if time_match:
-                hours, minutes, seconds = map(int, time_match.groups())
-                secs_left = float(hours * 3600 + minutes * 60 + seconds)
-            if "Charging" in line or "Full" in line:
-                power_plugged = True
-            elif "Discharging" in line:
-                power_plugged = False
+            line_percent, line_secs_left, line_power_plugged = _parse_acpi_line(line)
+            percent = line_percent if line_percent is not None else percent
+            secs_left = line_secs_left if line_secs_left is not None else secs_left
+            if line_power_plugged is not None:
+                power_plugged = line_power_plugged
 
         if percent is None and secs_left is None and power_plugged is None:
             return None

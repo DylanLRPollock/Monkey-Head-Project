@@ -153,6 +153,48 @@ def _error(request_id: object, code: int, message: str) -> dict[str, object]:
     }
 
 
+def _initialize(params: dict[str, object]) -> dict[str, object]:
+    version = params.get("protocolVersion")
+    if not isinstance(version, str) or version not in _PROTOCOL_VERSIONS:
+        version = _DEFAULT_PROTOCOL
+    return {
+        "protocolVersion": version,
+        "capabilities": {"tools": {"listChanged": False}},
+        "serverInfo": {"name": "hueyos", "version": "1.0.0"},
+    }
+
+
+def _call_tool(request_id: object, params: dict[str, object]) -> dict[str, object]:
+    name = params.get("name")
+    args = params.get("arguments", {})
+    if not isinstance(name, str) or name not in _ACTIONS:
+        return _error(request_id, -32602, "Unknown tool")
+    if not isinstance(args, dict) or args:
+        return _error(request_id, -32602, "Tool takes no arguments")
+    try:
+        payload = _ACTIONS[name]()
+    except Exception:
+        return {
+            "isError": True,
+            "content": [{"type": "text", "text": "Huey tool failed"}],
+        }
+    return {"content": [{"type": "text", "text": json.dumps(payload, sort_keys=True)}]}
+
+
+def _method_result(
+    request_id: object, method: str, params: dict[str, object]
+) -> dict[str, object]:
+    if method == "initialize":
+        return _initialize(params)
+    if method == "ping":
+        return {}
+    if method == "tools/list":
+        return {"tools": _TOOLS}
+    if method == "tools/call":
+        return _call_tool(request_id, params)
+    return _error(request_id, -32601, "Method not found")
+
+
 def dispatch(request: object) -> dict[str, object] | None:
     """Dispatch one JSON-RPC request; notifications produce no response."""
 
@@ -174,42 +216,9 @@ def dispatch(request: object) -> dict[str, object] | None:
     if not isinstance(params, dict):
         return _error(request_id, -32602, "Invalid params")
 
-    result: dict[str, object]
-    if method == "initialize":
-        version = params.get("protocolVersion")
-        if not isinstance(version, str) or version not in _PROTOCOL_VERSIONS:
-            version = _DEFAULT_PROTOCOL
-        result = {
-            "protocolVersion": version,
-            "capabilities": {"tools": {"listChanged": False}},
-            "serverInfo": {"name": "hueyos", "version": "1.0.0"},
-        }
-    elif method == "ping":
-        result = {}
-    elif method == "tools/list":
-        result = {"tools": _TOOLS}
-    elif method == "tools/call":
-        name = params.get("name")
-        args = params.get("arguments", {})
-        if not isinstance(name, str) or name not in _ACTIONS:
-            return _error(request_id, -32602, "Unknown tool")
-        if not isinstance(args, dict) or args:
-            return _error(request_id, -32602, "Tool takes no arguments")
-        try:
-            payload = _ACTIONS[name]()
-        except Exception:
-            result = {
-                "isError": True,
-                "content": [{"type": "text", "text": "Huey tool failed"}],
-            }
-        else:
-            result = {
-                "content": [
-                    {"type": "text", "text": json.dumps(payload, sort_keys=True)}
-                ]
-            }
-    else:
-        return _error(request_id, -32601, "Method not found")
+    result = _method_result(request_id, method, params)
+    if "error" in result and "jsonrpc" in result:
+        return result
 
     return {"jsonrpc": "2.0", "id": request_id, "result": result}
 
