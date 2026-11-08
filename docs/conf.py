@@ -27,5 +27,8 @@ include_patterns = [
     "index.rst",
     "development/v101.1-namespace-migration.md",
     "security/security-hardening-status.md",
+    "security/current-risk-register-2026-11-03.md",
+    "development/tooling-config-map.md",
+    "testing/test-suite-taxonomy.md",
     "audits/v101.1-repo-control-paths.md",
 ]
