@@ -12,7 +12,7 @@ alternate files without dependency and reference auditing.
 | CI tasks and developer commands | `Makefile`, `.github/workflows/ci.yml` | CI uses `make lint`, **not** `pre-commit run --all-files`. Avoid claiming parity between them without running both. |
 | Python interpreter policy | `pyproject.toml` and `.python-version` when present | 3.13 supported, 3.12 legacy, 3.14 experimental. |
 
-### Reference audit before removal
+## Reference audit before removal
 
 The canonical automatic entrypoints are `pyproject.toml`, `.editorconfig`,
 `.flake8` and `.pre-commit-config.yaml`. The root alternates `editorconfig`,
@@ -21,7 +21,7 @@ external scripts and local developer tooling. They are not loaded automatically
 by the corresponding tools. Historical references are retained as historical
 context; no files are moved or deleted solely because their names overlap.
 
-### Change policy
+## Change policy
 
 1. Keep `black --check`, `isort --check-only`, `ruff check` and `flake8`
    enabled. They have differing roles; do not disable failures to green CI.
