@@ -267,17 +267,21 @@ def _configured_api_token() -> str:
     return os.getenv("HUEY_API_TOKEN", "").strip()
 
 
-def _configured_api_tokens() -> dict[str, str]:
+def _configured_api_tokens() -> dict[str, list[str]]:
     """Return configured API credentials mapped to their least privilege role."""
 
-    tokens = {
-        "operator": os.getenv("HUEY_API_OPERATOR_TOKEN", "").strip(),
-        "admin": os.getenv("HUEY_API_ADMIN_TOKEN", "").strip(),
-    }
+    tokens: dict[str, list[str]] = {}
+    for role, variable in (
+        ("operator", "HUEY_API_OPERATOR_TOKEN"),
+        ("admin", "HUEY_API_ADMIN_TOKEN"),
+    ):
+        token = os.getenv(variable, "").strip()
+        if token:
+            tokens.setdefault(role, []).append(token)
     legacy_token = _configured_api_token()
     if legacy_token:
-        tokens.setdefault("operator", legacy_token)
-    return {role: token for role, token in tokens.items() if token}
+        tokens.setdefault("operator", []).append(legacy_token)
+    return tokens
 
 
 def _unsafe_task_submission_enabled() -> bool:
@@ -336,9 +340,10 @@ def require_strong_api_auth(request: Request) -> str:
 
     scheme, _, supplied_token = request.headers.get("authorization", "").partition(" ")
     if scheme.lower() == "bearer":
-        for role, expected_token in configured_tokens.items():
-            if hmac.compare_digest(supplied_token, expected_token):
-                return role
+        for role in ("admin", "operator"):
+            for expected_token in configured_tokens.get(role, []):
+                if hmac.compare_digest(supplied_token, expected_token):
+                    return role
 
     raise HTTPException(
         status_code=HTTP_401_UNAUTHORIZED,
@@ -397,7 +402,8 @@ async def require_api_token(request: Request, call_next):
     scheme, _, supplied_token = request.headers.get("authorization", "").partition(" ")
     authenticated = scheme.lower() == "bearer" and any(
         hmac.compare_digest(supplied_token, token)
-        for token in configured_tokens.values()
+        for role_tokens in configured_tokens.values()
+        for token in role_tokens
     )
     if not authenticated:
         return JSONResponse(
