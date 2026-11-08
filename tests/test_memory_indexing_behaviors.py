@@ -30,13 +30,9 @@ def test_update_index_insert_replace_and_search(tmp_path):
     assert indexing.search_index("motor controller", index_path=index_path) == [first]
 
     replacement = {**first, "content": "Revised design"}
-    assert indexing.update_index(replacement, index_path=index_path) == [
-        replacement
-    ]
+    assert indexing.update_index(replacement, index_path=index_path) == [replacement]
     assert indexing.search_index("hydraulic", index_path=index_path) == []
-    assert indexing.search_index("revised", index_path=index_path) == [
-        replacement
-    ]
+    assert indexing.search_index("revised", index_path=index_path) == [replacement]
     assert indexing.search_index("   ", index_path=index_path) == []
 
 
