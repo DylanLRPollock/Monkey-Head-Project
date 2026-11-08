@@ -5,7 +5,7 @@ alternate files without dependency and reference auditing.
 
 | Tool | Canonical entrypoint | Alternate / disposition |
 | --- | --- | --- |
-| Python packaging, Black, isort, Ruff, coverage, pytest, mypy, Bandit | `pyproject.toml` | `pytest.ini` previously shadowed pytest settings in pyproject; remove after confirming equivalent options. |
+| Python packaging, Black, isort, Ruff, coverage, pytest, mypy, Bandit | `pyproject.toml` | `pytest.ini` has been removed; pytest settings live in `pyproject.toml`, including an explicit asyncio fixture loop scope. |
 | EditorConfig | `.editorconfig` | `editorconfig` remains as an alternate historical file, not the automatic entrypoint. |
 | flake8 | `.flake8` (flake8 does not load pyproject) | `flake8.ini` is not automatically applied when .flake8 exists; retain for reference until migrated. |
 | Pre-commit | `.pre-commit-config.yaml` | `pre-commit.yaml` is not the automatic filename; do not run with `-c pre-commit.yaml` unless intentionally testing the alternate. |
@@ -14,13 +14,12 @@ alternate files without dependency and reference auditing.
 
 ### Reference audit before removal
 
-Repository code search for `pytest.ini`, `flake8.ini`, `pre-commit.yaml`,
-`editorconfig`, `.flake8` and `.pre-commit-config.yaml` on November 3
-found references in `docs/audits/v101.1-style-tooling.md`, `.gitattributes`,
-`.github/CODEOWNERS`, historical docs and configuration comments. Preserve
-historical descriptions or update links rather than deleting files by
-similar name. Audit external scripts and local developer tooling before
-removing the three noncanonical alternates.
+The canonical automatic entrypoints are `pyproject.toml`, `.editorconfig`,
+`.flake8` and `.pre-commit-config.yaml`. The root alternates `editorconfig`,
+`flake8.ini` and `pre-commit.yaml` remain tracked pending a broader audit of
+external scripts and local developer tooling. They are not loaded automatically
+by the corresponding tools. Historical references are retained as historical
+context; no files are moved or deleted solely because their names overlap.
 
 ### Change policy
 
