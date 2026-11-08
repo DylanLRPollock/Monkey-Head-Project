@@ -19,11 +19,7 @@ def main() -> int:
     body_lines, start = inspect.getsourcelines(indexing.update_index)
     needle = "records = _load_index(index_path)"
     body_lineno = next(
-        (
-            start + index
-            for index, line in enumerate(body_lines)
-            if needle in line
-        ),
+        (start + index for index, line in enumerate(body_lines) if needle in line),
         None,
     )
     if body_lineno is None:

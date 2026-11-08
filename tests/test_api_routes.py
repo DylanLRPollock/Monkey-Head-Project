@@ -525,6 +525,40 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
 
 
 @pytest.mark.asyncio
+async def test_shutdown_requires_admin_scoped_token(monkeypatch):
+    monkeypatch.setenv("HUEY_API_TOKEN", "legacy-operator")
+    monkeypatch.setenv("HUEY_API_ADMIN_TOKEN", "admin-token")
+    legacy_api = importlib.import_module("huey.memory.PY.api")
+    trigger = Mock(return_value={"action": "shutdown"})
+    monkeypatch.setattr(legacy_api, "trigger_shutdown", trigger)
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        operator = await client.post(
+            "/power/shutdown",
+            headers={
+                "Authorization": "Bearer legacy-operator",
+                "X-Huey-Confirm": "shutdown",
+            },
+        )
+        admin_without_confirmation = await client.post(
+            "/power/shutdown",
+            headers={"Authorization": "Bearer admin-token"},
+        )
+        admin = await client.post(
+            "/power/shutdown",
+            headers={
+                "Authorization": "Bearer admin-token",
+                "X-Huey-Confirm": "shutdown",
+            },
+        )
+
+    assert operator.status_code == 403
+    assert admin_without_confirmation.status_code == 403
+    assert admin.status_code == 200
+    trigger.assert_called_once_with(confirmed=True, actor_role="admin")
+
+
+@pytest.mark.asyncio
 async def test_shutdown_rejects_missing_explicit_confirmation_header(monkeypatch):
     monkeypatch.setenv("HUEY_API_TOKEN", "test-token")
     legacy_api = importlib.import_module("huey.memory.PY.api")

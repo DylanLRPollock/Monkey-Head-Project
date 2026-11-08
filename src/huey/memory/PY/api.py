@@ -262,9 +262,26 @@ validate_security_sensitive_environment()
 
 
 def _configured_api_token() -> str:
-    """Return the optional bearer token required for API access."""
+    """Return the legacy general-purpose API bearer token."""
 
     return os.getenv("HUEY_API_TOKEN", "").strip()
+
+
+def _configured_api_tokens() -> dict[str, list[str]]:
+    """Return configured API credentials mapped to their least privilege role."""
+
+    tokens: dict[str, list[str]] = {}
+    for role, variable in (
+        ("operator", "HUEY_API_OPERATOR_TOKEN"),
+        ("admin", "HUEY_API_ADMIN_TOKEN"),
+    ):
+        token = os.getenv(variable, "").strip()
+        if token:
+            tokens.setdefault(role, []).append(token)
+    legacy_token = _configured_api_token()
+    if legacy_token:
+        tokens.setdefault("operator", []).append(legacy_token)
+    return tokens
 
 
 def _unsafe_task_submission_enabled() -> bool:
@@ -298,7 +315,7 @@ def _require_privileged_surface_access(request: Request) -> None:
     access for developer workflows and block remote access by default.
     """
 
-    if _configured_api_token():
+    if _configured_api_tokens():
         return
     if _is_local_request(request):
         return
@@ -311,25 +328,27 @@ def _require_privileged_surface_access(request: Request) -> None:
     )
 
 
-def require_strong_api_auth(request: Request) -> None:
-    """Require explicit bearer-token authentication for dangerous endpoints."""
+def require_strong_api_auth(request: Request) -> str:
+    """Authenticate a scoped bearer token and return its least-privilege role."""
 
-    expected_token = _configured_api_token()
-    if not expected_token:
+    configured_tokens = _configured_api_tokens()
+    if not configured_tokens:
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED,
             detail="API token authentication is required for this endpoint",
         )
 
     scheme, _, supplied_token = request.headers.get("authorization", "").partition(" ")
-    if scheme.lower() != "bearer" or not hmac.compare_digest(
-        supplied_token,
-        expected_token,
-    ):
-        raise HTTPException(
-            status_code=HTTP_401_UNAUTHORIZED,
-            detail="Missing or invalid API token",
-        )
+    if scheme.lower() == "bearer":
+        for role in ("admin", "operator"):
+            for expected_token in configured_tokens.get(role, []):
+                if hmac.compare_digest(supplied_token, expected_token):
+                    return role
+
+    raise HTTPException(
+        status_code=HTTP_401_UNAUTHORIZED,
+        detail="Missing or invalid API token",
+    )
 
 
 def _require_unsafe_task_submission_access(request: Request) -> None:
@@ -346,7 +365,7 @@ def _require_unsafe_task_submission_access(request: Request) -> None:
     if _unsafe_task_submission_enabled():
         return
 
-    if _configured_api_token() and _configured_environment() in _DEVELOPMENT_ENVS:
+    if _configured_api_tokens() and _configured_environment() in _DEVELOPMENT_ENVS:
         return
 
     raise HTTPException(
@@ -361,30 +380,32 @@ def _require_unsafe_task_submission_access(request: Request) -> None:
 def _requires_scheduler_auth() -> bool:
     """Return whether task surfaces should require explicit bearer auth."""
 
-    return bool(_configured_api_token()) or SCHEDULER is DEFAULT_SCHEDULER
+    return bool(_configured_api_tokens()) or SCHEDULER is DEFAULT_SCHEDULER
 
 
 def _requires_emergency_auth() -> bool:
     """Return whether emergency-control surfaces should require explicit auth."""
 
-    return bool(_configured_api_token()) or (
+    return bool(_configured_api_tokens()) or (
         EMERGENCY_CONTROLLER is DEFAULT_EMERGENCY_CONTROLLER
     )
 
 
 @app.middleware("http")
 async def require_api_token(request: Request, call_next):
-    """Protect every non-health endpoint when HUEY_API_TOKEN is configured."""
+    """Protect non-health endpoints whenever any API token is configured."""
 
-    expected_token = _configured_api_token()
-    if not expected_token or request.url.path in _PUBLIC_PATHS:
+    configured_tokens = _configured_api_tokens()
+    if not configured_tokens or request.url.path in _PUBLIC_PATHS:
         return await call_next(request)
 
     scheme, _, supplied_token = request.headers.get("authorization", "").partition(" ")
-    if scheme.lower() != "bearer" or not hmac.compare_digest(
-        supplied_token,
-        expected_token,
-    ):
+    authenticated = scheme.lower() == "bearer" and any(
+        hmac.compare_digest(supplied_token, token)
+        for role_tokens in configured_tokens.values()
+        for token in role_tokens
+    )
+    if not authenticated:
         return JSONResponse(
             status_code=HTTP_401_UNAUTHORIZED,
             content={"detail": "Missing or invalid API token"},
