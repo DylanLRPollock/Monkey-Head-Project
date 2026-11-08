@@ -25,12 +25,7 @@ def power_should_shutdown():
 def trigger_shutdown(request: Request):
     from huey.memory.PY import api as legacy_api
 
-    actor_role = legacy_api.require_strong_api_auth(request)
-    if actor_role != "admin":
-        raise HTTPException(
-            status_code=403,
-            detail="An admin-scoped API token is required for host shutdown.",
-        )
+    actor_role = legacy_api.require_admin_api_auth(request)
     if request.headers.get("x-huey-confirm") != "shutdown":
         raise HTTPException(
             status_code=403,

@@ -360,6 +360,20 @@ def require_strong_api_auth(request: Request) -> str:
     )
 
 
+def require_admin_api_auth(request: Request) -> str:
+    """Require admin scope, retaining the existing loopback-only dev mode."""
+
+    if not _configured_api_tokens() and _is_local_request(request):
+        return "admin"
+    role = require_strong_api_auth(request)
+    if role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="An admin-scoped API token is required for this operation.",
+        )
+    return role
+
+
 def _require_unsafe_task_submission_access(request: Request) -> None:
     """Enforce defensive gating for free-form task submission surfaces.
 
@@ -1523,9 +1537,11 @@ def list_monitored_processes() -> List[MonitoredProcessStatusModel]:
     tags=["Resilience"],
 )
 def override_monitored_process(
-    name: str, request: ManualOverrideRequest
+    name: str, request: ManualOverrideRequest, http_request: Request
 ) -> MonitoredProcessStatusModel:
     """Enable or disable automatic crash recovery for the given process."""
+
+    require_admin_api_auth(http_request)
 
     try:
         process_status = CRASH_MANAGER.toggle_auto_restart(
@@ -1543,8 +1559,12 @@ def override_monitored_process(
     response_model=MonitoredProcessStatusModel,
     tags=["Resilience"],
 )
-def manual_restart_monitored_process(name: str) -> MonitoredProcessStatusModel:
+def manual_restart_monitored_process(
+    name: str, http_request: Request
+) -> MonitoredProcessStatusModel:
     """Force a restart for a monitored process regardless of overrides."""
+
+    require_admin_api_auth(http_request)
 
     try:
         CRASH_MANAGER.manual_restart(name)
@@ -1629,7 +1649,7 @@ def locate_pdf(
 def auto_sort(request: AutoSortRequest, http_request: Request) -> AutoSortResponse:
     """Trigger automated organisation of files in the HueyOS memory directory."""
 
-    require_strong_api_auth(http_request)
+    require_admin_api_auth(http_request)
     try:
         summary = auto_sort_memory(
             source_dir=request.source_dir,
@@ -1772,7 +1792,7 @@ def enter_emergency_mode(
     """Enter emergency mode after validating approvals."""
 
     if _requires_emergency_auth():
-        require_strong_api_auth(http_request)
+        require_admin_api_auth(http_request)
     try:
         EMERGENCY_CONTROLLER.enter_emergency_mode(
             triggered_by=request.triggered_by,
@@ -1801,7 +1821,7 @@ def exit_emergency_mode(
     """Exit emergency mode when sufficient approvals are provided."""
 
     if _requires_emergency_auth():
-        require_strong_api_auth(http_request)
+        require_admin_api_auth(http_request)
     try:
         EMERGENCY_CONTROLLER.exit_emergency_mode(
             requested_by=request.requested_by,
@@ -1824,7 +1844,7 @@ def emergency_authorised_action(
     """Validate that an emergency action has dual authorisation."""
 
     if _requires_emergency_auth():
-        require_strong_api_auth(http_request)
+        require_admin_api_auth(http_request)
     try:
         EMERGENCY_CONTROLLER.request_authorised_action(
             actor=request.actor,
@@ -1853,8 +1873,10 @@ def list_services() -> ServicesOverviewResponse:
     status_code=status.HTTP_202_ACCEPTED,
     tags=["Administration"],
 )
-def start_service(service_name: str) -> ServiceStatus:
+def start_service(service_name: str, request: Request) -> ServiceStatus:
     """Mark a HueyOS service as running."""
+
+    require_admin_api_auth(request)
 
     return _update_service_status(service_name, "running")
 
@@ -1865,8 +1887,10 @@ def start_service(service_name: str) -> ServiceStatus:
     status_code=status.HTTP_202_ACCEPTED,
     tags=["Administration"],
 )
-def stop_service(service_name: str) -> ServiceStatus:
+def stop_service(service_name: str, request: Request) -> ServiceStatus:
     """Mark a HueyOS service as stopped."""
+
+    require_admin_api_auth(request)
 
     return _update_service_status(service_name, "stopped")
 
@@ -1874,8 +1898,10 @@ def stop_service(service_name: str) -> ServiceStatus:
 @app.post(
     "/admin/system-check", response_model=SystemCheckResponse, tags=["Administration"]
 )
-def admin_system_check() -> SystemCheckResponse:
+def admin_system_check(request: Request) -> SystemCheckResponse:
     """Execute the full HueyOS system check suite and report individual results."""
+
+    require_admin_api_auth(request)
 
     results = system_check()
     passed = all(value for value in results.values() if isinstance(value, bool))

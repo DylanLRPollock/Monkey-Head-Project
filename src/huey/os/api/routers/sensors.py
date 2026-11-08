@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Query, Request, status
 
 from huey.memory.PY.api import SensorRegistrationRequest
 
@@ -26,16 +26,18 @@ def list_sensors():
 
 
 @router.post("/sensors/register", status_code=status.HTTP_201_CREATED)
-def register_sensor(request: SensorRegistrationRequest):
+def register_sensor(payload: SensorRegistrationRequest, request: Request):
     from huey.memory.PY import api as legacy_api
 
-    return legacy_api.register_sensor(request)
+    legacy_api.require_admin_api_auth(request)
+    return legacy_api.register_sensor(payload)
 
 
 @router.delete("/sensors/{sensor_name}")
-def remove_sensor(sensor_name: str):
+def remove_sensor(sensor_name: str, request: Request):
     from huey.memory.PY import api as legacy_api
 
+    legacy_api.require_admin_api_auth(request)
     return legacy_api.remove_sensor(sensor_name)
 
 
