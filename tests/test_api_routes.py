@@ -606,6 +606,43 @@ async def test_shutdown_requires_admin_scoped_token(monkeypatch):
     trigger.assert_called_once_with(confirmed=True, actor_role="admin")
 
 
+@pytest.mark.asyncio
+async def test_admin_routes_reject_operator_tokens_and_accept_admin_tokens(monkeypatch):
+    monkeypatch.setenv("HUEY_API_OPERATOR_TOKEN", "operator-token")
+    monkeypatch.setenv("HUEY_API_ADMIN_TOKEN", "admin-token")
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        operator_response = await client.post(
+            "/admin/services/coverage-test/start",
+            headers={"Authorization": "Bearer operator-token"},
+        )
+        admin_response = await client.post(
+            "/admin/services/coverage-test/start",
+            headers={"Authorization": "Bearer admin-token"},
+        )
+        sensor_response = await client.post(
+            "/sensors/register",
+            json={"name": "coverage-test", "plugin": "missing", "config": {}},
+            headers={"Authorization": "Bearer operator-token"},
+        )
+
+    assert operator_response.status_code == 403
+    assert admin_response.status_code == 202
+    assert sensor_response.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_admin_routes_keep_loopback_only_development_access(monkeypatch):
+    monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
+    monkeypatch.delenv("HUEY_API_OPERATOR_TOKEN", raising=False)
+    monkeypatch.delenv("HUEY_API_ADMIN_TOKEN", raising=False)
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        response = await client.post("/admin/services/local-dev-test/start")
+
+    assert response.status_code == 202
+
+
 def test_admin_token_cannot_reuse_operator_credential(monkeypatch):
     monkeypatch.setenv("HUEY_API_TOKEN", "same-secret")
     monkeypatch.setenv("HUEY_API_ADMIN_TOKEN", "same-secret")
