@@ -9,6 +9,13 @@ import pytest
 from huey.memory import indexing
 
 
+def _create_symlink_or_skip(link, target):
+    try:
+        link.symlink_to(target)
+    except (OSError, NotImplementedError) as exc:
+        pytest.skip(f"symlink support unavailable: {exc}")
+
+
 def test_update_index_insert_replace_and_search(tmp_path):
     index_path = tmp_path / "INDEX" / "memory-index.json"
     first = {
@@ -60,10 +67,7 @@ def test_discovery_skips_hidden_paths_code_and_symlinks(tmp_path):
     internal.mkdir()
     (internal / "legacy.txt").write_text("skip", encoding="utf-8")
     link = base / "alias.md"
-    try:
-        link.symlink_to(expected)
-    except (OSError, NotImplementedError):
-        pass
+    _create_symlink_or_skip(link, expected)
     assert indexing.discover_paths(base) == [expected]
     with pytest.raises(NotADirectoryError):
         indexing.discover_paths(tmp_path / "absent")
@@ -76,10 +80,7 @@ def test_build_index_does_not_ingest_symlinks_or_index_file(monkeypatch, tmp_pat
     doc.write_text("memo", encoding="utf-8")
     index_file = root / "index.json"
     alias = root / "alias.txt"
-    try:
-        alias.symlink_to(doc)
-    except (OSError, NotImplementedError):
-        pass
+    _create_symlink_or_skip(alias, doc)
     observed = []
 
     def fake_ingest(path):
