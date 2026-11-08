@@ -445,8 +445,8 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
     from huey.os.network.manager import NetworkStatus
     from huey.os.power.management import PowerEvent
 
-    monkeypatch.setenv("HUEY_API_TOKEN", "test-token")
-    auth_headers = {"Authorization": "Bearer test-token"}
+    monkeypatch.setenv("HUEY_API_ADMIN_TOKEN", "admin-test-token")
+    auth_headers = {"Authorization": "Bearer admin-test-token"}
 
     storage = HoneycombStorage(base_dir=tmp_path)
     registry = SensorRegistry()
