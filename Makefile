@@ -43,6 +43,7 @@ APP         ?= huey.api:app
 PKG_COV     ?= --cov=huey
 PYTEST_ARGS ?=
 LINT_PATHS  ?= src tests scripts conftest.py
+FLAKE8_PATHS ?= $(LINT_PATHS) run.py setup.py infra
 CONSTRAINTS ?= constraints.txt
 
 # Treat warnings during lint as errors so `make lint` and CI agree.
@@ -114,7 +115,7 @@ lint: ## Run repo guardrails + black/isort/ruff/flake8 (check-only).
 	$(PYTHON) scripts/repo/check_canon_terms.py
 	$(MAKE) format-check
 	ruff check $(LINT_PATHS)
-	flake8 $(LINT_PATHS)
+	flake8 $(FLAKE8_PATHS)
 
 # ---------------------------------------------------------------------------
 # Repository guardrails (run individually for faster feedback)

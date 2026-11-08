@@ -90,6 +90,7 @@ exclude =
     .idea,
     .vscode,
     archives,
+    vendor,
     # Vendored / legacy trees kept behind compatibility shims.
     src/huey/connectors/pyhuey,
     src/huey/memory/PY

@@ -188,39 +188,40 @@ class SensorRegistry:
         if self._loaded_entry_points:
             return
         self._loaded_entry_points = True
-        try:
-            entry_points = importlib_metadata.entry_points()
-        except Exception:  # pragma: no cover - defensive fallback
-            LOGGER.exception("Unable to enumerate sensor entry points")
-            return
-        groups = getattr(entry_points, "select", None)
-        if callable(groups):
-            sensors = list(groups(group="huey.os.sensors"))
-            if not sensors:
-                sensors = list(groups(group="hueyos.sensors"))
-        else:  # pragma: no cover - importlib_metadata < 3.10 compatibility
-            sensors = entry_points.get("huey.os.sensors", [])  # type: ignore[assignment]
-            if not sensors:
-                sensors = entry_points.get("hueyos.sensors", [])  # type: ignore[assignment]
-        for entry_point in sensors:
-            try:
-                plugin_cls = entry_point.load()
-            except Exception:  # pragma: no cover - plugin misbehaviour
-                LOGGER.exception("Failed to load sensor plugin from %s", entry_point)
-                continue
-            if not isinstance(plugin_cls, type):
-                LOGGER.warning(
-                    "Entry point %s did not return a class (got %r)",
-                    entry_point,
-                    plugin_cls,
-                )
-                continue
-            if not issubclass(plugin_cls, SensorPlugin):
-                LOGGER.warning(
-                    "Entry point %s does not implement SensorPlugin", entry_point
-                )
-                continue
-            self.register(plugin_cls)
+        for entry_point in _sensor_entry_points():
+            _register_sensor_entry_point(self, entry_point)
+
+
+def _sensor_entry_points():
+    try:
+        entry_points = importlib_metadata.entry_points()
+    except Exception:  # pragma: no cover - defensive fallback
+        LOGGER.exception("Unable to enumerate sensor entry points")
+        return []
+    groups = getattr(entry_points, "select", None)
+    if callable(groups):
+        sensors = list(groups(group="huey.os.sensors"))
+        return sensors or list(groups(group="hueyos.sensors"))
+
+    sensors = entry_points.get("huey.os.sensors", [])
+    return sensors or entry_points.get("hueyos.sensors", [])
+
+
+def _register_sensor_entry_point(registry: SensorRegistry, entry_point) -> None:
+    try:
+        plugin_cls = entry_point.load()
+    except Exception:  # pragma: no cover - plugin misbehaviour
+        LOGGER.exception("Failed to load sensor plugin from %s", entry_point)
+        return
+    if not isinstance(plugin_cls, type):
+        LOGGER.warning(
+            "Entry point %s did not return a class (got %r)", entry_point, plugin_cls
+        )
+        return
+    if not issubclass(plugin_cls, SensorPlugin):
+        LOGGER.warning("Entry point %s does not implement SensorPlugin", entry_point)
+        return
+    registry.register(plugin_cls)
 
 
 def import_from_string(path: str) -> type[SensorPlugin]:

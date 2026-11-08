@@ -53,6 +53,7 @@ def test_every_current_page_has_status_and_sources(tmp_path: Path) -> None:
         current += 1
         assert wiki.DATE in text
         assert "## Repository sources" in text
+        assert "[...]" not in text
     assert current == manifest["current_pages"]
     assert compatibility >= 12
 
@@ -65,3 +66,11 @@ def test_legacy_targets_resolve(tmp_path: Path) -> None:
     for old, info in nav["legacy_pages"].items():
         assert old in names
         assert info["target"] in names
+
+
+def test_topic_classification_preserves_priority_and_fallback() -> None:
+    wiki = load_generator()
+    assert "authentication" in wiki.topic_text("remote-network-security").lower()
+    assert "restore" in wiki.topic_text("recovery-backup").lower()
+    assert "release" in wiki.topic_text("release-checklist").lower()
+    assert "run/transaction" in wiki.topic_text("unclassified-topic").lower()

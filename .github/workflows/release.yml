@@ -232,7 +232,7 @@ jobs:
       - name: Install build tooling
         run: |
           python -m pip install --upgrade pip
-          python -m pip install 'build==1.2.2'
+          python -m pip install 'build==1.2.2' 'cyclonedx-bom==7.6.0'
 
       - name: Build sdist and wheel
         run: python -m build
@@ -286,13 +286,6 @@ jobs:
             exit 1
           fi
 
-      - name: Generate SHA256 checksums
-        run: |
-          cd dist
-          sha256sum ./* > SHA256SUMS
-          echo "--- SHA256SUMS ---"
-          cat SHA256SUMS
-
       # --- Wheel install smoke -------------------------------------------
       - name: Create fresh venv for wheel
         run: python -m venv .release-venv-wheel
@@ -339,6 +332,24 @@ jobs:
           python -c "import hueyos"
           python -c "import huey.api"
 
+      - name: Generate CycloneDX runtime SBOM
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          cyclonedx-py environment .release-venv-wheel/bin/python \
+            --of JSON --sv 1.6 --output-reproducible \
+            --output-file "dist/hueyos-${VERSION}.cdx.json"
+
+      - name: Generate and verify SHA256 checksums
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum ./* > SHA256SUMS
+          sha256sum --check SHA256SUMS
+          echo "--- SHA256SUMS ---"
+          cat SHA256SUMS
+
       - name: Upload release artifacts
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
@@ -375,6 +386,13 @@ jobs:
         with:
           name: release-dist
           path: dist/
+
+      - name: Verify release artifact checksums
+        run: |
+          set -euo pipefail
+          cd dist
+          test -s SHA256SUMS
+          sha256sum --check SHA256SUMS
 
       - name: Publish to PyPI
         # Trusted publishing: no password, no token. The action reads

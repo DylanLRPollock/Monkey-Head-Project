@@ -148,42 +148,57 @@ def _should_flag_pygpt(line: str) -> bool:
     return not _has_provenance_marker(line)
 
 
+def _rule_matches(rule: Rule, line: str) -> bool:
+    if rule.name == "live-microphone-v1" and re.search(
+        r"\b(?:does|do)\s+(?:\*\*)?not\b.*\blive microphone\b",
+        line,
+        re.IGNORECASE,
+    ):
+        return False
+    if rule.name in {
+        "huey-core-active",
+        "hims-active-runtime",
+    } and _has_provenance_marker(line):
+        return False
+    return bool(rule.pattern.search(line))
+
+
+def _line_violations(path: Path, lineno: int, line: str, rules: tuple[Rule, ...]):
+    violations = []
+    if path != Path("docs/integrations/pygpt.md") and _should_flag_pygpt(line):
+        violations.append(
+            f"{path}:{lineno}: Use PyHuey as the active cockpit name; "
+            "keep PyGPT for provenance only."
+        )
+    violations.extend(
+        f"{path}:{lineno}: {rule.message}"
+        for rule in rules
+        if _rule_matches(rule, line)
+    )
+    return violations
+
+
+def _path_violations(path: Path, rules: tuple[Rule, ...]) -> list[str]:
+    if _is_archival_path(path):
+        return []
+    try:
+        content = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        return []
+    return [
+        violation
+        for lineno, line in enumerate(content.splitlines(), start=1)
+        for violation in _line_violations(path, lineno, line, rules)
+    ]
+
+
 def main() -> int:
     rules = _compile_rules()
-    violations: list[str] = []
-
-    for path in _iter_targets():
-        if _is_archival_path(path):
-            continue
-
-        try:
-            content = path.read_text(encoding="utf-8")
-        except UnicodeDecodeError:
-            continue
-
-        for lineno, line in enumerate(content.splitlines(), start=1):
-            # This document names the separately installed upstream product.
-            # Preserve all other terminology rules for the same document.
-            if path != Path("docs/integrations/pygpt.md") and _should_flag_pygpt(line):
-                violations.append(
-                    f"{path}:{lineno}: Use PyHuey as the active cockpit name; "
-                    "keep PyGPT for provenance only."
-                )
-
-            for rule in rules:
-                # A stated boundary is not a claim that the feature is active.
-                if rule.name == "live-microphone-v1" and re.search(
-                    r"\b(?:does|do)\s+(?:\*\*)?not\b.*\blive microphone\b",
-                    line,
-                    re.IGNORECASE,
-                ):
-                    continue
-                if rule.name == "huey-core-active" and _has_provenance_marker(line):
-                    continue
-                if rule.name == "hims-active-runtime" and _has_provenance_marker(line):
-                    continue
-                if rule.pattern.search(line):
-                    violations.append(f"{path}:{lineno}: {rule.message}")
+    violations = [
+        violation
+        for path in _iter_targets()
+        for violation in _path_violations(path, rules)
+    ]
 
     if violations:
         print("Canon drift check failed:")

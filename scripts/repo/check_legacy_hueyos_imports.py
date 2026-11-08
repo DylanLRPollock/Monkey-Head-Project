@@ -103,29 +103,32 @@ def is_allowed_text_reference(path: Path, line: str) -> bool:
     return (path.as_posix(), line.strip()) in ALLOWED_TEXT_REFERENCES
 
 
+def _line_violation(path: Path, line_number: int, line: str) -> str | None:
+    if is_allowed_text_reference(path, line):
+        return None
+    if not any(pattern.search(line) for pattern in PATTERNS):
+        return None
+    return f"{path.as_posix()}:{line_number}: {line.strip()}"
+
+
+def _path_violations(path: Path) -> list[str]:
+    if not should_scan(path) or not path.is_file():
+        return []
+    try:
+        text = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        return []
+    return [
+        violation
+        for line_number, line in enumerate(text.splitlines(), start=1)
+        if (violation := _line_violation(path, line_number, line)) is not None
+    ]
+
+
 def main() -> int:
-    violations: list[str] = []
-
-    for path in git_ls_files():
-        if not should_scan(path):
-            continue
-        if not path.is_file():
-            continue
-
-        try:
-            text = path.read_text(encoding="utf-8")
-        except UnicodeDecodeError:
-            continue
-
-        for line_number, line in enumerate(text.splitlines(), start=1):
-            if is_allowed_text_reference(path, line):
-                continue
-            for pattern in PATTERNS:
-                if pattern.search(line):
-                    violations.append(
-                        f"{path.as_posix()}:{line_number}: {line.strip()}"
-                    )
-                    break
+    violations = [
+        violation for path in git_ls_files() for violation in _path_violations(path)
+    ]
 
     if violations:
         safe_print("Legacy hueyos import/path check failed.")

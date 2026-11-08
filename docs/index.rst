@@ -9,7 +9,10 @@ This site provides project documentation for HueyOS and PyHuey integration work.
 
    development/v101.1-namespace-migration.md
    development/tooling-config-map.md
+   development/config-reference-audit-2026-11-08.md
    security/security-hardening-status.md
    security/current-risk-register-2026-11-03.md
+   security/privilege-and-identity-audit-2026-11-08.md
+   release/artifact-audit-2026-11-08.md
    testing/test-suite-taxonomy.md
    audits/v101.1-repo-control-paths.md

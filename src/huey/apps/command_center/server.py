@@ -110,63 +110,33 @@ def get_state_payload() -> dict[str, object]:
     }
 
 
+def _phase_prompt(phase_id: str) -> dict[str, str]:
+    for phase in default_migration_phases():
+        if phase.id == phase_id:
+            return {"phase_id": phase_id, "prompt": generate_phase_prompt(phase)}
+    raise HTTPException(status_code=404, detail=f"Unknown phase id: {phase_id}")
+
+
 def register_routes(app: FastAPI) -> None:
-    """Attach all Command Center routes."""
+    """Attach all read-only Command Center routes."""
 
-    @app.get("/command-center/meta")
-    def command_center_meta() -> dict[str, object]:
-        return get_app_metadata()
-
-    @app.get("/command-center/launcher")
-    def command_center_launcher() -> dict[str, object]:
-        return get_launcher_support()
-
-    @app.get("/command-center/safety")
-    def command_center_safety() -> dict[str, object]:
-        return get_safety_policy()
-
-    @app.get("/command-center/repos")
-    def command_center_repos() -> list[dict[str, object]]:
-        return get_repositories()
-
-    @app.get("/command-center/phases")
-    def command_center_phases() -> list[dict[str, object]]:
-        return get_migration_phases()
-
-    @app.get("/command-center/validation")
-    def command_center_validation() -> list[dict[str, object]]:
-        return get_validation_commands()
-
-    @app.get("/command-center/operator-panel")
-    def command_center_operator_panel() -> dict[str, object]:
-        return get_operator_panel_state()
-
-    @app.get("/command-center/v1-runs/sample")
-    def command_center_v1_runs() -> list[dict[str, object]]:
-        return get_v1_sample_runs()
-
-    @app.get("/command-center/runtime")
-    def command_center_runtime() -> dict[str, object]:
-        return get_runtime_status()
-
-    @app.get("/command-center/memory")
-    def command_center_memory() -> dict[str, object]:
-        return get_memory_status()
-
-    @app.get("/command-center/api-status")
-    def command_center_api_status() -> dict[str, object]:
-        return get_api_status()
-
-    @app.get("/command-center/state")
-    def command_center_state() -> dict[str, object]:
-        return get_state_payload()
-
-    @app.get("/command-center/prompts/phase/{phase_id}")
-    def command_center_phase_prompt(phase_id: str) -> dict[str, str]:
-        for phase in default_migration_phases():
-            if phase.id == phase_id:
-                return {"phase_id": phase_id, "prompt": generate_phase_prompt(phase)}
-        raise HTTPException(status_code=404, detail=f"Unknown phase id: {phase_id}")
+    routes = (
+        ("/command-center/meta", get_app_metadata),
+        ("/command-center/launcher", get_launcher_support),
+        ("/command-center/safety", get_safety_policy),
+        ("/command-center/repos", get_repositories),
+        ("/command-center/phases", get_migration_phases),
+        ("/command-center/validation", get_validation_commands),
+        ("/command-center/operator-panel", get_operator_panel_state),
+        ("/command-center/v1-runs/sample", get_v1_sample_runs),
+        ("/command-center/runtime", get_runtime_status),
+        ("/command-center/memory", get_memory_status),
+        ("/command-center/api-status", get_api_status),
+        ("/command-center/state", get_state_payload),
+        ("/command-center/prompts/phase/{phase_id}", _phase_prompt),
+    )
+    for path, endpoint in routes:
+        app.add_api_route(path, endpoint, methods=["GET"])
 
 
 def create_app() -> FastAPI:

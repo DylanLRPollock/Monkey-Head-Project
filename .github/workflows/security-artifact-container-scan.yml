@@ -85,6 +85,7 @@ jobs:
           set -euo pipefail
           python - <<'PY'
           import datetime
+          import hashlib
           import json
           import pathlib
           import subprocess
@@ -121,11 +122,13 @@ jobs:
                   continue
               size = p.stat().st_size
               ext = p.suffix.lower()
+              digest = hashlib.sha256(p.read_bytes()).hexdigest()
               records.append({
                   "path": rel,
                   "bytes": size,
                   "extension": ext,
                   "binary_extension": ext in BINARY_EXTS,
+                  "sha256": digest,
               })
 
           records.sort(key=lambda r: r["bytes"], reverse=True)
@@ -133,6 +136,13 @@ jobs:
           with open("large-files-top200.json", "w", encoding="utf-8") as f:
               json.dump(
                   {"commit": commit, "generated": generated, "files": records[:200]},
+                  f,
+                  indent=2,
+              )
+
+          with open("tracked-artifact-inventory.json", "w", encoding="utf-8") as f:
+              json.dump(
+                  {"commit": commit, "generated": generated, "files": records},
                   f,
                   indent=2,
               )
@@ -225,6 +235,7 @@ jobs:
           path: |
             large-files-report.md
             large-files-top200.json
+            tracked-artifact-inventory.json
           if-no-files-found: warn
           retention-days: 30
 
