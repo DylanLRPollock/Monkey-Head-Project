@@ -503,7 +503,9 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
     )
 
     transport = ASGITransport(app=api_module.app)
-    async with AsyncClient(transport=transport, base_url="http://testserver", headers=auth_headers) as client:
+    async with AsyncClient(
+        transport=transport, base_url="http://testserver", headers=auth_headers
+    ) as client:
         sensors_initial = await client.get("/sensors")
         assert sensors_initial.status_code == 200
         assert sensors_initial.json()["sensors"] == []
