@@ -85,6 +85,6 @@ def test_system_requirements_ping_failure_then_success(caplog):
         mock_usage.return_value = type("U", (), {"free": 10 * (1024**3)})()
         mock_run.side_effect = [OSError("ping missing"), DummyCompleted(returncode=0)]
 
-        HostOS.ensure_system_requirements(logger=HostOS.log, ping_hosts=("a", "b"))
+        HostOS.ensure_system_requirements(ping_hosts=("a", "b"))
 
     assert "Ping to a failed" in caplog.text
