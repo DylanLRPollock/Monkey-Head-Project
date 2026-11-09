@@ -503,7 +503,7 @@ async def test_sensor_network_and_power_endpoints(monkeypatch, tmp_path):
     )
 
     transport = ASGITransport(app=api_module.app)
-    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+    async with AsyncClient(transport=transport, base_url="http://testserver", headers=auth_headers) as client:
         sensors_initial = await client.get("/sensors")
         assert sensors_initial.status_code == 200
         assert sensors_initial.json()["sensors"] == []
@@ -670,7 +670,7 @@ async def test_shutdown_rejects_missing_explicit_confirmation_header(monkeypatch
 @pytest.mark.asyncio
 async def test_dangerous_endpoints_reject_unauthenticated_access(monkeypatch):
     monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
-    transport = ASGITransport(app=api_module.app)
+    transport = ASGITransport(app=api_module.app, client=("203.0.113.9", 43123))
     async with AsyncClient(transport=transport, base_url="http://testserver") as client:
         task_submit = await client.post("/tasks", json={"command": "calibrate"})
         network_ensure = await client.post("/network/ensure")
@@ -699,7 +699,7 @@ async def test_dangerous_endpoints_reject_unauthenticated_access(monkeypatch):
 
 
 def test_sensor_network_power_routes_are_registered_via_focused_routers():
-    route_paths = {route.path for route in api_module.app.routes}
+    route_paths = {getattr(route, "path", None) for route in api_module.app.routes}
     assert "/sensors" in route_paths
     assert "/network/status" in route_paths
     assert "/power/battery" in route_paths
