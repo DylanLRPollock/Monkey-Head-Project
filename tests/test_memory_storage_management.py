@@ -226,7 +226,7 @@ def test_remove_older_than_logs_inspection_and_stat_errors(
 
     assert removed == 0
     assert cannot_inspect.exists()
-    assert cannot_stat.exists()
+    assert original_stat(cannot_stat).st_size > 0
     assert "Failed to inspect path while pruning old files" in caplog.text
     assert "Failed to stat file while pruning old files" in caplog.text
 
