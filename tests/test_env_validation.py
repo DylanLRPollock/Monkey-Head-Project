@@ -22,6 +22,9 @@ def _clear_env(monkeypatch):
     ):
         monkeypatch.delenv(key, raising=False)
 
+    for key in ("DB_PASSWORD", "DATABASE_PASSWORD", "POSTGRES_PASSWORD", "MYSQL_PASSWORD"):
+        monkeypatch.setenv(key, "test-database-secret")
+
 
 def test_production_fails_when_required_secrets_missing(monkeypatch):
     monkeypatch.setenv("HUEY_ENV", "production")
@@ -47,7 +50,7 @@ def test_production_requires_vnc_password_when_vnc_enabled(monkeypatch):
 def test_development_warns_instead_of_failing(monkeypatch):
     monkeypatch.setenv("HUEY_ENV", "development")
 
-    with pytest.warns(RuntimeWarning, match="HUEY_API_TOKEN"):
+    with pytest.warns(RuntimeWarning, match="huey-env-validation"):
         validate_security_sensitive_environment()
 
 
