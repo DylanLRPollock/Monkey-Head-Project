@@ -11,12 +11,14 @@ import asyncio
 import datetime as dt
 import hmac
 import html
+import logging
 import os
 import platform
 import shutil
 import socket
 import sys
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, AsyncGenerator, Dict, List, Optional, Sequence
 
@@ -30,6 +32,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from .env_validation import DEVELOPMENT_ENVS as _DEVELOPMENT_ENVS
+from .env_validation import parse_api_principals
 from .env_validation import configured_environment as _configured_environment
 from .env_validation import validate_security_sensitive_environment
 
@@ -256,6 +259,21 @@ _LOOPBACK_HOSTS = {
     "testclient",
     "testserver",
 }
+_API_PRINCIPALS_VARIABLE = "HUEY_API_PRINCIPALS_JSON"
+_API_TOKEN_VARIABLES = (
+    ("operator", "HUEY_API_OPERATOR_TOKEN"),
+    ("admin", "HUEY_API_ADMIN_TOKEN"),
+)
+_API_ACTION_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
+_API_AUDIT_LOGGER = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class _ApiPrincipal:
+    subject: str
+    role: str
+    identity_type: str
+
 
 validate_security_sensitive_environment()
 
@@ -266,31 +284,67 @@ def _configured_api_token() -> str:
     return os.getenv("HUEY_API_TOKEN", "").strip()
 
 
+def _configured_named_api_principals() -> list[dict[str, str]]:
+    """Return individually named credentials configured for API access."""
+
+    raw = os.getenv(_API_PRINCIPALS_VARIABLE, "").strip()
+    return parse_api_principals(raw) if raw else []
+
+
 def _configured_api_tokens() -> dict[str, list[str]]:
     """Return configured API credentials mapped to their least privilege role."""
 
     tokens: dict[str, list[str]] = {}
-    for role, variable in (
-        ("operator", "HUEY_API_OPERATOR_TOKEN"),
-        ("admin", "HUEY_API_ADMIN_TOKEN"),
-    ):
+    for role, variable in _API_TOKEN_VARIABLES:
         token = os.getenv(variable, "").strip()
         if token:
             tokens.setdefault(role, []).append(token)
     legacy_token = _configured_api_token()
     if legacy_token:
         tokens.setdefault("operator", []).append(legacy_token)
-    admin_tokens = tokens.get("admin", [])
-    operator_tokens = tokens.get("operator", [])
+    for principal in _configured_named_api_principals():
+        tokens.setdefault(principal["role"], []).append(principal["token"])
+
+    all_tokens = [
+        token for role_tokens in tokens.values() for token in role_tokens
+    ]
     if any(
-        hmac.compare_digest(admin, operator)
-        for admin in admin_tokens
-        for operator in operator_tokens
+        hmac.compare_digest(token, previous)
+        for index, token in enumerate(all_tokens)
+        for previous in all_tokens[:index]
     ):
-        raise RuntimeError(
-            "HUEY_API_ADMIN_TOKEN must be distinct from operator-scoped tokens"
-        )
+        raise RuntimeError("Each configured API credential must be unique")
     return tokens
+
+
+def _authenticate_api_request(request: Request) -> _ApiPrincipal | None:
+    """Match a bearer token to its configured role and principal identity."""
+
+    scheme, _, supplied_token = request.headers.get("authorization", "").partition(" ")
+    if scheme.lower() != "bearer":
+        return None
+
+    for principal in _configured_named_api_principals():
+        if hmac.compare_digest(supplied_token, principal["token"]):
+            return _ApiPrincipal(
+                subject=principal["subject"],
+                role=principal["role"],
+                identity_type="named-credential",
+            )
+
+    for role, role_tokens in _configured_api_tokens().items():
+        for expected_token in role_tokens:
+            if hmac.compare_digest(supplied_token, expected_token):
+                return _ApiPrincipal(
+                    subject=f"shared:{role}",
+                    role=role,
+                    identity_type="shared-credential",
+                )
+    return None
+
+
+def _set_request_principal(request: Request, principal: _ApiPrincipal) -> None:
+    request.state.api_principal = principal
 
 
 def _unsafe_task_submission_enabled() -> bool:
@@ -340,24 +394,19 @@ def _require_privileged_surface_access(request: Request) -> None:
 def require_strong_api_auth(request: Request) -> str:
     """Authenticate a scoped bearer token and return its least-privilege role."""
 
-    configured_tokens = _configured_api_tokens()
-    if not configured_tokens:
+    if not _configured_api_tokens():
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED,
             detail="API token authentication is required for this endpoint",
         )
-
-    scheme, _, supplied_token = request.headers.get("authorization", "").partition(" ")
-    if scheme.lower() == "bearer":
-        for role in ("admin", "operator"):
-            for expected_token in configured_tokens.get(role, []):
-                if hmac.compare_digest(supplied_token, expected_token):
-                    return role
-
-    raise HTTPException(
-        status_code=HTTP_401_UNAUTHORIZED,
-        detail="Missing or invalid API token",
-    )
+    principal = _authenticate_api_request(request)
+    if principal is None:
+        raise HTTPException(
+            status_code=HTTP_401_UNAUTHORIZED,
+            detail="Missing or invalid API token",
+        )
+    _set_request_principal(request, principal)
+    return principal.role
 
 
 def require_admin_api_auth(request: Request) -> str:
@@ -414,39 +463,79 @@ def _requires_emergency_auth() -> bool:
     )
 
 
+def _audit_api_action(
+    request: Request, status_code: int, principal: _ApiPrincipal | None
+) -> None:
+    """Write a secret-free record for every mutating HTTP operation."""
+
+    if request.method.upper() not in _API_ACTION_METHODS:
+        return
+    route = request.scope.get("route")
+    route_template = getattr(route, "path", request.url.path)
+    subject = principal.subject if principal else "unauthenticated"
+    role = principal.role if principal else "none"
+    identity_type = principal.identity_type if principal else "none"
+    occurred_at = dt.datetime.now(dt.timezone.utc).isoformat()
+    _API_AUDIT_LOGGER.info(
+        "api_action time=%s principal=%s role=%s identity=%s method=%s "
+        "route=%s status=%d",
+        occurred_at,
+        subject,
+        role,
+        identity_type,
+        request.method.upper(),
+        route_template,
+        status_code,
+    )
+
+
 @app.middleware("http")
 async def require_api_token(request: Request, call_next):
-    """Protect non-health endpoints with a token or local-only fallback."""
+    """Protect non-health endpoints and record their authenticated identity."""
 
-    configured_tokens = _configured_api_tokens()
     if request.url.path in _PUBLIC_PATHS:
         return await call_next(request)
+
+    configured_tokens = _configured_api_tokens()
+    principal: _ApiPrincipal | None = None
     if not configured_tokens:
         if _is_local_request(request):
-            return await call_next(request)
-        return JSONResponse(
-            status_code=status.HTTP_403_FORBIDDEN,
-            content={
-                "detail": (
-                    "Local access is required when API token authentication "
-                    "is not configured"
-                )
-            },
-        )
+            principal = _ApiPrincipal(
+                subject="local-loopback",
+                role="local-development",
+                identity_type="unverified-loopback",
+            )
+            _set_request_principal(request, principal)
+        else:
+            response = JSONResponse(
+                status_code=status.HTTP_403_FORBIDDEN,
+                content={
+                    "detail": (
+                        "Local access is required when API token authentication "
+                        "is not configured"
+                    )
+                },
+            )
+            _audit_api_action(request, response.status_code, principal)
+            return response
+    else:
+        principal = _authenticate_api_request(request)
+        if principal is None:
+            response = JSONResponse(
+                status_code=HTTP_401_UNAUTHORIZED,
+                content={"detail": "Missing or invalid API token"},
+            )
+            _audit_api_action(request, response.status_code, principal)
+            return response
+        _set_request_principal(request, principal)
 
-    scheme, _, supplied_token = request.headers.get("authorization", "").partition(" ")
-    authenticated = scheme.lower() == "bearer" and any(
-        hmac.compare_digest(supplied_token, token)
-        for role_tokens in configured_tokens.values()
-        for token in role_tokens
-    )
-    if not authenticated:
-        return JSONResponse(
-            status_code=HTTP_401_UNAUTHORIZED,
-            content={"detail": "Missing or invalid API token"},
-        )
-
-    return await call_next(request)
+    try:
+        response = await call_next(request)
+    except Exception:
+        _audit_api_action(request, 500, principal)
+        raise
+    _audit_api_action(request, response.status_code, principal)
+    return response
 
 
 class AcceleratorInfoModel(BaseModel):
