@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -188,3 +190,181 @@ def test_split_command_line_uses_platform_appropriate_rules() -> None:
 
     assert windows_parts == ["python", "-c", "print(1)"]
     assert posix_parts == ["python", "-c", "print(1)"]
+
+
+def test_read_os_release_falls_back_to_quoted_file_values(monkeypatch):
+    class ReleasePath:
+        def __init__(self, _path):
+            pass
+
+        def exists(self):
+            return True
+
+        def read_text(self, *, encoding):
+            assert encoding == "utf-8"
+            return "\n".join(
+                [
+                    'ID="TestOS"',
+                    "VERSION_CODENAME=stable",
+                    'ID_LIKE="Debian Ubuntu"',
+                    "invalid",
+                ]
+            )
+
+    def unavailable():
+        raise OSError("platform release helper unavailable")
+
+    monkeypatch.setattr(platform_support.platform, "freedesktop_os_release", unavailable)
+    monkeypatch.setattr(platform_support, "Path", ReleasePath)
+
+    assert platform_support._read_os_release() == {
+        "ID": "TestOS",
+        "VERSION_CODENAME": "stable",
+        "ID_LIKE": "Debian Ubuntu",
+    }
+
+
+def test_linux_distribution_details_use_fallback_and_normalize_id_like(monkeypatch):
+    monkeypatch.setattr(
+        platform_support,
+        "distro",
+        SimpleNamespace(id=lambda: "  ", codename=lambda: ""),
+    )
+    monkeypatch.setattr(
+        platform_support,
+        "_read_os_release",
+        lambda: {
+            "ID": " Ubuntu ",
+            "VERSION_CODENAME": " Noble ",
+            "ID_LIKE": "Debian  ubuntu ",
+        },
+    )
+
+    assert platform_support._read_linux_distribution_details() == (
+        "ubuntu",
+        "noble",
+        ("debian", "ubuntu"),
+    )
+
+
+def test_detect_host_platform_normalizes_empty_system_and_wsl_markers(monkeypatch):
+    monkeypatch.setattr(platform_support.platform, "system", lambda: "")
+    monkeypatch.setattr(platform_support.platform, "release", lambda: "5.15")
+    monkeypatch.setattr(platform_support.platform, "version", lambda: "")
+    monkeypatch.setattr(platform_support.platform, "machine", lambda: "x86_64")
+    monkeypatch.setattr(platform_support.sys, "platform", "linux")
+    monkeypatch.setattr(
+        platform_support, "_read_text_if_present", lambda _path: "Microsoft"
+    )
+    monkeypatch.setattr(
+        platform_support,
+        "_read_linux_distribution_details",
+        lambda: ("debian", "bookworm", ("debian",)),
+    )
+
+    host = platform_support.detect_host_platform()
+
+    assert host.family == "linux"
+    assert host.system == "Linux"
+    assert host.is_linux is True
+    assert host.is_wsl is True
+    assert host.installer_target == "debian"
+
+
+def test_detect_unknown_host_does_not_read_distribution(monkeypatch):
+    monkeypatch.setattr(platform_support.platform, "system", lambda: "Plan9")
+    monkeypatch.setattr(platform_support.platform, "release", lambda: "")
+    monkeypatch.setattr(platform_support.platform, "version", lambda: "")
+    monkeypatch.setattr(platform_support.platform, "machine", lambda: "")
+    monkeypatch.setattr(platform_support.sys, "platform", "plan9")
+    monkeypatch.setattr(
+        platform_support,
+        "_read_linux_distribution_details",
+        lambda: pytest.fail("non-Linux host must not read distribution details"),
+    )
+
+    host = platform_support.detect_host_platform()
+
+    assert host.family == "unknown"
+    assert host.is_unknown is True
+    assert host.is_posix is False
+    assert host.installer_target == "unknown"
+
+
+def test_find_project_root_reports_missing_project_marker(tmp_path: Path):
+    start = tmp_path / "nested" / "file.py"
+    start.parent.mkdir()
+    start.write_text("", encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="Unable to locate the project root"):
+        platform_support.find_project_root(start)
+
+
+def test_unknown_target_has_no_scripts_and_script_lookup_is_validated(
+    tmp_path: Path,
+):
+    paths = platform_support.resolve_platform_script_paths(
+        platform_support.find_project_root(Path(__file__).resolve()),
+        target="plan9",
+    )
+
+    assert paths.install is None
+    assert paths.update is None
+    assert paths.uninstall is None
+    assert paths.run is None
+    assert paths.command_for("install") is None
+    with pytest.raises(ValueError, match="Unsupported platform script action"):
+        paths.script_for("shutdown")
+
+
+def test_script_command_builders_cover_shell_and_powershell_fallbacks(
+    monkeypatch, tmp_path: Path
+):
+    monkeypatch.setattr(platform_support.shutil, "which", lambda _tool: None)
+    powershell_script = tmp_path / "setup.ps1"
+    assert platform_support.build_platform_script_command(powershell_script) == [
+        "powershell",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        str(powershell_script),
+    ]
+    assert platform_support.build_platform_script_command(tmp_path / "run.bat") == [
+        "cmd",
+        "/c",
+        str(tmp_path / "run.bat"),
+    ]
+    assert platform_support.build_platform_script_command(tmp_path / "run.sh") == [
+        "bash",
+        str(tmp_path / "run.sh"),
+    ]
+    assert platform_support.build_platform_script_command(tmp_path / "custom") == [
+        str(tmp_path / "custom")
+    ]
+
+
+def test_require_admin_privileges_checks_posix_and_windows(monkeypatch):
+    monkeypatch.setattr(platform_support.os, "geteuid", lambda: 0)
+    platform_support.require_admin_privileges(host=_host(family="linux", system="Linux"))
+    monkeypatch.setattr(platform_support.os, "geteuid", lambda: 1000)
+    with pytest.raises(PermissionError, match="root or with sudo"):
+        platform_support.require_admin_privileges(
+            host=_host(family="linux", system="Linux")
+        )
+
+    fake_ctypes = SimpleNamespace(
+        windll=SimpleNamespace(shell32=SimpleNamespace(IsUserAnAdmin=lambda: True))
+    )
+    monkeypatch.setitem(sys.modules, "ctypes", fake_ctypes)
+    platform_support.require_admin_privileges(
+        host=_host(family="windows", system="Windows")
+    )
+
+    fake_ctypes.windll.shell32.IsUserAnAdmin = lambda: False
+    with pytest.raises(
+        PermissionError,
+        match="Administrator privileges are required",
+    ):
+        platform_support.require_admin_privileges(
+            host=_host(family="windows", system="Windows")
+        )
