@@ -9,7 +9,7 @@ from huey.memory.PY.run import main
 def test_system_check_called(monkeypatch):
     called = {}
 
-    def fake_check():
+    def fake_check(*_args, **_kwargs):
         called["done"] = True
 
     monkeypatch.setattr("huey.os.core.system_checks.system_check", fake_check)
