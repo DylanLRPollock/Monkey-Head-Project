@@ -35,7 +35,9 @@ def test_legacy_flat_script_paths_still_exist() -> None:
         "repackage_files.py",
         "security_check.sh",
     }
-    assert expected.issubset({path.name for path in SCRIPTS_ROOT.rglob('*') if path.is_file()})
+    assert expected.issubset(
+        {path.name for path in SCRIPTS_ROOT.rglob("*") if path.is_file()}
+    )
 
 
 def test_memory_shell_wrappers_cover_preserved_shell_scripts() -> None:
