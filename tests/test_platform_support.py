@@ -214,7 +214,9 @@ def test_read_os_release_falls_back_to_quoted_file_values(monkeypatch):
     def unavailable():
         raise OSError("platform release helper unavailable")
 
-    monkeypatch.setattr(platform_support.platform, "freedesktop_os_release", unavailable)
+    monkeypatch.setattr(
+        platform_support.platform, "freedesktop_os_release", unavailable
+    )
     monkeypatch.setattr(platform_support, "Path", ReleasePath)
 
     assert platform_support._read_os_release() == {
@@ -345,7 +347,9 @@ def test_script_command_builders_cover_shell_and_powershell_fallbacks(
 
 def test_require_admin_privileges_checks_posix_and_windows(monkeypatch):
     monkeypatch.setattr(platform_support.os, "geteuid", lambda: 0)
-    platform_support.require_admin_privileges(host=_host(family="linux", system="Linux"))
+    platform_support.require_admin_privileges(
+        host=_host(family="linux", system="Linux")
+    )
     monkeypatch.setattr(platform_support.os, "geteuid", lambda: 1000)
     with pytest.raises(PermissionError, match="root or with sudo"):
         platform_support.require_admin_privileges(
