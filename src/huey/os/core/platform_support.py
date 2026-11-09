@@ -297,7 +297,7 @@ def find_project_root(start: Path | None = None) -> Path:
 
 
 def _host_platform_from_target(target: str) -> HostPlatform:
-    normalized_target = normalize_installer_target(target)
+    normalized_target = normalize_installer_target(target, sys_platform_name="")
     if normalized_target in {"debian", "linux"}:
         family: PlatformFamily = "linux"
     elif normalized_target in {"windows", "macos"}:
