@@ -134,14 +134,15 @@ def test_psutil_status_normalizes_unknown_runtime_and_handles_errors(monkeypatch
 
 def test_acpi_status_parses_output_and_handles_command_failure(monkeypatch):
     monkeypatch.setattr(management.shutil, "which", lambda _name: "/usr/bin/acpi")
-    monkeypatch.setattr(
-        management.subprocess,
-        "check_output",
-        lambda *_args, **_kwargs: (
-            "Battery 1: Discharging, 45%, 01:02:03 remaining\\n"
-            "AC Adapter 0: on-line"
-        ),
-    )
+    def fake_check_output(*_args, **_kwargs):
+        return "\\n".join(
+            [
+                "Battery 1: Discharging, 45%, 01:02:03 remaining",
+                "AC Adapter 0: on-line",
+            ]
+        )
+
+    monkeypatch.setattr(management.subprocess, "check_output", fake_check_output)
 
     status = BatteryMonitor()._status_from_acpi()
 
@@ -177,6 +178,7 @@ def test_observe_emits_low_recovery_and_connection_events_once():
 def test_remove_hook_and_listener_failure_do_not_break_observation():
     monitor = BatteryMonitor()
     received = []
+
     def callback(status):
         received.append(status)
 
