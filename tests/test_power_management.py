@@ -177,10 +177,15 @@ def test_observe_emits_low_recovery_and_connection_events_once():
 def test_remove_hook_and_listener_failure_do_not_break_observation():
     monitor = BatteryMonitor()
     received = []
-    callback = lambda status: received.append(status)
+    def callback(status):
+        received.append(status)
+
+    def failing_callback(_status):
+        raise ValueError("bad hook")
+
     monitor.register_hook("status", callback)
     monitor.remove_hook("status", callback)
-    monitor.register_hook("status", lambda _status: (_ for _ in ()).throw(ValueError("bad hook")))
+    monitor.register_hook("status", failing_callback)
 
     observed = monitor.observe({"percent": 50})
 
