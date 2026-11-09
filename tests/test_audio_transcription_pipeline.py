@@ -77,7 +77,9 @@ def test_custom_transcriber_preserves_metadata_and_prepares_audio(
         calls.append((path, output_path))
         return prepared
 
-    monkeypatch.setattr(pipeline, "_default_prepared_path", lambda path: tmp_path / "target.wav")
+    monkeypatch.setattr(
+        pipeline, "_default_prepared_path", lambda path: tmp_path / "target.wav"
+    )
     monkeypatch.setattr(pipeline, "prepare_for_whisper", fake_prepare)
 
     def custom(path: str) -> dict[str, object]:
@@ -130,7 +132,9 @@ def test_faster_whisper_backend_collects_segments_and_runtime_metadata(
                 ]
             ), SimpleNamespace(language="en", duration=3.0)
 
-    monkeypatch.setattr(pipeline, "prepare_for_whisper", lambda *args, **kwargs: prepared)
+    monkeypatch.setattr(
+        pipeline, "prepare_for_whisper", lambda *args, **kwargs: prepared
+    )
     monkeypatch.setattr(pipeline, "_default_prepared_path", lambda path: tmp_path / "target.wav")
     monkeypatch.setitem(
         sys.modules,
@@ -167,8 +171,14 @@ def test_faster_whisper_backend_uses_requested_language_when_info_omits_it(
         def transcribe(self, path: str, *, language: str):
             return iter(()), SimpleNamespace()
 
-    monkeypatch.setattr(pipeline, "prepare_for_whisper", lambda *args, **kwargs: path)
-    monkeypatch.setattr(pipeline, "_default_prepared_path", lambda source: tmp_path / "prepared.wav")
+    monkeypatch.setattr(
+        pipeline, "prepare_for_whisper", lambda *args, **kwargs: path
+    )
+    monkeypatch.setattr(
+        pipeline,
+        "_default_prepared_path",
+        lambda source: tmp_path / "prepared.wav",
+    )
     path = tmp_path / "prepared.wav"
     monkeypatch.setitem(
         sys.modules,
