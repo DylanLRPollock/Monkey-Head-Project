@@ -73,7 +73,7 @@ def source_file(tmp_path):
 
 
 def test_convert_audio_builds_argv_and_rejects_failed_ffmpeg(
-    manager, source_file, tmp_path
+    manager, source_file, tmp_path, monkeypatch
 ):
     target = tmp_path / "nested" / "converted.mp3"
 
@@ -144,7 +144,10 @@ def test_media_wrapper_commands_cover_filters_codecs_and_frame_patterns(
     assert extracted == (tmp_path / "audio.aac").resolve()
     assert transcoded == (tmp_path / "video.mp4").resolve()
     assert frames == (tmp_path / "frames" / "frame-%03d.png").resolve()
-    assert "silenceremove=" in manager.commands[0][0][manager.commands[0][0].index("-af") + 1]
+    silence_filter = manager.commands[0][0][
+        manager.commands[0][0].index("-af") + 1
+    ]
+    assert "silenceremove=" in silence_filter
     assert manager.commands[1][0][-7:] == [
         "-acodec",
         "aac",
@@ -187,13 +190,9 @@ def test_module_wrappers_validate_sources_outputs_and_ffmpeg_before_execution(
     def missing_ffmpeg():
         raise RuntimeError("FFmpeg is not available")
 
-    monkeypatch = pytest.MonkeyPatch()
-    try:
-        monkeypatch.setattr(manager, "require_ffmpeg", missing_ffmpeg)
-        with pytest.raises(RuntimeError, match="FFmpeg is not available"):
-            media_manager.convert_audio(source_file, tmp_path / "unavailable.wav")
-    finally:
-        monkeypatch.undo()
+    monkeypatch.setattr(manager, "require_ffmpeg", missing_ffmpeg)
+    with pytest.raises(RuntimeError, match="FFmpeg is not available"):
+        media_manager.convert_audio(source_file, tmp_path / "unavailable.wav")
     assert manager.commands == []
 
 
