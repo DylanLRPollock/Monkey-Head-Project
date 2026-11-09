@@ -109,7 +109,7 @@ def test_index_input_validation(tmp_path):
     path.write_text('{"invalid": true}')
     with pytest.raises(ValueError, match="Malformed"):
         indexing.update_index({"path": "test"}, index_path=path)
-    with pytest.raises(ValueError, match="path"):
+    with pytest.raises(ValueError, match="Malformed memory index"):
         indexing.update_index({}, index_path=path)
 
 
