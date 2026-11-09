@@ -21,20 +21,25 @@ Core HueyOS host power and project uninstall operations use
 - Power commands are constructed from fixed platform-specific argv lists with
   `shell=False`; the uninstaller verifies the resolved script remains inside
   the project root and uses a timeout.
-- API tokens are scoped: `HUEY_API_OPERATOR_TOKEN` and
-  `HUEY_API_ADMIN_TOKEN` provide separate roles. The legacy `HUEY_API_TOKEN`
-  remains accepted as an operator token. Host shutdown also requires the
-  `X-Huey-Confirm: shutdown` header and an admin-scoped token.
+- API credentials can be configured as shared role tokens through
+  `HUEY_API_OPERATOR_TOKEN` / `HUEY_API_ADMIN_TOKEN`, with legacy
+  `HUEY_API_TOKEN` remaining operator-scoped, or as unique named credentials
+  in `HUEY_API_PRINCIPALS_JSON`. Named principals receive configured
+  operator/admin roles and are attached to request state. Host shutdown also
+  requires the `X-Huey-Confirm: shutdown` header and admin scope.
+- Mutating HTTP requests produce secret-free application log entries with
+  principal label, role, route template, outcome status, and UTC time.
 
 ## Remaining boundary
 
 This policy does not authenticate the `actor_role` argument for arbitrary
 in-process callers. API ingress maps credentials to roles before reaching the
 gate; local callers must be trusted and must not forward untrusted role claims.
-The token scheme does not yet provide per-user identities, audit attribution,
-trusted-proxy policy, or fine-grained container/agent capabilities. Do not
-present those controls as implemented until a separate authenticated principal
-model and connector/action audit are in place.
+The named-credential option provides configured attribution, not external identity
+verification or federated login. Shared legacy tokens still collapse callers to
+one subject. Task ownership, tamper-resistant action records, trusted-proxy
+policy, and fine-grained container/agent capabilities remain absent. Direct
+in-process actions are not covered by the HTTP action log.
 
 The UI stub exposes no privileged actions at present. If script, container,
 Kubernetes, or tool execution is added, route every mutating operation through
