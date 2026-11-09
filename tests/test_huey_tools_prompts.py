@@ -38,4 +38,4 @@ def test_phase_3_prompt_does_not_instruct_changing_monkey_repo() -> None:
 def test_phase_2_5_prompt_does_not_instruct_renaming_package() -> None:
     prompt = generate_task_prompt("phase_2_5_connector")
 
-    assert "do not rename the PyHuey package" in prompt.lower()
+    assert "do not rename the pyhuey package" in prompt.lower()
