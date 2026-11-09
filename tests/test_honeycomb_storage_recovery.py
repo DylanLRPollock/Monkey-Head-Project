@@ -3,10 +3,34 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 
 import pytest
 
 from huey.honeycomb_storage import HoneycombStorage
+
+
+def test_legacy_storage_import_resolves_to_canonical_module():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "import huey.honeycomb_storage as canonical; "
+                "from huey.honeycomb import HoneycombMonitor as LegacyMonitor; "
+                "from huey.os.honeycomb import HoneycombMonitor as CanonicalMonitor; "
+                "from huey.os.honeycomb.storage import HoneycombStorage; "
+                "assert HoneycombStorage is canonical.HoneycombStorage; "
+                "assert LegacyMonitor is CanonicalMonitor"
+            ),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
 
 
 def test_missing_record_is_a_noop_for_reads_and_removal(tmp_path):
