@@ -10,6 +10,18 @@ import pytest
 from huey.os.logging_setup import configure_logging
 
 
+@pytest.fixture(autouse=True)
+def _close_logging_handlers():
+    yield
+    for logger in (logging.getLogger(), *(
+        item for item in logging.Logger.manager.loggerDict.values()
+        if isinstance(item, logging.Logger)
+    )):
+        for handler in list(logger.handlers):
+            logger.removeHandler(handler)
+            handler.close()
+
+
 def test_configure_logging_creates_log(tmp_path):
     cfg = tmp_path / "cfg.ini"
     log_file = tmp_path / "app.log"
@@ -94,7 +106,7 @@ def test_default_config_uses_memory(monkeypatch, tmp_path):
     monkeypatch.delenv("MONKEY_HEAD_CONFIG", raising=False)
     logger = configure_logging()
     logger.info("hello")
-    log_file = tmp_path / "memory" / "LOGS" / "huey.os.log"
+    log_file = tmp_path / "memory" / "LOGS" / "hueyos.log"
     assert log_file.exists()
 
 
