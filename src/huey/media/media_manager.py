@@ -533,7 +533,6 @@ class FFmpegMediaManager:
         """Extract one video frame by its zero-based frame number."""
         if frame_number < 0:
             raise ValueError("frame_number must be zero or greater")
-
         input_file = self._validate_existing_input(input_path)
         output_file = self._validate_output_available(output_path, overwrite)
         output_file.parent.mkdir(parents=True, exist_ok=True)
