@@ -91,8 +91,6 @@ def test_production_rejects_malformed_named_api_principals(monkeypatch):
         validate_security_sensitive_environment()
 
 
-
-
 def test_admin_and_operator_tokens_must_be_distinct(monkeypatch):
     monkeypatch.setenv("HUEY_ENV", "production")
     monkeypatch.setenv("HUEY_API_TOKEN", "same-token")
