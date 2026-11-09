@@ -1,4 +1,4 @@
-# HueyOS test taxonomy (2026-11-03)
+# HueyOS test taxonomy (reviewed 2026-11-09)
 
 Python 3.13 is the supported release target. The 3.14 CI lane is
 experimental and non-gating; both must report actual failures and skips.
@@ -43,3 +43,24 @@ Register custom pytest markers centrally when introduced, document
 platform-dependent skip reasons, and keep negative tests mandatory.
 A skip may reflect missing optional equipment; it may not hide a failure of
 a supported Python 3.13 pure-software codepath. Check skip counts in CI.
+
+The current tests use these explicit skip boundaries; they are not blanket
+platform exclusions:
+
+| Skip boundary | Examples in the test tree | Expected interpretation |
+| --- | --- | --- |
+| Optional dependency or executable | `pytest.importorskip` for TensorFlow, pypdf, and Pillow; module-level FFmpeg availability checks | Report as an optional-feature skip, not as a platform failure. Keep the affected feature's import and behavior covered when its dependency is installed. |
+| Host filesystem capability | Symlink creation in `test_memory_indexing_behaviors.py`, `test_privileged_operations.py`, and `test_chapter_splitter.py` | Skip only the symlink-specific case when the host explicitly rejects symlink creation; do not skip the surrounding path or security tests. |
+| Repository-layout compatibility | Module-level checks in `test_fresh_install.py`, `test_gui.py`, and `test_repair.py` | Keep the reason visible; a missing legacy module is not evidence that a supported runtime path passed. |
+
+No custom `hardware` or general platform marker is registered today. Tests
+must continue to mock hardware by default; if a genuinely hardware-dependent
+test is added, register its marker in the pytest configuration and require an
+explicit opt-in rather than using a broad platform skip. The 16 skips reported
+by PR #896 are a historical aggregate; do not infer their category distribution
+without inspecting that run's skip report.
+
+No assertions were removed or consolidated in this maintenance audit. Treat
+similar-looking assertions as distinct until a test-to-behavior map and
+coverage evidence demonstrate equivalent behavior; preserve the assertions
+otherwise.
