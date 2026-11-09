@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
-
 import pytest
 
 from huey.gui import storage
@@ -98,7 +96,8 @@ def test_save_workspace_creates_parent_and_uses_default_path(
     assert saved_path == path
     assert path.exists()
     saved_text = path.read_text(encoding="utf-8")
-    assert storage.import_workspace(saved_text) == data
+    restored = storage.import_workspace(saved_text)
+    assert restored == data
 
 
 def test_load_workspace_reads_existing_json(tmp_path) -> None:
@@ -135,4 +134,5 @@ def test_reset_workspace_writes_and_returns_defaults(tmp_path, monkeypatch) -> N
     assert isinstance(result, storage.WorkspaceData)
     assert path.exists()
     saved_text = path.read_text(encoding="utf-8")
-    assert storage.import_workspace(saved_text) == result
+    restored = storage.import_workspace(saved_text)
+    assert restored == result
