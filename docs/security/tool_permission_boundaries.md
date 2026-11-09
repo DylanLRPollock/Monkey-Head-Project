@@ -5,11 +5,6 @@ This note describes the current implementation and remaining boundaries for
 
 ## Current implementation
 
-The checked-in MonkeyManager module is currently a minimal cockpit stub with no
-script, container, Kubernetes, browser, or provider execution methods. Older
-notes about `_run_script()` and `HUEY_TOOL_ALLOW_DESTRUCTIVE` describe an
-previous implementation and must not be treated as current enforcement.
-
 Core HueyOS host power and project uninstall operations use
 `huey.os.core.privileged_operations.authorize_privileged_operation`:
 
@@ -29,19 +24,38 @@ Core HueyOS host power and project uninstall operations use
   requires the `X-Huey-Confirm: shutdown` header and admin scope.
 - Mutating HTTP requests produce secret-free application log entries with
   principal label, role, route template, outcome status, and UTC time.
+- PyHuey's `MonkeyManager` routes install, update, run, container, Kubernetes,
+  and memory auto-sort actions through the same capability gate. Its optional
+  host-supplied authorization provider returns a verified role and explicit
+  confirmation for each operation. Without that provider, manager actions are
+  denied; `HUEY_TOOL_ALLOW_MUTATING` and `HUEY_TOOL_ALLOW_DESTRUCTIVE` are not
+  authorization mechanisms. Manager construction and dry-run decisions do not
+  resolve project paths or scan registered functions.
+- Manager script execution resolves the script path, rejects symlinks and
+  paths outside the project root, and runs an argv list with `shell=False` and
+  a 300-second timeout. Mutating registered functions are capability-gated
+  before invocation; only reviewed registry functions are exposed, with
+  read-only functions requiring the `reader` role.
 
 ## Remaining boundary
 
 This policy does not authenticate the `actor_role` argument for arbitrary
 in-process callers. API ingress maps credentials to roles before reaching the
-gate; local callers must be trusted and must not forward untrusted role claims.
+gate. The PyHuey authorization provider is a trusted host integration point;
+it must establish caller identity and obtain confirmation rather than
+forwarding request-derived role claims.
 The named-credential option provides configured attribution, not external identity
 verification or federated login. Shared legacy tokens still collapse callers to
 one subject. Task ownership, tamper-resistant action records, trusted-proxy
-policy, and fine-grained container/agent capabilities remain absent. Direct
-in-process actions are not covered by the HTTP action log.
+policy, and external identity federation remain absent. Direct in-process
+actions are not covered by the HTTP action log.
 
-The UI stub exposes no privileged actions at present. If script, container,
-Kubernetes, or tool execution is added, route every mutating operation through
-the shared gate, validate paths and argv, set timeouts, and test that denied
-requests launch no subprocess and touch no filesystem.
+## Migration impact
+
+The prior `HUEY_TOOL_ALLOW_MUTATING=1` and
+`HUEY_TOOL_ALLOW_DESTRUCTIVE=1` environment opt-ins no longer authorize
+MonkeyManager actions. Integrations that need those actions must construct the
+manager with an authorization provider that validates a role for each
+capability and returns explicit confirmation when required. Existing scripts
+and container functions continue to deny direct calls unless their caller
+supplies the required role and confirmation.
