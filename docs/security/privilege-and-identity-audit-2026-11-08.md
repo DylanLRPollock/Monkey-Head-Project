@@ -60,11 +60,13 @@ guarded separately by the local capability gate.
 
 - No code path found in this audit grants admin from a body/query actor string;
   shutdown’s role comes from bearer-token matching.
-- Do not describe this deployment as per-user authenticated or audited.
-- Before remote multi-user operation, replace shared tokens with individually
-  named credentials or an external identity provider, add owner checks for task
-  operations, and emit secret-free audit records containing principal, role,
-  action, target, outcome, and UTC time.
+- Do not describe this deployment as externally user-authenticated or as a
+  tamper-resistant audit system. Named subjects are locally configured labels;
+  shared credentials still aggregate clients to one subject.
+- Before remote multi-user operation, add task-owner checks, durable
+  tamper-resistant action records, direct in-process action attribution, and a
+  complete plugin/agent capability registry. Consider an external identity
+  provider when local environment-managed credentials are insufficient.
 - Preserve local development behavior only as an explicit loopback policy;
   verify proxy deployments do not trust forwarded client addresses.
 - Continue treating plugin/agent execution as a separate capability boundary;
@@ -79,5 +81,7 @@ helpers in `src/huey/memory/PY/api.py`, extracted routers in
 document describes current source behavior and is not a deployment attestation.
 
 The direct-operation safeguards summarized above were merged in PR #870 on
-2026-11-09. Their merge does not resolve the remaining named-principal,
-per-task ownership, plugin-registry, or audit-record gaps.
+2026-11-09. Named API credential attribution and secret-free mutation logging
+are implemented in the current change. Per-task ownership, external identity
+verification, tamper-resistant audit storage, direct in-process action logging,
+and a complete plugin/agent capability registry remain open.
