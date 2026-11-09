@@ -39,8 +39,8 @@ def test_run_kubernetes(monkeypatch):
     )
     monkeypatch.setattr("huey.os.core.system_checks.check_os_support", lambda: None)
     monkeypatch.setattr("huey.os.core.system_checks.check_python_version", lambda: None)
-    monkeypatch.setattr("run.launch_gui", lambda: None)
-    monkeypatch.setattr("run._load_cli", lambda: lambda: None)
+    monkeypatch.setattr("huey.memory.PY.run.launch_gui", lambda: None)
+    monkeypatch.setattr("huey.memory.PY.run._load_cli", lambda: lambda: None)
     monkeypatch.setattr("sys.argv", ["run.py", "--kubernetes", "--yes"])
     main()
     assert called["k8s"] == {
