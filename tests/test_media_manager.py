@@ -1,8 +1,8 @@
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
-from huey.media.media_manager import FFmpegManager
 from huey.media import (
     AudioTransformOptions,
     FFmpegCommandResult,
@@ -10,6 +10,7 @@ from huey.media import (
     check_ffmpeg_available,
     media_manager,
 )
+from huey.media.media_manager import FFmpegManager
 
 
 def test_import_huey_media_succeeds() -> None:
