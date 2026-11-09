@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import subprocess
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -105,9 +104,11 @@ def test_container_and_kubernetes_commands_use_validated_paths(monkeypatch, tmp_
     )
     calls = []
     monkeypatch.setattr(
-        containers, "_run_command", lambda command, description, cwd=None: calls.append(
+        containers,
+        "_run_command",
+        lambda command, description, cwd=None: calls.append(
             (command, description, cwd)
-        )
+        ),
     )
 
     containers.manage_containers(confirmed=True, actor_role="operator")
@@ -117,9 +118,7 @@ def test_container_and_kubernetes_commands_use_validated_paths(monkeypatch, tmp_
     containers.manage_networks(actor_role="reader")
     containers.deploy_kubernetes(manifest, confirmed=True, actor_role="operator")
     containers.cleanup_kubernetes(manifest, confirmed=True, actor_role="admin")
-    containers.scale_deployment(
-        "web-api", 3, confirmed=True, actor_role="operator"
-    )
+    containers.scale_deployment("web-api", 3, confirmed=True, actor_role="operator")
 
     assert [call[0] for call in calls] == [
         ["docker-compose", "up", "-d"],
