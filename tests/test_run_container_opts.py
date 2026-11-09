@@ -13,7 +13,7 @@ def test_run_docker_compose(monkeypatch):
         called["docker"] = kwargs
 
     monkeypatch.setattr(
-        "huey.memory.PY.services.container_management.manage_containers", fake_manage
+        "huey.services.container_management.manage_containers", fake_manage
     )
     monkeypatch.setattr("huey.os.core.system_checks.check_os_support", lambda: None)
     monkeypatch.setattr("huey.os.core.system_checks.check_python_version", lambda: None)
@@ -35,7 +35,7 @@ def test_run_kubernetes(monkeypatch):
         called["k8s"] = kwargs
 
     monkeypatch.setattr(
-        "huey.memory.PY.services.container_management.deploy_kubernetes", fake_deploy
+        "huey.services.container_management.deploy_kubernetes", fake_deploy
     )
     monkeypatch.setattr("huey.os.core.system_checks.check_os_support", lambda: None)
     monkeypatch.setattr("huey.os.core.system_checks.check_python_version", lambda: None)
