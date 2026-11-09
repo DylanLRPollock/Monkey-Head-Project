@@ -6,10 +6,15 @@ Network ingress and agent/plugin integrations must authenticate separately.
 
 from __future__ import annotations
 
+import json
+import logging
+from datetime import UTC, datetime
 from typing import Literal
 
 Capability = Literal["read-only", "mutating", "destructive"]
 OperatorRole = Literal["reader", "operator", "admin"]
+
+LOGGER = logging.getLogger(__name__)
 
 OPERATIONS: dict[str, Capability] = {
     "host.shutdown": "destructive",
@@ -36,6 +41,35 @@ OPERATIONS: dict[str, Capability] = {
 }
 
 
+def _audit_attempt(
+    operation: str,
+    capability: Capability | None,
+    actor_role: object,
+    *,
+    confirmed: bool,
+    dry_run: bool,
+    outcome: Literal["allowed", "denied", "dry_run"],
+    reason: str,
+) -> None:
+    """Write a secret-free structured record for every gate decision."""
+    role_claim = (
+        actor_role if actor_role in {"reader", "operator", "admin"} else "unrecognized"
+    )
+    record = {
+        "event": "privileged_operation",
+        "timestamp": datetime.now(UTC).isoformat(timespec="seconds"),
+        "operation": operation,
+        "capability": capability,
+        "role_claim": role_claim,
+        "confirmed": confirmed,
+        "dry_run": dry_run,
+        "outcome": outcome,
+        "reason": reason,
+    }
+    level = logging.WARNING if outcome == "denied" else logging.INFO
+    LOGGER.log(level, "%s", json.dumps(record, sort_keys=True, separators=(",", ":")))
+
+
 def authorize_privileged_operation(
     operation: str,
     *,
@@ -49,19 +83,100 @@ def authorize_privileged_operation(
     the caller, not proof of identity; the calling surface must verify it.
     """
     capability = OPERATIONS.get(operation)
+    audit_operation = operation if capability is not None else "unregistered"
     if capability is None:
+        _audit_attempt(
+            audit_operation,
+            None,
+            actor_role,
+            confirmed=confirmed is True,
+            dry_run=dry_run is True,
+            outcome="denied",
+            reason="unknown_operation",
+        )
         raise PermissionError(f"Unknown privileged operation: {operation}")
+
+    if not isinstance(confirmed, bool) or not isinstance(dry_run, bool):
+        _audit_attempt(
+            audit_operation,
+            capability,
+            actor_role,
+            confirmed=confirmed is True,
+            dry_run=dry_run is True,
+            outcome="denied",
+            reason="invalid_confirmation_flags",
+        )
+        raise PermissionError(f"Invalid authorization flags: {operation}")
+
     if dry_run:
+        _audit_attempt(
+            audit_operation,
+            capability,
+            actor_role,
+            confirmed=confirmed,
+            dry_run=True,
+            outcome="dry_run",
+            reason="preview_only",
+        )
         return False
+
     if capability == "read-only":
         if actor_role not in {"reader", "operator", "admin"}:
+            _audit_attempt(
+                audit_operation,
+                capability,
+                actor_role,
+                confirmed=confirmed,
+                dry_run=False,
+                outcome="denied",
+                reason="role_not_authorized",
+            )
             raise PermissionError(f"Operator role not authorized: {operation}")
+        _audit_attempt(
+            audit_operation,
+            capability,
+            actor_role,
+            confirmed=confirmed,
+            dry_run=False,
+            outcome="allowed",
+            reason="read_only_role",
+        )
         return True
-    if not confirmed:
+
+    if confirmed is not True:
+        _audit_attempt(
+            audit_operation,
+            capability,
+            actor_role,
+            confirmed=confirmed,
+            dry_run=False,
+            outcome="denied",
+            reason="confirmation_required",
+        )
         raise PermissionError(f"Explicit confirmation required: {operation}")
+
     allowed_roles = {"admin"} if capability == "destructive" else {"operator", "admin"}
     if actor_role not in allowed_roles:
+        _audit_attempt(
+            audit_operation,
+            capability,
+            actor_role,
+            confirmed=confirmed,
+            dry_run=False,
+            outcome="denied",
+            reason="role_not_authorized",
+        )
         raise PermissionError(f"Operator role not authorized: {operation}")
+
+    _audit_attempt(
+        audit_operation,
+        capability,
+        actor_role,
+        confirmed=confirmed,
+        dry_run=False,
+        outcome="allowed",
+        reason="capability_policy",
+    )
     return True
 
 
