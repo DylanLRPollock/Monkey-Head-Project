@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import asyncio
 import importlib
+import json
+import logging
 from typing import Any
 from unittest.mock import Mock
 
@@ -82,6 +84,65 @@ async def test_api_token_is_required_when_configured(monkeypatch):
     assert health.status_code == 200
     assert blocked.status_code == 401
     assert allowed.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_named_api_principals_enforce_roles_and_are_audited(monkeypatch, caplog):
+    for variable in (
+        "HUEY_API_TOKEN",
+        "HUEY_API_OPERATOR_TOKEN",
+        "HUEY_API_ADMIN_TOKEN",
+    ):
+        monkeypatch.delenv(variable, raising=False)
+    operator_token = "operator-credential-test"
+    admin_token = "admin-credential-test"
+    monkeypatch.setenv(
+        "HUEY_API_PRINCIPALS_JSON",
+        json.dumps(
+            [
+                {
+                    "subject": "dashboard-service",
+                    "role": "operator",
+                    "token": operator_token,
+                },
+                {
+                    "subject": "deployment-admin",
+                    "role": "admin",
+                    "token": admin_token,
+                },
+            ]
+        ),
+    )
+    caplog.set_level(logging.INFO)
+
+    transport = ASGITransport(app=api_module.app)
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        operator_response = await client.post(
+            "/power/shutdown",
+            headers={
+                "Authorization": f"Bearer {operator_token}",
+                "X-Huey-Confirm": "shutdown",
+            },
+        )
+        admin_response = await client.post(
+            "/power/shutdown",
+            headers={"Authorization": f"Bearer {admin_token}"},
+        )
+
+    assert operator_response.status_code == 403
+    assert "admin-scoped API token" in operator_response.json()["detail"]
+    assert admin_response.status_code == 403
+    assert "Explicit shutdown confirmation required" in admin_response.json()["detail"]
+    assert (
+        "principal=dashboard-service role=operator "
+        "identity=named-credential method=POST route=/power/shutdown status=403"
+    ) in caplog.text
+    assert (
+        "principal=deployment-admin role=admin "
+        "identity=named-credential method=POST route=/power/shutdown status=403"
+    ) in caplog.text
+    assert operator_token not in caplog.text
+    assert admin_token not in caplog.text
 
 
 @pytest.mark.asyncio
