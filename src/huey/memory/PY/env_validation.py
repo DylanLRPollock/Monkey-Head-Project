@@ -153,13 +153,19 @@ def validate_security_sensitive_environment() -> None:
         value
         for key, value in configured_tokens.items()
         if key == "HUEY_API_ADMIN_TOKEN"
-        or any(p["subject"] == key and p["role"] == "admin" for p in named_principals)
+        or any(
+            p["subject"] == key and p["role"] == "admin"
+            for p in named_principals
+        )
     ]
     operator_tokens = [
         value
         for key, value in configured_tokens.items()
         if key in {"HUEY_API_TOKEN", "HUEY_API_OPERATOR_TOKEN"}
-        or any(p["subject"] == key and p["role"] == "operator" for p in named_principals)
+        or any(
+            p["subject"] == key and p["role"] == "operator"
+            for p in named_principals
+        )
     ]
     if any(
         hmac.compare_digest(admin, operator)
