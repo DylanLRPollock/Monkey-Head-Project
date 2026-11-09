@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import importlib.util
-import json
 from pathlib import Path
 
 
@@ -32,7 +31,6 @@ def test_complete_wiki_build(tmp_path: Path) -> None:
 def test_manifest_matches_generated_pages(tmp_path: Path) -> None:
     wiki = load_generator()
     wiki.build(tmp_path)
-    manifest = json.loads((tmp_path / "wiki-manifest.json").read_text())
     markdown = sorted(p.name for p in tmp_path.glob("*.md"))
     checksum_lines = (tmp_path / "SHA256SUMS").read_text().splitlines()
     checksums = {
