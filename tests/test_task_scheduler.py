@@ -114,9 +114,7 @@ def test_reconcile_processes_pending_tasks_in_priority_order():
 
 def test_complete_task_records_result_and_history():
     scheduler = TaskScheduler(health_provider=_healthy_snapshot)
-    record = scheduler.submit_task(
-        command="collect logs", requested_agent=Agent.SPARK
-    )
+    record = scheduler.submit_task(command="collect logs", requested_agent=Agent.SPARK)
     assert record.status is TaskStatus.RUNNING
 
     completed = scheduler.complete_task(record.task_id, result={"ok": True})
