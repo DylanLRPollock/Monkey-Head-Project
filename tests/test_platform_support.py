@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from types import SimpleNamespace
+import sys
 
 import pytest
 
@@ -201,7 +202,14 @@ def test_read_os_release_falls_back_to_quoted_file_values(monkeypatch):
 
         def read_text(self, *, encoding):
             assert encoding == "utf-8"
-            return 'ID="TestOS"\\nVERSION_CODENAME=stable\\nID_LIKE="Debian Ubuntu"\\ninvalid'
+            return "\\n".join(
+                [
+                    'ID="TestOS"',
+                    "VERSION_CODENAME=stable",
+                    'ID_LIKE="Debian Ubuntu"',
+                    "invalid",
+                ]
+            )
 
     def unavailable():
         raise OSError("platform release helper unavailable")
@@ -344,11 +352,10 @@ def test_require_admin_privileges_checks_posix_and_windows(monkeypatch):
             host=_host(family="linux", system="Linux")
         )
 
-    admin_check = SimpleNamespace(IsUserAnAdmin=lambda: True)
     fake_ctypes = SimpleNamespace(
         windll=SimpleNamespace(shell32=SimpleNamespace(IsUserAnAdmin=lambda: True))
     )
-    monkeypatch.setitem(__import__("sys").modules, "ctypes", fake_ctypes)
+    monkeypatch.setitem(sys.modules, "ctypes", fake_ctypes)
     platform_support.require_admin_privileges(
         host=_host(family="windows", system="Windows")
     )
