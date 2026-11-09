@@ -170,7 +170,7 @@ def test_media_wrapper_commands_cover_filters_codecs_and_frame_patterns(
 
 
 def test_module_wrappers_validate_sources_outputs_and_ffmpeg_before_execution(
-    manager, source_file, tmp_path
+    manager, source_file, tmp_path, monkeypatch
 ):
     with pytest.raises(FileNotFoundError):
         media_manager.convert_audio(tmp_path / "missing.wav", tmp_path / "out.wav")
