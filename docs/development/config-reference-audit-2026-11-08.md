@@ -22,10 +22,13 @@ settings.
 Searched all tracked repository files, including hidden files and workflow
 definitions, for alternate config names and explicit `-c`/`--config` selection.
 No build, test, lint, or CI command selects one of the alternate files. Matches
-are limited to audit/tooling documentation and workflow path filters for the
-canonical `.editorconfig`. `make lint` is the CI lint entrypoint; it uses the
-canonical configuration and does not call pre-commit. Standard automatic
-discovery therefore selects the canonical dotfiles documented above.
+for their names occur in the alternate/canonical config files themselves,
+repository metadata (including `.gitattributes` and `CODEOWNERS`), and audit or
+tooling documentation. The workflow references found are path filters for the
+canonical `.editorconfig`; no active command uses an alternate. `make lint` is
+the CI lint entrypoint; it uses the canonical configuration and does not call
+pre-commit. Standard automatic discovery therefore selects the canonical
+dotfiles documented above.
 
 The default `.flake8` scan excludes vendored code and the separately maintained
 legacy connector/API compatibility trees. The CI flake8 target additionally
