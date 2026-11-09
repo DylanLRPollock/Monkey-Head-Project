@@ -12,6 +12,7 @@ def _clear_env(monkeypatch):
         "HUEY_API_TOKEN",
         "HUEY_API_OPERATOR_TOKEN",
         "HUEY_API_ADMIN_TOKEN",
+        "HUEY_API_PRINCIPALS_JSON",
         "DB_PASSWORD",
         "DATABASE_PASSWORD",
         "POSTGRES_PASSWORD",
@@ -66,6 +67,30 @@ def test_production_passes_with_required_values(monkeypatch):
     monkeypatch.setenv("OPENAI_API_KEY", "openai-key")
 
     validate_security_sensitive_environment()
+
+
+def test_production_accepts_named_api_principals_without_shared_token(monkeypatch):
+    monkeypatch.setenv("HUEY_ENV", "production")
+    monkeypatch.setenv(
+        "HUEY_API_PRINCIPALS_JSON",
+        '[{"subject":"service-a","role":"operator","token":"named-token"}]',
+    )
+    monkeypatch.setenv("DB_PASSWORD", "db-pass")
+    monkeypatch.setenv("OPENAI_API_KEY", "openai-key")
+
+    validate_security_sensitive_environment()
+
+
+def test_production_rejects_malformed_named_api_principals(monkeypatch):
+    monkeypatch.setenv("HUEY_ENV", "production")
+    monkeypatch.setenv("HUEY_API_PRINCIPALS_JSON", "not-json")
+    monkeypatch.setenv("DB_PASSWORD", "db-pass")
+    monkeypatch.setenv("OPENAI_API_KEY", "openai-key")
+
+    with pytest.raises(RuntimeError, match="HUEY_API_PRINCIPALS_JSON"):
+        validate_security_sensitive_environment()
+
+
 
 
 def test_admin_and_operator_tokens_must_be_distinct(monkeypatch):
