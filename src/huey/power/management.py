@@ -300,9 +300,9 @@ class BatteryMonitor:
             return None
         try:
             output = subprocess.check_output(
-                [acpi_cmd, "-b"], text=True, stderr=subprocess.DEVNULL
+                [acpi_cmd, "-b"], text=True, stderr=subprocess.DEVNULL, timeout=10
             )
-        except (subprocess.CalledProcessError, OSError) as e:
+        except (subprocess.CalledProcessError, OSError, subprocess.TimeoutExpired) as e:
             LOGGER.debug("acpi command failed: %s", e)
             return None
         if not output:

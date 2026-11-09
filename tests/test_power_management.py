@@ -134,8 +134,10 @@ def test_psutil_status_normalizes_unknown_runtime_and_handles_errors(monkeypatch
 
 def test_acpi_status_parses_output_and_handles_command_failure(monkeypatch):
     monkeypatch.setattr(management.shutil, "which", lambda _name: "/usr/bin/acpi")
+    call = {}
 
     def fake_check_output(*_args, **_kwargs):
+        call.update(_kwargs)
         return "\n".join(
             [
                 "Battery 1: Discharging, 45%, 01:02:03 remaining",
@@ -153,10 +155,17 @@ def test_acpi_status_parses_output_and_handles_command_failure(monkeypatch):
         "power_plugged": False,
         "source": "acpi",
     }
+    assert call["timeout"] == 10
     monkeypatch.setattr(
         management.subprocess,
         "check_output",
         Mock(side_effect=management.subprocess.CalledProcessError(1, "acpi")),
+    )
+    assert BatteryMonitor()._status_from_acpi() is None
+    monkeypatch.setattr(
+        management.subprocess,
+        "check_output",
+        Mock(side_effect=management.subprocess.TimeoutExpired("acpi", 10)),
     )
     assert BatteryMonitor()._status_from_acpi() is None
 
