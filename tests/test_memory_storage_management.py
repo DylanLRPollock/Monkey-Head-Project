@@ -218,13 +218,15 @@ def test_remove_older_than_logs_inspection_and_stat_errors(
     monkeypatch.setattr(Path, "is_file", selective_is_file)
     monkeypatch.setattr(Path, "stat", selective_stat)
     monkeypatch.setattr(storage.time, "time", lambda: now + 60)
+    # Keep cleanup outside this test; the patched stat models the prune read only.
+    monkeypatch.setattr(manager, "cleanup_empty_dirs", lambda: None)
     caplog.set_level("WARNING")
 
     removed = manager.remove_older_than(7)
 
     assert removed == 0
     assert cannot_inspect.exists()
-    assert cannot_stat.exists()
+    assert original_stat(cannot_stat).st_size > 0
     assert "Failed to inspect path while pruning old files" in caplog.text
     assert "Failed to stat file while pruning old files" in caplog.text
 
