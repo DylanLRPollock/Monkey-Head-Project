@@ -61,6 +61,7 @@ class TaskResponse(BaseModel):
     """Serialized representation of a scheduled task."""
 
     task_id: str
+    owner_subject: str | None = None
     command: str
     priority: int
     requested_agent: Agent | None
@@ -90,6 +91,7 @@ class TaskResponse(BaseModel):
             )
         return cls(
             task_id=record.task_id,
+            owner_subject=record.owner_subject,
             command=record.command,
             priority=int(record.priority),
             requested_agent=record.requested_agent,

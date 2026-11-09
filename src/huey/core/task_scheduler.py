@@ -117,12 +117,14 @@ class TaskRecord:
     resource_profile: ResourceProfile = field(default_factory=ResourceProfile)
     snapshot: ResourceSnapshot | None = None
     history: list[TaskLogEntry] = field(default_factory=list)
+    owner_subject: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Serialise the record to a JSON compatible mapping."""
 
         return {
             "task_id": self.task_id,
+            "owner_subject": self.owner_subject,
             "command": self.command,
             "priority": int(self.priority),
             "requested_agent": (
@@ -303,6 +305,7 @@ class TaskScheduler:
         requested_agent: Agent | None = None,
         metadata: dict[str, Any] | None = None,
         resource_profile: ResourceProfile | None = None,
+        owner_subject: str | None = None,
     ) -> TaskRecord:
         """Register a new task and attempt assignment to an agent."""
 
@@ -320,6 +323,7 @@ class TaskScheduler:
             updated_at=created,
             metadata=metadata or {},
             resource_profile=resource_profile,
+            owner_subject=owner_subject,
         )
 
         with self._lock:

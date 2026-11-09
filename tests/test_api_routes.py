@@ -285,6 +285,95 @@ async def test_task_management_endpoints_support_submission_and_cancellation(
 
 
 @pytest.mark.asyncio
+async def test_named_task_principals_only_read_and_cancel_their_tasks(monkeypatch):
+    for variable in (
+        "HUEY_API_TOKEN",
+        "HUEY_API_OPERATOR_TOKEN",
+        "HUEY_API_ADMIN_TOKEN",
+    ):
+        monkeypatch.delenv(variable, raising=False)
+    monkeypatch.setenv("HUEY_ENABLE_UNSAFE_TASKS", "true")
+    monkeypatch.setenv(
+        "HUEY_API_PRINCIPALS_JSON",
+        json.dumps(
+            [
+                {
+                    "subject": "service-a",
+                    "role": "operator",
+                    "token": "token-a",
+                },
+                {
+                    "subject": "service-b",
+                    "role": "operator",
+                    "token": "token-b",
+                },
+                {
+                    "subject": "admin-service",
+                    "role": "admin",
+                    "token": "token-admin",
+                },
+            ]
+        ),
+    )
+    scheduler = TaskScheduler(health_provider=_healthy_snapshot)
+    monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
+    transport = ASGITransport(app=api_module.app)
+
+    async with AsyncClient(transport=transport, base_url="http://testserver") as client:
+        task_a = await client.post(
+            "/tasks",
+            json={"command": "task owned by service a"},
+            headers={"Authorization": "Bearer token-a"},
+        )
+        task_b = await client.post(
+            "/tasks",
+            json={"command": "task owned by service b"},
+            headers={"Authorization": "Bearer token-b"},
+        )
+        task_a_id = task_a.json()["task_id"]
+        task_b_id = task_b.json()["task_id"]
+
+        assert task_a.status_code == 202
+        assert task_a.json()["owner_subject"] == "service-a"
+        assert task_b.status_code == 202
+        assert task_b.json()["owner_subject"] == "service-b"
+
+        own_list = await client.get(
+            "/tasks", headers={"Authorization": "Bearer token-a"}
+        )
+        other_detail = await client.get(
+            f"/tasks/{task_b_id}", headers={"Authorization": "Bearer token-a"}
+        )
+        other_cancel = await client.post(
+            f"/tasks/{task_b_id}/cancel",
+            headers={"Authorization": "Bearer token-a"},
+        )
+        own_cancel = await client.post(
+            f"/tasks/{task_a_id}/cancel",
+            headers={"Authorization": "Bearer token-a"},
+        )
+        admin_detail = await client.get(
+            f"/tasks/{task_b_id}", headers={"Authorization": "Bearer token-admin"}
+        )
+        admin_list = await client.get(
+            "/tasks", headers={"Authorization": "Bearer token-admin"}
+        )
+
+    assert own_list.status_code == 200
+    assert [task["task_id"] for task in own_list.json()["tasks"]] == [task_a_id]
+    assert other_detail.status_code == 404
+    assert other_cancel.status_code == 404
+    assert own_cancel.status_code == 202
+    assert admin_detail.status_code == 200
+    assert admin_detail.json()["owner_subject"] == "service-b"
+    assert admin_list.status_code == 200
+    assert {task["task_id"] for task in admin_list.json()["tasks"]} == {
+        task_a_id,
+        task_b_id,
+    }
+
+
+@pytest.mark.asyncio
 async def test_task_submission_respects_resource_constraints(monkeypatch):
     monkeypatch.setenv("HUEY_ENABLE_UNSAFE_TASKS", "true")
     scheduler = TaskScheduler(health_provider=_degraded_snapshot)
