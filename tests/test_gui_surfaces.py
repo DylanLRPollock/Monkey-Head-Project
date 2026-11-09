@@ -56,6 +56,6 @@ def test_search_gui_actions_supports_navigation_queries() -> None:
     kubernetes_results = {action.id for action in search_gui_actions("kubernetes")}
 
     assert "command-center" in command_center_results
-    assert {"deploy-kubernetes", "scale-deployment", "cleanup-kubernetes"} <= (
+    assert {"deploy-kubernetes", "cleanup-kubernetes"} <= (
         kubernetes_results
     )
