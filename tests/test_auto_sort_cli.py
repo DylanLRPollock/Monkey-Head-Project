@@ -51,7 +51,9 @@ def test_main_human_output_lists_moved_and_skipped_files(monkeypatch, capsys) ->
     result = cli.main([])
 
     assert result is summary
-    sorter.assert_called_once_with(source_dir=None, destination_root=None, dry_run=False)
+    sorter.assert_called_once_with(
+        source_dir=None, destination_root=None, dry_run=False
+    )
     assert capsys.readouterr().out == (
         "Source: /memory/RAW\n"
         "Destination: /memory\n"
@@ -74,8 +76,5 @@ def test_main_human_output_handles_empty_summary_lists(monkeypatch, capsys) -> N
 
     cli.main([])
 
-    assert capsys.readouterr().out == (
-        "Source: /memory/RAW\n"
-        "Destination: /memory\n"
-        "Moved 0 file(s)\n"
-    )
+    expected = "Source: /memory/RAW\nDestination: /memory\nMoved 0 file(s)\n"
+    assert capsys.readouterr().out == expected
