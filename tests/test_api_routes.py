@@ -162,7 +162,7 @@ def test_api_startup_fails_with_placeholder_token_in_non_development_env(monkeyp
     monkeypatch.setenv("HUEY_ENV", "staging")
     monkeypatch.setenv("HUEY_API_TOKEN", "change-me")
 
-    with pytest.raises(RuntimeError, match="HUEY_API_TOKEN must be set"):
+    with pytest.raises(RuntimeError, match="Environment validation failed"):
         importlib.reload(api_module)
 
 
