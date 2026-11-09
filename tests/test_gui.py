@@ -148,11 +148,12 @@ def test_build_image_calls_runner():
     ui.progress = SimpleNamespace(start=lambda: None, stop=lambda: None)
     with (
         patch.object(MainUI, "_run_container_func") as runner,
+        patch.object(MainUI, "_confirm_container_operation", return_value=True),
         patch.object(MainUI, "log_message"),
         patch.object(main_ui.threading, "Thread") as th,
     ):
-        th.side_effect = lambda target, args: SimpleNamespace(
-            start=lambda: target(*args)
+        th.side_effect = lambda target, args, kwargs=None: SimpleNamespace(
+            start=lambda: target(*args, **(kwargs or {}))
         )
         MainUI.build_image(ui)
         runner.assert_called_once()
@@ -164,11 +165,12 @@ def test_deploy_kubernetes_calls_runner():
     ui.progress = SimpleNamespace(start=lambda: None, stop=lambda: None)
     with (
         patch.object(MainUI, "_run_container_func") as runner,
+        patch.object(MainUI, "_confirm_container_operation", return_value=True),
         patch.object(MainUI, "log_message"),
         patch.object(main_ui.threading, "Thread") as th,
     ):
-        th.side_effect = lambda target, args: SimpleNamespace(
-            start=lambda: target(*args)
+        th.side_effect = lambda target, args, kwargs=None: SimpleNamespace(
+            start=lambda: target(*args, **(kwargs or {}))
         )
         MainUI.deploy_kubernetes(ui)
         runner.assert_called_once()
@@ -181,12 +183,13 @@ def test_scale_deployment_prompt_collects_input():
     with (
         patch.object(main_ui.simpledialog, "askstring", return_value="demo"),
         patch.object(main_ui.simpledialog, "askinteger", return_value=2),
+        patch.object(MainUI, "_confirm_container_operation", return_value=True),
         patch.object(MainUI, "_run_container_func") as runner,
         patch.object(MainUI, "log_message"),
         patch.object(main_ui.threading, "Thread") as th,
     ):
-        th.side_effect = lambda target, args: SimpleNamespace(
-            start=lambda: target(*args)
+        th.side_effect = lambda target, args, kwargs=None: SimpleNamespace(
+            start=lambda: target(*args, **(kwargs or {}))
         )
         MainUI.scale_deployment_prompt(ui)
         runner.assert_called_once()
@@ -212,8 +215,8 @@ def test_convert_media_prompt_runs_thread():
         patch.object(main_ui.threading, "Thread") as th,
         patch.object(MainUI, "log_message"),
     ):
-        th.side_effect = lambda target, args: SimpleNamespace(
-            start=lambda: target(*args)
+        th.side_effect = lambda target, args, kwargs=None: SimpleNamespace(
+            start=lambda: target(*args, **(kwargs or {}))
         )
         MainUI.convert_media_prompt(ui)
         conv.assert_called_once_with(
@@ -228,8 +231,8 @@ def test_launch_simple_chat_runs_thread():
         patch.object(main_ui.threading, "Thread") as th,
         patch.object(MainUI, "log_message"),
     ):
-        th.side_effect = lambda target=None, args=(): SimpleNamespace(
-            start=lambda: target(*args)
+        th.side_effect = lambda target=None, args=(), kwargs=None: SimpleNamespace(
+            start=lambda: target(*args, **(kwargs or {}))
         )
         MainUI.launch_simple_chat(ui)
         run_chat.assert_called_once()
@@ -242,8 +245,8 @@ def test_launch_ai_tools_runs_thread():
         patch.object(main_ui.threading, "Thread") as th,
         patch.object(MainUI, "log_message"),
     ):
-        th.side_effect = lambda target=None, args=(): SimpleNamespace(
-            start=lambda: target(*args)
+        th.side_effect = lambda target=None, args=(), kwargs=None: SimpleNamespace(
+            start=lambda: target(*args, **(kwargs or {}))
         )
         MainUI.launch_ai_tools(ui)
         run_tools.assert_called_once()

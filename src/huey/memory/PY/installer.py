@@ -24,6 +24,7 @@ from huey.os.core.platform_support import (
 )
 from huey.os.license_cli import show_license_cli
 from huey.os.license_gui import show_license_gui
+from huey.os.core.privileged_operations import authorize_privileged_operation
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = find_project_root(Path(__file__).resolve())
@@ -112,6 +113,10 @@ def select_software() -> str:
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse command line arguments for non-interactive installs."""
     parser = argparse.ArgumentParser(description="Install Monkey Head Project")
+    parser.add_argument("--yes", action="store_true", help="Confirm installation")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Preview without changing the host"
+    )
     parser.add_argument("--hardware", help="Hardware preset name")
     parser.add_argument(
         "--software",
@@ -148,21 +153,50 @@ def update_submodules() -> None:
     )
     try:
         subprocess.run(
-            ["git", "submodule", "update", "--init", "--recursive"], check=True
+            ["git", "submodule", "update", "--init", "--recursive"],
+            check=True,
+            shell=False,
+            timeout=300,
         )
-        subprocess.run([sys.executable, str(sync_script)], check=True, cwd=PROJECT_ROOT)
+        subprocess.run(
+            [sys.executable, str(sync_script)],
+            check=True,
+            shell=False,
+            timeout=300,
+            cwd=PROJECT_ROOT,
+        )
     except subprocess.CalledProcessError as exc:
         print(f"Failed to update submodules: {exc.returncode}")
         raise
 
 
 def run_installer(
-    hardware: str | None = None, software: list[str] | None = None
+    hardware: str | None = None,
+    software: list[str] | None = None,
+    *,
+    confirmed: bool = False,
+    actor_role: str | None = None,
+    dry_run: bool = False,
 ) -> int:
+    try:
+        authorized = authorize_privileged_operation(
+            "project.install",
+            confirmed=confirmed,
+            actor_role=actor_role,
+            dry_run=dry_run,
+        )
+    except PermissionError as exc:
+        print(str(exc))
+        return 2
+    if not authorized:
+        print("[dry-run] Install authorization preview; no host changes.")
+        return 0
+
+    interactive = sys.stdin.isatty()
     if hardware is None:
-        hardware = select_hardware()
+        hardware = select_hardware() if interactive else "general"
     if software is None:
-        software_choice = select_software()
+        software_choice = select_software() if interactive else "auto"
     else:
         software_choice = "auto" if software == ["auto"] else " ".join(software)
     env = os.environ.copy()
@@ -173,9 +207,14 @@ def run_installer(
     if script_path is None:
         print(f"Unsupported operating system: {paths.host.system}")
         return 1
-    if not script_path.exists():
+    if script_path.is_symlink() or not script_path.is_file():
         print(f"Installer script not found: {script_path}")
         return 1
+    root = PROJECT_ROOT.resolve()
+    script = script_path.resolve()
+    if not script.is_relative_to(root):
+        print("Installer script must be inside the project directory.")
+        return 2
 
     try:
         ensure_admin_privileges()
@@ -184,9 +223,14 @@ def run_installer(
         subprocess.run(
             paths.command_for("install") or [str(script_path)],
             check=True,
+            shell=False,
+            timeout=1200,
             env=env,
-            cwd=PROJECT_ROOT,
+            cwd=root,
         )
+    except subprocess.TimeoutExpired:
+        print("Installer timed out.")
+        return 124
     except subprocess.CalledProcessError as exc:
         print(f"Installer failed with return code {exc.returncode}")
         return exc.returncode
@@ -199,4 +243,21 @@ def run_installer(
 
 if __name__ == "__main__":
     arguments = parse_args()
-    sys.exit(run_installer(arguments.hardware, arguments.software))
+    confirmed = arguments.yes
+    if not confirmed and not arguments.dry_run:
+        if not sys.stdin.isatty():
+            print("Noninteractive installation requires --yes.")
+            sys.exit(2)
+        confirmed = input("Run the Monkey Head installer? [y/N]: ").strip().lower() in {
+            "y",
+            "yes",
+        }
+    sys.exit(
+        run_installer(
+            arguments.hardware,
+            arguments.software,
+            confirmed=confirmed,
+            actor_role="operator" if confirmed else None,
+            dry_run=arguments.dry_run,
+        )
+    )

@@ -19,6 +19,8 @@ from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from huey.os.core.privileged_operations import authorize_privileged_operation
+
 LOGGER = logging.getLogger(__name__)
 
 CommandRunner = Callable[[Sequence[str]], None]
@@ -83,13 +85,32 @@ def build_failover_plan(
     return plan
 
 
-def execute_plan(plan: FailoverPlan, runner: CommandRunner | None = None) -> None:
-    """Execute the replication commands for the supplied plan."""
+def execute_plan(
+    plan: FailoverPlan,
+    runner: CommandRunner | None = None,
+    *,
+    confirmed: bool = False,
+    actor_role: str | None = None,
+    dry_run: bool = False,
+) -> bool:
+    """Execute destructive replication only with explicit admin intent."""
 
-    runner = runner or (lambda cmd: subprocess.run(cmd, check=True))
+    authorized = authorize_privileged_operation(
+        "host.failover_sync",
+        confirmed=confirmed,
+        actor_role=actor_role,
+        dry_run=dry_run,
+    )
+    if not authorized:
+        return False
+
+    runner = runner or (
+        lambda cmd: subprocess.run(cmd, check=True, shell=False, timeout=1800)
+    )
     for task in plan.tasks:
         LOGGER.info("Replicating %s -> %s", task.source, task.target)
         runner(task.command)
+    return True
 
 
 def simulate_hot_swap(plan: FailoverPlan, runner: CommandRunner | None = None) -> None:

@@ -77,6 +77,10 @@ from huey.os.core.platform_support import (
     find_project_root,
     resolve_platform_script_paths,
 )
+from huey.os.core.privileged_operations import (
+    OPERATIONS,
+    authorize_privileged_operation,
+)
 
 
 def _project_root() -> Path:
@@ -101,13 +105,20 @@ class MonkeyManager(BaseTool):
         self.update_path = paths.update
         self.run_path = paths.run
 
-    def _run_script(self, script: Path | None) -> None:
+    def _run_script(self, script: Path | None, operation: str) -> None:
+        self._run_capability(operation, lambda: self._execute_script(script))
+
+    def _execute_script(self, script: Path | None) -> None:
         if script is None or not script.exists():
             LOGGER.error("Script not found: %s", script)
             return
+        root = _project_root().resolve()
+        if script.is_symlink() or not script.resolve().is_relative_to(root):
+            LOGGER.error("Refusing script outside the project tree: %s", script)
+            return
         try:
             cmd = build_platform_script_command(script)
-            result = subprocess.run(cmd, check=False)
+            result = subprocess.run(cmd, check=False, shell=False, timeout=300)
             if result.returncode != 0:
                 LOGGER.error(
                     "Script failed with exit code %s: %s", result.returncode, script
@@ -115,20 +126,62 @@ class MonkeyManager(BaseTool):
         except OSError as exc:
             LOGGER.exception("Error running script %s: %s", script, exc)
 
-    def _destructive_intent_confirmed(self) -> bool:
-        return os.getenv(self.DESTRUCTIVE_ENV_FLAG, "").strip() == "1"
+    def _run_capability(
+        self, operation: str, callback: Callable[[], None], *, dry_run: bool = False
+    ) -> bool:
+        capability = OPERATIONS.get(operation)
+        if capability is None:
+            LOGGER.error("Blocked unknown operation '%s'.", operation)
+            return False
+        if capability == "read-only":
+            try:
+                allowed = authorize_privileged_operation(
+                    operation, actor_role="reader", dry_run=dry_run
+                )
+            except PermissionError as exc:
+                LOGGER.warning("Blocked operation '%s': %s", operation, exc)
+                return False
+            if not allowed:
+                return False
+            callback()
+            return True
+        destructive = capability == "destructive"
+        env_flag = self.DESTRUCTIVE_ENV_FLAG if destructive else self.MUTATING_ENV_FLAG
+        confirmed = os.getenv(env_flag, "").strip() == "1"
+        role = "admin" if destructive else "operator"
+        try:
+            allowed = authorize_privileged_operation(
+                operation,
+                confirmed=confirmed,
+                actor_role=role if confirmed else None,
+                dry_run=dry_run,
+            )
+        except PermissionError as exc:
+            LOGGER.warning("Blocked operation '%s': %s", operation, exc)
+            return False
+        if not allowed:
+            LOGGER.info("Dry run for operation '%s'; no action taken.", operation)
+            return False
+        callback()
+        return True
 
     def _run_destructive_action(
         self, action_name: str, callback: Callable[[], None]
     ) -> None:
-        if not self._destructive_intent_confirmed():
-            LOGGER.warning(
-                "Blocked destructive action '%s'; set %s=1 to allow.",
-                action_name,
-                self.DESTRUCTIVE_ENV_FLAG,
-            )
+        operation = self.DESTRUCTIVE_OPERATIONS.get(action_name)
+        if operation is None:
+            LOGGER.error("Blocked unregistered destructive action '%s'.", action_name)
             return
-        callback()
+        self._run_capability(operation, callback)
+
+    def _run_mutating_action(
+        self, action_name: str, callback: Callable[[], None]
+    ) -> None:
+        operation = self.MUTATING_OPERATIONS.get(action_name)
+        if operation is None:
+            LOGGER.error("Blocked unregistered mutating action '%s'.", action_name)
+            return
+        self._run_capability(operation, callback)
 
     def _action(self, label: str, callback: Callable[[], None]) -> QAction:
         action = QAction(trans(label), self.window)
@@ -147,13 +200,13 @@ class MonkeyManager(BaseTool):
         print(json.dumps(payload, indent=2, sort_keys=True, default=str))
 
     def install(self) -> None:
-        self._run_script(self.install_path)
+        self._run_script(self.install_path, "project.install")
 
     def update(self) -> None:
-        self._run_script(self.update_path)
+        self._run_script(self.update_path, "project.update")
 
     def run_app(self) -> None:
-        self._run_script(self.run_path)
+        self._run_script(self.run_path, "project.run")
 
     def integration_status(self) -> Dict[str, object]:
         """Return current PyHuey integration discovery details."""
@@ -209,11 +262,12 @@ class MonkeyManager(BaseTool):
         print("Custom functions:")
         for function in functions:
             print(
-                "  - "
-                f"{function['name']}{function['signature']} :: {function['module']}"
+                f"  - {function['name']}{function['signature']} :: {function['module']}"
             )
 
-    def invoke_registered_function(self, function_name: str, /, **kwargs: object) -> Any:
+    def invoke_registered_function(
+        self, function_name: str, /, **kwargs: object
+    ) -> Any:
         """Invoke a registered custom function by name."""
 
         return invoke_function(function_name, **kwargs)
@@ -390,7 +444,12 @@ class MonkeyManager(BaseTool):
                     "destructive": False,
                     "description": "Build the configured project Docker image.",
                 },
-                container_management.build_docker_image,
+                lambda: self._run_mutating_action(
+                    "docker_build",
+                    lambda: container_management.build_docker_image(
+                        confirmed=True, actor_role="operator"
+                    ),
+                ),
             ),
             (
                 {
@@ -401,7 +460,12 @@ class MonkeyManager(BaseTool):
                     "destructive": False,
                     "description": "Start the project's container stack.",
                 },
-                container_management.manage_containers,
+                lambda: self._run_mutating_action(
+                    "docker_start",
+                    lambda: container_management.manage_containers(
+                        confirmed=True, actor_role="operator"
+                    ),
+                ),
             ),
             (
                 {
@@ -413,7 +477,10 @@ class MonkeyManager(BaseTool):
                     "description": "Stop running project containers after explicit intent confirmation.",
                 },
                 lambda: self._run_destructive_action(
-                    "stop_containers", container_management.stop_containers
+                    "stop_containers",
+                    lambda: container_management.stop_containers(
+                        confirmed=True, actor_role="admin"
+                    ),
                 ),
             ),
             (
@@ -426,7 +493,10 @@ class MonkeyManager(BaseTool):
                     "description": "Remove stale project container images after explicit intent confirmation.",
                 },
                 lambda: self._run_destructive_action(
-                    "cleanup_images", container_management.cleanup_images
+                    "cleanup_images",
+                    lambda: container_management.cleanup_images(
+                        confirmed=True, actor_role="admin"
+                    ),
                 ),
             ),
             (
@@ -438,7 +508,12 @@ class MonkeyManager(BaseTool):
                     "destructive": False,
                     "description": "Inspect or manage project container volumes.",
                 },
-                container_management.manage_volumes,
+                lambda: self._run_mutating_action(
+                    "docker_volumes",
+                    lambda: container_management.manage_volumes(
+                        confirmed=True, actor_role="operator"
+                    ),
+                ),
             ),
             (
                 {
@@ -449,7 +524,12 @@ class MonkeyManager(BaseTool):
                     "destructive": False,
                     "description": "Inspect or manage project container networks.",
                 },
-                container_management.manage_networks,
+                lambda: self._run_mutating_action(
+                    "docker_networks",
+                    lambda: container_management.manage_networks(
+                        confirmed=True, actor_role="operator"
+                    ),
+                ),
             ),
             (
                 {
@@ -460,7 +540,12 @@ class MonkeyManager(BaseTool):
                     "destructive": False,
                     "description": "Deploy the project's Kubernetes resources.",
                 },
-                container_management.deploy_kubernetes,
+                lambda: self._run_mutating_action(
+                    "kubernetes_deploy",
+                    lambda: container_management.deploy_kubernetes(
+                        confirmed=True, actor_role="operator"
+                    ),
+                ),
             ),
             (
                 {
@@ -472,7 +557,10 @@ class MonkeyManager(BaseTool):
                     "description": "Remove Kubernetes resources after explicit intent confirmation.",
                 },
                 lambda: self._run_destructive_action(
-                    "cleanup_kubernetes", container_management.cleanup_kubernetes
+                    "cleanup_kubernetes",
+                    lambda: container_management.cleanup_kubernetes(
+                        confirmed=True, actor_role="admin"
+                    ),
                 ),
             ),
             (
@@ -484,7 +572,15 @@ class MonkeyManager(BaseTool):
                     "destructive": False,
                     "description": "Scale the default project deployment.",
                 },
-                lambda: container_management.scale_deployment("deployment", 1),
+                lambda: self._run_mutating_action(
+                    "kubernetes_scale",
+                    lambda: container_management.scale_deployment(
+                        "deployment",
+                        1,
+                        confirmed=True,
+                        actor_role="operator",
+                    ),
+                ),
             ),
         ]
 
@@ -496,3 +592,20 @@ class MonkeyManager(BaseTool):
         return actions
 
     DESTRUCTIVE_ENV_FLAG = "HUEY_TOOL_ALLOW_DESTRUCTIVE"
+    MUTATING_ENV_FLAG = "HUEY_TOOL_ALLOW_MUTATING"
+    DESTRUCTIVE_OPERATIONS = {
+        "stop_containers": "project.container.stop",
+        "cleanup_images": "project.container.cleanup",
+        "cleanup_kubernetes": "project.kubernetes.cleanup",
+    }
+    MUTATING_OPERATIONS = {
+        "install": "project.install",
+        "run": "project.run",
+        "update": "project.update",
+        "docker_build": "project.container.build",
+        "docker_start": "project.container.start",
+        "docker_volumes": "project.container.volumes",
+        "docker_networks": "project.container.networks",
+        "kubernetes_deploy": "project.kubernetes.deploy",
+        "kubernetes_scale": "project.kubernetes.scale",
+    }

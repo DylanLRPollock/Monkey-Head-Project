@@ -44,7 +44,7 @@ def test_fresh_install_local_success():
         )
         assert rc == 0
         uninst.assert_called_once()
-        inst.assert_called_once()
+        inst.assert_called_once_with(confirmed=True, actor_role="admin")
 
 
 def test_fresh_install_uninstall_fail():

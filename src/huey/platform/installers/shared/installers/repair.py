@@ -25,6 +25,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from huey.os.core.privileged_operations import authorize_privileged_operation
+
 from . import uninstaller
 
 
@@ -33,6 +35,7 @@ def _run(
     *,
     cwd: Path | None = None,
     capture_output: bool = True,
+    timeout: int = 300,
 ) -> subprocess.CompletedProcess[str]:
     """Internal helper to run a subprocess without raising on failure.
 
@@ -61,6 +64,15 @@ def _run(
             stdout=subprocess.PIPE if capture_output else None,
             stderr=subprocess.PIPE if capture_output else None,
             check=False,
+            shell=False,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired as exc:
+        return subprocess.CompletedProcess(
+            args=args,
+            returncode=124,
+            stdout="",
+            stderr=f"TimeoutExpired: {exc}",
         )
     except OSError as exc:
         # Normalise OS-level failures (e.g. command not found) into a
@@ -73,7 +85,13 @@ def _run(
         )
 
 
-def run_repair(repo_url: str) -> int:
+def run_repair(
+    repo_url: str,
+    *,
+    confirmed: bool = False,
+    actor_role: str | None = None,
+    dry_run: bool = False,
+) -> int:
     """Reinstall HueyOS from a Git repository.
 
     This function performs a best-effort repair of the local installation:
@@ -102,6 +120,18 @@ def run_repair(repo_url: str) -> int:
           phase. In case of clone or install failures, basic diagnostics are
           written to ``sys.stderr`` when available.
     """
+    try:
+        authorized = authorize_privileged_operation(
+            "project.uninstall",
+            confirmed=confirmed,
+            actor_role=actor_role,
+            dry_run=dry_run,
+        )
+    except PermissionError:
+        return 2
+    if not authorized:
+        return 0
+
     # Step 1: run the uninstaller first. If it fails, we stop here and bubble
     # up the exact code it returned so callers can see what went wrong.
     try:
@@ -120,6 +150,7 @@ def run_repair(repo_url: str) -> int:
             ["git", "clone", "--depth", "1", repo_url, str(checkout)],
             cwd=None,
             capture_output=True,
+            timeout=300,
         )
         if clone.returncode != 0:
             # Surface any useful diagnostics to stderr to help with debugging.
@@ -129,7 +160,11 @@ def run_repair(repo_url: str) -> int:
 
         # Step 3: locate and run scripts/installers/installer.py from the freshly cloned tree.
         installer = checkout / "scripts" / "installers" / "installer.py"
-        if not installer.is_file():
+        if (
+            installer.is_symlink()
+            or not installer.is_file()
+            or not installer.resolve().is_relative_to(checkout.resolve())
+        ):
             # No installer script present; fail with a generic non-zero code.
             sys.stderr.write(
                 "repair: expected scripts/installers/installer.py at "
@@ -141,6 +176,7 @@ def run_repair(repo_url: str) -> int:
             [sys.executable, str(installer)],
             cwd=checkout,
             capture_output=False,
+            timeout=1200,
         )
         return install.returncode
 

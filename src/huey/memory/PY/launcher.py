@@ -27,7 +27,9 @@ def main(argv: list[str] | None = None) -> None:
     sub = parser.add_subparsers(dest="command")
     sub.required = False
     sub.add_parser("run", help="Launch the application")
-    sub.add_parser("install", help="Run installer")
+    install_parser = sub.add_parser("install", help="Run installer")
+    install_parser.add_argument("--yes", action="store_true")
+    install_parser.add_argument("--dry-run", action="store_true")
     uninstall_parser = sub.add_parser("uninstall", help="Run uninstaller")
     uninstall_parser.add_argument("--yes", action="store_true")
     fresh_parser = sub.add_parser("fresh-install", help="Uninstall then reinstall")
@@ -49,7 +51,13 @@ def main(argv: list[str] | None = None) -> None:
     cmd = args.command or "run"
 
     if cmd == "install":
-        sys.exit(installer.run_installer())
+        sys.exit(
+            installer.run_installer(
+                confirmed=args.yes,
+                actor_role="operator" if args.yes else None,
+                dry_run=args.dry_run,
+            )
+        )
     if cmd == "uninstall":
         sys.exit(
             uninstaller.run_uninstaller(

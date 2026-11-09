@@ -13,13 +13,22 @@ import json
 import os
 import subprocess
 import sys
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
-from huey.os.core.platform_support import split_command_line
+from huey.os.core.privileged_operations import authorize_privileged_operation
 
 from .function_registry import describe_functions, invoke_function
 from .pygpt_integration import prepare_pygpt, pyhuey_status
+
+SYSTEM_DIAGNOSTIC_COMMANDS = {
+    "date": ["date", "-u"],
+    "df": ["df", "-h"],
+    "free": ["free", "-h"],
+    "uname": ["uname", "-a"],
+    "uptime": ["uptime"],
+    "whoami": ["whoami"],
+}
 
 
 def minimal_run() -> None:
@@ -31,16 +40,37 @@ def minimal_run() -> None:
     CustomPyGPT().run_cli()
 
 
-def run_sys_code(cmd: str) -> None:
-    """Execute ``cmd`` without invoking a shell and stream stdout/stderr."""
+def run_sys_code(
+    cmd: str,
+    *,
+    confirmed: bool = False,
+    actor_role: str | None = None,
+    dry_run: bool = False,
+) -> bool:
+    """Run one allowlisted diagnostic after explicit admin authorization."""
 
-    command = split_command_line(cmd)
-    if not command:
-        raise ValueError("No command provided.")
+    authorized = authorize_privileged_operation(
+        "host.execute_command",
+        confirmed=confirmed,
+        actor_role=actor_role,
+        dry_run=dry_run,
+    )
+    if not authorized:
+        return False
+
+    if not isinstance(cmd, str):
+        raise ValueError("Diagnostic command must be a string alias")
+    command = SYSTEM_DIAGNOSTIC_COMMANDS.get(cmd.strip().lower())
+    if command is None:
+        raise ValueError(
+            "Unsupported diagnostic command; choose one of: "
+            + ", ".join(sorted(SYSTEM_DIAGNOSTIC_COMMANDS))
+        )
     result = subprocess.run(
         command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
+        shell=False,
+        timeout=300,
     )
     if result.stdout:
         print(result.stdout.decode(), end="")
@@ -48,6 +78,29 @@ def run_sys_code(cmd: str) -> None:
         print(result.stderr.decode(), end="", file=sys.stderr)
     if result.returncode != 0:
         raise RuntimeError(f"Command failed with exit code {result.returncode}")
+    return True
+
+
+def _run_container_option(args: argparse.Namespace) -> bool:
+    """Dispatch the explicitly requested project container operation."""
+    if not (args.docker_compose or args.kubernetes):
+        return False
+    try:
+        from .services import container_management
+    except ImportError:  # pragma: no cover - fallback to legacy package
+        from huey.memory.PY import container_management  # type: ignore
+
+    operation = (
+        container_management.manage_containers
+        if args.docker_compose
+        else container_management.deploy_kubernetes
+    )
+    operation(
+        confirmed=args.yes,
+        actor_role="operator" if args.yes else None,
+        dry_run=args.dry_run,
+    )
+    return True
 
 
 def run_module(target: str) -> None:
@@ -124,10 +177,7 @@ def print_custom_functions(source: str | None = None) -> None:
 
     print("Custom functions")
     for function in functions:
-        print(
-            "  - "
-            f"{function['name']}{function['signature']} :: {function['module']}"
-        )
+        print(f"  - {function['name']}{function['signature']} :: {function['module']}")
 
 
 def _parse_custom_function_kwargs(raw: str | None) -> dict[str, object]:
@@ -151,9 +201,7 @@ def run_custom_function(
     """Run a registered custom function and return its result."""
 
     _prepare_pygpt(source)
-    return invoke_function(
-        function_name, **_parse_custom_function_kwargs(kwargs_json)
-    )
+    return invoke_function(function_name, **_parse_custom_function_kwargs(kwargs_json))
 
 
 def print_pyhuey_info(source: str | None = None) -> None:
@@ -270,6 +318,16 @@ def main(argv: list[str] | None = None) -> None:
         help="Build image and start Docker Compose stack",
     )
     parser.add_argument(
+        "--yes",
+        action="store_true",
+        help="Explicitly authorize the requested command or container operation",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Preview a container or cluster operation without running commands",
+    )
+    parser.add_argument(
         "--kubernetes",
         action="store_true",
         help="Deploy resources using manifests in k8s/",
@@ -287,8 +345,8 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "--sys-code",
         type=str,
-        metavar="CMD",
-        help="Execute system command and exit",
+        metavar="DIAGNOSTIC",
+        help="Run an allowlisted diagnostic (date, df, free, uname, uptime, whoami)",
     )
     parser.add_argument(
         "--config",
@@ -319,7 +377,12 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     if args.sys_code:
-        run_sys_code(args.sys_code)
+        run_sys_code(
+            args.sys_code,
+            confirmed=args.yes,
+            actor_role="admin" if args.yes else None,
+            dry_run=args.dry_run,
+        )
         return
 
     if args.list_pdfs:
@@ -335,22 +398,7 @@ def main(argv: list[str] | None = None) -> None:
         system_check()
         return
 
-    if args.docker_compose:
-        try:
-            from .services import container_management
-        except ImportError:  # pragma: no cover - fallback to legacy package
-            from huey.memory.PY import container_management  # type: ignore
-
-        container_management.manage_containers()
-        return
-
-    if args.kubernetes:
-        try:
-            from .services import container_management
-        except ImportError:  # pragma: no cover - fallback to legacy package
-            from huey.memory.PY import container_management  # type: ignore
-
-        container_management.deploy_kubernetes()
+    if _run_container_option(args):
         return
 
     if args.manager_ui:
@@ -416,13 +464,13 @@ __all__ = [
     "_load_cli",
     "launch_cli",
     "launch_gui",
-    "launch_manager_ui",
     "launch_install_gui",
+    "launch_manager_ui",
     "list_custom_functions",
-    "print_pyhuey_info",
-    "print_custom_functions",
     "main",
     "minimal_run",
+    "print_custom_functions",
+    "print_pyhuey_info",
     "run_custom_function",
     "run_module",
     "run_sys_code",

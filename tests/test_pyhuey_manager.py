@@ -131,3 +131,36 @@ def test_destructive_action_runs_when_intent_is_explicit(monkeypatch):
     monkeypatch.setenv("HUEY_TOOL_ALLOW_DESTRUCTIVE", "1")
     manager._run_destructive_action("cleanup_images", _callback)
     assert called["value"] is True
+
+
+def test_manager_mutating_scripts_default_to_deny(monkeypatch):
+    from unittest.mock import Mock
+
+    from huey.connectors.pyhuey.tools.manager import MonkeyManager
+
+    monkeypatch.delenv("HUEY_TOOL_ALLOW_MUTATING", raising=False)
+    manager = MonkeyManager()
+    execute = Mock(side_effect=AssertionError("unexpected script execution"))
+    monkeypatch.setattr(manager, "_execute_script", execute)
+
+    manager.install()
+    manager.update()
+    manager.run_app()
+
+    execute.assert_not_called()
+
+
+def test_manager_mutating_container_action_requires_explicit_intent(monkeypatch):
+    from unittest.mock import Mock
+
+    from huey.connectors.pyhuey.tools.manager import MonkeyManager
+
+    manager = MonkeyManager()
+    callback = Mock()
+    monkeypatch.delenv("HUEY_TOOL_ALLOW_MUTATING", raising=False)
+    assert manager._run_capability("project.container.start", callback) is False
+    callback.assert_not_called()
+
+    monkeypatch.setenv("HUEY_TOOL_ALLOW_MUTATING", "1")
+    assert manager._run_capability("project.container.start", callback) is True
+    callback.assert_called_once_with()
