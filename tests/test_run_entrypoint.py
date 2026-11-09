@@ -10,7 +10,7 @@ import pytest
 
 
 def test_run_module_invokes_target():
-    from huey import run as huey_run
+    from huey.memory.PY import run as huey_run
 
     called: dict[str, bool] = {}
     module = types.ModuleType("_dummy_run_module")
