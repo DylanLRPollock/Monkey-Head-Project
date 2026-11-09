@@ -203,7 +203,7 @@ def test_legacy_waveform_builds_command_and_returns_failure_result(
     command = captured["command"]
     assert result.ok is False
     assert result.output_path == output_path
-    assert command[1] == "-y"
+    assert command[2] == "-y"
     assert command[command.index("-filter_complex") + 1] == (
         "aformat=channel_layouts=mono,showwavespic=s=640x120"
     )
@@ -215,8 +215,10 @@ def test_legacy_waveform_validates_input_and_output_before_running(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     manager = FFmpegMediaManager(ffmpeg_path="ffmpeg")
-    run = lambda _args: pytest.fail("FFmpeg must not run for invalid paths")
-    monkeypatch.setattr(manager, "run", run)
+    def fail_run(_args: list[str]) -> FFmpegCommandResult:
+        pytest.fail("FFmpeg must not run for invalid paths")
+
+    monkeypatch.setattr(manager, "run", fail_run)
 
     with pytest.raises(FileNotFoundError):
         manager.waveform(tmp_path / "missing.wav", tmp_path / "waveform.png")
