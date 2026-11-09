@@ -89,8 +89,8 @@ Do not automatically point this at HueyOS's privileged data directory.
 3. In PyGPT 2.9.1, open **Config → MCP… → Connectors…**, import the JSON file,
    inspect the command and environment, and explicitly enable the connector.
 4. Enable the **MCP** plugin and its exposed tools in the desired PyGPT chat or
-   agent. The four commands are `huey_project`, `huey_health`,
-   `huey_diagnostics` and `huey_permissions`.
+   agent. The five commands are `huey_project`, `huey_health`,
+   `huey_diagnostics`, `huey_connections` and `huey_permissions`.
 
 PyGPT's MCP Connector manager imports configurations in common Claude/Cursor
 formats, but leaves imported servers disabled until the operator enables them.

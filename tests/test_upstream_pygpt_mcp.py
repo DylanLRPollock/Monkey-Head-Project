@@ -38,6 +38,7 @@ def test_mcp_tools_are_explicit_and_read_only():
         "huey_project",
         "huey_health",
         "huey_diagnostics",
+        "huey_connections",
         "huey_permissions",
     }
     assert "shell_exec" not in names
@@ -94,7 +95,7 @@ def test_mcp_stdio_processes_valid_and_invalid_json():
     responses = [json.loads(line) for line in target.getvalue().splitlines()]
     assert responses[0]["error"]["code"] == -32700
     assert responses[1]["result"] == {}
-    assert len(responses[2]["result"]["tools"]) == 4
+    assert len(responses[2]["result"]["tools"]) == 5
 
 
 def test_health_refuses_invalid_port_without_network(monkeypatch):
@@ -196,3 +197,15 @@ def test_failed_health_is_an_mcp_tool_error(monkeypatch):
     response = pygpt_mcp.dispatch(request("tools/call", {"name": "huey_health"}))
     assert response["result"]["isError"] is True
     assert "Invalid HUEY_API_PORT" in response["result"]["content"][0]["text"]
+
+
+def test_connections_summarizes_status(monkeypatch):
+    monkeypatch.setattr(pygpt_mcp, "health_info", lambda: {"connected": True})
+    monkeypatch.setattr(
+        pygpt_mcp,
+        "diagnostics",
+        lambda: {"ffmpeg_available": True, "ffprobe_available": True},
+    )
+    result = pygpt_mcp.connections()
+    assert result["all_connected"] is True
+    assert result["mcp"]["mode"] == "read-only"
