@@ -123,7 +123,11 @@ def authorize_privileged_operation(
         return False
 
     if capability == "read-only":
-        if not isinstance(actor_role, str) or actor_role not in ("reader", "operator", "admin"):
+        if not isinstance(actor_role, str) or actor_role not in (
+            "reader",
+            "operator",
+            "admin",
+        ):
             _audit_attempt(
                 audit_operation,
                 capability,
