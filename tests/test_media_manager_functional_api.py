@@ -98,7 +98,7 @@ def test_convert_audio_builds_argv_and_rejects_failed_ffmpeg(
 
 
 def test_audio_transform_wrappers_forward_options_and_surface_failures(
-    manager, source_file, tmp_path
+    manager, source_file, tmp_path, monkeypatch
 ):
     resampled = media_manager.resample_audio(
         source_file, tmp_path / "resampled.wav", channels=1, sample_rate=16000
@@ -144,9 +144,7 @@ def test_media_wrapper_commands_cover_filters_codecs_and_frame_patterns(
     assert extracted == (tmp_path / "audio.aac").resolve()
     assert transcoded == (tmp_path / "video.mp4").resolve()
     assert frames == (tmp_path / "frames" / "frame-%03d.png").resolve()
-    silence_filter = manager.commands[0][0][
-        manager.commands[0][0].index("-af") + 1
-    ]
+    silence_filter = manager.commands[0][0][manager.commands[0][0].index("-af") + 1]
     assert "silenceremove=" in silence_filter
     assert manager.commands[1][0][-7:] == [
         "-acodec",
@@ -181,9 +179,7 @@ def test_module_wrappers_validate_sources_outputs_and_ffmpeg_before_execution(
     existing = tmp_path / "existing.wav"
     existing.write_bytes(b"keep")
     with pytest.raises(FileExistsError):
-        media_manager.convert_audio(
-            source_file, existing, overwrite=False
-        )
+        media_manager.convert_audio(source_file, existing, overwrite=False)
     assert existing.read_bytes() == b"keep"
     assert manager.commands == []
 
@@ -198,8 +194,8 @@ def test_module_wrappers_validate_sources_outputs_and_ffmpeg_before_execution(
 
 def test_detect_silence_parses_matched_and_unmatched_segments(manager, source_file):
     manager.stderr = (
-        "silence_start: 0.5\\n"
-        "silence_end: 1.5 | silence_duration: 1.0\\n"
+        "silence_start: 0.5\n"
+        "silence_end: 1.5 | silence_duration: 1.0\n"
         "silence_end: 3.0 | silence_duration: 0.25"
     )
 
@@ -214,6 +210,7 @@ def test_detect_silence_parses_matched_and_unmatched_segments(manager, source_fi
     assert manager.silence_result == (source_file, -35, 0.4)
 
     manager.ok = False
+    manager.stderr = "simulated media failure"
     with pytest.raises(RuntimeError, match="simulated media failure"):
         media_manager.detect_silence(source_file)
 
