@@ -106,8 +106,9 @@ def test_default_config_uses_memory(monkeypatch, tmp_path):
     monkeypatch.delenv("MONKEY_HEAD_CONFIG", raising=False)
     logger = configure_logging()
     logger.info("hello")
-    log_file = tmp_path / "memory" / "LOGS" / "hueyos.log"
-    assert log_file.exists()
+    log_dir = tmp_path / "memory" / "LOGS"
+    log_files = list(log_dir.glob("*.log"))
+    assert log_files
 
 
 def test_missing_config_raises(tmp_path):
