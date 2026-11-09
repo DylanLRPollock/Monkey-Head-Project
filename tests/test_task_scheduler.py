@@ -140,14 +140,18 @@ def test_cancel_task_clears_assignment_and_records_reason():
 
 
 def test_list_tasks_supports_status_filters():
-    scheduler = TaskScheduler(health_provider=_healthy_snapshot)
-    running = scheduler.submit_task(command="active")
-    pending = TaskScheduler(health_provider=_overloaded_snapshot).submit_task(
-        command="blocked"
-    )
+    state = {"healthy": False}
 
-    assert running in scheduler.list_tasks(statuses=[TaskStatus.RUNNING])
-    assert pending not in scheduler.list_tasks(statuses=[TaskStatus.RUNNING])
+    def provider() -> ResourceSnapshot:
+        return _healthy_snapshot() if state["healthy"] else _overloaded_snapshot()
+
+    scheduler = TaskScheduler(health_provider=provider)
+    pending = scheduler.submit_task(command="blocked")
+    state["healthy"] = True
+    running = scheduler.submit_task(command="active")
+
+    assert scheduler.list_tasks(statuses=[TaskStatus.PENDING]) == [pending]
+    assert scheduler.list_tasks(statuses=[TaskStatus.RUNNING]) == [running]
 
 
 def test_missing_task_raises_key_error():
