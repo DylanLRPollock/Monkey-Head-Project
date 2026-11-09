@@ -142,7 +142,9 @@ def test_container_and_kubernetes_commands_use_validated_paths(monkeypatch, tmp_
     [("../web", 1), ("Web", 1), ("web", -1)],
 )
 def test_scale_deployment_rejects_invalid_values(monkeypatch, name, replicas):
-    monkeypatch.setattr(containers, "authorize_privileged_operation", lambda *a, **k: True)
+    monkeypatch.setattr(
+        containers, "authorize_privileged_operation", lambda *a, **k: True
+    )
     run = Mock()
     monkeypatch.setattr(containers, "_run_command", run)
 
