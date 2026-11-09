@@ -32,7 +32,7 @@ dependency manifests or hardware exposure.
 - `scripts/security/security_check.sh` deliberately warns/skips when the
   local `pip-audit` binary is absent. Local checks are therefore **not**
   equivalent to mandatory CI security gates.
-- PRs #850, #851, #870-#871, #883, #887-#909 were merged by November 9, 2026.
+- PRs #850, #851, #870-#871, #883, #887-#913 were merged by November 9, 2026. PR #907 is merged; its CI reported zero remaining Ruff diagnostics and a passing CodeQL Advanced check. PR #914's corrected test suite reports 797 passed and 16 skipped on both Python versions, and static analysis passes; the coverage job remains below the unchanged 80% threshold. A merge is not evidence that historic credentials were revoked, external identity is verified, or artifact attestations have been exercised on a tagged release.
   PR #907's lint and CodeQL checks passed; PR #910 carries a Black-only formatting correction.
   A merge is not evidence that historic credentials were revoked, external
   identity is verified, or artifact attestations have been exercised on a
