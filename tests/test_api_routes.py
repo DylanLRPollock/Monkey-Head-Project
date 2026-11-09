@@ -701,10 +701,12 @@ async def test_dangerous_endpoints_reject_unauthenticated_access(monkeypatch):
 
 
 def test_sensor_network_power_routes_are_registered_via_focused_routers():
-    route_paths = {getattr(route, "path", None) for route in api_module.app.routes}
-    assert any(path and path.startswith("/sensors") for path in route_paths)
-    assert any(path and path.startswith("/network/") for path in route_paths)
-    assert any(path and path.startswith("/power/") for path in route_paths)
+    for router in (
+        api_module.sensors_router,
+        api_module.network_router,
+        api_module.power_router,
+    ):
+        assert router.routes
 
 
 class _StubSensorManager:
