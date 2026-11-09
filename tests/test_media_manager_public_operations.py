@@ -189,3 +189,52 @@ def test_output_and_binary_validation_stays_before_execution(tmp_path):
         FFmpegMediaManager(ffmpeg_path="ffmpeg").build_audio_transform_command(
             source, existing, AudioTransformOptions()
         )
+
+
+def test_frame_extraction_propagates_failure_without_touching_existing_output(
+    tmp_path, monkeypatch
+):
+    source = tmp_path / "source.mp4"
+    source.write_bytes(b"fixture")
+    output = tmp_path / "frame.png"
+    output.write_bytes(b"original")
+    manager = FFmpegMediaManager(ffmpeg_path="ffmpeg")
+    calls = []
+
+    def unexpected_run(command):
+        calls.append(command)
+        return SimpleNamespace(
+            command=command,
+            returncode=1,
+            stdout="",
+            stderr="frame extraction failed",
+        )
+
+    monkeypatch.setattr(manager, "run", unexpected_run)
+    with pytest.raises(FileExistsError):
+        manager.extract_frame(source, output, frame_number=0)
+    assert calls == []
+    assert output.read_bytes() == b"original"
+
+    result = manager.extract_frame(source, tmp_path / "new" / "frame.png", 0)
+    assert result.returncode == 1
+    assert result.stderr == "frame extraction failed"
+    assert result.output_path == (tmp_path / "new" / "frame.png")
+    assert not result.output_path.exists()
+
+
+def test_frame_extraction_rejects_missing_source_before_creating_output_dir(
+    tmp_path, monkeypatch
+):
+    manager = FFmpegMediaManager(ffmpeg_path="ffmpeg")
+    monkeypatch.setattr(
+        manager,
+        "run",
+        lambda _command: pytest.fail("FFmpeg must not run for a missing input"),
+    )
+    output = tmp_path / "not-created" / "frame.png"
+
+    with pytest.raises(FileNotFoundError):
+        manager.extract_frame(tmp_path / "missing.mp4", output, frame_number=0)
+
+    assert not output.parent.exists()
