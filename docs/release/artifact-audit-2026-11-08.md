@@ -14,8 +14,8 @@ tracked-file inventory containing path, size, extension classification, and
 SHA-256, tied to the scanned commit. The report remains a review aid: binary
 extension and checksum do not prove license, origin, or build reproducibility.
 
-The tracked-tree inventory at main commit
-`7d675198f21932814f0c3e7526bafb612668aff5` contained 1,995 files; ten were at
+The refreshed tracked-tree inventory at main commit
+`9066adf810ab659ed8a53a4cba5d9d64eee9c2f3` contained 1,998 files; ten were at
 least 5 MiB. The largest were two initrds (64 and 23 MiB), the archived
 `dlrp-old.zip` (23 MiB), kernel images (12 MiB each), a test MP4 (11 MiB), and
 two Debian installer packages (10 and 8 MiB). The two duplicate kernel files

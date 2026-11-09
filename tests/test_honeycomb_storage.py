@@ -79,9 +79,69 @@ def test_store_rejects_invalid_keys(tmp_path):
         storage.store("/leading", {})
 
 
+@pytest.mark.parametrize(
+    "key", ["../outside", "safe/../outside", "safe/./outside", "safe\\..\\outside"]
+)
+def test_store_rejects_path_traversal_components(tmp_path, key):
+    storage = HoneycombStorage(base_dir=tmp_path / "storage")
+
+    with pytest.raises(ValueError, match="safe path"):
+        storage.store(key, {"payload": "blocked"})
+
+    assert not (tmp_path / "outside.json").exists()
+
+
+def test_store_rejects_symlinked_comb_that_escapes_root(tmp_path):
+    root = tmp_path / "storage"
+    outside = tmp_path / "outside"
+    root.mkdir()
+    outside.mkdir()
+    (root / "linked").symlink_to(outside, target_is_directory=True)
+    storage = HoneycombStorage(base_dir=root)
+
+    with pytest.raises(ValueError, match="inside the storage root"):
+        storage.store("linked/record", {"payload": "blocked"})
+
+    assert not (outside / "record.json").exists()
+
+
 def test_store_after_close_raises(tmp_path):
     storage = HoneycombStorage(base_dir=tmp_path)
     storage.close()
 
     with pytest.raises(RuntimeError):
         storage.store("alpha", {})
+
+
+def test_failed_atomic_replace_preserves_record_and_cleans_temporary_file(
+    tmp_path, monkeypatch
+):
+    from pathlib import Path
+
+    storage = HoneycombStorage(base_dir=tmp_path)
+    storage.store("alpha", {"version": 1})
+    record_path = tmp_path / "default" / "alpha.json"
+    original_bytes = record_path.read_bytes()
+
+    def fail_replace(_self, _target):
+        raise OSError("simulated replacement failure")
+
+    monkeypatch.setattr(Path, "replace", fail_replace)
+    with pytest.raises(OSError, match="simulated replacement failure"):
+        storage.store("alpha", {"version": 2})
+
+    assert record_path.read_bytes() == original_bytes
+    assert not list(tmp_path.rglob("*.tmp"))
+
+
+def test_failed_serialization_preserves_record_and_cleans_temporary_file(tmp_path):
+    storage = HoneycombStorage(base_dir=tmp_path)
+    storage.store("alpha", {"version": 1})
+    record_path = tmp_path / "default" / "alpha.json"
+    original_bytes = record_path.read_bytes()
+
+    with pytest.raises(TypeError):
+        storage.store("alpha", {"not-json": object()})
+
+    assert record_path.read_bytes() == original_bytes
+    assert not list(tmp_path.rglob("*.tmp"))
