@@ -215,7 +215,7 @@ def test_api_startup_fails_without_token_in_non_development_env(monkeypatch):
     monkeypatch.setenv("HUEY_ENV", "production")
     monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
 
-    with pytest.raises(RuntimeError, match="HUEY_API_TOKEN is missing"):
+    with pytest.raises(RuntimeError, match="Configure an API credential"):
         importlib.reload(api_module)
 
 
