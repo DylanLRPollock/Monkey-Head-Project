@@ -13,10 +13,14 @@ from huey.os.logging_setup import configure_logging
 @pytest.fixture(autouse=True)
 def _close_logging_handlers():
     yield
-    for logger in (logging.getLogger(), *(
-        item for item in logging.Logger.manager.loggerDict.values()
-        if isinstance(item, logging.Logger)
-    )):
+    for logger in (
+        logging.getLogger(),
+        *(
+            item
+            for item in logging.Logger.manager.loggerDict.values()
+            if isinstance(item, logging.Logger)
+        ),
+    ):
         for handler in list(logger.handlers):
             logger.removeHandler(handler)
             handler.close()
