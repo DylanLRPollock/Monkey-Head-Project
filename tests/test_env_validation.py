@@ -22,7 +22,12 @@ def _clear_env(monkeypatch):
     ):
         monkeypatch.delenv(key, raising=False)
 
-    for key in ("DB_PASSWORD", "DATABASE_PASSWORD", "POSTGRES_PASSWORD", "MYSQL_PASSWORD"):
+    for key in (
+        "DB_PASSWORD",
+        "DATABASE_PASSWORD",
+        "POSTGRES_PASSWORD",
+        "MYSQL_PASSWORD",
+    ):
         monkeypatch.setenv(key, "test-database-secret")
 
 
