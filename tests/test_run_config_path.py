@@ -15,7 +15,7 @@ def test_run_sets_config_env(monkeypatch, tmp_path):
         "log_backup_count = 1\n"
     )
     monkeypatch.setattr("huey.memory.PY.run.launch_gui", lambda: None)
-    monkeypatch.setattr("huey.memory.PY.run._load_cli", lambda: lambda: None)
+    monkeypatch.setattr("huey.memory.PY.run._load_cli", lambda *_args, **_kwargs: lambda: None)
     monkeypatch.setattr("huey.os.core.system_checks.check_os_support", lambda: None)
     monkeypatch.setattr(
         "huey.os.core.system_checks.check_python_version",
