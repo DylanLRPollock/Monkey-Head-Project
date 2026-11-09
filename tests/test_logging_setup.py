@@ -36,6 +36,7 @@ def test_configure_logging_creates_log(tmp_path):
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
         root_logger.removeHandler(h)
+        h.close()
     logger = configure_logging(str(cfg))
     logger.info("entry")
     assert log_file.exists()
@@ -70,6 +71,7 @@ def test_critical_error_triggers_gui(monkeypatch, tmp_path):
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
         root_logger.removeHandler(h)
+        h.close()
 
     dummy_tk = DummyTkModule()
     monkeypatch.setattr("huey.os.logging_setup.tk", dummy_tk)
@@ -95,6 +97,7 @@ def test_env_var_overrides_path(monkeypatch, tmp_path):
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
         root_logger.removeHandler(h)
+        h.close()
     monkeypatch.setenv("MEMORY_PATH", str(tmp_path / "memory"))
     monkeypatch.setenv("MONKEY_HEAD_CONFIG", str(cfg))
     logger = configure_logging()
@@ -106,6 +109,7 @@ def test_default_config_uses_memory(monkeypatch, tmp_path):
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
         root_logger.removeHandler(h)
+        h.close()
     monkeypatch.setenv("MEMORY_PATH", str(tmp_path / "memory"))
     monkeypatch.delenv("MONKEY_HEAD_CONFIG", raising=False)
     logger = configure_logging()
@@ -119,6 +123,7 @@ def test_missing_config_raises(tmp_path):
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
         root_logger.removeHandler(h)
+        h.close()
     missing = tmp_path / "missing.ini"
     with pytest.raises(FileNotFoundError):
         configure_logging(str(missing))
