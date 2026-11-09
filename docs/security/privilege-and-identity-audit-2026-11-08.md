@@ -22,9 +22,9 @@ roles and caller-supplied actor names are not treated as authenticated identity.
 | Sensor registration/removal; resilience restart/override; service start/stop | Admin-scoped token; loopback-only development mode when no tokens are configured. | Polling and watchdog actions remain operator-scoped through global bearer auth. |
 | Emergency governance enter/exit/action | Admin-scoped token when auth is configured; approval counts remain controller-validated. | Approval names are still caller claims and do not identify distinct authenticated people. |
 | Other POST routes | Global bearer middleware when credentials are configured; otherwise loopback-only. | Named principal attribution applies to API request logs. Routes outside task management do not have per-user object ownership. |
-| Direct power, uninstall, install, update, account, diagnostics, failover, Docker, and Kubernetes operations | Shared deny-by-default capability gate. Mutating/destructive calls require explicit confirmation and role; dry-run returns before host/path access. Gate decisions now emit secret-free structured application logs. | Local `actor_role` values and environment opt-ins remain caller claims, not named identity. Logs are not durable or tamper-resistant, and OS privilege checks remain separate. |
+| Direct power, uninstall, install, update, account, diagnostics, failover, Docker, and Kubernetes operations | Shared deny-by-default capability gate. Mutating/destructive calls require explicit confirmation and role; dry-run returns before host/path access. Gate decisions emit secret-free structured application logs. PyHuey's MonkeyManager requires a host-supplied authorization provider for its install/update/run, container, Kubernetes, and registered-function actions; without it, actions deny. Environment flags no longer authorize those actions. Manager scripts use resolved in-project paths, `shell=False`, and a 300-second timeout. | A provider is a trusted integration point and must verify identity and confirmation; local `actor_role` values remain claims for direct callers. Logs are not durable or tamper-resistant, and OS privilege checks remain separate. |
 | Container and cluster helpers | Direct public helpers enforce capability gates, use argv with `shell=False` and timeouts, validate Kubernetes manifests and scale names, and reject invalid Docker tags. The legacy import path re-exports these canonical guarded helpers. Volume/network manager actions only list resources; pruning was removed from those actions. | Docker/Kubernetes command completion still depends on local tool policy and credentials. Direct gate events are logged with a claimed role, not a verified principal, and need a protected external sink for durable retention. |
-| Plugins, agent tools, command center | Built-in PyHuey manager commands are capability-gated; command-center endpoints remain read-only. | A complete plugin/agent capability registry and per-user verified audit identity do not yet exist. Third-party tools need their own capability review. |
+| Plugins, agent tools, command center | Built-in PyHuey manager operations are capability-gated through a trusted provider; command-center endpoints remain read-only. The manager exposes only registered functions mapped to read-only or mutating capabilities. | A repository-wide plugin/agent capability registry and per-user verified audit identity do not yet exist. Third-party tools need their own capability review. |
 
 ## Named principal configuration and audit logging
 
@@ -90,7 +90,11 @@ helpers in `src/huey/memory/PY/api.py`, extracted routers in
 document describes current source behavior and is not a deployment attestation.
 
 The direct-operation safeguards summarized above were merged in PR #870 on
-2026-11-09. Named API credential attribution and secret-free mutation logging
-are implemented in the current change. Per-task ownership, external identity
-verification, tamper-resistant audit storage, direct in-process action logging,
-and a complete plugin/agent capability registry remain open.
+2026-11-09. PR #895 added default-deny PyHuey manager authorization through a
+trusted host-supplied provider, with role and confirmation checks, path
+validation, and subprocess timeouts. Named API attribution and secret-free
+HTTP mutation logging are implemented in PR #887; task ownership was added in
+PR #890; direct in-process gate-decision logging was added in PR #888.
+External identity verification, per-human emergency approval attribution,
+tamper-resistant audit storage, and a complete third-party plugin/agent
+capability registry remain open controls.
