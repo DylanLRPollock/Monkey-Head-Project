@@ -240,11 +240,10 @@ def test_psutil_status_without_battery_returns_none(monkeypatch):
 def test_power_action_without_supported_command_records_error(monkeypatch):
     monitor = BatteryMonitor()
     popen = Mock()
-    monkeypatch.setattr(
-        management, "detect_host_platform", lambda: SimpleNamespace(
-            display_name="Unknown", family="unknown"
-        )
-    )
+    def unknown_host():
+        return SimpleNamespace(display_name="Unknown", family="unknown")
+
+    monkeypatch.setattr(management, "detect_host_platform", unknown_host)
     monkeypatch.setattr(monitor, "_resolve_command", lambda _action: None)
     monkeypatch.setattr(management.subprocess, "Popen", popen)
 
