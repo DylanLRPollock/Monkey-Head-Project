@@ -218,6 +218,11 @@ audio = [
   "soundfile==0.14.0",
 ]
 
+# ComfyUI is an external, GPU-specific runtime managed by the official CLI.
+comfyui = [
+  "comfy-cli==1.25.0",
+]
+
 # ---------------------------------------------------------------------------
 # Console entry points
 # ---------------------------------------------------------------------------
