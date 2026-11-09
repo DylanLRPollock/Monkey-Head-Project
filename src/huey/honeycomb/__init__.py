@@ -4,9 +4,18 @@ from __future__ import annotations
 
 from .backup import perform_rsync_snapshot, restore_snapshot
 from .index import HoneycombIndex
-from .monitor import HoneycombMonitor
 from .retention import RetentionPolicy, parse_duration
 from .storage import HoneycombRecord, HoneycombStorage
+
+
+def __getattr__(name: str):
+    if name == "HoneycombMonitor":
+        from .monitor import HoneycombMonitor
+
+        globals()[name] = HoneycombMonitor
+        return HoneycombMonitor
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 __all__ = [
     "HoneycombIndex",

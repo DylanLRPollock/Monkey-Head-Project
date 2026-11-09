@@ -22,11 +22,18 @@ experimental and non-gating; both must report actual failures and skips.
   prove sufficient coverage by itself.
 - Historic November 3 failing evidence (issue #847): 36% combined CI total;
   XML measured 4,228/9,989 source lines (42.33%) and 70/1,890 branches
-  (3.70%). These are **different metrics**, not contradictory results.
+  (3.70%). The combined figure is `(4,228 + 70) / (9,989 + 1,890) = 36.18%`:
+  coverage.py combines covered statements and covered branches for its total.
+  The 42.33% line rate and 3.70% branch rate are **different metrics**, not
+  contradictory results.
   Re-measure the current head in Python 3.13 and 3.14 before publishing a
   new baseline.
+- Coverage enables subprocess tracing because fixture and CLI tests execute
+  Python children. This does not trace external programs such as FFmpeg.
 - Every coverage PR should report full and module-level line/branch deltas,
-  missed paths, and the exact CI run/coverage artifact.
+  missed paths, and the exact CI run/coverage artifact. Report core runtime,
+  optional hardware, vendor, and legacy areas separately; do not omit a
+  maintained module from the combined gate.
 
 ## Skip policy
 
