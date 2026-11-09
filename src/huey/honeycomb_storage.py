@@ -207,7 +207,7 @@ class HoneycombStorage:
                 json.dump(data, handle, ensure_ascii=False, indent=2, sort_keys=True)
             tmp_path.replace(path)
         except Exception:
-            with suppress(FileNotFoundError):
+            with suppress(OSError):
                 tmp_path.unlink()
             raise
 
