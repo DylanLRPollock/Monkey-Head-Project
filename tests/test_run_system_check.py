@@ -21,9 +21,7 @@ def test_system_check_called(monkeypatch):
         "huey.memory.PY.system_checks.check_python_version",
         lambda *_args, **_kwargs: None,
     )
-    monkeypatch.setattr(
-        "huey.memory.PY.run.launch_gui", lambda *_args, **_kwargs: None
-    )
+    monkeypatch.setattr("huey.memory.PY.run.launch_gui", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(
         "huey.memory.PY.run._load_cli", lambda: lambda *_args, **_kwargs: None
     )
