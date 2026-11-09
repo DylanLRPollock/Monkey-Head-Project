@@ -36,7 +36,8 @@ def test_execute_plan_invokes_runner(monkeypatch):
     def runner(cmd):
         executed.append(cmd)
 
-    assert execute_plan(plan, runner=runner, confirmed=True, actor_role="admin")
+    executed_ok = execute_plan(plan, runner=runner, confirmed=True, actor_role="admin")
+    assert executed_ok is True
     assert executed == plan.commands()
 
 
@@ -45,14 +46,12 @@ def test_execute_plan_denies_and_dry_run_never_calls_runner():
     executed = []
     with pytest.raises(PermissionError):
         execute_plan(plan, runner=lambda cmd: executed.append(cmd))
-    assert (
-        execute_plan(
-            plan,
-            runner=lambda cmd: executed.append(cmd),
-            dry_run=True,
-        )
-        is False
+    dry_run_result = execute_plan(
+        plan,
+        runner=lambda cmd: executed.append(cmd),
+        dry_run=True,
     )
+    assert dry_run_result is False
     assert executed == []
 
 
