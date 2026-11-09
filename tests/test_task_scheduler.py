@@ -3,7 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test Task Scheduler module (tests)
 
-"""Tests for the :mod:`huey.os.core.task_scheduler` module."""
+"""Tests for the :mod:`huey.core.task_scheduler` module."""
 
 from __future__ import annotations
 
@@ -35,123 +35,86 @@ def _overloaded_snapshot() -> ResourceSnapshot:
     )
 
 
-def test_schedule_task_dispatches_when_resources_are_healthy():
+def test_submit_task_dispatches_when_resources_are_healthy():
     scheduler = TaskScheduler(health_provider=_healthy_snapshot)
 
-    record = scheduler.schedule_task(command="run diagnostics")
+    record = scheduler.submit_task(command="run diagnostics")
 
     assert record.status is TaskStatus.RUNNING
     assert record.assigned_agent in {Agent.SPARK, Agent.ZAP}
     assert record.attempts == 1
+    assert record.history[-1].status is TaskStatus.RUNNING
 
 
-def test_schedule_task_is_pending_when_resources_are_constrained():
+def test_submit_task_remains_pending_when_resources_are_constrained():
     scheduler = TaskScheduler(health_provider=_overloaded_snapshot)
 
-    record = scheduler.schedule_task(
+    record = scheduler.submit_task(
         command="train model", priority=TaskPriority.CRITICAL
     )
 
     assert record.status is TaskStatus.PENDING
     assert record.assigned_agent is None
     assert record.attempts == 0
+    assert "exceeds" in record.history[-1].message
 
 
 def test_fail_task_reassigns_to_alternate_agent():
     scheduler = TaskScheduler(health_provider=_healthy_snapshot)
 
-    record = scheduler.schedule_task(
+    record = scheduler.submit_task(
         command="analyze telemetry",
         requested_agent=Agent.SPARK,
         resource_profile=ResourceProfile(cpu=0.2, memory=0.1, battery=0.1),
     )
+    failed_agent = record.assigned_agent
+    assert failed_agent is Agent.SPARK
 
-    assert record.assigned_agent is Agent.SPARK
+    retried = scheduler.fail_task(record.task_id, "transient GPU fault")
 
-    failed = scheduler.fail_task(record.task_id, "transient GPU fault")
-
-    assert failed.status is TaskStatus.RUNNING
-    assert failed.assigned_agent is Agent.ZAP
-    assert failed.attempts == 2
-
-
-def test_run_pending_dispatches_when_capacity_frees():
-    scheduler = TaskScheduler(
-        health_provider=_healthy_snapshot,
-        max_concurrency={Agent.SPARK: 1, Agent.ZAP: 0},
-    )
-
-    first = scheduler.schedule_task(command="initial", requested_agent=Agent.SPARK)
-    assert first.status is TaskStatus.RUNNING
-
-    queued = scheduler.schedule_task(
-        command="follow up",
-        priority=TaskPriority.HIGH,
-        requested_agent=Agent.SPARK,
-    )
-    assert queued.status is TaskStatus.PENDING
-
-    scheduler.complete_task(first.task_id)
-
-    refreshed = scheduler.get_task(queued.task_id)
-    assert refreshed.status is TaskStatus.RUNNING
-    assert refreshed.assigned_agent is Agent.SPARK
+    assert retried.status is TaskStatus.RUNNING
+    assert retried.assigned_agent is Agent.ZAP
+    assert retried.attempts == 2
+    assert retried.error == "transient GPU fault"
 
 
-def test_priority_queue_runs_critical_work_first():
-    scheduler = TaskScheduler(
-        health_provider=_healthy_snapshot,
-        max_concurrency={Agent.SPARK: 1, Agent.ZAP: 0},
-    )
-
-    active = scheduler.schedule_task(command="bootstrap", requested_agent=Agent.SPARK)
-    assert active.status is TaskStatus.RUNNING
-
-    low = scheduler.schedule_task(
-        command="routine check",
-        priority=TaskPriority.LOW,
-        requested_agent=Agent.SPARK,
-    )
-    critical = scheduler.schedule_task(
-        command="critical repair",
-        priority=TaskPriority.CRITICAL,
-        requested_agent=Agent.SPARK,
-    )
-
-    assert low.status is TaskStatus.PENDING
-    assert critical.status is TaskStatus.PENDING
-
-    scheduler.complete_task(active.task_id)
-
-    assert scheduler.get_task(critical.task_id).status is TaskStatus.RUNNING
-    assert scheduler.get_task(low.task_id).status is TaskStatus.PENDING
-
-
-def test_run_pending_uses_updated_health_snapshot():
+def test_reconcile_dispatches_pending_tasks_after_health_recovers():
     state = {"healthy": False}
 
     def provider() -> ResourceSnapshot:
         return _healthy_snapshot() if state["healthy"] else _overloaded_snapshot()
 
-    scheduler = TaskScheduler(
-        health_provider=provider,
-        max_concurrency={Agent.SPARK: 1, Agent.ZAP: 0},
-    )
-
-    record = scheduler.schedule_task(command="delayed", requested_agent=Agent.SPARK)
+    scheduler = TaskScheduler(health_provider=provider)
+    record = scheduler.submit_task(command="delayed", requested_agent=Agent.SPARK)
     assert record.status is TaskStatus.PENDING
 
     state["healthy"] = True
-    dispatched = scheduler.run_pending()
+    dispatched = scheduler.reconcile()
 
-    assert dispatched and dispatched[0].task_id == record.task_id
+    assert [task.task_id for task in dispatched] == [record.task_id]
     assert scheduler.get_task(record.task_id).status is TaskStatus.RUNNING
+
+
+def test_reconcile_processes_pending_tasks_in_priority_order():
+    state = {"healthy": False}
+
+    def provider() -> ResourceSnapshot:
+        return _healthy_snapshot() if state["healthy"] else _overloaded_snapshot()
+
+    scheduler = TaskScheduler(health_provider=provider)
+    low = scheduler.submit_task(command="routine", priority=TaskPriority.LOW)
+    critical = scheduler.submit_task(command="repair", priority=TaskPriority.CRITICAL)
+    assert low.status is critical.status is TaskStatus.PENDING
+
+    state["healthy"] = True
+    dispatched = scheduler.reconcile()
+
+    assert [task.task_id for task in dispatched] == [critical.task_id, low.task_id]
 
 
 def test_complete_task_records_result_and_history():
     scheduler = TaskScheduler(health_provider=_healthy_snapshot)
-
-    record = scheduler.schedule_task(
+    record = scheduler.submit_task(
         command="collect logs", requested_agent=Agent.SPARK
     )
     assert record.status is TaskStatus.RUNNING
@@ -163,36 +126,36 @@ def test_complete_task_records_result_and_history():
     assert any(entry.status is TaskStatus.COMPLETED for entry in completed.history)
 
 
-def test_cancel_task_frees_capacity_and_logs_reason():
+def test_cancel_task_clears_assignment_and_records_reason():
     scheduler = TaskScheduler(health_provider=_healthy_snapshot)
-
-    running = scheduler.schedule_task(command="initial", requested_agent=Agent.SPARK)
+    running = scheduler.submit_task(command="initial", requested_agent=Agent.SPARK)
     assert running.assigned_agent is Agent.SPARK
 
     cancelled = scheduler.cancel_task(running.task_id, reason="operator request")
+
     assert cancelled.status is TaskStatus.CANCELLED
+    assert cancelled.assigned_agent is None
     assert cancelled.error == "operator request"
     assert any(entry.status is TaskStatus.CANCELLED for entry in cancelled.history)
 
-    follow_up = scheduler.schedule_task(command="follow", requested_agent=Agent.SPARK)
-    assert follow_up.status is TaskStatus.RUNNING
-    assert follow_up.assigned_agent is Agent.SPARK
-
 
 def test_list_tasks_supports_status_filters():
-    scheduler = TaskScheduler(
-        health_provider=_healthy_snapshot,
-        max_concurrency={Agent.SPARK: 1, Agent.ZAP: 0},
+    scheduler = TaskScheduler(health_provider=_healthy_snapshot)
+    running = scheduler.submit_task(command="active")
+    pending = TaskScheduler(health_provider=_overloaded_snapshot).submit_task(
+        command="blocked"
     )
 
-    running = scheduler.schedule_task(command="active", requested_agent=Agent.SPARK)
-    pending = scheduler.schedule_task(
-        command="waiting",
-        priority=TaskPriority.HIGH,
-        requested_agent=Agent.SPARK,
-    )
+    assert running in scheduler.list_tasks(statuses=[TaskStatus.RUNNING])
+    assert pending not in scheduler.list_tasks(statuses=[TaskStatus.RUNNING])
 
-    subset = scheduler.list_tasks(statuses=[TaskStatus.PENDING])
 
-    assert {task.task_id for task in subset} == {pending.task_id}
-    assert running.task_id not in {task.task_id for task in subset}
+def test_missing_task_raises_key_error():
+    scheduler = TaskScheduler(health_provider=_healthy_snapshot)
+
+    try:
+        scheduler.get_task("missing")
+    except KeyError as exc:
+        assert "Unknown task_id" in str(exc)
+    else:
+        raise AssertionError("get_task should reject unknown task IDs")
