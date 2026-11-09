@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import importlib
+import json
+import logging
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -49,6 +51,52 @@ def test_capability_registry_enforces_read_mutating_and_destructive_roles():
     )
     with pytest.raises(PermissionError, match="role"):
         authorize_privileged_operation("project.container.volumes")
+
+
+def test_privileged_gate_audits_decisions_without_logging_unverified_identity(caplog):
+    caplog.set_level(logging.INFO, logger="huey.os.core.privileged_operations")
+    untrusted_claim = "secret-token-must-not-be-logged"
+
+    with pytest.raises(PermissionError, match="role"):
+        authorize_privileged_operation(
+            "host.shutdown", confirmed=True, actor_role=untrusted_claim
+        )
+    assert authorize_privileged_operation("host.shutdown", dry_run=True) is False
+    assert (
+        authorize_privileged_operation(
+            "host.shutdown", confirmed=True, actor_role="admin"
+        )
+        is True
+    )
+
+    records = [
+        json.loads(record.message)
+        for record in caplog.records
+        if record.name == "huey.os.core.privileged_operations"
+    ]
+    assert [record["outcome"] for record in records] == [
+        "denied",
+        "dry_run",
+        "allowed",
+    ]
+    assert records[0]["role_claim"] == "unrecognized"
+    assert records[0]["reason"] == "role_not_authorized"
+    assert records[1]["reason"] == "preview_only"
+    assert records[2]["role_claim"] == "admin"
+    assert all(record["operation"] == "host.shutdown" for record in records)
+    assert all(record["event"] == "privileged_operation" for record in records)
+    assert untrusted_claim not in caplog.text
+
+
+def test_privileged_gate_rejects_truthy_non_boolean_confirmation(caplog):
+    caplog.set_level(logging.INFO, logger="huey.os.core.privileged_operations")
+    with pytest.raises(PermissionError, match="Invalid authorization flags"):
+        authorize_privileged_operation(
+            "project.install", confirmed="yes", actor_role="operator"
+        )
+    record = json.loads(caplog.records[-1].message)
+    assert record["outcome"] == "denied"
+    assert record["reason"] == "invalid_confirmation_flags"
 
 
 @pytest.mark.parametrize(
