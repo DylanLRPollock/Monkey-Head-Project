@@ -99,14 +99,14 @@ def test_status_falls_back_to_empty_and_does_not_request_shutdown(monkeypatch):
     monkeypatch.setattr(monitor, "_status_from_sysfs", lambda: None)
     monkeypatch.setattr(monitor, "_status_from_acpi", lambda: None)
 
-    assert monitor.get_status() == {
-        "percent": None,
-        "secs_left": None,
-        "power_plugged": None,
-        "source": "unknown",
-        "estimated_runtime_minutes": None,
-        "threshold": 5.0,
-    }
+    status = monitor.get_status()
+    assert status["percent"] is None
+    assert status["secs_left"] is None
+    assert status["power_plugged"] is None
+    assert status["source"] == "unknown"
+    assert status["estimated_runtime_minutes"] is None
+    assert status["threshold"] == 5.0
+    assert isinstance(status["timestamp"], float)
     assert monitor.should_shutdown() is False
 
 
@@ -134,8 +134,9 @@ def test_psutil_status_normalizes_unknown_runtime_and_handles_errors(monkeypatch
 
 def test_acpi_status_parses_output_and_handles_command_failure(monkeypatch):
     monkeypatch.setattr(management.shutil, "which", lambda _name: "/usr/bin/acpi")
+
     def fake_check_output(*_args, **_kwargs):
-        return "\\n".join(
+        return "\n".join(
             [
                 "Battery 1: Discharging, 45%, 01:02:03 remaining",
                 "AC Adapter 0: on-line",
@@ -164,7 +165,9 @@ def test_observe_emits_low_recovery_and_connection_events_once():
     monitor = BatteryMonitor(shutdown_threshold=10)
     events = {name: [] for name in ("battery_low", "battery_recovered", "status")}
     for name in events:
-        monitor.register_hook(name, lambda status, event=name: events[event].append(status))
+        monitor.register_hook(
+            name, lambda status, event=name: events[event].append(status)
+        )
 
     monitor.observe({"percent": 5, "power_plugged": False})
     monitor.observe({"percent": 4, "power_plugged": False})
