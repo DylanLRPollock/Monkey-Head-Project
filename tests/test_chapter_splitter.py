@@ -96,7 +96,7 @@ def test_case_sensitive_matching_and_dry_run_do_not_create_output(tmp_path):
         dry_run=True,
     )
 
-    assert [path.name for path in paths] == ["chapter_001.txt"]
+    assert [path.name for path in paths] == ["preamble.txt", "chapter_001.txt"]
     assert not output.exists()
 
 
@@ -198,9 +198,7 @@ def test_split_refuses_to_overwrite_input_or_follow_output_symlink(tmp_path):
     assert target.read_text() == "protected\n"
 
 
-def test_atomic_writer_removes_temporary_file_when_replace_fails(
-    monkeypatch, tmp_path
-):
+def test_atomic_writer_removes_temporary_file_when_replace_fails(monkeypatch, tmp_path):
     destination = tmp_path / "chapter.txt"
     destination.write_text("old\n", encoding="utf-8")
 
