@@ -175,9 +175,7 @@ def test_faster_whisper_backend_uses_requested_language_when_info_omits_it(
         def transcribe(self, path: str, *, language: str):
             return iter(()), SimpleNamespace()
 
-    monkeypatch.setattr(
-        pipeline, "prepare_for_whisper", lambda *args, **kwargs: path
-    )
+    monkeypatch.setattr(pipeline, "prepare_for_whisper", lambda *args, **kwargs: path)
     monkeypatch.setattr(
         pipeline,
         "_default_prepared_path",
