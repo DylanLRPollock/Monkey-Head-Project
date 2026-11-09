@@ -75,7 +75,7 @@ def parse_api_principals(raw: str) -> list[dict[str, str]]:
             or not token.strip()
         ):
             raise ValueError(
-                "Each API principal needs a valid subject, operator/admin role, and token"
+                "Each API principal needs a valid subject, role, and token"
             )
         token = token.strip()
         if subject in subjects or token in tokens:
@@ -150,12 +150,14 @@ def validate_security_sensitive_environment() -> None:
             issues.append(f"{key} uses a placeholder API credential")
 
     admin_tokens = [
-        value for key, value in configured_tokens.items()
+        value
+        for key, value in configured_tokens.items()
         if key == "HUEY_API_ADMIN_TOKEN"
         or any(p["subject"] == key and p["role"] == "admin" for p in named_principals)
     ]
     operator_tokens = [
-        value for key, value in configured_tokens.items()
+        value
+        for key, value in configured_tokens.items()
         if key in {"HUEY_API_TOKEN", "HUEY_API_OPERATOR_TOKEN"}
         or any(p["subject"] == key and p["role"] == "operator" for p in named_principals)
     ]
