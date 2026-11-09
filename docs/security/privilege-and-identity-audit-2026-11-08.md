@@ -21,10 +21,10 @@ roles and caller-supplied actor names are not treated as authenticated identity.
 | Emergency governance writes | Strong auth when the default controller or tokens are active; controller validates approval count. | `actor`, `triggered_by`, `requested_by`, and `approvals` are request claims, not verified people. |
 | Sensor registration/removal; resilience restart/override; service start/stop | Admin-scoped token; loopback-only development mode when no tokens are configured. | Polling and watchdog actions remain operator-scoped through global bearer auth. |
 | Emergency governance enter/exit/action | Admin-scoped token when auth is configured; approval counts remain controller-validated. | Approval names are still caller claims and do not identify distinct authenticated people. |
-| Other POST routes | Global bearer middleware when credentials are configured; otherwise loopback-only. | Named principal attribution applies to API request logs; task ownership and per-task authorization are not implemented. |
-| Direct power, uninstall, install, update, account, diagnostics, failover, Docker, and Kubernetes operations | Shared deny-by-default capability gate. Mutating/destructive calls require explicit confirmation and role; dry-run returns before host/path access. GUI container actions prompt; CLI install/cluster/diagnostic actions require `--yes`; system diagnostics are selected from a fixed allowlist; and the PyHuey manager connector requires explicit process opt-in. | Local `actor_role` values and environment opt-ins are intent claims, not named identity. OS privilege checks remain a separate boundary. |
-| Container and cluster helpers | Direct public helpers enforce capability gates, use argv with `shell=False` and timeouts, validate Kubernetes manifests and scale names, and reject invalid Docker tags. The legacy import path re-exports these canonical guarded helpers. Volume/network manager actions only list resources; pruning was removed from those actions. | Docker/Kubernetes command completion still depends on local tool policy and credentials. Direct in-process actions are not included in the HTTP action log. |
-| Plugins, agent tools, command center | Built-in PyHuey manager commands are capability-gated; command-center endpoints remain read-only. | A complete plugin/agent capability registry and per-user audit trail do not yet exist. Third-party tools need their own review. |
+| Other POST routes | Global bearer middleware when credentials are configured; otherwise loopback-only. | Named principal attribution applies to API request logs. Routes outside task management do not have per-user object ownership. |
+| Direct power, uninstall, install, update, account, diagnostics, failover, Docker, and Kubernetes operations | Shared deny-by-default capability gate. Mutating/destructive calls require explicit confirmation and role; dry-run returns before host/path access. Gate decisions now emit secret-free structured application logs. | Local `actor_role` values and environment opt-ins remain caller claims, not named identity. Logs are not durable or tamper-resistant, and OS privilege checks remain separate. |
+| Container and cluster helpers | Direct public helpers enforce capability gates, use argv with `shell=False` and timeouts, validate Kubernetes manifests and scale names, and reject invalid Docker tags. The legacy import path re-exports these canonical guarded helpers. Volume/network manager actions only list resources; pruning was removed from those actions. | Docker/Kubernetes command completion still depends on local tool policy and credentials. Direct gate events are logged with a claimed role, not a verified principal, and need a protected external sink for durable retention. |
+| Plugins, agent tools, command center | Built-in PyHuey manager commands are capability-gated; command-center endpoints remain read-only. | A complete plugin/agent capability registry and per-user verified audit identity do not yet exist. Third-party tools need their own capability review. |
 
 ## Named principal configuration and audit logging
 
@@ -34,14 +34,20 @@ contain a unique `subject`, an `operator` or `admin` role, and a unique
 `token`. Alternatively, the existing shared token variables remain supported.
 The application logs mutating HTTP route templates, configured subject/role,
 response status, and UTC time; authorization failures are also logged without
-recording bearer values or request bodies.
+recording bearer values or request bodies. The shared privileged-operation
+gate also records direct in-process authorization decisions with operation,
+capability, claimed role, confirmation flags, outcome, reason, and UTC time.
 
 A configured subject is a local credential label, not proof of a human identity
-from an external identity provider. Shared credentials map to a shared subject.
-The logs are ordinary application logs, not append-only or tamper-resistant
-audit records. Task ownership, caller-attributed emergency approvals, direct
-library action logging, and a complete plugin/agent capability registry remain
-open controls.
+from an external identity provider. Shared credentials map to a shared subject;
+loopback development access uses one unverified local subject. Task API
+submissions carry the authenticated subject, and operators can list, read, or
+cancel only their own tasks; admins can access all tasks. Tasks created through
+direct scheduler calls are outside this HTTP ownership boundary.
+
+HTTP and privileged-operation events go to ordinary application logs, not
+append-only or tamper-resistant audit storage. Caller-attributed emergency
+approvals and a complete plugin/agent capability registry remain open controls.
 
 ## Mutating route inventory
 
@@ -51,9 +57,11 @@ and polling; resilience override, restart, poll, and watchdog ping; memory
 auto-sort; emergency enter/exit/action; service start/stop; system checks; and
 text processing/analysis operations. Admin scope is required for the
 host-affecting and configuration-mutating operations listed in the table above.
-Task submission/cancellation, polling, and selected read-like POST operations
-remain operator-scoped. `GET` routes include status, telemetry, history, model,
-PDF, and process listings. Direct library and GUI/container entrypoints are
+Task submission requires the configured unsafe-task opt-in and an authenticated
+principal; task list/detail/cancel access is owner-scoped for operators and
+cross-owner for admins. Polling and selected read-like POST operations remain
+operator-scoped. `GET` routes include status, telemetry, history, model, PDF,
+and process listings. Direct library and GUI/container entrypoints are
 guarded separately by the local capability gate.
 
 ## Release decision and follow-up requirements
@@ -63,10 +71,11 @@ guarded separately by the local capability gate.
 - Do not describe this deployment as externally user-authenticated or as a
   tamper-resistant audit system. Named subjects are locally configured labels;
   shared credentials still aggregate clients to one subject.
-- Before remote multi-user operation, add task-owner checks, durable
-  tamper-resistant action records, direct in-process action attribution, and a
-  complete plugin/agent capability registry. Consider an external identity
-  provider when local environment-managed credentials are insufficient.
+- Before remote multi-user operation, replace shared credentials with an
+  external identity provider if independently verified identities are required.
+  Configure a protected external sink if durable audit retention is required.
+  Complete the plugin/agent capability registry and authenticate any third-party
+  tools that perform privileged actions.
 - Preserve local development behavior only as an explicit loopback policy;
   verify proxy deployments do not trust forwarded client addresses.
 - Continue treating plugin/agent execution as a separate capability boundary;
