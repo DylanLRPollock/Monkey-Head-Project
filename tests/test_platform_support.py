@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from types import SimpleNamespace
-import sys
 
 import pytest
 
@@ -202,7 +202,7 @@ def test_read_os_release_falls_back_to_quoted_file_values(monkeypatch):
 
         def read_text(self, *, encoding):
             assert encoding == "utf-8"
-            return "\\n".join(
+            return "\n".join(
                 [
                     'ID="TestOS"',
                     "VERSION_CODENAME=stable",
