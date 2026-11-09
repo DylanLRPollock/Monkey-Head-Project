@@ -23,9 +23,9 @@ dependency manifests or hardware exposure.
   enforced failure on unaccepted advisories on PRs, main pushes and a weekly
   schedule. It audits the installed pinned dev environment. This does **not**
   imply every optional dependency or a deployed environment has been audited.
-- The 17-workflow November inventory in [issue #854](https://github.com/DylanLRPollock/Monkey-Head-Project/issues/854) reports
-  52 full 40-character SHA-pinned action references. Recheck before claiming
-  this for a future commit.
+- The 17-workflow November inventory in [issue #854](https://github.com/DylanLRPollock/Monkey-Head-Project/issues/854) reported
+  52 full 40-character SHA-pinned action references. Merged PR #889 added one
+  more full-SHA-pinned action; recheck the total after future workflow changes.
 - `scripts/security/security_check.sh` deliberately warns/skips when the
   local `pip-audit` binary is absent. Local checks are therefore **not**
   equivalent to mandatory CI security gates.
