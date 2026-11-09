@@ -51,7 +51,7 @@ def test_main_human_output_lists_moved_and_skipped_files(monkeypatch, capsys) ->
     result = cli.main([])
 
     assert result is summary
-    sorter.assert_called_once_with(source_dir=None, destination_root=None, dry_run=False)
+    sorter.assert_called_once_with(\n        source_dir=None, destination_root=None, dry_run=False\n    )
     assert capsys.readouterr().out == (
         "Source: /memory/RAW\n"
         "Destination: /memory\n"
