@@ -184,9 +184,10 @@ def test_manager_dry_run_does_not_resolve_paths_or_request_authorization(monkeyp
     monkeypatch.setattr(manager_module, "resolve_platform_script_paths", setup_paths)
     manager = MonkeyManager(authorization_provider=provider)
 
-    assert manager._run_capability(
-        "project.container.start", Mock(), dry_run=True
-    ) is False
+    assert (
+        manager._run_capability("project.container.start", Mock(), dry_run=True)
+        is False
+    )
     setup_paths.assert_not_called()
     provider.assert_not_called()
 
