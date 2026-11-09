@@ -177,10 +177,7 @@ def print_custom_functions(source: str | None = None) -> None:
 
     print("Custom functions")
     for function in functions:
-        print(
-            "  - "
-            f"{function['name']}{function['signature']} :: {function['module']}"
-        )
+        print(f"  - {function['name']}{function['signature']} :: {function['module']}")
 
 
 def _parse_custom_function_kwargs(raw: str | None) -> dict[str, object]:
@@ -204,9 +201,7 @@ def run_custom_function(
     """Run a registered custom function and return its result."""
 
     _prepare_pygpt(source)
-    return invoke_function(
-        function_name, **_parse_custom_function_kwargs(kwargs_json)
-    )
+    return invoke_function(function_name, **_parse_custom_function_kwargs(kwargs_json))
 
 
 def print_pyhuey_info(source: str | None = None) -> None:

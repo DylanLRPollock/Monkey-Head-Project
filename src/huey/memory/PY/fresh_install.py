@@ -65,9 +65,7 @@ def run_fresh_install(
         source = _prompt_source() if sys.stdin.isatty() else "local"
     if source == "github":
         # repair.run_repair handles uninstallation internally
-        return repair.run_repair(
-            repo_url, confirmed=confirmed, actor_role=actor_role
-        )
+        return repair.run_repair(repo_url, confirmed=confirmed, actor_role=actor_role)
 
     print("Starting fresh installation...")
     uninstall_rc = uninstaller.run_uninstaller(
@@ -76,9 +74,7 @@ def run_fresh_install(
     if uninstall_rc != 0:
         print(f"Uninstall failed with code {uninstall_rc}")
         return uninstall_rc
-    return installer.run_installer(
-        confirmed=confirmed, actor_role=actor_role
-    )
+    return installer.run_installer(confirmed=confirmed, actor_role=actor_role)
 
 
 def main(argv: list[str] | None = None) -> int:

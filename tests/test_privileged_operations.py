@@ -32,19 +32,21 @@ def test_privileged_operation_requires_confirmation_and_authority(operation):
 
 def test_capability_registry_enforces_read_mutating_and_destructive_roles():
     with pytest.raises(PermissionError, match="confirmation"):
+        authorize_privileged_operation("project.container.start", actor_role="operator")
+    assert (
         authorize_privileged_operation(
-            "project.container.start", actor_role="operator"
+            "project.container.start", confirmed=True, actor_role="operator"
         )
-    assert authorize_privileged_operation(
-        "project.container.start", confirmed=True, actor_role="operator"
-    ) is True
+        is True
+    )
     with pytest.raises(PermissionError, match="role"):
         authorize_privileged_operation(
             "project.container.stop", confirmed=True, actor_role="operator"
         )
-    assert authorize_privileged_operation(
-        "project.container.volumes", actor_role="reader"
-    ) is True
+    assert (
+        authorize_privileged_operation("project.container.volumes", actor_role="reader")
+        is True
+    )
     with pytest.raises(PermissionError, match="role"):
         authorize_privileged_operation("project.container.volumes")
 

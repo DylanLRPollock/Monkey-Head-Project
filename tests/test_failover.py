@@ -45,11 +45,14 @@ def test_execute_plan_denies_and_dry_run_never_calls_runner():
     executed = []
     with pytest.raises(PermissionError):
         execute_plan(plan, runner=lambda cmd: executed.append(cmd))
-    assert execute_plan(
-        plan,
-        runner=lambda cmd: executed.append(cmd),
-        dry_run=True,
-    ) is False
+    assert (
+        execute_plan(
+            plan,
+            runner=lambda cmd: executed.append(cmd),
+            dry_run=True,
+        )
+        is False
+    )
     assert executed == []
 
 

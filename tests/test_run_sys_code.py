@@ -27,9 +27,7 @@ def test_run_sys_code(monkeypatch):
     monkeypatch.setattr("run._load_cli", lambda: lambda: None)
     monkeypatch.setattr("huey.os.core.system_checks.check_os_support", lambda: None)
     monkeypatch.setattr("huey.os.core.system_checks.check_python_version", lambda: None)
-    monkeypatch.setattr(
-        sys, "argv", ["run.py", "--sys-code", "uname", "--yes"]
-    )
+    monkeypatch.setattr(sys, "argv", ["run.py", "--sys-code", "uname", "--yes"])
     main()
     assert called.get("cmd") == ["uname", "-a"]
     assert called["kwargs"]["shell"] is False
@@ -56,9 +54,7 @@ def test_run_sys_code_rejects_unlisted_commands_before_subprocess(monkeypatch):
     called = []
     monkeypatch.setattr("subprocess.run", lambda *args, **kwargs: called.append(args))
     try:
-        run_sys_code(
-            "uname; touch /tmp/forbidden", confirmed=True, actor_role="admin"
-        )
+        run_sys_code("uname; touch /tmp/forbidden", confirmed=True, actor_role="admin")
     except ValueError as exc:
         assert "Unsupported diagnostic" in str(exc)
     else:
@@ -71,7 +67,7 @@ def test_run_sys_code_dry_run_skips_subprocess(monkeypatch):
 
     called = []
     monkeypatch.setattr("subprocess.run", lambda *args, **kwargs: called.append(args))
-    assert run_sys_code(
-        "uname", confirmed=True, actor_role="admin", dry_run=True
-    ) is False
+    assert (
+        run_sys_code("uname", confirmed=True, actor_role="admin", dry_run=True) is False
+    )
     assert called == []

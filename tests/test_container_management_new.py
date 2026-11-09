@@ -97,13 +97,9 @@ def test_kubernetes_manifest_and_resource_arguments_are_validated(tmp_path):
                 tmp_path / "outside.yaml", confirmed=True, actor_role="admin"
             )
         with pytest.raises(ValueError, match="deployment name or replica count"):
-            scale_deployment(
-                "../deployment", 1, confirmed=True, actor_role="operator"
-            )
+            scale_deployment("../deployment", 1, confirmed=True, actor_role="operator")
         with pytest.raises(ValueError, match="deployment name or replica count"):
-            scale_deployment(
-                "valid-name", -1, confirmed=True, actor_role="operator"
-            )
+            scale_deployment("valid-name", -1, confirmed=True, actor_role="operator")
     run.assert_not_called()
 
 

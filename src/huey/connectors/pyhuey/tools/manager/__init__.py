@@ -262,11 +262,12 @@ class MonkeyManager(BaseTool):
         print("Custom functions:")
         for function in functions:
             print(
-                "  - "
-                f"{function['name']}{function['signature']} :: {function['module']}"
+                f"  - {function['name']}{function['signature']} :: {function['module']}"
             )
 
-    def invoke_registered_function(self, function_name: str, /, **kwargs: object) -> Any:
+    def invoke_registered_function(
+        self, function_name: str, /, **kwargs: object
+    ) -> Any:
         """Invoke a registered custom function by name."""
 
         return invoke_function(function_name, **kwargs)

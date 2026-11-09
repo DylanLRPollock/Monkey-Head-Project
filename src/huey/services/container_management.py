@@ -15,8 +15,8 @@ import subprocess
 from collections.abc import Iterable
 from pathlib import Path
 
-from huey.os.core.privileged_operations import authorize_privileged_operation
 from huey.os.core.platform_support import find_project_root
+from huey.os.core.privileged_operations import authorize_privileged_operation
 
 LOGGER = logging.getLogger(__name__)
 
@@ -71,7 +71,9 @@ def build_docker_image(
 ) -> None:
     """Build the project's Docker image if Docker is available."""
     if not authorize_privileged_operation(
-        "project.container.build", confirmed=confirmed, actor_role=actor_role,
+        "project.container.build",
+        confirmed=confirmed,
+        actor_role=actor_role,
         dry_run=dry_run,
     ):
         return
@@ -85,7 +87,9 @@ def manage_containers(
 ) -> None:
     """Start the docker-compose stack for the project."""
     if not authorize_privileged_operation(
-        "project.container.start", confirmed=confirmed, actor_role=actor_role,
+        "project.container.start",
+        confirmed=confirmed,
+        actor_role=actor_role,
         dry_run=dry_run,
     ):
         return
@@ -101,7 +105,9 @@ def stop_containers(
 ) -> None:
     """Stop the docker-compose stack for the project."""
     if not authorize_privileged_operation(
-        "project.container.stop", confirmed=confirmed, actor_role=actor_role,
+        "project.container.stop",
+        confirmed=confirmed,
+        actor_role=actor_role,
         dry_run=dry_run,
     ):
         return
@@ -114,7 +120,9 @@ def cleanup_images(
 ) -> None:
     """Remove dangling Docker images to free space."""
     if not authorize_privileged_operation(
-        "project.container.cleanup", confirmed=confirmed, actor_role=actor_role,
+        "project.container.cleanup",
+        confirmed=confirmed,
+        actor_role=actor_role,
         dry_run=dry_run,
     ):
         return
@@ -126,7 +134,8 @@ def manage_volumes(
 ) -> None:
     """List Docker volumes without removing resources."""
     if not authorize_privileged_operation(
-        "project.container.volumes", confirmed=confirmed,
+        "project.container.volumes",
+        confirmed=confirmed,
         actor_role=actor_role or "reader",
         dry_run=dry_run,
     ):
@@ -139,7 +148,8 @@ def manage_networks(
 ) -> None:
     """List Docker networks without removing resources."""
     if not authorize_privileged_operation(
-        "project.container.networks", confirmed=confirmed,
+        "project.container.networks",
+        confirmed=confirmed,
         actor_role=actor_role or "reader",
         dry_run=dry_run,
     ):
@@ -165,7 +175,9 @@ def deploy_kubernetes(
 ) -> None:
     """Apply the Kubernetes manifests to the current cluster."""
     if not authorize_privileged_operation(
-        "project.kubernetes.deploy", confirmed=confirmed, actor_role=actor_role,
+        "project.kubernetes.deploy",
+        confirmed=confirmed,
+        actor_role=actor_role,
         dry_run=dry_run,
     ):
         return
@@ -187,7 +199,9 @@ def cleanup_kubernetes(
 ) -> None:
     """Delete resources defined by the Kubernetes manifest."""
     if not authorize_privileged_operation(
-        "project.kubernetes.cleanup", confirmed=confirmed, actor_role=actor_role,
+        "project.kubernetes.cleanup",
+        confirmed=confirmed,
+        actor_role=actor_role,
         dry_run=dry_run,
     ):
         return
@@ -209,7 +223,9 @@ def scale_deployment(
 ) -> None:
     """Scale a deployment to the given number of replicas."""
     if not authorize_privileged_operation(
-        "project.kubernetes.scale", confirmed=confirmed, actor_role=actor_role,
+        "project.kubernetes.scale",
+        confirmed=confirmed,
+        actor_role=actor_role,
         dry_run=dry_run,
     ):
         return
@@ -225,7 +241,9 @@ def _validate_manifest_path(path: Path) -> None:
     root = _project_root().resolve()
     resolved = path.resolve()
     if path.is_symlink() or not resolved.is_relative_to(root) or not resolved.is_file():
-        raise ValueError("Kubernetes manifest must be a regular file inside the project")
+        raise ValueError(
+            "Kubernetes manifest must be a regular file inside the project"
+        )
 
 
 def kubernetes_management() -> None:

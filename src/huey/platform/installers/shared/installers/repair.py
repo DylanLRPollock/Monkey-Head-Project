@@ -25,8 +25,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-from . import uninstaller
 from huey.os.core.privileged_operations import authorize_privileged_operation
+
+from . import uninstaller
 
 
 def _run(
