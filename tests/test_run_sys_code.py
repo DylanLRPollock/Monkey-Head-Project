@@ -35,7 +35,7 @@ def test_run_sys_code(monkeypatch):
 
 
 def test_run_sys_code_denies_direct_calls_before_subprocess(monkeypatch):
-    from huey.memory.PY.run from huey.memory.PY import run_sys_code
+    from huey.memory.PY.run import run_sys_code
 
     called = []
     monkeypatch.setattr("subprocess.run", lambda *args, **kwargs: called.append(args))
