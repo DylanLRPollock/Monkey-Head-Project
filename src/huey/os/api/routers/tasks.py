@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 from types import ModuleType
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, HTTPException, Query, Request, status
 
-from huey.os.core.task_scheduler import ResourceProfile, TaskStatus
+from huey.os.core.task_scheduler import ResourceProfile, TaskRecord, TaskStatus
 from huey.os.services.tasks import (
     TaskListResponse,
     TaskResponse,
@@ -33,7 +33,7 @@ def _legacy_api_module() -> ModuleType:
     return _api_module
 
 
-def _request_principal(http_request: Request):
+def _request_principal(http_request: Request) -> Any:
     principal = getattr(http_request.state, "api_principal", None)
     if principal is None:
         raise HTTPException(
@@ -43,7 +43,7 @@ def _request_principal(http_request: Request):
     return principal
 
 
-def _owns_task(principal, record) -> bool:
+def _owns_task(principal: Any, record: TaskRecord) -> bool:
     return principal.role == "admin" or record.owner_subject == principal.subject
 
 
