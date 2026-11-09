@@ -10,7 +10,6 @@ from huey.media import (
     check_ffmpeg_available,
     media_manager,
 )
-from huey.media.media_manager import FFmpegManager
 
 
 def test_import_huey_media_succeeds() -> None:
@@ -178,59 +177,81 @@ def test_check_ffmpeg_available_returns_bool() -> None:
     assert isinstance(check_ffmpeg_available(), bool)
 
 
-def test_legacy_waveform_builds_command_and_surfaces_encoder_failure(
-    tmp_path: Path,
+def test_extract_frame_builds_select_command_and_returns_failure_result(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    input_path = tmp_path / "input.wav"
-    output_path = tmp_path / "waveform.png"
+    input_path = tmp_path / "input.mp4"
+    output_path = tmp_path / "frame.png"
     failed_output = tmp_path / "failed.png"
     input_path.write_bytes(b"fixture")
     responses = [
-        SimpleNamespace(returncode=0, stdout="", stderr=""),
-        SimpleNamespace(
+        FFmpegCommandResult(
+            command=[],
+            returncode=0,
+            stdout="",
+            stderr="",
+        ),
+        FFmpegCommandResult(
+            command=[],
             returncode=1,
             stdout="",
             stderr="simulated encoder failure",
         ),
     ]
-    captured: dict[str, list[str]] = {}
+    captured: list[list[str]] = []
+    manager = FFmpegMediaManager(ffmpeg_path="ffmpeg")
 
-    def fake_runner(command, **_kwargs):
-        captured["command"] = command
-        return responses.pop(0)
+    def fake_run(command: list[str]) -> FFmpegCommandResult:
+        captured.append(command)
+        return FFmpegCommandResult(
+            command=command,
+            returncode=responses[len(captured) - 1].returncode,
+            stdout="",
+            stderr=responses[len(captured) - 1].stderr,
+        )
 
-    manager = FFmpegManager(runner=fake_runner)
-    result = manager.waveform(
-        input_path, output_path, width=640, height=120, overwrite=True
+    monkeypatch.setattr(manager, "run", fake_run)
+    result = manager.extract_frame(
+        input_path, output_path, frame_number=7, overwrite=True
     )
+    failed = manager.extract_frame(input_path, failed_output, frame_number=2)
 
-    command = captured["command"]
     assert result.ok
     assert result.output_path == output_path
-    assert command[2] == "-y"
-    assert command[command.index("-filter_complex") + 1] == (
-        "aformat=channel_layouts=mono,showwavespic=s=640x120"
-    )
-    assert command[command.index("-frames:v") + 1] == "1"
-
-    with pytest.raises(RuntimeError, match="simulated encoder failure"):
-        manager.waveform(input_path, failed_output)
+    assert result.command[2] == "-y"
+    assert result.command[result.command.index("-vf") + 1] == "select=eq(n\\,7)"
+    assert result.command[result.command.index("-frames:v") + 1] == "1"
+    assert failed.ok is False
+    assert failed.stderr == "simulated encoder failure"
+    assert len(captured) == 2
 
 
-def test_legacy_waveform_validates_input_and_output_before_running(
-    tmp_path: Path,
+def test_extract_frame_validates_number_input_and_output_before_running(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    def fail_runner(_command, **_kwargs):
-        pytest.fail("FFmpeg must not run for invalid paths")
+    manager = FFmpegMediaManager(ffmpeg_path="ffmpeg")
 
-    manager = FFmpegManager(runner=fail_runner)
+    def fail_run(_command: list[str]) -> FFmpegCommandResult:
+        pytest.fail("FFmpeg must not run for invalid frame paths")
+
+    monkeypatch.setattr(manager, "run", fail_run)
+    with pytest.raises(ValueError, match="frame_number must be zero or greater"):
+        manager.extract_frame(
+            tmp_path / "missing.mp4",
+            tmp_path / "frame.png",
+            frame_number=-1,
+        )
     with pytest.raises(FileNotFoundError):
-        manager.waveform(tmp_path / "missing.wav", tmp_path / "waveform.png")
+        manager.extract_frame(
+            tmp_path / "missing.mp4",
+            tmp_path / "frame.png",
+            frame_number=0,
+        )
 
-    source = tmp_path / "source.wav"
+    source = tmp_path / "source.mp4"
     source.write_bytes(b"fixture")
-    output = tmp_path / "waveform.png"
+    output = tmp_path / "frame.png"
     output.write_bytes(b"keep")
     with pytest.raises(FileExistsError):
-        manager.waveform(source, output, overwrite=False)
+        manager.extract_frame(source, output, frame_number=0)
     assert output.read_bytes() == b"keep"
