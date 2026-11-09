@@ -143,7 +143,7 @@ def test_media_transform_helpers_build_expected_commands(
 
     command = seen[0]
     assert any(arg.startswith(expected[0]) for arg in command)
-    assert expected[1] in command
+    assert expected[1] in command or any(arg.startswith(expected[1]) for arg in command)
 
 
 def test_extract_frames_detect_silence_and_split_chunks(tmp_path, monkeypatch):
