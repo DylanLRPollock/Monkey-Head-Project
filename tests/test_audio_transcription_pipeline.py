@@ -28,7 +28,9 @@ def test_mock_transcription_skips_preparation_and_returns_stable_payload(
     prepared = tmp_path / "voice.whisper.wav"
 
     def unexpected_prepare(*args, **kwargs):
-        pytest.fail("mock transcription without a custom backend must not prepare audio")
+        pytest.fail(
+            "mock transcription without a custom backend must not prepare audio"
+        )
 
     monkeypatch.setattr(pipeline, "prepare_for_whisper", unexpected_prepare)
     result = pipeline.transcribe(source, mock=True)
@@ -135,7 +137,9 @@ def test_faster_whisper_backend_collects_segments_and_runtime_metadata(
     monkeypatch.setattr(
         pipeline, "prepare_for_whisper", lambda *args, **kwargs: prepared
     )
-    monkeypatch.setattr(pipeline, "_default_prepared_path", lambda path: tmp_path / "target.wav")
+    monkeypatch.setattr(
+        pipeline, "_default_prepared_path", lambda path: tmp_path / "target.wav"
+    )
     monkeypatch.setitem(
         sys.modules,
         "faster_whisper",
