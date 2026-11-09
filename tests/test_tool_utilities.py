@@ -31,12 +31,14 @@ def test_backup_archive_contains_source_files(tmp_path):
 
 def test_fernet_vault_round_trip_and_rejects_invalid_token():
     pytest.importorskip("cryptography.fernet")
+    from cryptography.fernet import InvalidToken
+
     vault = FernetVault()
 
     token = vault.encrypt_text("private note")
 
     assert vault.decrypt_text(token) == "private note"
-    with pytest.raises(Exception):
+    with pytest.raises(InvalidToken):
         vault.decrypt_text("not-a-valid-fernet-token")
 
 
@@ -125,13 +127,13 @@ def test_scheduler_runs_due_jobs_once_and_records_result():
         ScheduledJob("refresh", 10, lambda: calls.append("refresh") or "done")
     )
 
-    assert scheduler.tick(now=9.0) == [
-        {"name": "refresh", "result": "done", "ran_at": 9.0}
+    assert scheduler.tick(now=10.0) == [
+        {"name": "refresh", "result": "done", "ran_at": 10.0}
     ]
     assert calls == ["refresh"]
-    assert scheduler.tick(now=18.9) == []
-    assert scheduler.tick(now=19.0) == [
-        {"name": "refresh", "result": "done", "ran_at": 19.0}
+    assert scheduler.tick(now=19.9) == []
+    assert scheduler.tick(now=20.0) == [
+        {"name": "refresh", "result": "done", "ran_at": 20.0}
     ]
     assert calls == ["refresh", "refresh"]
 
