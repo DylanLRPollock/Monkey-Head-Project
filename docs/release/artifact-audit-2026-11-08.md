@@ -14,19 +14,39 @@ tracked-file inventory containing path, size, extension classification, and
 SHA-256, tied to the scanned commit. The report remains a review aid: binary
 extension and checksum do not prove license, origin, or build reproducibility.
 
-The refreshed tracked-tree inventory at main commit
-`9066adf810ab659ed8a53a4cba5d9d64eee9c2f3` contained 1,998 files; ten were at
-least 5 MiB. The largest were two initrds (64 and 23 MiB), the archived
-`dlrp-old.zip` (23 MiB), kernel images (12 MiB each), a test MP4 (11 MiB), and
-two Debian installer packages (10 and 8 MiB). The two duplicate kernel files
-have matching SHA-256 values but occupy different boot-layout paths. No payload
-was deleted based only on its size or duplicate content.
+The latest completed Artifact & filesystem scan workflow
+([run 42558916250](https://github.com/DylanLRPollock/Monkey-Head-Project/actions/runs/42558916250))
+inventoried 2,010 tracked files at merge-ref commit
+`78df2f698cb6e3bab9c65e9ca0958f80dcd1d835`; ten were at least 5 MiB. The
+workflow artifact `artifact-risk-scan-results` contains the complete
+path/size/SHA-256 inventory. Its report was generated 2026-11-09 at 03:55 UTC.
 
-Names and repository metadata identify the `.udeb` files as Debian packages,
-but the audit did not establish the upstream revision, license/NOTICE
-obligations, or consumer for every image, initrd, archived ZIP, or test video.
-Record those fields per payload before moving, replacing, or removing it. The
-artifact scan workflow produces the complete per-file path/size/hash list.
+### Files at least 5 MiB
+
+| Size | Tracked path | SHA-256 |
+| ---: | --- | --- |
+| 63.40 MiB | `src/huey/platform/installers/linux/gtk/initrd.gz` | `37ecc4117ed848d782b70bffd21e18799dc311816f07941e67da857bff3037fb` |
+| 23.21 MiB | `src/huey/platform/installers/linux/initrd.gz` | `ccd0eab9333579fde4cec9309de0e3f3d480ccb2e190a292ec8b3b650d8ce40b` |
+| 23.06 MiB | `src/huey/memory/ZIP/dlrp-old.zip` | `d689fc416b560c60e3ccee6e4025e72d41aac840725ef445e2802547f0177483` |
+| 12.16 MiB | `src/huey/platform/boot/legacy/live/vmlinuz` | `4dc574614936db013ec05c80da52bfb46131f350efdea7bacaf75054d7df79a5` |
+| 12.16 MiB | `src/huey/platform/boot/legacy/live/vmlinuz-6.18.5-hueyos` | `4dc574614936db013ec05c80da52bfb46131f350efdea7bacaf75054d7df79a5` |
+| 11.54 MiB | `src/huey/platform/installers/linux/gtk/vmlinuz` | `123e30d376f800b70848505a1193d0fce03359052677ed4e068eb60231a4bb02` |
+| 11.54 MiB | `src/huey/platform/installers/linux/vmlinuz` | `123e30d376f800b70848505a1193d0fce03359052677ed4e068eb60231a4bb02` |
+| 11.12 MiB | `src/huey/memory/MP4/TEST.mp4` | `a6d54b6196edf477a266d79a010616f3ace0addd21798753479d7d9466f5d09d` |
+| 9.99 MiB | `src/huey/platform/packaging/pool-udeb/main/f/fonts-noto/fonts-noto-unhinted-udeb_20201225-2_all.udeb` | `74da175792c6ad710c92eabca3657a8b05388f64fed95ca587165a086d564088` |
+| 8.23 MiB | `src/huey/platform/packaging/pool-udeb/main/e/espeak-ng/espeak-ng-data-udeb_1.52.0+dfsg-5+b1_amd64.udeb` | `22d5801f18ff5685541219e4a62542aa5937e15538c05d8a0a3b926381ec7c99` |
+
+The two kernel-content duplicate pairs have matching hashes but occupy distinct
+boot/installer paths; the copies may be required by the corresponding layout.
+Do not remove them based only on hash equality. The table identifies tracked
+bytes and content identity, not ownership or provenance.
+
+The filenames identify two Debian `.udeb` packages and include package
+versions, but this scan does not establish the upstream source revision,
+license/NOTICE obligations, owning component, intended consumer, or
+reproducible build recipe for any row. Those fields remain open for maintainer
+review before moving, replacing, redistributing, or removing a payload.
+No payload was deleted based only on size or duplicate content.
 
 ## Python release bundle
 
