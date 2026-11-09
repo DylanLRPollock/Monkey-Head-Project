@@ -50,6 +50,15 @@ _TOOLS: list[dict[str, object]] = [
         },
     },
     {
+        "name": "huey_connections",
+        "description": "Summarize read-only status of HueyOS connections (API, media tools, MCP).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
+    {
         "name": "huey_permissions",
         "description": "Describe the actions deliberately not exposed to PyGPT.",
         "inputSchema": {
@@ -124,6 +133,20 @@ def diagnostics() -> dict[str, object]:
     }
 
 
+def connections() -> dict[str, object]:
+    """Aggregate connection status from the existing read-only checks."""
+
+    health = health_info()
+    media = diagnostics()
+    return {
+        "api": health,
+        "media_tools": media,
+        "mcp": {"transport": "stdio", "mode": "read-only"},
+        "all_connected": bool(health.get("connected"))
+        and all(media.values()),
+    }
+
+
 def permissions() -> dict[str, object]:
     """Document the narrow permissions of this MCP bridge."""
 
@@ -151,6 +174,7 @@ _ACTIONS: dict[str, Callable[[], dict[str, object]]] = {
     "huey_project": project_info,
     "huey_health": health_info,
     "huey_diagnostics": diagnostics,
+    "huey_connections": connections,
     "huey_permissions": permissions,
 }
 
