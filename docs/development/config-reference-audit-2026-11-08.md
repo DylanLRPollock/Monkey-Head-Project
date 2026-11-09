@@ -1,4 +1,4 @@
-# Configuration reference audit (2026-11-08)
+# Configuration reference audit (reviewed 2026-11-09)
 
 ## Canonical entrypoints
 
@@ -11,14 +11,21 @@
 | developer commands / CI | `Makefile`, `.github/workflows/ci.yml` | None | CI calls `make lint`; flake8 covers `src`, `tests`, `scripts`, root entrypoints, and `infra`; Black/isort/Ruff keep the existing `LINT_PATHS` scope. |
 | Python support policy | `pyproject.toml`, `.python-version` | None | Python 3.13 primary, 3.12 legacy, 3.14 testing. |
 
+The three alternate files are not byte-identical copies of their canonical
+files. The editor settings, flake8 exclusions/options, and pre-commit hook sets
+differ. Therefore the alternates could change behavior if a developer selects
+them explicitly; their contents are not silently substituted for the canonical
+settings.
+
 ## Reference-search result
 
-Searched tracked and hidden repository files, excluding `.git`, `.venv`, and
-vendor trees, for alternate config filenames and explicit `-c`/`--config`
-selection. The only matches are the tooling map, workflow ownership references,
-and historical audit text. No build, test, lint, or CI script selects one of the
-alternate files. Standard automatic discovery therefore selects the canonical
-dotfiles documented above.
+Searched all tracked repository files, including hidden files and workflow
+definitions, for alternate config names and explicit `-c`/`--config` selection.
+No build, test, lint, or CI command selects one of the alternate files. Matches
+are limited to audit/tooling documentation and workflow path filters for the
+canonical `.editorconfig`. `make lint` is the CI lint entrypoint; it uses the
+canonical configuration and does not call pre-commit. Standard automatic
+discovery therefore selects the canonical dotfiles documented above.
 
 The default `.flake8` scan excludes vendored code and the separately maintained
 legacy connector/API compatibility trees. The CI flake8 target additionally
@@ -27,11 +34,12 @@ as part of the project lint cleanup.
 
 ## Disposition
 
-Keep the three alternates for now because the audit found no active consumer,
-but do not present them as active configuration. Before deleting them, check
-maintainer-local tooling and any external automation outside this repository;
-those systems cannot be observed by a repository search. When they are
-removed, update `.gitattributes` and this record in the same change.
+The in-repository reference audit is complete: no active consumer was found.
+Keep the three alternates as historical reference until maintainers check
+local editor, shell, and hook automation that is outside the repository; those
+systems cannot be inspected here. Treat that external-consumer check as the
+remaining removal gate. When alternates are removed, update `.gitattributes`
+and this record in the same change.
 
 The previous tooling map remains at
 [`tooling-config-map.md`](tooling-config-map.md).
