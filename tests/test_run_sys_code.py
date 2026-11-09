@@ -5,7 +5,7 @@
 
 import sys
 
-from run import main
+from huey.memory.PY.run import main
 
 
 def test_run_sys_code(monkeypatch):
@@ -23,8 +23,8 @@ def test_run_sys_code(monkeypatch):
         return FakeProcess()
 
     monkeypatch.setattr("subprocess.run", fake_run)
-    monkeypatch.setattr("run.launch_gui", lambda: None)
-    monkeypatch.setattr("run._load_cli", lambda: lambda: None)
+    monkeypatch.setattr("huey.memory.PY.run.launch_gui", lambda: None)
+    monkeypatch.setattr("huey.memory.PY.run._load_cli", lambda: lambda: None)
     monkeypatch.setattr("huey.os.core.system_checks.check_os_support", lambda: None)
     monkeypatch.setattr("huey.os.core.system_checks.check_python_version", lambda: None)
     monkeypatch.setattr(sys, "argv", ["run.py", "--sys-code", "uname", "--yes"])
@@ -35,7 +35,7 @@ def test_run_sys_code(monkeypatch):
 
 
 def test_run_sys_code_denies_direct_calls_before_subprocess(monkeypatch):
-    from huey.memory.PY.run import run_sys_code
+    from huey.memory.PY.run from huey.memory.PY import run_sys_code
 
     called = []
     monkeypatch.setattr("subprocess.run", lambda *args, **kwargs: called.append(args))
