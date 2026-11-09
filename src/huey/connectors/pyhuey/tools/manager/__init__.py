@@ -8,12 +8,12 @@ from __future__ import annotations
 from collections import defaultdict
 import json
 import logging
-import os
 import subprocess
 from pathlib import Path
 from typing import Any, Callable, Dict
 
 LOGGER = logging.getLogger(__name__)
+AuthorizationProvider = Callable[[str, str], tuple[str | None, bool]]
 
 
 try:  # pragma: no cover - exercised when the full PyGPT UI is installed
@@ -90,14 +90,18 @@ def _project_root() -> Path:
 class MonkeyManager(BaseTool):
     """Expose Monkey Head management tasks in the PyGPT UI."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self,
+        *args,
+        authorization_provider: AuthorizationProvider | None = None,
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
         self.id = "monkey_manager"
         self.install_path: Path | None = None
         self.update_path: Path | None = None
         self.run_path: Path | None = None
-        self._setup_paths()
-        ensure_registered_functions()
+        self.authorization_provider = authorization_provider
 
     def _setup_paths(self) -> None:
         paths = resolve_platform_script_paths(_project_root())
@@ -105,19 +109,29 @@ class MonkeyManager(BaseTool):
         self.update_path = paths.update
         self.run_path = paths.run
 
-    def _run_script(self, script: Path | None, operation: str) -> None:
-        self._run_capability(operation, lambda: self._execute_script(script))
+    def _run_script(self, operation: str) -> None:
+        def execute() -> None:
+            self._setup_paths()
+            script = {
+                "project.install": self.install_path,
+                "project.update": self.update_path,
+                "project.run": self.run_path,
+            }[operation]
+            self._execute_script(script)
+
+        self._run_capability(operation, execute)
 
     def _execute_script(self, script: Path | None) -> None:
-        if script is None or not script.exists():
+        if script is None or not script.is_file():
             LOGGER.error("Script not found: %s", script)
             return
         root = _project_root().resolve()
-        if script.is_symlink() or not script.resolve().is_relative_to(root):
+        resolved_script = script.resolve()
+        if script.is_symlink() or not resolved_script.is_relative_to(root):
             LOGGER.error("Refusing script outside the project tree: %s", script)
             return
         try:
-            cmd = build_platform_script_command(script)
+            cmd = build_platform_script_command(resolved_script)
             result = subprocess.run(cmd, check=False, shell=False, timeout=300)
             if result.returncode != 0:
                 LOGGER.error(
@@ -133,27 +147,22 @@ class MonkeyManager(BaseTool):
         if capability is None:
             LOGGER.error("Blocked unknown operation '%s'.", operation)
             return False
-        if capability == "read-only":
+
+        actor_role = None
+        confirmed = False
+        if not dry_run and self.authorization_provider is not None:
             try:
-                allowed = authorize_privileged_operation(
-                    operation, actor_role="reader", dry_run=dry_run
+                actor_role, confirmed = self.authorization_provider(
+                    operation, capability
                 )
-            except PermissionError as exc:
-                LOGGER.warning("Blocked operation '%s': %s", operation, exc)
-                return False
-            if not allowed:
-                return False
-            callback()
-            return True
-        destructive = capability == "destructive"
-        env_flag = self.DESTRUCTIVE_ENV_FLAG if destructive else self.MUTATING_ENV_FLAG
-        confirmed = os.getenv(env_flag, "").strip() == "1"
-        role = "admin" if destructive else "operator"
+            except Exception:
+                LOGGER.warning("Authorization provider failed for '%s'.", operation)
+
         try:
             allowed = authorize_privileged_operation(
                 operation,
                 confirmed=confirmed,
-                actor_role=role if confirmed else None,
+                actor_role=actor_role,
                 dry_run=dry_run,
             )
         except PermissionError as exc:
@@ -200,13 +209,13 @@ class MonkeyManager(BaseTool):
         print(json.dumps(payload, indent=2, sort_keys=True, default=str))
 
     def install(self) -> None:
-        self._run_script(self.install_path, "project.install")
+        self._run_script("project.install")
 
     def update(self) -> None:
-        self._run_script(self.update_path, "project.update")
+        self._run_script("project.update")
 
     def run_app(self) -> None:
-        self._run_script(self.run_path, "project.run")
+        self._run_script("project.run")
 
     def integration_status(self) -> Dict[str, object]:
         """Return current PyHuey integration discovery details."""
@@ -216,6 +225,7 @@ class MonkeyManager(BaseTool):
     def path_status(self) -> Dict[str, object]:
         """Return resolved project and launcher paths for the current platform."""
 
+        self._setup_paths()
         host = detect_host_platform()
         return {
             "platform": host.runtime_display_name,
@@ -270,7 +280,16 @@ class MonkeyManager(BaseTool):
     ) -> Any:
         """Invoke a registered custom function by name."""
 
-        return invoke_function(function_name, **kwargs)
+        operation = self.FUNCTION_OPERATIONS.get(function_name)
+        if operation is None:
+            raise PermissionError(f"Function is not exposed to PyHuey: {function_name}")
+
+        result: list[Any] = []
+        if not self._run_capability(
+            operation, lambda: result.append(invoke_function(function_name, **kwargs))
+        ):
+            raise PermissionError(f"Authorization required: {operation}")
+        return result[0]
 
     def action_catalog(self) -> list[dict[str, object]]:
         """Return structured metadata for the manager menu/actions."""
@@ -335,6 +354,7 @@ class MonkeyManager(BaseTool):
         self._print_json(result)
 
     def _action_specs(self) -> list[tuple[dict[str, object], Callable[[], None]]]:
+        self._setup_paths()
         return [
             (
                 {
@@ -591,8 +611,12 @@ class MonkeyManager(BaseTool):
 
         return actions
 
-    DESTRUCTIVE_ENV_FLAG = "HUEY_TOOL_ALLOW_DESTRUCTIVE"
-    MUTATING_ENV_FLAG = "HUEY_TOOL_ALLOW_MUTATING"
+    FUNCTION_OPERATIONS = {
+        "auto_sort_memory": "project.memory.auto_sort",
+        "find_pdf": "project.function.read",
+        "format_text": "project.function.read",
+        "list_available_pdfs": "project.function.read",
+    }
     DESTRUCTIVE_OPERATIONS = {
         "stop_containers": "project.container.stop",
         "cleanup_images": "project.container.cleanup",
