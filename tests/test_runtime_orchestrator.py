@@ -96,6 +96,21 @@ def test_orchestrator_start_stop_and_restart_preserve_blocked_services():
     assert orchestrator.registry.get("blocked").status == "blocked"
 
 
+def test_orchestrator_without_healthcheck_uses_registered_status():
+    orchestrator = RuntimeOrchestrator(bootstrap_defaults=False)
+    orchestrator.register_service("ready-service", "Ready", status="ready")
+    orchestrator.register_service("unknown-service", "Unknown")
+
+    results = orchestrator.health_check()
+
+    assert results == {
+        "ready-service": {"ready": True},
+        "unknown-service": {"ready": False},
+    }
+    assert orchestrator.registry.get("ready-service").status == "ready"
+    assert orchestrator.registry.get("unknown-service").status == "blocked"
+
+
 @pytest.mark.parametrize(
     ("healthcheck", "expected"),
     [
