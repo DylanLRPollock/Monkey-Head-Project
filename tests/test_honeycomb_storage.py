@@ -16,7 +16,7 @@ def test_store_list_and_remove(tmp_path):
     assert record.key == "alpha"
     assert storage.load("alpha") == {"a": 1}
     keys = storage.list_keys()
-    assert "default/alpha" in keys
+    assert "alpha" in keys
     assert storage.count() == 1
     storage.remove("alpha")
     assert storage.load("alpha") is None
