@@ -29,6 +29,7 @@ cryptography==50.0.2
 
 # --- Local model / orchestration anchors (optional extras) ---
 ollama==0.6.3
+comfy-cli==1.25.0
 faster-whisper==1.2.1
 transformers==5.22.1
 

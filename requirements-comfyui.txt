@@ -1,0 +1,6 @@
+# Optional installer for the external ComfyUI runtime.
+# Install in a dedicated environment; ComfyUI's GPU-specific dependencies
+# are installed by `comfy install` for the selected host.
+-c constraints.txt
+
+comfy-cli==1.25.0 ; python_version == "3.13"

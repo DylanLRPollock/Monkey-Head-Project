@@ -125,6 +125,21 @@ The initial large-model acceptance target is **OpenAI gpt-oss-120b**. The object
 
 This is an engineering acceptance target, not an assumption of compatibility. The final four-V100 runtime may use Ollama, vLLM, llama.cpp, Transformers/device mapping, or another suitable backend depending on what actually works on the V100/Volta hardware.
 
+### Local model and image-generation requirements
+
+Ollama is declared as `ollama==0.6.3` in the `ml` extra and in the full `requirements.txt` / `constraints.txt` environment. Install and run the Ollama service separately; the Python package is its client library.
+
+ComfyUI is an external GPU-specific application. The optional `comfyui` extra and `requirements-comfyui.txt` pin the official `comfy-cli` installer to `1.25.0`; that CLI installs ComfyUI and selects the application dependencies for the host GPU. Use a dedicated Python environment for the ComfyUI stack:
+
+```bash
+python3.13 -m venv .venv-comfyui
+. .venv-comfyui/bin/activate
+python -m pip install -r requirements-comfyui.txt
+comfy install --workspace "$HOME/AI"
+```
+
+The workspace’s PyTorch build and ComfyUI dependencies remain separate from HueyOS core dependencies because they depend on the GPU and driver stack.
+
 ## Pebbles, Districts, and the Atom
 
 Huey's internal cognition architecture is intentionally compartmentalized.
