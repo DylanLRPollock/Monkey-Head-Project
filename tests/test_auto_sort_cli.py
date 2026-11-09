@@ -74,8 +74,5 @@ def test_main_human_output_handles_empty_summary_lists(monkeypatch, capsys) -> N
 
     cli.main([])
 
-    assert capsys.readouterr().out == (
-        "Source: /memory/RAW\n"
-        "Destination: /memory\n"
-        "Moved 0 file(s)\n"
-    )
+    expected = "Source: /memory/RAW\nDestination: /memory\nMoved 0 file(s)\n"
+    assert capsys.readouterr().out == expected
