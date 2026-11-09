@@ -53,7 +53,9 @@ def _audit_attempt(
 ) -> None:
     """Write a secret-free structured record for every gate decision."""
     role_claim = (
-        actor_role if actor_role in {"reader", "operator", "admin"} else "unrecognized"
+        actor_role
+        if isinstance(actor_role, str) and actor_role in ("reader", "operator", "admin")
+        else "unrecognized"
     )
     record = {
         "event": "privileged_operation",
@@ -121,7 +123,7 @@ def authorize_privileged_operation(
         return False
 
     if capability == "read-only":
-        if actor_role not in {"reader", "operator", "admin"}:
+        if not isinstance(actor_role, str) or actor_role not in ("reader", "operator", "admin"):
             _audit_attempt(
                 audit_operation,
                 capability,
@@ -155,8 +157,8 @@ def authorize_privileged_operation(
         )
         raise PermissionError(f"Explicit confirmation required: {operation}")
 
-    allowed_roles = {"admin"} if capability == "destructive" else {"operator", "admin"}
-    if actor_role not in allowed_roles:
+    allowed_roles = ("admin",) if capability == "destructive" else ("operator", "admin")
+    if not isinstance(actor_role, str) or actor_role not in allowed_roles:
         _audit_attempt(
             audit_operation,
             capability,
