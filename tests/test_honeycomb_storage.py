@@ -105,6 +105,19 @@ def test_store_rejects_symlinked_comb_that_escapes_root(tmp_path):
     assert not (outside / "record.json").exists()
 
 
+def test_list_keys_ignores_symlinked_record_outside_root(tmp_path):
+    root = tmp_path / "storage"
+    record_dir = root / "default"
+    record_dir.mkdir(parents=True)
+    outside = tmp_path / "outside.json"
+    outside.write_text('{"key": "default/leaked", "data": "secret"}')
+    (record_dir / "linked.json").symlink_to(outside)
+    storage = HoneycombStorage(base_dir=root)
+
+    assert storage.list_keys() == []
+    assert storage.query("default/") == []
+
+
 def test_store_after_close_raises(tmp_path):
     storage = HoneycombStorage(base_dir=tmp_path)
     storage.close()

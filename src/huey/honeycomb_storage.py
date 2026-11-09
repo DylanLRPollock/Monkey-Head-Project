@@ -161,8 +161,13 @@ class HoneycombStorage:
     def _iter_record_paths(self) -> Iterator[Path]:
         if not self._base_dir.exists():
             return
+        base = self._base_dir.resolve()
         for path in self._base_dir.rglob(f"*{self._extension}"):
-            if path.is_file():
+            if (
+                not path.is_symlink()
+                and path.is_file()
+                and path.resolve().is_relative_to(base)
+            ):
                 yield path
 
     def _iter_records(self) -> Iterator[HoneycombRecord]:
