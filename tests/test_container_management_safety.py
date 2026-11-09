@@ -53,7 +53,9 @@ def test_command_runner_skips_missing_executable(monkeypatch, tmp_path, caplog):
 
 
 @pytest.mark.parametrize("returncode", [0, 2])
-def test_command_runner_uses_argv_and_logs_result(\n    monkeypatch, tmp_path, caplog, returncode\n):
+def test_command_runner_uses_argv_and_logs_result(
+    monkeypatch, tmp_path, caplog, returncode
+):
     monkeypatch.setattr(containers.shutil, "which", lambda name: f"/bin/{name}")
     result = subprocess.CompletedProcess(
         ["docker", "ps"], returncode, b"container output", b""
@@ -98,7 +100,9 @@ def test_container_and_kubernetes_commands_use_validated_paths(monkeypatch, tmp_
     manifest = tmp_path / "deploy.yaml"
     manifest.write_text("apiVersion: v1\n", encoding="utf-8")
     monkeypatch.setenv("MONKEY_HEAD_WORKDIR", str(tmp_path))
-    monkeypatch.setattr(\n        containers, "authorize_privileged_operation", lambda *a, **k: True\n    )
+    monkeypatch.setattr(
+        containers, "authorize_privileged_operation", lambda *a, **k: True
+    )
     calls = []
     monkeypatch.setattr(
         containers, "_run_command", lambda command, description, cwd=None: calls.append(
