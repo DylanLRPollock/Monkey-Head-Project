@@ -174,3 +174,57 @@ def test_extract_thumbnail_uses_single_frame_command(
 
 def test_check_ffmpeg_available_returns_bool() -> None:
     assert isinstance(check_ffmpeg_available(), bool)
+
+
+def test_legacy_waveform_builds_command_and_returns_failure_result(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    input_path = tmp_path / "input.wav"
+    output_path = tmp_path / "waveform.png"
+    input_path.write_bytes(b"fixture")
+    manager = FFmpegMediaManager(ffmpeg_path="ffmpeg")
+    captured: dict[str, list[str]] = {}
+
+    def fake_run(args: list[str]) -> FFmpegCommandResult:
+        captured["command"] = args
+        return FFmpegCommandResult(
+            command=args,
+            returncode=1,
+            stdout="",
+            stderr="simulated encoder failure",
+        )
+
+    monkeypatch.setattr(manager, "run", fake_run)
+
+    result = manager.waveform(
+        input_path, output_path, width=640, height=120, overwrite=True
+    )
+
+    command = captured["command"]
+    assert result.ok is False
+    assert result.output_path == output_path
+    assert command[1] == "-y"
+    assert command[command.index("-filter_complex") + 1] == (
+        "aformat=channel_layouts=mono,showwavespic=s=640x120"
+    )
+    assert command[command.index("-frames:v") + 1] == "1"
+    assert result.stderr == "simulated encoder failure"
+
+
+def test_legacy_waveform_validates_input_and_output_before_running(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    manager = FFmpegMediaManager(ffmpeg_path="ffmpeg")
+    run = lambda _args: pytest.fail("FFmpeg must not run for invalid paths")
+    monkeypatch.setattr(manager, "run", run)
+
+    with pytest.raises(FileNotFoundError):
+        manager.waveform(tmp_path / "missing.wav", tmp_path / "waveform.png")
+
+    source = tmp_path / "source.wav"
+    source.write_bytes(b"fixture")
+    output = tmp_path / "waveform.png"
+    output.write_bytes(b"keep")
+    with pytest.raises(FileExistsError):
+        manager.waveform(source, output, overwrite=False)
+    assert output.read_bytes() == b"keep"
