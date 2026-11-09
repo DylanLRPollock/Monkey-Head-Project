@@ -34,9 +34,13 @@ def test_manifest_matches_generated_pages(tmp_path: Path) -> None:
     wiki.build(tmp_path)
     manifest = json.loads((tmp_path / "wiki-manifest.json").read_text())
     markdown = sorted(p.name for p in tmp_path.glob("*.md"))
-    listed = sorted(item["file"] for item in manifest["files"])
-    assert markdown == listed
-    assert all(len(item["sha256"]) == 64 for item in manifest["files"])
+    checksum_lines = (tmp_path / "SHA256SUMS").read_text().splitlines()
+    checksums = {
+        line.split("  ", 1)[1]: line.split("  ", 1)[0]
+        for line in checksum_lines
+    }
+    assert markdown == sorted(checksums)
+    assert all(len(digest) == 64 for digest in checksums.values())
 
 
 def test_every_current_page_has_status_and_sources(tmp_path: Path) -> None:
