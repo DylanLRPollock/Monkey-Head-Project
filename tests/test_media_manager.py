@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from huey.media.media_manager import FFmpegManager
 from huey.media import (
     AudioTransformOptions,
     FFmpegCommandResult,
@@ -176,50 +177,52 @@ def test_check_ffmpeg_available_returns_bool() -> None:
     assert isinstance(check_ffmpeg_available(), bool)
 
 
-def test_legacy_waveform_builds_command_and_returns_failure_result(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+def test_legacy_waveform_builds_command_and_surfaces_encoder_failure(
+    tmp_path: Path,
 ) -> None:
     input_path = tmp_path / "input.wav"
     output_path = tmp_path / "waveform.png"
+    failed_output = tmp_path / "failed.png"
     input_path.write_bytes(b"fixture")
-    manager = FFmpegMediaManager(ffmpeg_path="ffmpeg")
-    captured: dict[str, list[str]] = {}
-
-    def fake_run(args: list[str]) -> FFmpegCommandResult:
-        captured["command"] = args
-        return FFmpegCommandResult(
-            command=args,
+    responses = [
+        SimpleNamespace(returncode=0, stdout="", stderr=""),
+        SimpleNamespace(
             returncode=1,
             stdout="",
             stderr="simulated encoder failure",
-        )
+        ),
+    ]
+    captured: dict[str, list[str]] = {}
 
-    monkeypatch.setattr(manager, "run", fake_run)
+    def fake_runner(command, **_kwargs):
+        captured["command"] = command
+        return responses.pop(0)
 
+    manager = FFmpegManager(runner=fake_runner)
     result = manager.waveform(
         input_path, output_path, width=640, height=120, overwrite=True
     )
 
     command = captured["command"]
-    assert result.ok is False
+    assert result.ok
     assert result.output_path == output_path
     assert command[2] == "-y"
     assert command[command.index("-filter_complex") + 1] == (
         "aformat=channel_layouts=mono,showwavespic=s=640x120"
     )
     assert command[command.index("-frames:v") + 1] == "1"
-    assert result.stderr == "simulated encoder failure"
+
+    with pytest.raises(RuntimeError, match="simulated encoder failure"):
+        manager.waveform(input_path, failed_output)
 
 
 def test_legacy_waveform_validates_input_and_output_before_running(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
 ) -> None:
-    manager = FFmpegMediaManager(ffmpeg_path="ffmpeg")
-    def fail_run(_args: list[str]) -> FFmpegCommandResult:
+    def fail_runner(_command, **_kwargs):
         pytest.fail("FFmpeg must not run for invalid paths")
 
-    monkeypatch.setattr(manager, "run", fail_run)
-
+    manager = FFmpegManager(runner=fail_runner)
     with pytest.raises(FileNotFoundError):
         manager.waveform(tmp_path / "missing.wav", tmp_path / "waveform.png")
 
