@@ -195,7 +195,8 @@ def test_remove_older_than_logs_inspection_and_stat_errors(
     cannot_stat = base / "cannot-stat.txt"
     cannot_inspect.write_text("inspect", encoding="utf-8")
     cannot_stat.write_text("stat", encoding="utf-8")
-    old_time = time.time() - 30 * 86400
+    now = time.time()
+    old_time = now - 30 * 86400
     os.utime(cannot_inspect, (old_time, old_time))
     os.utime(cannot_stat, (old_time, old_time))
     manager = storage.StorageManager(base)
@@ -216,7 +217,7 @@ def test_remove_older_than_logs_inspection_and_stat_errors(
 
     monkeypatch.setattr(Path, "is_file", selective_is_file)
     monkeypatch.setattr(Path, "stat", selective_stat)
-    monkeypatch.setattr(storage.time, "time", lambda: time.time() + 60)
+    monkeypatch.setattr(storage.time, "time", lambda: now + 60)
     caplog.set_level("WARNING")
 
     removed = manager.remove_older_than(7)
