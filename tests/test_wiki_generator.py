@@ -34,8 +34,7 @@ def test_manifest_matches_generated_pages(tmp_path: Path) -> None:
     markdown = sorted(p.name for p in tmp_path.glob("*.md"))
     checksum_lines = (tmp_path / "SHA256SUMS").read_text().splitlines()
     checksums = {
-        line.split("  ", 1)[1]: line.split("  ", 1)[0]
-        for line in checksum_lines
+        line.split("  ", 1)[1]: line.split("  ", 1)[0] for line in checksum_lines
     }
     assert markdown == sorted(checksums)
     assert all(len(digest) == 64 for digest in checksums.values())
