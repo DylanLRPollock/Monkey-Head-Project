@@ -146,8 +146,8 @@ def test_run_custom_function_requires_json_object():
 
 
 def test_launch_gui_delegates_to_upstream_launcher(monkeypatch):
-    from huey.memory.PY import run as huey_run
     from huey.integrations import pygpt_cli
+    from huey.memory.PY import run as huey_run
 
     captured = []
     monkeypatch.delenv("PYGPT_WORKDIR", raising=False)
@@ -159,8 +159,8 @@ def test_launch_gui_delegates_to_upstream_launcher(monkeypatch):
 
 
 def test_launch_gui_failure_does_not_run_demo(monkeypatch):
-    from huey.memory.PY import run as huey_run
     from huey.integrations import pygpt_cli
+    from huey.memory.PY import run as huey_run
 
     monkeypatch.setattr(pygpt_cli, "launch_gui", lambda **kwargs: 2)
     with pytest.raises(RuntimeError, match="status 2"):
