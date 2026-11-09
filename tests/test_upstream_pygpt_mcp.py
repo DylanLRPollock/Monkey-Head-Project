@@ -143,6 +143,13 @@ def test_connector_export_uses_running_python():
     assert config["args"] == ["-m", "huey.integrations.pygpt_mcp"]
 
 
+def test_default_health_port_matches_huey_api(monkeypatch):
+    monkeypatch.delenv("HUEY_API_PORT", raising=False)
+    config = pygpt_cli.connector_config()["mcpServers"]["hueyos"]
+    assert config["env"]["HUEY_API_PORT"] == "1995"
+    assert pygpt_cli.doctor()["huey_api_port"] == "1995"
+
+
 def test_gui_executes_upstream_binary_not_stub(monkeypatch, tmp_path):
     called = {}
     monkeypatch.setattr(pygpt_cli, "pygpt_executable", lambda: "/usr/bin/pygpt")
@@ -154,11 +161,10 @@ def test_gui_executes_upstream_binary_not_stub(monkeypatch, tmp_path):
 
     monkeypatch.setattr(pygpt_cli.subprocess, "run", fake_run)
     assert pygpt_cli.launch_gui(workdir=tmp_path) == 0
-    assert called["command"] == [
-        "/usr/bin/pygpt",
-        f"--workdir={Path(tmp_path).resolve()}",
-    ]
-    assert called["kwargs"] == {"check": False, "shell": False}
+    assert called["command"] == ["/usr/bin/pygpt"]
+    assert called["kwargs"]["env"]["PYGPT_WORKDIR"] == str(Path(tmp_path).resolve())
+    assert called["kwargs"]["check"] is False
+    assert called["kwargs"]["shell"] is False
 
 
 def test_missing_upstream_gui_fails_clearly(monkeypatch, capsys):
@@ -172,3 +178,21 @@ def test_mcp_permission_policy_does_not_claim_to_sandbox_upstream():
     assert policy["mode"] == "read-only"
     assert "hardware_actuation" in policy["not_exposed"]
     assert "other PyGPT plugins" in policy["note"]
+
+
+def test_tool_failure_is_logged_locally_without_leaking_details(monkeypatch, caplog):
+    def broken():
+        raise RuntimeError("local diagnostic detail")
+
+    monkeypatch.setitem(pygpt_mcp._ACTIONS, "huey_health", broken)
+    response = pygpt_mcp.dispatch(request("tools/call", {"name": "huey_health"}))
+    assert response["result"]["isError"] is True
+    assert "local diagnostic detail" not in str(response)
+    assert "local diagnostic detail" in caplog.text
+
+
+def test_failed_health_is_an_mcp_tool_error(monkeypatch):
+    monkeypatch.setenv("HUEY_API_PORT", "0")
+    response = pygpt_mcp.dispatch(request("tools/call", {"name": "huey_health"}))
+    assert response["result"]["isError"] is True
+    assert "Invalid HUEY_API_PORT" in response["result"]["content"][0]["text"]

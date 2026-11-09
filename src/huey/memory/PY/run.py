@@ -32,7 +32,7 @@ SYSTEM_DIAGNOSTIC_COMMANDS = {
 
 
 def minimal_run() -> None:
-    """Run the lightweight CLI without importing heavy GUI dependencies."""
+    """Run the explicitly requested echo-only demonstration CLI."""
 
     os.environ["MONKEY_HEAD_LIGHT_IMPORTS"] = "1"
     from .pygpt_custom_cli import CustomPyGPT
@@ -118,26 +118,17 @@ def run_module(target: str) -> None:
 
 
 def _prepare_pygpt(source: str | None = None) -> bool:
-    """Ensure :mod:`pygpt_net` is importable either from site-packages or vendors."""
+    """Prepare the explicitly selected legacy test stub, if requested."""
 
     return prepare_pygpt(source=source)
 
 
 def _load_cli(source: str | None = None) -> Callable[..., None]:
-    """Import and return the canonical PyHuey CLI runner.
-
-    Falls back to :func:`minimal_run` if the CLI cannot be imported due to
-    missing dependencies.
-    """
-
-    if not _prepare_pygpt(source):
-        return minimal_run
-
-    try:
-        from pygpt_net.app import run as cli_run
-    except Exception:  # pragma: no cover - fallback to bundled sources
-        return minimal_run
-    return cli_run
+    """Fail explicitly rather than substitute the echo demo for PyGPT."""
+    raise RuntimeError(
+        "The legacy PyGPT CLI is retired. Use 'huey-pygpt gui' for upstream "
+        "PyGPT or '--minimal' for the echo-only demo."
+    )
 
 
 def launch_cli(*args, source: str | None = None, **kwargs) -> None:
@@ -148,16 +139,13 @@ def launch_cli(*args, source: str | None = None, **kwargs) -> None:
 
 
 def launch_gui(source: str | None = None) -> None:
-    """Start the PyHuey GUI with the Monkey Head manager tool enabled."""
+    """Launch the separate upstream GUI through the canonical launcher."""
+    from huey.integrations.pygpt_cli import launch_gui as launch_upstream
 
-    if not _prepare_pygpt(source):
-        raise RuntimeError("pygpt_net package is not available")
-
-    from pygpt_net.app import run as pygpt_run
-
-    from huey.connectors.pyhuey.tools.manager import MonkeyManager
-
-    pygpt_run(tools=[MonkeyManager()])
+    workdir = os.environ.get("PYGPT_WORKDIR")
+    result = launch_upstream(workdir=Path(workdir) if workdir else None)
+    if result:
+        raise RuntimeError(f"PyGPT GUI exited with status {result}; see stderr.")
 
 
 def list_custom_functions(source: str | None = None) -> list[dict[str, object]]:
@@ -260,7 +248,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument(
         "--minimal",
         action="store_true",
-        help="Run lightweight CustomPyHuey CLI",
+        help="Run the echo-only CustomPyGPT test/demo CLI (not PyGPT)",
     )
     parser.add_argument(
         "--simple-chat",
@@ -273,7 +261,7 @@ def main(argv: list[str] | None = None) -> None:
         help="Run specified module optionally with :func",
     )
     parser.add_argument(
-        "--version", action="store_true", help="Print pygpt_net version and exit"
+        "--version", action="store_true", help="Report PyGPT launcher status and exit"
     )
     parser.add_argument(
         "--pyhuey-info",
@@ -282,9 +270,9 @@ def main(argv: list[str] | None = None) -> None:
     )
     parser.add_argument(
         "--pyhuey-source",
-        choices=("auto", "installed", "package", "pyhuey", "vendor"),
-        default=os.environ.get("PYHUEY_SOURCE", "auto"),
-        help="Select PyHuey/PyGPT-net source discovery preference",
+        choices=("auto", "package"),
+        default="auto",
+        help="Select deprecated test-stub compatibility for legacy diagnostics",
     )
     parser.add_argument(
         "--list-custom-functions",
@@ -365,8 +353,6 @@ def main(argv: list[str] | None = None) -> None:
 
     if args.workdir:
         os.environ["PYGPT_WORKDIR"] = os.path.abspath(args.workdir)
-    elif "PYGPT_WORKDIR" not in os.environ:
-        os.environ["PYGPT_WORKDIR"] = str(Path(__file__).resolve().parent.parent)
 
     if args.module:
         run_module(args.module)
@@ -427,12 +413,9 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     if args.version:
-        _prepare_pygpt(args.pyhuey_source)
-        try:
-            from pygpt_net import __version__
-        except Exception:  # pragma: no cover - pygpt missing
-            __version__ = "unknown"
-        print(f"pygpt_net version: {__version__}")
+        from huey.integrations.pygpt_cli import doctor
+
+        print(json.dumps(doctor(), indent=2))
         return
 
     from .system_checks import check_os_support, check_python_version
@@ -453,11 +436,7 @@ def main(argv: list[str] | None = None) -> None:
         simple_chat_main()
         return
 
-    try:
-        launch_gui(args.pyhuey_source)
-    except Exception as exc:  # pragma: no cover - fallback to CLI
-        print(f"GUI failed to launch: {exc}\nFalling back to CLI mode.")
-        launch_cli(source=args.pyhuey_source)
+    launch_gui(args.pyhuey_source)
 
 
 __all__ = [

@@ -1,8 +1,7 @@
-"""Utility helpers for wiring PyHuey/PyGPT-net into Monkey Head.
+"""Temporary, explicit opt-in compatibility for the historical PyHuey stub.
 
-The helpers in this module centralise how we discover and register local copies
-of ``pygpt_net``.  They are intentionally lightweight so they can be imported
-without pulling heavy GUI dependencies during CLI or test runs.
+The real PyGPT application runs separately; see huey.integrations.pygpt_cli.
+This compatibility API is scheduled for removal on 2027-05-01.
 """
 
 from __future__ import annotations
@@ -12,7 +11,7 @@ import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, List
+from typing import Iterable
 
 from .function_registry import (
     describe_functions,
@@ -20,14 +19,9 @@ from .function_registry import (
     ensure_registered_functions,
 )
 
-_PYGPT_PREPARED = False
-_PYGPT_ACTIVE_SOURCE: "PyHueySource | None" = None
-
 
 @dataclass(frozen=True)
 class PyHueySource:
-    """A possible source tree for the ``pygpt_net`` package."""
-
     name: str
     path: Path
     package_path: Path
@@ -52,175 +46,42 @@ class PyHueySource:
 
 
 def project_root(start: Path | None = None) -> Path:
-    """Return the repository root for a source checkout."""
-
     cursor = (start or Path(__file__)).resolve()
     if cursor.is_file():
         cursor = cursor.parent
-
     for parent in (cursor, *cursor.parents):
         if (parent / "pyproject.toml").is_file() and (parent / "src").is_dir():
             return parent
-        if (parent / ".git").exists():
-            return parent
-
     return Path(__file__).resolve().parents[4]
-
-
-def _normalise_source(value: str | None) -> str:
-    source = (value or os.environ.get("PYHUEY_SOURCE") or "auto").strip().lower()
-    aliases = {
-        "": "auto",
-        "local": "package",
-        "packaged": "package",
-        "pyhuey": "package",
-        "stub": "package",
-        "src": "package",
-        "submodule": "package",
-        "integration": "package",
-        "integrations": "package",
-        "mhp": "vendor",
-        "pygpt-mhp": "vendor",
-        "vendor-mhp": "vendor",
-        "site": "installed",
-        "site-packages": "installed",
-        "pip": "installed",
-    }
-    return aliases.get(source, source)
 
 
 def candidate_sources(
     extra_paths: Iterable[str | os.PathLike[str]] | None = None,
 ) -> list[PyHueySource]:
-    """Return ordered PyHuey/PyGPT-net source candidates."""
-
+    """Return only the packaged test stub; external paths are never searched."""
     root = project_root()
-    sources = [
+    return [
         PyHueySource(
             name="package",
             path=root / "src",
             package_path=root / "src" / "huey" / "connectors" / "pyhuey",
+            kind="compatibility",
+            description="Deprecated PyHuey test stub, not upstream PyGPT.",
             import_name="huey.connectors.pyhuey",
-            kind="packaged",
-            description="Vendored PyHuey connector package shipped with HueyOS.",
-        ),
-        PyHueySource(
-            name="pyhuey",
-            path=root / "integrations" / "pyhuey" / "src",
-            package_path=root / "integrations" / "pyhuey" / "src" / "pygpt_net",
-            kind="submodule",
-            description="Historical external PyHuey checkout.",
-        ),
-        PyHueySource(
-            name="vendor",
-            path=root / "vendor" / "pygpt" / "pygpt-mhp" / "src",
-            package_path=root / "vendor" / "pygpt" / "pygpt-mhp" / "src" / "pygpt_net",
-            kind="vendor",
-            description="Vendored lightweight pygpt-MHP mirror.",
-        ),
-        PyHueySource(
-            name="vendor-upstream",
-            path=root / "vendor" / "pygpt" / "py-gpt" / "src",
-            package_path=root / "vendor" / "pygpt" / "py-gpt" / "src" / "pygpt_net",
-            kind="vendor",
-            description="Vendored upstream py-gpt placeholder mirror.",
-        ),
-        PyHueySource(
-            name="legacy-root",
-            path=root / "pygpt",
-            package_path=root / "pygpt" / "pygpt_net",
-            kind="legacy",
-            description="Historical root-level PyGPT checkout.",
-        ),
-        PyHueySource(
-            name="legacy-root-src",
-            path=root / "pygpt" / "src",
-            package_path=root / "pygpt" / "src" / "pygpt_net",
-            kind="legacy",
-            description="Historical root-level PyGPT src checkout.",
-        ),
-        PyHueySource(
-            name="legacy-repo",
-            path=root / "repo" / "pygpt-MHP" / "src",
-            package_path=root / "repo" / "pygpt-MHP" / "src" / "pygpt_net",
-            kind="legacy",
-            description="Historical repo/pygpt-MHP checkout.",
-        ),
-    ]
-
-    env_paths: list[Path] = []
-    env_value = os.environ.get("PYGPT_EXTRA_PATHS")
-    if env_value:
-        for chunk in env_value.split(os.pathsep):
-            if chunk.strip():
-                env_paths.append(Path(chunk).expanduser())
-
-    for index, path in enumerate((*env_paths, *(extra_paths or ())), start=1):
-        source_path = Path(path).expanduser()
-        sources.append(
-            PyHueySource(
-                name=f"extra-{index}",
-                path=source_path,
-                package_path=source_path / "pygpt_net",
-                kind="extra",
-                description="Operator-provided PyGPT-net source path.",
-            )
         )
-
-    seen: set[str] = set()
-    ordered: list[PyHueySource] = []
-    for source in sources:
-        key = str(source.path)
-        if key in seen:
-            continue
-        seen.add(key)
-        ordered.append(source)
-    return ordered
+    ]
 
 
 def candidate_src_paths(
     extra_paths: Iterable[str | os.PathLike[str]] | None = None,
-) -> List[Path]:
-    """Return ordered candidate directories that may house ``pygpt_net`` sources."""
-
-    return [source.path for source in candidate_sources(extra_paths)]
+) -> list[Path]:
+    return [item.path for item in candidate_sources(extra_paths)]
 
 
 def available_sources(
     extra_paths: Iterable[str | os.PathLike[str]] | None = None,
 ) -> list[PyHueySource]:
-    """Return source candidates that currently contain ``pygpt_net``."""
-
-    return [source for source in candidate_sources(extra_paths) if source.exists]
-
-
-def _source_matches(source: PyHueySource, preference: str) -> bool:
-    if preference == "auto":
-        return True
-    if preference == "vendor":
-        return source.kind == "vendor"
-    return source.name == preference or source.kind == preference
-
-
-def _try_import(module_name: str) -> bool:
-    try:
-        importlib.import_module(module_name)
-    except Exception:
-        return False
-    return True
-
-
-def _try_import_source(candidate: PyHueySource, module_name: str) -> bool:
-    import_name = candidate.import_name or module_name
-
-    try:
-        module = importlib.import_module(import_name)
-    except Exception:
-        return False
-
-    if module_name != import_name:
-        sys.modules[module_name] = module
-    return True
+    return [item for item in candidate_sources(extra_paths) if item.exists]
 
 
 def prepare_pygpt(
@@ -229,78 +90,43 @@ def prepare_pygpt(
     search_paths: Iterable[Path] | None = None,
     source: str | None = None,
 ) -> bool:
-    """Ensure the requested module can be imported.
+    """Opt into the legacy stub by explicitly selecting ``source='package'``.
 
-    When the module is not installed site-wide the function will iteratively add
-    known vendor locations to ``sys.path`` until the import succeeds.
+    Never discover or import upstream PyGPT or mutate sys.path. Do not replace
+    a previously imported, unrelated module with the stub.
     """
-
-    global _PYGPT_ACTIVE_SOURCE, _PYGPT_PREPARED
-    preference = _normalise_source(source)
-
-    if _PYGPT_PREPARED:
-        ensure_registered_functions()
-        return True
-
-    if preference in {"auto", "installed"} and _try_import(module_name):
-        _PYGPT_PREPARED = True
-        _PYGPT_ACTIVE_SOURCE = None
-        ensure_registered_functions()
-        return True
-
-    if preference == "installed":
+    if source != "package" or module_name != "pygpt_net" or search_paths is not None:
         return False
-
-    for candidate in candidate_sources(search_paths):
-        if not _source_matches(candidate, preference):
-            continue
-        if not candidate.exists:
-            continue
-        resolved = str(candidate.path.resolve())
-        if resolved not in sys.path:
-            sys.path.insert(0, resolved)
-        if _try_import_source(candidate, module_name):
-            _PYGPT_PREPARED = True
-            _PYGPT_ACTIVE_SOURCE = candidate
-            ensure_registered_functions()
-            return True
-
-    return False
+    module = importlib.import_module("huey.connectors.pyhuey")
+    existing = sys.modules.get(module_name)
+    if existing is not None and existing is not module:
+        raise RuntimeError("pygpt_net is already loaded; refusing to replace it")
+    sys.modules[module_name] = module
+    ensure_registered_functions()
+    return True
 
 
 def pyhuey_status(
-    module_name: str = "pygpt_net",
-    *,
-    source: str | None = None,
+    module_name: str = "pygpt_net", *, source: str | None = None
 ) -> dict[str, object]:
-    """Return a lightweight status report for the PyHuey integration."""
-
     prepared = prepare_pygpt(module_name, source=source)
-    module = sys.modules.get(module_name)
-    custom_functions = describe_functions()
+    module = sys.modules.get(module_name) if prepared else None
+    functions = describe_functions()
     return {
         "prepared": prepared,
         "module": module_name,
         "version": getattr(module, "__version__", None) if module else None,
         "module_file": str(getattr(module, "__file__", "")) if module else None,
-        "active_source": (
-            _PYGPT_ACTIVE_SOURCE.as_dict()
-            if _PYGPT_ACTIVE_SOURCE
-            else "installed" if prepared else "unresolved"
-        ),
-        "candidates": [source.as_dict() for source in candidate_sources()],
+        "active_source": candidate_sources()[0].as_dict() if prepared else "unresolved",
+        "candidates": [item.as_dict() for item in candidate_sources()],
         "custom_function_modules": discover_function_modules(),
-        "custom_functions": custom_functions,
-        "custom_function_count": len(custom_functions),
+        "custom_functions": functions,
+        "custom_function_count": len(functions),
     }
 
 
 def reset_pygpt_state() -> None:
-    """Reset cached preparation state (useful for tests)."""
-
-    global _PYGPT_ACTIVE_SOURCE, _PYGPT_PREPARED
-    _PYGPT_PREPARED = False
-    _PYGPT_ACTIVE_SOURCE = None
+    """Compatibility no-op; preparation is no longer cached."""
 
 
 __all__ = [

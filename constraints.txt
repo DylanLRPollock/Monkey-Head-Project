@@ -7,8 +7,8 @@
 # pip constraints are additive rather than overrides.
 # Constraints DO NOT install packages, enforce the Python version, or enable
 # optional extras. The project's pyproject.toml must set requires-python.
-# The installer pip itself, PyGPT and faster-whisper are intentionally
-# constraint-only; PyGPT and faster-whisper belong in optional project extras.
+# The installer pip itself and faster-whisper are intentionally constraint-only.
+# PyGPT is installed separately, not as a HueyOS dependency.
 # The pip pin is constraint-only to avoid pip pin/self-upgrade conflicts.
 #
 # --- Packaging / installer toolchain ---
@@ -29,7 +29,6 @@ cryptography==50.0.2
 
 # --- Local model / orchestration anchors (optional extras) ---
 ollama==0.6.3
-pygpt-net==2.9.1
 faster-whisper==1.2.1
 transformers==5.22.1
 

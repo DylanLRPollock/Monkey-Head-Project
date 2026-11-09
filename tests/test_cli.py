@@ -12,9 +12,21 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 from huey import cli
 from huey.hims.shadow import ShadowHIMS
 from huey.memory.PY import cli as legacy_cli
+
+
+def test_run_gui_failure_is_reported_without_echo_fallback(monkeypatch, capsys):
+    from huey.integrations import pygpt_cli
+    from huey.memory.PY import run
+
+    monkeypatch.setattr(pygpt_cli, "launch_gui", lambda **kwargs: 2)
+    monkeypatch.setattr(run, "minimal_run", lambda: pytest.fail("unexpected demo"))
+    assert cli.main(["run", "--skip-checks"]) == 1
+    assert "PyGPT GUI exited with status 2" in capsys.readouterr().err
 
 
 def _build_shadow_run_record(

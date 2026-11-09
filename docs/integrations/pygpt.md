@@ -16,7 +16,7 @@ not an embedded copy of the complete upstream source tree.
   python -m huey.integrations.pygpt_mcp
        |
        +-- read-only project information
-       +-- GET http://127.0.0.1:8000/healthz
+       +-- GET http://127.0.0.1:1995/healthz
        +-- local FFmpeg tool availability
        +-- explicit HueyOS bridge permission policy
 
@@ -27,13 +27,29 @@ not an embedded copy of the complete upstream source tree.
 PyGPT's own chat, agents, Ollama, files and multimedia functionality remains
 provided by upstream PyGPT, **not** reimplemented in HueyOS. This integration
 provides an actual operator-to-HueyOS interface without introducing a second,
-diverging PyGPT codebase. The legacy PyHuey compatibility tree remains for
-older tests and adapters; it is not used by the new launcher or MCP server.
+diverging PyGPT codebase. The legacy PyHuey compatibility tree is not used by the launcher or MCP
+server. It is not the upstream GUI.
+
+## Migration window
+
+The old source discovery and in-process PyGPT launcher are retired now.
+`PYGPT_EXTRA_PATHS`, `PYHUEY_SOURCE`, vendor checkouts, installed PyGPT
+modules, and historical source trees are no longer searched or imported by
+the compatibility helper. During the migration window, through **2027-04-30**,
+source-checkout tests and adapters may explicitly call
+`prepare_pygpt(source="package")` to alias the bundled PyHuey test stub.
+It is not shipped in the HueyOS wheel and must not be used for production
+control. Remove the stub, aliases and remaining compatibility callers on
+**2027-05-01**; migrate operators to `huey-pygpt gui` and the MCP connector.
+The old `--cli` path fails rather than falling back; `--minimal` explicitly
+starts an echo-only test/demo, not PyGPT.
 
 ## Install (Linux, supported Python 3.13)
 
 Use **separate virtual environments** to avoid mixing PyGPT's large GUI/ML
 dependency graph with the core on-robot HueyOS environment.
+`pygpt-net` is not part of the HueyOS `ml` extra. Generate the connector
+from the HueyOS environment so its MCP process uses HueyOS's Python.
 
 ```sh
 # From the Monkey-Head-Project checkout:
@@ -64,7 +80,8 @@ Do not automatically point this at HueyOS's privileged data directory.
 ## Connect PyGPT to HueyOS
 
 1. Start HueyOS's API on local loopback, using its existing API configuration
-   and safety policy. The bridge's default health port is `8000`; set
+   and safety policy. The bridge's default health port is `1995`, matching
+   `huey-api`; set
    `HUEY_API_PORT` when using another local port.
 2. In the HueyOS environment, run `huey-pygpt connector > hueyos-mcp.json`.
    This writes a standard Claude-style `mcpServers` JSON configuration using
@@ -92,13 +109,22 @@ or ordinary console output into stdout when running in MCP mode.
   HTTP redirects, or authorization credentials are accepted by this tool.
 * All MCP tool names and argument schemas are allowlisted; unrecognized tools
   are rejected. The server does not load the compatibility stubs.
-* These restrictions apply **only to this HueyOS connector**. PyGPT's
-  *other* plugins (including Python/OS, terminal, desktop/computer use and
-  custom commands) retain their own permissions; disable or sandbox them
-  separately before using PyGPT near robot hardware.
+* These restrictions apply **only to this HueyOS connector**. Before use near
+  hardware, disable or independently sandbox PyGPT 2.9.1's **Filesystem,
+  Python and OS** (`filesystem`), **Custom Commands** (`cmd_custom`),
+  **Mouse And Keyboard** (`cmd_mouse_control`), **Serial port / USB**
+  (`cmd_serial`), **API calls** (`cmd_api`), and **Crontab / Task scheduler**
+  (`crontab`) plugins, plus terminal, desktop/computer-use, third-party and
+  other plugins capable of executing code, accessing devices, issuing network
+  requests or changing files. A separate venv is not a security sandbox:
+  use an unprivileged account and OS isolation that denies hardware devices,
+  privileged sockets, robot credentials and unsafe network access.
 * Do not enable remote hardware control or privileged robot operations as a
-  shortcut. Later integrations should use separately reviewed, authenticated,
-  capability-scoped APIs with explicit human approval.
+  shortcut. Future control must use narrow, authenticated, audited HueyOS APIs
+  with explicit human approval, not PyGPT module imports into HueyOS.
+* Bridge errors are reported as MCP tool errors. Detailed local diagnostics
+  go to stderr (not the JSON-RPC stdout stream); check the PyGPT connector
+  logs and verify the API port if a call fails.
 
 ## Validation
 
@@ -108,9 +134,22 @@ python -m huey.integrations.pygpt_cli doctor
 python -m huey.integrations.pygpt_cli connector
 ```
 
-These tests simulate the PyGPT GUI process, MCP messages and local health
-endpoint. They **do not** replace an actual operator smoke test of upstream
-PyGPT/PySide6, an Ollama model, or the real hardware. For a live smoke test,
-install PyGPT, connect the MCP server, then ask PyGPT to call
-`huey_health` and `huey_project`. An unavailable API must report
-`connected: false`, not claim that Huey is running.
+For the real boundary smoke test, use two clean environments as above. On
+Debian/Ubuntu install `portaudio19-dev`, `xvfb`, `xauth`, `x11-utils`,
+`libxcb-cursor0`, `libxcb-icccm4`, `libxcb-keysyms1`,
+`libxkbcommon-x11-0`, and `libpulse0`, then run:
+
+```sh
+HUEY_PYTHON="$PWD/.venv/bin/python" xvfb-run -a \
+  "$HOME/.venvs/pygpt/bin/python" scripts/smoke/pygpt_upstream.py
+```
+
+The smoke test launches the real GUI with a temporary profile, imports the
+generated connector using upstream PyGPT, and uses its MCP worker to call
+the real loopback HueyOS API health endpoint. It requires no model or
+hardware. Run it on an isolated test host, not a robot: the GUI may make
+network requests, and the smoke test disables the Qt WebEngine sandbox for
+headless CI. The test removes credentials from its child environment, but is
+not itself a security sandbox. The dedicated GitHub Actions workflow installs
+the pinned package in a separate environment and runs the same test. It does
+not replace an operator or hardware safety test.

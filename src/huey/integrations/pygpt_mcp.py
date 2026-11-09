@@ -9,6 +9,7 @@ from __future__ import annotations
 import http.client
 import importlib.metadata
 import json
+import logging
 import os
 import shutil
 import sys
@@ -17,6 +18,8 @@ from typing import Any, TextIO
 
 _PROTOCOL_VERSIONS = {"2024-11-05", "2025-03-26", "2025-06-18"}
 _DEFAULT_PROTOCOL = "2025-06-18"
+DEFAULT_API_PORT = "1995"
+_LOG = logging.getLogger(__name__)
 
 _TOOLS: list[dict[str, object]] = [
     {
@@ -77,7 +80,7 @@ def project_info() -> dict[str, object]:
 def health_info() -> dict[str, object]:
     """Connect only to IPv4 loopback, never to an operator-supplied URL."""
 
-    raw_port = os.environ.get("HUEY_API_PORT", "8000")
+    raw_port = os.environ.get("HUEY_API_PORT", DEFAULT_API_PORT)
     try:
         port = int(raw_port)
     except ValueError:
@@ -90,9 +93,15 @@ def health_info() -> dict[str, object]:
         response = conn.getresponse()
         data = response.read(4096)
         if response.status != 200:
+            _LOG.error(
+                "Huey health check on 127.0.0.1:%s returned HTTP %s",
+                port,
+                response.status,
+            )
             return {"connected": False, "status_code": response.status}
         payload = json.loads(data)
         if not isinstance(payload, dict):
+            _LOG.error("Huey health check on 127.0.0.1:%s returned a non-object", port)
             return {"connected": False, "error": "Unexpected API response"}
         return {
             "connected": True,
@@ -100,6 +109,7 @@ def health_info() -> dict[str, object]:
             "service": payload.get("service"),
         }
     except (OSError, http.client.HTTPException, ValueError) as exc:
+        _LOG.exception("Huey health check failed on 127.0.0.1:%s/healthz", port)
         return {"connected": False, "error": type(exc).__name__}
     finally:
         conn.close()
@@ -174,11 +184,17 @@ def _call_tool(request_id: object, params: dict[str, object]) -> dict[str, objec
     try:
         payload = _ACTIONS[name]()
     except Exception:
+        _LOG.exception("Huey MCP tool %s failed", name)
         return {
             "isError": True,
             "content": [{"type": "text", "text": "Huey tool failed"}],
         }
-    return {"content": [{"type": "text", "text": json.dumps(payload, sort_keys=True)}]}
+    result: dict[str, object] = {
+        "content": [{"type": "text", "text": json.dumps(payload, sort_keys=True)}]
+    }
+    if name == "huey_health" and not payload["connected"]:
+        result["isError"] = True
+    return result
 
 
 def _method_result(
