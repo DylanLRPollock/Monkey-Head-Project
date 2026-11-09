@@ -10,8 +10,8 @@ from __future__ import annotations
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from huey.os.honeycomb_index import HoneycombIndex
-from huey.os.honeycomb_storage import HoneycombStorage
+from huey.honeycomb.index import HoneycombIndex
+from huey.honeycomb.storage import HoneycombStorage
 
 
 @dataclass(frozen=True)
