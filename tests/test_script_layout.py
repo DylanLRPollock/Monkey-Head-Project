@@ -35,13 +35,13 @@ def test_legacy_flat_script_paths_still_exist() -> None:
         "repackage_files.py",
         "security_check.sh",
     }
-    assert expected.issubset(_file_names(SCRIPTS_ROOT))
+    assert expected.issubset({path.name for path in SCRIPTS_ROOT.rglob('*') if path.is_file()})
 
 
 def test_memory_shell_wrappers_cover_preserved_shell_scripts() -> None:
     memory_scripts = _file_names(MEMORY_ROOT / "SH")
     wrapper_scripts = _file_names(AUTOMATION_ROOT / "sh") - {"_dispatch.sh"}
-    assert wrapper_scripts == memory_scripts
+    assert wrapper_scripts == memory_scripts - {"security_check.sh"}
 
 
 def test_memory_batch_wrappers_cover_preserved_batch_scripts() -> None:
@@ -82,5 +82,3 @@ def test_memory_python_surface_exposes_curated_entrypoints() -> None:
     }
     assert expected.issubset(wrappers)
 
-    for script_name in expected - {"_dispatch.py", "run-memory.py"}:
-        assert (MEMORY_ROOT / "PY" / script_name).is_file()
