@@ -525,37 +525,37 @@ class FFmpegMediaManager:
 
     def extract_frame(
         self,
-        source: str | Path,
-        output: str | Path,
-        *,
+        input_path: str | Path,
+        output_path: str | Path,
         frame_number: int,
         overwrite: bool = False,
     ) -> CommandResult:
-        """Extract one frame by zero-based frame number."""
+        """Extract one video frame by its zero-based frame number."""
         if frame_number < 0:
             raise ValueError("frame_number must be zero or greater")
-        source_path = self._validate_existing_input(source)
-        output_path = self._validate_output_available(output, overwrite)
-        output_path.parent.mkdir(parents=True, exist_ok=True)
+        input_file = self._validate_existing_input(input_path)
+        output_file = self._validate_output_available(output_path, overwrite)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+        ffmpeg = self.require_ffmpeg()
         command = [
-            str(self.require_ffmpeg()),
+            str(ffmpeg),
             "-hide_banner",
             self._overwrite_arg(overwrite),
             "-i",
-            str(source_path),
+            str(input_file),
             "-vf",
             f"select=eq(n\\,{frame_number})",
             "-frames:v",
             "1",
-            str(output_path),
+            str(output_file),
         ]
         result = self.run(command)
         return CommandResult(
-            result.returncode,
-            result.stdout,
-            result.stderr,
-            result.command,
-            output_path,
+            returncode=result.returncode,
+            stdout=result.stdout,
+            stderr=result.stderr,
+            command=result.command,
+            output_path=output_file,
         )
 
     def detect_silence(

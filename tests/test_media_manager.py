@@ -1,4 +1,5 @@
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -9,6 +10,7 @@ from huey.media import (
     check_ffmpeg_available,
     media_manager,
 )
+from huey.media.media_manager import FFmpegManager
 
 
 def test_import_huey_media_succeeds() -> None:
@@ -176,64 +178,50 @@ def test_check_ffmpeg_available_returns_bool() -> None:
     assert isinstance(check_ffmpeg_available(), bool)
 
 
-def test_extract_frame_builds_select_command_and_returns_failure_result(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+def test_extract_frame_builds_select_command_and_surfaces_runner_failure(
+    tmp_path: Path,
 ) -> None:
     input_path = tmp_path / "input.mp4"
     output_path = tmp_path / "frame.png"
     failed_output = tmp_path / "failed.png"
     input_path.write_bytes(b"fixture")
     responses = [
-        FFmpegCommandResult(
-            command=[],
-            returncode=0,
-            stdout="",
-            stderr="",
-        ),
-        FFmpegCommandResult(
-            command=[],
+        SimpleNamespace(returncode=0, stdout="", stderr=""),
+        SimpleNamespace(
             returncode=1,
             stdout="",
             stderr="simulated encoder failure",
         ),
     ]
     captured: list[list[str]] = []
-    manager = FFmpegMediaManager(ffmpeg_path="ffmpeg")
 
-    def fake_run(command: list[str]) -> FFmpegCommandResult:
+    def fake_runner(command, **_kwargs):
         captured.append(command)
-        return FFmpegCommandResult(
-            command=command,
-            returncode=responses[len(captured) - 1].returncode,
-            stdout="",
-            stderr=responses[len(captured) - 1].stderr,
-        )
+        return responses.pop(0)
 
-    monkeypatch.setattr(manager, "run", fake_run)
+    manager = FFmpegManager(runner=fake_runner)
     result = manager.extract_frame(
         input_path, output_path, frame_number=7, overwrite=True
     )
-    failed = manager.extract_frame(input_path, failed_output, frame_number=2)
 
     assert result.ok
     assert result.output_path == output_path
     assert result.command[2] == "-y"
     assert result.command[result.command.index("-vf") + 1] == "select=eq(n\\,7)"
     assert result.command[result.command.index("-frames:v") + 1] == "1"
-    assert failed.ok is False
-    assert failed.stderr == "simulated encoder failure"
+
+    with pytest.raises(RuntimeError, match="simulated encoder failure"):
+        manager.extract_frame(input_path, failed_output, frame_number=2)
     assert len(captured) == 2
 
 
 def test_extract_frame_validates_number_input_and_output_before_running(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
 ) -> None:
-    manager = FFmpegMediaManager(ffmpeg_path="ffmpeg")
-
-    def fail_run(_command: list[str]) -> FFmpegCommandResult:
+    def fail_runner(_command, **_kwargs):
         pytest.fail("FFmpeg must not run for invalid frame paths")
 
-    monkeypatch.setattr(manager, "run", fail_run)
+    manager = FFmpegManager(runner=fail_runner)
     with pytest.raises(ValueError, match="frame_number must be zero or greater"):
         manager.extract_frame(
             tmp_path / "missing.mp4",
