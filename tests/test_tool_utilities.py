@@ -166,5 +166,5 @@ def test_scaffold_testing_helpers_apply_overrides_and_validate_subset():
 
     with pytest.raises(AssertionError, match="Missing key: absent"):
         assert_mapping_subset({"absent": 1}, payload)
-    with pytest.raises(AssertionError, match="Unexpected value for 'name'"):
+    with pytest.raises(AssertionError, match="Unexpected value for name"):
         assert_mapping_subset({"name": "wrong"}, payload)
