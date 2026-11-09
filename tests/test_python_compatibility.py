@@ -30,9 +30,10 @@ def _marker_allows(line: str, python_version: str) -> bool:
     return req.marker.evaluate({"python_version": python_version})
 
 
-def test_pygpt_marker_allows_python_313() -> None:
-    line = _get_requirement_line("pygpt-net")
-    assert _marker_allows(line, "3.13")
+def test_fork_specific_pygpt_dependency_is_not_declared() -> None:
+    data = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+    dependencies = data["project"]["optional-dependencies"]["ml"]
+    assert not any(Requirement(line).name == "pygpt-net" for line in dependencies)
 
 
 def test_audio_bridge_allows_python_313() -> None:
