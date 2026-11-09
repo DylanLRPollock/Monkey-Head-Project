@@ -60,15 +60,18 @@ def test_conversion_wrappers_validate_source_and_forward_options(
     monkeypatch.setattr(conversion, "_transcode_video", video)
     monkeypatch.setattr(conversion, "_extract_audio", extract)
 
-    assert conversion.convert_audio(source, target, bitrate="320k") == audio_result
+    converted_audio = conversion.convert_audio(source, target, bitrate="320k")
+    assert converted_audio == audio_result
     assert audio.call_args.args == (source.resolve(), target)
     assert audio.call_args.kwargs == {"bitrate": "320k"}
 
-    assert conversion.convert_video(source, target, codec="hevc") == video_result
+    converted_video = conversion.convert_video(source, target, codec="hevc")
+    assert converted_video == video_result
     assert video.call_args.args == (source.resolve(), target)
     assert video.call_args.kwargs == {"video_codec": "hevc"}
 
-    assert conversion.extract_audio(source, target) == extract_result
+    extracted_audio = conversion.extract_audio(source, target)
+    assert extracted_audio == extract_result
     assert extract.call_args.args == (source.resolve(), target)
     assert extract.call_args.kwargs == {"codec": "libmp3lame"}
 
@@ -86,7 +89,8 @@ def test_extract_audio_selects_codec_from_target_extension(
     extract = Mock(return_value=target)
     monkeypatch.setattr(conversion, "_extract_audio", extract)
 
-    assert conversion.extract_audio(source, target) == target
+    result = conversion.extract_audio(source, target)
+    assert result == target
     assert extract.call_args.kwargs == {"codec": expected_codec}
 
 
