@@ -196,3 +196,59 @@ def test_remove_hook_and_listener_failure_do_not_break_observation():
 
     assert observed["percent"] == 50
     assert received == []
+
+
+def test_sysfs_readers_and_adapter_status_handle_missing_and_invalid_values(tmp_path):
+    monitor = BatteryMonitor()
+    numeric = tmp_path / "capacity"
+    numeric.write_text(" 42.5 ", encoding="utf-8")
+    empty = tmp_path / "empty"
+    empty.write_text("  ", encoding="utf-8")
+    invalid = tmp_path / "invalid"
+    invalid.write_text("unknown", encoding="utf-8")
+
+    assert monitor._read_sysfs_text(numeric) == "42.5"
+    assert monitor._read_sysfs_float(numeric) == 42.5
+    assert monitor._read_sysfs_text(empty) is None
+    assert monitor._read_sysfs_float(invalid) is None
+    assert monitor._read_sysfs_float(tmp_path / "missing") is None
+
+    root = tmp_path / "power"
+    (root / "battery0").mkdir(parents=True)
+    adapter = root / "AC"
+    adapter.mkdir()
+    online = adapter / "online"
+    online.write_text("1", encoding="utf-8")
+    assert monitor._ac_adapter_online(root) is True
+    online.write_text("0", encoding="utf-8")
+    assert monitor._ac_adapter_online(root) is False
+    online.write_text("unknown", encoding="utf-8")
+    assert monitor._ac_adapter_online(root) is None
+
+
+def test_psutil_status_without_battery_returns_none(monkeypatch):
+    fake_psutil = SimpleNamespace(
+        POWER_TIME_UNKNOWN=-1,
+        POWER_TIME_UNLIMITED=-2,
+        sensors_battery=lambda: None,
+    )
+    monkeypatch.setattr(management, "psutil", fake_psutil)
+
+    assert BatteryMonitor()._status_from_psutil() is None
+
+
+def test_power_action_without_supported_command_records_error(monkeypatch):
+    monitor = BatteryMonitor()
+    popen = Mock()
+    monkeypatch.setattr(
+        management, "detect_host_platform", lambda: SimpleNamespace(
+            display_name="Unknown", family="unknown"
+        )
+    )
+    monkeypatch.setattr(monitor, "_resolve_command", lambda _action: None)
+    monkeypatch.setattr(management.subprocess, "Popen", popen)
+
+    event = monitor.initiate_reboot(confirmed=True, actor_role="admin")
+
+    assert event.metadata["error"] == "no supported command found"
+    popen.assert_not_called()
