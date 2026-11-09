@@ -91,3 +91,98 @@ def test_darwin_power_commands_and_missing_pmset(monkeypatch):
 )
 def test_parse_acpi_line(line, expected):
     assert management._parse_acpi_line(line) == expected
+
+
+def test_status_falls_back_to_empty_and_does_not_request_shutdown(monkeypatch):
+    monitor = BatteryMonitor()
+    monkeypatch.setattr(monitor, "_status_from_psutil", lambda: None)
+    monkeypatch.setattr(monitor, "_status_from_sysfs", lambda: None)
+    monkeypatch.setattr(monitor, "_status_from_acpi", lambda: None)
+
+    assert monitor.get_status() == {
+        "percent": None,
+        "secs_left": None,
+        "power_plugged": None,
+        "source": "unknown",
+        "estimated_runtime_minutes": None,
+        "threshold": 5.0,
+    }
+    assert monitor.should_shutdown() is False
+
+
+def test_psutil_status_normalizes_unknown_runtime_and_handles_errors(monkeypatch):
+    fake_psutil = SimpleNamespace(
+        POWER_TIME_UNKNOWN=-1,
+        POWER_TIME_UNLIMITED=-2,
+        sensors_battery=lambda: SimpleNamespace(
+            percent=37.5, secsleft=-1, power_plugged=False
+        ),
+    )
+    monkeypatch.setattr(management, "psutil", fake_psutil)
+
+    status = BatteryMonitor()._status_from_psutil()
+
+    assert status == {
+        "percent": 37.5,
+        "secs_left": None,
+        "power_plugged": False,
+        "source": "psutil",
+    }
+    fake_psutil.sensors_battery = Mock(side_effect=OSError("sensor unavailable"))
+    assert BatteryMonitor()._status_from_psutil() is None
+
+
+def test_acpi_status_parses_output_and_handles_command_failure(monkeypatch):
+    monkeypatch.setattr(management.shutil, "which", lambda _name: "/usr/bin/acpi")
+    monkeypatch.setattr(
+        management.subprocess,
+        "check_output",
+        lambda *_args, **_kwargs: (
+            "Battery 1: Discharging, 45%, 01:02:03 remaining\\n"
+            "AC Adapter 0: on-line"
+        ),
+    )
+
+    status = BatteryMonitor()._status_from_acpi()
+
+    assert status == {
+        "percent": 45.0,
+        "secs_left": 3723.0,
+        "power_plugged": False,
+        "source": "acpi",
+    }
+    monkeypatch.setattr(
+        management.subprocess,
+        "check_output",
+        Mock(side_effect=management.subprocess.CalledProcessError(1, "acpi")),
+    )
+    assert BatteryMonitor()._status_from_acpi() is None
+
+
+def test_observe_emits_low_recovery_and_connection_events_once():
+    monitor = BatteryMonitor(shutdown_threshold=10)
+    events = {name: [] for name in ("battery_low", "battery_recovered", "status")}
+    for name in events:
+        monitor.register_hook(name, lambda status, event=name: events[event].append(status))
+
+    monitor.observe({"percent": 5, "power_plugged": False})
+    monitor.observe({"percent": 4, "power_plugged": False})
+    monitor.observe({"percent": 20, "power_plugged": True})
+
+    assert len(events["battery_low"]) == 1
+    assert len(events["battery_recovered"]) == 1
+    assert len(events["status"]) == 3
+
+
+def test_remove_hook_and_listener_failure_do_not_break_observation():
+    monitor = BatteryMonitor()
+    received = []
+    callback = lambda status: received.append(status)
+    monitor.register_hook("status", callback)
+    monitor.remove_hook("status", callback)
+    monitor.register_hook("status", lambda _status: (_ for _ in ()).throw(ValueError("bad hook")))
+
+    observed = monitor.observe({"percent": 50})
+
+    assert observed["percent"] == 50
+    assert received == []
