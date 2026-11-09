@@ -19,7 +19,7 @@
 #   python -m pip check
 #
 # `-c constraints.txt` is relative to this file. Keep these two together.
-# PyGPT itself and local-model-only anchors stay in optional pyproject extras;
+# PyGPT is installed separately; local-model-only anchors stay in optional extras;
 # constraints.txt pins them when an extra is requested.
 #
 # HueyOS-specific packages (FastAPI + developer/QA tools) are retained.

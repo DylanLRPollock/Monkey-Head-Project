@@ -40,6 +40,6 @@ def test_run_cli_records_chat_messages(monkeypatch, capsys):
         {"role": "assistant", "content": "Echo: hello"},
     ]
     output = capsys.readouterr().out
-    assert "Custom PyHuey CLI. Type 'exit' to quit." in output
+    assert "Echo-only test/demo CLI (not PyGPT)" in output
     assert "Available PDFs:" in output
     assert "- manual.pdf" in output

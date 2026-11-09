@@ -153,7 +153,6 @@ ml = [
   "openai==3.42.0",
   "openai-agents==0.24.0",
   "pillow==13.0.0",
-  "pygpt-net==2.9.1",
   "safetensors==0.8.0",
   "sentencepiece==0.2.2",
   "sortedcontainers==2.4.0",

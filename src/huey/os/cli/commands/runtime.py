@@ -65,7 +65,7 @@ def register_runtime_commands(
     run_cmd.add_argument(
         "--minimal",
         action="store_true",
-        help="Use the lightweight CustomPyGPT CLI without GUI dependencies.",
+        help="Run the echo-only CustomPyGPT test/demo CLI (not PyGPT).",
     )
     run_cmd.add_argument(
         "--manager-ui",
@@ -96,7 +96,7 @@ def register_runtime_commands(
     run_cmd.add_argument(
         "--no-fallback",
         action="store_true",
-        help="Do not fall back to the CLI if the GUI fails to launch.",
+        help="Deprecated: GUI launch failures never fall back to the demo.",
     )
     run_cmd.set_defaults(handler=_legacy_handler("_cmd_run"))
 

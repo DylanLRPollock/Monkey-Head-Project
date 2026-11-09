@@ -15,7 +15,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from huey.integrations.pygpt_mcp import serve
+from huey.integrations.pygpt_mcp import DEFAULT_API_PORT, serve
 
 
 def pygpt_executable() -> str | None:
@@ -35,7 +35,7 @@ def connector_config() -> dict[str, object]:
             "hueyos": {
                 "command": sys.executable,
                 "args": ["-m", "huey.integrations.pygpt_mcp"],
-                "env": {"HUEY_API_PORT": os.getenv("HUEY_API_PORT", "8000")},
+                "env": {"HUEY_API_PORT": os.getenv("HUEY_API_PORT", DEFAULT_API_PORT)},
             }
         }
     }
@@ -56,7 +56,7 @@ def doctor() -> dict[str, object]:
         "hueyos_python": sys.version.split()[0],
         "mcp_server": "huey.integrations.pygpt_mcp",
         "mcp_transport": "stdio",
-        "huey_api_port": os.getenv("HUEY_API_PORT", "8000"),
+        "huey_api_port": os.getenv("HUEY_API_PORT", DEFAULT_API_PORT),
     }
 
 
@@ -74,10 +74,11 @@ def launch_gui(*, workdir: Path | None = None) -> int:
         return 2
 
     command = [executable]
+    env = os.environ.copy()
     if workdir is not None:
-        command.append(f"--workdir={workdir.expanduser().resolve()}")
+        env["PYGPT_WORKDIR"] = str(workdir.expanduser().resolve())
     try:
-        return subprocess.run(command, check=False, shell=False).returncode
+        return subprocess.run(command, check=False, shell=False, env=env).returncode
     except OSError as exc:
         print(f"Unable to start PyGPT: {exc}", file=sys.stderr)
         return 2

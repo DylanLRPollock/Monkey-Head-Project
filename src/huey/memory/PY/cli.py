@@ -172,28 +172,9 @@ def _cmd_run(args: argparse.Namespace) -> int:
             return 0
 
         if launch_gui is None:
-            if args.no_fallback:
-                raise RuntimeError(
-                    "GUI launcher is not available in this runtime build."
-                )
-            if load_cli is None:
-                raise RuntimeError("Neither GUI nor CLI entry points are available.")
-            runner = load_cli()
-            runner()
-            return 0
-
-        try:
-            launch_gui()
-            return 0
-        except Exception:
-            if args.no_fallback:
-                raise
-            print("GUI launch failed; falling back to CLI mode.")
-            if load_cli is None:
-                raise RuntimeError("GUI launch failed and CLI entry point is missing.")
-            runner = load_cli()
-            runner()
-            return 0
+            raise RuntimeError("GUI launcher is not available in this runtime build.")
+        launch_gui()
+        return 0
     except KeyboardInterrupt:  # pragma: no cover - interactive usage
         return 130
 

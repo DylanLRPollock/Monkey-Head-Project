@@ -1,0 +1,42 @@
+name: PyGPT upstream smoke
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "src/huey/integrations/pygpt_*.py"
+      - "src/huey/memory/PY/pygpt_integration.py"
+      - "src/huey/memory/PY/run.py"
+      - "src/huey/memory/PY/cli.py"
+      - "src/huey/os/api/routers/system.py"
+      - "scripts/smoke/pygpt_upstream.py"
+      - "pyproject.toml"
+      - ".github/workflows/pygpt-upstream-smoke.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v6
+        with:
+          python-version: "3.13"
+      - name: Install Linux GUI and audio prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y portaudio19-dev xvfb xauth x11-utils \
+            libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxkbcommon-x11-0 libpulse0
+      - name: Install separate HueyOS and PyGPT environments
+        run: |
+          python -m venv "$RUNNER_TEMP/huey"
+          python -m venv "$RUNNER_TEMP/pygpt"
+          "$RUNNER_TEMP/huey/bin/python" -m pip install .
+          "$RUNNER_TEMP/pygpt/bin/python" -m pip install 'pygpt-net==2.9.1'
+      - name: Launch PyGPT and exercise its connector
+        run: |
+          HUEY_PYTHON="$RUNNER_TEMP/huey/bin/python" xvfb-run -a \
+            "$RUNNER_TEMP/pygpt/bin/python" scripts/smoke/pygpt_upstream.py

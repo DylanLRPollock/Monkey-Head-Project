@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import importlib
 import sys
+import types
 from pathlib import Path
+
+import pytest
 
 from huey import function_registry
 from huey.pygpt_integration import (
@@ -15,7 +18,7 @@ from huey.pygpt_integration import (
 )
 
 
-def test_candidate_src_paths_resolves_defaults_and_env(monkeypatch, tmp_path):
+def test_candidate_src_paths_ignore_external_paths(monkeypatch, tmp_path):
     root = Path(__file__).resolve().parents[1]
     extra_dir = tmp_path / "custom-src"
     extra_dir.mkdir()
@@ -24,9 +27,8 @@ def test_candidate_src_paths_resolves_defaults_and_env(monkeypatch, tmp_path):
     paths = candidate_src_paths()
 
     assert paths[0] == root / "src"
-    assert paths[1] == root / "integrations" / "pyhuey" / "src"
-    assert root / "vendor" / "pygpt" / "pygpt-mhp" / "src" in paths
-    assert extra_dir in paths
+    assert paths == [root / "src"]
+    assert candidate_src_paths([extra_dir]) == paths
 
 
 def test_candidate_sources_describe_available_locations():
@@ -35,13 +37,13 @@ def test_candidate_sources_describe_available_locations():
     names = [source.name for source in sources]
     package = next(source for source in sources if source.name == "package")
 
-    assert names[:3] == ["package", "pyhuey", "vendor"]
+    assert names == ["package"]
     assert package.package_path == root / "src" / "huey" / "connectors" / "pyhuey"
     assert package.import_name == "huey.connectors.pyhuey"
     assert any(source.name == "package" for source in available_sources())
 
 
-def test_prepare_pygpt_uses_extra_paths(monkeypatch, tmp_path):
+def test_prepare_pygpt_never_loads_external_sources(monkeypatch, tmp_path):
     dummy_root = tmp_path / "vendor"
     package_root = dummy_root / "pygpt_net"
     package_root.mkdir(parents=True)
@@ -52,12 +54,13 @@ def test_prepare_pygpt_uses_extra_paths(monkeypatch, tmp_path):
     monkeypatch.delitem(sys.modules, "pygpt_net", raising=False)
 
     reset_pygpt_state()
-    assert prepare_pygpt(source="extra")
-
-    import pygpt_net  # type: ignore
-
-    assert getattr(pygpt_net, "__version__", None) == "test-vendor"
-    reset_pygpt_state()
+    before = list(sys.path)
+    assert not prepare_pygpt()
+    assert not prepare_pygpt(source="extra")
+    assert not prepare_pygpt(source="installed")
+    assert not prepare_pygpt(source="package", search_paths=[dummy_root])
+    assert "pygpt_net" not in sys.modules
+    assert sys.path == before
 
 
 def test_prepare_pygpt_package_source_aliases_canonical_connector(monkeypatch):
@@ -90,13 +93,47 @@ def test_prepare_pygpt_registers_custom_functions(monkeypatch):
     } <= set(function_registry.list_functions())
 
 
+def test_prepare_refuses_to_replace_a_loaded_upstream_module(monkeypatch):
+    existing = types.ModuleType("pygpt_net")
+    monkeypatch.setitem(sys.modules, "pygpt_net", existing)
+    with pytest.raises(RuntimeError, match="refusing to replace"):
+        prepare_pygpt(source="package")
+    assert sys.modules["pygpt_net"] is existing
+
+
+def test_default_does_not_activate_previously_prepared_stub(monkeypatch):
+    monkeypatch.delitem(sys.modules, "pygpt_net", raising=False)
+    assert prepare_pygpt(source="package")
+    assert not prepare_pygpt()
+
+
+def test_llm_adapter_does_not_import_pygpt_even_if_installed(monkeypatch):
+    from huey.memory.PY.llm import LLMAdapter
+
+    existing = types.ModuleType("pygpt_net")
+    monkeypatch.setitem(sys.modules, "pygpt_net", existing)
+    adapter = LLMAdapter("openai", model="test")
+    assert adapter.metadata == {}
+    assert adapter._pygpt_agent is None
+    assert sys.modules["pygpt_net"] is existing
+    response = types.SimpleNamespace(
+        choices=[types.SimpleNamespace(message={"content": "provider reply"})]
+    )
+    adapter._client = types.SimpleNamespace(
+        chat=types.SimpleNamespace(
+            completions=types.SimpleNamespace(create=lambda **kwargs: response)
+        )
+    )
+    assert adapter.generate("hello") == "provider reply"
+
+
 def test_pyhuey_status_reports_candidates():
     reset_pygpt_state()
     status = pyhuey_status(source="package")
 
     assert status["prepared"] is True
     assert status["module"] == "pygpt_net"
-    assert any(candidate["name"] == "pyhuey" for candidate in status["candidates"])
+    assert [candidate["name"] for candidate in status["candidates"]] == ["package"]
     assert status["custom_function_count"] >= 4
     assert {
         "auto_sort_memory",

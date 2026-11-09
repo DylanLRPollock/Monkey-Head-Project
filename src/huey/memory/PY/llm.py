@@ -3,16 +3,12 @@
 # www.dlrp.ca
 # HueyOS: Llm module (huey/agents)
 
-"""Abstractions for interacting with LLM providers via the PyHuey/PyGPT-net stack."""
+"""Abstractions for interacting directly with LLM providers."""
 
 from __future__ import annotations
 
-import json
 from enum import Enum
-from importlib import resources
 from typing import Any, Dict, Optional, Sequence
-
-from huey.pygpt_integration import prepare_pygpt
 
 
 class LLMProvider(str, Enum):
@@ -36,10 +32,9 @@ class LLMAdapter:
         self.provider = LLMProvider(provider)
         self.model = model
         self.settings = settings or {}
-        self.metadata = self._load_metadata()
+        self.metadata: Dict[str, Any] = {}
         self._client: Any | None = None
         self._pygpt_agent: Any | None = None
-        self._register_with_pygpt()
 
     # ------------------------------------------------------------------
     # Public API
@@ -77,49 +72,6 @@ class LLMAdapter:
     # ------------------------------------------------------------------
     # Private helpers
     # ------------------------------------------------------------------
-    def _load_metadata(self) -> Dict[str, Any]:
-        """Load preset metadata from the pygpt configuration tree."""
-
-        if not prepare_pygpt():
-            return {}
-
-        preset_name = f"agent_{self.provider.value}.json"
-        preset_path = (
-            resources.files("pygpt_net") / "data" / "config" / "presets" / preset_name
-        )
-        try:
-            return json.loads(preset_path.read_text(encoding="utf-8"))
-        except (FileNotFoundError, json.JSONDecodeError, ModuleNotFoundError):
-            return {}
-        return {}
-
-    def _register_with_pygpt(self) -> None:
-        """Instantiate a pygpt agent wrapper for integration metadata."""
-
-        if not prepare_pygpt():
-            self._pygpt_agent = None
-            return
-
-        try:
-            if self.provider is LLMProvider.OPENAI:
-                from pygpt_net.provider.agents.openai import (
-                    OpenAIAgent as ProviderAgent,
-                )
-            elif self.provider is LLMProvider.ANTHROPIC:
-                from pygpt_net.provider.agents.react import ReactAgent as ProviderAgent
-            else:
-                from pygpt_net.provider.agents.planner import (
-                    PlannerAgent as ProviderAgent,
-                )
-        except Exception:  # pragma: no cover - optional dependency path
-            self._pygpt_agent = None
-            return
-
-        try:
-            self._pygpt_agent = ProviderAgent()
-        except Exception:  # pragma: no cover - defensive
-            self._pygpt_agent = None
-
     def _ensure_client(self) -> Any:
         if self._client is not None:
             return self._client

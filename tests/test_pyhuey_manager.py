@@ -19,7 +19,7 @@ def test_monkey_manager_imports_without_full_pyside_stack():
     assert "monkey.pyhuey.status" in actions
     assert "monkey.functions.list" in actions
     assert "monkey.system.check" in actions
-    assert manager.integration_status()["prepared"] is True
+    assert manager.integration_status()["prepared"] is False
 
 
 def test_manager_exposes_and_invokes_registered_functions():

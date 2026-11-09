@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import importlib
 import sys
 import types
 
@@ -97,9 +96,9 @@ def test_main_pyhuey_info_invokes_report(monkeypatch):
         ),
     )
 
-    huey_run.main(["--pyhuey-info", "--pyhuey-source", "vendor"])
+    huey_run.main(["--pyhuey-info", "--pyhuey-source", "package"])
 
-    assert called["source"] == "vendor"
+    assert called["source"] == "package"
 
 
 def test_main_list_custom_functions_invokes_report(monkeypatch):
@@ -146,24 +145,41 @@ def test_run_custom_function_requires_json_object():
         huey_run.run_custom_function("format_text", '["not", "an", "object"]')
 
 
-def test_launch_gui_uses_canonical_connector_manager(monkeypatch):
+def test_launch_gui_delegates_to_upstream_launcher(monkeypatch):
     from huey.memory.PY import run as huey_run
-    from huey.pyhuey_integration import prepare_pygpt, reset_pygpt_state
+    from huey.integrations import pygpt_cli
 
-    monkeypatch.setattr(sys, "path", list(sys.path))
-    monkeypatch.delitem(sys.modules, "pygpt_net", raising=False)
+    captured = []
+    monkeypatch.delenv("PYGPT_WORKDIR", raising=False)
+    monkeypatch.setattr(
+        pygpt_cli, "launch_gui", lambda *, workdir=None: captured.append(workdir) or 0
+    )
+    huey_run.launch_gui()
+    assert captured == [None]
 
-    reset_pygpt_state()
-    assert prepare_pygpt(source="package")
 
-    app_module = importlib.import_module("pygpt_net.app")
-    captured: dict[str, list[str]] = {}
+def test_launch_gui_failure_does_not_run_demo(monkeypatch):
+    from huey.memory.PY import run as huey_run
+    from huey.integrations import pygpt_cli
 
-    def fake_run(*, tools=None):
-        captured["modules"] = [tool.__class__.__module__ for tool in tools or ()]
+    monkeypatch.setattr(pygpt_cli, "launch_gui", lambda **kwargs: 2)
+    with pytest.raises(RuntimeError, match="status 2"):
+        huey_run.launch_gui()
 
-    monkeypatch.setattr(app_module, "run", fake_run)
 
-    huey_run.launch_gui(source="package")
+def test_main_does_not_fallback_after_gui_failure(monkeypatch):
+    from huey.memory.PY import run as huey_run
+    from huey.memory.PY import system_checks
 
-    assert captured["modules"] == ["huey.connectors.pyhuey.tools.manager"]
+    monkeypatch.setattr(system_checks, "check_os_support", lambda: None)
+    monkeypatch.setattr(system_checks, "check_python_version", lambda: None)
+    monkeypatch.setattr(
+        huey_run,
+        "launch_gui",
+        lambda source: (_ for _ in ()).throw(RuntimeError("GUI failed")),
+    )
+    monkeypatch.setattr(
+        huey_run, "launch_cli", lambda **kwargs: pytest.fail("unexpected fallback")
+    )
+    with pytest.raises(RuntimeError, match="GUI failed"):
+        huey_run.main([])
