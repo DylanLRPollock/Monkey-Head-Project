@@ -286,6 +286,12 @@ async def test_task_management_endpoints_support_submission_and_cancellation(
 
 @pytest.mark.asyncio
 async def test_named_task_principals_only_read_and_cancel_their_tasks(monkeypatch):
+    for variable in (
+        "HUEY_API_TOKEN",
+        "HUEY_API_OPERATOR_TOKEN",
+        "HUEY_API_ADMIN_TOKEN",
+    ):
+        monkeypatch.delenv(variable, raising=False)
     monkeypatch.setenv("HUEY_ENABLE_UNSAFE_TASKS", "true")
     monkeypatch.setenv(
         "HUEY_API_PRINCIPALS_JSON",
