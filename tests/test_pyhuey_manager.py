@@ -202,7 +202,7 @@ def test_mutating_registered_function_requires_authorized_role(monkeypatch):
     monkeypatch.setattr(manager_module, "invoke_function", invoke)
     denied = MonkeyManager()
 
-    with pytest.raises(PermissionError, match="project.memory.auto_sort"):
+    with pytest.raises(PermissionError, match=r"project\.memory\.auto_sort"):
         denied.invoke_registered_function("auto_sort_memory")
     invoke.assert_not_called()
 
