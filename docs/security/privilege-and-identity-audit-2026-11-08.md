@@ -1,4 +1,4 @@
-# Privilege and identity audit (2026-11-08)
+# Privilege and identity audit (reviewed 2026-11-09)
 
 ## Scope and result
 
@@ -60,3 +60,7 @@ The audit is backed by the route definitions, token middleware and scoped-token
 helpers in `src/huey/memory/PY/api.py`, extracted routers in
 `src/huey/os/api/routers/`, and API tests in `tests/test_api_routes.py`. This
 document describes current source behavior and is not a deployment attestation.
+
+The direct-operation safeguards summarized above were merged in PR #870 on
+2026-11-09. Their merge does not resolve the remaining named-principal,
+per-task ownership, plugin-registry, or audit-record gaps.

@@ -38,13 +38,11 @@ def test_confirmed_installer_uses_project_script_with_timeout(monkeypatch, tmp_p
     run = Mock(return_value=SimpleNamespace(returncode=0))
     monkeypatch.setattr(installer.subprocess, "run", run)
 
-    result = installer.run_installer(
-        confirmed=True, actor_role="operator"
-    )
+    result = installer.run_installer(confirmed=True, actor_role="operator")
 
     assert result == 0
-    command, kwargs = run.call_args
-    assert command.args[0] == ["bash", str(script)]
+    args, kwargs = run.call_args
+    assert args[0] == ["bash", str(script)]
     assert kwargs["check"] is True
     assert kwargs["shell"] is False
     assert kwargs["timeout"] == 1200

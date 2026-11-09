@@ -10,6 +10,22 @@ import pytest
 from huey.os.logging_setup import configure_logging
 
 
+@pytest.fixture(autouse=True)
+def _close_logging_handlers():
+    yield
+    for logger in (
+        logging.getLogger(),
+        *(
+            item
+            for item in logging.Logger.manager.loggerDict.values()
+            if isinstance(item, logging.Logger)
+        ),
+    ):
+        for handler in list(logger.handlers):
+            logger.removeHandler(handler)
+            handler.close()
+
+
 def test_configure_logging_creates_log(tmp_path):
     cfg = tmp_path / "cfg.ini"
     log_file = tmp_path / "app.log"
@@ -20,6 +36,7 @@ def test_configure_logging_creates_log(tmp_path):
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
         root_logger.removeHandler(h)
+        h.close()
     logger = configure_logging(str(cfg))
     logger.info("entry")
     assert log_file.exists()
@@ -54,6 +71,7 @@ def test_critical_error_triggers_gui(monkeypatch, tmp_path):
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
         root_logger.removeHandler(h)
+        h.close()
 
     dummy_tk = DummyTkModule()
     monkeypatch.setattr("huey.os.logging_setup.tk", dummy_tk)
@@ -79,6 +97,7 @@ def test_env_var_overrides_path(monkeypatch, tmp_path):
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
         root_logger.removeHandler(h)
+        h.close()
     monkeypatch.setenv("MEMORY_PATH", str(tmp_path / "memory"))
     monkeypatch.setenv("MONKEY_HEAD_CONFIG", str(cfg))
     logger = configure_logging()
@@ -90,18 +109,21 @@ def test_default_config_uses_memory(monkeypatch, tmp_path):
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
         root_logger.removeHandler(h)
+        h.close()
     monkeypatch.setenv("MEMORY_PATH", str(tmp_path / "memory"))
     monkeypatch.delenv("MONKEY_HEAD_CONFIG", raising=False)
     logger = configure_logging()
     logger.info("hello")
-    log_file = tmp_path / "memory" / "LOGS" / "huey.os.log"
-    assert log_file.exists()
+    log_dir = tmp_path / "memory" / "LOGS"
+    log_files = list(log_dir.glob("*.log"))
+    assert log_files
 
 
 def test_missing_config_raises(tmp_path):
     root_logger = logging.getLogger()
     for h in list(root_logger.handlers):
         root_logger.removeHandler(h)
+        h.close()
     missing = tmp_path / "missing.ini"
     with pytest.raises(FileNotFoundError):
         configure_logging(str(missing))

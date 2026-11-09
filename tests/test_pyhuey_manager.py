@@ -116,7 +116,7 @@ def test_destructive_action_requires_explicit_intent(monkeypatch, caplog):
         manager._run_destructive_action("cleanup_images", _callback)
 
     assert called["value"] is False
-    assert "Blocked destructive action 'cleanup_images'" in caplog.text
+    assert "Blocked operation 'project.container.cleanup'" in caplog.text
 
 
 def test_destructive_action_runs_when_intent_is_explicit(monkeypatch):

@@ -10,7 +10,7 @@ import pytest
 
 
 def test_run_module_invokes_target():
-    from huey import run as huey_run
+    from huey.memory.PY import run as huey_run
 
     called: dict[str, bool] = {}
     module = types.ModuleType("_dummy_run_module")
@@ -34,7 +34,7 @@ def test_run_module_invokes_target():
 
 
 def test_main_delegates_to_run_module(monkeypatch):
-    from huey import run as huey_run
+    from huey.memory.PY import run as huey_run
 
     invoked: dict[str, str] = {}
 
@@ -61,7 +61,7 @@ def test_main_delegates_to_run_module(monkeypatch):
 
 
 def test_main_install_gui_invokes_launcher(monkeypatch):
-    from huey import run as huey_run
+    from huey.memory.PY import run as huey_run
 
     called: dict[str, bool] = {}
 
@@ -80,7 +80,7 @@ def test_main_install_gui_invokes_launcher(monkeypatch):
 
 
 def test_main_pyhuey_info_invokes_report(monkeypatch):
-    from huey import run as huey_run
+    from huey.memory.PY import run as huey_run
 
     called: dict[str, str] = {}
 
@@ -103,7 +103,7 @@ def test_main_pyhuey_info_invokes_report(monkeypatch):
 
 
 def test_main_list_custom_functions_invokes_report(monkeypatch):
-    from huey import run as huey_run
+    from huey.memory.PY import run as huey_run
 
     called: dict[str, str] = {}
 
@@ -126,7 +126,7 @@ def test_main_list_custom_functions_invokes_report(monkeypatch):
 
 
 def test_run_custom_function_executes_registered_callable():
-    from huey import run as huey_run
+    from huey.memory.PY import run as huey_run
     from huey.pyhuey_integration import reset_pygpt_state
 
     reset_pygpt_state()
@@ -140,14 +140,14 @@ def test_run_custom_function_executes_registered_callable():
 
 
 def test_run_custom_function_requires_json_object():
-    from huey import run as huey_run
+    from huey.memory.PY import run as huey_run
 
     with pytest.raises(ValueError):
         huey_run.run_custom_function("format_text", '["not", "an", "object"]')
 
 
 def test_launch_gui_uses_canonical_connector_manager(monkeypatch):
-    from huey import run as huey_run
+    from huey.memory.PY import run as huey_run
     from huey.pyhuey_integration import prepare_pygpt, reset_pygpt_state
 
     monkeypatch.setattr(sys, "path", list(sys.path))

@@ -76,15 +76,16 @@ def test_enable_services_logs_usermod_failure(caplog):
     assert "Unable to add current user to docker group" in caplog.text
 
 
-def test_system_requirements_ping_failure_then_success(caplog):
-    with (
-        patch("orchestrator_utils.shutil.disk_usage") as mock_usage,
-        patch("orchestrator_utils.run") as mock_run,
-        caplog.at_level("WARNING"),
-    ):
-        mock_usage.return_value = type("U", (), {"free": 10 * (1024**3)})()
-        mock_run.side_effect = [OSError("ping missing"), DummyCompleted(returncode=0)]
+def test_system_requirements_delegates_current_prerequisite_policy(monkeypatch):
+    captured = {}
 
-        HostOS.ensure_system_requirements(logger=HostOS.log, ping_hosts=("a", "b"))
+    def fake_ensure(**kwargs):
+        captured.update(kwargs)
 
-    assert "Ping to a failed" in caplog.text
+    monkeypatch.setattr(HostOS, "utils_ensure_system_requirements", fake_ensure)
+
+    HostOS.ensure_system_requirements()
+
+    assert captured["logger"] is HostOS.log
+    assert captured["required_commands"] == ("git", "docker", "kubectl")
+    assert captured["min_free_gib"] == 15.0

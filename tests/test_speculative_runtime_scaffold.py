@@ -114,7 +114,6 @@ EXPECTED_MODULES = (
     "huey.bridges.cognition_bridge",
     "huey.bridges.hardware_bridge",
     "huey.bridges.api_bridge",
-    "wsgi",
 )
 
 

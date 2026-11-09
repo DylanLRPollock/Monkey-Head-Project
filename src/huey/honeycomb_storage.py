@@ -13,6 +13,7 @@ import threading
 import time
 import uuid
 from collections.abc import Iterator
+from contextlib import suppress
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -61,7 +62,7 @@ class HoneycombStorage:
         else:
             base_dir = Path(base_dir)
             base_dir.mkdir(parents=True, exist_ok=True)
-        self._base_dir = Path(base_dir)
+        self._base_dir = Path(base_dir).resolve()
         self._extension = record_extension
         self._lock = threading.RLock()
         self._closed = False
@@ -117,6 +118,8 @@ class HoneycombStorage:
             comb, cell = "default", key
         if not comb:
             raise ValueError("Comb portion of key must not be empty")
+        if comb in {".", ".."} or any(char in comb for char in ("\\", ":", "\x00")):
+            raise ValueError("Comb portion of key must be a safe path component")
         return comb, cell
 
     def _record_path(self, key: str) -> Path:
@@ -124,11 +127,21 @@ class HoneycombStorage:
         cell_parts = [part for part in cell.split("/") if part]
         if not cell_parts:
             raise ValueError("Cell portion of key must not be empty")
+        if any(
+            part in {".", ".."} or any(char in part for char in ("\\", ":", "\x00"))
+            for part in cell_parts
+        ):
+            raise ValueError("Cell portion of key must contain safe path components")
         filename = cell_parts[-1]
         if not filename.endswith(self._extension):
             filename = f"{filename}{self._extension}"
         cell_parts[-1] = filename
-        return self._base_dir.joinpath(comb, *cell_parts)
+        path = self._base_dir.joinpath(comb, *cell_parts)
+        if not path.resolve().is_relative_to(self._base_dir):
+            raise ValueError(
+                "Honeycomb record path must remain inside the storage root"
+            )
+        return path
 
     def _key_from_path(self, path: Path) -> str:
         relative = path.relative_to(self._base_dir)
@@ -148,8 +161,13 @@ class HoneycombStorage:
     def _iter_record_paths(self) -> Iterator[Path]:
         if not self._base_dir.exists():
             return
+        base = self._base_dir.resolve()
         for path in self._base_dir.rglob(f"*{self._extension}"):
-            if path.is_file():
+            if (
+                not path.is_symlink()
+                and path.is_file()
+                and path.resolve().is_relative_to(base)
+            ):
                 yield path
 
     def _iter_records(self) -> Iterator[HoneycombRecord]:
@@ -184,9 +202,14 @@ class HoneycombStorage:
             "updated_at": record.updated_at,
         }
         tmp_path = path.with_suffix(f"{path.suffix}.tmp")
-        with tmp_path.open("w", encoding="utf-8") as handle:
-            json.dump(data, handle, ensure_ascii=False, indent=2, sort_keys=True)
-        tmp_path.replace(path)
+        try:
+            with tmp_path.open("w", encoding="utf-8") as handle:
+                json.dump(data, handle, ensure_ascii=False, indent=2, sort_keys=True)
+            tmp_path.replace(path)
+        except Exception:
+            with suppress(OSError):
+                tmp_path.unlink()
+            raise
 
     # ------------------------------------------------------------------
     # Core storage API
@@ -217,11 +240,11 @@ class HoneycombStorage:
 
     def list_keys(self, prefix: str | None = None) -> list[str]:
         with self._lock:
-            keys = []
-            for path in self._iter_record_paths():
-                key = self._key_from_path(path)
-                if prefix is None or key.startswith(prefix):
-                    keys.append(key)
+            keys = [
+                record.key
+                for record in self._iter_records()
+                if prefix is None or record.key.startswith(prefix)
+            ]
         keys.sort()
         return keys
 

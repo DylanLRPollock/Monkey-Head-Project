@@ -3,9 +3,6 @@
 # www.dlrp.ca
 # HueyOS: Test Honeycomb Management module (tests)
 
-import importlib
-import subprocess
-
 import pytest
 
 from huey.os.honeycomb.backup import perform_rsync_snapshot, restore_snapshot
@@ -39,25 +36,11 @@ def test_honeycomb_monitor_reports_usage(tmp_path):
     assert any(item["content_type"] == "images" for item in report["content_types"])
 
 
-def test_retention_policy_prunes_old_cells(tmp_path, monkeypatch):
-    retention_module = importlib.import_module("huey.os.honeycomb.retention")
-    storage_module = importlib.import_module("huey.os.honeycomb.storage")
+def test_retention_policy_prunes_by_age():
+    policy = RetentionPolicy(max_age="500s")
 
-    storage = HoneycombStorage(base_dir=tmp_path)
-    index = HoneycombIndex(storage)
-
-    monkeypatch.setattr(storage_module.time, "time", lambda: 1000.0)
-    index.store_payload("logs", {"message": "old"}, cell_id="old")
-
-    monkeypatch.setattr(storage_module.time, "time", lambda: 2000.0)
-    index.store_payload("logs", {"message": "new"}, cell_id="new")
-
-    policy = RetentionPolicy(content_types={"logs": 500.0})
-    monkeypatch.setattr(retention_module.time, "time", lambda: 2000.0)
-
-    removed = policy.apply(storage, index=index)
-    assert removed["logs"] == 1
-    assert storage.count("telemetry/logs/") == 1
+    assert policy.should_prune(1000.0, now=2000.0)
+    assert not policy.should_prune(1600.0, now=2000.0)
 
 
 def test_parse_duration_supports_units():
@@ -67,42 +50,25 @@ def test_parse_duration_supports_units():
         parse_duration("abc")
 
 
-def test_backup_helpers_build_rsync_commands(tmp_path, monkeypatch):
-    backup_module = importlib.import_module("huey.os.honeycomb.backup")
-
+def test_backup_helpers_copy_snapshot_and_restore(tmp_path):
     source = tmp_path / "memory"
     destination = tmp_path / "snapshots"
     source.mkdir()
     (source / "data.txt").write_text("hello")
 
-    monkeypatch.setattr(backup_module, "_resolve_rsync", lambda: "/usr/bin/rsync")
-
-    commands = {}
-
-    def fake_run(cmd, check, capture_output, text):
-        commands["cmd"] = cmd
-
-        class Result:
-            stdout = "ok"
-            stderr = ""
-
-        return Result()
-
-    monkeypatch.setattr(subprocess, "run", fake_run)
-
     result = perform_rsync_snapshot(
         destination=destination,
         source=source,
-        timestamp="20240101-000000",
+        label="20240101-000000",
     )
 
-    assert commands["cmd"][0] == "/usr/bin/rsync"
-    assert commands["cmd"][-2] == f"{source.resolve()}/"
-    assert result.snapshot == destination / "20240101-000000"
+    snapshot = destination / "20240101-000000"
+    assert result.destination == snapshot
+    assert result.files_copied == 1
+    assert (snapshot / "data.txt").read_text() == "hello"
 
-    commands.clear()
-    restore_result = restore_snapshot(
-        destination / "20240101-000000", tmp_path / "restore"
-    )
-    assert commands["cmd"][0] == "/usr/bin/rsync"
-    assert restore_result.snapshot == (tmp_path / "restore")
+    restore_dir = tmp_path / "restore"
+    restored = restore_snapshot(snapshot, restore_dir)
+    assert restored.destination == restore_dir.resolve()
+    assert restored.files_copied == 1
+    assert (restore_dir / "data.txt").read_text() == "hello"

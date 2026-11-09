@@ -5,7 +5,7 @@
 
 import os
 
-from run import main
+from huey.memory.PY.run import main
 
 
 def test_run_sets_config_env(monkeypatch, tmp_path):
@@ -14,8 +14,10 @@ def test_run_sets_config_env(monkeypatch, tmp_path):
         f"[logging]\nlog_level = INFO\nlog_file = {tmp_path}/app.log\nlog_max_bytes = 1024\n"
         "log_backup_count = 1\n"
     )
-    monkeypatch.setattr("run.launch_gui", lambda: None)
-    monkeypatch.setattr("run._load_cli", lambda: lambda: None)
+    monkeypatch.setattr("huey.memory.PY.run.launch_gui", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(
+        "huey.memory.PY.run._load_cli", lambda *_args, **_kwargs: lambda: None
+    )
     monkeypatch.setattr("huey.os.core.system_checks.check_os_support", lambda: None)
     monkeypatch.setattr(
         "huey.os.core.system_checks.check_python_version",

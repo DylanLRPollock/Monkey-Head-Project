@@ -8,7 +8,7 @@ from huey.os.pdf_utils import list_available_pdfs
 
 def test_list_available_pdfs():
     pdfs = list_available_pdfs("memory/PDF")
-    assert "Linux_on_PlayStation_3.pdf" in pdfs
+    assert pdfs == ["Local Large Language Model.pdf", "Sony Amplifier - 1977.pdf"]
 
 
 def test_pdf_dir_env(tmp_path, monkeypatch):

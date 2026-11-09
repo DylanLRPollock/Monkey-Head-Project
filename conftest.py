@@ -141,7 +141,7 @@ def _make_coro_runner(
 
 
 @pytest.hookimpl(tryfirst=True)
-def pytest_pyfunc_call(pyfuncitem: pytest.Function) -> bool:
+def pytest_pyfunc_call(pyfuncitem: pytest.Function) -> bool | None:
     """Drive ``@pytest.mark.asyncio`` coroutine tests without pytest-asyncio.
 
     Returns ``True`` when this hook took responsibility for the call so that
@@ -149,11 +149,11 @@ def pytest_pyfunc_call(pyfuncitem: pytest.Function) -> bool:
     just produce a "coroutine was never awaited" warning).
     """
     if pyfuncitem.get_closest_marker("asyncio") is None:
-        return False
+        return None
 
     func = pyfuncitem.obj
     if not inspect.iscoroutinefunction(func):
-        return False
+        return None
 
     signature = inspect.signature(func)
     kwargs = {

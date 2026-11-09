@@ -49,7 +49,10 @@ def test_fresh_install_local_success():
 
 def test_fresh_install_uninstall_fail():
     with patch("uninstaller.run_uninstaller", return_value=5):
-        assert fresh_install.run_fresh_install("local") == 5
+        assert (
+            fresh_install.run_fresh_install("local", confirmed=True, actor_role="admin")
+            == 5
+        )
 
 
 def test_fresh_install_github_calls_repair():

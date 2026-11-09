@@ -5,7 +5,7 @@
 
 import builtins
 
-import run
+from huey.memory.PY import run
 
 
 def test_load_cli_fallback(monkeypatch):
