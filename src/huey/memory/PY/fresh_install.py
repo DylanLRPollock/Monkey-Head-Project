@@ -62,7 +62,7 @@ def run_fresh_install(
     except PermissionError:
         return 2
     if source is None:
-        source = _prompt_source()
+        source = _prompt_source() if sys.stdin.isatty() else "local"
     if source == "github":
         # repair.run_repair handles uninstallation internally
         return repair.run_repair(
@@ -76,7 +76,9 @@ def run_fresh_install(
     if uninstall_rc != 0:
         print(f"Uninstall failed with code {uninstall_rc}")
         return uninstall_rc
-    return installer.run_installer()
+    return installer.run_installer(
+        confirmed=confirmed, actor_role=actor_role
+    )
 
 
 def main(argv: list[str] | None = None) -> int:

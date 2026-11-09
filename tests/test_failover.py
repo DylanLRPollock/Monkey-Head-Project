@@ -5,6 +5,8 @@
 
 from pathlib import Path
 
+import pytest
+
 from huey.os.scripts.failover import (
     build_failover_plan,
     execute_plan,
@@ -34,8 +36,21 @@ def test_execute_plan_invokes_runner(monkeypatch):
     def runner(cmd):
         executed.append(cmd)
 
-    execute_plan(plan, runner=runner)
+    assert execute_plan(plan, runner=runner, confirmed=True, actor_role="admin")
     assert executed == plan.commands()
+
+
+def test_execute_plan_denies_and_dry_run_never_calls_runner():
+    plan = build_failover_plan(Path("/a"), Path("/b"), volumes=["home"], excludes=[])
+    executed = []
+    with pytest.raises(PermissionError):
+        execute_plan(plan, runner=lambda cmd: executed.append(cmd))
+    assert execute_plan(
+        plan,
+        runner=lambda cmd: executed.append(cmd),
+        dry_run=True,
+    ) is False
+    assert executed == []
 
 
 def test_simulate_hot_swap_runs_verification(monkeypatch):

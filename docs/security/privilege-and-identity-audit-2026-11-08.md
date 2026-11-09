@@ -22,8 +22,9 @@ roles and caller-supplied actor names are not treated as authenticated identity.
 | Sensor registration/removal; resilience restart/override; service start/stop | Admin-scoped token; loopback-only development mode when no tokens are configured. | Polling and watchdog actions remain operator-scoped through global bearer auth. |
 | Emergency governance enter/exit/action | Admin-scoped token when auth is configured; approval counts remain controller-validated. | Approval names are still caller claims and do not identify distinct authenticated people. |
 | Other POST routes | Global bearer middleware when credentials are configured; otherwise loopback-only. | Read-like processing and telemetry operations share the same global operator token; task ownership is not implemented. |
-| Direct library host actions | Local intent/confirmation gate and deny-by-default policy. | `actor_role` is a caller claim when invoked outside authenticated API ingress. |
-| Plugins, agent tools, command center | Inspected by source and current tests. | A complete capability registry and per-user audit trail do not yet exist; command-center endpoints are read-only. |
+| Direct power, uninstall, install, update, account, command execution, failover, Docker, and Kubernetes operations | Shared deny-by-default capability gate. Mutating/destructive calls require explicit confirmation and role; dry-run returns before host/path access. GUI container actions prompt, CLI install/cluster/arbitrary command actions require `--yes`, and PyGPT manager mutating actions require explicit process opt-in. | Local `actor_role` values and environment opt-ins are intent claims, not named identity. OS privilege checks remain a separate boundary. |
+| Container and cluster helpers | Direct public helpers enforce capability gates, use argv with `shell=False` and timeouts, validate Kubernetes manifests and scale names, and reject invalid Docker tags. The legacy import path re-exports these canonical guarded helpers. Volume/network manager actions only list resources; pruning was removed from those actions. | Docker/Kubernetes command completion still depends on local tool policy and credentials. No per-user action audit trail exists. |
+| Plugins, agent tools, command center | Built-in PyGPT manager commands are capability-gated; command-center endpoints remain read-only. | A complete plugin/agent capability registry and per-user audit trail do not yet exist. Third-party tools need their own review. |
 
 ## Mutating route inventory
 
@@ -35,7 +36,8 @@ text processing/analysis operations. Admin scope is required for the
 host-affecting and configuration-mutating operations listed in the table above.
 Task submission/cancellation, polling, and selected read-like POST operations
 remain operator-scoped. `GET` routes include status, telemetry, history, model,
-PDF, and process listings.
+PDF, and process listings. Direct library and GUI/container entrypoints are
+guarded separately by the local capability gate.
 
 ## Release decision and follow-up requirements
 

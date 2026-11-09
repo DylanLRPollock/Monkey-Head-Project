@@ -20,6 +20,19 @@ OPERATIONS: dict[str, Capability] = {
     "project.install": "mutating",
     "project.update": "mutating",
     "project.run": "mutating",
+    "project.container.build": "mutating",
+    "project.container.start": "mutating",
+    "project.container.volumes": "read-only",
+    "project.container.networks": "read-only",
+    "project.kubernetes.deploy": "mutating",
+    "project.kubernetes.scale": "mutating",
+    "project.container.stop": "destructive",
+    "project.container.cleanup": "destructive",
+    "project.kubernetes.cleanup": "destructive",
+    "host.package_update": "destructive",
+    "host.user_create": "destructive",
+    "host.execute_command": "destructive",
+    "host.failover_sync": "destructive",
 }
 
 
@@ -40,6 +53,10 @@ def authorize_privileged_operation(
         raise PermissionError(f"Unknown privileged operation: {operation}")
     if dry_run:
         return False
+    if capability == "read-only":
+        if actor_role not in {"reader", "operator", "admin"}:
+            raise PermissionError(f"Operator role not authorized: {operation}")
+        return True
     if not confirmed:
         raise PermissionError(f"Explicit confirmation required: {operation}")
     allowed_roles = {"admin"} if capability == "destructive" else {"operator", "admin"}

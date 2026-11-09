@@ -50,7 +50,9 @@ def test_main_delegates_to_run_module(monkeypatch):
     monkeypatch.setattr(
         huey_run,
         "run_sys_code",
-        lambda cmd: (_ for _ in ()).throw(AssertionError("unexpected run_sys_code")),
+        lambda cmd, **kwargs: (_ for _ in ()).throw(
+            AssertionError("unexpected run_sys_code")
+        ),
     )
 
     huey_run.main(["--module", "pkg.module:func"])

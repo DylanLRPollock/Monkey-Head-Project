@@ -53,6 +53,8 @@ def run_repair(
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            shell=False,
+            timeout=300,
         )
         if clone.returncode != 0:
             sys.stderr.write(clone.stderr.decode())
@@ -60,12 +62,21 @@ def run_repair(
 
         print("Running installer from fresh clone...")
         installer_path = Path(tmpdir) / "scripts" / "installers" / "installer.py"
+        if (
+            installer_path.is_symlink()
+            or not installer_path.is_file()
+            or not installer_path.resolve().is_relative_to(Path(tmpdir).resolve())
+        ):
+            print("Installer script must be a regular file inside the cloned project.")
+            return 1
         rc = subprocess.run(
             [
                 sys.executable,
                 str(installer_path),
             ],
             cwd=tmpdir,
+            shell=False,
+            timeout=1200,
         ).returncode
         if rc != 0:
             print(f"Installer failed with code {rc}")

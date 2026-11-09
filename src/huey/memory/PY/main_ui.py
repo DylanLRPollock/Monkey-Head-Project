@@ -1246,9 +1246,17 @@ class MainUI:
             fallback=launch_graphical_install,
         )
 
-    def _run_container_func(self, func, action_label: str, source: str, *args):
+    def _run_container_func(
+        self,
+        func,
+        action_label: str,
+        source: str,
+        *args,
+        confirmed: bool = False,
+        actor_role: str | None = None,
+    ):
         try:
-            func(*args)
+            func(*args, confirmed=confirmed, actor_role=actor_role)
             self.log_message("Operation completed successfully.")
             self._track_finished(
                 source=source, status=f"{action_label.lower()} complete"
@@ -1260,23 +1268,48 @@ class MainUI:
             self._stop_progress()
             self._set_status("Status: Ready")
 
-    def _submit_task(self, func, *args):
+    def _confirm_container_operation(self, action: str, *, destructive=False) -> bool:
+        if messagebox is None:
+            self.log_message(f"Blocked {action}: confirmation dialog is unavailable.")
+            return False
+        consequence = (
+            "This may stop workloads or remove resources."
+            if destructive
+            else "This will change the local project or cluster state."
+        )
+        return bool(
+            messagebox.askyesno(
+                "Confirm host operation",
+                f"Run {action}?\n\n{consequence}",
+            )
+        )
+
+    def _submit_task(self, func, *args, **kwargs):
         executor = getattr(self, "executor", None)
         if executor is not None:
-            executor.submit(func, *args)
+            executor.submit(func, *args, **kwargs)
         else:  # fallback for tests
-            threading.Thread(target=func, args=args).start()
+            threading.Thread(target=func, args=args, kwargs=kwargs).start()
 
     def build_image(self):
+        if not self._confirm_container_operation("build the Docker image"):
+            return
         self.log_message("Building Docker image...")
         self._set_status("Status: Building")
         self._start_progress()
         self._track_started("Build Image", source="runtime", status="building image")
         self._submit_task(
-            self._run_container_func, build_docker_image, "Build Image", "runtime"
+            self._run_container_func,
+            build_docker_image,
+            "Build Image",
+            "runtime",
+            confirmed=True,
+            actor_role="operator",
         )
 
     def start_containers(self):
+        if not self._confirm_container_operation("start project containers"):
+            return
         self.log_message("Starting containers...")
         self._set_status("Status: Starting")
         self._start_progress()
@@ -1284,10 +1317,19 @@ class MainUI:
             "Start Containers", source="runtime", status="starting containers"
         )
         self._submit_task(
-            self._run_container_func, manage_containers, "Start Containers", "runtime"
+            self._run_container_func,
+            manage_containers,
+            "Start Containers",
+            "runtime",
+            confirmed=True,
+            actor_role="operator",
         )
 
     def stop_containers(self):
+        if not self._confirm_container_operation(
+            "stop project containers", destructive=True
+        ):
+            return
         self.log_message("Stopping containers...")
         self._set_status("Status: Stopping")
         self._start_progress()
@@ -1295,10 +1337,19 @@ class MainUI:
             "Stop Containers", source="runtime", status="stopping containers"
         )
         self._submit_task(
-            self._run_container_func, stop_containers, "Stop Containers", "runtime"
+            self._run_container_func,
+            stop_containers,
+            "Stop Containers",
+            "runtime",
+            confirmed=True,
+            actor_role="admin",
         )
 
     def cleanup_images(self):
+        if not self._confirm_container_operation(
+            "prune Docker images", destructive=True
+        ):
+            return
         self.log_message("Pruning images...")
         self._set_status("Status: Cleaning")
         self._start_progress()
@@ -1306,7 +1357,12 @@ class MainUI:
             "Cleanup Images", source="runtime", status="cleaning images"
         )
         self._submit_task(
-            self._run_container_func, cleanup_images, "Cleanup Images", "runtime"
+            self._run_container_func,
+            cleanup_images,
+            "Cleanup Images",
+            "runtime",
+            confirmed=True,
+            actor_role="admin",
         )
 
     def manage_volumes(self):
@@ -1317,7 +1373,11 @@ class MainUI:
             "Manage Volumes", source="runtime", status="managing volumes"
         )
         self._submit_task(
-            self._run_container_func, manage_volumes, "Manage Volumes", "runtime"
+            self._run_container_func,
+            manage_volumes,
+            "Manage Volumes",
+            "runtime",
+            actor_role="reader",
         )
 
     def manage_networks(self):
@@ -1328,10 +1388,16 @@ class MainUI:
             "Manage Networks", source="runtime", status="managing networks"
         )
         self._submit_task(
-            self._run_container_func, manage_networks, "Manage Networks", "runtime"
+            self._run_container_func,
+            manage_networks,
+            "Manage Networks",
+            "runtime",
+            actor_role="reader",
         )
 
     def deploy_kubernetes(self):
+        if not self._confirm_container_operation("apply Kubernetes resources"):
+            return
         self.log_message("Deploying Kubernetes resources...")
         self._set_status("Status: Deploying")
         self._start_progress()
@@ -1341,9 +1407,15 @@ class MainUI:
             deploy_kubernetes,
             "Deploy",
             "kubernetes",
+            confirmed=True,
+            actor_role="operator",
         )
 
     def cleanup_kubernetes(self):
+        if not self._confirm_container_operation(
+            "delete Kubernetes resources", destructive=True
+        ):
+            return
         self.log_message("Cleaning Kubernetes resources...")
         self._set_status("Status: Cleaning")
         self._start_progress()
@@ -1353,6 +1425,8 @@ class MainUI:
             cleanup_kubernetes,
             "Cleanup",
             "kubernetes",
+            confirmed=True,
+            actor_role="admin",
         )
 
     def scale_deployment_prompt(self):
@@ -1361,6 +1435,10 @@ class MainUI:
             return
         replicas = simpledialog.askinteger("Replicas", "Number of replicas:")
         if replicas is None:
+            return
+        if not self._confirm_container_operation(
+            f"scale deployment {name} to {replicas} replicas"
+        ):
             return
         self.log_message(f"Scaling {name} to {replicas}...")
         self._set_status("Status: Scaling")
@@ -1377,6 +1455,8 @@ class MainUI:
             "kubernetes",
             name,
             replicas,
+            confirmed=True,
+            actor_role="operator",
         )
 
     def get_pod_logs_prompt(self):

@@ -37,6 +37,9 @@ class DummyCompleted:
 
 
 def test_run_repair_success(tmp_path):
+    installer_path = tmp_path / "scripts" / "installers" / "installer.py"
+    installer_path.parent.mkdir(parents=True, exist_ok=True)
+    installer_path.write_text("pass\n", encoding="utf-8")
     with (
         patch("uninstaller.run_uninstaller", return_value=0) as uninst,
         patch("subprocess.run") as run_mock,
@@ -46,15 +49,19 @@ def test_run_repair_success(tmp_path):
         run_mock.side_effect = [DummyCompleted(), DummyCompleted()]
         rc = repair.run_repair("repo-url", confirmed=True, actor_role="admin")
         assert rc == 0
-        uninst.assert_called_once()
+        uninst.assert_called_once_with(confirmed=True, actor_role="admin")
         run_mock.assert_any_call(
             ["git", "clone", "repo-url", str(tmp_path)],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            shell=False,
+            timeout=300,
         )
         run_mock.assert_any_call(
             [sys.executable, str(tmp_path / "scripts" / "installers" / "installer.py")],
             cwd=str(tmp_path),
+            shell=False,
+            timeout=1200,
         )
 
 

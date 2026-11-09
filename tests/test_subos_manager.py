@@ -11,9 +11,10 @@
 # Overseen By:   Dylan L.R. Pollock
 # Updated: 06.09.2025
 # ==================================================
-import subprocess
 import types
 from unittest.mock import patch
+
+import pytest
 
 from huey.os import subos_manager
 
@@ -25,14 +26,20 @@ class R:
 
 def test_update_system_runs_commands():
     with patch("subprocess.run", return_value=R()) as mock_run:
-        subos_manager.update_system()
+        subos_manager.update_system(confirmed=True, actor_role="admin")
         mock_run.assert_any_call(
-            ["apt-get", "update"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ["apt-get", "update"],
+            capture_output=True,
+            check=True,
+            shell=False,
+            timeout=1800,
         )
         mock_run.assert_any_call(
             ["apt-get", "upgrade", "-y"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
+            check=True,
+            shell=False,
+            timeout=1800,
         )
 
 
@@ -41,7 +48,7 @@ def test_create_user_skips_existing():
         patch("pwd.getpwnam", return_value=types.SimpleNamespace()),
         patch("subprocess.run") as mock_run,
     ):
-        subos_manager.create_user("nobody")
+        subos_manager.create_user("nobody", confirmed=True, actor_role="admin")
         mock_run.assert_not_called()
 
 
@@ -50,9 +57,29 @@ def test_create_user_adds_new():
         patch("pwd.getpwnam", side_effect=KeyError),
         patch("subprocess.run", return_value=R()) as mock_run,
     ):
-        subos_manager.create_user("subos")
+        subos_manager.create_user("subos", confirmed=True, actor_role="admin")
         mock_run.assert_called_with(
             ["useradd", "-m", "subos"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
+            check=True,
+            shell=False,
+            timeout=30,
         )
+
+
+def test_host_mutations_deny_without_confirmation_before_process_creation():
+    with patch("subprocess.run", side_effect=AssertionError("spawned")) as mock_run:
+        with pytest.raises(PermissionError):
+            subos_manager.update_system()
+        with pytest.raises(PermissionError):
+            subos_manager.create_user("huey")
+    mock_run.assert_not_called()
+
+
+def test_create_user_rejects_invalid_name_before_subprocess():
+    with (
+        patch("subprocess.run", side_effect=AssertionError("spawned")) as mock_run,
+        pytest.raises(ValueError, match="Invalid username"),
+    ):
+        subos_manager.create_user("../huey", confirmed=True, actor_role="admin")
+    mock_run.assert_not_called()

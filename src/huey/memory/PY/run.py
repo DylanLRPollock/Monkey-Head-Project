@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Callable
 
 from huey.os.core.platform_support import split_command_line
+from huey.os.core.privileged_operations import authorize_privileged_operation
 
 from .function_registry import describe_functions, invoke_function
 from .pygpt_integration import prepare_pygpt, pyhuey_status
@@ -31,8 +32,23 @@ def minimal_run() -> None:
     CustomPyGPT().run_cli()
 
 
-def run_sys_code(cmd: str) -> None:
-    """Execute ``cmd`` without invoking a shell and stream stdout/stderr."""
+def run_sys_code(
+    cmd: str,
+    *,
+    confirmed: bool = False,
+    actor_role: str | None = None,
+    dry_run: bool = False,
+) -> bool:
+    """Execute a system command only after explicit admin authorization."""
+
+    authorized = authorize_privileged_operation(
+        "host.execute_command",
+        confirmed=confirmed,
+        actor_role=actor_role,
+        dry_run=dry_run,
+    )
+    if not authorized:
+        return False
 
     command = split_command_line(cmd)
     if not command:
@@ -41,6 +57,8 @@ def run_sys_code(cmd: str) -> None:
         command,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        shell=False,
+        timeout=300,
     )
     if result.stdout:
         print(result.stdout.decode(), end="")
@@ -48,6 +66,7 @@ def run_sys_code(cmd: str) -> None:
         print(result.stderr.decode(), end="", file=sys.stderr)
     if result.returncode != 0:
         raise RuntimeError(f"Command failed with exit code {result.returncode}")
+    return True
 
 
 def run_module(target: str) -> None:
@@ -270,6 +289,16 @@ def main(argv: list[str] | None = None) -> None:
         help="Build image and start Docker Compose stack",
     )
     parser.add_argument(
+        "--yes",
+        action="store_true",
+        help="Explicitly authorize the requested command or container operation",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Preview a container or cluster operation without running commands",
+    )
+    parser.add_argument(
         "--kubernetes",
         action="store_true",
         help="Deploy resources using manifests in k8s/",
@@ -319,7 +348,12 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     if args.sys_code:
-        run_sys_code(args.sys_code)
+        run_sys_code(
+            args.sys_code,
+            confirmed=args.yes,
+            actor_role="admin" if args.yes else None,
+            dry_run=args.dry_run,
+        )
         return
 
     if args.list_pdfs:
@@ -341,7 +375,11 @@ def main(argv: list[str] | None = None) -> None:
         except ImportError:  # pragma: no cover - fallback to legacy package
             from huey.memory.PY import container_management  # type: ignore
 
-        container_management.manage_containers()
+        container_management.manage_containers(
+            confirmed=args.yes,
+            actor_role="operator" if args.yes else None,
+            dry_run=args.dry_run,
+        )
         return
 
     if args.kubernetes:
@@ -350,7 +388,11 @@ def main(argv: list[str] | None = None) -> None:
         except ImportError:  # pragma: no cover - fallback to legacy package
             from huey.memory.PY import container_management  # type: ignore
 
-        container_management.deploy_kubernetes()
+        container_management.deploy_kubernetes(
+            confirmed=args.yes,
+            actor_role="operator" if args.yes else None,
+            dry_run=args.dry_run,
+        )
         return
 
     if args.manager_ui:

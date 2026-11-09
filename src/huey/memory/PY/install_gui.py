@@ -262,7 +262,12 @@ def launch_install_gui(config_path: str | Path = DEFAULT_CONFIG_PATH) -> None:
 
     def _run_install(hardware: str, software: list[str]) -> None:
         try:
-            return_code = run_installer(hardware=hardware, software=software)
+            return_code = run_installer(
+                hardware=hardware,
+                software=software,
+                confirmed=True,
+                actor_role="operator",
+            )
             if return_code == 0:
                 _ui(lambda: status_var.set("Installation completed successfully."))
                 _ui(

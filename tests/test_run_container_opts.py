@@ -9,8 +9,8 @@ from run import main
 def test_run_docker_compose(monkeypatch):
     called = {}
 
-    def fake_manage():
-        called["docker"] = True
+    def fake_manage(**kwargs):
+        called["docker"] = kwargs
 
     monkeypatch.setattr(
         "huey.os.services.container_management.manage_containers", fake_manage
@@ -19,16 +19,20 @@ def test_run_docker_compose(monkeypatch):
     monkeypatch.setattr("huey.os.core.system_checks.check_python_version", lambda: None)
     monkeypatch.setattr("run.launch_gui", lambda: None)
     monkeypatch.setattr("run._load_cli", lambda: lambda: None)
-    monkeypatch.setattr("sys.argv", ["run.py", "--docker-compose"])
+    monkeypatch.setattr("sys.argv", ["run.py", "--docker-compose", "--yes"])
     main()
-    assert called.get("docker") is True
+    assert called["docker"] == {
+        "confirmed": True,
+        "actor_role": "operator",
+        "dry_run": False,
+    }
 
 
 def test_run_kubernetes(monkeypatch):
     called = {}
 
-    def fake_deploy():
-        called["k8s"] = True
+    def fake_deploy(**kwargs):
+        called["k8s"] = kwargs
 
     monkeypatch.setattr(
         "huey.os.services.container_management.deploy_kubernetes", fake_deploy
@@ -37,6 +41,10 @@ def test_run_kubernetes(monkeypatch):
     monkeypatch.setattr("huey.os.core.system_checks.check_python_version", lambda: None)
     monkeypatch.setattr("run.launch_gui", lambda: None)
     monkeypatch.setattr("run._load_cli", lambda: lambda: None)
-    monkeypatch.setattr("sys.argv", ["run.py", "--kubernetes"])
+    monkeypatch.setattr("sys.argv", ["run.py", "--kubernetes", "--yes"])
     main()
-    assert called.get("k8s") is True
+    assert called["k8s"] == {
+        "confirmed": True,
+        "actor_role": "operator",
+        "dry_run": False,
+    }
