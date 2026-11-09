@@ -154,7 +154,7 @@ def test_api_startup_fails_without_token_in_non_development_env(monkeypatch):
     monkeypatch.setenv("HUEY_ENV", "production")
     monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
 
-    with pytest.raises(RuntimeError, match="HUEY_API_TOKEN is missing"):
+    with pytest.raises(RuntimeError, match="huey-env-validation"):
         importlib.reload(api_module)
 
 
@@ -244,7 +244,7 @@ async def test_task_and_dashboard_surfaces_block_remote_when_token_unset(monkeyp
     scheduler = TaskScheduler(health_provider=_healthy_snapshot)
     monkeypatch.setattr(api_module, "SCHEDULER", scheduler, raising=False)
 
-    transport = ASGITransport(app=api_module.app)
+    transport = ASGITransport(app=api_module.app, client=("198.51.100.10", 43123))
     async with AsyncClient(
         transport=transport, base_url="http://198.51.100.10"
     ) as client:
