@@ -240,11 +240,11 @@ class HoneycombStorage:
 
     def list_keys(self, prefix: str | None = None) -> list[str]:
         with self._lock:
-            keys = []
-            for path in self._iter_record_paths():
-                key = self._key_from_path(path)
-                if prefix is None or key.startswith(prefix):
-                    keys.append(key)
+            keys = [
+                record.key
+                for record in self._iter_records()
+                if prefix is None or record.key.startswith(prefix)
+            ]
         keys.sort()
         return keys
 
