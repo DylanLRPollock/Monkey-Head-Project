@@ -38,9 +38,7 @@ def test_confirmed_installer_uses_project_script_with_timeout(monkeypatch, tmp_p
     run = Mock(return_value=SimpleNamespace(returncode=0))
     monkeypatch.setattr(installer.subprocess, "run", run)
 
-    result = installer.run_installer(
-        confirmed=True, actor_role="operator"
-    )
+    result = installer.run_installer(confirmed=True, actor_role="operator")
 
     assert result == 0
     command, kwargs = run.call_args
