@@ -80,8 +80,6 @@ def test_storage_index_handles_empty_labels_clusters_and_removal():
     assert index.by_label("red") == ["three"]
     assert index.by_cluster("west") == ["three"]
     assert index.snapshot() == {
-        "labels": {"red": ["three"], "first": []}
-        if False
-        else {"red": ["three"]},
+        "labels": {"red": ["three"]},
         "clusters": {"west": ["three"]},
     }
