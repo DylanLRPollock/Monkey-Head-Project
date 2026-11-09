@@ -305,6 +305,17 @@ def _configured_api_tokens() -> dict[str, list[str]]:
     for principal in _configured_named_api_principals():
         tokens.setdefault(principal["role"], []).append(principal["token"])
 
+    admin_tokens = tokens.get("admin", [])
+    operator_tokens = tokens.get("operator", [])
+    if any(
+        hmac.compare_digest(admin, operator)
+        for admin in admin_tokens
+        for operator in operator_tokens
+    ):
+        raise RuntimeError(
+            "HUEY_API_ADMIN_TOKEN must be distinct from operator-scoped tokens"
+        )
+
     all_tokens = [
         token for role_tokens in tokens.values() for token in role_tokens
     ]
