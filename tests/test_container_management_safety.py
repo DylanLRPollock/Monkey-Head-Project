@@ -99,6 +99,7 @@ def test_container_and_kubernetes_commands_use_validated_paths(monkeypatch, tmp_
     manifest = tmp_path / "deploy.yaml"
     manifest.write_text("apiVersion: v1\n", encoding="utf-8")
     monkeypatch.setenv("MONKEY_HEAD_WORKDIR", str(tmp_path))
+    assert containers._manifest_path("deploy.yaml") == manifest
     monkeypatch.setattr(
         containers, "authorize_privileged_operation", lambda *a, **k: True
     )
