@@ -154,7 +154,7 @@ def test_api_startup_fails_without_token_in_non_development_env(monkeypatch):
     monkeypatch.setenv("HUEY_ENV", "production")
     monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
 
-    with pytest.raises(RuntimeError, match="HUEY_API_TOKEN must be set"):
+    with pytest.raises(RuntimeError, match="HUEY_API_TOKEN is missing"):
         importlib.reload(api_module)
 
 
@@ -170,7 +170,8 @@ def test_api_startup_allows_missing_token_in_development_env(monkeypatch):
     monkeypatch.setenv("HUEY_ENV", "development")
     monkeypatch.delenv("HUEY_API_TOKEN", raising=False)
 
-    reloaded = importlib.reload(api_module)
+    with pytest.warns(RuntimeWarning, match="HUEY_API_TOKEN is missing"):
+        reloaded = importlib.reload(api_module)
     assert reloaded.app is not None
 
 
