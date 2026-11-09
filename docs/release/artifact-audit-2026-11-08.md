@@ -44,9 +44,12 @@ The GitHub Releases API was checked on 2026-11-09. The repository has four
 published pre-releases (`Pre-Release-#1` through `Pre-Release-#4`, latest
 published 2026-07-17); none has attached assets. No `v*` package release was
 present in that listing. There are no current GitHub release assets to
-rehash or attest. The tagged release workflow would attach `dist/*` after
-building and verify `SHA256SUMS` before upload. PyPI provenance does not by
-itself attest GitHub's copies of those files.
+rehash or verify. The tagged release workflow is configured to create
+repository artifact attestations for the wheel, sdist, CycloneDX SBOM, and
+`SHA256SUMS` before publishing, then attach the checksummed `dist/*` files.
+The attest action is pinned by full commit SHA. PyPI provenance and GitHub
+artifact attestations cover separate publication channels. The workflow
+configuration has not yet been exercised by a tagged release.
 
 ## Residual decisions
 
@@ -54,13 +57,15 @@ itself attest GitHub's copies of those files.
   license/NOTICE, upstream origin, retention, and replacement path.
 - The repository-wide inventory is not itself an SBOM; only the Python release
   runtime receives a CycloneDX dependency bill of materials in this change.
-- Artifact hashes establish byte identity, not authenticity. Release provenance
-  is provided by the existing PyPI Trusted Publishing attestation; future
-  GitHub release assets would be checksum-verified but would not yet have a
-  separate GitHub build attestation.
-- Confirm the generated checksum, SBOM, and provenance records after the next
-  package release; this read-only audit does not establish future release
-  behavior.
+- SHA-256 hashes establish byte identity; artifact attestations bind release
+  file digests to the repository workflow that produced them.
+- The release workflow is configured to attest its wheel, sdist, SBOM, and
+  checksum manifest using GitHub artifact attestations. Verify each attached
+  file with `gh attestation verify <file> --repo
+  DylanLRPollock/Monkey-Head-Project` after the next tagged release, and
+  confirm the PyPI provenance and SBOM as well.
+- This audit records configuration only; it does not claim that a release
+  attestation has already been generated or verified.
 - Ten tracked files over 5 MiB still need a maintainer-reviewed owner,
   upstream-origin, license/NOTICE, and consumer register. Checksums and package
   names alone do not answer those questions.
@@ -71,4 +76,6 @@ itself attest GitHub's copies of those files.
 Run the `artifact-scan` workflow on a commit and download
 `artifact-risk-scan-results/tracked-artifact-inventory.json`. For package
 releases, inspect the attached `hueyos-<version>.cdx.json` and `SHA256SUMS`;
-the publish job checks the latter before publishing.
+the publish job verifies the latter and creates GitHub artifact attestations
+for the release files. After download, verify each release asset with
+`gh attestation verify <file> --repo DylanLRPollock/Monkey-Head-Project`.
