@@ -26,8 +26,10 @@ experimental and non-gating; both must report actual failures and skips.
   coverage.py combines covered statements and covered branches for its total.
   The 42.33% line rate and 3.70% branch rate are **different metrics**, not
   contradictory results.
-  Re-measure the current head in Python 3.13 and 3.14 before publishing a
-  new baseline.
+  At PR #894 (2026-11-09), both Python 3.13 and 3.14 report 741 passed,
+  16 skipped, and 56.28% combined coverage. Coverage tracing validation and
+  static analysis pass; the only CI failure is the unchanged 80% threshold.
+  Publish this as the current full-suite baseline until a later CI run replaces it.
 - Coverage enables subprocess tracing because fixture and CLI tests execute
   Python children. This does not trace external programs such as FFmpeg.
 - Every coverage PR should report full and module-level line/branch deltas,
