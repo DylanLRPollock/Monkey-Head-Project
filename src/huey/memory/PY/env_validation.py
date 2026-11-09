@@ -71,6 +71,7 @@ def parse_api_principals(raw: str) -> list[dict[str, str]]:
             or not isinstance(role, str)
             or role not in _API_PRINCIPAL_ROLES
             or not isinstance(token, str)
+            or subject in _API_TOKEN_VARIABLES
             or not token.strip()
         ):
             raise ValueError(
@@ -137,6 +138,13 @@ def validate_security_sensitive_environment() -> None:
             "HUEY_API_OPERATOR_TOKEN, HUEY_API_ADMIN_TOKEN, or "
             "HUEY_API_PRINCIPALS_JSON"
         )
+    configured_token_values = list(configured_tokens.values())
+    if any(
+        hmac.compare_digest(token, previous)
+        for index, token in enumerate(configured_token_values)
+        for previous in configured_token_values[:index]
+    ):
+        issues.append("API credentials must be unique")
     for key, value in configured_tokens.items():
         if _looks_like_placeholder(value):
             issues.append(f"{key} uses a placeholder API credential")
