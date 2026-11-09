@@ -47,19 +47,23 @@ def test_file_watcher_reports_added_modified_and_removed_files(tmp_path):
     existing.write_text("before", encoding="utf-8")
     watcher = FileWatcher(root)
 
-    assert watcher.snapshot() == {"existing.txt": existing.stat().st_mtime}
+    (root / "removed.txt").write_text("gone", encoding="utf-8")
+    snapshot = watcher.snapshot()
+    assert snapshot == {
+        "existing.txt": existing.stat().st_mtime,
+        "removed.txt": (root / "removed.txt").stat().st_mtime,
+    }
     assert watcher.changes() == {"added": [], "modified": [], "removed": []}
 
+    old_mtime = existing.stat().st_mtime
     existing.write_text("after", encoding="utf-8")
-    os.utime(existing, (existing.stat().st_atime, existing.stat().st_mtime + 5))
+    os.utime(existing, (existing.stat().st_atime, old_mtime + 5))
     (root / "new.txt").write_text("new", encoding="utf-8")
-    (root / "removed.txt").write_text("gone", encoding="utf-8")
-    watcher.snapshot()
     (root / "removed.txt").unlink()
 
     assert watcher.changes() == {
-        "added": [],
-        "modified": [],
+        "added": ["new.txt"],
+        "modified": ["existing.txt"],
         "removed": ["removed.txt"],
     }
 
@@ -80,8 +84,8 @@ def test_file_watcher_detects_changes_since_previous_snapshot(tmp_path):
 
 
 def test_hashing_helpers_are_stable_and_order_independent():
-    assert sha256_text("huey") == (
-        "e7c6f7f6dff8d6d76f5d17f9a6e0f3c3e5d9fb9afaaed7d6f0cbf234c4d5c2d9"
+    assert sha256_text("abc") == (
+        "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
     )
     assert fingerprint_mapping({"b": 2, "a": 1}) == fingerprint_mapping(
         {"a": 1, "b": 2}
@@ -104,7 +108,7 @@ def test_metrics_registry_accumulates_sets_and_returns_copy():
 def test_profile_timer_uses_fixed_start_and_stop_times(monkeypatch):
     import huey.tools.profiler as profiler
 
-    times = iter((12.5, 18.0))
+    times = iter((12.5, 12.5))
     monkeypatch.setattr(profiler, "perf_counter", lambda: next(times))
     timer = ProfileTimer("startup", started_at=10.0)
 
