@@ -185,7 +185,7 @@ def test_deploy_dry_run_prints_expected_commands(tmp_path: Path, monkeypatch, ca
     compose_file.write_text("services: {}", encoding="utf-8")
     manifest_file.write_text("apiVersion: v1\nkind: Pod", encoding="utf-8")
 
-    monkeypatch.setattr(cli.shutil, "which", lambda tool: f"/usr/bin/{tool}")
+    monkeypatch.setattr(legacy_cli.shutil, "which", lambda tool: f"/usr/bin/{tool}")
 
     exit_code = cli.main(
         [
