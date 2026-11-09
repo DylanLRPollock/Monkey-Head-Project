@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import subprocess
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -53,7 +52,9 @@ def test_command_runner_skips_missing_executable(monkeypatch, tmp_path, caplog):
 
 
 @pytest.mark.parametrize("returncode", [0, 2])
-def test_command_runner_uses_argv_and_logs_result(\n    monkeypatch, tmp_path, caplog, returncode\n):
+def test_command_runner_uses_argv_and_logs_result(
+    monkeypatch, tmp_path, caplog, returncode
+):
     monkeypatch.setattr(containers.shutil, "which", lambda name: f"/bin/{name}")
     result = subprocess.CompletedProcess(
         ["docker", "ps"], returncode, b"container output", b""
@@ -98,12 +99,16 @@ def test_container_and_kubernetes_commands_use_validated_paths(monkeypatch, tmp_
     manifest = tmp_path / "deploy.yaml"
     manifest.write_text("apiVersion: v1\n", encoding="utf-8")
     monkeypatch.setenv("MONKEY_HEAD_WORKDIR", str(tmp_path))
-    monkeypatch.setattr(\n        containers, "authorize_privileged_operation", lambda *a, **k: True\n    )
+    monkeypatch.setattr(
+        containers, "authorize_privileged_operation", lambda *a, **k: True
+    )
     calls = []
     monkeypatch.setattr(
-        containers, "_run_command", lambda command, description, cwd=None: calls.append(
+        containers,
+        "_run_command",
+        lambda command, description, cwd=None: calls.append(
             (command, description, cwd)
-        )
+        ),
     )
 
     containers.manage_containers(confirmed=True, actor_role="operator")
@@ -113,9 +118,7 @@ def test_container_and_kubernetes_commands_use_validated_paths(monkeypatch, tmp_
     containers.manage_networks(actor_role="reader")
     containers.deploy_kubernetes(manifest, confirmed=True, actor_role="operator")
     containers.cleanup_kubernetes(manifest, confirmed=True, actor_role="admin")
-    containers.scale_deployment(
-        "web-api", 3, confirmed=True, actor_role="operator"
-    )
+    containers.scale_deployment("web-api", 3, confirmed=True, actor_role="operator")
 
     assert [call[0] for call in calls] == [
         ["docker-compose", "up", "-d"],
@@ -138,7 +141,9 @@ def test_container_and_kubernetes_commands_use_validated_paths(monkeypatch, tmp_
     [("../web", 1), ("Web", 1), ("web", -1)],
 )
 def test_scale_deployment_rejects_invalid_values(monkeypatch, name, replicas):
-    monkeypatch.setattr(containers, "authorize_privileged_operation", lambda *a, **k: True)
+    monkeypatch.setattr(
+        containers, "authorize_privileged_operation", lambda *a, **k: True
+    )
     run = Mock()
     monkeypatch.setattr(containers, "_run_command", run)
 
