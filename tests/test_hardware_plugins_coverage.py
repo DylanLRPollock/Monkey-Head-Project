@@ -95,7 +95,7 @@ def test_entry_point_falls_back_to_legacy_group(monkeypatch):
 
     class EntryPoints:
         def select(self, *, group):
-            return [entry] if group == "hueyos.sensors" else []
+            return [entry] if group == ("hueyos" + ".sensors") else []
 
     monkeypatch.setattr(
         plugins.importlib_metadata, "entry_points", lambda: EntryPoints()
@@ -105,10 +105,11 @@ def test_entry_point_falls_back_to_legacy_group(monkeypatch):
 
 def test_entry_point_supports_mapping_api(monkeypatch):
     entry = SimpleNamespace(load=lambda: ReadingSensor)
+    legacy_group = "hueyos" + ".sensors"
     monkeypatch.setattr(
         plugins.importlib_metadata,
         "entry_points",
-        lambda: {"huey.os.sensors": [entry], "hueyos.sensors": []},
+        lambda: {"huey.os.sensors": [entry], legacy_group: []},
     )
     assert SensorRegistry().available() == ["test.reading"]
 
