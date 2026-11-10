@@ -8,22 +8,8 @@ from types import SimpleNamespace
 
 import pytest
 
-import huey.media.video_pipeline as video_module
+from huey.media import video_pipeline as video_module
 from huey.media.media_manifest import MediaProbe
-from huey.media.video_pipeline import (
-    VideoFramePreview,
-    VideoPipeline,
-    VideoPipelineResult,
-    build_video_preview,
-    extract_frames,
-    extract_keyframes,
-    extract_thumbnail,
-    extract_video_frame,
-    split_video,
-    video_duration,
-    video_fps,
-    video_metadata,
-)
 
 
 def _source(tmp_path: Path) -> Path:
@@ -60,8 +46,10 @@ class ManagerStub:
 
 
 def test_result_dataclasses_return_independent_serializable_mappings():
-    result = VideoPipelineResult("source.mp4", 2.0, 24.0, {"x": 1}, {"ready": True})
-    preview = VideoFramePreview(
+    result = video_module.VideoPipelineResult(
+        "source.mp4", 2.0, 24.0, {"x": 1}, {"ready": True}
+    )
+    preview = video_module.VideoFramePreview(
         "source.mp4", "preview.jpg", 1.0, 2.0, 24.0, {"x": 1}, {"ready": True}
     )
     result_dict = result.to_dict()
@@ -94,7 +82,7 @@ def test_video_pipeline_extract_preview_and_segment_wrap_functional_helpers(
     monkeypatch.setattr(
         video_module, "validate_media_environment", lambda: {"ready": True}
     )
-    pipeline = VideoPipeline()
+    pipeline = video_module.VideoPipeline()
 
     preview = pipeline.extract_preview(source, preview_path, timestamp_seconds=1.25)
     assert preview.preview_path == str(preview_path)
@@ -121,7 +109,7 @@ def test_extract_frames_delegates_fps_and_paths(monkeypatch, tmp_path):
         "_extract_frames",
         lambda *args, **kwargs: calls.append((args, kwargs)) or expected,
     )
-    assert extract_frames(source, output, fps=2.5) == expected
+    assert video_module.extract_frames(source, output, fps=2.5) == expected
     assert calls == [((source, output), {"fps": 2.5})]
 
 
@@ -130,7 +118,7 @@ def test_extract_keyframes_builds_safe_ffmpeg_argument_list(monkeypatch, tmp_pat
     target = tmp_path / "keyframes" / "key-%03d.jpg"
     commands = []
     monkeypatch.setattr(video_module, "_run_ffmpeg", commands.append)
-    result = extract_keyframes(source, target)
+    result = video_module.extract_keyframes(source, target)
     assert result == target
     assert target.parent.is_dir()
     assert commands == [
@@ -151,7 +139,7 @@ def test_extract_thumbnail_builds_timestamp_command(monkeypatch, tmp_path):
     target = tmp_path / "thumbs" / "preview.jpg"
     commands = []
     monkeypatch.setattr(video_module, "_run_ffmpeg", commands.append)
-    result = extract_thumbnail(source, target, timestamp=2.75)
+    result = video_module.extract_thumbnail(source, target, timestamp=2.75)
     assert result == target
     assert target.parent.is_dir()
     assert commands == [
@@ -168,7 +156,9 @@ def test_split_video_builds_segments_and_returns_sorted_matches(monkeypatch, tmp
     (output_dir / "other-001.mp4").write_bytes(b"other")
     commands = []
     monkeypatch.setattr(video_module, "_run_ffmpeg", commands.append)
-    result = split_video(source, output_dir, chunk_seconds=10, prefix="part")
+    result = video_module.split_video(
+        source, output_dir, chunk_seconds=10, prefix="part"
+    )
     assert [path.name for path in result] == ["part-001.mp4", "part-002.mp4"]
     assert commands[0][-2:] == ["10", str(output_dir / "part-%03d.mp4")]
     assert commands[0][:4] == ["-i", str(source.resolve()), "-c", "copy"]
@@ -191,9 +181,9 @@ def test_metadata_helpers_probe_format_duration_and_stream_rates(monkeypatch, tm
         )
 
     monkeypatch.setattr(video_module, "probe_media", probe)
-    assert video_metadata(source)["format"]["duration"] == "4.75"
-    assert video_duration(source) == 4.75
-    assert video_fps(source) == pytest.approx(30000 / 1001)
+    assert video_module.video_metadata(source)["format"]["duration"] == "4.75"
+    assert video_module.video_duration(source) == 4.75
+    assert video_module.video_fps(source) == pytest.approx(30000 / 1001)
     assert probes == [source, source, source]
 
 
@@ -214,13 +204,15 @@ def test_video_fps_handles_zero_denominator_integer_and_missing_video(
         "probe_media",
         lambda _path: SimpleNamespace(raw={"streams": streams}),
     )
-    assert video_fps("clip.mp4") == expected
+    assert video_module.video_fps("clip.mp4") == expected
 
 
 def test_build_video_preview_records_artifacts_commands_and_manifest(tmp_path):
     source = _source(tmp_path)
     manager = ManagerStub()
-    manifest = build_video_preview(source, tmp_path / "output", manager=manager)
+    manifest = video_module.build_video_preview(
+        source, tmp_path / "output", manager=manager
+    )
     manifest_path = tmp_path / "output" / "clip.video.manifest.json"
     saved = json.loads(manifest_path.read_text())
     assert manifest.operation == "build_video_preview"
@@ -241,7 +233,7 @@ def test_build_video_preview_records_artifacts_commands_and_manifest(tmp_path):
 
 def test_build_video_preview_rejects_missing_source(tmp_path):
     with pytest.raises(FileNotFoundError, match="Video source not found"):
-        build_video_preview(
+        video_module.build_video_preview(
             tmp_path / "missing.mp4", tmp_path / "output", manager=ManagerStub()
         )
 
@@ -250,7 +242,7 @@ def test_build_video_preview_constructs_default_manager(monkeypatch, tmp_path):
     source = _source(tmp_path)
     manager = ManagerStub()
     monkeypatch.setattr(video_module, "FFmpegManager", lambda: manager)
-    result = build_video_preview(source, tmp_path / "output")
+    result = video_module.build_video_preview(source, tmp_path / "output")
     assert result.operation == "build_video_preview"
     assert manager.calls[0][0] == "probe"
 
@@ -261,7 +253,7 @@ def test_extract_video_frame_delegates_manager_options_and_resolves_output(
     source = _source(tmp_path)
     output = tmp_path / "frames" / "frame.png"
     manager = ManagerStub()
-    result = extract_video_frame(
+    result = video_module.extract_video_frame(
         source, output, frame_number=12, manager=manager, overwrite=True
     )
     assert result == output.resolve()
@@ -274,6 +266,8 @@ def test_extract_video_frame_constructs_default_manager(monkeypatch, tmp_path):
     source = _source(tmp_path)
     manager = ManagerStub()
     monkeypatch.setattr(video_module, "FFmpegManager", lambda: manager)
-    output = extract_video_frame(source, tmp_path / "frame.png", frame_number=0)
+    output = video_module.extract_video_frame(
+        source, tmp_path / "frame.png", frame_number=0
+    )
     assert output.name == "frame.png"
     assert manager.calls[0][0] == "extract_frame"
