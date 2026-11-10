@@ -8,8 +8,7 @@ import logging
 
 import pytest
 
-from huey.memory.PY import cli_print
-from huey.memory.PY import fixture_registry
+from huey.memory.PY import cli_print, fixture_registry
 
 
 def test_fixture_record_json_conversion_and_registry_round_trip(tmp_path):
