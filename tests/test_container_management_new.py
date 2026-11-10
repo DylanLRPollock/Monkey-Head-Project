@@ -35,10 +35,13 @@ def test_scale_deployment():
 
 
 def test_get_pod_logs():
-    with patch(
-        "huey.services.container_management.shutil.which",
-        return_value="/usr/bin/kubectl",
-    ), patch("subprocess.run", return_value=DummyCompleted(stdout=b"log")):
+    with (
+        patch(
+            "huey.services.container_management.shutil.which",
+            return_value="/usr/bin/kubectl",
+        ),
+        patch("subprocess.run", return_value=DummyCompleted(stdout=b"log")),
+    ):
         logs = get_pod_logs("monkey-head-0")
         assert logs == "log"
 
