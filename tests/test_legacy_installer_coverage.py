@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib
 import os
 import subprocess
 import sys
@@ -308,3 +309,12 @@ def test_installer_cli_entry_point_supports_safe_dry_run():
     )
     assert result.returncode == 0
     assert "no host changes" in result.stdout
+
+
+def test_installer_module_reloads_from_the_covered_source_file():
+    source_path = Path(installer.__file__).resolve()
+
+    reloaded = importlib.reload(installer)
+
+    assert Path(reloaded.__file__).resolve() == source_path
+    assert reloaded.parse_args(["--dry-run"]).dry_run is True
