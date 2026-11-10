@@ -26,16 +26,17 @@ experimental and non-gating; both must report actual failures and skips.
   coverage.py combines covered statements and covered branches for its total.
   The 42.33% line rate and 3.70% branch rate are **different metrics**, not
   contradictory results.
-  At PR #920 (2026-11-09), both Python 3.13 and 3.14 report 821 passed,
-  16 skipped, and 58.14% combined coverage. `huey.memory.PY.storage_management`
+  At PR #923 (2026-11-10), both Python 3.13 and 3.14 report 888 passed,
+  16 skipped, and 59.84% combined coverage. `huey.memory.PY.storage_management`
   has 100% line and 98% branch coverage after PR #913. `huey.storage.honeycomb`
   and `huey.storage.index` have 100% line and branch coverage after PR #917;
   `huey.services.container_management` has 100% line and branch coverage after
-  PRs #918-#920. Coverage tracing validation passes. The 80% threshold remains
-  unmet. PR #907 cleared Ruff and passed CodeQL; PR #920 static analysis passes.
-  The test step exits nonzero only because combined coverage is below 80%.
-  Publish this as the current full-suite baseline until a later CI run replaces
-  it.
+  PRs #918-#920; `huey.network.manager` has 100% line and branch coverage after
+  PR #922; and `huey.agents.presidential` and `huey.agents.llm` have 100% line
+  and branch coverage in PR #923. Coverage tracing validation passes. The 80%
+  threshold remains unmet. PR #923 static analysis passes; its test step exits
+  nonzero only because combined coverage is below 80%. Publish this as the
+  current full-suite baseline until a later CI run replaces it.
 - Coverage enables subprocess tracing because fixture and CLI tests execute
   Python children. This does not trace external programs such as FFmpeg.
 - Every coverage PR should report full and module-level line/branch deltas,
