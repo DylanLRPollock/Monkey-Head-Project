@@ -142,8 +142,7 @@ def connections() -> dict[str, object]:
         "api": health,
         "media_tools": media,
         "mcp": {"transport": "stdio", "mode": "read-only"},
-        "all_connected": bool(health.get("connected"))
-        and all(media.values()),
+        "all_connected": bool(health.get("connected")) and all(media.values()),
     }
 
 
