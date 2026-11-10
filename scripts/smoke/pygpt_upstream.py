@@ -69,6 +69,7 @@ async def check_connector(connector: dict) -> None:
             "huey_project",
             "huey_health",
             "huey_diagnostics",
+            "huey_connections",
             "huey_permissions",
         }
         result = await session.call_tool("huey_health", arguments={})
