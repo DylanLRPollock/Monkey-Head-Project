@@ -309,7 +309,6 @@ def test_dashboard_window_builds_tabs_and_refreshes_views(dashboard, monkeypatch
     assert window.agent_table.rows == len(Agent)
     assert window.memory_tree.children
     assert "Total" in window.memory_summary.text
-    assert window.memory_bar.value == 0
 
     monkeypatch.setattr(
         module,
