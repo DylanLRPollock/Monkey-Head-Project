@@ -18,7 +18,7 @@ import logging
 import sys
 from concurrent.futures import ThreadPoolExecutor
 
-from ..logging_setup import configure_logging
+from .logging_setup import configure_logging
 
 
 def valid_types():
@@ -34,7 +34,7 @@ class CLI:
 
     def load_config(self, config_file):
         try:
-            with open(config_file, "r") as file:
+            with open(config_file) as file:
                 config = json.load(file)
                 self.log_file = config.get("log_file", "CLI_LOG.json")
                 self.valid_message_types = config.get(
@@ -103,7 +103,8 @@ class CLI:
                 raise ValueError("message_type cannot be an empty string.")
             if message_type.lower() not in self.valid_message_types:
                 raise ValueError(
-                    f"Invalid message_type provided. Valid types are {', '.join(self.valid_message_types)}"
+                    "Invalid message_type provided. Valid types are "
+                    f"{', '.join(self.valid_message_types)}"
                 )
         except (TypeError, ValueError) as e:
             self.print_message(str(e), "error")
