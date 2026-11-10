@@ -51,7 +51,10 @@ _TOOLS: list[dict[str, object]] = [
     },
     {
         "name": "huey_connections",
-        "description": "Summarize read-only status of HueyOS connections (API, media tools, MCP).",
+        "description": (
+            "Summarize read-only status of HueyOS connections "
+            "(API, media tools, MCP)."
+        ),
         "inputSchema": {
             "type": "object",
             "properties": {},
