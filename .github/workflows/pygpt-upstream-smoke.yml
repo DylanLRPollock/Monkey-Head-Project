@@ -29,7 +29,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y portaudio19-dev xvfb xauth x11-utils \
-            libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxkbcommon-x11-0 libpulse0
+            libegl1 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 \
+            libxkbcommon-x11-0 libpulse0
       - name: Install separate HueyOS and PyGPT environments
         run: |
           python -m venv "$RUNNER_TEMP/huey"
