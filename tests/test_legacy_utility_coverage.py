@@ -9,8 +9,7 @@ from pathlib import Path
 import pytest
 
 from huey.memory.PY import add_project_headers as headers
-from huey.memory.PY import set_api_keys
-from huey.memory.PY import update_prompts
+from huey.memory.PY import set_api_keys, update_prompts
 
 
 def test_header_humanization_and_building_cover_package_and_script_types(
