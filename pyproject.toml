@@ -109,7 +109,7 @@ ml = [
   "anthropic[bedrock,vertex]==2.3.0",
   "audioop-lts==0.2.2; python_version >= '3.13' and python_version < '3.14'",
   "faster-whisper==1.2.1",
-  "google-genai==2.34.0",
+  "google-genai==3.0.0",
   "huggingface-hub==2.4.0",
   "llama-cloud-services==0.6.94",
   "llama-index==0.14.25",
