@@ -48,13 +48,17 @@ def test_unified_installer_rejects_unknown_target_and_missing_scripts(
 ):
     monkeypatch.setattr(unified_installer, "REPO_ROOT", tmp_path)
     monkeypatch.setattr(unified_installer, "detect_target", lambda: "unknown")
-    monkeypatch.setattr(unified_installer, "_normalize_target", lambda _target: "unknown")
+    monkeypatch.setattr(
+        unified_installer, "_normalize_target", lambda _target: "unknown"
+    )
     assert unified_installer.main(["--yes"]) == 1
     assert "Unsupported OS" in capsys.readouterr().err
 
     monkeypatch.setattr(unified_installer, "detect_target", lambda: "linux")
     monkeypatch.setattr(unified_installer, "_normalize_target", lambda _target: "linux")
-    monkeypatch.setattr(unified_installer, "select_script", lambda _target: tmp_path / "missing.sh")
+    monkeypatch.setattr(
+        unified_installer, "select_script", lambda _target: tmp_path / "missing.sh"
+    )
     assert unified_installer.main(["--yes"]) == 1
     assert "Installer script not found" in capsys.readouterr().err
 
@@ -92,13 +96,18 @@ def test_unified_installer_reports_subprocess_failures(
     script.write_text("exit 0\n", encoding="utf-8")
     monkeypatch.setattr(unified_installer, "REPO_ROOT", tmp_path)
     monkeypatch.setattr(unified_installer, "select_script", lambda _target: script)
-    monkeypatch.setattr(unified_installer, "build_command", lambda _target, args: ["installer", *args])
+    monkeypatch.setattr(
+        unified_installer, "build_command", lambda _target, args: ["installer", *args]
+    )
     failure = (
         unified_installer.subprocess.TimeoutExpired("installer", 1200)
         if error == "timeout"
         else unified_installer.subprocess.CalledProcessError(23, "installer")
     )
     monkeypatch.setattr(unified_installer.subprocess, "run", Mock(side_effect=failure))
-    assert unified_installer.main(["--yes", "--target", "linux", "--", "--quiet"]) == expected
+    assert (
+        unified_installer.main(["--yes", "--target", "linux", "--", "--quiet"])
+        == expected
+    )
     if error == "timeout":
         assert "Installer timed out" in capsys.readouterr().err

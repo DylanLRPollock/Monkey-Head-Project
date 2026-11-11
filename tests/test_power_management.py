@@ -360,7 +360,9 @@ def test_acpi_status_returns_none_for_empty_and_unrecognized_output(monkeypatch)
     monkeypatch.setattr(management.subprocess, "check_output", lambda *a, **k: "")
     assert BatteryMonitor()._status_from_acpi() is None
     monkeypatch.setattr(
-        management.subprocess, "check_output", lambda *a, **k: "Battery state unavailable"
+        management.subprocess,
+        "check_output",
+        lambda *a, **k: "Battery state unavailable",
     )
     assert BatteryMonitor()._status_from_acpi() is None
 
@@ -372,7 +374,9 @@ def test_confirmed_power_command_records_launch_error(monkeypatch):
         "detect_host_platform",
         lambda: SimpleNamespace(display_name="Linux", family="linux"),
     )
-    monkeypatch.setattr(monitor, "_resolve_command", lambda _action: ["systemctl", "reboot"])
+    monkeypatch.setattr(
+        monitor, "_resolve_command", lambda _action: ["systemctl", "reboot"]
+    )
     monkeypatch.setattr(
         management.subprocess,
         "Popen",

@@ -55,18 +55,27 @@ def test_prompt_helpers_supply_fallbacks_and_skip_completed_phases() -> None:
     body = generate_pr_body(phase)
     assert "- No checklist" in body
     assert "- No validation commands recorded" in body
-    assert generate_review_checklist(phase) == "- [ ] Review the changed code paths for compatibility."
-    assert generate_next_best_task_prompt([_phase(status="merged"), _phase(status="blocked")]) == (
-        "All current migration phases are merged or blocked."
+    assert (
+        generate_review_checklist(phase)
+        == "- [ ] Review the changed code paths for compatibility."
     )
+    assert generate_next_best_task_prompt(
+        [_phase(status="merged"), _phase(status="blocked")]
+    ) == ("All current migration phases are merged or blocked.")
     assert "Cover connectors" in generate_next_best_task_prompt(
-        [_phase(id="z", status="ready_for_pr", risk="low"), _phase(id="a", status="in_progress", risk="critical")]
+        [
+            _phase(id="z", status="ready_for_pr", risk="low"),
+            _phase(id="a", status="in_progress", risk="critical"),
+        ]
     )
 
 
 def test_prompt_priority_handles_unknown_status_and_risk() -> None:
     selected = generate_next_best_task_prompt(
-        [_phase(id="unknown", status="unknown", risk="unknown"), _phase(id="ready", status="ready_for_pr", risk="low")]
+        [
+            _phase(id="unknown", status="unknown", risk="unknown"),
+            _phase(id="ready", status="ready_for_pr", risk="low"),
+        ]
     )
     assert "Work phase: Cover connectors" in selected
     assert "Phase" not in generate_next_best_task_prompt([])

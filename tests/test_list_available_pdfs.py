@@ -3,8 +3,9 @@
 # www.dlrp.ca
 # HueyOS: Test List Available Pdfs module (tests)
 
-from huey.os.pdf_utils import list_available_pdfs
 import pytest
+
+from huey.os.pdf_utils import list_available_pdfs
 
 
 def test_list_available_pdfs():
