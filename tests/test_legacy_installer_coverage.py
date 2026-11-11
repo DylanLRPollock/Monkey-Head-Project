@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import importlib.util
 import os
 import subprocess
 import sys
@@ -15,9 +16,18 @@ from huey.memory.PY import installer
 
 
 @pytest.fixture(autouse=True)
-def _reload_installer_under_coverage():
-    """Trace module execution after coverage starts, not during collection."""
-    importlib.reload(installer)
+def load_installer_source_for_coverage():
+    """Load the legacy source under a unique name after tracing has started."""
+    global installer
+    source = Path(installer.__file__).resolve()
+    spec = importlib.util.spec_from_file_location(
+        "huey.memory.PY._installer_coverage_probe", source
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    installer = module
 
 
 def test_manual_hardware_selection_and_invalid_selection_are_saved(
@@ -320,7 +330,7 @@ def test_installer_cli_entry_point_supports_safe_dry_run():
 def test_installer_module_reloads_from_the_covered_source_file():
     source_path = Path(installer.__file__).resolve()
 
-    reloaded = importlib.reload(installer)
+    installer.__loader__.exec_module(installer)
 
-    assert Path(reloaded.__file__).resolve() == source_path
-    assert reloaded.parse_args(["--dry-run"]).dry_run is True
+    assert Path(installer.__file__).resolve() == source_path
+    assert installer.parse_args(["--dry-run"]).dry_run is True
