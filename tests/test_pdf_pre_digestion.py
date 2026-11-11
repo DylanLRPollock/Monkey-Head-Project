@@ -4,7 +4,6 @@
 # HueyOS: Test Pdf Pre Digestion module (tests)
 
 import json
-import shutil
 
 # ==================================================
 # This file is a part of the 'Monkey Head Project'
@@ -19,13 +18,23 @@ from pathlib import Path
 import pytest
 
 pytest.importorskip("fitz")
+pytest.importorskip("PIL.Image")
+import fitz
+
 from huey.os.pdf_pre_digestion import pdf_pre_digestion
 
 
+def _create_pdf(path: Path) -> None:
+    document = fitz.open()
+    page = document.new_page()
+    page.insert_text((72, 72), "Huey PDF digestion test fixture")
+    document.save(path)
+    document.close()
+
+
 def test_pdf_pre_digestion(tmp_path):
-    pdf_src = Path("memory/PDF/Linux_on_PlayStation_3.pdf")
     pdf_path = tmp_path / "doc.pdf"
-    shutil.copy(pdf_src, pdf_path)
+    _create_pdf(pdf_path)
 
     mem_dir = tmp_path / "mem"
     pdf_pre_digestion(str(pdf_path), str(mem_dir))
@@ -48,9 +57,8 @@ def test_pdf_pre_digestion(tmp_path):
 
 
 def test_pdf_pre_digestion_env(tmp_path, monkeypatch):
-    pdf_src = Path("memory/PDF/Linux_on_PlayStation_3.pdf")
     pdf_path = tmp_path / "doc.pdf"
-    shutil.copy(pdf_src, pdf_path)
+    _create_pdf(pdf_path)
 
     mem_dir = tmp_path / "env_mem"
     monkeypatch.setenv("MEMORY_DIR", str(mem_dir))

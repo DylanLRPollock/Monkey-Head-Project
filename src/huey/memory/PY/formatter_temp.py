@@ -18,7 +18,7 @@ import logging
 import os
 import sys
 
-from ..logging_setup import configure_logging
+from .logging_setup import configure_logging
 
 
 # Define Formatter class
@@ -35,7 +35,7 @@ class Formatter:
     # Load configuration from file
     def load_config(self, config_file):
         try:
-            with open(config_file, "r") as file:
+            with open(config_file) as file:
                 config = json.load(file)
                 self.books_folder = config.get("books_folder", "BOOKS")
                 self.memory_folder = config.get("memory_folder", "MEMORY")

@@ -36,7 +36,9 @@ def convert_line(line: str, release: str) -> str:
     """Replace the distribution name in a sources.list line with ``release``."""
     if line.lstrip().startswith("#"):
         return line
-    m = APT_LINE_RE.match(line)
+    ending = "\r\n" if line.endswith("\r\n") else "\n" if line.endswith("\n") else ""
+    content = line[: -len(ending)] if ending else line
+    m = APT_LINE_RE.match(content)
     if not m:
         return line
     prefix, dist, rest = m.groups()
@@ -47,7 +49,7 @@ def convert_line(line: str, release: str) -> str:
         new_dist = f"{release}-{suffix}"
     else:
         new_dist = release
-    return f"{prefix}{new_dist}{rest}"
+    return f"{prefix}{new_dist}{rest}{ending}"
 
 
 def main() -> None:
@@ -64,7 +66,7 @@ def main() -> None:
 
     release = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_RELEASE
 
-    with open(SOURCE_FILE, "r", encoding="utf-8") as fh:
+    with open(SOURCE_FILE, encoding="utf-8") as fh:
         lines = [convert_line(line, release) for line in fh]
 
     with open(SOURCE_FILE, "w", encoding="utf-8") as fh:

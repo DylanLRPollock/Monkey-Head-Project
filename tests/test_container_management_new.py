@@ -110,12 +110,18 @@ def test_kubernetes_manifest_and_resource_arguments_are_validated(tmp_path):
 
 
 def test_list_containers():
-    with patch("subprocess.run", return_value=DummyCompleted(stdout=b"list")):
+    with (
+        patch("shutil.which", return_value="/usr/bin/docker"),
+        patch("subprocess.run", return_value=DummyCompleted(stdout=b"list")),
+    ):
         output = list_containers()
         assert output == "list"
 
 
 def test_get_container_logs():
-    with patch("subprocess.run", return_value=DummyCompleted(stdout=b"logs")):
+    with (
+        patch("shutil.which", return_value="/usr/bin/docker"),
+        patch("subprocess.run", return_value=DummyCompleted(stdout=b"logs")),
+    ):
         logs = get_container_logs("monkey-head")
         assert logs == "logs"
