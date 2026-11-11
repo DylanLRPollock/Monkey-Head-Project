@@ -7,13 +7,14 @@ The concrete ASGI app remains available from ``huey.os.api.app``.
 
 from __future__ import annotations
 
+from importlib import import_module
+
 __all__ = ["SCHEDULER", "app", "main"]
 
 
 def __getattr__(name: str):
     if name in __all__:
-        from . import app as _app_module
-
+        _app_module = import_module(".app", __name__)
         value = getattr(_app_module, name)
         globals()[name] = value
         return value
