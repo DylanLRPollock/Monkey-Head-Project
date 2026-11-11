@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import importlib.util
 import runpy
 import sys
 from pathlib import Path
@@ -14,6 +15,14 @@ import pytest
 
 def _reload(name: str):
     return importlib.reload(importlib.import_module(f"huey.memory.PY.{name}"))
+
+
+def _load_source(path: Path, name: str):
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def test_hardware_interface_routes_commands_to_configured_paths(monkeypatch):
@@ -112,7 +121,10 @@ def test_update_commands_authorization_and_failures(monkeypatch):
 
 
 def test_huey_environment_helpers_and_deployment_paths(monkeypatch, tmp_path):
-    module = _reload("Huey")
+    module = _load_source(
+        Path(__file__).parents[1] / "src" / "huey" / "memory" / "PY" / "Huey.py",
+        "legacy_huey_deployment",
+    )
     monkeypatch.setattr(module.shutil, "which", lambda _tool: "/bin/tool")
     module.require_tools(["python"])
     monkeypatch.setattr(
