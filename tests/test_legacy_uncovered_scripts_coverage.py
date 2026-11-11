@@ -3,12 +3,20 @@
 from __future__ import annotations
 
 import importlib
-import runpy
+import importlib.util
 import sys
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 
 LEGACY = Path(__file__).parents[1] / "src" / "huey" / "memory" / "PY"
+
+
+def _load_script(path: Path, name: str):
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def test_transcribe_lecture_writes_text_and_srt_with_and_without_segments(
@@ -40,13 +48,14 @@ def test_transcribe_lecture_writes_text_and_srt_with_and_without_segments(
         sys.modules, "faster_whisper", SimpleNamespace(WhisperModel=WhisperModel)
     )
 
-    runpy.run_path(str(LEGACY / "transcribe-lecture.py"))
+    script = LEGACY / "transcribe-lecture.py"
+    module = _load_script(script, "legacy_transcribe_lecture")
     text_path = tmp_path / "alan_watts_medium.en.txt"
     srt_path = tmp_path / "alan_watts_medium.en.srt"
     assert "[0.00 -> 62.00] first" in text_path.read_text(encoding="utf-8")
     assert "00:00:00,000 --> 00:01:02,000" in srt_path.read_text(encoding="utf-8")
 
-    runpy.run_path(str(LEGACY / "transcribe-lecture.py"))
+    module.__loader__.exec_module(module)
     assert "Segments: 0" in capsys.readouterr().out
 
 
@@ -91,14 +100,13 @@ def test_mini_chat_gui_answers_and_updates_widgets(monkeypatch):
     monkeypatch.setitem(sys.modules, "tkinter", fake_tk)
     monkeypatch.setitem(sys.modules, "tkinter.scrolledtext", fake_scrolled)
 
-    result = runpy.run_path(str(LEGACY / "mini-chat-gui.py"))
+    result = _load_script(LEGACY / "mini-chat-gui.py", "legacy_mini_chat_gui")
     assert (
-        result["get_answer"]("  CAPITAL OF FRANCE ")
-        == "The capital of France is Paris."
+        result.get_answer("  CAPITAL OF FRANCE ") == "The capital of France is Paris."
     )
-    assert result["get_answer"]("2+2") == "2 + 2 equals 4."
-    assert result["get_answer"]("unknown") == "Sorry, I do not know the answer."
-    result["on_ask"]()
+    assert result.get_answer("2+2") == "2 + 2 equals 4."
+    assert result.get_answer("unknown") == "Sorry, I do not know the answer."
+    result.on_ask()
     assert any("2 + 2 equals 4." in item[-1] for item in calls if item[0] == "insert")
     assert ("mainloop",) in calls
 
@@ -120,12 +128,12 @@ def test_train_image_model_cli_selects_device_and_prints_artifacts(monkeypatch, 
     monkeypatch.setitem(sys.modules, "monkey_head.training", training)
     monkeypatch.setitem(sys.modules, "torch", torch)
 
-    script = str(LEGACY / "train_image_model.py")
+    script = LEGACY / "train_image_model.py"
     monkeypatch.setattr(
         sys,
         "argv",
         [
-            script,
+            str(script),
             "--data-dir",
             "images",
             "--output-dir",
@@ -134,7 +142,8 @@ def test_train_image_model_cli_selects_device_and_prints_artifacts(monkeypatch, 
             "cpu",
         ],
     )
-    runpy.run_path(script, run_name="__main__")
+    module = _load_script(script, "legacy_train_image_model")
+    module.main()
     assert configs[-1]["device"] == "cpu"
     output = capsys.readouterr().out
     assert "Best validation accuracy: 0.8750" in output
@@ -143,9 +152,9 @@ def test_train_image_model_cli_selects_device_and_prints_artifacts(monkeypatch, 
     monkeypatch.setattr(
         sys,
         "argv",
-        [script, "--data-dir", "images", "--output-dir", "artifacts"],
+        [str(script), "--data-dir", "images", "--output-dir", "artifacts"],
     )
-    runpy.run_path(script, run_name="__main__")
+    module.main()
     assert configs[-1]["device"] == "cuda"
 
 
