@@ -80,15 +80,15 @@ import json
 import logging
 import time
 import uuid
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 from aiohttp import web
 
 from .job_models import (
     ALL_STATES,
     Job,
-    JobResult,
     JobState,
     Priority,
 )
@@ -98,7 +98,7 @@ from .scheduler import (
     SchedulerShuttingDown,
 )
 
-__all__ = ["SchedulerAPI", "APIError"]
+__all__ = ["APIError", "SchedulerAPI"]
 
 LOG = logging.getLogger("banana_brain.scheduler_api")
 
@@ -109,11 +109,13 @@ MAX_LIST_LIMIT = 1000
 
 #: Endpoints that bypass authentication. Only /health.
 _PUBLIC_PATHS = frozenset({"/health"})
+_REQUEST_ID_KEY = web.RequestKey("banana_brain_request_id", str)
 
 
 # ---------------------------------------------------------------------------
 # Error model
 # ---------------------------------------------------------------------------
+
 
 class APIError(Exception):
     """Raised by handlers to return a structured error response."""
@@ -150,6 +152,7 @@ def _error_kind(status: int) -> str:
 # API
 # ---------------------------------------------------------------------------
 
+
 class SchedulerAPI:
     """Local HTTP control API for Banana Brain."""
 
@@ -177,21 +180,19 @@ class SchedulerAPI:
         self._socket_path = _cfg_str(config, "api_socket_path")
         self._bind = _cfg_str(config, "api_bind")
         self._token = _cfg_str(config, "api_token")
-        self._shutdown_grace = float(
-            _cfg_num(config, "shutdown_grace_seconds", 30.0)
-        )
+        self._shutdown_grace = float(_cfg_num(config, "shutdown_grace_seconds", 30.0))
 
-        self._runner: Optional[web.AppRunner] = None
-        self._site: Optional[web.BaseSite] = None
-        self._app: Optional[web.Application] = None
+        self._runner: web.AppRunner | None = None
+        self._site: web.BaseSite | None = None
+        self._app: web.Application | None = None
 
         # In-flight request tracking for graceful drain.
         self._inflight_count = 0
         self._inflight_idle = asyncio.Event()
         self._inflight_idle.set()
 
-        self._started_at: Optional[float] = None
-        self._listening_on: Optional[str] = None
+        self._started_at: float | None = None
+        self._listening_on: str | None = None
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -211,7 +212,7 @@ class SchedulerAPI:
         )
         self._install_routes(self._app)
 
-        self._runner = web.AppRunner(self._app, access_log=LOG)
+        self._runner = web.AppRunner(self._app, access_log=LOG, shutdown_timeout=0.1)
         await self._runner.setup()
 
         try:
@@ -220,9 +221,7 @@ class SchedulerAPI:
             elif self._bind:
                 await self._start_tcp()
             else:
-                raise RuntimeError(
-                    "neither api_socket_path nor api_bind is configured"
-                )
+                raise RuntimeError("neither api_socket_path nor api_bind is configured")
         except Exception:
             await self._runner.cleanup()
             self._runner = None
@@ -233,9 +232,11 @@ class SchedulerAPI:
         LOG.info(
             "scheduler_api listening on %s (auth=%s)",
             self._listening_on,
-            "unix-socket"
-            if self._socket_path
-            else ("bearer" if self._token else "none"),
+            (
+                "unix-socket"
+                if self._socket_path
+                else ("bearer" if self._token else "none")
+            ),
         )
 
     async def stop(self) -> None:
@@ -247,11 +248,12 @@ class SchedulerAPI:
             await asyncio.wait_for(
                 self._inflight_idle.wait(), timeout=self._shutdown_grace
             )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             LOG.warning(
                 "scheduler_api: %d request(s) still in flight after %.0fs; "
                 "closing anyway",
-                self._inflight_count, self._shutdown_grace,
+                self._inflight_count,
+                self._shutdown_grace,
             )
 
         await self._runner.cleanup()
@@ -262,7 +264,7 @@ class SchedulerAPI:
         LOG.info("scheduler_api stopped")
 
     @property
-    def listening_on(self) -> Optional[str]:
+    def listening_on(self) -> str | None:
         return self._listening_on
 
     # ------------------------------------------------------------------
@@ -276,9 +278,7 @@ class SchedulerAPI:
         socket_path.parent.mkdir(parents=True, exist_ok=True)
         if socket_path.exists():
             socket_path.unlink()
-        self._site = web.UnixSite(
-            self._runner, str(socket_path), shutdown_timeout=0.1
-        )
+        self._site = web.UnixSite(self._runner, str(socket_path))
         await self._site.start()
         try:
             socket_path.chmod(0o660)
@@ -301,9 +301,7 @@ class SchedulerAPI:
         if not host:
             raise RuntimeError(f"invalid api_bind {self._bind!r}")
         port = int(port_str)
-        self._site = web.TCPSite(
-            self._runner, host=host, port=port, shutdown_timeout=0.1
-        )
+        self._site = web.TCPSite(self._runner, host=host, port=port)
         await self._site.start()
         self._listening_on = f"http://{host}:{port}"
 
@@ -316,7 +314,7 @@ class SchedulerAPI:
         self, request: web.Request, handler: Callable
     ) -> web.StreamResponse:
         request_id = request.headers.get("X-Request-Id") or uuid.uuid4().hex[:16]
-        request["request_id"] = request_id
+        request[_REQUEST_ID_KEY] = request_id
         try:
             response = await handler(request)
         except APIError as exc:
@@ -331,11 +329,11 @@ class SchedulerAPI:
         except Exception as exc:
             LOG.exception(
                 "unhandled error in %s %s (request_id=%s)",
-                request.method, request.path, request_id,
+                request.method,
+                request.path,
+                request_id,
             )
-            response = _error_response(
-                500, f"{type(exc).__name__}: {exc}", request_id
-            )
+            response = _error_response(500, f"{type(exc).__name__}: {exc}", request_id)
         response.headers["X-Request-Id"] = request_id
         return response
 
@@ -356,7 +354,7 @@ class SchedulerAPI:
             return _error_response(
                 503,
                 "TCP API is exposed without an api_token; refusing all requests",
-                request.get("request_id", ""),
+                request.get(_REQUEST_ID_KEY, ""),
             )
 
         presented = _extract_token(request)
@@ -364,7 +362,7 @@ class SchedulerAPI:
             response = _error_response(
                 401,
                 "missing Authorization header (expected: Bearer <token>)",
-                request.get("request_id", ""),
+                request.get(_REQUEST_ID_KEY, ""),
             )
             response.headers["WWW-Authenticate"] = "Bearer"
             return response
@@ -372,7 +370,7 @@ class SchedulerAPI:
             return _error_response(
                 401,
                 "invalid API token",
-                request.get("request_id", ""),
+                request.get(_REQUEST_ID_KEY, ""),
             )
         return await handler(request)
 
@@ -412,9 +410,7 @@ class SchedulerAPI:
 
         app.router.add_get("/queue", self._handle_queue)
         app.router.add_get("/suspended", self._handle_list_suspended)
-        app.router.add_post(
-            "/suspended/{job_id}/cancel", self._handle_cancel_suspended
-        )
+        app.router.add_post("/suspended/{job_id}/cancel", self._handle_cancel_suspended)
 
         app.router.add_get("/vram", self._handle_vram)
         app.router.add_get("/watchdog", self._handle_watchdog)
@@ -424,9 +420,7 @@ class SchedulerAPI:
     # Handlers: health and status
     # ------------------------------------------------------------------
 
-    async def _handle_health(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_health(self, request: web.Request) -> web.Response:
         """
         Unauthenticated liveness probe.
 
@@ -434,9 +428,7 @@ class SchedulerAPI:
         whether the process is alive and willing to accept work, without
         leaking job data, prompts, or VRAM figures.
         """
-        shutting_down = bool(
-            getattr(self._scheduler, "is_shutting_down", False)
-        )
+        shutting_down = bool(getattr(self._scheduler, "is_shutting_down", False))
         mode = None
         severity = "ok"
         if self._gpu_modes is not None:
@@ -472,9 +464,7 @@ class SchedulerAPI:
             status=status,
         )
 
-    async def _handle_status(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_status(self, request: web.Request) -> web.Response:
         body: dict[str, Any] = {
             "api_version": API_VERSION,
             "started_at": self._started_at,
@@ -496,9 +486,7 @@ class SchedulerAPI:
 
         return web.json_response(body)
 
-    async def _handle_adapters(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_adapters(self, request: web.Request) -> web.Response:
         adapters = sorted(getattr(self._scheduler, "_adapters", {}).keys())
         return web.json_response({"adapters": adapters})
 
@@ -506,16 +494,12 @@ class SchedulerAPI:
     # Handlers: mode
     # ------------------------------------------------------------------
 
-    async def _handle_get_mode(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_get_mode(self, request: web.Request) -> web.Response:
         self._require_gpu_modes()
         state = await self._gpu_modes.get_state()
         return web.json_response(state)
 
-    async def _handle_set_mode(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_set_mode(self, request: web.Request) -> web.Response:
         self._require_gpu_modes()
         body = await _read_json(request)
         mode = body.get("mode")
@@ -550,9 +534,7 @@ class SchedulerAPI:
             status=status,
         )
 
-    async def _handle_resume_mode(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_resume_mode(self, request: web.Request) -> web.Response:
         self._require_gpu_modes()
         body = await _read_json(request, optional=True)
         reason = str(body.get("reason") or "api resume")
@@ -569,16 +551,12 @@ class SchedulerAPI:
             }
         )
 
-    async def _handle_clear_halt(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_clear_halt(self, request: web.Request) -> web.Response:
         self._require_gpu_modes()
         body = await _read_json(request)
         reason = str(body.get("reason") or "operator cleared via API")
         cleared_by = _maybe_str(body.get("cleared_by")) or "api"
-        await self._gpu_modes.clear_safety_halt(
-            reason=reason, cleared_by=cleared_by
-        )
+        await self._gpu_modes.clear_safety_halt(reason=reason, cleared_by=cleared_by)
         state = await self._gpu_modes.get_state()
         return web.json_response(
             {"ok": True, "safety_halted": state.get("safety_halted")}
@@ -588,9 +566,7 @@ class SchedulerAPI:
     # Handlers: jobs
     # ------------------------------------------------------------------
 
-    async def _handle_list_jobs(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_list_jobs(self, request: web.Request) -> web.Response:
         limit = _parse_limit(request.query.get("limit"), DEFAULT_LIST_LIMIT)
         states = _parse_states(request.query.get("state"))
         jobs = await self._job_store.list_recent(limit=limit, states=states)
@@ -601,9 +577,7 @@ class SchedulerAPI:
             }
         )
 
-    async def _handle_submit_job(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_submit_job(self, request: web.Request) -> web.Response:
         body = await _read_json(request)
         if not isinstance(body, dict):
             raise APIError(400, "body must be a JSON object")
@@ -627,7 +601,9 @@ class SchedulerAPI:
             if existing is not None:
                 LOG.info(
                     "submission idempotency hit: key=%r adapter=%s -> job %s",
-                    job.idempotency_key, job.adapter, existing.id,
+                    job.idempotency_key,
+                    job.adapter,
+                    existing.id,
                 )
                 return web.json_response(
                     existing.to_dict(),
@@ -643,9 +619,7 @@ class SchedulerAPI:
             raise APIError(400, str(exc)) from exc
         except Exception as exc:
             LOG.exception("scheduler.submit raised")
-            raise APIError(
-                500, f"{type(exc).__name__}: {exc}"
-            ) from exc
+            raise APIError(500, f"{type(exc).__name__}: {exc}") from exc
 
         return web.json_response(
             submitted.to_dict(),
@@ -653,18 +627,14 @@ class SchedulerAPI:
             headers={"Location": f"/jobs/{submitted.id}"},
         )
 
-    async def _handle_get_job(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_get_job(self, request: web.Request) -> web.Response:
         job_id = request.match_info["job_id"]
         job = await self._job_store.get(job_id)
         if job is None:
             raise APIError(404, f"job {job_id} not found")
         return web.json_response(job.to_dict())
 
-    async def _handle_cancel_job(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_cancel_job(self, request: web.Request) -> web.Response:
         job_id = request.match_info["job_id"]
         body = await _read_json(request, optional=True)
         force = bool(body.get("force", False))
@@ -681,17 +651,13 @@ class SchedulerAPI:
             raise APIError(409, str(exc)) from exc
         except Exception as exc:
             LOG.exception("scheduler.cancel raised for job %s", job_id)
-            raise APIError(
-                500, f"{type(exc).__name__}: {exc}"
-            ) from exc
+            raise APIError(500, f"{type(exc).__name__}: {exc}") from exc
 
         if not cancelled and self._gpu_modes is not None:
             try:
                 cancelled = await self._gpu_modes.cancel_suspended(job_id)
             except Exception:
-                LOG.exception(
-                    "gpu_modes.cancel_suspended raised for job %s", job_id
-                )
+                LOG.exception("gpu_modes.cancel_suspended raised for job %s", job_id)
 
         if not cancelled:
             # Distinguish "unknown job" from "job finished already".
@@ -718,9 +684,7 @@ class SchedulerAPI:
             }
         )
 
-    async def _handle_job_events(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_job_events(self, request: web.Request) -> web.Response:
         job_id = request.match_info["job_id"]
         limit = _parse_limit(request.query.get("limit"), 100)
         events = await self._job_store.list_events(job_id, limit=limit)
@@ -730,25 +694,17 @@ class SchedulerAPI:
     # Handlers: queue, suspended, vram
     # ------------------------------------------------------------------
 
-    async def _handle_queue(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_queue(self, request: web.Request) -> web.Response:
         limit = _parse_limit(request.query.get("limit"), None)
         snapshot = await self._priority_manager.snapshot(limit=limit)
         return web.json_response(snapshot)
 
-    async def _handle_list_suspended(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_list_suspended(self, request: web.Request) -> web.Response:
         self._require_gpu_modes()
         suspended = await self._gpu_modes.get_suspended()
-        return web.json_response(
-            {"count": len(suspended), "jobs": suspended}
-        )
+        return web.json_response({"count": len(suspended), "jobs": suspended})
 
-    async def _handle_cancel_suspended(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_cancel_suspended(self, request: web.Request) -> web.Response:
         self._require_gpu_modes()
         job_id = request.match_info["job_id"]
         cancelled = await self._gpu_modes.cancel_suspended(job_id)
@@ -756,9 +712,7 @@ class SchedulerAPI:
             raise APIError(404, f"suspended job {job_id} not found")
         return web.json_response({"ok": True, "job_id": job_id})
 
-    async def _handle_vram(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_vram(self, request: web.Request) -> web.Response:
         snapshot = await self._vram_manager.snapshot()
         return web.json_response(snapshot)
 
@@ -766,17 +720,13 @@ class SchedulerAPI:
     # Handlers: watchdog
     # ------------------------------------------------------------------
 
-    async def _handle_watchdog(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_watchdog(self, request: web.Request) -> web.Response:
         if self._watchdog is None:
             raise APIError(503, "watchdog is not configured")
         snapshot = await self._watchdog.snapshot()
         return web.json_response(snapshot)
 
-    async def _handle_watchdog_ack(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_watchdog_ack(self, request: web.Request) -> web.Response:
         if self._watchdog is None:
             raise APIError(503, "watchdog is not configured")
         body = await _read_json(request)
@@ -799,9 +749,8 @@ class SchedulerAPI:
 # Request parsing
 # ---------------------------------------------------------------------------
 
-async def _read_json(
-    request: web.Request, *, optional: bool = False
-) -> dict[str, Any]:
+
+async def _read_json(request: web.Request, *, optional: bool = False) -> dict[str, Any]:
     text = await request.text()
     if not text.strip():
         if optional:
@@ -825,8 +774,15 @@ def _job_from_body(body: dict[str, Any]) -> Job:
     and result are all forbidden — those are scheduler-assigned.
     """
     forbidden = {
-        "id", "state", "submitted_at", "started_at", "finished_at",
-        "attempts", "last_error", "result", "version",
+        "id",
+        "state",
+        "submitted_at",
+        "started_at",
+        "finished_at",
+        "attempts",
+        "last_error",
+        "result",
+        "version",
     }
     present = forbidden & set(body)
     if present:
@@ -853,7 +809,9 @@ def _job_from_body(body: dict[str, Any]) -> Job:
     elif isinstance(priority_raw, str) and priority_raw.upper() in Priority.__members__:
         priority = int(Priority[priority_raw.upper()])
     else:
-        raise ValueError(f"priority must be an int or Priority name, got {priority_raw!r}")
+        raise ValueError(
+            f"priority must be an int or Priority name, got {priority_raw!r}"
+        )
 
     deadline = body.get("deadline")
     if deadline is not None:
@@ -863,9 +821,10 @@ def _job_from_body(body: dict[str, Any]) -> Job:
             raise ValueError("deadline must be a unix timestamp or null") from None
 
     est = body.get("estimated_vram_bytes")
-    if est is not None:
-        if not isinstance(est, int) or isinstance(est, bool) or est <= 0:
-            raise ValueError("estimated_vram_bytes must be a positive int")
+    if est is not None and (
+        not isinstance(est, int) or isinstance(est, bool) or est <= 0
+    ):
+        raise ValueError("estimated_vram_bytes must be a positive int")
 
     tags = body.get("tags") or {}
     if not isinstance(tags, dict):
@@ -880,7 +839,11 @@ def _job_from_body(body: dict[str, Any]) -> Job:
         raise ValueError("idempotency_key must be a string or null")
 
     max_attempts = body.get("max_attempts", 1)
-    if not isinstance(max_attempts, int) or isinstance(max_attempts, bool) or max_attempts < 1:
+    if (
+        not isinstance(max_attempts, int)
+        or isinstance(max_attempts, bool)
+        or max_attempts < 1
+    ):
         raise ValueError("max_attempts must be an int >= 1")
 
     return Job(
@@ -897,7 +860,7 @@ def _job_from_body(body: dict[str, Any]) -> Job:
     )
 
 
-def _parse_limit(value: Optional[str], default: Optional[int]) -> Optional[int]:
+def _parse_limit(value: str | None, default: int | None) -> int | None:
     if value is None or value == "":
         return default
     try:
@@ -909,7 +872,7 @@ def _parse_limit(value: Optional[str], default: Optional[int]) -> Optional[int]:
     return min(n, MAX_LIST_LIMIT)
 
 
-def _parse_states(value: Optional[str]) -> Optional[set[JobState]]:
+def _parse_states(value: str | None) -> set[JobState] | None:
     if not value:
         return None
     parts = [p.strip().lower() for p in value.split(",") if p.strip()]
@@ -931,7 +894,8 @@ def _parse_states(value: Optional[str]) -> Optional[set[JobState]]:
 # Response helpers
 # ---------------------------------------------------------------------------
 
-def _extract_token(request: web.Request) -> Optional[str]:
+
+def _extract_token(request: web.Request) -> str | None:
     auth = request.headers.get("Authorization", "")
     if auth.lower().startswith("bearer "):
         return auth[7:].strip() or None
@@ -941,9 +905,7 @@ def _extract_token(request: web.Request) -> Optional[str]:
     return None
 
 
-def _error_response(
-    status: int, message: str, request_id: str
-) -> web.Response:
+def _error_response(status: int, message: str, request_id: str) -> web.Response:
     return web.json_response(
         {
             "error": {
@@ -980,49 +942,51 @@ async def _safe_call(obj: Any, method: str) -> Any:
         return {"error": "call failed"}
 
 
-def _serialise_gpu_status(status: Any) -> Optional[dict[str, Any]]:
+def _serialise_gpu_status(status: Any) -> dict[str, Any] | None:
     if status is None:
         return None
     try:
         identity = getattr(status, "identity", None)
         health = getattr(status, "health", None)
         return {
-            "identity": {
-                "index": getattr(identity, "index", None),
-                "name": getattr(identity, "name", None),
-                "uuid": getattr(identity, "uuid", None),
-                "pci_bus_id": getattr(identity, "pci_bus_id", None),
-            }
-            if identity is not None
-            else None,
+            "identity": (
+                {
+                    "index": getattr(identity, "index", None),
+                    "name": getattr(identity, "name", None),
+                    "uuid": getattr(identity, "uuid", None),
+                    "pci_bus_id": getattr(identity, "pci_bus_id", None),
+                }
+                if identity is not None
+                else None
+            ),
             "timestamp": getattr(status, "timestamp", None),
             "total_vram_bytes": getattr(status, "total_vram_bytes", None),
             "free_vram_bytes": getattr(status, "free_vram_bytes", None),
             "used_vram_bytes": getattr(status, "used_vram_bytes", None),
             "reserved_vram_bytes": getattr(status, "reserved_vram_bytes", None),
-            "gpu_utilization_percent": getattr(
-                status, "gpu_utilization_percent", None
-            ),
+            "gpu_utilization_percent": getattr(status, "gpu_utilization_percent", None),
             "memory_utilization_percent": getattr(
                 status, "memory_utilization_percent", None
             ),
             "temperature_c": getattr(status, "temperature_c", None),
             "power_watts": getattr(status, "power_watts", None),
             "process_count": len(getattr(status, "processes", ()) or ()),
-            "health": {
-                "thermal_slowdown": getattr(health, "thermal_slowdown", False),
-                "power_brake": getattr(health, "power_brake", False),
-                "device_lost": getattr(health, "device_lost", False),
-                "shutdown_threshold_c": getattr(
-                    health, "shutdown_threshold_c", None
-                ),
-                "slowdown_threshold_c": getattr(
-                    health, "slowdown_threshold_c", None
-                ),
-                "power_limit_watts": getattr(health, "power_limit_watts", None),
-            }
-            if health is not None
-            else None,
+            "health": (
+                {
+                    "thermal_slowdown": getattr(health, "thermal_slowdown", False),
+                    "power_brake": getattr(health, "power_brake", False),
+                    "device_lost": getattr(health, "device_lost", False),
+                    "shutdown_threshold_c": getattr(
+                        health, "shutdown_threshold_c", None
+                    ),
+                    "slowdown_threshold_c": getattr(
+                        health, "slowdown_threshold_c", None
+                    ),
+                    "power_limit_watts": getattr(health, "power_limit_watts", None),
+                }
+                if health is not None
+                else None
+            ),
         }
     except Exception:
         LOG.exception("api: failed to serialise GPUStatus")
@@ -1033,13 +997,14 @@ def _serialise_gpu_status(status: Any) -> Optional[dict[str, Any]]:
 # Config helpers
 # ---------------------------------------------------------------------------
 
+
 def _cfg_get(config: Any, name: str) -> Any:
     if isinstance(config, dict):
         return config.get(name)
     return getattr(config, name, None)
 
 
-def _cfg_str(config: Any, name: str) -> Optional[str]:
+def _cfg_str(config: Any, name: str) -> str | None:
     value = _cfg_get(config, name)
     return str(value) if value else None
 
@@ -1047,3 +1012,8 @@ def _cfg_str(config: Any, name: str) -> Optional[str]:
 def _cfg_num(config: Any, name: str, default: float) -> float:
     value = _cfg_get(config, name)
     return float(value) if isinstance(value, (int, float)) else default
+
+
+def _maybe_str(value: Any) -> str | None:
+    """Return non-empty string values, ignoring other optional inputs."""
+    return value.strip() if isinstance(value, str) and value.strip() else None

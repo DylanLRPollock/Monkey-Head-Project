@@ -82,12 +82,13 @@ __all__ = [
 
 LOG = logging.getLogger("banana_brain.watchdog")
 
-GIB = 1024 ** 3
+GIB = 1024**3
 
 
 # ---------------------------------------------------------------------------
 # Signal model
 # ---------------------------------------------------------------------------
+
 
 class Severity(IntEnum):
     OK = 0
@@ -117,6 +118,7 @@ class HealthSignal:
 # ---------------------------------------------------------------------------
 # Watchdog
 # ---------------------------------------------------------------------------
+
 
 class Watchdog:
     """
@@ -160,61 +162,71 @@ class Watchdog:
 
         self._check_interval = float(
             _cfg_num(
-                config, "watchdog_check_interval_seconds",
+                config,
+                "watchdog_check_interval_seconds",
                 self.DEFAULT_CHECK_INTERVAL_S,
             )
         )
         self._temp_warn_c = float(
             _cfg_num(
-                config, "watchdog_temperature_warn_c",
+                config,
+                "watchdog_temperature_warn_c",
                 self.DEFAULT_TEMP_WARN_C,
             )
         )
         self._temp_ceiling_c = float(
             _cfg_num(
-                config, "watchdog_temperature_ceiling_c",
+                config,
+                "watchdog_temperature_ceiling_c",
                 self.DEFAULT_TEMP_CEILING_C,
             )
         )
         self._unavailable_warn_s = float(
             _cfg_num(
-                config, "watchdog_gpu_unavailable_warn_s",
+                config,
+                "watchdog_gpu_unavailable_warn_s",
                 self.DEFAULT_UNAVAILABLE_WARN_S,
             )
         )
         self._unavailable_critical_s = float(
             _cfg_num(
-                config, "watchdog_gpu_unavailable_critical_s",
+                config,
+                "watchdog_gpu_unavailable_critical_s",
                 self.DEFAULT_UNAVAILABLE_CRITICAL_S,
             )
         )
         self._stuck_job_s = float(
             _cfg_num(
-                config, "watchdog_stuck_job_seconds",
+                config,
+                "watchdog_stuck_job_seconds",
                 self.DEFAULT_STUCK_JOB_S,
             )
         )
         self._cancel_grace_s = float(
             _cfg_num(
-                config, "watchdog_cancel_grace_seconds",
+                config,
+                "watchdog_cancel_grace_seconds",
                 self.DEFAULT_CANCEL_GRACE_S,
             )
         )
         self._service_failure_threshold = int(
             _cfg_num(
-                config, "watchdog_service_failure_threshold",
+                config,
+                "watchdog_service_failure_threshold",
                 self.DEFAULT_SERVICE_FAILURE_THRESHOLD,
             )
         )
         self._lease_expiry_s = float(
             _cfg_num(
-                config, "watchdog_lease_expiry_seconds",
+                config,
+                "watchdog_lease_expiry_seconds",
                 self.DEFAULT_LEASE_EXPIRY_S,
             )
         )
         self._signal_cooldown_s = float(
             _cfg_num(
-                config, "watchdog_signal_cooldown_seconds",
+                config,
+                "watchdog_signal_cooldown_seconds",
                 self.DEFAULT_SIGNAL_COOLDOWN_S,
             )
         )
@@ -240,7 +252,8 @@ class Watchdog:
             LOG.warning(
                 "watchdog_temperature_warn_c (%.1f) >= ceiling (%.1f); "
                 "warn-level temperature alerts will not fire",
-                self._temp_warn_c, self._temp_ceiling_c,
+                self._temp_warn_c,
+                self._temp_ceiling_c,
             )
 
     # ------------------------------------------------------------------
@@ -257,8 +270,11 @@ class Watchdog:
         LOG.info(
             "watchdog ready (interval=%.0fs, temp warn=%.0f°C ceiling=%.0f°C, "
             "stuck_job=%.0fs, lease_expiry=%.0fs)",
-            self._check_interval, self._temp_warn_c, self._temp_ceiling_c,
-            self._stuck_job_s, self._lease_expiry_s,
+            self._check_interval,
+            self._temp_warn_c,
+            self._temp_ceiling_c,
+            self._stuck_job_s,
+            self._lease_expiry_s,
         )
 
     async def stop(self) -> None:
@@ -498,13 +514,16 @@ class Watchdog:
                 self._temperature_warn_active = False
                 self._temperature_cleared_at = time.monotonic()
                 LOG.info(
-                    "watchdog: GPU temperature back below %.0f°C "
-                    "(now %s°C)",
-                    self._temp_warn_c, temp,
+                    "watchdog: GPU temperature back below %.0f°C " "(now %s°C)",
+                    self._temp_warn_c,
+                    temp,
                 )
             # If a thermal halt is still active, nudge the operator
             # that the underlying condition is gone. Never clear it here.
-            if "temperature_ceiling" in self._halt_triggered_for:
+            if any(
+                key.startswith("temperature_ceiling:")
+                for key in self._halt_triggered_for
+            ):
                 if self._temperature_cleared_at is None:
                     self._temperature_cleared_at = time.monotonic()
                 if temp is not None and temp < self._temp_warn_c:
@@ -530,7 +549,9 @@ class Watchdog:
                         severity=Severity.WARN,
                         message="GPU is thermal-throttling",
                         key="thermal_slowdown",
-                        details={"throttle_reasons": getattr(health, "throttle_reasons", 0)},
+                        details={
+                            "throttle_reasons": getattr(health, "throttle_reasons", 0)
+                        },
                     )
                 )
             if getattr(health, "power_brake", False):
@@ -569,8 +590,7 @@ class Watchdog:
         if current is None:
             if self._cancel_requested:
                 LOG.info(
-                    "watchdog: current job cleared; releasing %d cancel "
-                    "request(s)",
+                    "watchdog: current job cleared; releasing %d cancel " "request(s)",
                     len(self._cancel_requested),
                 )
                 self._cancel_requested.clear()
@@ -609,9 +629,7 @@ class Watchdog:
                         "threshold_s": self._stuck_job_s,
                     },
                     action=(
-                        "cancel_requested"
-                        if cancel_ok
-                        else "cancel_request_failed"
+                        "cancel_requested" if cancel_ok else "cancel_request_failed"
                     ),
                 )
             )
@@ -650,9 +668,7 @@ class Watchdog:
             try:
                 await probe()
                 if self._service_failures.get(name, 0):
-                    LOG.info(
-                        "watchdog: service %s recovered", name
-                    )
+                    LOG.info("watchdog: service %s recovered", name)
                 self._service_failures[name] = 0
                 continue
             except asyncio.CancelledError:
@@ -764,13 +780,15 @@ class Watchdog:
         if signal.severity is Severity.CRITICAL:
             LOG.critical(
                 "[%s] %s%s",
-                signal.name, signal.message,
+                signal.name,
+                signal.message,
                 f" (action={signal.action})" if signal.action else "",
             )
         elif signal.severity is Severity.ERROR:
             LOG.error(
                 "[%s] %s%s",
-                signal.name, signal.message,
+                signal.name,
+                signal.message,
                 f" (action={signal.action})" if signal.action else "",
             )
         elif signal.severity is Severity.WARN:
@@ -800,9 +818,7 @@ class Watchdog:
     # Escalation
     # ------------------------------------------------------------------
 
-    async def _trigger_safety_halt(
-        self, key: str, *, reason: str
-    ) -> Optional[str]:
+    async def _trigger_safety_halt(self, key: str, *, reason: str) -> Optional[str]:
         """
         Engage the safety overlay once per `key`.
 
@@ -815,15 +831,16 @@ class Watchdog:
         if self._mode_manager is None:
             LOG.error(
                 "watchdog: CRITICAL condition but no mode manager wired; "
-                "cannot engage safety halt: %s", reason,
+                "cannot engage safety halt: %s",
+                reason,
             )
             return "no_mode_manager"
 
         halt = getattr(self._mode_manager, "force_safety_halt", None)
         if not callable(halt):
             LOG.error(
-                "watchdog: mode manager has no force_safety_halt(); "
-                "cannot halt: %s", reason,
+                "watchdog: mode manager has no force_safety_halt(); " "cannot halt: %s",
+                reason,
             )
             return "mode_manager_api_missing"
 
@@ -834,9 +851,7 @@ class Watchdog:
             return "halt_failed"
 
         self._halt_triggered_for.add(key)
-        LOG.critical(
-            "watchdog: safety halt engaged (%s): %s", key, reason
-        )
+        LOG.critical("watchdog: safety halt engaged (%s): %s", key, reason)
         return "safety_halt_engaged"
 
     # ------------------------------------------------------------------
@@ -845,19 +860,16 @@ class Watchdog:
 
     async def _request_cancel(self, job_id: str) -> bool:
         try:
-            return bool(
-                await self._scheduler.cancel(job_id, force=True)
-            )
+            return bool(await self._scheduler.cancel(job_id, force=True))
         except Exception:
-            LOG.exception(
-                "watchdog: failed to request cancel for job %s", job_id
-            )
+            LOG.exception("watchdog: failed to request cancel for job %s", job_id)
             return False
 
 
 # ---------------------------------------------------------------------------
 # Probe resolution
 # ---------------------------------------------------------------------------
+
 
 def _resolve_probe(adapter: Any) -> Optional[Any]:
     """
@@ -883,6 +895,7 @@ def _resolve_probe(adapter: Any) -> Optional[Any]:
 # ---------------------------------------------------------------------------
 # Config helpers
 # ---------------------------------------------------------------------------
+
 
 def _cfg_get(config: Any, name: str) -> Any:
     if isinstance(config, dict):

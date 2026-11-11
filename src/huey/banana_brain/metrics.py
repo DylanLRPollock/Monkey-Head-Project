@@ -67,28 +67,31 @@ Constraints:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import math
 import time
 from collections import defaultdict
-from dataclasses import dataclass, field
-from typing import Any, Iterable, Optional
+from collections.abc import Iterable
+from dataclasses import dataclass
+from typing import Any
 
 __all__ = [
-    "Metrics",
+    "Aggregate",
     "GPUSample",
     "JobMetric",
-    "Aggregate",
+    "Metrics",
 ]
 
 LOG = logging.getLogger("banana_brain.metrics")
 
-GIB = 1024 ** 3
+GIB = 1024**3
 
 
 # ---------------------------------------------------------------------------
 # Data models
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class GPUSample:
@@ -99,8 +102,8 @@ class GPUSample:
     memory_utilization_percent: int
     vram_used_bytes: int
     vram_total_bytes: int
-    temperature_c: Optional[int]
-    power_watts: Optional[float]
+    temperature_c: int | None
+    power_watts: float | None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -120,15 +123,15 @@ class JobMetric:
 
     job_id: str
     adapter: str
-    state: str                    # "completed" | "failed" | "cancelled"
+    state: str  # "completed" | "failed" | "cancelled"
     submitted_at: float
-    started_at: Optional[float]
+    started_at: float | None
     finished_at: float
-    wait_s: Optional[float]
-    run_s: Optional[float]
+    wait_s: float | None
+    run_s: float | None
     total_s: float
-    load_duration_s: Optional[float]
-    error_class: Optional[str]    # first token of last_error, if any
+    load_duration_s: float | None
+    error_class: str | None  # first token of last_error, if any
 
 
 @dataclass(frozen=True)
@@ -136,14 +139,14 @@ class Aggregate:
     """Summary statistics for a numeric series."""
 
     count: int = 0
-    min: Optional[float] = None
-    max: Optional[float] = None
-    mean: Optional[float] = None
-    p50: Optional[float] = None
-    p95: Optional[float] = None
-    p99: Optional[float] = None
+    min: float | None = None
+    max: float | None = None
+    mean: float | None = None
+    p50: float | None = None
+    p95: float | None = None
+    p99: float | None = None
 
-    def to_dict(self) -> dict[str, Optional[float]]:
+    def to_dict(self) -> dict[str, float | None]:
         return {
             "count": self.count,
             "min": self.min,
@@ -158,6 +161,7 @@ class Aggregate:
 # ---------------------------------------------------------------------------
 # Ring buffer
 # ---------------------------------------------------------------------------
+
 
 class _RingBuffer:
     """
@@ -183,7 +187,7 @@ class _RingBuffer:
             excess = len(self._items) - self._capacity
             del self._items[:excess]
 
-    def since(self, cutoff: Optional[float]) -> list[Any]:
+    def since(self, cutoff: float | None) -> list[Any]:
         if cutoff is None:
             return list(self._items)
         return [item for item in self._items if item.at >= cutoff]
@@ -195,6 +199,7 @@ class _RingBuffer:
 # ---------------------------------------------------------------------------
 # Metrics
 # ---------------------------------------------------------------------------
+
 
 class Metrics:
     """
@@ -228,24 +233,24 @@ class Metrics:
         self._enabled = _cfg_bool(config, "metrics_enabled", True)
         self._sample_interval = float(
             _cfg_num(
-                config, "metrics_sample_interval_seconds",
+                config,
+                "metrics_sample_interval_seconds",
                 self.DEFAULT_SAMPLE_INTERVAL_S,
             )
         )
-        ring_size = int(
-            _cfg_num(config, "metrics_ring_size", self.DEFAULT_RING_SIZE)
-        )
+        ring_size = int(_cfg_num(config, "metrics_ring_size", self.DEFAULT_RING_SIZE))
         self._default_window = float(
             _cfg_num(
-                config, "metrics_default_window_seconds",
+                config,
+                "metrics_default_window_seconds",
                 self.DEFAULT_WINDOW_S,
             )
         )
 
         self._gpu_samples = _RingBuffer(ring_size)
-        self._sample_task: Optional[asyncio.Task[None]] = None
+        self._sample_task: asyncio.Task[None] | None = None
         self._stop_event = asyncio.Event()
-        self._started_at: Optional[float] = None
+        self._started_at: float | None = None
         self._sample_count: int = 0
 
         #: Optional adapter-sourced model load times. Keyed by
@@ -279,7 +284,8 @@ class Metrics:
         LOG.info(
             "metrics ready (sample_interval=%.0fs, ring_size=%d, "
             "default_window=%.0fs)",
-            self._sample_interval, len(self._gpu_samples),
+            self._sample_interval,
+            len(self._gpu_samples),
             self._default_window,
         )
 
@@ -289,13 +295,9 @@ class Metrics:
         self._sample_task = None
         if task is not None:
             task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await task
-            except asyncio.CancelledError:
-                pass
-        LOG.info(
-            "metrics stopped after %d GPU sample(s)", self._sample_count
-        )
+        LOG.info("metrics stopped after %d GPU sample(s)", self._sample_count)
 
     # ------------------------------------------------------------------
     # Sampling
@@ -328,12 +330,10 @@ class Metrics:
 
     async def _sample_loop(self) -> None:
         while not self._stop_event.is_set():
-            try:
+            with contextlib.suppress(TimeoutError):
                 await asyncio.wait_for(
                     self._stop_event.wait(), timeout=self._sample_interval
                 )
-            except asyncio.TimeoutError:
-                pass
             if self._stop_event.is_set():
                 return
             try:
@@ -347,9 +347,7 @@ class Metrics:
     # Optional explicit recording
     # ------------------------------------------------------------------
 
-    def record_model_load(
-        self, adapter: str, model: str, duration_s: float
-    ) -> None:
+    def record_model_load(self, adapter: str, model: str, duration_s: float) -> None:
         """
         Record a model-load duration reported by an adapter.
 
@@ -373,9 +371,7 @@ class Metrics:
     # Snapshot (the /metrics response body)
     # ------------------------------------------------------------------
 
-    async def snapshot(
-        self, window_s: Optional[float] = None
-    ) -> dict[str, Any]:
+    async def snapshot(self, window_s: float | None = None) -> dict[str, Any]:
         """Aggregate everything into one JSON-serialisable dict."""
         window = float(window_s or self._default_window)
         cutoff = time.time() - window
@@ -405,9 +401,7 @@ class Metrics:
                 "temperature_c": _aggregate(
                     s.temperature_c for s in gpu_recent
                 ).to_dict(),
-                "power_watts": _aggregate(
-                    s.power_watts for s in gpu_recent
-                ).to_dict(),
+                "power_watts": _aggregate(s.power_watts for s in gpu_recent).to_dict(),
             },
             "jobs": self._job_summary(jobs, window),
             "model_loads": self._model_loads_summary(jobs),
@@ -418,13 +412,13 @@ class Metrics:
     # ------------------------------------------------------------------
 
     async def query_gpu_utilization(
-        self, window_s: Optional[float] = None
+        self, window_s: float | None = None
     ) -> list[GPUSample]:
         cutoff = time.time() - float(window_s) if window_s else None
         return self._gpu_samples.since(cutoff)
 
     async def query_aggregate(
-        self, sample_kind: str, window_s: Optional[float] = None
+        self, sample_kind: str, window_s: float | None = None
     ) -> Aggregate:
         cutoff = time.time() - float(window_s) if window_s else None
         samples = self._gpu_samples.since(cutoff)
@@ -447,7 +441,7 @@ class Metrics:
     ) -> dict[str, Any]:
         cutoff = time.time() - float(window_s)
         jobs = await self._load_jobs_since(cutoff)
-        return self._throughput_from_jobs(jobs, window_s, group_by)
+        return self._throughput_from_jobs(jobs, window_s, group_by=group_by)
 
     async def query_failures(
         self,
@@ -456,25 +450,19 @@ class Metrics:
     ) -> dict[str, Any]:
         cutoff = time.time() - float(window_s)
         jobs = await self._load_jobs_since(cutoff)
-        return self._failures_from_jobs(jobs, group_by)
+        return self._failures_from_jobs(jobs, group_by=group_by)
 
-    async def query_waiting_times(
-        self, window_s: float
-    ) -> Aggregate:
+    async def query_waiting_times(self, window_s: float) -> Aggregate:
         cutoff = time.time() - float(window_s)
         jobs = await self._load_jobs_since(cutoff)
         return _aggregate(j.wait_s for j in jobs)
 
-    async def query_run_times(
-        self, window_s: float
-    ) -> Aggregate:
+    async def query_run_times(self, window_s: float) -> Aggregate:
         cutoff = time.time() - float(window_s)
         jobs = await self._load_jobs_since(cutoff)
         return _aggregate(j.run_s for j in jobs)
 
-    async def query_model_load_times(
-        self, window_s: float
-    ) -> dict[str, Aggregate]:
+    async def query_model_load_times(self, window_s: float) -> dict[str, Aggregate]:
         cutoff = time.time() - float(window_s)
         jobs = await self._load_jobs_since(cutoff)
         by_key: dict[str, list[float]] = defaultdict(list)
@@ -519,9 +507,7 @@ class Metrics:
             metrics.append(_job_to_metric(job))
         return metrics
 
-    def _job_summary(
-        self, jobs: list[JobMetric], window_s: float
-    ) -> dict[str, Any]:
+    def _job_summary(self, jobs: list[JobMetric], window_s: float) -> dict[str, Any]:
         return {
             "terminal_count": len(jobs),
             "throughput": self._throughput_from_jobs(
@@ -567,9 +553,7 @@ class Metrics:
         failures = [j for j in jobs if j.state == "failed"]
         if group_by == "adapter":
             counts: dict[str, int] = defaultdict(int)
-            classes: dict[str, dict[str, int]] = defaultdict(
-                lambda: defaultdict(int)
-            )
+            classes: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
             for job in failures:
                 counts[job.adapter] += 1
                 if job.error_class:
@@ -588,9 +572,7 @@ class Metrics:
             return dict(sorted(counts.items()))
         raise ValueError(f"unknown group_by {group_by!r}")
 
-    def _model_loads_summary(
-        self, jobs: list[JobMetric]
-    ) -> dict[str, Any]:
+    def _model_loads_summary(self, jobs: list[JobMetric]) -> dict[str, Any]:
         by_adapter: dict[str, list[float]] = defaultdict(list)
         for job in jobs:
             if job.load_duration_s and job.load_duration_s > 0:
@@ -598,15 +580,13 @@ class Metrics:
         for key, values in self._explicit_loads.items():
             if values:
                 by_adapter[key].extend(values)
-        return {
-            key: _aggregate(values).to_dict()
-            for key, values in by_adapter.items()
-        }
+        return {key: _aggregate(values).to_dict() for key, values in by_adapter.items()}
 
 
 # ---------------------------------------------------------------------------
 # Derivation
 # ---------------------------------------------------------------------------
+
 
 def _job_to_metric(job: Any) -> JobMetric:
     submitted_at = float(getattr(job, "submitted_at", None) or 0.0)
@@ -618,7 +598,7 @@ def _job_to_metric(job: Any) -> JobMetric:
     run_s = (finished_at - started_at) if started_at and finished_at else None
     total_s = max(0.0, finished_at - submitted_at) if submitted_at else 0.0
 
-    load_duration_ns: Optional[int] = None
+    load_duration_ns: int | None = None
     result = getattr(job, "result", None)
     if isinstance(result, dict):
         load_duration_ns = _opt_int(result.get("load_duration_ns"))
@@ -674,7 +654,7 @@ def _aggregate(values: Iterable[Any]) -> Aggregate:
 
     def _at(p: float) -> float:
         # Nearest-rank percentile; adequate for the sample sizes involved.
-        idx = min(n - 1, max(0, int(math.ceil(p * n)) - 1))
+        idx = min(n - 1, max(0, math.ceil(p * n) - 1))
         return clean[idx]
 
     return Aggregate(
@@ -692,7 +672,8 @@ def _aggregate(values: Iterable[Any]) -> Aggregate:
 # Small helpers
 # ---------------------------------------------------------------------------
 
-def _opt_float(value: Any) -> Optional[float]:
+
+def _opt_float(value: Any) -> float | None:
     if value is None:
         return None
     try:
@@ -701,7 +682,7 @@ def _opt_float(value: Any) -> Optional[float]:
         return None
 
 
-def _opt_int(value: Any) -> Optional[int]:
+def _opt_int(value: Any) -> int | None:
     if value is None:
         return None
     try:
@@ -713,6 +694,7 @@ def _opt_int(value: Any) -> Optional[int]:
 # ---------------------------------------------------------------------------
 # Config helpers
 # ---------------------------------------------------------------------------
+
 
 def _cfg_get(config: Any, name: str) -> Any:
     if isinstance(config, dict):

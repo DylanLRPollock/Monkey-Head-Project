@@ -88,7 +88,7 @@ import os
 import re
 from dataclasses import dataclass, field, fields
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import urlparse
 
 __all__ = [
@@ -103,6 +103,7 @@ LOG = logging.getLogger("banana_brain.config")
 # ---------------------------------------------------------------------------
 # Errors
 # ---------------------------------------------------------------------------
+
 
 class ConfigError(RuntimeError):
     """
@@ -130,9 +131,7 @@ _KNOWN_SECTIONS: frozenset[str] = frozenset(
     {"gpu", "priority", "ollama", "comfyui", "storage", "api", "watchdog"}
 )
 
-_PATH_FIELDS: frozenset[str] = frozenset(
-    {"database_path", "api_socket_path"}
-)
+_PATH_FIELDS: frozenset[str] = frozenset({"database_path", "api_socket_path"})
 _INT_FIELDS: frozenset[str] = frozenset(
     {"priority_aging_step", "priority_aging_cap", "priority_overdue_boost"}
 )
@@ -176,18 +175,14 @@ _SECRET_FIELDS: frozenset[str] = frozenset({"api_token"})
 #: Every field name the dataclass exposes except `extra`. Used to reject
 #: unknown keys after flattening.
 _KNOWN_FIELDS: frozenset[str] = (
-    _PATH_FIELDS
-    | _INT_FIELDS
-    | _FLOAT_FIELDS
-    | _BOOL_FIELDS
-    | _STR_FIELDS
-    | {"extra"}
+    _PATH_FIELDS | _INT_FIELDS | _FLOAT_FIELDS | _BOOL_FIELDS | _STR_FIELDS | {"extra"}
 )
 
 
 # ---------------------------------------------------------------------------
 # Immutable config object
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class BananaBrainConfig:
@@ -203,11 +198,11 @@ class BananaBrainConfig:
 
     # ---- Lifecycle --------------------------------------------------------
     shutdown_grace_seconds: float = 30.0
-    device: Optional[str] = None
+    device: str | None = None
 
     # ---- GPU / monitor ----------------------------------------------------
-    device_uuid: Optional[str] = None
-    pci_bus_id: Optional[str] = None
+    device_uuid: str | None = None
+    pci_bus_id: str | None = None
     poll_interval_seconds: float = 2.0
     max_staleness_seconds: float = 5.0
 
@@ -240,9 +235,9 @@ class BananaBrainConfig:
     database_path: Path = Path("data/banana-brain.db")
 
     # ---- Control API ------------------------------------------------------
-    api_socket_path: Optional[Path] = None
-    api_bind: Optional[str] = None
-    api_token: Optional[str] = field(default=None, repr=False)
+    api_socket_path: Path | None = None
+    api_bind: str | None = None
+    api_token: str | None = field(default=None, repr=False)
 
     # ---- Watchdog ---------------------------------------------------------
     watchdog_stuck_job_seconds: float = 1800.0
@@ -261,9 +256,7 @@ class BananaBrainConfig:
         # at least one working transport, and the TCP path (which requires
         # a token) is strictly opt-in.
         if self.api_socket_path is None and self.api_bind is None:
-            object.__setattr__(
-                self, "api_socket_path", Path("data/banana-brain.sock")
-            )
+            object.__setattr__(self, "api_socket_path", Path("data/banana-brain.sock"))
 
     # ------------------------------------------------------------------
     # Serialisation
@@ -284,7 +277,7 @@ class BananaBrainConfig:
     @classmethod
     def from_dict(
         cls, data: dict[str, Any], *, source: str = "<dict>"
-    ) -> "BananaBrainConfig":
+    ) -> BananaBrainConfig:
         """
         Build a config from a (possibly nested) mapping.
 
@@ -330,6 +323,7 @@ class BananaBrainConfig:
 # ---------------------------------------------------------------------------
 # Public loader
 # ---------------------------------------------------------------------------
+
 
 def load_config(path: str | Path) -> BananaBrainConfig:
     """
@@ -379,14 +373,16 @@ def load_config(path: str | Path) -> BananaBrainConfig:
     cfg = BananaBrainConfig.from_dict(expanded, source=str(cfg_path))
 
     LOG.info(
-        "loaded config from %s (device_uuid=%s, pci_bus_id=%s, "
-        "database=%s, api=%s)",
+        "loaded config from %s (device_uuid=%s, pci_bus_id=%s, " "database=%s, api=%s)",
         cfg_path,
         cfg.device_uuid or "-",
         cfg.pci_bus_id or "-",
         cfg.database_path,
-        f"tcp {cfg.api_bind}" if cfg.api_bind
-        else (f"socket {cfg.api_socket_path}" if cfg.api_socket_path else "none"),
+        (
+            f"tcp {cfg.api_bind}"
+            if cfg.api_bind
+            else (f"socket {cfg.api_socket_path}" if cfg.api_socket_path else "none")
+        ),
     )
     return cfg
 
@@ -395,9 +391,8 @@ def load_config(path: str | Path) -> BananaBrainConfig:
 # Flattening: nested YAML -> flat dict
 # ---------------------------------------------------------------------------
 
-def _flatten(
-    data: dict[str, Any], *, source: str, prefix: str = ""
-) -> dict[str, Any]:
+
+def _flatten(data: dict[str, Any], *, source: str, prefix: str = "") -> dict[str, Any]:
     """
     Flatten known sections to ``section_key``. Unknown top-level keys are
     preserved verbatim so the caller can reject them with a clear message.
@@ -405,10 +400,13 @@ def _flatten(
     out: dict[str, Any] = {}
     for key, value in data.items():
         if not isinstance(key, str):
-            raise ConfigError(
-                f"{source}: non-string YAML key {key!r}; quote keys"
-            )
-        flat_key = f"{prefix}_{key}" if prefix else key
+            raise ConfigError(f"{source}: non-string YAML key {key!r}; quote keys")
+        # GPU and storage keys are already named after their flat config
+        # fields (for example ``gpu.poll_interval_seconds`` and
+        # ``storage.database_path``). Other sections use namespaced fields.
+        flat_key = (
+            key if not prefix or prefix in {"gpu", "storage"} else f"{prefix}_{key}"
+        )
 
         if not prefix and key in _KNOWN_SECTIONS and isinstance(value, dict):
             nested = _flatten(value, source=source, prefix=key)
@@ -422,9 +420,7 @@ def _flatten(
             continue
 
         if flat_key in out:
-            raise ConfigError(
-                f"{source}: duplicate key {flat_key!r}"
-            )
+            raise ConfigError(f"{source}: duplicate key {flat_key!r}")
         out[flat_key] = value
     return out
 
@@ -444,7 +440,8 @@ def _expand_env(value: Any, *, source: str) -> Any:
     surface at startup, not on first API call.
     """
     if isinstance(value, str):
-        def repl(match: "re.Match[str]") -> str:
+
+        def repl(match: re.Match[str]) -> str:
             name = match.group(1)
             if name not in os.environ:
                 raise ConfigError(
@@ -452,6 +449,7 @@ def _expand_env(value: Any, *, source: str) -> Any:
                     f"the environment"
                 )
             return os.environ[name]
+
         return _ENV_VAR_RE.sub(repl, value)
     if isinstance(value, dict):
         return {k: _expand_env(v, source=source) for k, v in value.items()}
@@ -463,6 +461,7 @@ def _expand_env(value: Any, *, source: str) -> Any:
 # ---------------------------------------------------------------------------
 # Type coercion
 # ---------------------------------------------------------------------------
+
 
 def _coerce(flat: dict[str, Any], *, source: str) -> dict[str, Any]:
     """Coerce scalars to their declared types with clear error messages."""
@@ -511,14 +510,13 @@ def _to_bool(key: str, value: Any, *, source: str) -> bool:
             return True
         if normalized in {"0", "false", "no", "off"}:
             return False
-    raise ConfigError(
-        f"{source}: {key}: expected bool, got {value!r}"
-    )
+    raise ConfigError(f"{source}: {key}: expected bool, got {value!r}")
 
 
 # ---------------------------------------------------------------------------
 # Validation
 # ---------------------------------------------------------------------------
+
 
 def _validate(cfg: BananaBrainConfig) -> list[str]:
     """
@@ -617,8 +615,7 @@ def _validate(cfg: BananaBrainConfig) -> list[str]:
             )
         elif len(cfg.api_token) < 16:
             problems.append(
-                "api_token must be at least 16 characters when "
-                "api_bind is set"
+                "api_token must be at least 16 characters when " "api_bind is set"
             )
         if cfg.api_bind.startswith("0.0.0.0"):
             problems.append(
@@ -632,7 +629,7 @@ def _validate(cfg: BananaBrainConfig) -> list[str]:
     return problems
 
 
-def _validate_url(url: str) -> Optional[str]:
+def _validate_url(url: str) -> str | None:
     try:
         parsed = urlparse(url)
     except Exception as exc:
@@ -646,7 +643,7 @@ def _validate_url(url: str) -> Optional[str]:
     return None
 
 
-def _validate_bind(bind: str) -> Optional[str]:
+def _validate_bind(bind: str) -> str | None:
     if not bind:
         return "empty"
     if bind.startswith("/"):
