@@ -12,16 +12,16 @@
 # The pip pin is constraint-only to avoid pip pin/self-upgrade conflicts.
 #
 # --- Packaging / installer toolchain ---
-pip==26.2.2
+pip==26.3
 setuptools==84.2.1
 wheel==0.48.0
-uv==0.13.6
+uv==0.13.7
 
 # --- Core API / runtime anchors ---
-fastapi==0.162.0
+fastapi==0.162.2
 starlette==1.10.0
 uvicorn==0.54.0
-pydantic==2.14.2
+pydantic==2.14.3
 pydantic-settings==2.16.2
 orjson==3.13.0
 aiosqlite==0.22.1
@@ -31,12 +31,12 @@ cryptography==50.0.2
 ollama==0.6.3
 comfy-cli==1.25.0
 faster-whisper==1.2.1
-transformers==5.22.1
+transformers==5.22.2
 
 # --- Developer / QA anchors ---
 pytest==9.2.0
 pytest-cov==7.1.0
-ruff==0.17.3
+ruff==0.17.4
 black==26.10.1
 isort==9.0.2
 mypy==2.4.1
