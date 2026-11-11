@@ -414,7 +414,9 @@ def test_power_platform_fallbacks_and_unknown_platform(monkeypatch):
     assert monitor._resolve_command("shutdown") is None
 
 
-def test_psutil_without_sensor_api_and_ac_adapter_unknown_entries(monkeypatch, tmp_path):
+def test_psutil_without_sensor_api_and_ac_adapter_unknown_entries(
+    monkeypatch, tmp_path
+):
     monkeypatch.setattr(management, "psutil", SimpleNamespace())
     assert BatteryMonitor()._status_from_psutil() is None
 

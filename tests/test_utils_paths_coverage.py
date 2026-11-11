@@ -7,7 +7,9 @@ import pytest
 from huey.utils import paths
 
 
-def test_expand_path_resolves_relative_values_and_keeps_absolute_paths(tmp_path, monkeypatch):
+def test_expand_path_resolves_relative_values_and_keeps_absolute_paths(
+    tmp_path, monkeypatch
+):
     root = tmp_path / "project"
     root.mkdir()
     monkeypatch.setattr(paths, "_PROJECT_ROOT", root)
@@ -16,7 +18,9 @@ def test_expand_path_resolves_relative_values_and_keeps_absolute_paths(tmp_path,
     assert paths._expand_path("relative/memory") == (root / "relative/memory").resolve()
 
 
-def test_memory_path_rejects_file_override_and_supports_create_false(tmp_path, monkeypatch):
+def test_memory_path_rejects_file_override_and_supports_create_false(
+    tmp_path, monkeypatch
+):
     file_path = tmp_path / "memory-file"
     file_path.write_text("x", encoding="utf-8")
     monkeypatch.setenv("MEMORY_PATH", str(file_path))
@@ -83,10 +87,16 @@ def test_memory_candidates_include_extra_and_deduplicate_resolved_paths(
     monkeypatch.setenv("MEMORY_PATH", str(relative))
 
     candidates = paths.memory_candidates([preferred, tmp_path / "extra"])
-    assert candidates == [relative.resolve(), packaged.resolve(), (tmp_path / "extra").resolve()]
+    assert candidates == [
+        relative.resolve(),
+        packaged.resolve(),
+        (tmp_path / "extra").resolve(),
+    ]
 
 
-def test_log_directory_and_nested_paths_are_created_from_override(tmp_path, monkeypatch):
+def test_log_directory_and_nested_paths_are_created_from_override(
+    tmp_path, monkeypatch
+):
     base = tmp_path / "memory"
     monkeypatch.setenv("MEMORY_PATH", str(base))
     target = paths.ensure_subdirectory("AUDIO", "prepared")
