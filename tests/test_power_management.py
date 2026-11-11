@@ -385,3 +385,65 @@ def test_confirmed_power_command_records_launch_error(monkeypatch):
     event = monitor.initiate_reboot(confirmed=True, actor_role="admin")
     assert event.metadata["error"] == "permission denied"
     assert monitor.last_event is event
+
+
+def test_power_platform_fallbacks_and_unknown_platform(monkeypatch):
+    monitor = BatteryMonitor()
+    monkeypatch.setattr(management.shutil, "which", lambda _command: None)
+    assert monitor._linux_command("reboot") == ["shutdown", "-r", "now"]
+    assert monitor._linux_command("hibernate") is None
+    assert monitor._linux_command("sleep") is None
+
+    available = {"pm-hibernate", "pm-suspend"}
+    monkeypatch.setattr(
+        management.shutil,
+        "which",
+        lambda command: f"/sbin/{command}" if command in available else None,
+    )
+    assert monitor._linux_command("hibernate") == ["pm-hibernate"]
+    assert monitor._linux_command("sleep") == ["pm-suspend"]
+    assert monitor._linux_command("other") is None
+
+    monkeypatch.setattr(
+        management,
+        "detect_host_platform",
+        lambda: SimpleNamespace(
+            is_windows=False, is_macos=False, is_linux=False, system="Plan9"
+        ),
+    )
+    assert monitor._resolve_command("shutdown") is None
+
+
+def test_psutil_without_sensor_api_and_ac_adapter_unknown_entries(monkeypatch, tmp_path):
+    monkeypatch.setattr(management, "psutil", SimpleNamespace())
+    assert BatteryMonitor()._status_from_psutil() is None
+
+    root = tmp_path / "supplies"
+    root.mkdir()
+    (root / "not-a-directory").write_text("skip", encoding="utf-8")
+    (root / "USB0").mkdir()
+    adapter = root / "AC"
+    adapter.mkdir()
+    (adapter / "online").write_text(" ", encoding="utf-8")
+    assert BatteryMonitor()._ac_adapter_online(root) is None
+
+
+def test_psutil_runtime_and_darwin_reboot_paths(monkeypatch):
+    fake_psutil = SimpleNamespace(
+        POWER_TIME_UNKNOWN=-1,
+        POWER_TIME_UNLIMITED=-2,
+        sensors_battery=lambda: SimpleNamespace(
+            percent=80, secsleft=120, power_plugged=True
+        ),
+    )
+    monkeypatch.setattr(management, "psutil", fake_psutil)
+    assert BatteryMonitor()._status_from_psutil()["secs_left"] == 120.0
+    fake_psutil.sensors_battery = lambda: SimpleNamespace(
+        percent=80, secsleft=-2, power_plugged=True
+    )
+    assert BatteryMonitor()._status_from_psutil()["secs_left"] is None
+    assert BatteryMonitor()._darwin_command("reboot") == [
+        "osascript",
+        "-e",
+        'tell app "System Events" to restart',
+    ]
