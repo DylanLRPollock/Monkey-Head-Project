@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 
-LEGACY = Path(__file__).parents[1] / "src" / "huey" / "memory" / "PY"
+LEGACY = Path(__file__).resolve().parents[1] / "src" / "huey" / "memory" / "PY"
 
 
 def _load_script(path: Path, name: str):
