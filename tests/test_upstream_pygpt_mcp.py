@@ -209,3 +209,85 @@ def test_connections_summarizes_status(monkeypatch):
     result = pygpt_mcp.connections()
     assert result["all_connected"] is True
     assert result["mcp"]["mode"] == "read-only"
+
+
+def test_project_info_handles_uninstalled_distribution(monkeypatch):
+    monkeypatch.setattr(
+        pygpt_mcp.importlib.metadata,
+        "version",
+        lambda _name: (_ for _ in ()).throw(pygpt_mcp.importlib.metadata.PackageNotFoundError),
+    )
+    assert pygpt_mcp.project_info()["package_version"] is None
+
+
+@pytest.mark.parametrize(
+    ("port", "response", "expected"),
+    [
+        ("abc", None, {"connected": False, "error": "Invalid HUEY_API_PORT"}),
+        ("0", None, {"connected": False, "error": "Invalid HUEY_API_PORT"}),
+        ("8080", (503, b"{}"), {"connected": False, "status_code": 503}),
+        ("8080", (200, b"[]"), {"connected": False, "error": "Unexpected API response"}),
+        ("8080", (200, b"not json"), {"connected": False, "error": "JSONDecodeError"}),
+        ("8080", OSError("offline"), {"connected": False, "error": "OSError"}),
+    ],
+)
+def test_health_failure_paths_close_loopback_connection(monkeypatch, port, response, expected):
+    closed = []
+
+    class FakeHTTP:
+        def __init__(self, host, port, timeout):
+            assert host == "127.0.0.1"
+            assert timeout == 2
+
+        def request(self, method, path):
+            assert method == "GET" and path == "/healthz"
+
+        def getresponse(self):
+            if isinstance(response, Exception):
+                raise response
+            status, payload = response
+            return SimpleNamespace(status=status, read=lambda limit: payload)
+
+        def close(self):
+            closed.append(True)
+
+    monkeypatch.setenv("HUEY_API_PORT", port)
+    monkeypatch.setattr(pygpt_mcp.http.client, "HTTPConnection", FakeHTTP)
+    assert pygpt_mcp.health_info() == expected
+    assert closed == ([] if port in {"abc", "0"} else [True])
+
+
+def test_mcp_protocol_and_json_rpc_invalid_shapes():
+    initialized = pygpt_mcp.dispatch(request("initialize", {"protocolVersion": "future"}))
+    assert initialized["result"]["protocolVersion"] == "2025-06-18"
+
+    assert pygpt_mcp.dispatch([])["error"]["code"] == -32600
+    assert pygpt_mcp.dispatch({"jsonrpc": "1.0", "id": 1, "method": "ping"})["error"]["code"] == -32600
+    for request_id in (True, [], {}):
+        response = pygpt_mcp.dispatch({"jsonrpc": "2.0", "id": request_id, "method": "ping"})
+        assert response["error"]["code"] == -32600
+    assert pygpt_mcp.dispatch({"jsonrpc": "2.0", "id": 4, "method": None})["error"]["code"] == -32600
+    assert pygpt_mcp.dispatch(request("ping", []))["error"]["code"] == -32602
+    assert pygpt_mcp.dispatch(request("not-a-method"))["error"]["code"] == -32601
+
+
+def test_mcp_rejects_non_object_tool_arguments_and_reports_disconnected(monkeypatch):
+    response = pygpt_mcp.dispatch(request("tools/call", {"name": "huey_project", "arguments": ["unexpected"]}))
+    assert response["error"]["message"] == "Tool takes no arguments"
+
+    monkeypatch.setattr(pygpt_mcp, "health_info", lambda: {"connected": False, "error": "offline"})
+    monkeypatch.setattr(pygpt_mcp, "diagnostics", lambda: {"ffmpeg_available": False, "ffprobe_available": True})
+    result = pygpt_mcp.connections()
+    assert result["all_connected"] is False
+    assert result["media_tools"]["ffmpeg_available"] is False
+
+
+def test_mcp_stdio_skips_notification_responses_and_main_returns_zero(monkeypatch):
+    source = io.StringIO(
+        json.dumps({"jsonrpc": "2.0", "method": "notifications/initialized"}) + "\n"
+    )
+    target = io.StringIO()
+    pygpt_mcp.serve(source, target)
+    assert target.getvalue() == ""
+    monkeypatch.setattr(pygpt_mcp, "serve", lambda: None)
+    assert pygpt_mcp.main() == 0
