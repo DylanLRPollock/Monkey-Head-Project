@@ -1,0 +1,201 @@
+# =============================================================================
+# Banana Brain — reference configuration
+# =============================================================================
+#
+# This file is loaded by scripts/banana-brain_scheduler.py --config PATH.
+# Every key is optional; the values shown are the defaults. Uncomment and
+# edit any value you want to change.
+#
+# Environment variables may be referenced as ${NAME}. Undefined variables
+# are a startup error (fail-fast, not first-use).
+#
+# See src/huey/banana_brain/config.py for the schema and the list of valid
+# values for each field.
+# =============================================================================
+
+# ---- Lifecycle --------------------------------------------------------------
+# Maximum seconds to wait for in-flight GPU work on shutdown. After this
+# window, remaining jobs persist in SQLite and are re-queued on next start.
+#shutdown_grace_seconds: 30
+
+# Human-readable device name (informational only; identity uses uuid/pci).
+#device: "Tesla V100"
+
+# ---- GPU identity and monitoring -------------------------------------------
+# Resolve the V100 by UUID (preferred) or PCI bus ID. Never by index.
+# Get these from `nvidia-smi -L`. When only one NVML device is visible,
+# these may be left unset.
+#device_uuid: "GPU-1a2b3c4d-5e6f-7890-abcd-ef1234567890"
+#pci_bus_id: "0000:01:00.0"
+
+# GPU monitoring poll interval. The scheduler tolerates staleness up to
+# max_staleness_seconds before refusing admission.
+#poll_interval_seconds: 2.0
+#max_staleness_seconds: 5.0
+
+# ---- VRAM budget ------------------------------------------------------------
+# Headroom kept free for the OS, CUDA contexts and unmanaged processes
+# (e.g. a Steam game). Tuning guidance:
+#   - 3 GiB is safe on a 32 GiB V100 for typical Ollama + ComfyUI workloads.
+#   - Operators running multiple simultaneous clients may raise this.
+# The percent form scales with the card; the effective headroom is max().
+#vram_headroom_gib: 3.0
+#vram_headroom_percent: 0.0
+
+# ---- Scheduling policy ------------------------------------------------------
+# Priority aging: +1 effective priority per 60 seconds of waiting,
+# capped below SAFETY (100) so an exclusive reservation at 90 still wins.
+#priority_aging_interval_seconds: 60
+#priority_aging_step: 1
+#priority_aging_cap: 99
+# Overdue jobs (deadline passed) gain this much effective priority.
+#priority_overdue_boost: 20
+
+# ---- Ollama -----------------------------------------------------------------
+#ollama_base_url: "http://127.0.0.1:11434"
+# Default keep-alive for jobs that do not override it. "0" would unload
+# immediately after each generation; "5m" keeps the model warm.
+#ollama_keep_alive: "5m"
+#ollama_request_timeout_seconds: 600
+#ollama_connect_timeout_seconds: 10
+# Whether to unload models whose keep-alive has pinned them ("forever").
+#ollama_unload_pinned: false
+# Whether to unload the soonest-expiring model first (LRU) or the
+# latest-expiring first (LIFO).
+#ollama_unload_lru_first: true
+
+# ---- ComfyUI ----------------------------------------------------------------
+#comfyui_base_url: "http://127.0.0.1:8188"
+#comfyui_poll_interval_seconds: 0.75
+#comfyui_job_timeout_seconds: 900
+#comfyui_connect_timeout_seconds: 10
+# Fixed overhead added on top of checkpoint file sizes to account for
+# VAE, text encoder, activation buffers and (often) multiple resident
+# models (SDXL base + refiner).
+#comfyui_inference_overhead_gib: 3.0
+
+# ---- PyGPT integration ------------------------------------------------------
+# Expose an OpenAI-compatible endpoint that PyGPT talks to as a custom
+# provider. Every request becomes an Ollama job in the scheduler queue.
+#pygpt_proxy_enabled: false
+#pygpt_proxy_socket_path: "data/banana-brain-pygpt.sock"
+#pygpt_proxy_bind: "127.0.0.1:8081"     # TCP alternative to the Unix socket
+# Fallback model when PyGPT requests something not loaded and no alias
+# matches. If a single Ollama model is loaded, that one is preferred.
+#pygpt_default_model: "qwen2.5:32b"
+# Aliases let PyGPT's model names (e.g. "gpt-4") map to local Ollama tags.
+#pygpt_model_aliases:
+#  gpt-4: "qwen2.5:32b"
+#  gpt-4o: "qwen2.5:32b"
+#  gpt-3.5-turbo: "qwen2.5:7b"
+#pygpt_request_timeout_seconds: 600
+#pygpt_poll_interval_seconds: 0.35
+
+# ---- Audio ------------------------------------------------------------------
+# Speech-to-text backend: "faster-whisper-server" | "whisper-cpp" | "disabled"
+#audio_stt_backend: "disabled"
+#audio_stt_base_url: "http://127.0.0.1:8000"
+#audio_stt_default_model: "large-v3"
+#audio_stt_timeout_seconds: 900
+
+# Text-to-speech backend: "coqui" | "piper" | "disabled"
+#audio_tts_backend: "disabled"
+#audio_tts_base_url: "http://127.0.0.1:5002"
+#audio_tts_default_model: "xtts_v2"
+#audio_tts_default_voice: "Claribel Dervla"
+#audio_tts_timeout_seconds: 300
+
+# None of the common audio backends expose a standard unload endpoint, so
+# free VRAM by restarting them via this command. Runs via shlex, no shell.
+#audio_unload_command: "systemctl --user restart faster-whisper-server"
+#audio_unload_wait_seconds: 15
+# Per-model VRAM overrides. Keys are either "stt:model", "tts:model" or
+# just "model" (matched against both).
+#audio_model_vram_gib:
+#  stt:large-v3: 3.5
+#  tts:xtts_v2: 4.5
+
+# ---- Modes ------------------------------------------------------------------
+# Starting mode: "ai" | "image" | "mixed" | "maintenance" | "gaming"
+#mode_default: "mixed"
+# Resume the last mode across restarts.
+#mode_persistence_enabled: true
+#mode_state_path: "data/banana-brain.mode.json"
+# How long to wait for the current job to finish before entering an
+# exclusive mode. Operators can pass --force to request cancellation.
+#mode_transition_timeout_s: 300
+# How often to drain non-matching jobs out of the queue during exclusive
+# modes (jobs submitted while GAMING is active are suspended within this).
+#mode_drain_interval_s: 5
+
+# ---- Watchdog ---------------------------------------------------------------
+#watchdog_check_interval_seconds: 15
+# Temperature at which a WARN is emitted (desktop notification by default).
+#watchdog_temperature_warn_c: 80
+# Temperature at which a CRITICAL is emitted and the safety overlay engages.
+#watchdog_temperature_ceiling_c: 85
+# GPU visibility staleness thresholds (increasing severity).
+#watchdog_gpu_unavailable_warn_s: 15
+#watchdog_gpu_unavailable_critical_s: 120
+# Jobs running longer than this are considered stuck; the watchdog requests
+# cancellation from the adapter at this threshold.
+#watchdog_stuck_job_seconds: 1800
+# Grace period after a cancellation request before reporting the job as
+# uninterruptible.
+#watchdog_cancel_grace_seconds: 60
+# Consecutive probe failures before an adapter is reported as down.
+#watchdog_service_failure_threshold: 3
+# VRAM reservations held longer than this with no corresponding running
+# job are reported as leaks.
+#watchdog_lease_expiry_seconds: 120
+# Cooldown for deduplication of WARN-level signals (same key).
+#watchdog_signal_cooldown_seconds: 600
+
+# ---- Storage ----------------------------------------------------------------
+#database_path: "data/banana-brain.db"
+#job_retention_days: 7.0
+#job_max_terminal_rows: 10000
+#job_prune_interval_seconds: 3600
+
+# ---- Local control API ------------------------------------------------------
+# Default transport is a Unix socket; TCP requires api_token (>= 16 chars).
+#api_socket_path: "data/banana-brain.sock"
+#api_bind: "127.0.0.1:8080"
+#api_token: "${BANANA_BRAIN_TOKEN}"
+
+# ---- Metrics ----------------------------------------------------------------
+#metrics_enabled: true
+#metrics_sample_interval_seconds: 10.0
+#metrics_ring_size: 3600
+#metrics_default_window_seconds: 3600.0
+
+# ---- Notifications ----------------------------------------------------------
+#notifications_enabled: true
+#notifications_cooldown_seconds: 300
+#notifications_queue_maxsize: 512
+#notifications_shutdown_grace_seconds: 5
+
+# Per-backend minimum levels: "info" | "warn" | "error" | "critical"
+#notifications_min_level_log: "info"
+#notifications_min_level_desktop: "warn"
+#notifications_min_level_webhook: "error"
+#notifications_min_level_file: "info"
+
+# Desktop popups (Linux: requires notify-send from libnotify-bin).
+#notifications_desktop_enabled: false
+#notifications_desktop_timeout_ms: 8000
+
+# Webhook (e.g. a Slack incoming hook, an ntfy.sh topic, or your own pager).
+#notifications_webhook_url: "https://ntfy.sh/banana-brain-CHANGEME"
+#notifications_webhook_token: "${BANANA_BRAIN_WEBHOOK_TOKEN}"
+#notifications_webhook_timeout_seconds: 5
+
+# Append-only JSONL log of every notification, useful for postmortem.
+#notifications_file_path: "data/notifications.jsonl"
+
+# ---- Free-form --------------------------------------------------------------
+# Unrecognised keys must live under `extra:` so the schema rejects typos
+# elsewhere. Values here are available as config.extra["key"].
+#extra:
+#  deployment_id: "hueyos-workstation"
+#  operator: "dylan"
