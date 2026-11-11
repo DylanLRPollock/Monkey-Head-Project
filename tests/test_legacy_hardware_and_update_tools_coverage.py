@@ -122,7 +122,12 @@ def test_update_commands_authorization_and_failures(monkeypatch):
 
 def test_huey_environment_helpers_and_deployment_paths(monkeypatch, tmp_path):
     module = _load_source(
-        Path(__file__).parents[1] / "src" / "huey" / "memory" / "PY" / "Huey.py",
+        Path(__file__).resolve().parents[1]
+        / "src"
+        / "huey"
+        / "memory"
+        / "PY"
+        / "Huey.py",
         "legacy_huey_deployment",
     )
     monkeypatch.setattr(module.shutil, "which", lambda _tool: "/bin/tool")
