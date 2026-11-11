@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -18,10 +19,10 @@ from huey.banana_brain.ollama_adapter import (
 
 from .conftest import make_job
 
-
 # ---------------------------------------------------------------------------
 # Helper: an in-process fake Ollama
 # ---------------------------------------------------------------------------
+
 
 class FakeOllama:
     """A minimal Ollama-shaped HTTP server."""
@@ -29,12 +30,16 @@ class FakeOllama:
     def __init__(self):
         self.tags = [{"name": "qwen2.5:32b"}]
         self.loaded: list[dict] = []
-        self.show_details: dict = {"parameter_size": "32B", "quantization_level": "Q4_K_M"}
+        self.show_details: dict = {
+            "parameter_size": "32B",
+            "quantization_level": "Q4_K_M",
+        }
         self.generate_responses: list[dict] = []
         self.chat_responses: list[dict] = []
         self.unload_calls: list[str] = []
         self.generate_calls: list[dict] = []
         self.chat_calls: list[dict] = []
+        self.stream_body: bytes | None = None
 
     def make_app(self) -> web.Application:
         app = web.Application()
@@ -60,6 +65,10 @@ class FakeOllama:
         if body.get("keep_alive") == 0:
             self.unload_calls.append(body["model"])
             return web.json_response({"done": True})
+        if self.stream_body is not None:
+            return web.Response(
+                body=self.stream_body, content_type="application/x-ndjson"
+            )
         if self.generate_responses:
             return web.json_response(self.generate_responses.pop(0))
         return web.json_response({"response": "hello", "done": True, "eval_count": 5})
@@ -69,11 +78,13 @@ class FakeOllama:
         self.chat_calls.append(body)
         if self.chat_responses:
             return web.json_response(self.chat_responses.pop(0))
-        return web.json_response({
-            "message": {"role": "assistant", "content": "hi"},
-            "done": True,
-            "eval_count": 2,
-        })
+        return web.json_response(
+            {
+                "message": {"role": "assistant", "content": "hi"},
+                "done": True,
+                "eval_count": 2,
+            }
+        )
 
 
 @pytest.fixture
@@ -108,6 +119,7 @@ async def adapter(test_config, fake_ollama):
 # Model matching (pure helper)
 # ---------------------------------------------------------------------------
 
+
 def test_model_matches_exact():
     entry = {"name": "qwen2.5:32b"}
     assert _model_matches(entry, "qwen2.5:32b")
@@ -136,6 +148,7 @@ def test_parse_parameter_size():
 # Lifecycle
 # ---------------------------------------------------------------------------
 
+
 async def test_start_probes_tags(adapter, fake_ollama):
     _, server = fake_ollama
     assert server.tags == [{"name": "qwen2.5:32b"}]
@@ -146,18 +159,24 @@ async def test_start_probes_tags(adapter, fake_ollama):
 # Execution
 # ---------------------------------------------------------------------------
 
+
 async def test_execute_generate(adapter, fake_ollama):
     _, server = fake_ollama
-    server.generate_responses = [{
-        "response": "Paris is the capital.",
-        "done": True,
-        "eval_count": 5,
-        "load_duration": 1_500_000_000,
-    }]
-    job = make_job(adapter="ollama", payload={
-        "model": "qwen2.5:32b",
-        "prompt": "What is the capital of France?",
-    })
+    server.generate_responses = [
+        {
+            "response": "Paris is the capital.",
+            "done": True,
+            "eval_count": 5,
+            "load_duration": 1_500_000_000,
+        }
+    ]
+    job = make_job(
+        adapter="ollama",
+        payload={
+            "model": "qwen2.5:32b",
+            "prompt": "What is the capital of France?",
+        },
+    )
     result = await adapter.execute(job)
     assert result["response"].startswith("Paris")
     assert result["load_duration_ns"] == 1_500_000_000
@@ -167,14 +186,19 @@ async def test_execute_generate(adapter, fake_ollama):
 
 async def test_execute_chat(adapter, fake_ollama):
     _, server = fake_ollama
-    server.chat_responses = [{
-        "message": {"role": "assistant", "content": "Hello!"},
-        "done": True,
-    }]
-    job = make_job(adapter="ollama", payload={
-        "model": "qwen2.5:32b",
-        "messages": [{"role": "user", "content": "hi"}],
-    })
+    server.chat_responses = [
+        {
+            "message": {"role": "assistant", "content": "Hello!"},
+            "done": True,
+        }
+    ]
+    job = make_job(
+        adapter="ollama",
+        payload={
+            "model": "qwen2.5:32b",
+            "messages": [{"role": "user", "content": "hi"}],
+        },
+    )
     result = await adapter.execute(job)
     assert result["message"]["content"] == "Hello!"
     assert server.chat_calls[-1]["messages"][0]["content"] == "hi"
@@ -193,38 +217,89 @@ async def test_execute_requires_messages_or_prompt(adapter):
 
 
 async def test_execute_rejects_both(adapter):
-    job = make_job(adapter="ollama", payload={
-        "model": "qwen2.5:32b",
-        "prompt": "hi",
-        "messages": [{"role": "user", "content": "hi"}],
-    })
+    job = make_job(
+        adapter="ollama",
+        payload={
+            "model": "qwen2.5:32b",
+            "prompt": "hi",
+            "messages": [{"role": "user", "content": "hi"}],
+        },
+    )
     with pytest.raises(ValueError, match="not both"):
         await adapter.execute(job)
 
 
 async def test_execute_passes_options(adapter, fake_ollama):
     _, server = fake_ollama
-    job = make_job(adapter="ollama", payload={
-        "model": "qwen2.5:32b",
-        "prompt": "hi",
-        "options": {"temperature": 0.1, "num_predict": 50},
-        "format": "json",
-    })
+    job = make_job(
+        adapter="ollama",
+        payload={
+            "model": "qwen2.5:32b",
+            "prompt": "hi",
+            "options": {"temperature": 0.1, "num_predict": 50},
+            "format": "json",
+        },
+    )
     await adapter.execute(job)
     body = server.generate_calls[-1]
     assert body["options"]["temperature"] == 0.1
     assert body["format"] == "json"
 
 
+async def test_execute_stream_concatenates_chunks(adapter, fake_ollama):
+    _, server = fake_ollama
+    server.stream_body = (
+        b'{"response":"Hello "}\n'
+        b"not-json\n"
+        b'{"response":"world","done":true,"eval_count":2}\n'
+    )
+    job = make_job(
+        adapter="ollama",
+        payload={"model": "qwen2.5:32b", "prompt": "hi", "stream": True},
+    )
+    result = await adapter.execute(job)
+    assert result["response"] == "Hello world"
+    assert result["eval_count"] == 2
+
+
+async def test_execute_stream_raises_ollama_error(adapter, fake_ollama):
+    _, server = fake_ollama
+    server.stream_body = b'{"error":"model failed"}\n'
+    job = make_job(
+        adapter="ollama",
+        payload={"model": "qwen2.5:32b", "prompt": "hi", "stream": True},
+    )
+    with pytest.raises(RuntimeError, match="stream error: model failed"):
+        await adapter.execute(job)
+
+
+async def test_execute_stream_observes_cancel_request(adapter, fake_ollama):
+    _, server = fake_ollama
+    server.stream_body = b'{"response":"first"}\n'
+    job = make_job(
+        adapter="ollama",
+        payload={"model": "qwen2.5:32b", "prompt": "hi", "stream": True},
+    )
+    assert await adapter.request_cancel(job)
+    with pytest.raises(asyncio.CancelledError):
+        await adapter.execute(job)
+
+
 async def test_execute_http_error_raises(adapter, fake_ollama):
     _, server = fake_ollama
+
     # Override /api/generate to return 500 once.
     async def fail(request):
         return web.Response(status=500, text="boom")
+
     server.make_app().router  # no-op; we patch by replacing response list
-    job = make_job(adapter="ollama", payload={
-        "model": "qwen2.5:32b", "prompt": "hi",
-    })
+    job = make_job(
+        adapter="ollama",
+        payload={
+            "model": "qwen2.5:32b",
+            "prompt": "hi",
+        },
+    )
     # Instead: simulate by passing a model whose /api/generate is 500.
     # Simpler: monkeypatch the adapter's session by breaking the URL.
     adapter._base_url = adapter._base_url + "/nope"
@@ -236,12 +311,15 @@ async def test_execute_http_error_raises(adapter, fake_ollama):
 # estimate_vram
 # ---------------------------------------------------------------------------
 
+
 async def test_estimate_uses_measured_size_when_loaded(adapter, fake_ollama):
     _, server = fake_ollama
-    server.loaded = [{
-        "name": "qwen2.5:32b",
-        "size_vram": 22 * 1024**3,
-    }]
+    server.loaded = [
+        {
+            "name": "qwen2.5:32b",
+            "size_vram": 22 * 1024**3,
+        }
+    ]
     job = make_job(adapter="ollama", payload={"model": "qwen2.5:32b"})
     estimate = await adapter.estimate_vram(job)
     assert estimate == 22 * 1024**3
@@ -262,7 +340,7 @@ async def test_estimate_uses_details_when_not_loaded(adapter, fake_ollama):
 
 async def test_estimate_falls_back_to_default(adapter, fake_ollama):
     _, server = fake_ollama
-    server.show_details = {}      # no parameter_size
+    server.show_details = {}  # no parameter_size
     job = make_job(adapter="ollama", payload={"model": "mystery:latest"})
     estimate = await adapter.estimate_vram(job)
     assert estimate == 8 * 1024**3
@@ -278,6 +356,7 @@ async def test_estimate_requires_model(adapter):
 # unload_idle_models
 # ---------------------------------------------------------------------------
 
+
 async def test_unload_skips_active_models(adapter, fake_ollama):
     _, server = fake_ollama
     server.loaded = [{"name": "qwen2.5:32b", "size_vram": 22 * 1024**3}]
@@ -290,11 +369,13 @@ async def test_unload_skips_active_models(adapter, fake_ollama):
 
 async def test_unload_removes_idle_models(adapter, fake_ollama):
     _, server = fake_ollama
-    server.loaded = [{
-        "name": "qwen2.5:32b",
-        "size_vram": 22 * 1024**3,
-        "expires_at": "2024-01-01T00:00:00Z",
-    }]
+    server.loaded = [
+        {
+            "name": "qwen2.5:32b",
+            "size_vram": 22 * 1024**3,
+            "expires_at": "2024-01-01T00:00:00Z",
+        }
+    ]
     freed = await adapter.unload_idle_models(10 * 1024**3)
     assert freed == 22 * 1024**3
     assert server.unload_calls == ["qwen2.5:32b"]
