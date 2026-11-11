@@ -33,19 +33,31 @@ def test_base_agent_builds_context_and_returns_brain_summary():
     agent = BaseAgent(FakeBrain())
     context = agent.build_context(
         "review plan",
-        metadata={"urgency": 0.8, "risk": 0.4, "fit": 0.9, "constraints": ["offline", 3]},
+        metadata={
+            "urgency": 0.8,
+            "risk": 0.4,
+            "fit": 0.9,
+            "constraints": ["offline", 3],
+        },
     )
     assert context == DecisionContext(
         goal="review plan",
         signals={"urgency": 0.8, "risk_inverse": 0.6, "fit": 0.9},
         constraints=["offline", "3"],
-        metadata={"urgency": 0.8, "risk": 0.4, "fit": 0.9, "constraints": ["offline", 3]},
+        metadata={
+            "urgency": 0.8,
+            "risk": 0.4,
+            "fit": 0.9,
+            "constraints": ["offline", 3],
+        },
     )
 
     response = agent.respond("review plan")
     assert response.agent == "BaseAgent"
     assert response.metadata["role"] == "general"
-    assert "processed: BaseAgent (general) is evaluating: review plan" in response.summary
+    assert (
+        "processed: BaseAgent (general) is evaluating: review plan" in response.summary
+    )
     assert response.metadata["context"] == {}
 
 
