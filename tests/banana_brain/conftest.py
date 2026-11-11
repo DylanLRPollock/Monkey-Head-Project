@@ -37,8 +37,6 @@ from huey.banana_brain.scheduler import Scheduler
 # pytest-asyncio default
 # ---------------------------------------------------------------------------
 
-pytest_plugins = ("pytest_asyncio",)
-
 
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line(
