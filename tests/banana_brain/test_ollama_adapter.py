@@ -3,14 +3,12 @@
 from __future__ import annotations
 
 import asyncio
-from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from aiohttp import web
 from aiohttp.test_utils import TestServer
 
 from huey.banana_brain.config import BananaBrainConfig
-from huey.banana_brain.job_models import Job
 from huey.banana_brain.ollama_adapter import (
     OllamaAdapter,
     _model_matches,
@@ -40,6 +38,7 @@ class FakeOllama:
         self.generate_calls: list[dict] = []
         self.chat_calls: list[dict] = []
         self.stream_body: bytes | None = None
+        self.generate_http_error: int | None = None
 
     def make_app(self) -> web.Application:
         app = web.Application()
@@ -62,6 +61,8 @@ class FakeOllama:
     async def _generate(self, request):
         body = await request.json()
         self.generate_calls.append(body)
+        if self.generate_http_error is not None:
+            return web.Response(status=self.generate_http_error, text="boom")
         if body.get("keep_alive") == 0:
             self.unload_calls.append(body["model"])
             return web.json_response({"done": True})
@@ -212,7 +213,7 @@ async def test_execute_requires_model(adapter):
 
 async def test_execute_requires_messages_or_prompt(adapter):
     job = make_job(adapter="ollama", payload={"model": "qwen2.5:32b"})
-    with pytest.raises(ValueError, match="messages.*prompt"):
+    with pytest.raises(ValueError, match=r"messages.*prompt"):
         await adapter.execute(job)
 
 
@@ -287,12 +288,7 @@ async def test_execute_stream_observes_cancel_request(adapter, fake_ollama):
 
 async def test_execute_http_error_raises(adapter, fake_ollama):
     _, server = fake_ollama
-
-    # Override /api/generate to return 500 once.
-    async def fail(request):
-        return web.Response(status=500, text="boom")
-
-    server.make_app().router  # no-op; we patch by replacing response list
+    server.generate_http_error = 500
     job = make_job(
         adapter="ollama",
         payload={
@@ -300,9 +296,6 @@ async def test_execute_http_error_raises(adapter, fake_ollama):
             "prompt": "hi",
         },
     )
-    # Instead: simulate by passing a model whose /api/generate is 500.
-    # Simpler: monkeypatch the adapter's session by breaking the URL.
-    adapter._base_url = adapter._base_url + "/nope"
     with pytest.raises(RuntimeError, match="ollama"):
         await adapter.execute(job)
 
