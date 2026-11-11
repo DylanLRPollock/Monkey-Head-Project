@@ -173,3 +173,45 @@ def test_launch_gui_passes_workdir_and_reports_exit_status(monkeypatch, tmp_path
     cli.launch_gui = lambda **kwargs: 3
     with pytest.raises(RuntimeError, match="status 3"):
         runtime.launch_gui()
+
+
+def test_launch_cli_reports_retired_entrypoint():
+    with pytest.raises(RuntimeError, match="legacy PyGPT CLI is retired"):
+        runtime.launch_cli("--help")
+
+
+def test_manager_ui_uses_tk_root_and_mainloop(monkeypatch):
+    calls = []
+
+    class FakeRoot:
+        def mainloop(self):
+            calls.append("mainloop")
+
+    tkinter = ModuleType("tkinter")
+    tkinter.Tk = lambda: calls.append("Tk") or FakeRoot()
+    ui = ModuleType("huey.memory.PY.main_ui")
+    ui.MainUI = lambda root: calls.append(("MainUI", root.__class__.__name__))
+    monkeypatch.setitem(sys.modules, "tkinter", tkinter)
+    monkeypatch.setitem(sys.modules, ui.__name__, ui)
+
+    runtime.launch_manager_ui()
+    assert calls == ["Tk", ("MainUI", "FakeRoot"), "mainloop"]
+
+
+def test_main_simple_chat_and_custom_function_dispatch(monkeypatch, capsys):
+    monkeypatch.setattr("huey.memory.PY.system_checks.check_os_support", lambda: None)
+    monkeypatch.setattr("huey.memory.PY.system_checks.check_python_version", lambda: None)
+    calls = []
+    chat = ModuleType("huey.memory.PY.legacy.simple_chat")
+    chat.main = lambda: calls.append("chat")
+    monkeypatch.setitem(sys.modules, chat.__name__, chat)
+    runtime.main(["--simple-chat"])
+    assert calls == ["chat"]
+
+    monkeypatch.setattr(runtime, "run_custom_function", lambda name, kwargs, source=None: {"name": name, "args": json.loads(kwargs), "source": source})
+    runtime.main(["--run-custom-function", "demo", "--custom-function-kwargs", '{"n": 2}', "--pyhuey-source", "package"])
+    assert json.loads(capsys.readouterr().out) == {
+        "name": "demo",
+        "args": {"n": 2},
+        "source": "package",
+    }
