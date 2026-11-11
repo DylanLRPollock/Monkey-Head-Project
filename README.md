@@ -92,6 +92,7 @@ V220 distinguishes carefully between **what exists now** and **what Huey is bein
 | **CPU** | Intel Core i9-12900K, definitive V4 baseline |
 | **Motherboard** | ASUS TUF Gaming Z790-Plus WiFi |
 | **Accelerators** | Target: 4 × NVIDIA Tesla V100 32GB; **1 currently on hand, 3 still required** |
+| **Installed V100 driver (i9 workstation)** | **NVIDIA proprietary Linux driver 580.196.07 (R580)**, confirmed by `nvidia-smi` and `modinfo`; the driver reports CUDA compatibility **13.0** (not the installed CUDA Toolkit version). See [verified V100 driver baseline](docs/hardware/tesla-v100-nvidia-driver-baseline.md). |
 | **Accelerator objective** | Intended unified **128GB VRAM** resource, still requiring real topology/runtime validation |
 | **General-purpose GPU** | Separate approximately 16GB target for display and smaller low-latency workloads such as transcription |
 | **PCIe** | Five-device target topology using extenders/risers; exact electrical lane layout and P2P behaviour still require validation |
@@ -100,6 +101,8 @@ V220 distinguishes carefully between **what exists now** and **what Huey is bein
 | **Root / OS** | Target: 4 × Intel Optane M10 16GB in RAID 10, approximately 32GB usable |
 | **`/home`** | Still unresolved; available 2.5-inch SSDs remain candidates |
 | **Bulk data** | 2 × 10TB Western Digital HDDs intended for direct-SATA RAID 1 after safe migration from the existing enclosure |
+
+The [verified V100 Linux driver baseline](docs/hardware/tesla-v100-nvidia-driver-baseline.md) records the **as-installed NVIDIA 580.196.07 driver** and DKMS/kernel verification procedures; it is a measured single-card workstation configuration, not a universal dependency pin.
 
 The four-V100 design is an **architectural target**, not a statement that 128GB unified operation already exists. The final PCIe topology, power budget, passive-V100 airflow, driver/runtime stack, and actual multi-GPU model behaviour all have to be proven on the physical machine.
 
