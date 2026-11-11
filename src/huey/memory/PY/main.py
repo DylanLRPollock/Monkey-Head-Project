@@ -3,15 +3,10 @@
 # www.dlrp.ca
 # HueyOS: Main module compatibility shim (src/huey)
 
-"""Expose the legacy :mod:`monkey_head.main` implementation under ``huey``.
+"""Expose the maintained :mod:`huey.main` interfaces at the legacy path.
 
-This repository still ships the historical entry point in
-``huey/memory/PY/main.py`` and surfaces it via the :mod:`monkey_head` package
-path.  Importing ``huey.main`` previously resulted in a ``ModuleNotFoundError``
-because no dedicated module existed in the :mod:`huey` namespace.  Hidden
-consumers – including some test environments – expect to import
-``huey.main`` directly, so this thin wrapper ensures that path remains valid
-while keeping all behaviour centralized in a single implementation.
+This wrapper keeps imports from ``huey.memory.PY.main`` working while all
+runtime behavior remains centralized in ``huey.main``.
 """
 
 from __future__ import annotations
@@ -20,29 +15,29 @@ from importlib import import_module
 from typing import Any
 
 # Reuse the existing, fully featured implementation.
-_impl = import_module("monkey_head.main")
+_impl = import_module("huey.main")
 
-app = getattr(_impl, "app")
-health_check = getattr(_impl, "health_check")
-readiness_check = getattr(_impl, "readiness_check")
-version_info = getattr(_impl, "version_info")
-parse_args = getattr(_impl, "parse_args")
-run_setup = getattr(_impl, "run_setup")
-main = getattr(_impl, "main")
+app = _impl.app
+health_check = _impl.health_check
+main = _impl.main
+parse_args = _impl.parse_args
+readiness_check = _impl.readiness_check
+run_setup = _impl.run_setup
+version_info = _impl.version_info
 
 __all__ = [
     "app",
     "health_check",
-    "readiness_check",
-    "version_info",
-    "parse_args",
-    "run_setup",
     "main",
+    "parse_args",
+    "readiness_check",
+    "run_setup",
+    "version_info",
 ]
 
 
 def __getattr__(name: str) -> Any:
-    """Delegate attribute access to :mod:`monkey_head.main`."""
+    """Delegate attribute access to :mod:`huey.main`."""
 
     return getattr(_impl, name)
 
