@@ -220,6 +220,64 @@ def test_sysfs_readers_and_adapter_status_handle_missing_and_invalid_values(tmp_
     assert monitor._read_sysfs_float(numeric) == 42.5
     assert monitor._read_sysfs_text(empty) is None
     assert monitor._read_sysfs_float(invalid) is None
+
+
+def test_sysfs_status_uses_energy_power_and_adapter_fallbacks(monkeypatch, tmp_path):
+    root = tmp_path / "power_supply"
+    battery = root / "BAT0"
+    adapter = root / "AC"
+    battery.mkdir(parents=True)
+    adapter.mkdir()
+    (battery / "capacity").write_text("42")
+    (battery / "status").write_text("Discharging")
+    (battery / "power_now").write_text("200")
+    (battery / "energy_now").write_text("20")
+    (adapter / "online").write_text("online")
+
+    original_path = management.Path
+    monkeypatch.setattr(
+        management,
+        "Path",
+        lambda value: (
+            root if str(value) == "/sys/class/power_supply" else original_path(value)
+        ),
+    )
+    monitor = BatteryMonitor()
+    assert monitor._status_from_sysfs() == {
+        "percent": 42.0,
+        "secs_left": 360.0,
+        "power_plugged": True,
+        "source": "sysfs",
+    }
+
+    (battery / "power_now").unlink()
+    (battery / "current_now").write_text("100")
+    (battery / "energy_now").unlink()
+    (battery / "charge_now").write_text("10")
+    (adapter / "online").write_text("invalid")
+    status = monitor._status_from_sysfs()
+    assert status["secs_left"] == 360.0
+    assert status["power_plugged"] is False
+
+    (adapter / "online").unlink()
+    (battery / "status").write_text("Charging")
+    assert monitor._status_from_sysfs()["power_plugged"] is True
+
+
+def test_sysfs_status_without_battery_and_adapter_markers(monkeypatch, tmp_path):
+    root = tmp_path / "empty_supply"
+    root.mkdir()
+    original_path = management.Path
+    monkeypatch.setattr(
+        management,
+        "Path",
+        lambda value: (
+            root if str(value) == "/sys/class/power_supply" else original_path(value)
+        ),
+    )
+    monitor = BatteryMonitor()
+    assert monitor._status_from_sysfs() is None
+    assert monitor._ac_adapter_online(root) is None
     assert monitor._read_sysfs_float(tmp_path / "missing") is None
 
     root = tmp_path / "power"
