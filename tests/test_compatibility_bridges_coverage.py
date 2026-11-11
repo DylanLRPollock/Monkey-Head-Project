@@ -9,8 +9,33 @@ from types import ModuleType
 
 import pytest
 
-BRIDGE_NAMES = ("pdf_chat", "pdf_pre_digestion", "tensorflow_feed")
+BRIDGE_NAMES = (
+    "ai_processor",
+    "chapter_splitter",
+    "convert_png_to_jpeg",
+    "error_handler",
+    "file_manager",
+    "huey_checks",
+    "huey_core",
+    "huey_disk_manager_temp",
+    "huey_linux",
+    "huey_remover",
+    "huey_tkinter",
+    "install_gui",
+    "license_cli",
+    "license_gui",
+    "log",
+    "logging_setup",
+    "pdf_chat",
+    "pdf_pre_digestion",
+    "pygpt_memory",
+    "tensorflow_feed",
+)
 SOURCE_ROOT = Path(__file__).resolve().parents[1] / "src" / "huey"
+IMPLEMENTATION_MODULES = {
+    "convert_png_to_jpeg": "huey.media.convert_png_to_jpeg",
+    "log": "huey.memory.PY.logger",
+}
 
 
 @pytest.mark.parametrize("name", BRIDGE_NAMES)
@@ -19,7 +44,7 @@ def test_compatibility_bridge_exports_and_delegates(
     monkeypatch, name, explicit_exports
 ):
     bridge_name = f"huey.{name}"
-    implementation_name = f"huey.memory.PY.{name}"
+    implementation_name = IMPLEMENTATION_MODULES.get(name, f"huey.memory.PY.{name}")
     implementation = ModuleType(implementation_name)
     implementation.public_value = f"{name}-value"
     implementation.delegated_value = f"{name}-delegated"
