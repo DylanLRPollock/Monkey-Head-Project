@@ -52,7 +52,7 @@ async def test_fifo_at_equal_priority(pm):
 
 async def test_priority_beats_fifo(pm):
     now = time.time()
-    low = _submit(pm, priority=int(Priority.BATCH), submitted_at=now - 10)
+    low = _submit(pm, priority=int(Priority.BATCH), submitted_at=now - 0.05)
     high = _submit(pm, priority=int(Priority.INTERACTIVE), submitted_at=now)
     await pm.push(low)
     await pm.push(high)

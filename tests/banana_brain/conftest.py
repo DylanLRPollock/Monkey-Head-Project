@@ -14,6 +14,7 @@ Provides:
 from __future__ import annotations
 
 import asyncio
+from dataclasses import dataclass
 import sys
 import tempfile
 import time
@@ -268,13 +269,30 @@ def fake_adapter() -> FakeAdapter:
 # Config
 # ---------------------------------------------------------------------------
 
+@dataclass(frozen=True)
+class BananaBrainTestConfig(BananaBrainConfig):
+    """Base config plus component options accepted by the scheduler stack."""
+
+    job_retention_days: float = 0.0
+    job_max_terminal_rows: int = 0
+    job_prune_interval_seconds: float = 0.0
+    metrics_enabled: bool = False
+    notifications_enabled: bool = False
+    mode_persistence_enabled: bool = False
+    watchdog_check_interval_seconds: float = 0.1
+    watchdog_temperature_warn_c: float = 70.0
+    watchdog_gpu_unavailable_warn_s: float = 0.1
+    watchdog_gpu_unavailable_critical_s: float = 0.3
+    watchdog_lease_expiry_seconds: float = 10.0
+
+
 @pytest.fixture
-def test_config(tmp_path: Path) -> BananaBrainConfig:
+def test_config(tmp_path: Path) -> BananaBrainTestConfig:
     """
     BananaBrainConfig tuned for tests: fast polling, small headroom,
     Unix API socket in tmp_path, terminal-row pruning disabled.
     """
-    return BananaBrainConfig(
+    return BananaBrainTestConfig(
         shutdown_grace_seconds=5.0,
         poll_interval_seconds=0.05,
         max_staleness_seconds=1.0,

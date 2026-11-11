@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from dataclasses import replace
 import time
 
 import pytest
@@ -187,6 +188,7 @@ async def test_processes_reported(test_config, fake_nvml):
 
 
 async def test_status_never_raises(test_config, fake_nvml):
+    test_config = replace(test_config, max_staleness_seconds=0.05)
     monitor = GPUMonitor(test_config)
     await monitor.start()
     try:
