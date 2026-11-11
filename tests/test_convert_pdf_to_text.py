@@ -3,9 +3,7 @@
 # www.dlrp.ca
 # HueyOS: Test Convert Pdf To Text module (tests)
 
-import importlib.util
-import shutil
-from pathlib import Path
+from huey.memory.PY.convert_files import convert_pdf_to_text
 
 import pytest
 
@@ -13,18 +11,13 @@ pytest.importorskip("pypdf")
 
 
 def test_convert_pdf_to_text(tmp_path):
-    root = Path(__file__).resolve().parents[1]
-    module_path = root / "hueyos" / "convert_pdf_to_text.py"
-    spec = importlib.util.spec_from_file_location("cpt", module_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    convert_pdf_to_text = module.convert_pdf_to_text
+    fitz = pytest.importorskip("fitz")
+    pdf_path = tmp_path / "doc.pdf"
+    document = fitz.open()
+    page = document.new_page()
+    page.insert_text((72, 72), "PlayStation supports Linux software.")
+    document.save(pdf_path)
+    document.close()
 
-    pdf_src = root / "memory" / "PDF" / "Linux_on_PlayStation_3.pdf"
-    pdf_copy = tmp_path / "doc.pdf"
-    shutil.copy(pdf_src, pdf_copy)
-    out_txt = tmp_path / "out.txt"
-
-    convert_pdf_to_text(str(pdf_copy), str(out_txt))
-    assert out_txt.exists()
-    assert "PlayStation" in out_txt.read_text(encoding="utf-8")
+    result = convert_pdf_to_text(pdf_path)
+    assert "PlayStation" in result

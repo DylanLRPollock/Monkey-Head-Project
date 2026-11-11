@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 
 import pytest
 
@@ -57,7 +58,7 @@ def test_manager_gui_payload_groups_actions_and_paths():
     groups = {item["group"] for item in payload["action_groups"]}
 
     assert payload["title"] == "Monkey Manager"
-    assert payload["paths"]["project_root"].endswith("Monkey-Head-Project")
+    assert payload["paths"]["project_root"] == str(Path(__file__).resolve().parents[1])
     assert payload["paths"]["installer_target"] in {
         "windows",
         "macos",

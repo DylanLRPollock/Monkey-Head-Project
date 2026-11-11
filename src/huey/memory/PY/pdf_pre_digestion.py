@@ -25,12 +25,11 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from typing import List
 
 import fitz  # PyMuPDF
 
-from .convert_png_to_jpeg import convert_png_to_jpeg
 from .formatter import format_text
+from huey.convert_png_to_jpeg import convert_png_to_jpeg
 
 _DEF_MEM_DIR = Path("memory")
 
@@ -76,7 +75,7 @@ def pdf_pre_digestion(
     json_path = dirs["JSON"] / f"{stem}.json"
 
     doc = fitz.open(pdf_path)
-    pages_data: List[dict[str, object]] = []
+    pages_data: list[dict[str, object]] = []
     with txt_path.open("w", encoding="utf-8") as txt_file:
         for i, page in enumerate(doc, start=1):
             raw = page.get_text()

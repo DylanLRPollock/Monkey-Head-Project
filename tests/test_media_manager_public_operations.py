@@ -54,6 +54,7 @@ def test_media_manager_version_handles_success_failure_and_missing_binary(
         "ffmpeg": "ffmpeg version 7.0",
         "ffprobe": None,
     }
+    monkeypatch.setattr("huey.media.media_manager.shutil.which", lambda _name: None)
     assert FFmpegMediaManager().version() == {"ffmpeg": None, "ffprobe": None}
 
 
@@ -170,9 +171,10 @@ def test_extract_frames_detect_silence_and_split_chunks(tmp_path, monkeypatch):
     assert (tmp_path / "chunks").is_dir()
 
 
-def test_output_and_binary_validation_stays_before_execution(tmp_path):
+def test_output_and_binary_validation_stays_before_execution(tmp_path, monkeypatch):
     source = tmp_path / "source.wav"
     source.write_bytes(b"fixture")
+    monkeypatch.setattr("huey.media.media_manager.shutil.which", lambda _name: None)
     manager = FFmpegMediaManager()
     with pytest.raises(RuntimeError, match="FFmpeg is not available"):
         manager.build_audio_transform_command(

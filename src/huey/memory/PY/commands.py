@@ -6,16 +6,16 @@
 from __future__ import annotations
 
 import subprocess
-from typing import Optional, Sequence
+from collections.abc import Sequence
 
-from ..core.system_checks import check_error
+from huey.os.core.system_checks import check_error
 from .logger import get_logger
 
 logger = get_logger(__name__)
 
 
 def run_command(
-    cmd: Sequence[str], *, cwd: Optional[str] = None, check: bool = True
+    cmd: Sequence[str], *, cwd: str | None = None, check: bool = True
 ) -> subprocess.CompletedProcess:
     """Run a system command and optionally verify it succeeded."""
     logger.debug("Running command: %s", " ".join(cmd))
