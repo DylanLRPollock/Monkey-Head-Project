@@ -115,8 +115,13 @@ async def test_priority_ordering(scheduler, job_store):
         return {"ok": True}
 
     adapter.on_execute = slow
+    # Hold dispatch until both jobs are queued so the assertion measures
+    # queue priority rather than submission timing.
+    sched.set_admission_checker(lambda job: False)
     low = await sched.submit(make_job(priority=int(Priority.BATCH)))
     high = await sched.submit(make_job(priority=int(Priority.INTERACTIVE)))
+    sched.set_admission_checker(None)
+    sched.request_dispatch()
 
     async def both_done():
         a = await job_store.get(low.id)
@@ -333,6 +338,7 @@ async def test_dispatch_waits_when_gpu_state_unknown(
     # Recovery: fake NVML comes back.
     fake_nvml.fail_poll = False
     await monitor.refresh()
+    sched.request_dispatch()
     await wait_until(
         lambda: len(adapter.executed) == 1, timeout=3.0
     )

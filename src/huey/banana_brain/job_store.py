@@ -413,14 +413,19 @@ class JobStore:
                 "Downgrade is not supported; migrate manually."
             )
 
-        conn.execute("BEGIN")
+        # executescript() implicitly commits any open transaction first, so
+        # the transaction must be part of the script itself. This keeps the
+        # schema and user_version update atomic on Python's sqlite3 driver.
+        script = (
+            "BEGIN IMMEDIATE;\n"
+            + _SCHEMA_SQL
+            + f"\nPRAGMA user_version = {SCHEMA_VERSION};\nCOMMIT;"
+        )
         try:
-            conn.executescript(_SCHEMA_SQL)
-            if version < SCHEMA_VERSION:
-                conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
-            conn.execute("COMMIT")
+            conn.executescript(script)
         except Exception:
-            conn.execute("ROLLBACK")
+            if conn.in_transaction:
+                conn.execute("ROLLBACK")
             raise
 
     def _save_sync(self, conn: sqlite3.Connection, job: Job) -> None:

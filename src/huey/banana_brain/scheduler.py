@@ -64,7 +64,9 @@ import asyncio
 import logging
 import time
 import uuid
-from typing import Any, Optional
+from typing import Any, Callable, Optional
+
+from .job_models import JobState
 
 __all__ = [
     "Scheduler",
@@ -75,25 +77,6 @@ __all__ = [
 ]
 
 LOG = logging.getLogger("banana_brain.scheduler")
-
-
-# ---------------------------------------------------------------------------
-# Job state vocabulary
-# ---------------------------------------------------------------------------
-# NOTE: these are strings, not an Enum, so job_store and adapters never need
-# to import the scheduler. When job_models.py lands it may publish these as
-# an Enum; as long as its string values match, everything interoperates.
-
-class JobState:
-    PENDING = "pending"       # in queue, awaiting admission
-    RUNNING = "running"       # adapter is executing
-    COMPLETED = "completed"   # adapter returned successfully
-    FAILED = "failed"         # adapter raised, or no adapter
-    CANCELLED = "cancelled"   # operator cancelled before/while running
-
-    ACTIVE = frozenset({PENDING, RUNNING})
-    TERMINAL = frozenset({COMPLETED, FAILED, CANCELLED})
-    ALL = ACTIVE | TERMINAL
 
 
 # ---------------------------------------------------------------------------
@@ -158,6 +141,7 @@ class Scheduler:
         self._idle.set()  # idle until the loop starts
         self._shutting_down = False
         self._current_job: Optional[Any] = None
+        self._admission_checker: Optional[Callable[[Any], bool]] = None
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -238,6 +222,17 @@ class Scheduler:
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
+
+    def request_dispatch(self) -> None:
+        """Wake the dispatch loop after an external state change."""
+        self._wake.set()
+
+    def set_admission_checker(
+        self, checker: Optional[Callable[[Any], bool]]
+    ) -> None:
+        """Install or clear a synchronous policy gate for job dispatch."""
+        self._admission_checker = checker
+        self._wake.set()
 
     async def submit(self, job: Any) -> Any:
         """
@@ -438,6 +433,14 @@ class Scheduler:
             return False
         if self._shutting_down:
             return False
+        checker = self._admission_checker
+        if checker is not None:
+            try:
+                if not checker(job):
+                    return False
+            except Exception:
+                LOG.exception("admission checker failed; refusing job %s", job.id)
+                return False
 
         estimate = await self._estimate_vram(job)
         reserved = await self._reserve_memory(job, estimate)
@@ -464,6 +467,12 @@ class Scheduler:
     async def _run_job(self, job: Any) -> None:
         """Transition through RUNNING and persist the terminal state."""
         job.state = JobState.RUNNING
+        mark_running = getattr(self._vram_manager, "mark_running", None)
+        if callable(mark_running):
+            try:
+                mark_running(job)
+            except Exception:
+                LOG.exception("vram_manager.mark_running failed for %s", job.id)
         job.started_at = time.time()
         job.attempts = int(getattr(job, "attempts", 0)) + 1
         await self._persist(job)

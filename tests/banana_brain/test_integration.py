@@ -14,12 +14,12 @@ Covers:
 from __future__ import annotations
 
 import asyncio
+from dataclasses import replace
 import time
 
 import pytest
 import pytest_asyncio
 
-from huey.banana_brain.config import BananaBrainConfig
 from huey.banana_brain.gpu_modes import GPUMode, GPUModeManager
 from huey.banana_brain.gpu_monitor import GPUMonitor
 from huey.banana_brain.job_models import JobState, Priority
@@ -46,20 +46,15 @@ async def stack(test_config, fake_nvml, tmp_path):
 
     Yields a dict with all components for tests to manipulate.
     """
-    cfg = BananaBrainConfig(
+    cfg = replace(
+        test_config,
         shutdown_grace_seconds=3.0,
         poll_interval_seconds=0.05,
         max_staleness_seconds=1.0,
         vram_headroom_gib=1.0,
         priority_aging_interval_seconds=0.2,
         database_path=tmp_path / "integration.db",
-        job_retention_days=0,
-        job_max_terminal_rows=0,
-        job_prune_interval_seconds=0,
         api_socket_path=tmp_path / "integration.sock",
-        metrics_enabled=False,
-        notifications_enabled=False,
-        mode_persistence_enabled=False,
         watchdog_check_interval_seconds=0.05,
         watchdog_temperature_warn_c=70,
         watchdog_temperature_ceiling_c=80,

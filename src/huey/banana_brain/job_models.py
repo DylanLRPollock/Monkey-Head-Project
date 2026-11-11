@@ -73,9 +73,11 @@ class JobState(str, Enum):
     #: and for f-strings in older scheduler code paths.
     __str__ = str.__str__
 
+    @property
     def is_active(self) -> bool:
         return self in ACTIVE_STATES
 
+    @property
     def is_terminal(self) -> bool:
         return self in TERMINAL_STATES
 

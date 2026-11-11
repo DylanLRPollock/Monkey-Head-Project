@@ -36,7 +36,7 @@ class FakeComfy:
 
     def make_app(self) -> web.Application:
         app = web.Application()
-        app.router.add_get("/system_stats", lambda r: web.json_response({}))
+        app.router.add_get("/system_stats", self._system_stats)
         app.router.add_post("/prompt", self._submit)
         app.router.add_get("/queue", self._queue)
         app.router.add_post("/queue", self._queue_delete)
@@ -45,6 +45,9 @@ class FakeComfy:
         app.router.add_post("/free", self._free)
         app.router.add_get("/view_metadata/{folder}", self._metadata)
         return app
+
+    async def _system_stats(self, request):
+        return web.json_response({})
 
     async def _submit(self, request):
         if self.submit_errors:
