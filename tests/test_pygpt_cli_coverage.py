@@ -38,6 +38,7 @@ def test_doctor_reports_installed_package_and_gui(monkeypatch):
 
 def test_gui_launch_without_workdir_and_handles_os_error(monkeypatch, capsys):
     monkeypatch.setattr(pygpt_cli, "pygpt_executable", lambda: "/usr/bin/pygpt")
+    monkeypatch.delenv("PYGPT_WORKDIR", raising=False)
     called = {}
 
     def run(command, **kwargs):
