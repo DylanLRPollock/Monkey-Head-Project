@@ -20,7 +20,9 @@ from huey.os.legacy.connectors import (
 
 
 @pytest.mark.asyncio
-async def test_serial_connector_lifecycle_uses_configured_transport(monkeypatch) -> None:
+async def test_serial_connector_lifecycle_uses_configured_transport(
+    monkeypatch,
+) -> None:
     events = []
 
     class FakeSerial:
@@ -61,7 +63,9 @@ async def test_serial_connector_lifecycle_uses_configured_transport(monkeypatch)
 
 
 def test_connector_factory_normalizes_mode_and_rejects_unknown() -> None:
-    assert isinstance(LegacyConnectorFactory.create({"mode": "EMULATED"}), EmulatedLegacyConnector)
+    assert isinstance(
+        LegacyConnectorFactory.create({"mode": "EMULATED"}), EmulatedLegacyConnector
+    )
     with pytest.raises(ValueError, match="Unsupported legacy connector mode: other"):
         LegacyConnectorFactory.create({"mode": "other"})
     serial = LegacyConnectorFactory.create(
@@ -119,7 +123,9 @@ def test_backup_and_restore_guard_overwrites_and_missing_inputs(tmp_path: Path) 
         restore_snapshot(tmp_path / "missing", tmp_path / "restore")
 
 
-def test_backup_wraps_filesystem_errors_and_empty_directory_is_valid(tmp_path: Path, monkeypatch) -> None:
+def test_backup_wraps_filesystem_errors_and_empty_directory_is_valid(
+    tmp_path: Path, monkeypatch
+) -> None:
     empty = tmp_path / "empty"
     empty.mkdir()
     result = perform_rsync_snapshot(empty, tmp_path / "empty-copy")

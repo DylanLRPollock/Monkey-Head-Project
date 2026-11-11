@@ -52,12 +52,16 @@ def test_github_client_headers_timeout_and_request_params(monkeypatch) -> None:
     assert captured["timeout"] == 2.5
 
 
-def test_github_client_filters_pull_requests_and_handles_empty_commit(monkeypatch) -> None:
+def test_github_client_filters_pull_requests_and_handles_empty_commit(
+    monkeypatch,
+) -> None:
     client = GitHubReadOnlyClient()
-    payloads = iter([
-        [{"number": 1}, {"number": 2, "pull_request": {"url": "api"}}, "bad"],
-        [],
-    ])
+    payloads = iter(
+        [
+            [{"number": 1}, {"number": 2, "pull_request": {"url": "api"}}, "bad"],
+            [],
+        ]
+    )
     monkeypatch.setattr(client, "_request", lambda *args, **kwargs: next(payloads))
     assert client.list_issues("org/repo") == [{"number": 1}]
     assert client.get_latest_commit("org/repo") == {}
@@ -72,7 +76,9 @@ def test_github_client_filters_pull_requests_and_handles_empty_commit(monkeypatc
         ("get_latest_commit", {}, "commits"),
     ],
 )
-def test_github_client_rejects_wrong_payload_shapes(method, payload, message, monkeypatch):
+def test_github_client_rejects_wrong_payload_shapes(
+    method, payload, message, monkeypatch
+):
     client = GitHubReadOnlyClient()
     monkeypatch.setattr(client, "_request", lambda *args, **kwargs: payload)
     with pytest.raises(TypeError, match=message):
@@ -82,7 +88,11 @@ def test_github_client_rejects_wrong_payload_shapes(method, payload, message, mo
 def test_workflow_branch_is_optional_and_client_reads_environment(monkeypatch) -> None:
     client = GitHubReadOnlyClient()
     seen = []
-    monkeypatch.setattr(client, "_request", lambda path, params=None: seen.append(params) or {"workflow_runs": []})
+    monkeypatch.setattr(
+        client,
+        "_request",
+        lambda path, params=None: seen.append(params) or {"workflow_runs": []},
+    )
     assert client.list_workflow_runs("org/repo") == []
     assert client.list_workflow_runs("org/repo", branch="release") == []
     assert seen == [{"per_page": 10}, {"per_page": 10, "branch": "release"}]
@@ -96,7 +106,9 @@ def test_workflow_branch_is_optional_and_client_reads_environment(monkeypatch) -
 def test_summarize_repo_status_uses_fallbacks_and_tooling_role(monkeypatch) -> None:
     client = GitHubReadOnlyClient()
     monkeypatch.setattr(client, "get_repo", lambda name: {})
-    monkeypatch.setattr(client, "list_workflow_runs", lambda *a, **k: [{"status": "queued"}])
+    monkeypatch.setattr(
+        client, "list_workflow_runs", lambda *a, **k: [{"status": "queued"}]
+    )
     monkeypatch.setattr(client, "get_latest_commit", lambda *a, **k: {})
     monkeypatch.setattr(client, "list_pull_requests", lambda name: [])
     monkeypatch.setattr(client, "list_issues", lambda name: [])
@@ -108,7 +120,9 @@ def test_summarize_repo_status_uses_fallbacks_and_tooling_role(monkeypatch) -> N
     assert status.description == ""
 
 
-def test_bridge_validates_roots_and_reports_optional_probe(tmp_path: Path, monkeypatch) -> None:
+def test_bridge_validates_roots_and_reports_optional_probe(
+    tmp_path: Path, monkeypatch
+) -> None:
     project = tmp_path / "project"
     project.mkdir()
     workspace = tmp_path / "workspace"
@@ -120,7 +134,10 @@ def test_bridge_validates_roots_and_reports_optional_probe(tmp_path: Path, monke
         )
     )
     assert bridge._allowed_roots() == [project.resolve(), workspace.resolve()]
-    assert bridge._validate_user_path(workspace / "audio.wav", require_exists=False) == workspace / "audio.wav"
+    assert (
+        bridge._validate_user_path(workspace / "audio.wav", require_exists=False)
+        == workspace / "audio.wav"
+    )
     with pytest.raises(ValueError, match="outside allowed workspaces"):
         bridge._validate_user_path(tmp_path / "outside.wav", require_exists=False)
     with pytest.raises(FileNotFoundError, match="Path does not exist"):
@@ -153,7 +170,9 @@ def test_bridge_external_paths_and_symlink_escape_are_explicit(tmp_path: Path) -
     assert permissive._validate_user_path(outside, require_exists=True) == outside
 
 
-def test_bridge_module_timeout_and_result_serialization(tmp_path: Path, monkeypatch) -> None:
+def test_bridge_module_timeout_and_result_serialization(
+    tmp_path: Path, monkeypatch
+) -> None:
     project = tmp_path / "project"
     project.mkdir()
     bridge = HueyToolBridge(
@@ -176,7 +195,9 @@ def test_bridge_module_timeout_and_result_serialization(tmp_path: Path, monkeypa
     assert result.to_dict()["cwd"] == str(project)
 
 
-@pytest.mark.parametrize("stdout", ["", "plain output", "null", "42", "{broken", "[broken"])
+@pytest.mark.parametrize(
+    "stdout", ["", "plain output", "null", "42", "{broken", "[broken"]
+)
 def test_bridge_json_parser_returns_none_for_non_json_or_invalid(stdout: str) -> None:
     assert HueyToolBridge._parse_json(stdout) is None
 
@@ -194,9 +215,9 @@ def test_bridge_parses_json_list_and_nonzero_exit(tmp_path: Path, monkeypatch) -
     monkeypatch.setattr(
         "huey.connectors.pyhuey.plugin.huey_tools.bridge.subprocess.run", fake_run
     )
-    result = HueyToolBridge(HueyBridgeConfig(monkey_head_project_path=project)).run_script(
-        "scripts/tool.py", []
-    )
+    result = HueyToolBridge(
+        HueyBridgeConfig(monkey_head_project_path=project)
+    ).run_script("scripts/tool.py", [])
     assert result.ok is False
     assert result.parsed_json == [1, 2]
     assert result.stderr == "failed"

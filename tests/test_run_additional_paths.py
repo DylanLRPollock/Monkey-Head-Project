@@ -200,7 +200,9 @@ def test_manager_ui_uses_tk_root_and_mainloop(monkeypatch):
 
 def test_main_simple_chat_and_custom_function_dispatch(monkeypatch, capsys):
     monkeypatch.setattr("huey.memory.PY.system_checks.check_os_support", lambda: None)
-    monkeypatch.setattr("huey.memory.PY.system_checks.check_python_version", lambda: None)
+    monkeypatch.setattr(
+        "huey.memory.PY.system_checks.check_python_version", lambda: None
+    )
     calls = []
     chat = ModuleType("huey.memory.PY.legacy.simple_chat")
     chat.main = lambda: calls.append("chat")
@@ -208,8 +210,25 @@ def test_main_simple_chat_and_custom_function_dispatch(monkeypatch, capsys):
     runtime.main(["--simple-chat"])
     assert calls == ["chat"]
 
-    monkeypatch.setattr(runtime, "run_custom_function", lambda name, kwargs, source=None: {"name": name, "args": json.loads(kwargs), "source": source})
-    runtime.main(["--run-custom-function", "demo", "--custom-function-kwargs", '{"n": 2}', "--pyhuey-source", "package"])
+    monkeypatch.setattr(
+        runtime,
+        "run_custom_function",
+        lambda name, kwargs, source=None: {
+            "name": name,
+            "args": json.loads(kwargs),
+            "source": source,
+        },
+    )
+    runtime.main(
+        [
+            "--run-custom-function",
+            "demo",
+            "--custom-function-kwargs",
+            '{"n": 2}',
+            "--pyhuey-source",
+            "package",
+        ]
+    )
     assert json.loads(capsys.readouterr().out) == {
         "name": "demo",
         "args": {"n": 2},

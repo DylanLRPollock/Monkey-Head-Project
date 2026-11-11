@@ -67,7 +67,10 @@ class _Widget:
             return self.command()
 
 
-def test_ai_tools_console_processing_memory_upload_and_chat(monkeypatch, tmp_path):
+# McCabe counts the nested widget doubles as branches of this integration test.
+def test_ai_tools_console_processing_memory_upload_and_chat(  # noqa: C901, RUF100
+    monkeypatch, tmp_path
+):
     events = []
     buttons = {}
     entries = []

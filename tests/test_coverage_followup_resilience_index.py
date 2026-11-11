@@ -28,20 +28,32 @@ def test_watchdog_missing_or_unreachable_socket_is_best_effort(monkeypatch) -> N
 def test_emergency_transitions_skip_essential_services_and_ignore_duplicates() -> None:
     controller = EmergencyGovernanceController(required_approvals=2)
     calls = []
-    controller.register_service("essential", stop=lambda: calls.append("essential-stop"), essential=True)
+    controller.register_service(
+        "essential", stop=lambda: calls.append("essential-stop"), essential=True
+    )
     controller.register_service("unmanaged", stop=lambda: calls.append("stop"))
     controller.register_service("no-start", stop=lambda: None)
-    controller.register_service("managed", stop=lambda: calls.append("managed-stop"), start=lambda: calls.append("managed-start"))
+    controller.register_service(
+        "managed",
+        stop=lambda: calls.append("managed-stop"),
+        start=lambda: calls.append("managed-start"),
+    )
 
     with pytest.raises(ValueError, match="reason"):
         controller.enter_emergency_mode(triggered_by="a", reason="", approvals=["b"])
     with pytest.raises(PermissionError):
-        controller.enter_emergency_mode(triggered_by="a", reason="fault", approvals=["a"])
+        controller.enter_emergency_mode(
+            triggered_by="a", reason="fault", approvals=["a"]
+        )
     with pytest.raises(PermissionError):
-        controller.enter_emergency_mode(triggered_by="a", reason="fault", approvals=["a", "a"])
+        controller.enter_emergency_mode(
+            triggered_by="a", reason="fault", approvals=["a", "a"]
+        )
 
     controller.enter_emergency_mode(triggered_by="a", reason="fault", approvals=["b"])
-    controller.enter_emergency_mode(triggered_by="duplicate", reason="ignored", approvals=[])
+    controller.enter_emergency_mode(
+        triggered_by="duplicate", reason="ignored", approvals=[]
+    )
     assert controller.state is EmergencyState.EMERGENCY
     assert calls == ["stop", "managed-stop"]
     controller.exit_emergency_mode(requested_by="a", approvals=["b"])
@@ -72,7 +84,9 @@ def test_crash_manager_unknown_processes_and_disabled_restart_reason() -> None:
     assert manager.event_log() == [event]
 
 
-def test_index_fallback_classification_custom_types_and_malformed_records(tmp_path) -> None:
+def test_index_fallback_classification_custom_types_and_malformed_records(
+    tmp_path,
+) -> None:
     storage = HoneycombStorage(base_dir=tmp_path)
     index = HoneycombIndex(storage, extension_map={"foo": "CUSTOM"})
     assert index.infer_category(tmp_path / "unknown.foo") == "CUSTOM"
@@ -85,14 +99,21 @@ def test_index_fallback_classification_custom_types_and_malformed_records(tmp_pa
     assert "misc" in index.list_content_types()
     index.register_content_type(
         "custom",
-        HoneycombContentMapping(comb="custom-comb", cell_prefix="items", categories=("CUSTOM",)),
+        HoneycombContentMapping(
+            comb="custom-comb", cell_prefix="items", categories=("CUSTOM",)
+        ),
     )
     assert index.infer_content_type(tmp_path / "x.foo") == "custom"
     assert index.describe()["custom"]["categories"] == ["CUSTOM"]
 
     malformed = HoneycombRecord(
         key="misc/general/bad",
-        data={"content_type": "misc", "payload": "scalar", "metadata": [1], "indexed_at": 2},
+        data={
+            "content_type": "misc",
+            "payload": "scalar",
+            "metadata": [1],
+            "indexed_at": 2,
+        },
         created_at=1,
         updated_at=3,
     )
@@ -102,7 +123,9 @@ def test_index_fallback_classification_custom_types_and_malformed_records(tmp_pa
     assert converted.metadata == {"value": [1]}
 
 
-def test_index_skips_non_object_or_untyped_records_and_applies_limits(tmp_path, monkeypatch) -> None:
+def test_index_skips_non_object_or_untyped_records_and_applies_limits(
+    tmp_path, monkeypatch
+) -> None:
     storage = HoneycombStorage(base_dir=tmp_path)
     index = HoneycombIndex(storage)
     good = HoneycombRecord(
@@ -117,7 +140,9 @@ def test_index_skips_non_object_or_untyped_records_and_applies_limits(tmp_path, 
     bad_data = HoneycombRecord(
         key="telemetry/logs/three", data="not a mapping", created_at=3, updated_at=3
     )
-    monkeypatch.setattr(storage, "query", lambda _prefix: [good, missing_type, bad_data])
+    monkeypatch.setattr(
+        storage, "query", lambda _prefix: [good, missing_type, bad_data]
+    )
     assert len(index.records_for_content_type("logs", limit=1)) == 1
     assert [item.key for item in index.records_since(0)] == ["telemetry/logs/one"]
     assert [item.key for item in index.records_since(0, content_type="logs")] == [

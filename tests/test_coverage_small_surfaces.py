@@ -18,10 +18,12 @@ def test_text_parsing_and_extraction_handles_blanks_and_delimiters() -> None:
     assert split_sentences(" \n ") == []
     assert split_sentences("First. Second! third?") == ["First.", "Second!", "third?"]
     assert token_frequency("Hi hi, Huey's v1") == {"hi": 2, "huey's": 1, "v1": 1}
-    assert extract_key_values("no delimiter\n: empty key\n Name : Ada: Lovelace \nName: Grace") == {
-        "Name": "Grace"
-    }
-    sections = extract_sections("\n\n".join(["", "Title\nFirst sentence. Second sentence!", "  "]))
+    assert extract_key_values(
+        "no delimiter\n: empty key\n Name : Ada: Lovelace \nName: Grace"
+    ) == {"Name": "Grace"}
+    sections = extract_sections(
+        "\n\n".join(["", "Title\nFirst sentence. Second sentence!", "  "])
+    )
     assert len(sections) == 1
     assert sections[0]["title"] == "Title"
     assert sections[0]["sentences"] == ["Title First sentence.", "Second sentence!"]
@@ -59,7 +61,12 @@ def test_priority_scheduler_orders_tasks_and_honors_run_limit() -> None:
     low_payload = {"value": 4}
     low = scheduler.schedule("low", priority=10, payload=low_payload)
     low_payload["value"] = 8
-    high = scheduler.schedule("high", priority=1, handler=lambda payload: payload["value"], payload={"value": 3})
+    high = scheduler.schedule(
+        "high",
+        priority=1,
+        handler=lambda payload: payload["value"],
+        payload={"value": 3},
+    )
     same_priority = scheduler.schedule("same", priority=1)
     assert [task.name for task in scheduler.pending()] == ["high", "same", "low"]
     assert scheduler.run_next() is high

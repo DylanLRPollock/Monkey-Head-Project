@@ -7,16 +7,29 @@ import json
 import pytest
 
 from huey.v1 import report_generator, structured_run_log
-from huey.v1.response_bridge import ResponseBridge, main as response_main
+from huey.v1.response_bridge import ResponseBridge
+from huey.v1.response_bridge import main as response_main
 
 
 def test_report_formats_empty_and_mixed_records_with_escaped_html() -> None:
-    assert json.loads(report_generator.generate_json_report([]))["summary"]["total"] == 0
+    assert (
+        json.loads(report_generator.generate_json_report([]))["summary"]["total"] == 0
+    )
     assert "Success rate: 0.00%" in report_generator.generate_markdown_report([])
 
     records = [
-        {"run_id": "<run&1>", "exit_status": "success", "transcript": "a\nb", "response": "ok"},
-        {"run_id": "failed", "exit_status": "error", "transcript": "", "response": None},
+        {
+            "run_id": "<run&1>",
+            "exit_status": "success",
+            "transcript": "a\nb",
+            "response": "ok",
+        },
+        {
+            "run_id": "failed",
+            "exit_status": "error",
+            "transcript": "",
+            "response": None,
+        },
     ]
     markdown = report_generator.generate_markdown_report(records)
     assert "a b" in markdown
@@ -42,7 +55,9 @@ def test_structured_run_log_append_read_and_empty(tmp_path) -> None:
 @pytest.mark.parametrize("event_type", ["", "  ", None])
 def test_structured_run_log_rejects_empty_event_type(tmp_path, event_type) -> None:
     with pytest.raises(ValueError, match="event_type is required"):
-        structured_run_log.StructuredRunLog(tmp_path / "events.jsonl").append(event_type, {})
+        structured_run_log.StructuredRunLog(tmp_path / "events.jsonl").append(
+            event_type, {}
+        )
 
 
 def test_structured_run_log_rejects_payload_and_malformed_jsonl(tmp_path) -> None:
@@ -58,7 +73,9 @@ def test_structured_run_log_rejects_payload_and_malformed_jsonl(tmp_path) -> Non
         log.read()
 
 
-def test_structured_run_log_cli_append_read_and_invalid_payload(tmp_path, capsys) -> None:
+def test_structured_run_log_cli_append_read_and_invalid_payload(
+    tmp_path, capsys
+) -> None:
     path = str(tmp_path / "cli.jsonl")
     assert structured_run_log.main([path, "append", "proof", '{"ok": true}']) == 0
     assert json.loads(capsys.readouterr().out)["payload"] == {"ok": True}

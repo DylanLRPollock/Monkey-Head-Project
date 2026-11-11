@@ -3,9 +3,9 @@
 # www.dlrp.ca
 # HueyOS: Test Convert Pdf To Text module (tests)
 
-from huey.memory.PY.convert_files import convert_pdf_to_text
-
 import pytest
+
+from huey.memory.PY.convert_files import convert_pdf_to_text
 
 pytest.importorskip("pypdf")
 

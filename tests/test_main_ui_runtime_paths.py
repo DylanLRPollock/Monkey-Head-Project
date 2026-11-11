@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from types import SimpleNamespace
+
 from huey.memory.PY import main_ui
 from huey.memory.PY.main_ui import MainUI
 

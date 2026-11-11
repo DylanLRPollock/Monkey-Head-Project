@@ -90,12 +90,12 @@ def test_process_interrupt_device_and_syscall_helpers() -> None:
     assert [device["name"] for device in devices.online_devices()] == ["alpha"]
 
     interrupts = InterruptController()
-    interrupts.register_handler("power.low", lambda interrupt: interrupt.payload["percent"])
+    interrupts.register_handler(
+        "power.low", lambda interrupt: interrupt.payload["percent"]
+    )
     assert interrupts.dispatch(Interrupt("unknown", "tests")) is None
     assert (
-        interrupts.dispatch(
-            Interrupt("power.low", "tests", payload={"percent": 11})
-        )
+        interrupts.dispatch(Interrupt("power.low", "tests", payload={"percent": 11}))
         == 11
     )
     assert [item["code"] for item in interrupts.history()] == ["unknown", "power.low"]
