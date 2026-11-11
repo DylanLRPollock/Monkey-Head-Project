@@ -14,8 +14,8 @@
 import os
 import subprocess
 
-from ..utils.commands import run_command
-from ..utils.logger import get_logger
+from huey.memory.PY.commands import run_command
+from huey.memory.PY.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -79,8 +79,7 @@ def configure_git(
     current_name = (
         subprocess.run(
             ["git", "config", "--global", "user.name"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
         )
         .stdout.decode()
         .strip()
@@ -91,8 +90,7 @@ def configure_git(
     current_email = (
         subprocess.run(
             ["git", "config", "--global", "user.email"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
         )
         .stdout.decode()
         .strip()

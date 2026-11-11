@@ -14,8 +14,8 @@
 import os
 import subprocess
 
-from ..core.system_checks import check_error
-from ..utils.logger import get_logger
+from huey.memory.PY.logger import get_logger
+from huey.os.core.system_checks import check_error
 
 logger = get_logger(__name__)
 
@@ -26,8 +26,7 @@ def backup_config():
     os.makedirs(backup_dir, exist_ok=True)
     backup = subprocess.run(
         ["cp", "-r", os.path.expanduser("~/Source/repo/config"), backup_dir],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
     )
     check_error(backup, "Backup Configurations")
 
@@ -41,7 +40,6 @@ def restore_config():
             os.path.expanduser("~/Backup/repo/config"),
             os.path.expanduser("~/Source/repo/config"),
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
     )
     check_error(restore, "Restore Configurations")
