@@ -12,9 +12,11 @@ LEGACY = Path(__file__).resolve().parents[1] / "src" / "huey" / "memory" / "PY"
 
 
 def _load_script(path: Path, name: str):
-    spec = importlib.util.spec_from_file_location(name, path)
+    module_name = f"huey.memory.PY._coverage_{name}"
+    spec = importlib.util.spec_from_file_location(module_name, path)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
