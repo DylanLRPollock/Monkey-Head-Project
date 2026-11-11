@@ -14,6 +14,12 @@ import pytest
 from huey.memory.PY import installer
 
 
+@pytest.fixture(autouse=True)
+def _reload_installer_under_coverage():
+    """Trace module execution after coverage starts, not during collection."""
+    importlib.reload(installer)
+
+
 def test_manual_hardware_selection_and_invalid_selection_are_saved(
     tmp_path, monkeypatch, capsys
 ):
