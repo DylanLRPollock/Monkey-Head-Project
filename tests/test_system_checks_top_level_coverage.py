@@ -65,6 +65,8 @@ def test_free_threaded_detection_and_gil_probe_edges(monkeypatch):
 
 
 def test_gil_enabled_free_threaded_python_is_rejected(monkeypatch, caplog):
+    # Exercise the free-threaded policy after the supported-version guard.
+    monkeypatch.setattr(sys, "version_info", (3, 13, 0, "final", 0))
     monkeypatch.setattr(system_checks, "_is_free_threaded_build", lambda: True)
     monkeypatch.setattr(system_checks, "_python_gil_enabled", lambda: True)
     assert system_checks.check_python_version() is False
