@@ -319,3 +319,65 @@ def test_power_action_without_supported_command_records_error(monkeypatch):
 
     assert event.metadata["error"] == "no supported command found"
     popen.assert_not_called()
+
+
+def test_runtime_estimate_shutdown_threshold_and_listener_removal(monkeypatch):
+    monitor = BatteryMonitor(shutdown_threshold=12)
+    monkeypatch.setattr(
+        monitor,
+        "_status_from_psutil",
+        lambda: {"percent": 8, "secs_left": 600, "power_plugged": False},
+    )
+    monkeypatch.setattr(monitor, "_status_from_sysfs", lambda: None)
+    monkeypatch.setattr(monitor, "_status_from_acpi", lambda: None)
+    status = monitor.get_status()
+    assert status["estimated_runtime_minutes"] == 10
+    assert monitor.should_shutdown() is True
+
+    assert monitor.observe({"percent": None, "power_plugged": False})["percent"] is None
+    monkeypatch.setattr(
+        monitor, "get_status", lambda: {"percent": 8, "power_plugged": True}
+    )
+    assert monitor.should_shutdown() is False
+    monkeypatch.setattr(
+        monitor, "get_status", lambda: {"percent": 20, "power_plugged": False}
+    )
+    assert monitor.should_shutdown() is False
+
+    def callback(_status):
+        pass
+
+    monitor.remove_hook("missing", callback)
+    monitor.register_hook("status", callback)
+    monitor.remove_hook("status", lambda _status: None)
+    assert callback in monitor._listeners["status"]
+    monitor.remove_hook("status", callback)
+    assert callback not in monitor._listeners["status"]
+
+
+def test_acpi_status_returns_none_for_empty_and_unrecognized_output(monkeypatch):
+    monkeypatch.setattr(management.shutil, "which", lambda _name: "/usr/bin/acpi")
+    monkeypatch.setattr(management.subprocess, "check_output", lambda *a, **k: "")
+    assert BatteryMonitor()._status_from_acpi() is None
+    monkeypatch.setattr(
+        management.subprocess, "check_output", lambda *a, **k: "Battery state unavailable"
+    )
+    assert BatteryMonitor()._status_from_acpi() is None
+
+
+def test_confirmed_power_command_records_launch_error(monkeypatch):
+    monitor = BatteryMonitor()
+    monkeypatch.setattr(
+        management,
+        "detect_host_platform",
+        lambda: SimpleNamespace(display_name="Linux", family="linux"),
+    )
+    monkeypatch.setattr(monitor, "_resolve_command", lambda _action: ["systemctl", "reboot"])
+    monkeypatch.setattr(
+        management.subprocess,
+        "Popen",
+        Mock(side_effect=OSError("permission denied")),
+    )
+    event = monitor.initiate_reboot(confirmed=True, actor_role="admin")
+    assert event.metadata["error"] == "permission denied"
+    assert monitor.last_event is event
