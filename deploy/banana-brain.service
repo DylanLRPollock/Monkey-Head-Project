@@ -1,0 +1,119 @@
+# /etc/systemd/system/banana-brain.service
+#
+# Install:
+#   sudo cp deploy/banana-brain.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now banana-brain.service
+#
+# Secrets (create once, chmod 0600, owned by the service user):
+#   /etc/banana-brain/env
+#     BANANA_BRAIN_TOKEN=<openssl rand -hex 32>
+#     BANANA_BRAIN_WEBHOOK_TOKEN=<if using a webhook>
+#
+# Logs:
+#   journalctl -u banana-brain -f
+#   journalctl -u banana-brain -p err -b
+#
+# Reload the config without restarting jobs (SIGHUP is not currently
+# handled; use `systemctl restart` — queued jobs persist in SQLite and
+# are re-dispatched on restart).
+
+[Unit]
+Description=Banana Brain GPU scheduler (HueyOS)
+Documentation=file:///opt/monkey-head-project/README.md
+After=network-online.target ollama.service
+Wants=network-online.target
+
+# The scheduler must start after any GPU-using services it coordinates,
+# but should not hard-fail if they are not yet up — it will probe them at
+# start() and log warnings, and the watchdog will report them as down.
+RequiresMountsFor=/opt/monkey-head-project
+
+[Service]
+Type=simple
+User=huey
+Group=huey
+
+# Adjust these to the operator's checkout.
+WorkingDirectory=/opt/monkey-head-project
+EnvironmentFile=-/etc/banana-brain/env
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONPATH=/opt/monkey-head-project/src
+
+# --dry-run would validate config without starting; omit for production.
+# The config file must exist; the executable exits with a clear error if not.
+ExecStart=/opt/monkey-head-project/venv/bin/python \
+    /opt/monkey-head-project/scripts/banana-brain_scheduler.py \
+    --config /opt/monkey-head-project/config/banana-brain.yaml \
+    --log-level INFO
+
+# Give the scheduler its full shutdown grace plus a margin. Default is
+# shutdown_grace_seconds (30) + component stop buffer (5) + drain (5).
+TimeoutStopSec=45
+KillMode=mixed
+KillSignal=SIGTERM
+SendSIGKILL=yes
+
+Restart=on-failure
+RestartSec=5s
+# Don't hammer the restart if the config is broken (a persistent startup
+# failure will trip this; the operator sees it in the journal and fixes
+# the config, then `systemctl reset-failed banana-brain` and restarts).
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+# ---- Sandboxing ------------------------------------------------------------
+# These are deliberately moderate: the scheduler needs access to the GPU
+# via NVML (which reads /proc/driver/nvidia and /dev/nvidia*), the SQLite
+# database, the Unix socket, and network access to Ollama / ComfyUI.
+# Each directive is chosen to allow exactly that and no more.
+
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=no       # needs /dev/nvidia* for NVML
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+ProtectProc=invisible
+ProcSubset=pid
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+# A conservative syscall filter: block the highest-risk calls.
+SystemCallFilter=@system-service
+SystemCallFilter=~@clock @cpu-emulation @debug @keyring @module @mount \
+                   @obsolete @privileged @raw-io @reboot @resources @swap
+
+# Write access is needed only for the state directory (SQLite DB, Unix
+# socket, mode file, notifications JSONL). Read-only elsewhere.
+ReadWritePaths=/opt/monkey-head-project/data
+ReadOnlyPaths=/opt/monkey-head-project
+ProtectSystem=strict
+ProtectHome=read-only
+
+# Network: localhost only by default. If api_bind is exposed on a
+# specific interface, add IPAddressAllow for it and IPAddressDeny=any.
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+IPAddressAllow=localhost
+IPAddressDeny=any
+
+# Resource limits.
+LimitNOFILE=65536
+LimitMEMLOCK=infinity
+# The scheduler itself is light; the VRAM budget is on the GPU side.
+MemoryMax=2G
+
+# ---- Logging ---------------------------------------------------------------
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=banana-brain
+
+# ---- Install ---------------------------------------------------------------
+[Install]
+WantedBy=multi-user.target
