@@ -214,7 +214,7 @@ def test_source_updater_checks_privilege_missing_file_and_writes_backup(
     )
     monkeypatch.setattr(module, "SOURCE_FILE", str(source))
     monkeypatch.setattr(module, "BACKUP_FILE", str(backup))
-    monkeypatch.setattr(module.os.path, "isfile", lambda path: Path(path).is_file())
+    monkeypatch.setattr(module.os.path, "isfile", lambda path: Path(path).exists())
     monkeypatch.setattr(sys, "argv", [module_name, "testing"])
     module.main()
     assert backup.read_text(encoding="utf-8").startswith("deb ")
