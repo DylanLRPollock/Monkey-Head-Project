@@ -207,7 +207,7 @@ dev = [
   "pytest-cov==7.1.0",
   "rich==15.0.0",
   "ruff==0.17.4",
-  "types-PyYAML==6.0.12.20260724",
+  "types-PyYAML==6.0.12.20261103",
   "types-requests==2.33.0.20260906",
   "uv==0.13.7",
 ]
