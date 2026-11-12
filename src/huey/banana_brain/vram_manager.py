@@ -179,7 +179,11 @@ class VRAMManager:
         job_id = getattr(job, "id", None) or "<unknown>"
         adapter = getattr(job, "adapter", None) or "<unknown>"
 
-        if not isinstance(required_bytes, int) or required_bytes <= 0:
+        if (
+            isinstance(required_bytes, bool)
+            or not isinstance(required_bytes, int)
+            or required_bytes <= 0
+        ):
             self._refuse(
                 "invalid_estimate", job_id=job_id, requested=required_bytes,
             )

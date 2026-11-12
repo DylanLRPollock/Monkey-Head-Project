@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-import asyncio
 from unittest.mock import AsyncMock
 
 import pytest
 
-from huey.banana_brain.config import BananaBrainConfig
-from huey.banana_brain.job_models import Job
 from huey.banana_brain.vram_manager import (
     ReservationState,
     VRAMManager,
@@ -16,13 +13,13 @@ from huey.banana_brain.vram_manager import (
 
 from .conftest import make_job
 
-
-GIB = 1024 ** 3
+GIB = 1024**3
 
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def stub_monitor():
@@ -50,6 +47,7 @@ def vram(test_config, stub_monitor):
 
 def _status(total_gib=32, free_gib=30):
     from types import SimpleNamespace
+
     return SimpleNamespace(
         total_vram_bytes=total_gib * GIB,
         free_vram_bytes=free_gib * GIB,
@@ -60,6 +58,7 @@ def _status(total_gib=32, free_gib=30):
 # ---------------------------------------------------------------------------
 # Admission
 # ---------------------------------------------------------------------------
+
 
 async def test_reserve_success(vram, stub_monitor, test_config):
     stub_monitor.status = _status(total_gib=32, free_gib=30)
@@ -120,6 +119,7 @@ async def test_estimate_exceeds_total(vram, stub_monitor):
 # Idempotency
 # ---------------------------------------------------------------------------
 
+
 async def test_reserve_is_idempotent_for_same_job(vram, stub_monitor):
     stub_monitor.status = _status()
     job = make_job()
@@ -148,6 +148,7 @@ async def test_reserve_excludes_self_from_committed(vram, stub_monitor):
 # Release and mark_running
 # ---------------------------------------------------------------------------
 
+
 async def test_release_frees_commitment(vram, stub_monitor):
     stub_monitor.status = _status(free_gib=3)
     job = make_job()
@@ -162,7 +163,7 @@ async def test_release_is_idempotent(vram, stub_monitor):
     job = make_job()
     await vram.try_reserve(job, 1 * GIB)
     vram.release(job)
-    vram.release(job)     # must not raise
+    vram.release(job)  # must not raise
     assert vram.reservation_count() == 0
 
 
@@ -179,7 +180,7 @@ async def test_mark_running_removes_from_committed(vram, stub_monitor):
 
     vram.mark_running(job)
     assert vram.reservation_count() == 1
-    assert vram.committed_bytes() == 0    # not double-counted
+    assert vram.committed_bytes() == 0  # not double-counted
 
 
 async def test_mark_running_unknown_job_is_noop(vram):
@@ -190,6 +191,7 @@ async def test_mark_running_unknown_job_is_noop(vram):
 # available_bytes
 # ---------------------------------------------------------------------------
 
+
 async def test_available_bytes_returns_none_when_unknown(vram, stub_monitor):
     stub_monitor.status = None
     assert await vram.available_bytes() is None
@@ -197,8 +199,70 @@ async def test_available_bytes_returns_none_when_unknown(vram, stub_monitor):
 
 async def test_available_bytes_after_reservation(vram, stub_monitor):
     stub_monitor.status = _status(total_gib=32, free_gib=10)
-    assert await vram.available_bytes() == 9 * GIB    # 10 - 1 headroom
+    assert await vram.available_bytes() == 9 * GIB  # 10 - 1 headroom
 
     job = make_job()
     await vram.try_reserve(job, 4 * GIB)
-    assert await vram.available_bytes() == 5 * GIB    # 10 - 4 - 1
+    assert await vram.available_bytes() == 5 * GIB  # 10 - 4 - 1
+
+
+async def test_lifecycle_refresh_and_boolean_estimate_are_safe(vram, stub_monitor):
+    await vram.start()
+    stub_monitor.refresh_result = _status()
+    assert await vram.try_reserve(make_job(), True, refresh=True) is False
+    assert (await vram.snapshot())["last_refusal"]["reason"] == "invalid_estimate"
+    assert await vram.try_reserve(make_job(), GIB, refresh=True) is True
+    await vram.stop()
+    assert vram.reservation_count() == 0
+
+
+async def test_stop_without_reservations_is_quiet(vram, caplog):
+    await vram.stop()
+    assert "still held" not in caplog.text
+
+
+async def test_reservation_resize_preserves_active_state(vram, stub_monitor):
+    stub_monitor.status = _status()
+    job = make_job()
+    assert await vram.try_reserve(job, GIB) is True
+    vram.mark_running(job)
+    assert await vram.try_reserve(job, 2 * GIB) is True
+    reservation = vram._reservations[job.id]
+    assert reservation.bytes == 2 * GIB
+    assert reservation.state is ReservationState.ACTIVE
+    assert await vram.try_reserve(job, 3 * GIB) is True
+
+
+async def test_release_and_mark_running_accept_missing_ids(vram):
+    vram.release(None)
+    vram.mark_running(None)
+    vram.release(make_job())
+    vram.mark_running(make_job())
+    assert vram.reservation_count() == 0
+
+
+async def test_monitor_failures_and_implausible_diagnostics_fail_closed(
+    vram, stub_monitor
+):
+    async def fail_status():
+        raise RuntimeError("monitor unavailable")
+
+    stub_monitor.get_status = fail_status
+    assert await vram.try_reserve(make_job(), GIB) is False
+    stub_monitor.get_status = AsyncMock(return_value=None)
+    assert (await vram.snapshot())["gpu_state_known"] is False
+
+    async def fail_refresh():
+        raise RuntimeError("refresh unavailable")
+
+    stub_monitor.refresh = fail_refresh
+    assert await vram.try_reserve(make_job(), GIB, refresh=True) is False
+
+    stub_monitor.get_status = AsyncMock(
+        return_value=type(
+            "Status", (), {"total_vram_bytes": GIB, "free_vram_bytes": -1}
+        )()
+    )
+    assert await vram.available_bytes() is None
+    snapshot = await vram.snapshot()
+    assert snapshot["allocatable_bytes"] is None

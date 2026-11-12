@@ -40,10 +40,17 @@ def test_defaults_nested_sections_coercion_and_redaction():
 
 
 def test_flatten_collisions_unknown_keys_and_value_types():
+    assert BananaBrainConfig.from_dict(None).api_socket_path is not None
     with pytest.raises(ConfigError, match="specified both"):
         BananaBrainConfig.from_dict(
             {"poll_interval_seconds": 3, "gpu": {"poll_interval_seconds": 2}}
         )
+    with pytest.raises(ConfigError, match="specified both"):
+        BananaBrainConfig.from_dict(
+            {"priority_aging_step": 1, "priority": {"aging_step": 2}}
+        )
+    with pytest.raises(ConfigError, match="top-level YAML must be a mapping"):
+        BananaBrainConfig.from_dict(["bad"])
     with pytest.raises(ConfigError, match="non-string YAML key"):
         BananaBrainConfig.from_dict({1: "bad"})
     with pytest.raises(ConfigError, match="unknown key"):
@@ -62,6 +69,7 @@ def test_flatten_collisions_unknown_keys_and_value_types():
         BananaBrainConfig.from_dict({"ollama_unload_pinned": "perhaps"})
     assert _to_bool("flag", " OFF ", source="test") is False
     assert _to_bool("flag", "on", source="test") is True
+    assert _to_bool("flag", True, source="test") is True
 
 
 def test_environment_expansion_and_loader_errors(tmp_path, monkeypatch):
@@ -86,6 +94,9 @@ def test_environment_expansion_and_loader_errors(tmp_path, monkeypatch):
     sequence.write_text("- one\n- two\n")
     with pytest.raises(ConfigError, match="top-level YAML must be a mapping"):
         load_config(sequence)
+    null_yaml = tmp_path / "null.yaml"
+    null_yaml.write_text("null\n")
+    assert load_config(null_yaml).poll_interval_seconds == 2.0
     valid = tmp_path / "valid.yaml"
     valid.write_text("api:\n  token: ${BB_TOKEN}\n")
     assert load_config(valid).api_token == "0123456789abcdef"
@@ -143,3 +154,20 @@ def test_bind_and_url_validation_variants():
     assert "scheme" in _validate_url("ftp://host")
     assert "hostname" in _validate_url("http://")
     assert _validate_url("https://host:443/path") is None
+    assert "invalid URL" in _validate_url("https://host:99999")
+
+
+def test_validation_reports_short_tokens_and_nonpositive_monitor_limits():
+    with pytest.raises(ConfigError) as exc:
+        BananaBrainConfig.from_dict(
+            {
+                "api_bind": "127.0.0.1:8080",
+                "api_token": "short",
+                "poll_interval_seconds": 0,
+                "max_staleness_seconds": 0,
+            }
+        )
+    details = str(exc.value)
+    assert "api_token must be at least 16 characters" in details
+    assert "poll_interval_seconds must be > 0" in details
+    assert "max_staleness_seconds must be > 0" in details

@@ -342,6 +342,36 @@ async def test_notifier_disabled_and_backend_failures(monkeypatch):
     await notifier.stop()
 
 
+@pytest.mark.asyncio
+async def test_delivery_filters_backend_levels_and_records_timeout():
+    notifier = Notifier({})
+
+    class BackendStub:
+        name = "critical-only"
+        min_level = NotificationLevel.CRITICAL
+
+        async def send(self, _notification):
+            return None
+
+        async def close(self):
+            return None
+
+    backend = BackendStub()
+    notifier._backends = [backend]
+    await notifier._deliver(note(NotificationLevel.INFO))
+    assert notifier.get_stats()["delivered"] == 0
+
+    backend.min_level = NotificationLevel.INFO
+
+    async def timeout(_notification):
+        raise TimeoutError
+
+    backend.send = timeout
+    await notifier._deliver(note(NotificationLevel.INFO))
+    assert notifier.get_stats()["backend_failures"] == 1
+    assert notifier.get_stats()["delivered"] == 0
+
+
 def test_backend_configuration_parsing(tmp_path, monkeypatch):
     monkeypatch.setattr(
         "huey.banana_brain.notifications.shutil.which", lambda _: "/bin/notify-send"

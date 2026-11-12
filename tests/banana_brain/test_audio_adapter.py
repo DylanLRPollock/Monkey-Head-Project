@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from types import SimpleNamespace
 
 import aiohttp
 import pytest
@@ -85,6 +86,10 @@ async def test_config_validation_vram_estimates_and_lifecycle():
     assert await stt.estimate_vram(
         make_job(payload={"task": "transcribe", "model": "TINY"})
     ) == int(0.7 * 1024**3)
+    assert await stt.estimate_vram(
+        make_job(payload={"task": "transcribe", "model": "custom-model"})
+    ) == int(3.5 * 1024**3)
+    assert stt._lookup_vram("tts", "unknown", 1.25) == 1.25
     with pytest.raises(RuntimeError, match="synthesis is not configured"):
         await stt.estimate_vram(make_job(payload={"task": "synthesize"}))
     tts = adapter(
@@ -191,6 +196,50 @@ async def test_transcription_whisper_cpp_and_remote_audio_fetch():
     item._session.response = Response(status=404, text="not found")
     with pytest.raises(RuntimeError, match="failed to fetch audio_url"):
         await item._fetch_audio("https://audio.test/missing")
+
+
+@pytest.mark.asyncio
+async def test_transcription_routing_and_cleanup_for_unsupported_backend(tmp_path):
+    source = tmp_path / "sample.wav"
+    source.write_bytes(b"wave")
+    item = adapter(
+        {
+            "audio_stt_backend": "faster-whisper-server",
+            "audio_stt_base_url": "http://stt",
+        }
+    )
+    await item.execute(
+        make_job(
+            payload={
+                "task": "transcribe",
+                "audio_url": "https://audio.test/sample.wav?secret=1",
+            }
+        )
+    )
+    assert item._session.calls[0][1].endswith("sample.wav?secret=1")
+    item._stt_backend = "unsupported"
+    with pytest.raises(RuntimeError, match="unsupported audio_stt_backend"):
+        await item.execute(
+            make_job(payload={"task": "transcribe", "audio_path": str(source)})
+        )
+    assert item._busy == 0
+
+
+@pytest.mark.asyncio
+async def test_synthesis_optional_fields_and_unsupported_backend(tmp_path):
+    item = adapter({"audio_tts_backend": "piper", "audio_tts_base_url": "http://piper"})
+    result = await item.execute(
+        make_job(
+            payload={"task": "synthesize", "text": "hello", "speed": 0, "format": "wav"}
+        )
+    )
+    assert result["output_path"] is None
+    form = item._session.calls[0][2]["data"]
+    assert all(field[0] != "length_scale" for field in form._fields)
+    item._tts_backend = "unsupported"
+    with pytest.raises(RuntimeError, match="unsupported audio_tts_backend"):
+        await item.execute(make_job(payload={"task": "synthesize", "text": "hi"}))
+    assert item._busy == 0
 
 
 @pytest.mark.asyncio
@@ -336,3 +385,27 @@ async def test_probe_paths_and_start_cleanup(monkeypatch):
     with pytest.raises(RuntimeError, match="probe failed"):
         await broken.start()
     assert broken._session is None
+
+
+@pytest.mark.asyncio
+async def test_probe_stt_falls_back_after_connection_error_and_config_object():
+    item = AudioAdapter(
+        SimpleNamespace(
+            audio_stt_backend="whisper-cpp",
+            audio_stt_base_url="http://stt",
+        ),
+        object(),
+    )
+    item._session = Session()
+    calls = 0
+
+    def get(url, **kwargs):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise RuntimeError("health endpoint unavailable")
+        return Response(status=200)
+
+    item._session.get = get
+    await item._probe_stt()
+    assert calls == 2

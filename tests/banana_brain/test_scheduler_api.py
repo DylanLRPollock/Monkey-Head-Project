@@ -118,6 +118,18 @@ async def test_api_helpers_parse_and_validate_inputs():
         JobState.PENDING,
         JobState.COMPLETED,
     }
+    assert api_module._cfg_get(SimpleNamespace(value=1), "value") == 1
+    numeric_job = api_module._job_from_body(
+        {"adapter": "ollama", "payload": {}, "priority": 40.5}
+    )
+    assert numeric_job.priority == 40
+    assert api_module._job_from_body(
+        {"adapter": "ollama", "payload": {}, "priority": None}
+    ).priority == int(Priority.BACKGROUND)
+    with pytest.raises(ValueError, match="priority must be an int"):
+        api_module._job_from_body(
+            {"adapter": "ollama", "payload": {}, "priority": True}
+        )
     with pytest.raises(APIError):
         api_module._parse_states("missing")
 
@@ -405,6 +417,8 @@ async def test_api_unix_lifecycle_and_startup_failures(tmp_path, monkeypatch):
         gpu_monitor=Monitor(),
     )
     assert api.listening_on is None
+    socket_path.parent.mkdir(parents=True, exist_ok=True)
+    socket_path.write_text("stale socket placeholder", encoding="utf-8")
     await api.start()
     assert socket_path.exists()
     assert socket_path.stat().st_mode & 0o777 == 0o660
@@ -414,6 +428,11 @@ async def test_api_unix_lifecycle_and_startup_failures(tmp_path, monkeypatch):
     await api.stop()
     await api.stop()
     assert api.listening_on is None
+
+    await api.start()
+    api._inflight_idle.clear()
+    api._shutdown_grace = 0
+    await api.stop()
 
     missing = SchedulerAPI(
         {},
@@ -437,6 +456,18 @@ async def test_api_unix_lifecycle_and_startup_failures(tmp_path, monkeypatch):
     with pytest.raises(RuntimeError, match="api_token is missing"):
         await no_token.start()
     assert no_token._runner is None
+
+
+@pytest.mark.asyncio
+async def test_tcp_start_rejects_invalid_bind_shapes():
+    api = make_api(token="secret")
+    api._runner = object()
+    api._bind = ":8080"
+    with pytest.raises(RuntimeError, match="invalid api_bind"):
+        await api._start_tcp()
+    api._bind = "localhost:not-a-port"
+    with pytest.raises(ValueError):
+        await api._start_tcp()
 
 
 @pytest.mark.asyncio
@@ -594,3 +625,25 @@ async def test_cancel_job_errors_suspended_fallback_and_optional_modes():
                     "/mode/clear-halt", headers=headers, json={"reason": "x"}
                 )
             ).status == 503
+
+
+@pytest.mark.asyncio
+async def test_error_middleware_normalizes_http_and_unexpected_errors():
+    api = make_api()
+    app = api_module.web.Application(middlewares=[api._error_middleware])
+
+    async def missing(_request):
+        raise api_module.web.HTTPNotFound(reason="missing")
+
+    async def broken(_request):
+        raise RuntimeError("endpoint broke")
+
+    app.router.add_get("/missing", missing)
+    app.router.add_get("/broken", broken)
+    async with TestClient(TestServer(app)) as client:
+        missing_response = await client.get("/missing")
+        assert missing_response.status == 404
+        assert (await missing_response.json())["error"]["message"] == "missing"
+        broken_response = await client.get("/broken")
+        assert broken_response.status == 500
+        assert "endpoint broke" in (await broken_response.json())["error"]["message"]

@@ -638,8 +638,12 @@ def _validate_url(url: str) -> str | None:
         return f"scheme must be http or https, got {parsed.scheme!r}"
     if not parsed.hostname:
         return "missing hostname"
-    if parsed.port is not None and not (0 < parsed.port < 65536):
-        return f"invalid port {parsed.port}"
+    try:
+        port = parsed.port
+    except ValueError as exc:
+        return f"invalid URL {url!r}: {exc}"
+    if port is not None and not (0 < port < 65536):
+        return f"invalid port {port}"
     return None
 
 
