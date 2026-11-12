@@ -2,24 +2,26 @@
 
 from __future__ import annotations
 
+import pytest
 from aiohttp import web
 from aiohttp.test_utils import TestServer
-
-import pytest
 
 from huey.banana_brain.comfyui_adapter import (
     ComfyUIAdapter,
     _extract_checkpoint_names,
+    _extract_error_message,
     _extract_prompt_ids,
+    _extract_size_from_metadata,
+    _history_is_terminal,
 )
 from huey.banana_brain.config import BananaBrainConfig
 
 from .conftest import make_job, wait_until
 
-
 # ---------------------------------------------------------------------------
 # Fake ComfyUI
 # ---------------------------------------------------------------------------
+
 
 class FakeComfy:
     def __init__(self):
@@ -65,10 +67,12 @@ class FakeComfy:
         return web.json_response({"prompt_id": pid, "number": 1})
 
     async def _queue(self, request):
-        return web.json_response({
-            "queue_running": self.queue_running,
-            "queue_pending": self.queue_pending,
-        })
+        return web.json_response(
+            {
+                "queue_running": self.queue_running,
+                "queue_pending": self.queue_pending,
+            }
+        )
 
     async def _queue_delete(self, request):
         body = await request.json()
@@ -137,6 +141,7 @@ async def adapter(test_config, fake_comfy):
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _wf(**inputs):
     """Build a minimal ComfyUI workflow with checkpoint inputs."""
     return {
@@ -159,6 +164,31 @@ def test_extract_checkpoint_names():
     assert "not-a-checkpoint" not in names
 
 
+def test_extract_checkpoint_names_deduplicates_and_ignores_invalid_nodes():
+    workflow = {
+        "1": {"inputs": {"ckpt_name": "same.safetensors"}},
+        "2": {"class_type": "X", "inputs": {"ckpt_name": "same.safetensors"}},
+        "3": None,
+        "4": {"inputs": ["invalid"]},
+    }
+    assert _extract_checkpoint_names(workflow) == ["same.safetensors"]
+
+
+def test_metadata_size_and_history_error_helpers_cover_fallback_shapes():
+    assert _extract_size_from_metadata({"metadata": {"file_size": 42.9}}) == 42
+    assert _extract_size_from_metadata({"size": 0}) is None
+    assert _extract_size_from_metadata([]) is None
+    assert _history_is_terminal({"status_str": "SUCCESS"})
+    assert _history_is_terminal({"status_str": "error"})
+    assert not _history_is_terminal({"status_str": "running"})
+    assert (
+        _extract_error_message([["execution_error", {"exception_type": "OOM"}]])
+        == "OOM"
+    )
+    assert _extract_error_message([]) == "execution_error (no detail)"
+    assert _extract_error_message(None) == "unknown error"
+
+
 def test_extract_prompt_ids():
     queue = [[1, "pid-a", {}, {}, []], [2, "pid-b", {}, {}, []]]
     assert _extract_prompt_ids(queue) == {"pid-a", "pid-b"}
@@ -168,9 +198,11 @@ def test_extract_prompt_ids():
 # Submission and polling
 # ---------------------------------------------------------------------------
 
+
 async def test_execute_completes(adapter, fake_comfy):
-    _, server = fake_comfy
-    job = make_job(adapter="comfyui", payload={"workflow": _wf(ckpt_name="a.safetensors")})
+    job = make_job(
+        adapter="comfyui", payload={"workflow": _wf(ckpt_name="a.safetensors")}
+    )
     result = await adapter.execute(job)
     assert result["status"] == "success"
     assert result["prompt_id"] == "prompt-1"
@@ -179,7 +211,9 @@ async def test_execute_completes(adapter, fake_comfy):
 async def test_execute_polls_until_terminal(adapter, fake_comfy):
     _, server = fake_comfy
     server.auto_complete = False
-    job = make_job(adapter="comfyui", payload={"workflow": _wf(ckpt_name="a.safetensors")})
+    job = make_job(
+        adapter="comfyui", payload={"workflow": _wf(ckpt_name="a.safetensors")}
+    )
 
     async def complete():
         # After a short delay, populate history to make the job finish.
@@ -191,6 +225,7 @@ async def test_execute_polls_until_terminal(adapter, fake_comfy):
         server.queue_pending = []
 
     import asyncio as _asyncio
+
     waiter = _asyncio.create_task(complete())
     try:
         result = await adapter.execute(job)
@@ -206,10 +241,13 @@ async def test_execute_resumes_with_prompt_id(adapter, fake_comfy):
         "status": {"status_str": "success", "messages": []},
         "outputs": {},
     }
-    job = make_job(adapter="comfyui", payload={
-        "workflow": _wf(ckpt_name="a.safetensors"),
-        "prompt_id": "prior-prompt",
-    })
+    job = make_job(
+        adapter="comfyui",
+        payload={
+            "workflow": _wf(ckpt_name="a.safetensors"),
+            "prompt_id": "prior-prompt",
+        },
+    )
     result = await adapter.execute(job)
     assert result["prompt_id"] == "prior-prompt"
     # No new submission occurred.
@@ -226,18 +264,24 @@ async def test_execute_raises_on_execution_error(adapter, fake_comfy):
         },
     }
     server.queue_pending = []
-    job = make_job(adapter="comfyui", payload={"workflow": _wf(ckpt_name="a.safetensors")})
+    job = make_job(
+        adapter="comfyui", payload={"workflow": _wf(ckpt_name="a.safetensors")}
+    )
     with pytest.raises(RuntimeError, match="OOM"):
         await adapter.execute(job)
 
 
 async def test_execute_validation_error(adapter, fake_comfy):
     _, server = fake_comfy
-    server.submit_errors = [{
-        "error": "invalid prompt",
-        "node_errors": {"1": "bad"},
-    }]
-    job = make_job(adapter="comfyui", payload={"workflow": _wf(ckpt_name="a.safetensors")})
+    server.submit_errors = [
+        {
+            "error": "invalid prompt",
+            "node_errors": {"1": "bad"},
+        }
+    ]
+    job = make_job(
+        adapter="comfyui", payload={"workflow": _wf(ckpt_name="a.safetensors")}
+    )
     with pytest.raises(RuntimeError, match="invalid prompt"):
         await adapter.execute(job)
 
@@ -246,29 +290,42 @@ async def test_execute_validation_error(adapter, fake_comfy):
 # estimate_vram
 # ---------------------------------------------------------------------------
 
+
 async def test_estimate_uses_checkpoint_size(adapter, fake_comfy):
     _, server = fake_comfy
     server.metadata_size = 8 * 1024**3
-    job = make_job(adapter="comfyui", payload={
-        "workflow": _wf(ckpt_name="sd_xl_base.safetensors"),
-    })
+    job = make_job(
+        adapter="comfyui",
+        payload={
+            "workflow": _wf(ckpt_name="sd_xl_base.safetensors"),
+        },
+    )
     estimate = await adapter.estimate_vram(job)
     # 8 GiB checkpoint + 3 GiB overhead = ~11 GiB.
     assert 10 * 1024**3 < estimate < 13 * 1024**3
 
 
 async def test_estimate_uses_fallback_for_unknown_checkpoint(adapter):
-    job = make_job(adapter="comfyui", payload={
-        "workflow": _wf(ckpt_name="nonexistent.safetensors"),
-    })
+    job = make_job(
+        adapter="comfyui",
+        payload={
+            "workflow": _wf(ckpt_name="nonexistent.safetensors"),
+        },
+    )
     estimate = await adapter.estimate_vram(job)
     # 7 GiB fallback + 3 GiB overhead = 10 GiB.
     assert estimate >= 10 * 1024**3
 
 
+async def test_estimate_without_workflow_uses_overhead(adapter):
+    job = make_job(adapter="comfyui", payload={})
+    assert await adapter.estimate_vram(job) == adapter._inference_overhead_bytes
+
+
 # ---------------------------------------------------------------------------
 # Cancellation
 # ---------------------------------------------------------------------------
+
 
 async def test_cancel_running_interrupts(adapter, fake_comfy):
     _, server = fake_comfy
@@ -277,6 +334,7 @@ async def test_cancel_running_interrupts(adapter, fake_comfy):
     # Submit (async), then cancel the running prompt.
 
     import asyncio as _asyncio
+
     exec_task = _asyncio.create_task(adapter.execute(job))
     await wait_until(lambda: "prompt-1" in server.prompts)
     server.queue_running = [[1, "prompt-1", {}, {}, []]]
@@ -303,6 +361,7 @@ async def test_cancel_pending_deletes(adapter, fake_comfy):
 # ---------------------------------------------------------------------------
 # unload_idle_models
 # ---------------------------------------------------------------------------
+
 
 async def test_unload_calls_free_when_idle(adapter, fake_comfy):
     _, server = fake_comfy

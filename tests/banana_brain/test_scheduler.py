@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import time
+from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import pytest
@@ -18,10 +19,10 @@ from huey.banana_brain.scheduler import (
 
 from .conftest import FakeAdapter, make_job, wait_until
 
-
 # ---------------------------------------------------------------------------
 # Lifecycle
 # ---------------------------------------------------------------------------
+
 
 async def test_scheduler_start_and_stop(scheduler):
     sched, adapter, _ = scheduler
@@ -42,6 +43,7 @@ async def test_double_start_raises(scheduler, test_config, job_store, fake_nvml)
 # ---------------------------------------------------------------------------
 # Submission and dispatch
 # ---------------------------------------------------------------------------
+
 
 async def test_submit_assigns_id_and_state(scheduler, job_store):
     sched, _, _ = scheduler
@@ -75,10 +77,12 @@ async def test_job_dispatches_and_completes(scheduler, job_store):
         lambda: asyncio.create_task(job_store.get(submitted.id)),
         timeout=2.0,
     )
+
     # Wait for terminal state.
     async def terminal():
         job = await job_store.get(submitted.id)
         return job is not None and job.state.is_terminal
+
     await wait_until(terminal, timeout=2.0)
 
     stored = await job_store.get(submitted.id)
@@ -99,6 +103,7 @@ async def test_job_fails_when_adapter_raises(scheduler, job_store):
     async def terminal():
         job = await job_store.get(submitted.id)
         return job is not None and job.state.is_terminal
+
     await wait_until(terminal, timeout=2.0)
 
     stored = await job_store.get(submitted.id)
@@ -109,6 +114,7 @@ async def test_job_fails_when_adapter_raises(scheduler, job_store):
 
 async def test_priority_ordering(scheduler, job_store):
     sched, adapter, _ = scheduler
+
     # Submit low first, then high — high must run first.
     async def slow(job):
         await asyncio.sleep(0.02)
@@ -127,9 +133,12 @@ async def test_priority_ordering(scheduler, job_store):
         a = await job_store.get(low.id)
         b = await job_store.get(high.id)
         return (
-            a is not None and a.state.is_terminal
-            and b is not None and b.state.is_terminal
+            a is not None
+            and a.state.is_terminal
+            and b is not None
+            and b.state.is_terminal
         )
+
     await wait_until(both_done, timeout=3.0)
 
     # The high-priority job must have been executed before the low one.
@@ -141,6 +150,7 @@ async def test_priority_ordering(scheduler, job_store):
 # Cancellation
 # ---------------------------------------------------------------------------
 
+
 async def test_cancel_pending_job(scheduler, job_store):
     sched, adapter, _ = scheduler
 
@@ -150,9 +160,7 @@ async def test_cancel_pending_job(scheduler, job_store):
 
     adapter.on_execute = slow
     blocker = await sched.submit(make_job())
-    await wait_until(
-        lambda: sched.current_job is not None, timeout=1.0
-    )
+    await wait_until(lambda: sched.current_job is not None, timeout=1.0)
     pending = await sched.submit(make_job())
 
     cancelled = await sched.cancel(pending.id, force=False)
@@ -172,8 +180,7 @@ async def test_cancel_running_without_force_raises(scheduler):
     adapter.on_execute = slow
     running = await sched.submit(make_job())
     await wait_until(
-        lambda: sched.current_job is not None
-        and sched.current_job.id == running.id,
+        lambda: sched.current_job is not None and sched.current_job.id == running.id,
         timeout=1.0,
     )
     with pytest.raises(JobNotCancellable):
@@ -190,8 +197,7 @@ async def test_cancel_running_with_force_calls_adapter(scheduler):
     adapter.on_execute = slow
     running = await sched.submit(make_job())
     await wait_until(
-        lambda: sched.current_job is not None
-        and sched.current_job.id == running.id,
+        lambda: sched.current_job is not None and sched.current_job.id == running.id,
         timeout=1.0,
     )
     ok = await sched.cancel(running.id, force=True)
@@ -208,6 +214,7 @@ async def test_cancel_unknown_returns_false(scheduler):
 # Shutdown drain
 # ---------------------------------------------------------------------------
 
+
 async def test_shutdown_waits_for_running_job(scheduler, job_store):
     sched, adapter, _ = scheduler
 
@@ -217,9 +224,7 @@ async def test_shutdown_waits_for_running_job(scheduler, job_store):
 
     adapter.on_execute = slow
     running = await sched.submit(make_job())
-    await wait_until(
-        lambda: sched.current_job is not None, timeout=1.0
-    )
+    await wait_until(lambda: sched.current_job is not None, timeout=1.0)
 
     sched.begin_shutdown()
     # The job must complete even though we're shutting down.
@@ -237,9 +242,7 @@ async def test_shutdown_preserves_pending_jobs(scheduler, job_store):
 
     adapter.on_execute = slow
     running = await sched.submit(make_job())
-    await wait_until(
-        lambda: sched.current_job is not None, timeout=1.0
-    )
+    await wait_until(lambda: sched.current_job is not None, timeout=1.0)
     pending = await sched.submit(make_job())
 
     sched.begin_shutdown()
@@ -257,6 +260,7 @@ async def test_shutdown_preserves_pending_jobs(scheduler, job_store):
 # ---------------------------------------------------------------------------
 # Admission checker (used by gpu_modes)
 # ---------------------------------------------------------------------------
+
 
 async def test_admission_checker_blocks_dispatch(scheduler, job_store):
     sched, adapter, _ = scheduler
@@ -285,9 +289,8 @@ async def test_admission_checker_blocks_dispatch(scheduler, job_store):
 # VRAM integration (mark_running)
 # ---------------------------------------------------------------------------
 
-async def test_vram_mark_running_called(
-    scheduler, job_store, fake_nvml
-):
+
+async def test_vram_mark_running_called(scheduler, job_store, fake_nvml):
     """
     Regression test for the noted patch: scheduler._run_job must call
     vram_manager.mark_running() so the reservation state transitions
@@ -319,9 +322,8 @@ async def test_vram_mark_running_called(
 # Fail-closed on unknown GPU state
 # ---------------------------------------------------------------------------
 
-async def test_dispatch_waits_when_gpu_state_unknown(
-    scheduler, job_store, fake_nvml
-):
+
+async def test_dispatch_waits_when_gpu_state_unknown(scheduler, job_store, fake_nvml):
     sched, adapter, monitor = scheduler
     fake_nvml.fail_poll = True
     # Force the monitor to consider itself stale.
@@ -339,6 +341,59 @@ async def test_dispatch_waits_when_gpu_state_unknown(
     fake_nvml.fail_poll = False
     await monitor.refresh()
     sched.request_dispatch()
-    await wait_until(
-        lambda: len(adapter.executed) == 1, timeout=3.0
+    await wait_until(lambda: len(adapter.executed) == 1, timeout=3.0)
+
+
+async def test_estimate_vram_prefers_explicit_then_uses_default_on_adapter_error(
+    scheduler,
+):
+    sched, adapter, _ = scheduler
+    explicit = make_job(estimated_vram_bytes=1234)
+    assert await sched._estimate_vram(explicit) == 1234
+
+    async def fail_estimate(_job):
+        raise RuntimeError("estimate unavailable")
+
+    adapter.estimate_vram = fail_estimate
+    unestimated = make_job()
+    assert await sched._estimate_vram(unestimated) == sched.DEFAULT_VRAM_ESTIMATE_BYTES
+
+
+async def test_reservation_retries_after_adapter_releases_memory(scheduler):
+    sched, adapter, monitor = scheduler
+    required = 4 * 1024**3
+    monitor.get_status = AsyncMock(
+        side_effect=[
+            SimpleNamespace(free_vram_bytes=1),
+            SimpleNamespace(free_vram_bytes=required + 1),
+        ]
     )
+    sched._vram_manager.try_reserve = AsyncMock(side_effect=[False, True])
+
+    async def unload(_needed):
+        return required
+
+    adapter.on_unload = unload
+    assert await sched._reserve_memory(make_job(), required)
+    assert adapter.unload_calls == [required]
+    assert sched._vram_manager.try_reserve.await_count == 2
+
+
+async def test_reservation_fails_closed_when_monitor_unavailable(scheduler):
+    sched, _, monitor = scheduler
+    monitor.get_status = AsyncMock(return_value=None)
+    assert not await sched._free_memory_for(make_job(), 100)
+
+
+async def test_persistence_failure_does_not_abort_scheduler(scheduler, job_store):
+    sched, _, _ = scheduler
+    job_store.save = AsyncMock(side_effect=OSError("database unavailable"))
+    await sched._persist(make_job())
+    job_store.save.assert_awaited_once()
+
+
+async def test_recovery_store_failure_is_logged_and_ignored(scheduler, job_store):
+    sched, _, _ = scheduler
+    job_store.list_by_state = AsyncMock(side_effect=OSError("database unavailable"))
+    await sched._recover_unfinished()
+    job_store.list_by_state.assert_awaited_once()

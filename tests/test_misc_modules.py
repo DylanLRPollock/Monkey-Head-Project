@@ -118,7 +118,7 @@ def test_remove_files(tmp_path):
 
 
 def test_split_chapters(tmp_path):
-    text = "intro\nCHAPTERfirst\nCHAPTERsecond"
+    text = "intro\nCHAPTER 1\nfirst\nCHAPTER 2\nsecond"
     infile = tmp_path / "book.txt"
     infile.write_text(text)
     outdir = tmp_path / "chapters"

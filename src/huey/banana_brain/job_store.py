@@ -51,25 +51,25 @@ Configuration fields consumed:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
 import sqlite3
 import time
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable, Optional
+from typing import Any
 
 from .job_models import (
-    ACTIVE_STATES,
     TERMINAL_STATES,
     Job,
-    JobState,
 )
 
 __all__ = [
+    "SCHEMA_VERSION",
     "JobStore",
     "JobStoreNotReady",
     "SchemaError",
-    "SCHEMA_VERSION",
 ]
 
 LOG = logging.getLogger("banana_brain.job_store")
@@ -139,6 +139,7 @@ CREATE INDEX IF NOT EXISTS idx_job_events_job
 # Errors
 # ---------------------------------------------------------------------------
 
+
 class JobStoreNotReady(RuntimeError):
     """Raised when save()/list_by_state() are called before start() or after stop()."""
 
@@ -150,6 +151,7 @@ class SchemaError(RuntimeError):
 # ---------------------------------------------------------------------------
 # JobStore
 # ---------------------------------------------------------------------------
+
 
 class JobStore:
     """
@@ -176,19 +178,15 @@ class JobStore:
             _cfg_num(config, "job_retention_days", DEFAULT_RETENTION_DAYS)
         )
         self._max_terminal_rows = int(
-            _cfg_num(
-                config, "job_max_terminal_rows", DEFAULT_MAX_TERMINAL_ROWS
-            )
+            _cfg_num(config, "job_max_terminal_rows", DEFAULT_MAX_TERMINAL_ROWS)
         )
         self._prune_interval_s = float(
-            _cfg_num(
-                config, "job_prune_interval_seconds", DEFAULT_PRUNE_INTERVAL_S
-            )
+            _cfg_num(config, "job_prune_interval_seconds", DEFAULT_PRUNE_INTERVAL_S)
         )
 
-        self._conn: Optional[sqlite3.Connection] = None
+        self._conn: sqlite3.Connection | None = None
         self._lock = asyncio.Lock()
-        self._prune_task: Optional[asyncio.Task[None]] = None
+        self._prune_task: asyncio.Task[None] | None = None
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -204,9 +202,7 @@ class JobStore:
         try:
             conn = await asyncio.to_thread(self._open_connection)
         except Exception as exc:
-            raise SchemaError(
-                f"cannot open job store {self._db_path}: {exc}"
-            ) from exc
+            raise SchemaError(f"cannot open job store {self._db_path}: {exc}") from exc
 
         async with self._lock:
             self._conn = conn
@@ -241,10 +237,8 @@ class JobStore:
         self._prune_task = None
         if task is not None:
             task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await task
-            except asyncio.CancelledError:
-                pass
 
         async with self._lock:
             conn = self._conn
@@ -274,7 +268,7 @@ class JobStore:
             await asyncio.to_thread(self._save_sync, conn, job)
 
     async def record_event(
-        self, job_id: str, kind: str, detail: Optional[dict[str, Any]] = None
+        self, job_id: str, kind: str, detail: dict[str, Any] | None = None
     ) -> None:
         """
         Append a free-form event for the CLI/postmortem.
@@ -288,22 +282,18 @@ class JobStore:
             conn = self._conn
             if conn is None:
                 raise JobStoreNotReady("job_store is not running")
-            await asyncio.to_thread(
-                self._record_event_sync, conn, job_id, kind, detail
-            )
+            await asyncio.to_thread(self._record_event_sync, conn, job_id, kind, detail)
 
     # ------------------------------------------------------------------
     # Reads
     # ------------------------------------------------------------------
 
-    async def get(self, job_id: str) -> Optional[Job]:
+    async def get(self, job_id: str) -> Job | None:
         async with self._lock:
             conn = self._require_conn()
             return await asyncio.to_thread(self._get_sync, conn, job_id)
 
-    async def list_by_state(
-        self, states: Iterable[Any]
-    ) -> list[Job]:
+    async def list_by_state(self, states: Iterable[Any]) -> list[Job]:
         """
         Return all jobs in the given states, ordered by submitted_at.
         Accepts strings or JobState members; both are normalised to their
@@ -314,15 +304,13 @@ class JobStore:
             return []
         async with self._lock:
             conn = self._require_conn()
-            return await asyncio.to_thread(
-                self._list_by_state_sync, conn, state_values
-            )
+            return await asyncio.to_thread(self._list_by_state_sync, conn, state_values)
 
     async def list_recent(
-        self, limit: int = 50, states: Optional[Iterable[Any]] = None
+        self, limit: int = 50, states: Iterable[Any] | None = None
     ) -> list[Job]:
         """Most recent jobs by updated_at, for CLI history."""
-        state_values: Optional[tuple[str, ...]] = None
+        state_values: tuple[str, ...] | None = None
         if states is not None:
             state_values = tuple(sorted({str(s) for s in states}))
             if not state_values:
@@ -338,9 +326,7 @@ class JobStore:
             conn = self._require_conn()
             return await asyncio.to_thread(self._count_by_state_sync, conn)
 
-    async def find_by_idempotency_key(
-        self, key: str, adapter: str
-    ) -> Optional[Job]:
+    async def find_by_idempotency_key(self, key: str, adapter: str) -> Job | None:
         if not key:
             return None
         async with self._lock:
@@ -349,14 +335,10 @@ class JobStore:
                 self._find_by_idempotency_sync, conn, key, adapter
             )
 
-    async def list_events(
-        self, job_id: str, limit: int = 100
-    ) -> list[dict[str, Any]]:
+    async def list_events(self, job_id: str, limit: int = 100) -> list[dict[str, Any]]:
         async with self._lock:
             conn = self._require_conn()
-            return await asyncio.to_thread(
-                self._list_events_sync, conn, job_id, limit
-            )
+            return await asyncio.to_thread(self._list_events_sync, conn, job_id, limit)
 
     # ------------------------------------------------------------------
     # Maintenance
@@ -385,18 +367,22 @@ class JobStore:
             check_same_thread=False,
             isolation_level=None,  # explicit transactions
         )
-        conn.row_factory = sqlite3.Row
-        # Write-ahead logging improves read concurrency and survives
-        # crashes more gracefully than the default rollback journal.
-        conn.execute("PRAGMA journal_mode = WAL")
-        conn.execute("PRAGMA synchronous = NORMAL")
-        conn.execute(f"PRAGMA busy_timeout = {BUSY_TIMEOUT_MS}")
-        conn.execute("PRAGMA foreign_keys = ON")
+        try:
+            conn.row_factory = sqlite3.Row
+            # Write-ahead logging improves read concurrency and survives
+            # crashes more gracefully than the default rollback journal.
+            conn.execute("PRAGMA journal_mode = WAL")
+            conn.execute("PRAGMA synchronous = NORMAL")
+            conn.execute(f"PRAGMA busy_timeout = {BUSY_TIMEOUT_MS}")
+            conn.execute("PRAGMA foreign_keys = ON")
 
-        # Cheap smoke test: the DB file must be readable. If this fails,
-        # the file is corrupt or not a SQLite database at all.
-        conn.execute("SELECT 1 FROM sqlite_master LIMIT 1").fetchone()
-        return conn
+            # Cheap smoke test: the DB file must be readable. If this fails,
+            # the file is corrupt or not a SQLite database at all.
+            conn.execute("SELECT 1 FROM sqlite_master LIMIT 1").fetchone()
+            return conn
+        except Exception:
+            self._close_sync(conn)
+            raise
 
     def _close_sync(self, conn: sqlite3.Connection) -> None:
         try:
@@ -433,9 +419,7 @@ class JobStore:
         now = time.time()
         payload_json = _dumps(data["payload"])
         tags_json = _dumps(data.get("tags") or {})
-        result_json = (
-            _dumps(data["result"]) if data.get("result") is not None else None
-        )
+        result_json = _dumps(data["result"]) if data.get("result") is not None else None
 
         row = (
             data["id"],
@@ -519,7 +503,7 @@ class JobStore:
         conn: sqlite3.Connection,
         job_id: str,
         kind: str,
-        detail: Optional[dict[str, Any]],
+        detail: dict[str, Any] | None,
     ) -> None:
         now = time.time()
         detail_json = _dumps(detail) if detail is not None else None
@@ -535,15 +519,12 @@ class JobStore:
             # diagnostic, not load-bearing.
             LOG.debug(
                 "record_event: job %s no longer exists; dropping %s",
-                job_id, kind,
+                job_id,
+                kind,
             )
 
-    def _get_sync(
-        self, conn: sqlite3.Connection, job_id: str
-    ) -> Optional[Job]:
-        row = conn.execute(
-            "SELECT * FROM jobs WHERE id = ?", (job_id,)
-        ).fetchone()
+    def _get_sync(self, conn: sqlite3.Connection, job_id: str) -> Job | None:
+        row = conn.execute("SELECT * FROM jobs WHERE id = ?", (job_id,)).fetchone()
         if row is None:
             return None
         return _row_to_job(row)
@@ -563,7 +544,7 @@ class JobStore:
         self,
         conn: sqlite3.Connection,
         limit: int,
-        states: Optional[tuple[str, ...]],
+        states: tuple[str, ...] | None,
     ) -> list[Job]:
         limit = max(0, int(limit))
         if limit == 0:
@@ -582,17 +563,13 @@ class JobStore:
             ).fetchall()
         return _rows_to_jobs(rows)
 
-    def _count_by_state_sync(
-        self, conn: sqlite3.Connection
-    ) -> dict[str, int]:
+    def _count_by_state_sync(self, conn: sqlite3.Connection) -> dict[str, int]:
         rows = conn.execute(
             "SELECT state, COUNT(*) AS n FROM jobs GROUP BY state"
         ).fetchall()
         return {row["state"]: int(row["n"]) for row in rows}
 
-    def _count_sync(
-        self, conn: sqlite3.Connection, where_state: Optional[str]
-    ) -> int:
+    def _count_sync(self, conn: sqlite3.Connection, where_state: str | None) -> int:
         if where_state is None:
             row = conn.execute("SELECT COUNT(*) AS n FROM jobs").fetchone()
         else:
@@ -604,7 +581,7 @@ class JobStore:
 
     def _find_by_idempotency_sync(
         self, conn: sqlite3.Connection, key: str, adapter: str
-    ) -> Optional[Job]:
+    ) -> Job | None:
         row = conn.execute(
             "SELECT * FROM jobs WHERE idempotency_key = ? AND adapter = ? "
             "ORDER BY created_at ASC LIMIT 1",
@@ -698,6 +675,7 @@ class JobStore:
 # Serialisation helpers
 # ---------------------------------------------------------------------------
 
+
 def _dumps(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
 
@@ -761,7 +739,7 @@ def _rows_to_jobs(rows: Iterable[sqlite3.Row]) -> list[Job]:
         except Exception:
             LOG.exception(
                 "job_store: skipping unparseable row id=%s",
-                row["id"] if "id" in row.keys() else "<unknown>",
+                row["id"] if "id" in row.keys() else "<unknown>",  # noqa: SIM118
             )
     return jobs
 
@@ -769,6 +747,7 @@ def _rows_to_jobs(rows: Iterable[sqlite3.Row]) -> list[Job]:
 # ---------------------------------------------------------------------------
 # Config helpers
 # ---------------------------------------------------------------------------
+
 
 def _cfg_get(config: Any, *names: str) -> Any:
     for name in names:
