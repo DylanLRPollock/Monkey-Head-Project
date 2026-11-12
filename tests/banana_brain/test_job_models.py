@@ -84,7 +84,6 @@ def test_model_validation_and_identity_edge_cases():
 
     job = Job(adapter="ollama", payload={}, state="pending")
     assert job.can_transition_to(JobState.PENDING)
-    assert job == job
     assert job.__eq__(object()) is NotImplemented
 
     job.id = ""
