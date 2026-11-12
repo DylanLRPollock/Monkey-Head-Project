@@ -14,24 +14,21 @@ Provides:
 from __future__ import annotations
 
 import asyncio
-from dataclasses import dataclass
 import sys
-import tempfile
 import time
 import types
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
-from unittest.mock import AsyncMock
+from typing import Any
 
 import pytest
 import pytest_asyncio
 
 from huey.banana_brain.config import BananaBrainConfig
-from huey.banana_brain.job_models import Job, JobState, Priority
+from huey.banana_brain.job_models import Job, Priority
 from huey.banana_brain.job_store import JobStore
 from huey.banana_brain.priority_manager import PriorityManager
 from huey.banana_brain.scheduler import Scheduler
-
 
 # ---------------------------------------------------------------------------
 # pytest-asyncio default
@@ -47,6 +44,7 @@ def pytest_configure(config: pytest.Config) -> None:
 # ---------------------------------------------------------------------------
 # Fake NVML
 # ---------------------------------------------------------------------------
+
 
 class FakeNVMLHandle:
     def __init__(self, index: int, uuid: str, name: str, pci: str) -> None:
@@ -77,10 +75,10 @@ class FakeNVMLModule(types.ModuleType):
         self.initialized = False
         self.fail_init = False
         self.devices: list[FakeNVMLHandle] = []
-        self.memory: dict[str, tuple[int, int, int]] = {}   # uuid -> (total, free, used)
+        self.memory: dict[str, tuple[int, int, int]] = {}  # uuid -> (total, free, used)
         self.temperature: dict[str, int] = {}
         self.power_mw: dict[str, int] = {}
-        self.util: dict[str, tuple[int, int]] = {}          # uuid -> (gpu, mem)
+        self.util: dict[str, tuple[int, int]] = {}  # uuid -> (gpu, mem)
         self.throttle: dict[str, int] = {}
         self.compute_procs: dict[str, list[Any]] = {}
         self.graphics_procs: dict[str, list[Any]] = {}
@@ -159,7 +157,9 @@ class FakeNVMLModule(types.ModuleType):
     def nvmlDeviceGetPowerUsage(self, handle: FakeNVMLHandle) -> int:
         return self.power_mw.get(handle.uuid, 70_000)
 
-    def nvmlDeviceGetTemperatureThreshold(self, handle: FakeNVMLHandle, kind: int) -> int:
+    def nvmlDeviceGetTemperatureThreshold(
+        self, handle: FakeNVMLHandle, kind: int
+    ) -> int:
         if kind == self.NVML_TEMPERATURE_THRESHOLD_SHUTDOWN:
             return 95
         return 88
@@ -173,7 +173,9 @@ class FakeNVMLModule(types.ModuleType):
     def nvmlDeviceGetComputeRunningProcesses(self, handle: FakeNVMLHandle) -> list[Any]:
         return list(self.compute_procs.get(handle.uuid, []))
 
-    def nvmlDeviceGetGraphicsRunningProcesses(self, handle: FakeNVMLHandle) -> list[Any]:
+    def nvmlDeviceGetGraphicsRunningProcesses(
+        self, handle: FakeNVMLHandle
+    ) -> list[Any]:
         return list(self.graphics_procs.get(handle.uuid, []))
 
 
@@ -207,6 +209,7 @@ def fake_nvml(monkeypatch: pytest.MonkeyPatch) -> FakeNVMLModule:
 # Stub adapters
 # ---------------------------------------------------------------------------
 
+
 class FakeAdapter:
     """
     In-memory adapter satisfying the scheduler's contract.
@@ -227,8 +230,8 @@ class FakeAdapter:
         self.executed: list[Job] = []
         self.unload_calls: list[int] = []
         self.cancel_calls: list[Job] = []
-        self.on_execute: Optional[Any] = None
-        self.on_unload: Optional[Any] = None
+        self.on_execute: Any | None = None
+        self.on_unload: Any | None = None
         self.started = False
         self.stopped = False
 
@@ -267,6 +270,7 @@ def fake_adapter() -> FakeAdapter:
 # Config
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class BananaBrainTestConfig(BananaBrainConfig):
     """Base config plus component options accepted by the scheduler stack."""
@@ -300,8 +304,8 @@ def test_config(tmp_path: Path) -> BananaBrainTestConfig:
         priority_aging_cap=99,
         priority_overdue_boost=20,
         database_path=tmp_path / "test.db",
-        job_retention_days=0,        # disable pruning
-        job_max_terminal_rows=0,     # disable pruning
+        job_retention_days=0,  # disable pruning
+        job_max_terminal_rows=0,  # disable pruning
         job_prune_interval_seconds=0,
         api_socket_path=tmp_path / "test.sock",
         metrics_enabled=False,
@@ -314,6 +318,7 @@ def test_config(tmp_path: Path) -> BananaBrainTestConfig:
 # ---------------------------------------------------------------------------
 # Job store
 # ---------------------------------------------------------------------------
+
 
 @pytest_asyncio.fixture
 async def job_store(test_config: BananaBrainConfig):
@@ -329,6 +334,7 @@ async def job_store(test_config: BananaBrainConfig):
 # Priority manager
 # ---------------------------------------------------------------------------
 
+
 @pytest_asyncio.fixture
 async def priority_manager(test_config: BananaBrainConfig):
     pm = PriorityManager(test_config)
@@ -342,6 +348,7 @@ async def priority_manager(test_config: BananaBrainConfig):
 # ---------------------------------------------------------------------------
 # Scheduler + fake adapter
 # ---------------------------------------------------------------------------
+
 
 @pytest_asyncio.fixture
 async def scheduler(test_config, job_store, fake_nvml):
@@ -380,11 +387,12 @@ async def scheduler(test_config, job_store, fake_nvml):
 # Convenience builders
 # ---------------------------------------------------------------------------
 
+
 def make_job(
     *,
     adapter: str = "fake",
-    priority: int = int(Priority.BACKGROUND),
-    payload: Optional[dict[str, Any]] = None,
+    priority: int = Priority.BACKGROUND,
+    payload: dict[str, Any] | None = None,
     **kwargs: Any,
 ) -> Job:
     return Job(
@@ -414,12 +422,10 @@ async def wait_until(
         if result:
             return
         if time.monotonic() >= deadline:
-            raise AssertionError(
-                f"wait_until: condition not met within {timeout:.1f}s"
-            )
+            raise AssertionError(f"wait_until: condition not met within {timeout:.1f}s")
         await asyncio.sleep(interval)
 
 
-pytest_asyncio.fixture
+@pytest_asyncio.fixture
 async def wait_until_fixture():
     return wait_until

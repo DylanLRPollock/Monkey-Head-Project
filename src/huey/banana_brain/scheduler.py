@@ -61,19 +61,21 @@ A Job object (provided by job_models) must expose:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import time
 import uuid
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 from .job_models import JobState
 
 __all__ = [
-    "Scheduler",
+    "JobNotCancellable",
     "JobState",
+    "Scheduler",
     "SchedulerError",
     "SchedulerShuttingDown",
-    "JobNotCancellable",
 ]
 
 LOG = logging.getLogger("banana_brain.scheduler")
@@ -82,6 +84,7 @@ LOG = logging.getLogger("banana_brain.scheduler")
 # ---------------------------------------------------------------------------
 # Errors
 # ---------------------------------------------------------------------------
+
 
 class SchedulerError(Exception):
     """Base class for scheduler errors."""
@@ -98,6 +101,7 @@ class JobNotCancellable(SchedulerError):
 # ---------------------------------------------------------------------------
 # Scheduler
 # ---------------------------------------------------------------------------
+
 
 class Scheduler:
     """
@@ -135,13 +139,13 @@ class Scheduler:
         self._priority_manager = priority_manager
         self._adapters = dict(adapters)
 
-        self._dispatch_task: Optional[asyncio.Task[None]] = None
+        self._dispatch_task: asyncio.Task[None] | None = None
         self._wake = asyncio.Event()
         self._idle = asyncio.Event()
         self._idle.set()  # idle until the loop starts
         self._shutting_down = False
-        self._current_job: Optional[Any] = None
-        self._admission_checker: Optional[Callable[[Any], bool]] = None
+        self._current_job: Any | None = None
+        self._admission_checker: Callable[[Any], bool] | None = None
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -183,13 +187,11 @@ class Scheduler:
             return
         try:
             await asyncio.wait_for(task, timeout=self.DISPATCH_TASK_JOIN_S)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             LOG.warning("dispatch loop did not exit; cancelling")
             task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await task
-            except asyncio.CancelledError:
-                pass
         finally:
             self._dispatch_task = None
         LOG.info("scheduler stopped")
@@ -206,7 +208,7 @@ class Scheduler:
         """Resolve when the dispatch loop has exited and no job is running."""
         await self._idle.wait()
 
-    async def wait_until_empty(self, timeout: Optional[float] = None) -> bool:
+    async def wait_until_empty(self, timeout: float | None = None) -> bool:
         """
         Wait until the queue is empty and no job is running, without
         initiating shutdown. Returns True if it became empty in time.
@@ -227,9 +229,7 @@ class Scheduler:
         """Wake the dispatch loop after an external state change."""
         self._wake.set()
 
-    def set_admission_checker(
-        self, checker: Optional[Callable[[Any], bool]]
-    ) -> None:
+    def set_admission_checker(self, checker: Callable[[Any], bool] | None) -> None:
         """Install or clear a synchronous policy gate for job dispatch."""
         self._admission_checker = checker
         self._wake.set()
@@ -269,7 +269,9 @@ class Scheduler:
         self._wake.set()
         LOG.info(
             "job %s submitted (adapter=%s priority=%s est_vram=%s)",
-            job.id, job.adapter, job.priority,
+            job.id,
+            job.adapter,
+            job.priority,
             getattr(job, "estimated_vram_bytes", None),
         )
         return job
@@ -312,12 +314,15 @@ class Scheduler:
                 except Exception:
                     LOG.exception(
                         "adapter %s failed to request cancellation for %s",
-                        current.adapter, job_id,
+                        current.adapter,
+                        job_id,
                     )
             else:
                 LOG.warning(
                     "adapter %s does not implement request_cancel; job %s "
-                    "will run to completion", current.adapter, job_id,
+                    "will run to completion",
+                    current.adapter,
+                    job_id,
                 )
             return True
 
@@ -357,14 +362,17 @@ class Scheduler:
                 dropped += 1
                 LOG.error(
                     "recovery: job %s referenced missing adapter %r; marked failed",
-                    job.id, job.adapter,
+                    job.id,
+                    job.adapter,
                 )
                 continue
 
             if job.state == JobState.RUNNING:
                 LOG.warning(
                     "recovery: job %s was RUNNING at last shutdown; requeueing "
-                    "with attempts=%s", job.id, getattr(job, "attempts", 0),
+                    "with attempts=%s",
+                    job.id,
+                    getattr(job, "attempts", 0),
                 )
             job.state = JobState.PENDING
             job.started_at = None
@@ -374,9 +382,7 @@ class Scheduler:
             recovered += 1
 
         if recovered or dropped:
-            LOG.info(
-                "recovery complete: %d requeued, %d dropped", recovered, dropped
-            )
+            LOG.info("recovery complete: %d requeued, %d dropped", recovered, dropped)
 
     # ------------------------------------------------------------------
     # Dispatch loop
@@ -405,18 +411,16 @@ class Scheduler:
                     continue  # try to pick up the next job immediately
 
                 # Nothing dispatchable. Wait for a wake or re-check.
-                try:
+                with contextlib.suppress(TimeoutError):
                     await asyncio.wait_for(
                         self._wake.wait(), timeout=self.REFRESH_INTERVAL_S
                     )
-                except asyncio.TimeoutError:
-                    pass
                 self._wake.clear()
         finally:
             self._idle.set()
             LOG.debug("dispatch loop exited")
 
-    async def _try_dispatch_next(self) -> bool:
+    async def _try_dispatch_next(self) -> bool:  # noqa: C901,RUF100
         """
         Try to run the highest-priority job once.
 
@@ -478,7 +482,9 @@ class Scheduler:
         await self._persist(job)
         LOG.info(
             "job %s running (adapter=%s attempts=%d)",
-            job.id, job.adapter, job.attempts,
+            job.id,
+            job.adapter,
+            job.attempts,
         )
 
         adapter = self._adapters.get(job.adapter)
@@ -502,7 +508,9 @@ class Scheduler:
             await self._persist(job)
             LOG.info(
                 "job %s %s in %.2fs",
-                job.id, job.state, time.monotonic() - started_monotonic,
+                job.id,
+                job.state,
+                time.monotonic() - started_monotonic,
             )
 
     # ------------------------------------------------------------------
@@ -522,12 +530,14 @@ class Scheduler:
             except Exception:
                 LOG.exception(
                     "adapter %s failed to estimate VRAM for job %s",
-                    job.adapter, job.id,
+                    job.adapter,
+                    job.id,
                 )
 
         LOG.warning(
             "no VRAM estimate for job %s; using default %d bytes",
-            job.id, self.DEFAULT_VRAM_ESTIMATE_BYTES,
+            job.id,
+            self.DEFAULT_VRAM_ESTIMATE_BYTES,
         )
         return self.DEFAULT_VRAM_ESTIMATE_BYTES
 
@@ -550,7 +560,8 @@ class Scheduler:
         if not freed:
             LOG.debug(
                 "job %s waiting: %d bytes unavailable, no memory freed",
-                job.id, required_bytes,
+                job.id,
+                required_bytes,
             )
             return False
 
@@ -591,16 +602,16 @@ class Scheduler:
 
         after = await self._gpu_monitor.get_status()
         if after is None:
-            LOG.warning(
-                "gpu_monitor unavailable after freeing; cannot confirm release"
-            )
+            LOG.warning("gpu_monitor unavailable after freeing; cannot confirm release")
             return False
         free_after = int(after.free_vram_bytes)
         delta = free_after - free_before
         if delta > 0:
             LOG.info(
                 "VRAM freed: +%d bytes (now %d free); retrying reservation for job %s",
-                delta, free_after, job.id,
+                delta,
+                free_after,
+                job.id,
             )
             return True
         return False
@@ -625,7 +636,7 @@ class Scheduler:
     # ------------------------------------------------------------------
 
     @property
-    def current_job(self) -> Optional[Any]:
+    def current_job(self) -> Any | None:
         return self._current_job
 
     @property

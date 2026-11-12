@@ -15,9 +15,7 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import replace
-import time
 
-import pytest
 import pytest_asyncio
 
 from huey.banana_brain.gpu_modes import GPUMode, GPUModeManager
@@ -31,13 +29,13 @@ from huey.banana_brain.watchdog import Severity, Watchdog
 
 from .conftest import FakeAdapter, make_job, wait_until
 
-
-GIB = 1024 ** 3
+GIB = 1024**3
 
 
 # ---------------------------------------------------------------------------
 # Composition fixture
 # ---------------------------------------------------------------------------
+
 
 @pytest_asyncio.fixture
 async def stack(test_config, fake_nvml, tmp_path):
@@ -131,6 +129,7 @@ async def stack(test_config, fake_nvml, tmp_path):
 # Take-turns scenario
 # ---------------------------------------------------------------------------
 
+
 async def test_ollama_then_comfyui_serial_dispatch(stack):
     sched = stack["scheduler"]
     ollama = stack["ollama"]
@@ -150,12 +149,16 @@ async def test_ollama_then_comfyui_serial_dispatch(stack):
     comfyui.on_execute = comfyui_run
 
     a = await sched.submit(
-        make_job(adapter="ollama", priority=int(Priority.INTERACTIVE),
-                 payload={"prompt": "hi"})
+        make_job(
+            adapter="ollama",
+            priority=int(Priority.INTERACTIVE),
+            payload={"prompt": "hi"},
+        )
     )
     b = await sched.submit(
-        make_job(adapter="comfyui", priority=int(Priority.IMAGE),
-                 payload={"workflow": {}})
+        make_job(
+            adapter="comfyui", priority=int(Priority.IMAGE), payload={"workflow": {}}
+        )
     )
 
     async def both_done():
@@ -179,6 +182,7 @@ async def test_ollama_then_comfyui_serial_dispatch(stack):
 # Mode transition: GAMING blocks dispatch
 # ---------------------------------------------------------------------------
 
+
 async def test_gaming_mode_blocks_dispatch(stack):
     sched = stack["scheduler"]
     modes = stack["modes"]
@@ -192,14 +196,10 @@ async def test_gaming_mode_blocks_dispatch(stack):
     adapter.on_execute = slow
 
     running = await sched.submit(make_job(adapter="ollama"))
-    await wait_until(
-        lambda: sched.current_job is not None, timeout=1.0
-    )
+    await wait_until(lambda: sched.current_job is not None, timeout=1.0)
 
     # Transition to gaming. Should wait for the running job.
-    result = await modes.set_mode(
-        GPUMode.GAMING, reason="test", requested_by="test"
-    )
+    result = await modes.set_mode(GPUMode.GAMING, reason="test", requested_by="test")
     assert result.success
     assert result.to_mode is GPUMode.GAMING
 
@@ -248,6 +248,7 @@ async def test_mode_suspends_jobs_on_entry(stack):
 # Safety halt triggered by thermal event
 # ---------------------------------------------------------------------------
 
+
 async def test_thermal_event_triggers_safety_halt(stack):
     monitor = stack["monitor"]
     modes = stack["modes"]
@@ -289,6 +290,7 @@ async def test_safety_halt_blocks_admission(stack):
     async def baseline_done():
         j = await store.get(baseline.id)
         return j.state.is_terminal
+
     await wait_until(baseline_done, timeout=2.0)
 
     # Now trigger a halt.
@@ -309,12 +311,14 @@ async def test_safety_halt_blocks_admission(stack):
     async def blocked_done():
         j = await store.get(blocked.id)
         return j.state.is_terminal
+
     await wait_until(blocked_done, timeout=3.0)
 
 
 # ---------------------------------------------------------------------------
 # Fail-closed on GPU state loss
 # ---------------------------------------------------------------------------
+
 
 async def test_gpu_unavailable_refuses_admission(stack):
     monitor = stack["monitor"]
@@ -339,6 +343,7 @@ async def test_gpu_unavailable_refuses_admission(stack):
 # Shutdown drain
 # ---------------------------------------------------------------------------
 
+
 async def test_shutdown_drains_running_job(stack):
     sched = stack["scheduler"]
     adapter = stack["ollama"]
@@ -350,9 +355,7 @@ async def test_shutdown_drains_running_job(stack):
 
     adapter.on_execute = slow
     running = await sched.submit(make_job(adapter="ollama"))
-    await wait_until(
-        lambda: sched.current_job is not None, timeout=1.0
-    )
+    await wait_until(lambda: sched.current_job is not None, timeout=1.0)
 
     sched.begin_shutdown()
     await asyncio.wait_for(sched.wait_for_idle(), timeout=3.0)

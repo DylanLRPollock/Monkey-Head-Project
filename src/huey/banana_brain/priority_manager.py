@@ -56,7 +56,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
-from typing import Any, Optional
+from typing import Any
 
 from .job_models import Job, Priority
 
@@ -91,8 +91,9 @@ class PriorityManager:
         self._config = config
 
         self._aging_interval = float(
-            _cfg_num(config, "priority_aging_interval_seconds",
-                     self.DEFAULT_AGING_INTERVAL_S)
+            _cfg_num(
+                config, "priority_aging_interval_seconds", self.DEFAULT_AGING_INTERVAL_S
+            )
         )
         self._aging_step = int(
             _cfg_num(config, "priority_aging_step", self.DEFAULT_AGING_STEP)
@@ -110,13 +111,15 @@ class PriorityManager:
         if self._aging_interval <= 0:
             LOG.warning(
                 "priority_aging_interval_seconds=%.1f is non-positive; aging "
-                "disabled", self._aging_interval,
+                "disabled",
+                self._aging_interval,
             )
         if self._aging_cap < int(Priority.SAFETY):
             LOG.info(
                 "priority aging cap is %d (< SAFETY=%d); starving jobs will "
                 "never exceed this ceiling",
-                self._aging_cap, int(Priority.SAFETY),
+                self._aging_cap,
+                int(Priority.SAFETY),
             )
 
     # ------------------------------------------------------------------
@@ -126,8 +129,10 @@ class PriorityManager:
     async def start(self) -> None:
         LOG.info(
             "priority_manager ready (aging +%d/%ds, cap=%d, overdue +%d)",
-            self._aging_step, int(self._aging_interval),
-            self._aging_cap, self._overdue_boost,
+            self._aging_step,
+            int(self._aging_interval),
+            self._aging_cap,
+            self._overdue_boost,
         )
 
     async def stop(self) -> None:
@@ -137,7 +142,8 @@ class PriorityManager:
         if count:
             LOG.warning(
                 "priority_manager stopped with %d job(s) discarded "
-                "(scheduler should have drained before stop)", count,
+                "(scheduler should have drained before stop)",
+                count,
             )
 
     # ------------------------------------------------------------------
@@ -156,10 +162,13 @@ class PriorityManager:
             self._jobs[job.id] = job
         LOG.debug(
             "queued job %s (priority=%d, adapter=%s, queue=%d)",
-            job.id, int(job.priority), job.adapter, len(self._jobs),
+            job.id,
+            int(job.priority),
+            job.adapter,
+            len(self._jobs),
         )
 
-    async def remove(self, job_id: str) -> Optional[Job]:
+    async def remove(self, job_id: str) -> Job | None:
         """Remove and return the job, or None if it is no longer queued."""
         if not job_id:
             return None
@@ -177,7 +186,7 @@ class PriorityManager:
     # Selection
     # ------------------------------------------------------------------
 
-    async def peek(self, *, now: Optional[float] = None) -> Optional[Job]:
+    async def peek(self, *, now: float | None = None) -> Job | None:
         """
         Return the job that should run next, or None if the queue is empty.
 
@@ -208,7 +217,7 @@ class PriorityManager:
         """
         return int(Priority.BACKGROUND)
 
-    async def head_is_exclusive(self, *, now: Optional[float] = None) -> bool:
+    async def head_is_exclusive(self, *, now: float | None = None) -> bool:
         """
         True if the job at the head of the queue has exclusive=True.
 
@@ -227,8 +236,8 @@ class PriorityManager:
     async def snapshot(
         self,
         *,
-        now: Optional[float] = None,
-        limit: Optional[int] = None,
+        now: float | None = None,
+        limit: int | None = None,
     ) -> dict[str, Any]:
         """
         Ordered view for the CLI and API.
@@ -279,9 +288,7 @@ class PriorityManager:
         effective = self._effective_priority(job, now)
         has_deadline = job.deadline is not None
         deadline = float(job.deadline) if has_deadline else 0.0
-        submitted = (
-            float(job.submitted_at) if job.submitted_at is not None else 0.0
-        )
+        submitted = float(job.submitted_at) if job.submitted_at is not None else 0.0
         return (
             -effective,
             0 if has_deadline else 1,
@@ -323,6 +330,7 @@ class PriorityManager:
 # ---------------------------------------------------------------------------
 # Config helpers (tolerant of dataclass, mapping, or attribute access)
 # ---------------------------------------------------------------------------
+
 
 def _cfg_num(config: Any, name: str, default: float) -> float:
     if isinstance(config, dict):

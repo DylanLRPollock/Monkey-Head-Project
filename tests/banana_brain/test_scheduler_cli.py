@@ -31,7 +31,7 @@ class FakeClient:
             return 200, {"ok": True, "mode": "ai"}
         return 200, {"ok": True}
 
-    async def request_ok(self, method, path, body=None):
+    async def request_ok(self, method, path, body=None):  # noqa: C901,RUF100
         self.calls.append((method, path, body))
         if path == "/status":
             return {
@@ -221,7 +221,9 @@ def test_formatting_parsing_and_config_precedence(tmp_path, monkeypatch):
 
     cfg = tmp_path / "bb.yaml"
     cfg.write_text(
-        "api_socket_path: /run/bb.sock\napi_bind: 127.0.0.1:12\napi_token: cfg-token-123456789\n"
+        "api_socket_path: /run/bb.sock\n"
+        "api_bind: 127.0.0.1:12\n"
+        "api_token: cfg-token-123456789\n"
     )
     monkeypatch.delenv("BANANA_BRAIN_TOKEN", raising=False)
     default = cli._build_client(
@@ -443,7 +445,9 @@ async def test_client_unix_socket_context_and_transport_errors(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_cli_commands_cover_empty_payloads_and_failure_responses(capsys):
+async def test_cli_commands_cover_empty_payloads_and_failure_responses(  # noqa: C901,RUF100
+    capsys,
+):
     class EmptyClient(FakeClient):
         async def request_ok(self, method, path, body=None):
             self.calls.append((method, path, body))
@@ -525,7 +529,9 @@ async def test_watch_timeout_and_health_http_error(capsys):
 
 
 @pytest.mark.asyncio
-async def test_cli_rich_status_watch_and_mode_branches(tmp_path, monkeypatch, capsys):
+async def test_cli_rich_status_watch_and_mode_branches(  # noqa: C901,RUF100
+    tmp_path, monkeypatch, capsys
+):
     class RichClient(FakeClient):
         async def request(self, method, path, body=None):
             return 200, {"ok": True}

@@ -48,26 +48,27 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, replace
-from enum import Enum
-from typing import Any, Optional
+from enum import StrEnum
+from typing import Any
 
 __all__ = [
-    "VRAMManager",
+    "AdmissionRefused",
     "Reservation",
     "ReservationState",
-    "AdmissionRefused",
+    "VRAMManager",
 ]
 
 LOG = logging.getLogger("banana_brain.vram_manager")
 
-GIB = 1024 ** 3
+GIB = 1024**3
 
 
 # ---------------------------------------------------------------------------
 # Data
 # ---------------------------------------------------------------------------
 
-class ReservationState(str, Enum):
+
+class ReservationState(StrEnum):
     """
     RESERVED: memory promised to a job that has not yet started. Counts
               against allocatable free VRAM because NVML does not yet
@@ -81,6 +82,7 @@ class ReservationState(str, Enum):
     mark_running(job). Callers that never call mark_running leave every
     reservation in RESERVED, which is conservative and safe.
     """
+
     RESERVED = "reserved"
     ACTIVE = "active"
 
@@ -108,6 +110,7 @@ class AdmissionRefused(Exception):
 # Manager
 # ---------------------------------------------------------------------------
 
+
 class VRAMManager:
     """
     Tracks per-job VRAM reservations and decides whether a new job fits.
@@ -126,13 +129,11 @@ class VRAMManager:
         self._headroom_gib = float(
             _cfg_num(config, "vram_headroom_gib", self.DEFAULT_HEADROOM_GIB)
         )
-        self._headroom_percent = float(
-            _cfg_num(config, "vram_headroom_percent", 0.0)
-        )
+        self._headroom_percent = float(_cfg_num(config, "vram_headroom_percent", 0.0))
 
         self._reservations: dict[str, Reservation] = {}
         self._lock = asyncio.Lock()
-        self._last_refusal: Optional[dict[str, Any]] = None
+        self._last_refusal: dict[str, Any] | None = None
 
     # ------------------------------------------------------------------
     # Lifecycle
@@ -141,7 +142,8 @@ class VRAMManager:
     async def start(self) -> None:
         LOG.info(
             "vram_manager ready (headroom=%.2f GiB + %.1f%% of total)",
-            self._headroom_gib, self._headroom_percent * 100.0,
+            self._headroom_gib,
+            self._headroom_percent * 100.0,
         )
 
     async def stop(self) -> None:
@@ -185,7 +187,9 @@ class VRAMManager:
             or required_bytes <= 0
         ):
             self._refuse(
-                "invalid_estimate", job_id=job_id, requested=required_bytes,
+                "invalid_estimate",
+                job_id=job_id,
+                requested=required_bytes,
             )
             return False
 
@@ -201,14 +205,18 @@ class VRAMManager:
         if total <= 0 or free < 0 or free > total:
             self._refuse(
                 "implausible_nvml_data",
-                job_id=job_id, total=total, free=free,
+                job_id=job_id,
+                total=total,
+                free=free,
             )
             return False
 
         if required_bytes > total:
             self._refuse(
                 "estimate_exceeds_total",
-                job_id=job_id, requested=required_bytes, total=total,
+                job_id=job_id,
+                requested=required_bytes,
+                total=total,
             )
             return False
 
@@ -245,7 +253,9 @@ class VRAMManager:
                 if existing.bytes != required_bytes:
                     LOG.info(
                         "job %s reservation %d -> %d bytes",
-                        job_id, existing.bytes, required_bytes,
+                        job_id,
+                        existing.bytes,
+                        required_bytes,
                     )
                 else:
                     LOG.debug("job %s reservation refreshed", job_id)
@@ -261,8 +271,12 @@ class VRAMManager:
                 LOG.info(
                     "job %s reserved %d bytes (free=%d, committed_elsewhere=%d, "
                     "headroom=%d, allocatable=%d)",
-                    job_id, required_bytes, free, committed_elsewhere,
-                    headroom, allocatable - required_bytes,
+                    job_id,
+                    required_bytes,
+                    free,
+                    committed_elsewhere,
+                    headroom,
+                    allocatable - required_bytes,
                 )
             self._last_refusal = None
 
@@ -281,7 +295,9 @@ class VRAMManager:
         if existing is not None:
             LOG.info(
                 "job %s released %d bytes (was %s, held %.1fs)",
-                job_id, existing.bytes, existing.state.value,
+                job_id,
+                existing.bytes,
+                existing.state.value,
                 time.time() - existing.created_at,
             )
 
@@ -301,9 +317,7 @@ class VRAMManager:
             return
         existing = self._reservations.get(job_id)
         if existing is None:
-            LOG.debug(
-                "mark_running called for job %s with no reservation", job_id
-            )
+            LOG.debug("mark_running called for job %s with no reservation", job_id)
             return
         if existing.state is ReservationState.ACTIVE:
             return
@@ -318,7 +332,7 @@ class VRAMManager:
     # Diagnostics
     # ------------------------------------------------------------------
 
-    async def available_bytes(self) -> Optional[int]:
+    async def available_bytes(self) -> int | None:
         """
         Bytes a fresh job could reserve right now, after headroom and
         existing RESERVED commitments. None when GPU state is unknown.
@@ -355,10 +369,10 @@ class VRAMManager:
 
         total = int(getattr(status, "total_vram_bytes", 0) or 0) if status else 0
         free = int(getattr(status, "free_vram_bytes", 0) or 0) if status else 0
-        headroom = self._headroom_for(total) if total > 0 else int(
-            self._headroom_gib * GIB
+        headroom = (
+            self._headroom_for(total) if total > 0 else int(self._headroom_gib * GIB)
         )
-        allocatable: Optional[int] = None
+        allocatable: int | None = None
         if status is not None and total > 0 and 0 <= free <= total:
             allocatable = max(0, free - committed - headroom)
 
@@ -398,7 +412,7 @@ class VRAMManager:
             LOG.exception("gpu_monitor call failed while checking VRAM")
             return None
 
-    def _committed_excluding(self, exclude_job_id: Optional[str]) -> int:
+    def _committed_excluding(self, exclude_job_id: str | None) -> int:
         """Sum of RESERVED bytes for jobs other than `exclude_job_id`."""
         total = 0
         for reservation in self._reservations.values():
@@ -426,6 +440,7 @@ class VRAMManager:
 # ---------------------------------------------------------------------------
 # Config helpers (tolerant of dataclass, mapping, or attribute access)
 # ---------------------------------------------------------------------------
+
 
 def _cfg_get(config: Any, name: str) -> Any:
     if isinstance(config, dict):

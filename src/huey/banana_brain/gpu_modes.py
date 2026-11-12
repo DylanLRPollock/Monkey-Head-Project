@@ -61,28 +61,29 @@ Dependencies:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
 import os
 import time
-from dataclasses import dataclass, field
-from enum import Enum
+from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path
-from typing import Any, Callable, Optional
+from typing import Any
 
 from .job_models import Job, JobState, Priority
 
 __all__ = [
-    "GPUModeManager",
     "GPUMode",
-    "ModeTransitionResult",
+    "GPUModeManager",
     "ModeTransitionError",
+    "ModeTransitionResult",
     "ModeTransitionTimeout",
 ]
 
 LOG = logging.getLogger("banana_brain.gpu_modes")
 
-GIB = 1024 ** 3
+GIB = 1024**3
 
 #: Passed to adapters' unload_idle_models() to mean "free as much as you can".
 _UNLOAD_ALL_BYTES = 1024 * GIB  # larger than any single GPU's VRAM
@@ -92,19 +93,18 @@ _UNLOAD_ALL_BYTES = 1024 * GIB  # larger than any single GPU's VRAM
 # Mode enum and results
 # ---------------------------------------------------------------------------
 
-class GPUMode(str, Enum):
+
+class GPUMode(StrEnum):
     """Operator-facing GPU modes. Order matches the design doc's priority ladder."""
 
-    AI = "ai"                    # LLM-focused: Ollama / PyGPT workloads
-    IMAGE = "image"              # Image-generation-focused: ComfyUI
-    MIXED = "mixed"              # Default: everything, priority-ordered
+    AI = "ai"  # LLM-focused: Ollama / PyGPT workloads
+    IMAGE = "image"  # Image-generation-focused: ComfyUI
+    MIXED = "mixed"  # Default: everything, priority-ordered
     MAINTENANCE = "maintenance"  # Operator-exclusive; benchmark/repair jobs only
-    GAMING = "gaming"            # Manual exclusive; no scheduled work
+    GAMING = "gaming"  # Manual exclusive; no scheduled work
 
     def is_exclusive(self) -> bool:
         return self in (GPUMode.MAINTENANCE, GPUMode.GAMING)
-
-    __str__ = str.__str__
 
 
 @dataclass(frozen=True)
@@ -113,11 +113,11 @@ class ModeTransitionResult:
     from_mode: GPUMode
     to_mode: GPUMode
     reason: str
-    requested_by: Optional[str]
+    requested_by: str | None
     elapsed_s: float
-    interrupted_job_id: Optional[str] = None
+    interrupted_job_id: str | None = None
     suspended_count: int = 0
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class ModeTransitionError(RuntimeError):
@@ -131,6 +131,7 @@ class ModeTransitionTimeout(ModeTransitionError):
 # ---------------------------------------------------------------------------
 # Manager
 # ---------------------------------------------------------------------------
+
 
 class GPUModeManager:
     """
@@ -159,9 +160,7 @@ class GPUModeManager:
         self._default_mode = _parse_mode(
             _cfg_str(config, "mode_default") or GPUMode.MIXED.value
         )
-        self._persistence_enabled = _cfg_bool(
-            config, "mode_persistence_enabled", True
-        )
+        self._persistence_enabled = _cfg_bool(config, "mode_persistence_enabled", True)
         state_path = _cfg_str(config, "mode_state_path")
         self._state_path = Path(
             state_path or "data/banana-brain.mode.json"
@@ -169,22 +168,20 @@ class GPUModeManager:
         self._transition_timeout = float(
             _cfg_num(config, "mode_transition_timeout_s", 300.0)
         )
-        self._drain_interval = float(
-            _cfg_num(config, "mode_drain_interval_s", 5.0)
-        )
+        self._drain_interval = float(_cfg_num(config, "mode_drain_interval_s", 5.0))
 
         self._current_mode: GPUMode = self._default_mode
         self._previous_non_exclusive: GPUMode = self._default_mode
         self._mode_since: float = time.time()
         self._mode_reason: str = "initial default"
-        self._mode_requested_by: Optional[str] = None
+        self._mode_requested_by: str | None = None
 
         self._safety_halted: bool = False
-        self._safety_halt_reason: Optional[str] = None
+        self._safety_halt_reason: str | None = None
 
         self._suspended_jobs: list[Job] = []
         self._transition_lock = asyncio.Lock()
-        self._housekeeping_task: Optional[asyncio.Task[None]] = None
+        self._housekeeping_task: asyncio.Task[None] | None = None
         self._housekeeping_stop = asyncio.Event()
         self._admission_installed: bool = False
 
@@ -198,9 +195,7 @@ class GPUModeManager:
             self._current_mode = _parse_mode(
                 persisted.get("mode", self._default_mode.value)
             )
-            self._mode_since = float(
-                persisted.get("since", time.time())
-            )
+            self._mode_since = float(persisted.get("since", time.time()))
             self._mode_reason = str(persisted.get("reason") or "restored from disk")
             self._mode_requested_by = _maybe_str(persisted.get("requested_by"))
             if self._current_mode not in (GPUMode.MAINTENANCE, GPUMode.GAMING):
@@ -227,10 +222,8 @@ class GPUModeManager:
         self._housekeeping_stop.set()
         if self._housekeeping_task is not None:
             self._housekeeping_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._housekeeping_task
-            except asyncio.CancelledError:
-                pass
             self._housekeeping_task = None
 
         if self._admission_installed:
@@ -289,9 +282,9 @@ class GPUModeManager:
         target: GPUMode | str,
         *,
         reason: str,
-        requested_by: Optional[str] = None,
+        requested_by: str | None = None,
         force: bool = False,
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
     ) -> ModeTransitionResult:
         """
         Transition to `target`, waiting for in-flight work when required.
@@ -318,9 +311,7 @@ class GPUModeManager:
         Concurrent calls are serialised by an asyncio.Lock.
         """
         target_mode = _parse_mode(target)
-        wait_budget = (
-            self._transition_timeout if timeout is None else float(timeout)
-        )
+        wait_budget = self._transition_timeout if timeout is None else float(timeout)
 
         async with self._transition_lock:
             started = time.monotonic()
@@ -346,10 +337,14 @@ class GPUModeManager:
 
             LOG.info(
                 "mode transition: %s -> %s (reason=%r, by=%r, force=%s)",
-                from_mode.value, target_mode.value, reason, requested_by, force,
+                from_mode.value,
+                target_mode.value,
+                reason,
+                requested_by,
+                force,
             )
 
-            interrupted_job_id: Optional[str] = None
+            interrupted_job_id: str | None = None
             suspended_count = 0
 
             if target_mode.is_exclusive():
@@ -360,7 +355,8 @@ class GPUModeManager:
                     LOG.warning(
                         "mode transition: job %s still running after %.0fs; "
                         "operator must resolve it manually",
-                        interrupted_job_id, wait_budget,
+                        interrupted_job_id,
+                        wait_budget,
                     )
 
             # Commit the mode before draining, so admission checks during
@@ -403,7 +399,7 @@ class GPUModeManager:
         self,
         *,
         reason: str = "resume previous non-exclusive mode",
-        requested_by: Optional[str] = None,
+        requested_by: str | None = None,
     ) -> ModeTransitionResult:
         """
         Exit an exclusive mode by returning to the most recent non-exclusive
@@ -441,14 +437,12 @@ class GPUModeManager:
         try:
             suspended = await self._suspend_non_matching()
             if suspended:
-                LOG.info(
-                    "safety halt: suspended %d queued job(s)", suspended
-                )
+                LOG.info("safety halt: suspended %d queued job(s)", suspended)
         except Exception:
             LOG.exception("safety halt: failed to suspend queue")
 
     async def clear_safety_halt(
-        self, *, reason: str, cleared_by: Optional[str] = None
+        self, *, reason: str, cleared_by: str | None = None
     ) -> None:
         """Clear the safety overlay and resume normal operation."""
         if not self._safety_halted:
@@ -458,7 +452,8 @@ class GPUModeManager:
         self._safety_halt_reason = None
         LOG.warning(
             "safety halt cleared by %s: %s",
-            cleared_by or "<unknown>", reason,
+            cleared_by or "<unknown>",
+            reason,
         )
         try:
             resumed = await self._resume_all_suspended()
@@ -574,9 +569,7 @@ class GPUModeManager:
     # Internal: waiting for current job
     # ------------------------------------------------------------------
 
-    async def _await_current_job(
-        self, timeout: float, *, force: bool
-    ) -> Optional[str]:
+    async def _await_current_job(self, timeout: float, *, force: bool) -> str | None:
         """
         Wait for scheduler.current_job to become None.
 
@@ -651,9 +644,9 @@ class GPUModeManager:
         if to_suspend:
             self._suspended_jobs.extend(to_suspend)
             LOG.info(
-                "suspended %d job(s) during exclusive-mode entry "
-                "(%d kept in queue)",
-                len(to_suspend), len(to_keep),
+                "suspended %d job(s) during exclusive-mode entry " "(%d kept in queue)",
+                len(to_suspend),
+                len(to_keep),
             )
         return len(to_suspend)
 
@@ -721,12 +714,11 @@ class GPUModeManager:
                 if freed:
                     LOG.info(
                         "mode transition: adapter %s released %d bytes",
-                        name, freed,
+                        name,
+                        freed,
                     )
             except Exception:
-                LOG.exception(
-                    "mode transition: adapter %s unload raised", name
-                )
+                LOG.exception("mode transition: adapter %s unload raised", name)
 
     # ------------------------------------------------------------------
     # Internal: housekeeping
@@ -751,7 +743,7 @@ class GPUModeManager:
                 )
                 # stop event was set; exit
                 return
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass
             if not (self._current_mode.is_exclusive() or self._safety_halted):
                 continue
@@ -764,7 +756,7 @@ class GPUModeManager:
     # Internal: persistence
     # ------------------------------------------------------------------
 
-    def _load_persisted_state(self) -> Optional[dict[str, Any]]:
+    def _load_persisted_state(self) -> dict[str, Any] | None:
         if not self._persistence_enabled:
             return None
         path = self._state_path
@@ -775,7 +767,8 @@ class GPUModeManager:
         except Exception:
             LOG.warning(
                 "could not parse persisted mode state from %s; using default",
-                path, exc_info=True,
+                path,
+                exc_info=True,
             )
             return None
         if not isinstance(data, dict):
@@ -796,9 +789,7 @@ class GPUModeManager:
         }
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
-            tmp.write_text(
-                json.dumps(data, indent=2, sort_keys=True), encoding="utf-8"
-            )
+            tmp.write_text(json.dumps(data, indent=2, sort_keys=True), encoding="utf-8")
             os.replace(tmp, path)
         except Exception:
             LOG.exception("failed to persist mode state to %s", path)
@@ -818,14 +809,13 @@ class GPUModeManager:
         if priority >= int(Priority.EXCLUSIVE):
             return True
         tags = getattr(job, "tags", {}) or {}
-        if tags.get("maintenance"):
-            return True
-        return False
+        return bool(tags.get("maintenance"))
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _parse_mode(value: Any) -> GPUMode:
     if isinstance(value, GPUMode):
@@ -839,7 +829,7 @@ def _parse_mode(value: Any) -> GPUMode:
         ) from exc
 
 
-def _maybe_str(value: Any) -> Optional[str]:
+def _maybe_str(value: Any) -> str | None:
     if value is None:
         return None
     return str(value)
@@ -849,13 +839,14 @@ def _maybe_str(value: Any) -> Optional[str]:
 # Config helpers
 # ---------------------------------------------------------------------------
 
+
 def _cfg_get(config: Any, name: str) -> Any:
     if isinstance(config, dict):
         return config.get(name)
     return getattr(config, name, None)
 
 
-def _cfg_str(config: Any, name: str) -> Optional[str]:
+def _cfg_str(config: Any, name: str) -> str | None:
     value = _cfg_get(config, name)
     return str(value) if value else None
 

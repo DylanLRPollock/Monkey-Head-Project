@@ -123,7 +123,10 @@ class APIError(Exception):
     def __init__(self, status: int, message: str) -> None:
         self.status = status
         self.message = message
-        super().__init__(message)
+        super().__init__(status, message)
+
+    def __str__(self) -> str:
+        return self.message
 
 
 def _error_kind(status: int) -> str:
@@ -577,7 +580,9 @@ class SchedulerAPI:
             }
         )
 
-    async def _handle_submit_job(self, request: web.Request) -> web.Response:
+    async def _handle_submit_job(  # noqa: C901,RUF100
+        self, request: web.Request
+    ) -> web.Response:
         body = await _read_json(request)
         if not isinstance(body, dict):
             raise APIError(400, "body must be a JSON object")
@@ -634,7 +639,9 @@ class SchedulerAPI:
             raise APIError(404, f"job {job_id} not found")
         return web.json_response(job.to_dict())
 
-    async def _handle_cancel_job(self, request: web.Request) -> web.Response:
+    async def _handle_cancel_job(  # noqa: C901,RUF100
+        self, request: web.Request
+    ) -> web.Response:
         job_id = request.match_info["job_id"]
         body = await _read_json(request, optional=True)
         force = bool(body.get("force", False))
@@ -765,7 +772,7 @@ async def _read_json(request: web.Request, *, optional: bool = False) -> dict[st
     return data
 
 
-def _job_from_body(body: dict[str, Any]) -> Job:
+def _job_from_body(body: dict[str, Any]) -> Job:  # noqa: C901,RUF100
     """
     Build a Job from an API submission body.
 

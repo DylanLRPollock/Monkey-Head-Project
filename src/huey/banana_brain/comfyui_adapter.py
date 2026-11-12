@@ -53,17 +53,17 @@ import json
 import logging
 import time
 import uuid
-from typing import Any, Optional
+from typing import Any
 
 import aiohttp
 
-from .job_models import Job, JobResult
+from .job_models import Job
 
 __all__ = ["ComfyUIAdapter"]
 
 LOG = logging.getLogger("banana_brain.comfyui_adapter")
 
-GIB = 1024 ** 3
+GIB = 1024**3
 
 #: Default overhead applied on top of checkpoint weights. ComfyUI's own
 #: VRAM estimator node documents ~2 GiB for VAE, text encoder and a small
@@ -92,7 +92,7 @@ class ComfyUIAdapter:
 
     DEFAULT_BASE_URL = "http://127.0.0.1:8188"
     DEFAULT_POLL_INTERVAL_S = 0.75
-    DEFAULT_JOB_TIMEOUT_S = 900.0      # 15 minutes
+    DEFAULT_JOB_TIMEOUT_S = 900.0  # 15 minutes
     DEFAULT_CONNECT_TIMEOUT_S = 10.0
     UNLOAD_TIMEOUT_S = 20.0
     METADATA_TIMEOUT_S = 5.0
@@ -102,35 +102,39 @@ class ComfyUIAdapter:
         self._vram_manager = vram_manager
 
         self._base_url = str(
-            _cfg_str(config, "comfyui_base_url", "comfyui_url")
-            or self.DEFAULT_BASE_URL
+            _cfg_str(config, "comfyui_base_url", "comfyui_url") or self.DEFAULT_BASE_URL
         ).rstrip("/")
         self._poll_interval = float(
             _cfg_num(
-                config, "comfyui_poll_interval_seconds",
+                config,
+                "comfyui_poll_interval_seconds",
                 self.DEFAULT_POLL_INTERVAL_S,
             )
         )
         self._job_timeout = float(
             _cfg_num(
-                config, "comfyui_job_timeout_seconds",
+                config,
+                "comfyui_job_timeout_seconds",
                 self.DEFAULT_JOB_TIMEOUT_S,
             )
         )
         self._connect_timeout = float(
             _cfg_num(
-                config, "comfyui_connect_timeout_seconds",
+                config,
+                "comfyui_connect_timeout_seconds",
                 self.DEFAULT_CONNECT_TIMEOUT_S,
             )
         )
         self._inference_overhead_bytes = int(
             _cfg_num(
-                config, "comfyui_inference_overhead_gib",
+                config,
+                "comfyui_inference_overhead_gib",
                 DEFAULT_INFERENCE_OVERHEAD_GIB,
-            ) * GIB
+            )
+            * GIB
         )
 
-        self._session: Optional[aiohttp.ClientSession] = None
+        self._session: aiohttp.ClientSession | None = None
         self._active_prompts: set[str] = set()
         self._active_lock = asyncio.Lock()
         self._cancellation_requested: set[str] = set()
@@ -159,7 +163,8 @@ class ComfyUIAdapter:
             raise
         LOG.info(
             "comfyui_adapter ready at %s (poll=%.2fs, overhead=%.1f GiB)",
-            self._base_url, self._poll_interval,
+            self._base_url,
+            self._poll_interval,
             self._inference_overhead_bytes / GIB,
         )
 
@@ -189,9 +194,7 @@ class ComfyUIAdapter:
 
         prompt_id = self._payload_str(job, "prompt_id")
         if prompt_id:
-            LOG.info(
-                "comfyui: resuming prompt_id %s for job %s", prompt_id, job.id
-            )
+            LOG.info("comfyui: resuming prompt_id %s for job %s", prompt_id, job.id)
         else:
             prompt_id = await self._submit_workflow(session, job)
 
@@ -199,16 +202,16 @@ class ComfyUIAdapter:
             self._active_prompts.add(prompt_id)
 
         try:
-            timeout = float(
-                (job.payload or {}).get("timeout_s") or self._job_timeout
-            )
+            timeout = float((job.payload or {}).get("timeout_s") or self._job_timeout)
             poll_interval = float(
-                (job.payload or {}).get("poll_interval_s")
-                or self._poll_interval
+                (job.payload or {}).get("poll_interval_s") or self._poll_interval
             )
             history_entry = await self._poll_until_done(
-                session, prompt_id, timeout=timeout,
-                poll_interval=poll_interval, job=job,
+                session,
+                prompt_id,
+                timeout=timeout,
+                poll_interval=poll_interval,
+                job=job,
             )
             result = self._summarise_history(prompt_id, history_entry)
             result["elapsed_s"] = round(time.monotonic() - started, 3)
@@ -236,7 +239,8 @@ class ComfyUIAdapter:
         if not isinstance(workflow, dict):
             LOG.warning(
                 "comfyui estimate_vram: no workflow in payload; "
-                "using overhead only for job %s", job.id,
+                "using overhead only for job %s",
+                job.id,
             )
             return self._inference_overhead_bytes
 
@@ -244,7 +248,8 @@ class ComfyUIAdapter:
         if not checkpoint_names:
             LOG.warning(
                 "comfyui estimate_vram: no checkpoints found in workflow "
-                "for job %s; using overhead only", job.id,
+                "for job %s; using overhead only",
+                job.id,
             )
             return self._inference_overhead_bytes
 
@@ -256,7 +261,8 @@ class ComfyUIAdapter:
             else:
                 LOG.warning(
                     "comfyui estimate_vram: unknown size for checkpoint %r; "
-                    "using 7 GiB fallback", name,
+                    "using 7 GiB fallback",
+                    name,
                 )
                 total_weights += int(7 * GIB)
 
@@ -264,8 +270,11 @@ class ComfyUIAdapter:
         LOG.debug(
             "comfyui estimate_vram(%s): %d checkpoints, weights=%d, "
             "overhead=%d, total=%d",
-            job.id, len(checkpoint_names), total_weights,
-            self._inference_overhead_bytes, estimate,
+            job.id,
+            len(checkpoint_names),
+            total_weights,
+            self._inference_overhead_bytes,
+            estimate,
         )
         return max(estimate, 1 * GIB)
 
@@ -301,7 +310,8 @@ class ComfyUIAdapter:
                     body = await _safe_text(resp)
                     LOG.warning(
                         "comfyui /free returned %d: %s",
-                        resp.status, body[:200],
+                        resp.status,
+                        body[:200],
                     )
                     return 0
                 await resp.read()
@@ -311,7 +321,8 @@ class ComfyUIAdapter:
 
         LOG.info(
             "comfyui /free requested (unload_models=true, free_memory=true); "
-            "claiming up to %d bytes freed", needed_bytes,
+            "claiming up to %d bytes freed",
+            needed_bytes,
         )
         return needed_bytes
 
@@ -332,8 +343,8 @@ class ComfyUIAdapter:
         prompt_id = self._payload_str(job, "prompt_id")
         if not prompt_id:
             LOG.warning(
-                "comfyui request_cancel: job %s has no prompt_id; "
-                "nothing to target", job.id,
+                "comfyui request_cancel: job %s has no prompt_id; " "nothing to target",
+                job.id,
             )
             return False
 
@@ -346,7 +357,8 @@ class ComfyUIAdapter:
             if prompt_id in running_ids:
                 LOG.info(
                     "comfyui: interrupting running prompt %s for job %s",
-                    prompt_id, job.id,
+                    prompt_id,
+                    job.id,
                 )
                 async with session.post(
                     f"{self._base_url}/interrupt",
@@ -354,9 +366,7 @@ class ComfyUIAdapter:
                     timeout=aiohttp.ClientTimeout(total=5.0),
                 ) as resp:
                     if resp.status >= 400:
-                        LOG.warning(
-                            "comfyui /interrupt returned %d", resp.status
-                        )
+                        LOG.warning("comfyui /interrupt returned %d", resp.status)
                         return False
                     await resp.read()
                 return True
@@ -364,7 +374,8 @@ class ComfyUIAdapter:
             if prompt_id in pending_ids:
                 LOG.info(
                     "comfyui: deleting pending prompt %s for job %s",
-                    prompt_id, job.id,
+                    prompt_id,
+                    job.id,
                 )
                 async with session.post(
                     f"{self._base_url}/queue",
@@ -372,9 +383,7 @@ class ComfyUIAdapter:
                     timeout=aiohttp.ClientTimeout(total=5.0),
                 ) as resp:
                     if resp.status >= 400:
-                        LOG.warning(
-                            "comfyui /queue delete returned %d", resp.status
-                        )
+                        LOG.warning("comfyui /queue delete returned %d", resp.status)
                         return False
                     await resp.read()
                 return True
@@ -394,9 +403,7 @@ class ComfyUIAdapter:
     # Submission
     # ------------------------------------------------------------------
 
-    async def _submit_workflow(
-        self, session: aiohttp.ClientSession, job: Job
-    ) -> str:
+    async def _submit_workflow(self, session: aiohttp.ClientSession, job: Job) -> str:
         payload = job.payload or {}
         workflow = payload.get("workflow")
         if not isinstance(workflow, dict):
@@ -406,8 +413,7 @@ class ComfyUIAdapter:
 
         body: dict[str, Any] = {
             "prompt": workflow,
-            "client_id": self._payload_str(job, "client_id")
-            or str(uuid.uuid4()),
+            "client_id": self._payload_str(job, "client_id") or str(uuid.uuid4()),
         }
         if isinstance(payload.get("extra_data"), dict):
             body["extra_data"] = dict(payload["extra_data"])
@@ -436,12 +442,12 @@ class ComfyUIAdapter:
             )
         prompt_id = data.get("prompt_id")
         if not prompt_id:
-            raise RuntimeError(
-                f"comfyui /prompt returned no prompt_id: {data!r}"
-            )
+            raise RuntimeError(f"comfyui /prompt returned no prompt_id: {data!r}")
         LOG.info(
             "comfyui submitted job %s as prompt_id %s (queue position %s)",
-            job.id, prompt_id, data.get("number"),
+            job.id,
+            prompt_id,
+            data.get("number"),
         )
         return str(prompt_id)
 
@@ -480,7 +486,7 @@ class ComfyUIAdapter:
 
     async def _get_history_entry(
         self, session: aiohttp.ClientSession, prompt_id: str
-    ) -> Optional[dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         try:
             async with session.get(
                 f"{self._base_url}/history/{prompt_id}",
@@ -491,7 +497,8 @@ class ComfyUIAdapter:
                 if resp.status >= 400:
                     LOG.warning(
                         "comfyui /history/%s returned %d",
-                        prompt_id, resp.status,
+                        prompt_id,
+                        resp.status,
                     )
                     return None
                 data = await resp.json(content_type=None)
@@ -503,9 +510,7 @@ class ComfyUIAdapter:
         entry = data.get(prompt_id)
         return entry if isinstance(entry, dict) else None
 
-    async def _get_queue(
-        self, session: aiohttp.ClientSession
-    ) -> dict[str, Any]:
+    async def _get_queue(self, session: aiohttp.ClientSession) -> dict[str, Any]:
         try:
             async with session.get(
                 f"{self._base_url}/queue",
@@ -524,9 +529,7 @@ class ComfyUIAdapter:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _summarise_history(
-        prompt_id: str, entry: dict[str, Any]
-    ) -> dict[str, Any]:
+    def _summarise_history(prompt_id: str, entry: dict[str, Any]) -> dict[str, Any]:
         status = entry.get("status") or {}
         status_str = str(status.get("status_str") or "").lower()
         messages = status.get("messages") or []
@@ -549,16 +552,14 @@ class ComfyUIAdapter:
 
         if state == "error":
             error_detail = _extract_error_message(messages)
-            raise RuntimeError(
-                f"comfyui prompt {prompt_id} failed: {error_detail}"
-            )
+            raise RuntimeError(f"comfyui prompt {prompt_id} failed: {error_detail}")
         return summary
 
     # ------------------------------------------------------------------
     # VRAM estimation helpers
     # ------------------------------------------------------------------
 
-    async def _checkpoint_size_bytes(self, name: str) -> Optional[int]:
+    async def _checkpoint_size_bytes(self, name: str) -> int | None:
         """
         Ask ComfyUI for a checkpoint's file size.
 
@@ -573,9 +574,7 @@ class ComfyUIAdapter:
                 async with session.get(
                     f"{self._base_url}/view_metadata/{folder}",
                     params={"filename": name},
-                    timeout=aiohttp.ClientTimeout(
-                        total=self.METADATA_TIMEOUT_S
-                    ),
+                    timeout=aiohttp.ClientTimeout(total=self.METADATA_TIMEOUT_S),
                 ) as resp:
                     if resp.status == 404:
                         continue
@@ -599,7 +598,7 @@ class ComfyUIAdapter:
         return self._session
 
     @staticmethod
-    def _payload_str(job: Job, key: str) -> Optional[str]:
+    def _payload_str(job: Job, key: str) -> str | None:
         value = (job.payload or {}).get(key)
         return str(value) if value else None
 
@@ -619,6 +618,7 @@ class ComfyUIAdapter:
 # ---------------------------------------------------------------------------
 # Workflow and history helpers
 # ---------------------------------------------------------------------------
+
 
 def _extract_checkpoint_names(workflow: dict[str, Any]) -> list[str]:
     """
@@ -651,7 +651,7 @@ def _extract_checkpoint_names(workflow: dict[str, Any]) -> list[str]:
     return names
 
 
-def _extract_size_from_metadata(data: Any) -> Optional[int]:
+def _extract_size_from_metadata(data: Any) -> int | None:
     """Best-effort size extraction from varied metadata shapes."""
     if not isinstance(data, dict):
         return None
@@ -692,9 +692,8 @@ def _extract_error_message(messages: Any) -> str:
         if isinstance(msg, list) and len(msg) == 2:
             kind, detail = msg
             if kind == "execution_error" and isinstance(detail, dict):
-                return (
-                    str(detail.get("exception_message") or "")
-                    or str(detail.get("exception_type") or "execution_error")
+                return str(detail.get("exception_message") or "") or str(
+                    detail.get("exception_type") or "execution_error"
                 )
     return "execution_error (no detail)"
 
@@ -710,13 +709,14 @@ async def _safe_text(resp: aiohttp.ClientResponse) -> str:
 # Config helpers (tolerant of dataclass, mapping, or attribute access)
 # ---------------------------------------------------------------------------
 
+
 def _cfg_get(config: Any, name: str) -> Any:
     if isinstance(config, dict):
         return config.get(name)
     return getattr(config, name, None)
 
 
-def _cfg_str(config: Any, name: str, *fallback_names: str) -> Optional[str]:
+def _cfg_str(config: Any, name: str, *fallback_names: str) -> str | None:
     for candidate in (name, *fallback_names):
         value = _cfg_get(config, candidate)
         if value:

@@ -83,6 +83,7 @@ validation error, so a missing secret fails at startup, not at first use.
 
 from __future__ import annotations
 
+import ipaddress
 import logging
 import os
 import re
@@ -333,22 +334,46 @@ def load_config(path: str | Path) -> BananaBrainConfig:
     syntax errors are reported with line/column information where available.
     """
     cfg_path = Path(path).expanduser()
+    raw = _read_yaml_mapping(cfg_path)
+    expanded = _expand_env(raw, source=str(cfg_path))
+    cfg = BananaBrainConfig.from_dict(expanded, source=str(cfg_path))
+
+    LOG.info(
+        "loaded config from %s (device_uuid=%s, pci_bus_id=%s, " "database=%s, api=%s)",
+        cfg_path,
+        cfg.device_uuid or "-",
+        cfg.pci_bus_id or "-",
+        cfg.database_path,
+        (
+            f"tcp {cfg.api_bind}"
+            if cfg.api_bind
+            else (f"socket {cfg.api_socket_path}" if cfg.api_socket_path else "none")
+        ),
+    )
+    return cfg
+
+
+def _read_yaml_mapping(cfg_path: Path) -> dict[str, Any]:
     if not cfg_path.exists():
         raise ConfigError(f"config file not found: {cfg_path}")
     if not cfg_path.is_file():
         raise ConfigError(f"config path is not a file: {cfg_path}")
 
     try:
+        text = cfg_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise ConfigError(f"cannot read {cfg_path}: {exc}") from exc
+
+    return _parse_yaml_mapping(text, cfg_path)
+
+
+def _parse_yaml_mapping(text: str, cfg_path: Path) -> dict[str, Any]:
+    try:
         import yaml  # PyYAML
     except ImportError as exc:
         raise ConfigError(
             "PyYAML is required to load config files; pip install pyyaml"
         ) from exc
-
-    try:
-        text = cfg_path.read_text(encoding="utf-8")
-    except OSError as exc:
-        raise ConfigError(f"cannot read {cfg_path}: {exc}") from exc
 
     try:
         raw = yaml.safe_load(text) if text.strip() else {}
@@ -369,22 +394,7 @@ def load_config(path: str | Path) -> BananaBrainConfig:
             f"got {type(raw).__name__}"
         )
 
-    expanded = _expand_env(raw, source=str(cfg_path))
-    cfg = BananaBrainConfig.from_dict(expanded, source=str(cfg_path))
-
-    LOG.info(
-        "loaded config from %s (device_uuid=%s, pci_bus_id=%s, " "database=%s, api=%s)",
-        cfg_path,
-        cfg.device_uuid or "-",
-        cfg.pci_bus_id or "-",
-        cfg.database_path,
-        (
-            f"tcp {cfg.api_bind}"
-            if cfg.api_bind
-            else (f"socket {cfg.api_socket_path}" if cfg.api_socket_path else "none")
-        ),
-    )
-    return cfg
+    return raw
 
 
 # ---------------------------------------------------------------------------
@@ -465,40 +475,44 @@ def _expand_env(value: Any, *, source: str) -> Any:
 
 def _coerce(flat: dict[str, Any], *, source: str) -> dict[str, Any]:
     """Coerce scalars to their declared types with clear error messages."""
-    out: dict[str, Any] = {}
-    for key, value in flat.items():
-        if value is None:
-            out[key] = None
-            continue
+    return {
+        key: _coerce_value(key, value, source=source) for key, value in flat.items()
+    }
 
-        if key in _PATH_FIELDS:
-            out[key] = Path(str(value))
-        elif key in _INT_FIELDS:
-            if isinstance(value, bool):
-                raise ConfigError(f"{source}: {key}: expected int, got bool")
-            try:
-                out[key] = int(value)
-            except (TypeError, ValueError):
-                raise ConfigError(
-                    f"{source}: {key}: expected int, got {value!r}"
-                ) from None
-        elif key in _FLOAT_FIELDS:
-            if isinstance(value, bool):
-                raise ConfigError(f"{source}: {key}: expected number, got bool")
-            try:
-                out[key] = float(value)
-            except (TypeError, ValueError):
-                raise ConfigError(
-                    f"{source}: {key}: expected number, got {value!r}"
-                ) from None
-        elif key in _BOOL_FIELDS:
-            out[key] = _to_bool(key, value, source=source)
-        elif key in _STR_FIELDS:
-            out[key] = str(value)
-        else:
-            # Unknown key: preserved so from_dict can report it.
-            out[key] = value
-    return out
+
+def _coerce_value(key: str, value: Any, *, source: str) -> Any:
+    if value is None:
+        return None
+    if key in _PATH_FIELDS:
+        return Path(str(value))
+    if key in _INT_FIELDS:
+        return _coerce_int(key, value, source=source)
+    if key in _FLOAT_FIELDS:
+        return _coerce_float(key, value, source=source)
+    if key in _BOOL_FIELDS:
+        return _to_bool(key, value, source=source)
+    if key in _STR_FIELDS:
+        return str(value)
+    # Unknown keys are preserved so from_dict can report them.
+    return value
+
+
+def _coerce_int(key: str, value: Any, *, source: str) -> int:
+    if isinstance(value, bool):
+        raise ConfigError(f"{source}: {key}: expected int, got bool")
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        raise ConfigError(f"{source}: {key}: expected int, got {value!r}") from None
+
+
+def _coerce_float(key: str, value: Any, *, source: str) -> float:
+    if isinstance(value, bool):
+        raise ConfigError(f"{source}: {key}: expected number, got bool")
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        raise ConfigError(f"{source}: {key}: expected number, got {value!r}") from None
 
 
 def _to_bool(key: str, value: Any, *, source: str) -> bool:
@@ -525,13 +539,19 @@ def _validate(cfg: BananaBrainConfig) -> list[str]:
     Collects every problem rather than failing on the first, so operators
     can fix a batch in one pass.
     """
-    problems: list[str] = []
+    problems = []
+    problems.extend(_validate_gpu_settings(cfg))
+    problems.extend(_validate_vram_settings(cfg))
+    problems.extend(_validate_priority_settings(cfg))
+    problems.extend(_validate_service_settings(cfg))
+    problems.extend(_validate_api_settings(cfg))
+    return problems
 
-    # ---- Lifecycle --------------------------------------------------------
+
+def _validate_gpu_settings(cfg: BananaBrainConfig) -> list[str]:
+    problems = []
     if cfg.shutdown_grace_seconds <= 0:
         problems.append("shutdown_grace_seconds must be > 0")
-
-    # ---- GPU monitor ------------------------------------------------------
     if cfg.poll_interval_seconds <= 0:
         problems.append("poll_interval_seconds must be > 0")
     if cfg.max_staleness_seconds <= 0:
@@ -546,14 +566,22 @@ def _validate(cfg: BananaBrainConfig) -> list[str]:
             "device_uuid should start with 'GPU-' (NVML UUID format); "
             "verify with 'nvidia-smi -L'"
         )
+    return problems
 
-    # ---- VRAM budget ------------------------------------------------------
+
+def _validate_vram_settings(cfg: BananaBrainConfig) -> list[str]:
+    problems = []
     if cfg.vram_headroom_gib < 0:
         problems.append("vram_headroom_gib must be >= 0")
     if not (0.0 <= cfg.vram_headroom_percent < 1.0):
         problems.append("vram_headroom_percent must be in [0, 1)")
+    if cfg.comfyui_inference_overhead_gib < 0:
+        problems.append("comfyui_inference_overhead_gib must be >= 0")
+    return problems
 
-    # ---- Priority ---------------------------------------------------------
+
+def _validate_priority_settings(cfg: BananaBrainConfig) -> list[str]:
+    problems = []
     if cfg.priority_aging_interval_seconds < 0:
         problems.append("priority_aging_interval_seconds must be >= 0")
     if cfg.priority_aging_step < 0:
@@ -564,8 +592,11 @@ def _validate(cfg: BananaBrainConfig) -> list[str]:
         )
     if cfg.priority_overdue_boost < 0:
         problems.append("priority_overdue_boost must be >= 0")
+    return problems
 
-    # ---- Service URLs -----------------------------------------------------
+
+def _validate_service_settings(cfg: BananaBrainConfig) -> list[str]:
+    problems = []
     for name, url in (
         ("ollama_base_url", cfg.ollama_base_url),
         ("comfyui_base_url", cfg.comfyui_base_url),
@@ -573,9 +604,7 @@ def _validate(cfg: BananaBrainConfig) -> list[str]:
         problem = _validate_url(url)
         if problem:
             problems.append(f"{name}: {problem}")
-
-    # ---- Timeouts (positive) ---------------------------------------------
-    for name in (
+    timeout_fields = (
         "ollama_request_timeout_seconds",
         "ollama_connect_timeout_seconds",
         "comfyui_poll_interval_seconds",
@@ -583,15 +612,10 @@ def _validate(cfg: BananaBrainConfig) -> list[str]:
         "comfyui_connect_timeout_seconds",
         "watchdog_stuck_job_seconds",
         "watchdog_temperature_ceiling_c",
-    ):
+    )
+    for name in timeout_fields:
         if getattr(cfg, name) <= 0:
             problems.append(f"{name} must be > 0")
-
-    # ---- ComfyUI overhead -------------------------------------------------
-    if cfg.comfyui_inference_overhead_gib < 0:
-        problems.append("comfyui_inference_overhead_gib must be >= 0")
-
-    # ---- Cross-field: timeouts ordered sensibly ---------------------------
     if cfg.ollama_connect_timeout_seconds >= cfg.ollama_request_timeout_seconds:
         problems.append(
             "ollama_connect_timeout_seconds must be less than "
@@ -602,30 +626,33 @@ def _validate(cfg: BananaBrainConfig) -> list[str]:
             "comfyui_connect_timeout_seconds must be less than "
             "comfyui_job_timeout_seconds"
         )
+    return problems
 
-    # ---- API exposure -----------------------------------------------------
-    if cfg.api_bind:
-        problem = _validate_bind(cfg.api_bind)
-        if problem:
-            problems.append(f"api_bind: {problem}")
-        if not cfg.api_token:
-            problems.append(
-                "api_token is required when api_bind is set; a TCP-exposed "
-                "control API must require authentication"
-            )
-        elif len(cfg.api_token) < 16:
-            problems.append(
-                "api_token must be at least 16 characters when " "api_bind is set"
-            )
-        if cfg.api_bind.startswith("0.0.0.0"):
-            problems.append(
-                "api_bind must not be 0.0.0.0 without an explicit "
-                "reverse-proxy in front; use 127.0.0.1 or a specific "
-                "interface address"
-            )
-    # If api_socket_path was defaulted (or set) and api_bind is unset,
-    # nothing else is needed — Unix sockets rely on filesystem permissions.
 
+def _validate_api_settings(cfg: BananaBrainConfig) -> list[str]:
+    if not cfg.api_bind:
+        return []
+    problems = []
+    problem = _validate_bind(cfg.api_bind)
+    if problem:
+        problems.append(f"api_bind: {problem}")
+    if not cfg.api_token:
+        problems.append(
+            "api_token is required when api_bind is set; a TCP-exposed "
+            "control API must require authentication"
+        )
+    elif len(cfg.api_token) < 16:
+        problems.append("api_token must be at least 16 characters when api_bind is set")
+    bind_host = cfg.api_bind.rpartition(":")[0].strip("[]")
+    try:
+        wildcard_bind = ipaddress.ip_address(bind_host).is_unspecified
+    except ValueError:
+        wildcard_bind = False
+    if wildcard_bind:
+        problems.append(
+            f"api_bind must not use wildcard address {bind_host} without an explicit "
+            "reverse-proxy in front; use 127.0.0.1 or a specific interface address"
+        )
     return problems
 
 

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import asyncio
 import sqlite3
-from types import SimpleNamespace
 import time
+from types import SimpleNamespace
 
 import pytest
 
@@ -14,8 +14,8 @@ from huey.banana_brain.job_store import (
     JobStore,
     JobStoreNotReady,
     SchemaError,
-    _maybe_loads,
     _cfg_get,
+    _maybe_loads,
     _row_to_job,
     _rows_to_jobs,
 )

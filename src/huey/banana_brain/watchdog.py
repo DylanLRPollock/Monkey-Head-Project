@@ -68,16 +68,17 @@ Dependencies:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import time
 from dataclasses import dataclass, field
 from enum import IntEnum
-from typing import Any, Optional
+from typing import Any
 
 __all__ = [
-    "Watchdog",
     "HealthSignal",
     "Severity",
+    "Watchdog",
 ]
 
 LOG = logging.getLogger("banana_brain.watchdog")
@@ -112,7 +113,7 @@ class HealthSignal:
     message: str
     key: str
     details: dict[str, Any] = field(default_factory=dict)
-    action: Optional[str] = None
+    action: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -232,20 +233,20 @@ class Watchdog:
         )
 
         # Per-check runtime state (recreated by start()).
-        self._loop_task: Optional[asyncio.Task[None]] = None
+        self._loop_task: asyncio.Task[None] | None = None
         self._stop_event = asyncio.Event()
 
-        self._gpu_unavailable_since: Optional[float] = None
+        self._gpu_unavailable_since: float | None = None
         self._cancel_requested: dict[str, float] = {}
         self._service_failures: dict[str, int] = {}
         self._lease_reported: set[str] = set()  # job_ids already reported
         self._signal_last_logged: dict[str, float] = {}
         self._halt_triggered_for: set[str] = set()  # halt reasons already acted on
         self._temperature_warn_active: bool = False
-        self._temperature_cleared_at: Optional[float] = None
+        self._temperature_cleared_at: float | None = None
 
         self._last_signals: list[HealthSignal] = []
-        self._last_run_at: Optional[float] = None
+        self._last_run_at: float | None = None
         self._run_count: int = 0
 
         if self._temp_warn_c >= self._temp_ceiling_c:
@@ -283,10 +284,8 @@ class Watchdog:
         self._loop_task = None
         if task is not None:
             task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await task
-            except asyncio.CancelledError:
-                pass
         LOG.info(
             "watchdog stopped after %d check(s); last run %.1fs ago",
             self._run_count,
@@ -385,12 +384,10 @@ class Watchdog:
             except Exception:
                 LOG.exception("watchdog iteration failed; continuing")
 
-            try:
+            with contextlib.suppress(TimeoutError):
                 await asyncio.wait_for(
                     self._stop_event.wait(), timeout=self._check_interval
                 )
-            except asyncio.TimeoutError:
-                pass
 
     # ------------------------------------------------------------------
     # Checks
@@ -455,7 +452,7 @@ class Watchdog:
 
         return []
 
-    async def _check_temperature(self) -> list[HealthSignal]:
+    async def _check_temperature(self) -> list[HealthSignal]:  # noqa: C901,RUF100
         signals: list[HealthSignal] = []
         status = await self._gpu_monitor.get_status()
         if status is None:
@@ -818,7 +815,7 @@ class Watchdog:
     # Escalation
     # ------------------------------------------------------------------
 
-    async def _trigger_safety_halt(self, key: str, *, reason: str) -> Optional[str]:
+    async def _trigger_safety_halt(self, key: str, *, reason: str) -> str | None:
         """
         Engage the safety overlay once per `key`.
 
@@ -871,7 +868,7 @@ class Watchdog:
 # ---------------------------------------------------------------------------
 
 
-def _resolve_probe(adapter: Any) -> Optional[Any]:
+def _resolve_probe(adapter: Any) -> Any | None:
     """
     Prefer a public ``probe()`` method. Fall back to the private
     ``_probe()`` / ``_probe_stt()`` methods that the current adapters

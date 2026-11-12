@@ -8,6 +8,7 @@ HueyOS venv's Python. This test never loads PyGPT modules into HueyOS.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import importlib.metadata
 import json
 import os
@@ -86,7 +87,9 @@ def main() -> None:
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]
-    with tempfile.TemporaryDirectory(prefix="huey-pygpt-smoke-") as tmp:
+    with tempfile.TemporaryDirectory(
+        prefix="huey-pygpt-smoke-", ignore_cleanup_errors=True
+    ) as tmp:
         root = Path(tmp)
         env = {
             key: os.environ[key]
@@ -162,13 +165,18 @@ def main() -> None:
                 raise
             finally:
                 for process in (gui, api):
-                    if process is not None and process.poll() is None:
-                        os.killpg(process.pid, signal.SIGTERM)
-                        try:
-                            process.wait(timeout=10)
-                        except subprocess.TimeoutExpired:
+                    if process is not None:
+                        if process.poll() is None:
+                            with contextlib.suppress(ProcessLookupError):
+                                os.killpg(process.pid, signal.SIGTERM)
+                            with contextlib.suppress(subprocess.TimeoutExpired):
+                                process.wait(timeout=10)
+                        # The GUI can leave child processes behind after its
+                        # launcher exits. Kill the original process group again
+                        # before the temporary profile is removed.
+                        with contextlib.suppress(ProcessLookupError):
                             os.killpg(process.pid, signal.SIGKILL)
-                            process.wait()
+                        process.wait()
 
 
 if __name__ == "__main__":
