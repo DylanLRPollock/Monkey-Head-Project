@@ -129,7 +129,16 @@ class ConfigError(RuntimeError):
 #: as ``<section>_<key>``. Everything else at the top level must match a
 #: dataclass field name directly (or be ``extra``).
 _KNOWN_SECTIONS: frozenset[str] = frozenset(
-    {"gpu", "priority", "ollama", "comfyui", "audio", "storage", "api", "watchdog"}
+    {
+        "gpu",
+        "priority",
+        "ollama",
+        "comfyui",
+        "audio",
+        "storage",
+        "api",
+        "watchdog",
+    }
 )
 
 _PATH_FIELDS: frozenset[str] = frozenset({"database_path", "api_socket_path"})
@@ -663,8 +672,18 @@ def _validate_service_settings(cfg: BananaBrainConfig) -> list[str]:
 def _validate_audio_settings(cfg: BananaBrainConfig) -> list[str]:
     problems = []
     backends = (
-        ("audio_stt_backend", cfg.audio_stt_backend, {"disabled", "faster-whisper-server", "whisper-cpp"}, cfg.audio_stt_base_url),
-        ("audio_tts_backend", cfg.audio_tts_backend, {"disabled", "coqui", "piper"}, cfg.audio_tts_base_url),
+        (
+            "audio_stt_backend",
+            cfg.audio_stt_backend,
+            {"disabled", "faster-whisper-server", "whisper-cpp"},
+            cfg.audio_stt_base_url,
+        ),
+        (
+            "audio_tts_backend",
+            cfg.audio_tts_backend,
+            {"disabled", "coqui", "piper"},
+            cfg.audio_tts_base_url,
+        ),
     )
     for name, backend, choices, url in backends:
         url_name = name.rsplit("_", 1)[0] + "_base_url"
@@ -676,14 +695,24 @@ def _validate_audio_settings(cfg: BananaBrainConfig) -> list[str]:
             problem = _validate_url(url)
             if problem:
                 problems.append(f"{url_name}: {problem}")
-    for name in ("audio_stt_timeout_seconds", "audio_tts_timeout_seconds", "audio_unload_wait_seconds"):
+    for name in (
+        "audio_stt_timeout_seconds",
+        "audio_tts_timeout_seconds",
+        "audio_unload_wait_seconds",
+    ):
         if getattr(cfg, name) <= 0:
             problems.append(f"{name} must be > 0")
     for model, gib in cfg.audio_model_vram_gib.items():
         if not isinstance(model, str) or not model.strip():
             problems.append("audio_model_vram_gib keys must be non-empty strings")
-        if isinstance(gib, bool) or not isinstance(gib, (int, float)) or gib <= 0:
-            problems.append(f"audio_model_vram_gib[{model!r}] must be a positive number")
+        if (
+            isinstance(gib, bool)
+            or not isinstance(gib, (int, float))
+            or gib <= 0
+        ):
+            problems.append(
+                f"audio_model_vram_gib[{model!r}] must be a positive number"
+            )
     return problems
 
 
