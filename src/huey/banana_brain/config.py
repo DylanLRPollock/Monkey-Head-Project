@@ -713,11 +713,7 @@ def _validate_audio_settings(cfg: BananaBrainConfig) -> list[str]:
     for model, gib in cfg.audio_model_vram_gib.items():
         if not isinstance(model, str) or not model.strip():
             problems.append("audio_model_vram_gib keys must be non-empty strings")
-        if (
-            isinstance(gib, bool)
-            or not isinstance(gib, (int, float))
-            or gib <= 0
-        ):
+        if isinstance(gib, bool) or not isinstance(gib, (int, float)) or gib <= 0:
             problems.append(
                 f"audio_model_vram_gib[{model!r}] must be a positive number"
             )
