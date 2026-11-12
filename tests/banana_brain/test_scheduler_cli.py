@@ -529,6 +529,87 @@ async def test_watch_timeout_and_health_http_error(capsys):
 
 
 @pytest.mark.asyncio
+async def test_cli_json_command_paths_and_error_message_shapes(capsys):
+    client = FakeClient()
+    with pytest.raises(ValueError, match="socket_path or base_url"):
+        cli.Client()
+
+    assert cli._extract_error_message({"error": {"message": "nested"}}) == "nested"
+    assert cli._extract_error_message({"error": {"message": 7}}).startswith(
+        "HTTP error"
+    )
+    assert cli._extract_error_message({"error": "plain"}) == "plain"
+    assert cli._extract_error_message({"raw": "text"}) == "text"
+    assert cli._extract_error_message({"other": 1}).startswith("HTTP error")
+
+    assert (
+        await cli._cmd_health(argparse.Namespace(json=True), client) == cli.ExitCode.OK
+    )
+    assert (
+        await cli._cmd_status(argparse.Namespace(json=True), client) == cli.ExitCode.OK
+    )
+    assert (
+        await cli._cmd_jobs_cancel(
+            argparse.Namespace(id="j", force=False, json=True), client
+        )
+        == cli.ExitCode.OK
+    )
+    assert (
+        await cli._cmd_queue(argparse.Namespace(limit=None, json=True), client)
+        == cli.ExitCode.OK
+    )
+    assert (
+        await cli._cmd_mode_set(
+            argparse.Namespace(mode="ai", reason="test", force=False, json=True), client
+        )
+        == cli.ExitCode.OK
+    )
+    assert (
+        await cli._cmd_mode_resume(argparse.Namespace(reason="test", json=True), client)
+        == cli.ExitCode.OK
+    )
+    assert (
+        await cli._cmd_mode_clear_halt(
+            argparse.Namespace(reason="test", cleared_by="operator", json=True), client
+        )
+        == cli.ExitCode.OK
+    )
+    assert (
+        await cli._cmd_pause(argparse.Namespace(reason="test", json=True), client)
+        == cli.ExitCode.OK
+    )
+    assert (
+        await cli._cmd_resume(argparse.Namespace(reason="test", json=True), client)
+        == cli.ExitCode.OK
+    )
+    assert await cli._cmd_vram(argparse.Namespace(json=True), client) == cli.ExitCode.OK
+    capsys.readouterr()
+
+
+@pytest.mark.asyncio
+async def test_watch_repeated_state_and_optional_queue_limit(capsys):
+    class RepeatingClient(FakeClient):
+        def __init__(self):
+            super().__init__()
+            self.states = iter(("running", "running", "completed"))
+
+        async def request_ok(self, method, path, body=None):
+            self.calls.append((method, path, body))
+            if path == "/jobs/job":
+                return {"id": "job", "state": next(self.states)}
+            if path == "/queue":
+                return {"size": 0, "entries": []}
+            return {"success": True}
+
+    client = RepeatingClient()
+    args = argparse.Namespace(id="job", timeout=2, interval=0, json=True)
+    assert await cli._cmd_jobs_watch(args, client) == cli.ExitCode.OK
+    await cli._cmd_queue(argparse.Namespace(limit=10, json=True), client)
+    assert client.calls[-1][1] == "/queue?limit=10"
+    capsys.readouterr()
+
+
+@pytest.mark.asyncio
 async def test_cli_rich_status_watch_and_mode_branches(  # noqa: C901,RUF100
     tmp_path, monkeypatch, capsys
 ):

@@ -78,6 +78,45 @@ def test_validation_reports_invalid_fields():
         assert field in str(error.value)
 
 
+def test_model_validation_and_identity_edge_cases():
+    with pytest.raises(JobValidationError, match="invalid job state"):
+        Job(adapter="ollama", payload={}, state="not-a-state")
+
+    job = Job(adapter="ollama", payload={}, state="pending")
+    assert job.can_transition_to(JobState.PENDING)
+    assert job == job
+    assert job.__eq__(object()) is NotImplemented
+
+    job.id = ""
+    job.adapter = ""
+    job.payload = []
+    job.priority = True
+    job.state = "pending"
+    job.tags = {1: "bad-key"}
+    with pytest.raises(JobValidationError) as error:
+        job.validate()
+    for problem in (
+        "id must be a non-empty string",
+        "adapter must be a non-empty string",
+        "payload must be a dict",
+        "priority must be an int",
+        "state must be JobState",
+        "tags keys and values must be strings",
+    ):
+        assert problem in str(error.value)
+
+
+def test_coerce_state_accepts_enum_and_rejects_bad_value():
+    from huey.banana_brain.job_models import _coerce_state
+
+    assert _coerce_state(JobState.RUNNING) is JobState.RUNNING
+    with pytest.raises(JobValidationError, match="invalid job state"):
+        _coerce_state("unknown")
+
+    job = Job(adapter="ollama", payload={}, tags={"source": "pygpt"})
+    job.validate()
+
+
 def test_result_and_job_round_trip_tagged_result():
     result = JobResult(ok=True, data={"tokens": 3}, message="done", metrics={"rate": 1})
     restored = Job.from_dict(Job(adapter="ollama", payload={}, result=result).to_dict())
