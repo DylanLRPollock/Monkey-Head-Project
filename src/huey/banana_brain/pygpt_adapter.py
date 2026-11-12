@@ -81,9 +81,6 @@ __all__ = ["PyGPTAdapter"]
 
 LOG = logging.getLogger("banana_brain.pygpt_adapter")
 
-GIB = 1024**3
-
-
 # ---------------------------------------------------------------------------
 # Adapter
 # ---------------------------------------------------------------------------
@@ -561,19 +558,11 @@ class PyGPTAdapter:
                     return name
 
         if len(loaded_names) == 1:
-            LOG.info(
-                "pygpt model %r not loaded; reusing the only loaded model %r",
-                requested_str or "<none>",
-                loaded_names[0],
-            )
+            LOG.info("pygpt model unavailable; reusing the only loaded model")
             return loaded_names[0]
 
         if self._default_model:
-            LOG.info(
-                "pygpt model %r not loaded; using pygpt_default_model %r",
-                requested_str or "<none>",
-                self._default_model,
-            )
+            LOG.info("pygpt model unavailable; using configured default model")
             return self._default_model
 
         raise ValueError(

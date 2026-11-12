@@ -313,16 +313,14 @@ class Scheduler:
                     await request(current)
                 except Exception:
                     LOG.exception(
-                        "adapter %s failed to request cancellation for %s",
+                        "adapter %s failed to request cancellation for running job",
                         current.adapter,
-                        job_id,
                     )
             else:
                 LOG.warning(
-                    "adapter %s does not implement request_cancel; job %s "
+                    "adapter %s does not implement request_cancel; running job "
                     "will run to completion",
                     current.adapter,
-                    job_id,
                 )
             return True
 

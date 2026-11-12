@@ -84,7 +84,6 @@ LOG = logging.getLogger("banana_brain.cli")
 #: Terminal job states (kept local so the CLI does not need job_models on
 #: the import path when invoked as a standalone script from a checkout).
 _TERMINAL_STATES = frozenset({"completed", "failed", "cancelled"})
-_VALID_STATES = frozenset({"pending", "running", "completed", "failed", "cancelled"})
 _VALID_MODES = ("ai", "image", "mixed", "maintenance", "gaming")
 
 #: Priorities accepted by 'jobs priority' beyond plain integers.
