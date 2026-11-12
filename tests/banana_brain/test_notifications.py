@@ -80,7 +80,9 @@ async def test_file_backend_appends_and_disables_after_failure(tmp_path, monkeyp
 
 
 @pytest.mark.asyncio
-async def test_desktop_backend_missing_binary_and_failure_paths(monkeypatch):
+async def test_desktop_backend_missing_binary_and_failure_paths(
+    monkeypatch,
+):  # noqa: C901,RUF100
     monkeypatch.setattr("huey.banana_brain.notifications.shutil.which", lambda _: None)
     missing = DesktopBackend(NotificationLevel.INFO)
     await missing.send(note())

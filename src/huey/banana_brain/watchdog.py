@@ -452,7 +452,7 @@ class Watchdog:
 
         return []
 
-    async def _check_temperature(self) -> list[HealthSignal]:
+    async def _check_temperature(self) -> list[HealthSignal]:  # noqa: C901,RUF100
         signals: list[HealthSignal] = []
         status = await self._gpu_monitor.get_status()
         if status is None:

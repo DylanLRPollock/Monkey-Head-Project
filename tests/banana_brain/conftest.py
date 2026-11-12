@@ -391,7 +391,7 @@ async def scheduler(test_config, job_store, fake_nvml):
 def make_job(
     *,
     adapter: str = "fake",
-    priority: int = int(Priority.BACKGROUND),
+    priority: int = Priority.BACKGROUND,
     payload: dict[str, Any] | None = None,
     **kwargs: Any,
 ) -> Job:

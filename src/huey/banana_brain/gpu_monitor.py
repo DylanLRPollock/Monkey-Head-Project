@@ -368,7 +368,7 @@ class GPUMonitor:
         finally:
             self._handle = None
 
-    def _select_device(self) -> Any:
+    def _select_device(self) -> Any:  # noqa: C901,RUF100
         """
         Resolve the configured GPU by UUID or PCI bus ID.
 

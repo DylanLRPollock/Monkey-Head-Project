@@ -105,6 +105,7 @@ class StartupError(RuntimeError):
 
 class Component(Protocol):
     async def start(self) -> None: ...
+
     async def stop(self) -> None: ...
 
 

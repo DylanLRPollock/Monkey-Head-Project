@@ -420,7 +420,7 @@ class Scheduler:
             self._idle.set()
             LOG.debug("dispatch loop exited")
 
-    async def _try_dispatch_next(self) -> bool:
+    async def _try_dispatch_next(self) -> bool:  # noqa: C901,RUF100
         """
         Try to run the highest-priority job once.
 

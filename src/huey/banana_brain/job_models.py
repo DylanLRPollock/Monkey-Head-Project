@@ -374,8 +374,19 @@ class Job:
         path fast), but scheduler_api and scheduler_cli should call it on
         incoming jobs to produce clear errors for callers.
         """
-        problems: list[str] = []
+        problems = self._validation_problems()
 
+        if problems:
+            raise JobValidationError(f"job {self.id}: " + "; ".join(problems))
+
+    def _validation_problems(self) -> list[str]:
+        problems: list[str] = []
+        self._validate_core_fields(problems)
+        self._validate_attempt_fields(problems)
+        self._validate_optional_fields(problems)
+        return problems
+
+    def _validate_core_fields(self, problems: list[str]) -> None:
         if not isinstance(self.id, str) or not self.id:
             problems.append("id must be a non-empty string")
         if not isinstance(self.adapter, str) or not self.adapter:
@@ -386,6 +397,8 @@ class Job:
             problems.append("priority must be an int")
         if not isinstance(self.state, JobState):
             problems.append(f"state must be JobState, got {type(self.state).__name__}")
+
+    def _validate_attempt_fields(self, problems: list[str]) -> None:
         if self.estimated_vram_bytes is not None and (
             not isinstance(self.estimated_vram_bytes, int)
             or self.estimated_vram_bytes <= 0
@@ -397,6 +410,8 @@ class Job:
             problems.append("attempts must be a non-negative int")
         if not isinstance(self.max_attempts, int) or self.max_attempts < 1:
             problems.append("max_attempts must be an int >= 1")
+
+    def _validate_optional_fields(self, problems: list[str]) -> None:
         if self.owner is not None and not isinstance(self.owner, str):
             problems.append("owner must be a string or None")
         if self.idempotency_key is not None and not isinstance(
@@ -405,14 +420,11 @@ class Job:
             problems.append("idempotency_key must be a string or None")
         if not isinstance(self.tags, dict):
             problems.append("tags must be a dict")
-        else:
-            for k, v in self.tags.items():
-                if not isinstance(k, str) or not isinstance(v, str):
-                    problems.append("tags keys and values must be strings")
-                    break
-
-        if problems:
-            raise JobValidationError(f"job {self.id}: " + "; ".join(problems))
+            return
+        for key, value in self.tags.items():
+            if not isinstance(key, str) or not isinstance(value, str):
+                problems.append("tags keys and values must be strings")
+                break
 
     # ------------------------------------------------------------------
     # Persistence

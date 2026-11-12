@@ -123,7 +123,10 @@ class APIError(Exception):
     def __init__(self, status: int, message: str) -> None:
         self.status = status
         self.message = message
-        super().__init__(f"HTTP {status}: {message}")
+        super().__init__(status, message)
+
+    def __str__(self) -> str:
+        return f"HTTP {self.status}: {self.message}"
 
 
 class Client:
@@ -902,7 +905,7 @@ async def _cmd_watchdog(args: argparse.Namespace, client: Client) -> int:
         print(f"run_count:         {data.get('run_count')}")
         print(
             f"last_run:          {_fmt_ts(data.get('last_run_at'))} "
-            f"({_fmt_duration(_now_minus(data.get('last_run_at'))) } ago)"
+            f"({_fmt_duration(_now_minus(data.get('last_run_at')))} ago)"
         )
         print(f"check_interval:    {data.get('check_interval_s')}s")
         signals = data.get("signals") or []

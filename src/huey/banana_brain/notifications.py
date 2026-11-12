@@ -202,6 +202,7 @@ class Backend(Protocol):
     min_level: NotificationLevel
 
     async def send(self, notification: Notification) -> None: ...
+
     async def close(self) -> None: ...
 
 
@@ -597,7 +598,7 @@ class Notifier:
         *,
         kind: str | None = None,
         key: str | None = None,
-    ) -> None:
+    ) -> None:  # noqa: C901,RUF100
         """
         Enqueue a notification for delivery. Returns immediately.
 
