@@ -181,3 +181,97 @@ def test_validation_reports_short_tokens_and_nonpositive_monitor_limits():
     assert "api_token must be at least 16 characters" in details
     assert "poll_interval_seconds must be > 0" in details
     assert "max_staleness_seconds must be > 0" in details
+
+
+def test_remaining_config_edges_and_audio_validation(tmp_path, monkeypatch):
+    import builtins
+    from pathlib import Path
+
+    from huey.banana_brain.config import _parse_yaml_mapping
+
+    assert BananaBrainConfig.from_dict({"device": None}).device is None
+    assert _expand_env(42, source="test") == 42
+
+    with pytest.raises(ConfigError, match="specified both"):
+        BananaBrainConfig.from_dict(
+            {
+                "audio_stt_backend": "disabled",
+                "audio": {"stt_backend": "disabled"},
+            }
+        )
+    with pytest.raises(ConfigError, match="expected mapping"):
+        BananaBrainConfig.from_dict({"audio_model_vram_gib": []})
+
+    enabled = BananaBrainConfig.from_dict(
+        {
+            "audio": {
+                "stt_backend": "faster-whisper-server",
+                "stt_base_url": "http://127.0.0.1:8000",
+                "tts_backend": "piper",
+                "tts_base_url": "http://127.0.0.1:5002",
+                "model_vram_gib": {"stt:large-v3": 3.5},
+            }
+        }
+    )
+    assert enabled.audio_stt_backend == "faster-whisper-server"
+    assert enabled.audio_model_vram_gib["stt:large-v3"] == 3.5
+
+    invalid_cases = [
+        ({"audio_stt_backend": "unknown"}, "audio_stt_backend must be one of"),
+        (
+            {"audio_stt_backend": "whisper-cpp"},
+            "audio_stt_base_url is required",
+        ),
+        (
+            {"audio_stt_backend": "whisper-cpp", "audio_stt_base_url": "ftp://host"},
+            "audio_stt_base_url: scheme",
+        ),
+        ({"audio_stt_timeout_seconds": 0}, "audio_stt_timeout_seconds must be > 0"),
+        ({"audio_unload_wait_seconds": 0}, "audio_unload_wait_seconds must be > 0"),
+        (
+            {"audio_model_vram_gib": {" ": True}},
+            "must be non-empty strings",
+        ),
+    ]
+    for values, expected in invalid_cases:
+        with pytest.raises(ConfigError, match=expected):
+            BananaBrainConfig.from_dict(values)
+
+    assert BananaBrainConfig.from_dict(
+        {
+            "api_bind": "localhost:8080",
+            "api_token": "0123456789abcdef",
+        }
+    ).api_bind == "localhost:8080"
+    assert "invalid URL" in _validate_url("http://[invalid")
+    assert "invalid port" in _validate_url("http://localhost:0")
+
+    valid_file = tmp_path / "read-error.yaml"
+    valid_file.write_text("device: test")
+
+    def denied_read(*_args, **_kwargs):
+        raise OSError("permission denied")
+
+    monkeypatch.setattr(Path, "read_text", denied_read)
+    with pytest.raises(ConfigError, match="cannot read"):
+        load_config(valid_file)
+    monkeypatch.undo()
+
+    original_import = builtins.__import__
+
+    def without_yaml(name, *args, **kwargs):
+        if name == "yaml":
+            raise ImportError("hidden for test")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", without_yaml)
+    with pytest.raises(ConfigError, match="PyYAML is required"):
+        _parse_yaml_mapping("device: test", tmp_path / "config.yaml")
+    monkeypatch.undo()
+
+    def fail_constructor(self, **_kwargs):
+        raise TypeError("forced construction failure")
+
+    monkeypatch.setattr(BananaBrainConfig, "__init__", fail_constructor)
+    with pytest.raises(ConfigError, match="forced construction failure"):
+        BananaBrainConfig.from_dict({})
