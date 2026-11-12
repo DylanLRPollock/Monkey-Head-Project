@@ -679,30 +679,22 @@ def _validate_service_settings(cfg: BananaBrainConfig) -> list[str]:
 
 def _validate_audio_settings(cfg: BananaBrainConfig) -> list[str]:
     problems = []
-    backends = (
-        (
+    problems.extend(
+        _validate_audio_backend(
             "audio_stt_backend",
             cfg.audio_stt_backend,
             {"disabled", "faster-whisper-server", "whisper-cpp"},
             cfg.audio_stt_base_url,
-        ),
-        (
+        )
+    )
+    problems.extend(
+        _validate_audio_backend(
             "audio_tts_backend",
             cfg.audio_tts_backend,
             {"disabled", "coqui", "piper"},
             cfg.audio_tts_base_url,
-        ),
+        )
     )
-    for name, backend, choices, url in backends:
-        url_name = name.rsplit("_", 1)[0] + "_base_url"
-        if backend not in choices:
-            problems.append(f"{name} must be one of: {', '.join(sorted(choices))}")
-        if backend != "disabled" and not url:
-            problems.append(f"{url_name} is required when {name} is enabled")
-        if url:
-            problem = _validate_url(url)
-            if problem:
-                problems.append(f"{url_name}: {problem}")
     for name in (
         "audio_stt_timeout_seconds",
         "audio_tts_timeout_seconds",
@@ -710,7 +702,29 @@ def _validate_audio_settings(cfg: BananaBrainConfig) -> list[str]:
     ):
         if getattr(cfg, name) <= 0:
             problems.append(f"{name} must be > 0")
-    for model, gib in cfg.audio_model_vram_gib.items():
+    problems.extend(_validate_audio_vram_overrides(cfg.audio_model_vram_gib))
+    return problems
+
+
+def _validate_audio_backend(
+    name: str, backend: str, choices: set[str], url: str | None
+) -> list[str]:
+    problems = []
+    url_name = name.rsplit("_", 1)[0] + "_base_url"
+    if backend not in choices:
+        problems.append(f"{name} must be one of: {', '.join(sorted(choices))}")
+    if backend != "disabled" and not url:
+        problems.append(f"{url_name} is required when {name} is enabled")
+    if url:
+        problem = _validate_url(url)
+        if problem:
+            problems.append(f"{url_name}: {problem}")
+    return problems
+
+
+def _validate_audio_vram_overrides(overrides: dict[str, Any]) -> list[str]:
+    problems = []
+    for model, gib in overrides.items():
         if not isinstance(model, str) or not model.strip():
             problems.append("audio_model_vram_gib keys must be non-empty strings")
         if isinstance(gib, bool) or not isinstance(gib, (int, float)) or gib <= 0:
