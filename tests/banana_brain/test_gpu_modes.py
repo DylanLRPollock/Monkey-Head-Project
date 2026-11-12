@@ -10,6 +10,10 @@ from huey.banana_brain.gpu_modes import (
     GPUMode,
     GPUModeManager,
     ModeTransitionError,
+    _cfg_bool,
+    _cfg_num,
+    _cfg_str,
+    _maybe_str,
     _parse_mode,
 )
 from huey.banana_brain.job_models import Job, JobState, Priority
@@ -30,6 +34,30 @@ def test_parse_mode_accepts_names_and_rejects_unknown():
     assert _parse_mode(GPUMode.AI) is GPUMode.AI
     with pytest.raises(ModeTransitionError):
         _parse_mode("invalid")
+
+
+def test_mode_config_and_workload_predicates():
+    assert _cfg_str({"name": 0}, "name") is None
+    assert _cfg_num({"n": "3"}, "n", 2.5) == 2.5
+    assert _cfg_bool({}, "enabled", True) is True
+    assert _cfg_bool({"enabled": False}, "enabled", True) is False
+    assert _cfg_bool({"enabled": " YES "}, "enabled", False) is True
+    assert _cfg_bool({"enabled": "no"}, "enabled", True) is False
+    assert _cfg_bool({"enabled": 1}, "enabled", False) is True
+    assert _maybe_str(None) is None
+    assert _maybe_str(12) == "12"
+    assert GPUModeManager._is_maintenance_workload(
+        Job(adapter="fake", payload={}, exclusive=True)
+    )
+    assert GPUModeManager._is_maintenance_workload(
+        Job(adapter="fake", payload={}, priority=int(Priority.EXCLUSIVE))
+    )
+    assert GPUModeManager._is_maintenance_workload(
+        Job(adapter="fake", payload={}, tags={"maintenance": True})
+    )
+    assert not GPUModeManager._is_maintenance_workload(
+        SimpleNamespace(priority="invalid", exclusive=False, tags={})
+    )
 
 
 @pytest.mark.asyncio
@@ -208,3 +236,268 @@ async def test_forced_mode_transition_reports_still_running_job():
     assert result.interrupted_job_id == "busy-job"
     assert "still running" in result.error
     scheduler.cancel.assert_awaited_once_with("busy-job", force=True)
+
+
+@pytest.mark.asyncio
+async def test_noop_transition_and_repeated_halt_are_idempotent(scheduler, job_store):
+    sched, adapter, _ = scheduler
+    modes = manager(sched, job_store, adapters={"fake": adapter})
+    same = await modes.set_mode("mixed", reason="no change")
+    assert same.success and same.elapsed_s == 0
+    await modes.force_safety_halt("thermal risk")
+    await modes.force_safety_halt("duplicate event")
+    assert modes._safety_halt_reason == "thermal risk"
+    await modes.clear_safety_halt(reason="not required twice")
+    await modes.clear_safety_halt(reason="already cleared")
+    assert not modes.safety_halted
+
+
+@pytest.mark.asyncio
+async def test_bad_persisted_state_uses_configured_default(
+    tmp_path, scheduler, job_store
+):
+    path = tmp_path / "mode.json"
+    path.write_text("not json", encoding="utf-8")
+    sched, adapter, _ = scheduler
+    modes = GPUModeManager(
+        {
+            "mode_default": "image",
+            "mode_persistence_enabled": True,
+            "mode_state_path": str(path),
+        },
+        scheduler=sched,
+        priority_manager=sched._priority_manager,
+        job_store=job_store,
+        adapters={"fake": adapter},
+    )
+    await modes.start()
+    try:
+        assert modes.current_mode is GPUMode.IMAGE
+    finally:
+        await modes.stop()
+
+
+@pytest.mark.asyncio
+async def test_persisted_exclusive_mode_restores_previous_nonexclusive_mode(
+    tmp_path, scheduler, job_store
+):
+    path = tmp_path / "mode.json"
+    path.write_text(
+        '{"mode":"gaming","previous_non_exclusive_mode":"image"}',
+        encoding="utf-8",
+    )
+    sched, adapter, _ = scheduler
+    modes = GPUModeManager(
+        {"mode_persistence_enabled": True, "mode_state_path": str(path)},
+        scheduler=sched,
+        priority_manager=sched._priority_manager,
+        job_store=job_store,
+        adapters={"fake": adapter},
+    )
+    await modes.start()
+    try:
+        assert modes.current_mode is GPUMode.GAMING
+        result = await modes.resume_previous()
+        assert result.to_mode is GPUMode.IMAGE
+    finally:
+        await modes.stop()
+
+
+@pytest.mark.asyncio
+async def test_resume_drops_missing_and_terminal_suspended_jobs():
+    pending = Job(adapter="audio", payload={})
+    terminal = Job(adapter="audio", payload={}, state=JobState.CANCELLED)
+
+    class Store:
+        async def get(self, job_id):
+            return pending if job_id == pending.id else terminal
+
+    push = AsyncMock()
+    modes = GPUModeManager(
+        {"mode_persistence_enabled": False},
+        scheduler=SimpleNamespace(),
+        priority_manager=SimpleNamespace(push=push),
+        job_store=Store(),
+        adapters={},
+    )
+    modes._suspended_jobs = [pending, terminal, Job(adapter="audio", payload={})]
+    assert await modes._resume_all_suspended() == 1
+    push.assert_awaited_once_with(pending)
+    assert modes._suspended_jobs == []
+
+
+@pytest.mark.asyncio
+async def test_resume_discards_job_when_store_read_fails():
+    job = Job(adapter="audio", payload={})
+
+    class BrokenStore:
+        async def get(self, _job_id):
+            raise OSError("database offline")
+
+    modes = GPUModeManager(
+        {"mode_persistence_enabled": False},
+        scheduler=SimpleNamespace(),
+        priority_manager=SimpleNamespace(push=AsyncMock()),
+        job_store=BrokenStore(),
+        adapters={},
+    )
+    modes._suspended_jobs = [job]
+    assert await modes._resume_all_suspended() == 0
+    assert modes._suspended_jobs == []
+
+
+@pytest.mark.asyncio
+async def test_cancel_suspended_persistence_failure_is_best_effort():
+    job = Job(adapter="audio", payload={})
+
+    class BrokenStore:
+        async def save(self, _job):
+            raise OSError("database offline")
+
+    modes = GPUModeManager(
+        {"mode_persistence_enabled": False},
+        scheduler=SimpleNamespace(),
+        priority_manager=SimpleNamespace(),
+        job_store=BrokenStore(),
+        adapters={},
+    )
+    modes._suspended_jobs = [job]
+    assert await modes.cancel_suspended(job.id)
+    assert job.state is JobState.CANCELLED
+    assert await modes.get_suspended() == []
+
+
+def test_admission_install_failure_and_wake_fallback():
+    event = asyncio.Event()
+
+    def fail_install(_checker):
+        raise RuntimeError("cannot install checker")
+
+    def fail_wake():
+        raise RuntimeError("wake unavailable")
+
+    scheduler = SimpleNamespace(
+        set_admission_checker=fail_install,
+        request_dispatch=fail_wake,
+        _wake=event,
+    )
+    modes = GPUModeManager(
+        {"mode_persistence_enabled": False},
+        scheduler=scheduler,
+        priority_manager=SimpleNamespace(),
+        job_store=SimpleNamespace(),
+        adapters={},
+    )
+    assert not modes._install_admission_check()
+    modes._wake_scheduler()
+    assert event.is_set()
+
+
+@pytest.mark.asyncio
+async def test_stop_tolerates_admission_uninstall_failure():
+    def setter(_checker):
+        return None
+
+    scheduler = SimpleNamespace(set_admission_checker=setter)
+    modes = GPUModeManager(
+        {"mode_persistence_enabled": False},
+        scheduler=scheduler,
+        priority_manager=SimpleNamespace(),
+        job_store=SimpleNamespace(),
+        adapters={},
+    )
+    modes._admission_installed = True
+    scheduler.set_admission_checker = lambda _checker: (_ for _ in ()).throw(
+        RuntimeError("setter failed")
+    )
+    await modes.stop()
+
+
+@pytest.mark.asyncio
+async def test_safety_halt_and_clear_survive_queue_errors():
+    modes = GPUModeManager(
+        {"mode_persistence_enabled": False},
+        scheduler=SimpleNamespace(),
+        priority_manager=SimpleNamespace(),
+        job_store=SimpleNamespace(),
+        adapters={},
+    )
+    modes._suspend_non_matching = AsyncMock(side_effect=RuntimeError("drain failed"))
+    modes._resume_all_suspended = AsyncMock(side_effect=RuntimeError("resume failed"))
+    await modes.force_safety_halt("unsafe temperature")
+    assert modes.safety_halted
+    await modes.clear_safety_halt(reason="cooled", cleared_by="operator")
+    assert not modes.safety_halted
+    modes._suspend_non_matching.assert_awaited_once()
+    modes._resume_all_suspended.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_current_job_timeout_handles_cancel_failure():
+    scheduler = SimpleNamespace(
+        current_job=SimpleNamespace(id="busy"),
+        cancel=AsyncMock(side_effect=RuntimeError("cancel unavailable")),
+    )
+    modes = GPUModeManager(
+        {"mode_persistence_enabled": False},
+        scheduler=scheduler,
+        priority_manager=SimpleNamespace(),
+        job_store=SimpleNamespace(),
+        adapters={},
+    )
+    assert await modes._await_current_job(0, force=True) == "busy"
+    assert await modes._await_current_job(0, force=False) == "busy"
+    scheduler.current_job = None
+    assert await modes._await_current_job(0, force=False) is None
+
+
+@pytest.mark.asyncio
+async def test_resume_push_failure_is_best_effort():
+    job = Job(adapter="audio", payload={})
+
+    class BrokenQueue:
+        async def push(self, _job):
+            raise OSError("queue unavailable")
+
+    modes = GPUModeManager(
+        {"mode_persistence_enabled": False},
+        scheduler=SimpleNamespace(),
+        priority_manager=BrokenQueue(),
+        job_store=SimpleNamespace(get=AsyncMock(return_value=job)),
+        adapters={},
+    )
+    modes._suspended_jobs = [job]
+    assert await modes._resume_all_suspended() == 0
+    assert modes._suspended_jobs == []
+
+
+@pytest.mark.asyncio
+async def test_adapter_unload_errors_do_not_abort_mode_work():
+    async def fail(_needed):
+        raise RuntimeError("model busy")
+
+    modes = GPUModeManager(
+        {"mode_persistence_enabled": False},
+        scheduler=SimpleNamespace(),
+        priority_manager=SimpleNamespace(),
+        job_store=SimpleNamespace(),
+        adapters={"bad": SimpleNamespace(unload_idle_models=fail), "none": object()},
+    )
+    await modes._unload_all_adapters()
+
+
+def test_persistence_rejects_non_object_state_and_ignores_write_errors(tmp_path):
+    path = tmp_path / "state.json"
+    path.write_text("[]", encoding="utf-8")
+    modes = GPUModeManager(
+        {"mode_persistence_enabled": True, "mode_state_path": str(path)},
+        scheduler=SimpleNamespace(),
+        priority_manager=SimpleNamespace(),
+        job_store=SimpleNamespace(),
+        adapters={},
+    )
+    assert modes._load_persisted_state() is None
+    blocked_parent = tmp_path / "not-a-directory"
+    blocked_parent.write_text("file", encoding="utf-8")
+    modes._state_path = blocked_parent / "mode.json"
+    modes._save_persisted_state()

@@ -11,6 +11,11 @@ from aiohttp.test_utils import TestServer
 from huey.banana_brain.config import BananaBrainConfig
 from huey.banana_brain.ollama_adapter import (
     OllamaAdapter,
+    _cfg_bool,
+    _cfg_num,
+    _cfg_str,
+    _expires_sort_key,
+    _is_pinned,
     _model_matches,
     _parse_parameter_size,
 )
@@ -39,6 +44,11 @@ class FakeOllama:
         self.chat_calls: list[dict] = []
         self.stream_body: bytes | None = None
         self.generate_http_error: int | None = None
+        self.tags_status = 200
+        self.ps_status = 200
+        self.show_status = 200
+        self.show_response = None
+        self.generate_response_override = None
 
     def make_app(self) -> web.Application:
         app = web.Application()
@@ -50,13 +60,14 @@ class FakeOllama:
         return app
 
     async def _tags(self, request):
-        return web.json_response({"models": self.tags})
+        return web.json_response({"models": self.tags}, status=self.tags_status)
 
     async def _ps(self, request):
-        return web.json_response({"models": self.loaded})
+        return web.json_response({"models": self.loaded}, status=self.ps_status)
 
     async def _show(self, request):
-        return web.json_response({"details": self.show_details})
+        body = self.show_response or {"details": self.show_details}
+        return web.json_response(body, status=self.show_status)
 
     async def _generate(self, request):
         body = await request.json()
@@ -70,6 +81,8 @@ class FakeOllama:
             return web.Response(
                 body=self.stream_body, content_type="application/x-ndjson"
             )
+        if self.generate_response_override is not None:
+            return web.json_response(self.generate_response_override)
         if self.generate_responses:
             return web.json_response(self.generate_responses.pop(0))
         return web.json_response({"response": "hello", "done": True, "eval_count": 5})
@@ -145,6 +158,20 @@ def test_parse_parameter_size():
     assert _parse_parameter_size("unknown") is None
 
 
+def test_expiry_and_config_helper_fallbacks():
+    assert not _is_pinned({"expires_at": ""})
+    assert not _is_pinned({"expires_at": "not-a-date"})
+    assert _expires_sort_key({}) == float("inf")
+    assert _expires_sort_key({"expires_at": "not-a-date"}) == float("inf")
+    assert _cfg_str({"first": "", "second": 4}, "first", "second") == "4"
+    assert _cfg_str({}, "missing") is None
+    assert _cfg_num({"count": "3"}, "count", 1.5) == 1.5
+    assert _cfg_bool({}, "enabled", True) is True
+    assert _cfg_bool({"enabled": " YES "}, "enabled", False) is True
+    assert _cfg_bool({"enabled": "no"}, "enabled", True) is False
+    assert _cfg_bool({"enabled": 0}, "enabled", True) is False
+
+
 # ---------------------------------------------------------------------------
 # Lifecycle
 # ---------------------------------------------------------------------------
@@ -154,6 +181,27 @@ async def test_start_probes_tags(adapter, fake_ollama):
     _, server = fake_ollama
     assert server.tags == [{"name": "qwen2.5:32b"}]
     # adapter.start() succeeded — the probe would have raised otherwise.
+
+
+async def test_start_probe_failure_closes_session(fake_ollama, test_config):
+    server, fake = fake_ollama
+    fake.tags_status = 503
+    cfg = BananaBrainConfig(
+        ollama_base_url=str(server.make_url("")).rstrip("/"),
+        database_path=test_config.database_path,
+    )
+    instance = OllamaAdapter(cfg, vram_manager=None)
+    with pytest.raises(RuntimeError, match="tags returned 503"):
+        await instance.start()
+    assert instance._session is None
+
+
+async def test_duplicate_start_and_unstarted_stop(adapter, test_config):
+    with pytest.raises(RuntimeError, match="already started"):
+        await adapter.start()
+    fresh = OllamaAdapter(test_config, vram_manager=None)
+    await fresh.stop()
+    assert fresh._session is None
 
 
 # ---------------------------------------------------------------------------
@@ -300,6 +348,15 @@ async def test_execute_http_error_raises(adapter, fake_ollama):
         await adapter.execute(job)
 
 
+async def test_execute_rejects_non_object_response(adapter, fake_ollama):
+    _, server = fake_ollama
+    server.generate_response_override = ["not", "an", "object"]
+    job = make_job(adapter="ollama", payload={"model": "qwen2.5:32b", "prompt": "hi"})
+    with pytest.raises(RuntimeError, match="non-object JSON"):
+        await adapter.execute(job)
+    assert "qwen2.5:32b" not in adapter._active_models
+
+
 # ---------------------------------------------------------------------------
 # estimate_vram
 # ---------------------------------------------------------------------------
@@ -336,6 +393,30 @@ async def test_estimate_falls_back_to_default(adapter, fake_ollama):
     server.show_details = {}  # no parameter_size
     job = make_job(adapter="ollama", payload={"model": "mystery:latest"})
     estimate = await adapter.estimate_vram(job)
+    assert estimate == 8 * 1024**3
+
+
+async def test_estimate_uses_top_level_show_fields_and_unknown_quant(
+    adapter, fake_ollama
+):
+    _, server = fake_ollama
+    server.loaded = [{"name": "m:latest", "size_vram": 0}]
+    server.show_response = {
+        "parameter_size": "7B",
+        "quantization_level": "unknown_quant",
+    }
+    estimate = await adapter.estimate_vram(
+        make_job(adapter="ollama", payload={"model": "m"})
+    )
+    assert estimate > 5 * 1024**3
+
+
+async def test_estimate_defaults_when_show_endpoint_errors(adapter, fake_ollama):
+    _, server = fake_ollama
+    server.show_status = 500
+    estimate = await adapter.estimate_vram(
+        make_job(adapter="ollama", payload={"model": "missing"})
+    )
     assert estimate == 8 * 1024**3
 
 
@@ -383,3 +464,30 @@ async def test_unload_stops_when_enough_freed(adapter, fake_ollama):
     freed = await adapter.unload_idle_models(5 * 1024**3)
     assert freed == 5 * 1024**3
     assert len(server.unload_calls) == 1
+
+
+async def test_unload_handles_empty_and_http_error_model_lists(adapter, fake_ollama):
+    _, server = fake_ollama
+    assert await adapter.unload_idle_models(1) == 0
+    server.ps_status = 500
+    server.loaded = [{"name": "m", "size_vram": 10}]
+    assert await adapter.unload_idle_models(1) == 0
+
+
+async def test_unload_skips_pinned_and_unnamed_models(adapter, fake_ollama):
+    _, server = fake_ollama
+    server.loaded = [
+        {"name": "pinned", "size_vram": 10, "expires_at": "2999-01-01T00:00:00Z"},
+        {"size_vram": 20},
+    ]
+    assert await adapter.unload_idle_models(1) == 0
+    assert server.unload_calls == []
+
+
+async def test_cancel_without_model_returns_false(adapter):
+    assert (
+        await adapter.request_cancel(
+            make_job(adapter="ollama", payload={"prompt": "hi"})
+        )
+        is False
+    )

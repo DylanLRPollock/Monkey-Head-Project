@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import io
+import sys
 from typing import ClassVar
 
 import aiohttp
@@ -409,3 +411,255 @@ async def test_async_main_handles_connector_errors(monkeypatch, capsys):
     monkeypatch.setattr(cli, "_dispatch", fail)
     assert await cli._async_main(args_for("health")) == cli.ExitCode.TRANSPORT
     assert "cannot reach Banana Brain API" in capsys.readouterr().err
+
+
+@pytest.mark.asyncio
+async def test_client_unix_socket_context_and_transport_errors(monkeypatch):
+    calls = {}
+
+    class Session:
+        async def close(self):
+            calls["closed"] = True
+
+        def request(self, *args, **kwargs):
+            raise aiohttp.ClientError("connection reset")
+
+    monkeypatch.setattr(
+        cli.aiohttp,
+        "UnixConnector",
+        lambda *, path: calls.setdefault("socket", path),
+    )
+    monkeypatch.setattr(cli.aiohttp, "ClientSession", lambda **kwargs: Session())
+    client = cli.Client(socket_path="/tmp/banana.sock")
+    assert client.endpoint == "unix:/tmp/banana.sock"
+    await client.__aenter__()
+    assert calls["socket"] == "/tmp/banana.sock"
+    with pytest.raises(cli.APIError, match="transport error"):
+        await client.request("GET", "/health")
+    await client.__aexit__()
+    assert calls["closed"] is True
+    assert client._session is None
+    await client.__aexit__()  # exiting an already closed context is harmless
+
+
+@pytest.mark.asyncio
+async def test_cli_commands_cover_empty_payloads_and_failure_responses(capsys):
+    class EmptyClient(FakeClient):
+        async def request_ok(self, method, path, body=None):
+            self.calls.append((method, path, body))
+            if path == "/status":
+                return {}
+            if path.startswith("/jobs?") or path.endswith("/events?limit=100"):
+                return {}
+            if path.startswith("/jobs/"):
+                return {"id": "bare", "state": "pending"}
+            if path == "/queue":
+                return {"size": 0}
+            if path == "/suspended":
+                return {}
+            if path == "/mode" and method == "GET":
+                return {
+                    "mode": "maintenance",
+                    "safety_halted": True,
+                    "safety_halt_reason": "hot",
+                }
+            if path == "/watchdog":
+                return {"running": False, "signals": []}
+            if path == "/adapters":
+                return {}
+            if path == "/mode" and method == "POST":
+                return {
+                    "success": False,
+                    "from_mode": "ai",
+                    "to_mode": "image",
+                    "error": "could not switch",
+                    "interrupted_job_id": "j",
+                }
+            if path == "/mode/resume":
+                return {"success": False, "to_mode": "ai"}
+            return {"success": True}
+
+    client = EmptyClient()
+    commands = [
+        ["status"],
+        ["jobs", "list", "--state", "pending"],
+        ["jobs", "show", "bare"],
+        ["jobs", "events", "bare"],
+        ["queue"],
+        ["suspended", "list"],
+        ["mode", "get"],
+        ["mode", "set", "image"],
+        ["mode", "resume"],
+        ["adapters"],
+        ["watchdog"],
+    ]
+    results = [await cli._dispatch(args_for(*command), client) for command in commands]
+    assert results[7] == cli.ExitCode.APP_ERROR
+    assert results[8] == cli.ExitCode.APP_ERROR
+    output = capsys.readouterr()
+    assert "no jobs" in output.out
+    assert "no events" in output.out
+    assert "no suspended jobs" in output.out
+    assert "no adapters registered" in output.out
+    assert "could not switch" in output.out
+    assert "still running" in output.err
+
+
+@pytest.mark.asyncio
+async def test_watch_timeout_and_health_http_error(capsys):
+    class PendingClient(FakeClient):
+        async def request(self, method, path, body=None):
+            return 503, {"error": "offline"}
+
+        async def request_ok(self, method, path, body=None):
+            return {"id": "pending", "state": "running"}
+
+    client = PendingClient()
+    assert await cli._cmd_health(args_for("health"), client) == cli.ExitCode.APP_ERROR
+    with pytest.raises(cli.APIError, match="did not finish"):
+        await cli._cmd_jobs_watch(
+            argparse.Namespace(id="pending", timeout=0, interval=0, json=False),
+            client,
+        )
+    assert "status:            503" in capsys.readouterr().out
+
+
+@pytest.mark.asyncio
+async def test_cli_rich_status_watch_and_mode_branches(tmp_path, monkeypatch, capsys):
+    class RichClient(FakeClient):
+        async def request(self, method, path, body=None):
+            return 200, {"ok": True}
+
+        async def request_ok(self, method, path, body=None):
+            self.calls.append((method, path, body))
+            if path == "/status":
+                return {
+                    "uptime_seconds": 5,
+                    "scheduler": {"shutting_down": True, "current_job_id": "j"},
+                    "mode": {
+                        "mode": "maintenance",
+                        "safety_halted": True,
+                        "safety_halt_reason": "temperature",
+                    },
+                    "watchdog": {
+                        "signals": [
+                            {"severity": "critical", "name": "gpu", "message": "hot"}
+                        ]
+                    },
+                    "adapters": [],
+                    "gpu": {
+                        "identity": {"name": "V100", "index": 0, "uuid": "GPU-1"},
+                        "used_vram_bytes": 1,
+                        "total_vram_bytes": 2,
+                        "free_vram_bytes": 1,
+                        "temperature_c": 88,
+                        "power_watts": 250,
+                    },
+                }
+            if path == "/jobs/done":
+                return {"id": "done", "state": "failed", "last_error": "oom"}
+            if path == "/mode" and method == "GET":
+                return {
+                    "mode": "maintenance",
+                    "safety_halted": True,
+                    "safety_halt_reason": "temperature",
+                }
+            if path == "/watchdog/ack":
+                return {"acknowledged": True}
+            if path == "/jobs?limit=50":
+                return {"jobs": []}
+            if path == "/jobs/done/events?limit=100":
+                return {"events": []}
+            if path == "/queue":
+                return {"size": 0, "entries": []}
+            if path == "/suspended":
+                return {"jobs": []}
+            return {
+                "success": False,
+                "from_mode": "ai",
+                "to_mode": "image",
+                "error": "blocked",
+                "suspended_count": 2,
+                "interrupted_job_id": "running",
+            }
+
+    client = RichClient()
+    assert await cli._dispatch(args_for("status"), client) == cli.ExitCode.OK
+    assert (
+        await cli._dispatch(args_for("jobs", "watch", "done", "--timeout", "1"), client)
+        == cli.ExitCode.OK
+    )
+    assert (
+        await cli._dispatch(args_for("--json", "jobs", "watch", "done"), client)
+        == cli.ExitCode.OK
+    )
+    assert await cli._dispatch(args_for("mode", "get"), client) == cli.ExitCode.OK
+    assert (
+        await cli._dispatch(args_for("mode", "set", "image"), client)
+        == cli.ExitCode.APP_ERROR
+    )
+    assert (
+        await cli._dispatch(args_for("--json", "watchdog", "ack", "gpu"), client)
+        == cli.ExitCode.OK
+    )
+    assert await cli._dispatch(args_for("jobs", "list"), client) == cli.ExitCode.OK
+    assert (
+        await cli._dispatch(args_for("jobs", "events", "done"), client)
+        == cli.ExitCode.OK
+    )
+    assert await cli._dispatch(args_for("queue"), client) == cli.ExitCode.OK
+    assert await cli._dispatch(args_for("suspended", "list"), client) == cli.ExitCode.OK
+    output = capsys.readouterr()
+    assert "temperature" in output.out
+    assert "V100" in output.out
+    assert "final state: failed" in output.out
+    assert "blocked" in output.out
+    assert "still running" in output.err
+
+
+@pytest.mark.asyncio
+async def test_cli_json_submit_priority_and_config_socket_fallback(
+    tmp_path, monkeypatch, capsys
+):
+    class InputClient(FakeClient):
+        async def request_ok(self, method, path, body=None):
+            self.calls.append((method, path, body))
+            if method == "GET" and path == "/jobs/running":
+                return {"id": "running", "state": "running"}
+            if method == "GET" and path == "/jobs/pending":
+                return {"id": "pending", "state": "pending", "adapter": "ollama"}
+            if method == "POST" and path == "/jobs":
+                return {"id": "replacement", "adapter": "ollama"}
+            return {"id": "cancelled", "state": "cancelled"}
+
+    client = InputClient()
+    with pytest.raises(cli.APIError, match="running; cancel it first"):
+        await cli._dispatch(args_for("jobs", "priority", "running", "40"), client)
+    assert (
+        await cli._dispatch(
+            args_for("--json", "jobs", "priority", "pending", "40"), client
+        )
+        == cli.ExitCode.OK
+    )
+    monkeypatch.setattr(sys, "stdin", io.StringIO('{"adapter":"ollama"}'))
+    assert (
+        await cli._dispatch(args_for("--json", "jobs", "submit", "-"), client)
+        == cli.ExitCode.OK
+    )
+    assert (
+        await cli._dispatch(args_for("--json", "suspended", "cancel", "s1"), client)
+        == cli.ExitCode.OK
+    )
+
+    monkeypatch.setattr(
+        cli,
+        "_load_config_safe",
+        lambda _path: argparse.Namespace(
+            api_bind=None, api_socket_path="/run/test.sock", api_token=None
+        ),
+    )
+    sock_client = cli._build_client(
+        argparse.Namespace(config="unused", url=None, socket=None, token=None)
+    )
+    assert sock_client.endpoint == "unix:/run/test.sock"
+    assert "replacement" in capsys.readouterr().out

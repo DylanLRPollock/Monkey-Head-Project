@@ -11,21 +11,17 @@ import pytest
 from huey.banana_brain.config import BananaBrainConfig
 from huey.banana_brain.gpu_monitor import (
     DeviceIdentity,
-    GPUHealth,
     GPUMonitor,
-    GPUProcess,
     GPUStatus,
     NVMLUnavailable,
 )
-
 
 # ---------------------------------------------------------------------------
 # Device selection
 # ---------------------------------------------------------------------------
 
-async def test_select_single_device_when_only_one_visible(
-    test_config, fake_nvml
-):
+
+async def test_select_single_device_when_only_one_visible(test_config, fake_nvml):
     monitor = GPUMonitor(test_config)
     await monitor.start()
     try:
@@ -70,9 +66,7 @@ async def test_select_by_pci_bus_id(test_config, fake_nvml, tmp_path):
         await monitor.stop()
 
 
-async def test_refuses_multi_gpu_without_identity(
-    test_config, fake_nvml, tmp_path
-):
+async def test_refuses_multi_gpu_without_identity(test_config, fake_nvml, tmp_path):
     # Add a second device; no UUID/PCI configured.
     from .conftest import FakeNVMLHandle
 
@@ -109,9 +103,10 @@ async def test_init_retries_and_fails_cleanly(test_config, fake_nvml):
 # Staleness
 # ---------------------------------------------------------------------------
 
+
 async def test_status_is_none_when_stale(test_config, fake_nvml):
     cfg = BananaBrainConfig(
-        poll_interval_seconds=10.0,     # very long; we won't get a fresh poll
+        poll_interval_seconds=10.0,  # very long; we won't get a fresh poll
         max_staleness_seconds=0.05,
         database_path=test_config.database_path,
     )
@@ -149,6 +144,7 @@ async def test_refresh_updates_staleness(test_config, fake_nvml):
 # ---------------------------------------------------------------------------
 # Health and processes
 # ---------------------------------------------------------------------------
+
 
 async def test_health_fields_populated(test_config, fake_nvml):
     fake_nvml.temperature[fake_nvml.devices[0].uuid] = 90
@@ -198,3 +194,196 @@ async def test_status_never_raises(test_config, fake_nvml):
         assert await monitor.get_status() is None
     finally:
         await monitor.stop()
+
+
+def test_device_identity_and_status_helpers():
+    identity = DeviceIdentity(
+        index=0, name="GPU", uuid="GPU-ABC", pci_bus_id="0000:01:00.0"
+    )
+    assert identity.matches(uuid="gpu-abc", pci_bus_id=None)
+    assert identity.matches(uuid=None, pci_bus_id="0000:01:00.0")
+    assert not identity.matches(uuid=None, pci_bus_id="0000:02:00.0")
+    status = GPUStatus(
+        identity=identity,
+        timestamp=time.time(),
+        total_vram_bytes=100,
+        free_vram_bytes=25,
+        used_vram_bytes=75,
+        reserved_vram_bytes=0,
+        gpu_utilization_percent=0,
+        memory_utilization_percent=0,
+        temperature_c=None,
+        power_watts=None,
+    )
+    assert status.vram_free_fraction == 0.25
+    assert status.managed_pids(set()) == frozenset()
+    zero_total = replace(status, total_vram_bytes=0)
+    assert zero_total.vram_free_fraction == 0.0
+
+
+async def test_monitor_rejects_second_start_and_stop_is_idempotent(
+    test_config, fake_nvml
+):
+    monitor = GPUMonitor(test_config)
+    await monitor.stop()
+    await monitor.start()
+    try:
+        with pytest.raises(RuntimeError, match="already started"):
+            await monitor.start()
+    finally:
+        await monitor.stop()
+    await monitor.stop()
+
+
+async def test_start_refuses_when_first_poll_has_no_snapshot(test_config, fake_nvml):
+    monitor = GPUMonitor(test_config)
+    monitor._poll_once = lambda: None
+    with pytest.raises(NVMLUnavailable, match="first device poll failed"):
+        await monitor.start()
+    assert monitor._poll_task is None
+    await monitor.stop()
+
+
+async def test_refresh_logs_poll_exception_and_returns_none(test_config):
+    monitor = GPUMonitor(test_config)
+
+    def fail_poll():
+        raise RuntimeError("driver error")
+
+    monitor._poll_once = fail_poll
+    assert await monitor.refresh() is None
+
+
+async def test_process_enumeration_handles_missing_and_failing_nvml_apis(
+    test_config, fake_nvml
+):
+    monitor = GPUMonitor(test_config)
+    await monitor.start()
+    try:
+        handle = monitor._handle
+        fake_nvml.nvmlDeviceGetComputeRunningProcesses = None
+        fake_nvml.nvmlDeviceGetGraphicsRunningProcesses = None
+        assert monitor._read_processes(handle) == ()
+
+        fake_nvml.nvmlDeviceGetComputeRunningProcesses = lambda _handle: (
+            _ for _ in ()
+        ).throw(RuntimeError("NVML process query failed"))
+        fake_nvml.nvmlDeviceGetGraphicsRunningProcesses = lambda _handle: [
+            type("Process", (), {"pid": 44, "usedGpuMemory": 0})()
+        ]
+        process = monitor._read_processes(handle)[0]
+        assert process.pid == 44
+        assert process.used_memory_bytes == 0
+        assert process.kind == "graphics"
+    finally:
+        await monitor.stop()
+
+
+async def test_poll_loop_recovers_after_a_failed_poll(test_config):
+    monitor = GPUMonitor(test_config)
+    identity = DeviceIdentity(index=0, name="GPU", uuid="GPU-test", pci_bus_id="")
+    status = GPUStatus(
+        identity=identity,
+        timestamp=time.time(),
+        total_vram_bytes=100,
+        free_vram_bytes=50,
+        used_vram_bytes=50,
+        reserved_vram_bytes=0,
+        gpu_utilization_percent=0,
+        memory_utilization_percent=0,
+        temperature_c=40,
+        power_watts=10,
+    )
+    attempts = 0
+
+    def poll_once():
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise RuntimeError("transient poll failure")
+        monitor._stopping = True
+        return status
+
+    monitor._poll_once = poll_once
+    await monitor._poll_loop()
+    assert attempts == 2
+    assert await monitor.get_status() == status
+
+
+async def test_configured_missing_device_fails(
+    test_config, fake_nvml, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(GPUMonitor, "INIT_RETRY_DELAYS", (0.001,))
+    cfg = BananaBrainConfig(
+        device_uuid="GPU-does-not-exist",
+        poll_interval_seconds=0.05,
+        max_staleness_seconds=1,
+        database_path=tmp_path / "missing-device.db",
+    )
+    with pytest.raises(NVMLUnavailable, match="not found"):
+        await GPUMonitor(cfg).start()
+
+
+async def test_device_health_reports_power_brake(test_config, fake_nvml):
+    fake_nvml.throttle[fake_nvml.devices[0].uuid] = (
+        fake_nvml.nvmlClocksThrottleReasonHwPowerBrakeSlowdown
+    )
+    monitor = GPUMonitor(test_config)
+    await monitor.start()
+    try:
+        status = await monitor.get_status()
+        assert status.health.power_brake is True
+        assert status.health.thermal_slowdown is False
+    finally:
+        await monitor.stop()
+
+
+async def test_processes_are_deduplicated_and_unknown_memory_is_preserved(
+    test_config, fake_nvml
+):
+    import types
+
+    gpu_uuid = fake_nvml.devices[0].uuid
+    fake_nvml.compute_procs[gpu_uuid] = [
+        types.SimpleNamespace(pid=11, usedGpuMemory=None),
+        types.SimpleNamespace(pid=12, usedGpuMemory=-1),
+    ]
+    fake_nvml.graphics_procs[gpu_uuid] = [
+        types.SimpleNamespace(pid=11, usedGpuMemory=1024),
+    ]
+    monitor = GPUMonitor(test_config)
+    await monitor.start()
+    try:
+        status = await monitor.get_status()
+        by_pid = {process.pid: process for process in status.processes}
+        assert len(by_pid) == 2
+        assert by_pid[11].used_memory_bytes == 1024
+        assert by_pid[12].used_memory_bytes is None
+    finally:
+        await monitor.stop()
+
+
+async def test_select_by_uuid_missing_and_pci_missing(
+    test_config, fake_nvml, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(GPUMonitor, "INIT_RETRY_DELAYS", (0.001,))
+    for field, value in (
+        ("device_uuid", "missing"),
+        ("pci_bus_id", "0000:ff:00.0"),
+    ):
+        cfg = BananaBrainConfig(
+            **{field: value},
+            poll_interval_seconds=0.05,
+            max_staleness_seconds=1,
+            database_path=tmp_path / f"{field}.db",
+        )
+        with pytest.raises(NVMLUnavailable, match="not found"):
+            await GPUMonitor(cfg).start()
+
+
+def test_safe_and_optional_string_helpers():
+    assert GPUMonitor._safe(lambda: 1, 0) == 1
+    assert GPUMonitor._safe(lambda: 1 / 0, "fallback") == "fallback"
+    assert GPUMonitor._optional_str(lambda: b"hello") == "hello"
+    assert GPUMonitor._optional_str(lambda: "") is None
+    assert GPUMonitor._optional_str(lambda: (_ for _ in ()).throw(OSError())) is None

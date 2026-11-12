@@ -3,21 +3,19 @@
 from __future__ import annotations
 
 import asyncio
-import time
 from types import SimpleNamespace
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from huey.banana_brain.job_models import Job, JobState, Priority
+from huey.banana_brain.job_models import JobState, Priority
 from huey.banana_brain.scheduler import (
     JobNotCancellable,
-    Scheduler,
     SchedulerError,
     SchedulerShuttingDown,
 )
 
-from .conftest import FakeAdapter, make_job, wait_until
+from .conftest import make_job, wait_until
 
 # ---------------------------------------------------------------------------
 # Lifecycle
@@ -25,7 +23,7 @@ from .conftest import FakeAdapter, make_job, wait_until
 
 
 async def test_scheduler_start_and_stop(scheduler):
-    sched, adapter, _ = scheduler
+    sched, _adapter, _ = scheduler
     status = await sched.status()
     assert status["shutting_down"] is False
     assert status["current_job_id"] is None
@@ -33,7 +31,7 @@ async def test_scheduler_start_and_stop(scheduler):
 
 
 async def test_double_start_raises(scheduler, test_config, job_store, fake_nvml):
-    sched, _, monitor = scheduler
+    sched, _, _monitor = scheduler
     # Building a second scheduler against the same store is legal, but
     # calling .start() twice on the same instance is not.
     with pytest.raises(SchedulerError):
@@ -159,7 +157,7 @@ async def test_cancel_pending_job(scheduler, job_store):
         return {}
 
     adapter.on_execute = slow
-    blocker = await sched.submit(make_job())
+    await sched.submit(make_job())
     await wait_until(lambda: sched.current_job is not None, timeout=1.0)
     pending = await sched.submit(make_job())
 
@@ -297,7 +295,7 @@ async def test_vram_mark_running_called(scheduler, job_store, fake_nvml):
     from RESERVED to ACTIVE. Without this, concurrency would double-count
     reserved bytes and deadlock.
     """
-    sched, adapter, _ = scheduler
+    sched, _adapter, _ = scheduler
     seen: list[str] = []
 
     original_mark = sched._vram_manager.mark_running
@@ -397,3 +395,154 @@ async def test_recovery_store_failure_is_logged_and_ignored(scheduler, job_store
     job_store.list_by_state = AsyncMock(side_effect=OSError("database unavailable"))
     await sched._recover_unfinished()
     job_store.list_by_state.assert_awaited_once()
+
+
+async def test_submit_normalizes_missing_id_and_default_priority(scheduler):
+    sched, _, _ = scheduler
+    sched._priority_manager.default_priority = lambda _job: int(Priority.BACKGROUND)
+    job = make_job(id="", priority=None, submitted_at=0, attempts=0)
+    submitted = await sched.submit(job)
+    assert submitted.id
+    assert submitted.priority == int(Priority.BACKGROUND)
+    assert submitted.submitted_at > 0
+    assert submitted.started_at is None
+    assert submitted.finished_at is None
+    assert submitted.attempts == 0
+
+
+async def test_submit_requires_adapter(scheduler):
+    sched, _, _ = scheduler
+    with pytest.raises(SchedulerError, match=r"job.adapter is required"):
+        await sched.submit(SimpleNamespace(adapter=None, id="", priority=0))
+
+
+async def test_wait_until_empty_reports_empty_and_timeout(scheduler):
+    sched, _, _ = scheduler
+    assert await sched.wait_until_empty(timeout=0.1) is True
+    sched.set_admission_checker(lambda _job: False)
+    await sched.submit(make_job())
+    assert await sched.wait_until_empty(timeout=0) is False
+
+
+async def test_cancel_force_swallows_adapter_cancel_error(scheduler):
+    sched, adapter, _ = scheduler
+    running = make_job()
+    sched._current_job = running
+
+    async def fail_cancel(_job):
+        raise RuntimeError("adapter cancel failed")
+
+    adapter.request_cancel = fail_cancel
+    assert await sched.cancel(running.id, force=True) is True
+    sched._current_job = None
+
+
+async def test_reserve_memory_fails_when_manager_raises(scheduler):
+    sched, _, _ = scheduler
+    sched._vram_manager.try_reserve = AsyncMock(
+        side_effect=RuntimeError("reservation failed")
+    )
+    assert await sched._reserve_memory(make_job(), 100) is False
+
+
+async def test_reserve_memory_fails_when_retry_raises(scheduler):
+    sched, adapter, monitor = scheduler
+    monitor.get_status = AsyncMock(
+        side_effect=[
+            SimpleNamespace(free_vram_bytes=1),
+            SimpleNamespace(free_vram_bytes=101),
+        ]
+    )
+    sched._vram_manager.try_reserve = AsyncMock(
+        side_effect=[False, RuntimeError("retry failed")]
+    )
+    adapter.on_unload = AsyncMock(return_value=100)
+    assert await sched._reserve_memory(make_job(), 100) is False
+
+
+async def test_free_memory_continues_after_unload_error_and_requires_delta(scheduler):
+    sched, adapter, monitor = scheduler
+    monitor.get_status = AsyncMock(
+        side_effect=[
+            SimpleNamespace(free_vram_bytes=100),
+            SimpleNamespace(free_vram_bytes=100),
+        ]
+    )
+    adapter.on_unload = AsyncMock(side_effect=RuntimeError("unload failed"))
+    assert await sched._free_memory_for(make_job(), 20) is False
+    adapter.on_unload.assert_awaited_once_with(20)
+
+
+async def test_dispatch_refuses_when_admission_checker_raises(scheduler):
+    sched, _, _ = scheduler
+    sched.set_admission_checker(lambda _job: (_ for _ in ()).throw(ValueError()))
+    await sched._priority_manager.push(make_job())
+    assert await sched._try_dispatch_next() is False
+
+
+async def test_dispatch_releases_reservation_when_job_disappears(scheduler):
+    sched, _, _ = scheduler
+    job = make_job()
+    await sched._priority_manager.push(job)
+    sched._vram_manager.try_reserve = AsyncMock(return_value=True)
+    sched._priority_manager.remove = AsyncMock(return_value=None)
+    sched._vram_manager.release = Mock()
+    assert await sched._try_dispatch_next() is False
+    sched._vram_manager.release.assert_called_once_with(job)
+
+
+async def test_run_job_marks_missing_adapter_failed(scheduler, job_store):
+    sched, _, _ = scheduler
+    job = make_job(adapter="removed")
+    await sched._run_job(job)
+    assert job.state is JobState.FAILED
+    assert "no adapter registered" in job.last_error
+    assert job.finished_at is not None
+
+
+async def test_run_job_propagates_cancellation_after_persisting(scheduler):
+    sched, adapter, _ = scheduler
+
+    async def cancel(_job):
+        raise asyncio.CancelledError
+
+    adapter.on_execute = cancel
+    job = make_job()
+    with pytest.raises(asyncio.CancelledError):
+        await sched._run_job(job)
+    assert job.state is JobState.CANCELLED
+    assert job.finished_at is not None
+
+
+async def test_stop_cancels_dispatch_task_that_does_not_join(scheduler):
+    sched, _, _ = scheduler
+    current = sched._dispatch_task
+    current.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await current
+    sched._dispatch_task = asyncio.create_task(asyncio.sleep(30))
+    sched._idle.set()
+    sched.DISPATCH_TASK_JOIN_S = 0
+    await sched.stop()
+    assert sched._dispatch_task is None
+
+
+async def test_dispatch_loop_recovers_from_iteration_error_and_timeout(scheduler):
+    sched, _, _ = scheduler
+    await sched.stop()
+    sched._shutting_down = False
+    sched.REFRESH_INTERVAL_S = 0.001
+    attempts = 0
+
+    async def dispatch_once():
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise RuntimeError("transient dispatch failure")
+        sched._shutting_down = True
+        return False
+
+    sched._try_dispatch_next = dispatch_once
+    await sched._dispatch_loop()
+    assert attempts == 2
+    assert sched._idle.is_set()

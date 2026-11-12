@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+import asyncio
+
 import pytest
 from aiohttp import web
 from aiohttp.test_utils import TestServer
 
 from huey.banana_brain.comfyui_adapter import (
     ComfyUIAdapter,
+    _cfg_num,
+    _cfg_str,
     _extract_checkpoint_names,
     _extract_error_message,
     _extract_prompt_ids,
@@ -35,6 +39,14 @@ class FakeComfy:
         self.deleted_prompts: list[str] = []
         self.auto_complete = True
         self.metadata_size = 8 * 1024**3  # 8 GiB checkpoint
+        self.system_stats_status = 200
+        self.free_status = 200
+        self.metadata_status = 200
+        self.interrupt_status = 200
+        self.queue_delete_status = 200
+        self.submit_response_override = None
+        self.history_response_override = None
+        self.history_status = 200
 
     def make_app(self) -> web.Application:
         app = web.Application()
@@ -49,12 +61,14 @@ class FakeComfy:
         return app
 
     async def _system_stats(self, request):
-        return web.json_response({})
+        return web.json_response({}, status=self.system_stats_status)
 
     async def _submit(self, request):
         if self.submit_errors:
             return web.json_response(self.submit_errors.pop(0), status=400)
         body = await request.json()
+        if self.submit_response_override is not None:
+            return web.json_response(self.submit_response_override)
         pid = f"prompt-{len(self.prompts) + 1}"
         self.prompts[pid] = body
         if self.auto_complete:
@@ -76,6 +90,8 @@ class FakeComfy:
 
     async def _queue_delete(self, request):
         body = await request.json()
+        if self.queue_delete_status >= 400:
+            return web.json_response({}, status=self.queue_delete_status)
         for pid in body.get("delete") or []:
             self.deleted_prompts.append(pid)
             self.queue_pending = [e for e in self.queue_pending if e[1] != pid]
@@ -85,6 +101,10 @@ class FakeComfy:
         return web.json_response({})
 
     async def _history(self, request):
+        if self.history_status >= 400:
+            return web.json_response({}, status=self.history_status)
+        if self.history_response_override is not None:
+            return web.json_response(self.history_response_override)
         pid = request.match_info["prompt_id"]
         if pid not in self.history:
             return web.json_response({})
@@ -92,6 +112,8 @@ class FakeComfy:
 
     async def _interrupt(self, request):
         self.interrupt_calls += 1
+        if self.interrupt_status >= 400:
+            return web.json_response({}, status=self.interrupt_status)
         for entry in self.queue_running:
             pid = entry[1]
             self.history[pid] = {
@@ -102,10 +124,12 @@ class FakeComfy:
 
     async def _free(self, request):
         self.free_calls += 1
-        return web.json_response({})
+        return web.json_response({}, status=self.free_status)
 
     async def _metadata(self, request):
-        return web.json_response({"size": self.metadata_size})
+        return web.json_response(
+            {"size": self.metadata_size}, status=self.metadata_status
+        )
 
 
 @pytest.fixture
@@ -187,11 +211,22 @@ def test_metadata_size_and_history_error_helpers_cover_fallback_shapes():
     )
     assert _extract_error_message([]) == "execution_error (no detail)"
     assert _extract_error_message(None) == "unknown error"
+    assert _extract_error_message(["malformed", ["other", {}]]) == (
+        "execution_error (no detail)"
+    )
+    assert _cfg_str({"first": "", "second": 5}, "first", "second") == "5"
+    assert _cfg_str({}, "missing") is None
+    assert _cfg_num({"number": "bad"}, "number", 2.5) == 2.5
 
 
 def test_extract_prompt_ids():
     queue = [[1, "pid-a", {}, {}, []], [2, "pid-b", {}, {}, []]]
     assert _extract_prompt_ids(queue) == {"pid-a", "pid-b"}
+
+
+def test_extract_prompt_ids_ignores_malformed_entries():
+    assert _extract_prompt_ids(None) == set()
+    assert _extract_prompt_ids([None, [], [1], [2, "pid"], (3, "tuple")]) == {"pid"}
 
 
 # ---------------------------------------------------------------------------
@@ -286,6 +321,91 @@ async def test_execute_validation_error(adapter, fake_comfy):
         await adapter.execute(job)
 
 
+async def test_execute_times_out_when_server_never_finishes(adapter, fake_comfy):
+    _, server = fake_comfy
+    server.auto_complete = False
+    job = make_job(
+        adapter="comfyui",
+        payload={
+            "workflow": _wf(ckpt_name="a.safetensors"),
+            "timeout_s": 0.001,
+            "poll_interval_s": 0.001,
+        },
+    )
+    with pytest.raises(TimeoutError, match="did not complete"):
+        await adapter.execute(job)
+    assert not adapter._active_prompts
+
+
+async def test_adapter_lifecycle_rejects_duplicate_start(adapter, test_config):
+    with pytest.raises(RuntimeError, match="already started"):
+        await adapter.start()
+    fresh = ComfyUIAdapter(test_config, vram_manager=None)
+    await fresh.stop()
+    assert fresh._session is None
+
+
+async def test_execute_rejects_workflow_missing_from_payload(adapter):
+    job = make_job(adapter="comfyui", payload={})
+    with pytest.raises(ValueError, match=r"workflow.*must be a dict"):
+        await adapter.execute(job)
+    assert not adapter._active_prompts
+
+
+async def test_execute_rejects_non_object_submission_response(adapter, fake_comfy):
+    _, server = fake_comfy
+    # An empty error payload is not a validation error, but it lacks the id
+    # required to track a submitted prompt.
+    server.submit_response_override = {"number": 1}
+    job = make_job(
+        adapter="comfyui", payload={"workflow": _wf(ckpt_name="a.safetensors")}
+    )
+    with pytest.raises(RuntimeError, match="no prompt_id"):
+        await adapter.execute(job)
+
+
+async def test_submit_forwards_extra_data_and_rejects_non_object_json(
+    adapter, fake_comfy
+):
+    _, server = fake_comfy
+    job = make_job(
+        adapter="comfyui",
+        payload={"workflow": _wf(), "extra_data": {"source": "test"}},
+    )
+    await adapter.execute(job)
+    assert server.prompts["prompt-1"]["extra_data"] == {"source": "test"}
+
+    server.submit_response_override = ["not", "an", "object"]
+    with pytest.raises(RuntimeError, match="non-object JSON"):
+        await adapter.execute(make_job(adapter="comfyui", payload={"workflow": _wf()}))
+
+
+async def test_poll_observes_cancellation_and_history_failures(adapter, fake_comfy):
+    _, server = fake_comfy
+    adapter._cancellation_requested.add("cancelled-prompt")
+    with pytest.raises(asyncio.CancelledError):
+        await adapter._poll_until_done(
+            adapter._session,
+            "cancelled-prompt",
+            timeout=1,
+            poll_interval=0,
+            job=make_job(adapter="comfyui", payload={}),
+        )
+
+    server.history_status = 500
+    assert await adapter._get_history_entry(adapter._session, "p") is None
+    server.history_status = 200
+    server.history_response_override = []
+    assert await adapter._get_history_entry(adapter._session, "p") is None
+
+
+def test_unexpected_terminal_status_fails_with_safe_default_message():
+    with pytest.raises(RuntimeError, match=r"execution_error \(no detail\)"):
+        ComfyUIAdapter._summarise_history(
+            "p", {"status": {"status_str": "unknown", "messages": []}}
+        )
+
+
 # ---------------------------------------------------------------------------
 # estimate_vram
 # ---------------------------------------------------------------------------
@@ -322,6 +442,38 @@ async def test_estimate_without_workflow_uses_overhead(adapter):
     assert await adapter.estimate_vram(job) == adapter._inference_overhead_bytes
 
 
+async def test_estimate_without_checkpoint_uses_overhead(adapter):
+    job = make_job(adapter="comfyui", payload={"workflow": {"1": {"inputs": {}}}})
+    assert await adapter.estimate_vram(job) == adapter._inference_overhead_bytes
+
+
+async def test_estimate_skips_http_error_metadata_entries(adapter, fake_comfy):
+    _, server = fake_comfy
+    server.metadata_status = 500
+    job = make_job(
+        adapter="comfyui", payload={"workflow": _wf(ckpt_name="unknown.safetensors")}
+    )
+    assert await adapter.estimate_vram(job) == 10 * 1024**3
+
+
+async def test_estimate_uses_overhead_for_non_dict_workflow(adapter):
+    job = make_job(adapter="comfyui", payload={"workflow": []})
+    assert await adapter.estimate_vram(job) == adapter._inference_overhead_bytes
+
+
+async def test_estimate_uses_fallback_when_metadata_size_is_invalid(
+    adapter, fake_comfy
+):
+    _, server = fake_comfy
+    server.metadata_size = 0
+    job = make_job(
+        adapter="comfyui",
+        payload={"workflow": _wf(ckpt_name="missing-size.safetensors")},
+    )
+    estimate = await adapter.estimate_vram(job)
+    assert estimate == 10 * 1024**3
+
+
 # ---------------------------------------------------------------------------
 # Cancellation
 # ---------------------------------------------------------------------------
@@ -356,6 +508,86 @@ async def test_cancel_pending_deletes(adapter, fake_comfy):
     )
     assert "prompt-9" in server.deleted_prompts
     assert server.interrupt_calls == 0
+
+
+async def test_cancel_returns_false_for_http_errors(adapter, fake_comfy):
+    _, server = fake_comfy
+    server.queue_running = [[1, "running", {}, {}, []]]
+    server.interrupt_status = 503
+    assert (
+        await adapter.request_cancel(
+            make_job(adapter="comfyui", payload={"prompt_id": "running"})
+        )
+        is False
+    )
+    server.queue_running = []
+    server.queue_pending = [[1, "pending", {}, {}, []]]
+    server.queue_delete_status = 503
+    assert (
+        await adapter.request_cancel(
+            make_job(adapter="comfyui", payload={"prompt_id": "pending"})
+        )
+        is False
+    )
+    assert not adapter._cancellation_requested
+
+
+async def test_cancel_queue_request_failure_is_best_effort(adapter, monkeypatch):
+    async def fail(_session):
+        raise OSError("queue unavailable")
+
+    monkeypatch.setattr(adapter, "_get_queue", fail)
+    assert (
+        await adapter.request_cancel(
+            make_job(adapter="comfyui", payload={"prompt_id": "p"})
+        )
+        is False
+    )
+    assert not adapter._cancellation_requested
+
+
+async def test_cancel_without_prompt_id_is_noop(adapter, fake_comfy):
+    assert (
+        await adapter.request_cancel(make_job(adapter="comfyui", payload={})) is False
+    )
+    _, server = fake_comfy
+    assert server.interrupt_calls == 0
+    assert server.deleted_prompts == []
+
+
+async def test_cancel_unknown_prompt_is_noop(adapter):
+    assert (
+        await adapter.request_cancel(
+            make_job(adapter="comfyui", payload={"prompt_id": "not-queued"})
+        )
+        is False
+    )
+
+
+async def test_unload_http_error_returns_zero(adapter, fake_comfy):
+    _, server = fake_comfy
+    server.free_status = 503
+    assert await adapter.unload_idle_models(1024) == 0
+    assert server.free_calls == 1
+
+
+async def test_start_probe_failure_closes_session(fake_comfy, test_config):
+    ts, server = fake_comfy
+    server.system_stats_status = 503
+    cfg = BananaBrainConfig(
+        comfyui_base_url=str(ts.make_url("")).rstrip("/"),
+        database_path=test_config.database_path,
+    )
+    instance = ComfyUIAdapter(cfg, vram_manager=None)
+    with pytest.raises(RuntimeError, match="system_stats returned 503"):
+        await instance.start()
+    assert instance._session is None
+
+
+async def test_stop_is_safe_before_start(test_config):
+    instance = ComfyUIAdapter(test_config, vram_manager=None)
+    await instance.stop()
+    assert instance._session is None
 
 
 # ---------------------------------------------------------------------------

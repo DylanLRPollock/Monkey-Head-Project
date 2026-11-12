@@ -389,6 +389,7 @@ branch = true
 source = ["src/huey"]
 parallel = true
 patch = ["subprocess"]
+omit = ["src/huey/memory/PY/test_*.py"]
 
 [tool.coverage.report]
 show_missing = true
