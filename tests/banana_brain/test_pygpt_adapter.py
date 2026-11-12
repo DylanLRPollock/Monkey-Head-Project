@@ -77,6 +77,10 @@ def make_adapter(config=None, *, models=None, state=JobState.COMPLETED, result=N
 
 def test_helpers_response_shapes_options_and_binding():
     assert module._extract_text({"message": {"content": "chat"}}) == "chat"
+    assert (
+        module._extract_text({"message": {"content": None}, "response": "fallback"})
+        == "fallback"
+    )
     assert module._extract_text({"response": "completion"}) == "completion"
     assert module._extract_text({}) == ""
     response = module._openai_chat_response(
@@ -205,6 +209,10 @@ async def test_build_job_validation_and_openai_option_mapping():
     completion = item._build_job({"prompt": ["a", "b"]}, model="m", kind="completion")
     assert completion.payload["prompt"] == "a\nb"
     assert completion.payload["stream"] is False
+    plain_text = item._build_job(
+        {"prompt": "single prompt"}, model="m", kind="completion"
+    )
+    assert plain_text.payload["prompt"] == "single prompt"
 
 
 @pytest.mark.asyncio
@@ -253,7 +261,10 @@ async def test_submit_completion_state_result_shapes_and_streaming():
 @pytest.mark.asyncio
 async def test_http_routes_reject_invalid_input_and_advertise_models():
     item, _, ollama = make_adapter(
-        {"pygpt_model_aliases": {"alias": "qwen"}, "pygpt_default_model": "fallback"}
+        {
+            "pygpt_model_aliases": {"alias": "qwen", "loaded": "duplicate"},
+            "pygpt_default_model": "fallback",
+        }
     )
     ollama.models = [{"name": "loaded"}, {"model": "loaded"}, {"name": ""}]
     app = web.Application()
@@ -362,6 +373,8 @@ async def test_proxy_startup_and_shutdown_for_tcp_and_unix(monkeypatch, tmp_path
     assert tcp._runner is None
 
     unix_path = tmp_path / "custom" / "pygpt.sock"
+    unix_path.parent.mkdir(parents=True)
+    unix_path.write_text("stale socket placeholder")
     monkeypatch.setattr(module.web, "UnixSite", Site)
     unix, _, _ = make_adapter(
         {"pygpt_proxy_enabled": True, "pygpt_proxy_socket_path": str(unix_path)}
@@ -405,3 +418,34 @@ def test_socket_path_and_config_helpers():
     assert item._default_socket_path().name == "banana-pygpt.sock"
     fallback, _, _ = make_adapter()
     assert str(fallback._default_socket_path()) == "data/banana-brain-pygpt.sock"
+    assert module._cfg_get({"value": 0}, "value") == 0
+    assert module._cfg_get(object(), "missing") is None
+    assert module._cfg_str({"value": " text "}, "value") == " text "
+    assert module._cfg_str({"value": ""}, "value") is None
+    assert module._cfg_num({"value": 2}, "value", 1.0) == 2.0
+    assert module._cfg_num({"value": "2"}, "value", 1.0) == 1.0
+    assert module._cfg_bool({"value": None}, "value", True) is True
+    assert module._cfg_bool({"value": False}, "value", True) is False
+    assert module._cfg_bool({"value": "yes"}, "value", False) is True
+    assert module._cfg_bool({"value": 0}, "value", True) is False
+    assert module._cfg_dict({"value": {"a": 1}}, "value") == {"a": 1}
+    assert module._cfg_dict({"value": []}, "value") is None
+
+
+@pytest.mark.asyncio
+async def test_await_completion_reports_vanished_and_timed_out_jobs():
+    item, scheduler, _ = make_adapter(state=JobState.PENDING)
+    item._request_timeout = -1
+    scheduler.jobs["pending"] = Job(
+        adapter="ollama", payload={}, id="pending", state=JobState.PENDING
+    )
+    with pytest.raises(TimeoutError, match="did not finish"):
+        await item._await_completion("pending")
+
+    class MissingStore:
+        async def get(self, _job_id):
+            return None
+
+    item._job_store = MissingStore()
+    with pytest.raises(RuntimeError, match="vanished"):
+        await item._await_completion("missing")

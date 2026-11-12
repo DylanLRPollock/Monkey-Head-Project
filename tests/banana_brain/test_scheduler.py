@@ -68,6 +68,35 @@ async def test_submit_while_shutting_down_raises(scheduler):
         await sched.submit(make_job())
 
 
+async def test_scheduler_idle_timeout_and_dispatch_guards(scheduler):
+    sched, _, _ = scheduler
+    sched.set_admission_checker(lambda _job: False)
+    job = make_job()
+    job.id = None
+    job.priority = None
+    submitted = await sched.submit(job)
+    assert submitted.id
+    assert submitted.priority is not None
+    assert await sched.wait_until_empty(timeout=0) is False
+    assert await sched._try_dispatch_next() is False
+
+    def broken_checker(_job):
+        raise RuntimeError("policy unavailable")
+
+    sched.set_admission_checker(broken_checker)
+    assert await sched._try_dispatch_next() is False
+
+    sched.set_admission_checker(None)
+    sched._shutting_down = True
+    assert await sched._try_dispatch_next() is False
+    sched._shutting_down = False
+    sched._current_job = submitted
+    assert await sched._try_dispatch_next() is False
+    sched._current_job = None
+    assert await sched.cancel(submitted.id) is True
+    assert await sched.wait_until_empty(timeout=0) is True
+
+
 async def test_job_dispatches_and_completes(scheduler, job_store):
     sched, adapter, _ = scheduler
     submitted = await sched.submit(make_job(payload={"p": 1}))
