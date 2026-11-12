@@ -129,10 +129,20 @@ class ConfigError(RuntimeError):
 #: as ``<section>_<key>``. Everything else at the top level must match a
 #: dataclass field name directly (or be ``extra``).
 _KNOWN_SECTIONS: frozenset[str] = frozenset(
-    {"gpu", "priority", "ollama", "comfyui", "storage", "api", "watchdog"}
+    {
+        "gpu",
+        "priority",
+        "ollama",
+        "comfyui",
+        "audio",
+        "storage",
+        "api",
+        "watchdog",
+    }
 )
 
 _PATH_FIELDS: frozenset[str] = frozenset({"database_path", "api_socket_path"})
+_DICT_FIELDS: frozenset[str] = frozenset({"audio_model_vram_gib"})
 _INT_FIELDS: frozenset[str] = frozenset(
     {"priority_aging_step", "priority_aging_cap", "priority_overdue_boost"}
 )
@@ -150,6 +160,9 @@ _FLOAT_FIELDS: frozenset[str] = frozenset(
         "comfyui_job_timeout_seconds",
         "comfyui_connect_timeout_seconds",
         "comfyui_inference_overhead_gib",
+        "audio_stt_timeout_seconds",
+        "audio_tts_timeout_seconds",
+        "audio_unload_wait_seconds",
         "watchdog_stuck_job_seconds",
         "watchdog_temperature_ceiling_c",
     }
@@ -165,6 +178,14 @@ _STR_FIELDS: frozenset[str] = frozenset(
         "ollama_base_url",
         "ollama_keep_alive",
         "comfyui_base_url",
+        "audio_stt_backend",
+        "audio_stt_base_url",
+        "audio_stt_default_model",
+        "audio_tts_backend",
+        "audio_tts_base_url",
+        "audio_tts_default_model",
+        "audio_tts_default_voice",
+        "audio_unload_command",
         "api_bind",
         "api_token",
     }
@@ -176,7 +197,13 @@ _SECRET_FIELDS: frozenset[str] = frozenset({"api_token"})
 #: Every field name the dataclass exposes except `extra`. Used to reject
 #: unknown keys after flattening.
 _KNOWN_FIELDS: frozenset[str] = (
-    _PATH_FIELDS | _INT_FIELDS | _FLOAT_FIELDS | _BOOL_FIELDS | _STR_FIELDS | {"extra"}
+    _PATH_FIELDS
+    | _DICT_FIELDS
+    | _INT_FIELDS
+    | _FLOAT_FIELDS
+    | _BOOL_FIELDS
+    | _STR_FIELDS
+    | {"extra"}
 )
 
 
@@ -231,6 +258,20 @@ class BananaBrainConfig:
     comfyui_job_timeout_seconds: float = 900.0
     comfyui_connect_timeout_seconds: float = 10.0
     comfyui_inference_overhead_gib: float = 3.0
+
+    # ---- Audio ------------------------------------------------------------
+    audio_stt_backend: str = "disabled"
+    audio_stt_base_url: str | None = None
+    audio_stt_default_model: str = "large-v3"
+    audio_stt_timeout_seconds: float = 900.0
+    audio_tts_backend: str = "disabled"
+    audio_tts_base_url: str | None = None
+    audio_tts_default_model: str = "xtts_v2"
+    audio_tts_default_voice: str | None = None
+    audio_tts_timeout_seconds: float = 300.0
+    audio_unload_command: str | None = None
+    audio_unload_wait_seconds: float = 15.0
+    audio_model_vram_gib: dict[str, Any] = field(default_factory=dict)
 
     # ---- Storage ----------------------------------------------------------
     database_path: Path = Path("data/banana-brain.db")
@@ -485,6 +526,12 @@ def _coerce_value(key: str, value: Any, *, source: str) -> Any:
         return None
     if key in _PATH_FIELDS:
         return Path(str(value))
+    if key in _DICT_FIELDS:
+        if not isinstance(value, dict):
+            raise ConfigError(
+                f"{source}: {key}: expected mapping, got {type(value).__name__}"
+            )
+        return dict(value)
     if key in _INT_FIELDS:
         return _coerce_int(key, value, source=source)
     if key in _FLOAT_FIELDS:
@@ -544,6 +591,7 @@ def _validate(cfg: BananaBrainConfig) -> list[str]:
     problems.extend(_validate_vram_settings(cfg))
     problems.extend(_validate_priority_settings(cfg))
     problems.extend(_validate_service_settings(cfg))
+    problems.extend(_validate_audio_settings(cfg))
     problems.extend(_validate_api_settings(cfg))
     return problems
 
@@ -626,6 +674,49 @@ def _validate_service_settings(cfg: BananaBrainConfig) -> list[str]:
             "comfyui_connect_timeout_seconds must be less than "
             "comfyui_job_timeout_seconds"
         )
+    return problems
+
+
+def _validate_audio_settings(cfg: BananaBrainConfig) -> list[str]:
+    problems = []
+    backends = (
+        (
+            "audio_stt_backend",
+            cfg.audio_stt_backend,
+            {"disabled", "faster-whisper-server", "whisper-cpp"},
+            cfg.audio_stt_base_url,
+        ),
+        (
+            "audio_tts_backend",
+            cfg.audio_tts_backend,
+            {"disabled", "coqui", "piper"},
+            cfg.audio_tts_base_url,
+        ),
+    )
+    for name, backend, choices, url in backends:
+        url_name = name.rsplit("_", 1)[0] + "_base_url"
+        if backend not in choices:
+            problems.append(f"{name} must be one of: {', '.join(sorted(choices))}")
+        if backend != "disabled" and not url:
+            problems.append(f"{url_name} is required when {name} is enabled")
+        if url:
+            problem = _validate_url(url)
+            if problem:
+                problems.append(f"{url_name}: {problem}")
+    for name in (
+        "audio_stt_timeout_seconds",
+        "audio_tts_timeout_seconds",
+        "audio_unload_wait_seconds",
+    ):
+        if getattr(cfg, name) <= 0:
+            problems.append(f"{name} must be > 0")
+    for model, gib in cfg.audio_model_vram_gib.items():
+        if not isinstance(model, str) or not model.strip():
+            problems.append("audio_model_vram_gib keys must be non-empty strings")
+        if isinstance(gib, bool) or not isinstance(gib, (int, float)) or gib <= 0:
+            problems.append(
+                f"audio_model_vram_gib[{model!r}] must be a positive number"
+            )
     return problems
 
 

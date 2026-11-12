@@ -81,6 +81,7 @@ STARTUP_ORDER = (
     "priority_manager",
     "ollama_adapter",
     "comfyui_adapter",
+    "audio_adapter",
     "scheduler",
     "watchdog",
     "scheduler_api",
@@ -90,6 +91,7 @@ SHUTDOWN_ORDER = (
     "scheduler_api",
     "watchdog",
     "scheduler",
+    "audio_adapter",
     "comfyui_adapter",
     "ollama_adapter",
     "priority_manager",
@@ -234,6 +236,7 @@ def _construct_components(config: Any) -> dict[str, Any]:
     component needs a new dependency, thread it through here rather than
     reaching into globals elsewhere.
     """
+    from huey.banana_brain.audio_adapter import AudioAdapter
     from huey.banana_brain.comfyui_adapter import ComfyUIAdapter
     from huey.banana_brain.gpu_monitor import GPUMonitor
     from huey.banana_brain.job_store import JobStore
@@ -250,6 +253,7 @@ def _construct_components(config: Any) -> dict[str, Any]:
     priority_manager = PriorityManager(config)
     ollama_adapter = OllamaAdapter(config, vram_manager)
     comfyui_adapter = ComfyUIAdapter(config, vram_manager)
+    audio_adapter = AudioAdapter(config, vram_manager)
 
     scheduler = Scheduler(
         config=config,
@@ -257,7 +261,11 @@ def _construct_components(config: Any) -> dict[str, Any]:
         gpu_monitor=gpu_monitor,
         vram_manager=vram_manager,
         priority_manager=priority_manager,
-        adapters={"ollama": ollama_adapter, "comfyui": comfyui_adapter},
+        adapters={
+            "ollama": ollama_adapter,
+            "comfyui": comfyui_adapter,
+            "audio": audio_adapter,
+        },
     )
     watchdog = Watchdog(config, scheduler=scheduler, gpu_monitor=gpu_monitor)
     scheduler_api = SchedulerAPI(config, scheduler=scheduler)
@@ -269,6 +277,7 @@ def _construct_components(config: Any) -> dict[str, Any]:
         "priority_manager": priority_manager,
         "ollama_adapter": ollama_adapter,
         "comfyui_adapter": comfyui_adapter,
+        "audio_adapter": audio_adapter,
         "scheduler": scheduler,
         "watchdog": watchdog,
         "scheduler_api": scheduler_api,
