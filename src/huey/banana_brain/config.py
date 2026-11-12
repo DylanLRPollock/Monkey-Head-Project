@@ -360,16 +360,20 @@ def _read_yaml_mapping(cfg_path: Path) -> dict[str, Any]:
         raise ConfigError(f"config path is not a file: {cfg_path}")
 
     try:
+        text = cfg_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise ConfigError(f"cannot read {cfg_path}: {exc}") from exc
+
+    return _parse_yaml_mapping(text, cfg_path)
+
+
+def _parse_yaml_mapping(text: str, cfg_path: Path) -> dict[str, Any]:
+    try:
         import yaml  # PyYAML
     except ImportError as exc:
         raise ConfigError(
             "PyYAML is required to load config files; pip install pyyaml"
         ) from exc
-
-    try:
-        text = cfg_path.read_text(encoding="utf-8")
-    except OSError as exc:
-        raise ConfigError(f"cannot read {cfg_path}: {exc}") from exc
 
     try:
         raw = yaml.safe_load(text) if text.strip() else {}
@@ -482,27 +486,33 @@ def _coerce_value(key: str, value: Any, *, source: str) -> Any:
     if key in _PATH_FIELDS:
         return Path(str(value))
     if key in _INT_FIELDS:
-        if isinstance(value, bool):
-            raise ConfigError(f"{source}: {key}: expected int, got bool")
-        try:
-            return int(value)
-        except (TypeError, ValueError):
-            raise ConfigError(f"{source}: {key}: expected int, got {value!r}") from None
+        return _coerce_int(key, value, source=source)
     if key in _FLOAT_FIELDS:
-        if isinstance(value, bool):
-            raise ConfigError(f"{source}: {key}: expected number, got bool")
-        try:
-            return float(value)
-        except (TypeError, ValueError):
-            raise ConfigError(
-                f"{source}: {key}: expected number, got {value!r}"
-            ) from None
+        return _coerce_float(key, value, source=source)
     if key in _BOOL_FIELDS:
         return _to_bool(key, value, source=source)
     if key in _STR_FIELDS:
         return str(value)
     # Unknown keys are preserved so from_dict can report them.
     return value
+
+
+def _coerce_int(key: str, value: Any, *, source: str) -> int:
+    if isinstance(value, bool):
+        raise ConfigError(f"{source}: {key}: expected int, got bool")
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        raise ConfigError(f"{source}: {key}: expected int, got {value!r}") from None
+
+
+def _coerce_float(key: str, value: Any, *, source: str) -> float:
+    if isinstance(value, bool):
+        raise ConfigError(f"{source}: {key}: expected number, got bool")
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        raise ConfigError(f"{source}: {key}: expected number, got {value!r}") from None
 
 
 def _to_bool(key: str, value: Any, *, source: str) -> bool:

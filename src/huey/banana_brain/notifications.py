@@ -201,9 +201,11 @@ class Backend(Protocol):
     name: str
     min_level: NotificationLevel
 
-    async def send(self, notification: Notification) -> None: ...
+    async def send(self, notification: Notification) -> None:
+        raise NotImplementedError
 
-    async def close(self) -> None: ...
+    async def close(self) -> None:
+        raise NotImplementedError
 
 
 # ---------------------------------------------------------------------------
@@ -589,7 +591,7 @@ class Notifier:
     # Public API
     # ------------------------------------------------------------------
 
-    async def notify(
+    async def notify(  # noqa: C901,RUF100
         self,
         level: Any,
         title: str,
@@ -598,7 +600,7 @@ class Notifier:
         *,
         kind: str | None = None,
         key: str | None = None,
-    ) -> None:  # noqa: C901,RUF100
+    ) -> None:
         """
         Enqueue a notification for delivery. Returns immediately.
 

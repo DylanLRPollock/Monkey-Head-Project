@@ -445,9 +445,9 @@ async def test_client_unix_socket_context_and_transport_errors(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_cli_commands_cover_empty_payloads_and_failure_responses(
+async def test_cli_commands_cover_empty_payloads_and_failure_responses(  # noqa: C901,RUF100
     capsys,
-):  # noqa: C901,RUF100
+):
     class EmptyClient(FakeClient):
         async def request_ok(self, method, path, body=None):
             self.calls.append((method, path, body))
@@ -529,9 +529,9 @@ async def test_watch_timeout_and_health_http_error(capsys):
 
 
 @pytest.mark.asyncio
-async def test_cli_rich_status_watch_and_mode_branches(
+async def test_cli_rich_status_watch_and_mode_branches(  # noqa: C901,RUF100
     tmp_path, monkeypatch, capsys
-):  # noqa: C901,RUF100
+):
     class RichClient(FakeClient):
         async def request(self, method, path, body=None):
             return 200, {"ok": True}

@@ -580,9 +580,9 @@ class SchedulerAPI:
             }
         )
 
-    async def _handle_submit_job(
+    async def _handle_submit_job(  # noqa: C901,RUF100
         self, request: web.Request
-    ) -> web.Response:  # noqa: C901,RUF100
+    ) -> web.Response:
         body = await _read_json(request)
         if not isinstance(body, dict):
             raise APIError(400, "body must be a JSON object")
@@ -639,9 +639,9 @@ class SchedulerAPI:
             raise APIError(404, f"job {job_id} not found")
         return web.json_response(job.to_dict())
 
-    async def _handle_cancel_job(
+    async def _handle_cancel_job(  # noqa: C901,RUF100
         self, request: web.Request
-    ) -> web.Response:  # noqa: C901,RUF100
+    ) -> web.Response:
         job_id = request.match_info["job_id"]
         body = await _read_json(request, optional=True)
         force = bool(body.get("force", False))
