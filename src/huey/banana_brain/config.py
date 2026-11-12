@@ -197,7 +197,13 @@ _SECRET_FIELDS: frozenset[str] = frozenset({"api_token"})
 #: Every field name the dataclass exposes except `extra`. Used to reject
 #: unknown keys after flattening.
 _KNOWN_FIELDS: frozenset[str] = (
-    _PATH_FIELDS | _DICT_FIELDS | _INT_FIELDS | _FLOAT_FIELDS | _BOOL_FIELDS | _STR_FIELDS | {"extra"}
+    _PATH_FIELDS
+    | _DICT_FIELDS
+    | _INT_FIELDS
+    | _FLOAT_FIELDS
+    | _BOOL_FIELDS
+    | _STR_FIELDS
+    | {"extra"}
 )
 
 
@@ -522,7 +528,9 @@ def _coerce_value(key: str, value: Any, *, source: str) -> Any:
         return Path(str(value))
     if key in _DICT_FIELDS:
         if not isinstance(value, dict):
-            raise ConfigError(f"{source}: {key}: expected mapping, got {type(value).__name__}")
+            raise ConfigError(
+                f"{source}: {key}: expected mapping, got {type(value).__name__}"
+            )
         return dict(value)
     if key in _INT_FIELDS:
         return _coerce_int(key, value, source=source)
