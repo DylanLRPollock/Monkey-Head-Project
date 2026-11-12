@@ -4,13 +4,11 @@ from __future__ import annotations
 
 import asyncio
 
-import pytest
-
-from huey.banana_brain.job_models import Job, JobState, Priority
+from huey.banana_brain.gpu_monitor import GPUMonitor
+from huey.banana_brain.job_models import JobState
 from huey.banana_brain.job_store import JobStore
 from huey.banana_brain.priority_manager import PriorityManager
 from huey.banana_brain.scheduler import Scheduler
-from huey.banana_brain.gpu_monitor import GPUMonitor
 from huey.banana_brain.vram_manager import VRAMManager
 
 from .conftest import FakeAdapter, make_job, wait_until
@@ -33,6 +31,7 @@ async def _build_scheduler(test_config, job_store, adapter, monitor):
 # ---------------------------------------------------------------------------
 # PENDING survives restart
 # ---------------------------------------------------------------------------
+
 
 async def test_pending_jobs_requeued_on_restart(test_config, fake_nvml):
     store = JobStore(test_config)
@@ -57,6 +56,7 @@ async def test_pending_jobs_requeued_on_restart(test_config, fake_nvml):
         sched2 = await _build_scheduler(test_config, store, adapter2, monitor)
         await sched2.start()
         try:
+
             async def terminal():
                 j = await store.get(submitted.id)
                 return j.state.is_terminal
@@ -73,6 +73,7 @@ async def test_pending_jobs_requeued_on_restart(test_config, fake_nvml):
 # ---------------------------------------------------------------------------
 # RUNNING becomes PENDING on restart
 # ---------------------------------------------------------------------------
+
 
 async def test_running_jobs_requeued_as_pending(test_config, fake_nvml):
     store = JobStore(test_config)
@@ -98,6 +99,7 @@ async def test_running_jobs_requeued_as_pending(test_config, fake_nvml):
         sched2 = await _build_scheduler(test_config, store, adapter2, monitor)
         await sched2.start()
         try:
+
             async def terminal():
                 j = await store.get(crashed.id)
                 return j is not None and j.state.is_terminal
@@ -119,6 +121,7 @@ async def test_running_jobs_requeued_as_pending(test_config, fake_nvml):
 # Terminal jobs are not duplicated
 # ---------------------------------------------------------------------------
 
+
 async def test_completed_jobs_not_requeued(test_config, fake_nvml):
     store = JobStore(test_config)
     await store.start()
@@ -129,10 +132,8 @@ async def test_completed_jobs_not_requeued(test_config, fake_nvml):
     try:
         sched = await _build_scheduler(test_config, store, adapter, monitor)
         await sched.start()
-        submitted = await sched.submit(make_job())
-        await wait_until(
-            lambda: len(adapter.executed) == 1, timeout=2.0
-        )
+        await sched.submit(make_job())
+        await wait_until(lambda: len(adapter.executed) == 1, timeout=2.0)
         # Wait for terminal state and persistence.
         await asyncio.sleep(0.1)
         await sched.stop()
@@ -155,9 +156,8 @@ async def test_completed_jobs_not_requeued(test_config, fake_nvml):
 # Missing adapter is handled
 # ---------------------------------------------------------------------------
 
-async def test_job_with_removed_adapter_marked_failed(
-    test_config, fake_nvml
-):
+
+async def test_job_with_removed_adapter_marked_failed(test_config, fake_nvml):
     store = JobStore(test_config)
     await store.start()
     monitor = GPUMonitor(test_config)
@@ -186,6 +186,7 @@ async def test_job_with_removed_adapter_marked_failed(
 # ---------------------------------------------------------------------------
 # Idempotency key prevents duplicates on re-submit
 # ---------------------------------------------------------------------------
+
 
 async def test_idempotency_key_lookup(test_config, fake_nvml):
     store = JobStore(test_config)

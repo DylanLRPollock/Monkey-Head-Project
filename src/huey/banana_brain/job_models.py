@@ -31,20 +31,20 @@ from __future__ import annotations
 import time
 import uuid
 from dataclasses import dataclass, field
-from enum import Enum, IntEnum
-from typing import Any, Optional
+from enum import IntEnum, StrEnum
+from typing import Any
 
 __all__ = [
-    "Job",
-    "JobState",
-    "Priority",
-    "Adapters",
-    "JobResult",
     "ACTIVE_STATES",
-    "TERMINAL_STATES",
     "ALL_STATES",
-    "JobValidationError",
+    "TERMINAL_STATES",
+    "Adapters",
+    "Job",
+    "JobResult",
+    "JobState",
     "JobTransitionError",
+    "JobValidationError",
+    "Priority",
     "new_job_id",
 ]
 
@@ -53,14 +53,15 @@ __all__ = [
 # State
 # ---------------------------------------------------------------------------
 
-class JobState(str, Enum):
+
+class JobState(StrEnum):
     """
     Lifecycle states for a job.
 
-    The str mixin makes ``JobState.PENDING == "pending"`` true and keeps
-    hashes compatible with the plain strings currently used in
-    banana_brain.scheduler. Do not remove the str base: the whole package
-    relies on string equality for backward compatibility.
+    StrEnum makes ``JobState.PENDING == "pending"`` true and keeps hashes
+    compatible with the plain strings currently used in
+    banana_brain.scheduler. The whole package relies on string equality
+    for backward compatibility.
     """
 
     PENDING = "pending"
@@ -68,10 +69,6 @@ class JobState(str, Enum):
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
-
-    #: ``str(JobState.PENDING)`` should be ``"pending"`` for clean logs
-    #: and for f-strings in older scheduler code paths.
-    __str__ = str.__str__
 
     @property
     def is_active(self) -> bool:
@@ -82,9 +79,7 @@ class JobState(str, Enum):
         return self in TERMINAL_STATES
 
 
-ACTIVE_STATES: frozenset[JobState] = frozenset(
-    {JobState.PENDING, JobState.RUNNING}
-)
+ACTIVE_STATES: frozenset[JobState] = frozenset({JobState.PENDING, JobState.RUNNING})
 TERMINAL_STATES: frozenset[JobState] = frozenset(
     {JobState.COMPLETED, JobState.FAILED, JobState.CANCELLED}
 )
@@ -111,6 +106,7 @@ _LEGAL_TRANSITIONS: dict[JobState, frozenset[JobState]] = {
 # Priority
 # ---------------------------------------------------------------------------
 
+
 class Priority(IntEnum):
     """
     Well-known priority levels from the Banana Brain design doc, §3.
@@ -119,19 +115,20 @@ class Priority(IntEnum):
     be persisted and compared across versions; do not renumber.
     """
 
-    SAFETY = 100          # thermal / hardware safety halt
-    EXCLUSIVE = 90        # manual exclusive mode (gaming, operator task)
-    INTERACTIVE = 80      # interactive Huey / PyGPT requests
-    IMAGE = 70            # user-requested image generation
-    AUDIO = 60            # user-requested audio tasks
-    BACKGROUND = 40       # background RAG / embeddings
-    BATCH = 20            # batch image / video generation
-    MAINTENANCE = 10      # maintenance / benchmarking
+    SAFETY = 100  # thermal / hardware safety halt
+    EXCLUSIVE = 90  # manual exclusive mode (gaming, operator task)
+    INTERACTIVE = 80  # interactive Huey / PyGPT requests
+    IMAGE = 70  # user-requested image generation
+    AUDIO = 60  # user-requested audio tasks
+    BACKGROUND = 40  # background RAG / embeddings
+    BATCH = 20  # batch image / video generation
+    MAINTENANCE = 10  # maintenance / benchmarking
 
 
 # ---------------------------------------------------------------------------
 # Adapter name constants (informational; config is authoritative)
 # ---------------------------------------------------------------------------
+
 
 class Adapters:
     """Well-known adapter names. Config validates which are installed."""
@@ -145,6 +142,7 @@ class Adapters:
 # ---------------------------------------------------------------------------
 # Result
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class JobResult:
@@ -170,7 +168,7 @@ class JobResult:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "JobResult":
+    def from_dict(cls, data: dict[str, Any]) -> JobResult:
         return cls(
             ok=bool(data.get("ok", True)),
             data=dict(data.get("data") or {}),
@@ -186,6 +184,7 @@ class JobResult:
 # ---------------------------------------------------------------------------
 # Errors
 # ---------------------------------------------------------------------------
+
 
 class JobValidationError(ValueError):
     """Raised by Job.validate() when the job is malformed."""
@@ -226,24 +225,24 @@ class Job:
     priority: int = int(Priority.BACKGROUND)
     state: JobState = JobState.PENDING
     exclusive: bool = False
-    deadline: Optional[float] = None       # absolute unix timestamp
+    deadline: float | None = None  # absolute unix timestamp
 
     # ---- Resources --------------------------------------------------------
-    estimated_vram_bytes: Optional[int] = None
+    estimated_vram_bytes: int | None = None
 
     # ---- Accountability ---------------------------------------------------
-    owner: Optional[str] = None
+    owner: str | None = None
     tags: dict[str, str] = field(default_factory=dict)
-    idempotency_key: Optional[str] = None
+    idempotency_key: str | None = None
 
     # ---- Progress ---------------------------------------------------------
-    submitted_at: Optional[float] = None
-    started_at: Optional[float] = None
-    finished_at: Optional[float] = None
+    submitted_at: float | None = None
+    started_at: float | None = None
+    finished_at: float | None = None
     attempts: int = 0
     max_attempts: int = 1
-    last_error: Optional[str] = None
-    result: Optional[Any] = None
+    last_error: str | None = None
+    result: Any | None = None
 
     # ---- Optimistic concurrency (job_store) -------------------------------
     version: int = 0
@@ -347,19 +346,19 @@ class Job:
     # Timing helpers
     # ------------------------------------------------------------------
 
-    def age_seconds(self, *, now: Optional[float] = None) -> Optional[float]:
+    def age_seconds(self, *, now: float | None = None) -> float | None:
         """Seconds since submission; None if never submitted."""
         if self.submitted_at is None:
             return None
         return (time.time() if now is None else now) - self.submitted_at
 
-    def remaining_seconds(self, *, now: Optional[float] = None) -> Optional[float]:
+    def remaining_seconds(self, *, now: float | None = None) -> float | None:
         """Seconds until deadline; None if no deadline set."""
         if self.deadline is None:
             return None
         return self.deadline - (time.time() if now is None else now)
 
-    def is_overdue(self, *, now: Optional[float] = None) -> bool:
+    def is_overdue(self, *, now: float | None = None) -> bool:
         remaining = self.remaining_seconds(now=now)
         return remaining is not None and remaining < 0
 
@@ -387,12 +386,11 @@ class Job:
             problems.append("priority must be an int")
         if not isinstance(self.state, JobState):
             problems.append(f"state must be JobState, got {type(self.state).__name__}")
-        if self.estimated_vram_bytes is not None:
-            if (
-                not isinstance(self.estimated_vram_bytes, int)
-                or self.estimated_vram_bytes <= 0
-            ):
-                problems.append("estimated_vram_bytes must be a positive int")
+        if self.estimated_vram_bytes is not None and (
+            not isinstance(self.estimated_vram_bytes, int)
+            or self.estimated_vram_bytes <= 0
+        ):
+            problems.append("estimated_vram_bytes must be a positive int")
         if self.deadline is not None and self.deadline < 0:
             problems.append("deadline must be a non-negative unix timestamp")
         if not isinstance(self.attempts, int) or self.attempts < 0:
@@ -451,7 +449,7 @@ class Job:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "Job":
+    def from_dict(cls, data: dict[str, Any]) -> Job:
         """
         Inverse of to_dict(). Tolerant of missing/extra keys but strict
         about adapter (required) and state (must parse).
@@ -462,15 +460,11 @@ class Job:
             adapter=str(data["adapter"]),
             payload=dict(data.get("payload") or {}),
             id=str(data.get("id") or str(uuid.uuid4())),
-            priority=_coerce_int(
-                data.get("priority"), int(Priority.BACKGROUND)
-            ),
+            priority=_coerce_int(data.get("priority"), int(Priority.BACKGROUND)),
             state=_coerce_state(data.get("state", JobState.PENDING.value)),
             exclusive=bool(data.get("exclusive", False)),
             deadline=_maybe_float(data.get("deadline")),
-            estimated_vram_bytes=_maybe_positive_int(
-                data.get("estimated_vram_bytes")
-            ),
+            estimated_vram_bytes=_maybe_positive_int(data.get("estimated_vram_bytes")),
             owner=_maybe_str(data.get("owner")),
             tags=dict(data.get("tags") or {}),
             idempotency_key=_maybe_str(data.get("idempotency_key")),
@@ -488,6 +482,7 @@ class Job:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def new_job_id() -> str:
     """Return a fresh job id. Exposed for tests and adapters."""
@@ -512,7 +507,7 @@ def _coerce_int(value: Any, default: int) -> int:
         return default
 
 
-def _maybe_float(value: Any) -> Optional[float]:
+def _maybe_float(value: Any) -> float | None:
     if value is None:
         return None
     try:
@@ -521,7 +516,7 @@ def _maybe_float(value: Any) -> Optional[float]:
         return None
 
 
-def _maybe_positive_int(value: Any) -> Optional[int]:
+def _maybe_positive_int(value: Any) -> int | None:
     if value is None:
         return None
     try:
@@ -531,7 +526,7 @@ def _maybe_positive_int(value: Any) -> Optional[int]:
     return ivalue if ivalue > 0 else None
 
 
-def _maybe_str(value: Any) -> Optional[str]:
+def _maybe_str(value: Any) -> str | None:
     if value is None:
         return None
     return str(value)

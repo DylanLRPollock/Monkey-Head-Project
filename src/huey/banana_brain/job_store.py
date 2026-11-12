@@ -532,11 +532,11 @@ class JobStore:
     def _list_by_state_sync(
         self, conn: sqlite3.Connection, states: tuple[str, ...]
     ) -> list[Job]:
-        placeholders = ",".join("?" * len(states))
         rows = conn.execute(
-            f"SELECT * FROM jobs WHERE state IN ({placeholders}) "
+            "SELECT * FROM jobs WHERE state IN "
+            "(SELECT value FROM json_each(?)) "
             "ORDER BY submitted_at ASC, id ASC",
-            states,
+            (json.dumps([str(state) for state in states]),),
         ).fetchall()
         return _rows_to_jobs(rows)
 
@@ -550,11 +550,11 @@ class JobStore:
         if limit == 0:
             return []
         if states:
-            placeholders = ",".join("?" * len(states))
             rows = conn.execute(
-                f"SELECT * FROM jobs WHERE state IN ({placeholders}) "
+                "SELECT * FROM jobs WHERE state IN "
+                "(SELECT value FROM json_each(?)) "
                 "ORDER BY updated_at DESC, id DESC LIMIT ?",
-                (*states, limit),
+                (json.dumps([str(state) for state in states]), limit),
             ).fetchall()
         else:
             rows = conn.execute(
@@ -614,32 +614,34 @@ class JobStore:
         try:
             if self._retention_days > 0:
                 cutoff = time.time() - self._retention_days * 86400.0
-                placeholders = ",".join("?" * len(TERMINAL_STATES))
                 cursor = conn.execute(
-                    f"DELETE FROM jobs WHERE state IN ({placeholders}) "
+                    "DELETE FROM jobs WHERE state IN "
+                    "(SELECT value FROM json_each(?)) "
                     "AND COALESCE(finished_at, updated_at) < ?",
-                    (*tuple(str(s) for s in TERMINAL_STATES), cutoff),
+                    (json.dumps([str(state) for state in TERMINAL_STATES]), cutoff),
                 )
                 counts["aged_out"] = cursor.rowcount or 0
 
             if self._max_terminal_rows > 0:
-                placeholders = ",".join("?" * len(TERMINAL_STATES))
                 total_terminal_row = conn.execute(
-                    f"SELECT COUNT(*) AS n FROM jobs "
-                    f"WHERE state IN ({placeholders})",
-                    tuple(str(s) for s in TERMINAL_STATES),
+                    "SELECT COUNT(*) AS n FROM jobs "
+                    "WHERE state IN (SELECT value FROM json_each(?))",
+                    (json.dumps([str(state) for state in TERMINAL_STATES]),),
                 ).fetchone()
                 total_terminal = int(total_terminal_row["n"])
                 excess = total_terminal - self._max_terminal_rows
                 if excess > 0:
                     cursor = conn.execute(
-                        f"DELETE FROM jobs WHERE id IN ("
-                        f"  SELECT id FROM jobs "
-                        f"  WHERE state IN ({placeholders}) "
-                        f"  ORDER BY COALESCE(finished_at, updated_at) ASC "
-                        f"  LIMIT ?"
-                        f")",
-                        (*tuple(str(s) for s in TERMINAL_STATES), excess),
+                        "DELETE FROM jobs WHERE id IN ("
+                        "  SELECT id FROM jobs "
+                        "  WHERE state IN (SELECT value FROM json_each(?)) "
+                        "  ORDER BY COALESCE(finished_at, updated_at) ASC "
+                        "  LIMIT ?"
+                        ")",
+                        (
+                            json.dumps([str(state) for state in TERMINAL_STATES]),
+                            excess,
+                        ),
                     )
                     counts["over_cap"] = cursor.rowcount or 0
 

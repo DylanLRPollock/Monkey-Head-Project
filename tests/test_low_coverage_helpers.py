@@ -2,19 +2,22 @@
 
 from __future__ import annotations
 
-import json
 import importlib
+import json
 
 import pytest
 
+from huey.ai.brain import HueyBrain
 from huey.ai.neural_net import NeuralLayer, SimpleNeuralNetwork
 from huey.ai.tokenizer import BasicTokenizer
 from huey.ai.transformers import TransformerBlock
-from huey.ai.brain import HueyBrain
 from huey.connectors.pyhuey import tool_manifest
 from huey.data.loader import load_data, load_text
 from huey.data.transformer import transform_records
 from huey.data.validator import validate_required_fields, validate_schema
+from huey.decision.context import DecisionContext
+from huey.decision.multi_choice import ChoiceOption, choose_option
+from huey.governance.compliance import ComplianceChecker
 from huey.gui.safety import (
     SafetyPolicy,
     assert_action_allowed,
@@ -22,9 +25,6 @@ from huey.gui.safety import (
     is_dangerous_action,
     safety_banner,
 )
-from huey.decision.context import DecisionContext
-from huey.decision.multi_choice import ChoiceOption, choose_option
-from huey.governance.compliance import ComplianceChecker
 from huey.hardware.actuators import ActuatorHub
 from huey.hardware.cooling import CoolingController
 from huey.hardware.gpio import GPIOController

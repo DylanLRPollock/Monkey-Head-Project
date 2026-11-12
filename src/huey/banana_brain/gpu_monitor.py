@@ -34,17 +34,18 @@ Dependency:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 __all__ = [
-    "GPUMonitor",
-    "GPUStatus",
-    "GPUProcess",
     "DeviceIdentity",
     "GPUHealth",
+    "GPUMonitor",
+    "GPUProcess",
+    "GPUStatus",
     "NVMLUnavailable",
 ]
 
@@ -55,6 +56,7 @@ LOG = logging.getLogger("banana_brain.gpu_monitor")
 # Data models
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class DeviceIdentity:
     """Stable identity for a GPU, independent of enumeration order."""
@@ -63,14 +65,12 @@ class DeviceIdentity:
     name: str
     uuid: str
     pci_bus_id: str
-    serial: Optional[str] = None
+    serial: str | None = None
 
-    def matches(self, *, uuid: Optional[str], pci_bus_id: Optional[str]) -> bool:
+    def matches(self, *, uuid: str | None, pci_bus_id: str | None) -> bool:
         if uuid and self.uuid.upper() == uuid.upper():
             return True
-        if pci_bus_id and self.pci_bus_id.lower() == pci_bus_id.lower():
-            return True
-        return False
+        return bool(pci_bus_id and self.pci_bus_id.lower() == pci_bus_id.lower())
 
 
 @dataclass(frozen=True)
@@ -78,8 +78,8 @@ class GPUProcess:
     """One process with memory allocated on the GPU."""
 
     pid: int
-    used_memory_bytes: Optional[int]  # None when NVML cannot report it
-    kind: str                         # "compute" or "graphics"
+    used_memory_bytes: int | None  # None when NVML cannot report it
+    kind: str  # "compute" or "graphics"
 
 
 @dataclass(frozen=True)
@@ -89,9 +89,9 @@ class GPUHealth:
     device_lost: bool = False
     thermal_slowdown: bool = False
     power_brake: bool = False
-    shutdown_threshold_c: Optional[int] = None
-    slowdown_threshold_c: Optional[int] = None
-    power_limit_watts: Optional[float] = None
+    shutdown_threshold_c: int | None = None
+    slowdown_threshold_c: int | None = None
+    power_limit_watts: float | None = None
     throttle_reasons: int = 0
 
 
@@ -109,8 +109,8 @@ class GPUStatus:
 
     gpu_utilization_percent: int
     memory_utilization_percent: int
-    temperature_c: Optional[int]
-    power_watts: Optional[float]
+    temperature_c: int | None
+    power_watts: float | None
 
     processes: tuple[GPUProcess, ...] = field(default_factory=tuple)
     health: GPUHealth = field(default_factory=GPUHealth)
@@ -145,6 +145,7 @@ class NVMLUnavailable(RuntimeError):
 # Monitor
 # ---------------------------------------------------------------------------
 
+
 class GPUMonitor:
     """
     Polls NVML in a background task and publishes the latest GPUStatus.
@@ -167,12 +168,8 @@ class GPUMonitor:
     def __init__(self, config: Any) -> None:
         self._config = config
 
-        self._device_uuid: Optional[str] = _cfg_str(
-            config, "device_uuid", "gpu_uuid"
-        )
-        self._pci_bus_id: Optional[str] = _cfg_str(
-            config, "pci_bus_id", "gpu_pci_bus_id"
-        )
+        self._device_uuid: str | None = _cfg_str(config, "device_uuid", "gpu_uuid")
+        self._pci_bus_id: str | None = _cfg_str(config, "pci_bus_id", "gpu_pci_bus_id")
         self._poll_interval = float(
             _cfg_num(config, "poll_interval_seconds", self.DEFAULT_POLL_INTERVAL_S)
         )
@@ -180,13 +177,13 @@ class GPUMonitor:
             _cfg_num(config, "max_staleness_seconds", self.DEFAULT_MAX_STALENESS_S)
         )
 
-        self._nvml: Any = None          # pynvml module, once imported
-        self._handle: Any = None        # nvmlDevice_t
-        self._identity: Optional[DeviceIdentity] = None
-        self._last_status: Optional[GPUStatus] = None
-        self._last_success_monotonic: Optional[float] = None
+        self._nvml: Any = None  # pynvml module, once imported
+        self._handle: Any = None  # nvmlDevice_t
+        self._identity: DeviceIdentity | None = None
+        self._last_status: GPUStatus | None = None
+        self._last_success_monotonic: float | None = None
 
-        self._poll_task: Optional[asyncio.Task[None]] = None
+        self._poll_task: asyncio.Task[None] | None = None
         self._wake = asyncio.Event()
         self._stopping = False
         self._lock = asyncio.Lock()
@@ -216,8 +213,11 @@ class GPUMonitor:
         ident = self._identity
         LOG.info(
             "gpu_monitor started: %s (%s) uuid=%s pci=%s, poll=%.1fs",
-            ident.name, "index %d" % ident.index,
-            ident.uuid, ident.pci_bus_id, self._poll_interval,
+            ident.name,
+            f"index {ident.index}",
+            ident.uuid,
+            ident.pci_bus_id,
+            self._poll_interval,
         )
 
     async def stop(self) -> None:
@@ -227,10 +227,8 @@ class GPUMonitor:
         self._poll_task = None
         if task is not None:
             task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await task
-            except asyncio.CancelledError:
-                pass
         await asyncio.to_thread(self._shutdown_nvml)
         LOG.info("gpu_monitor stopped")
 
@@ -238,7 +236,7 @@ class GPUMonitor:
     # Public queries
     # ------------------------------------------------------------------
 
-    async def get_status(self) -> Optional[GPUStatus]:
+    async def get_status(self) -> GPUStatus | None:
         """
         Latest snapshot, or None if unavailable/stale.
 
@@ -255,12 +253,13 @@ class GPUMonitor:
         if age > self._max_staleness:
             LOG.warning(
                 "GPU status is stale (%.1fs old, max %.1fs); reporting unavailable",
-                age, self._max_staleness,
+                age,
+                self._max_staleness,
             )
             return None
         return status
 
-    async def refresh(self) -> Optional[GPUStatus]:
+    async def refresh(self) -> GPUStatus | None:
         """Force one poll now. Used after model unloads to confirm release."""
         try:
             status = await asyncio.to_thread(self._poll_once)
@@ -275,7 +274,7 @@ class GPUMonitor:
         """Wake the poll loop for an immediate poll (fire-and-forget)."""
         self._wake.set()
 
-    async def get_device_identity(self) -> Optional[DeviceIdentity]:
+    async def get_device_identity(self) -> DeviceIdentity | None:
         return self._identity
 
     # ------------------------------------------------------------------
@@ -305,15 +304,13 @@ class GPUMonitor:
                 if consecutive_failures == 1 or consecutive_failures % 30 == 0:
                     LOG.warning(
                         "GPU poll failed (%d consecutive): %s: %s",
-                        consecutive_failures, type(exc).__name__, exc,
+                        consecutive_failures,
+                        type(exc).__name__,
+                        exc,
                     )
 
-            try:
-                await asyncio.wait_for(
-                    self._wake.wait(), timeout=self._poll_interval
-                )
-            except asyncio.TimeoutError:
-                pass
+            with contextlib.suppress(TimeoutError):
+                await asyncio.wait_for(self._wake.wait(), timeout=self._poll_interval)
             self._wake.clear()
 
     async def _publish(self, status: GPUStatus) -> None:
@@ -330,8 +327,8 @@ class GPUMonitor:
 
         self._nvml = pynvml
 
-        last_exc: Optional[BaseException] = None
-        for attempt, delay in enumerate((0.0,) + self.INIT_RETRY_DELAYS, start=1):
+        last_exc: BaseException | None = None
+        for attempt, delay in enumerate((0.0, *self.INIT_RETRY_DELAYS), start=1):
             if delay:
                 time.sleep(delay)
             try:
@@ -341,22 +338,20 @@ class GPUMonitor:
                 LOG.info(
                     "NVML ready (driver %s, CUDA %s)",
                     self._safe(lambda: pynvml.nvmlSystemGetDriverVersion(), "?"),
-                    self._safe(
-                        lambda: pynvml.nvmlSystemGetCudaDriverVersion_v2(), "?"
-                    ),
+                    self._safe(lambda: pynvml.nvmlSystemGetCudaDriverVersion_v2(), "?"),
                 )
                 return
             except Exception as exc:
                 last_exc = exc
                 LOG.warning(
                     "NVML init attempt %d/%d failed: %s: %s",
-                    attempt, len(self.INIT_RETRY_DELAYS) + 1,
-                    type(exc).__name__, exc,
+                    attempt,
+                    len(self.INIT_RETRY_DELAYS) + 1,
+                    type(exc).__name__,
+                    exc,
                 )
-                try:
+                with contextlib.suppress(Exception):
                     pynvml.nvmlShutdown()
-                except Exception:
-                    pass
 
         raise NVMLUnavailable(
             f"NVML could not be initialised after "
@@ -415,8 +410,8 @@ class GPUMonitor:
             try:
                 h = nvml.nvmlDeviceGetHandleByIndex_v2(i)
                 names.append(
-                    f"  index={i} name={self._safe(lambda: nvml.nvmlDeviceGetName(h), '?')}"
-                    f" uuid={self._safe(lambda: nvml.nvmlDeviceGetUUID(h), '?')}"
+                    f"  index={i} name={self._safe(lambda h=h: nvml.nvmlDeviceGetName(h), '?')}"
+                    f" uuid={self._safe(lambda h=h: nvml.nvmlDeviceGetUUID(h), '?')}"
                 )
             except Exception:
                 names.append(f"  index={i} <unqueryable>")
@@ -436,16 +431,14 @@ class GPUMonitor:
             name=str(self._safe(lambda: nvml.nvmlDeviceGetName(handle), "unknown")),
             uuid=str(self._safe(lambda: nvml.nvmlDeviceGetUUID(handle), "")),
             pci_bus_id=str(pci_bus or ""),
-            serial=self._optional_str(
-                lambda: nvml.nvmlDeviceGetSerial(handle)
-            ),
+            serial=self._optional_str(lambda: nvml.nvmlDeviceGetSerial(handle)),
         )
 
     # ------------------------------------------------------------------
     # One poll (runs in a worker thread)
     # ------------------------------------------------------------------
 
-    def _poll_once(self) -> Optional[GPUStatus]:
+    def _poll_once(self) -> GPUStatus | None:
         nvml = self._nvml
         handle = self._handle
         identity = self._identity
@@ -460,21 +453,15 @@ class GPUMonitor:
         used = int(mem.used)
         reserved = int(getattr(mem, "reserved", 0) or 0)
 
-        rates = self._safe(
-            lambda: nvml.nvmlDeviceGetUtilizationRates(handle), None
-        )
+        rates = self._safe(lambda: nvml.nvmlDeviceGetUtilizationRates(handle), None)
         gpu_util = int(getattr(rates, "gpu", 0) or 0)
         mem_util = int(getattr(rates, "memory", 0) or 0)
 
         temperature = self._safe(
-            lambda: nvml.nvmlDeviceGetTemperature(
-                handle, nvml.NVML_TEMPERATURE_GPU
-            ),
+            lambda: nvml.nvmlDeviceGetTemperature(handle, nvml.NVML_TEMPERATURE_GPU),
             None,
         )
-        power_mw = self._safe(
-            lambda: nvml.nvmlDeviceGetPowerUsage(handle), None
-        )
+        power_mw = self._safe(lambda: nvml.nvmlDeviceGetPowerUsage(handle), None)
         power_w = (float(power_mw) / 1000.0) if power_mw is not None else None
 
         health = self._read_health(handle)
@@ -518,9 +505,7 @@ class GPUMonitor:
         throttle = int(throttle or 0)
 
         hw_slowdown = getattr(nvml, "nvmlClocksThrottleReasonHwSlowdown", 0x8)
-        sw_slowdown = getattr(
-            nvml, "nvmlClocksThrottleReasonSwThermalSlowdown", 0x20
-        )
+        sw_slowdown = getattr(nvml, "nvmlClocksThrottleReasonSwThermalSlowdown", 0x20)
         power_brake = getattr(
             nvml, "nvmlClocksThrottleReasonHwPowerBrakeSlowdown", 0x80
         )
@@ -560,11 +545,7 @@ class GPUMonitor:
                 continue
             for p in procs:
                 raw = getattr(p, "usedGpuMemory", None)
-                used = (
-                    int(raw)
-                    if isinstance(raw, int) and raw >= 0
-                    else None
-                )
+                used = int(raw) if isinstance(raw, int) and raw >= 0 else None
                 out.append(
                     GPUProcess(pid=int(p.pid), used_memory_bytes=used, kind=kind)
                 )
@@ -573,9 +554,9 @@ class GPUMonitor:
         seen: dict[int, GPUProcess] = {}
         for proc in out:
             existing = seen.get(proc.pid)
-            if existing is None:
-                seen[proc.pid] = proc
-            elif existing.used_memory_bytes is None and proc.used_memory_bytes:
+            if existing is None or (
+                existing.used_memory_bytes is None and proc.used_memory_bytes
+            ):
                 seen[proc.pid] = proc
         return tuple(seen.values())
 
@@ -591,7 +572,7 @@ class GPUMonitor:
             return default
 
     @staticmethod
-    def _optional_str(fn: Any) -> Optional[str]:
+    def _optional_str(fn: Any) -> str | None:
         try:
             value = fn()
         except Exception:
@@ -605,6 +586,7 @@ class GPUMonitor:
 # Config helpers (tolerant of dataclass, mapping, or attribute access)
 # ---------------------------------------------------------------------------
 
+
 def _cfg_get(config: Any, *names: str) -> Any:
     for name in names:
         if isinstance(config, dict):
@@ -617,7 +599,7 @@ def _cfg_get(config: Any, *names: str) -> Any:
     return None
 
 
-def _cfg_str(config: Any, *names: str) -> Optional[str]:
+def _cfg_str(config: Any, *names: str) -> str | None:
     value = _cfg_get(config, *names)
     return str(value) if value else None
 

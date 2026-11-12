@@ -55,7 +55,7 @@ import os
 import signal
 import sys
 from pathlib import Path
-from typing import Any, Optional, Protocol
+from typing import Any, Protocol
 
 __version__ = "0.1.0"
 
@@ -112,7 +112,8 @@ class Component(Protocol):
 # CLI
 # ---------------------------------------------------------------------------
 
-def _parse_args(argv: Optional[list[str]]) -> argparse.Namespace:
+
+def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="banana-brain_scheduler.py",
         description="Banana Brain — GPU resource scheduler for HueyOS.",
@@ -173,6 +174,7 @@ def _ensure_package_on_path() -> None:
     """Make the banana_brain package importable when running from a checkout."""
     try:
         import huey.banana_brain  # noqa: F401
+
         return
     except ImportError:
         pass
@@ -186,6 +188,7 @@ def _ensure_package_on_path() -> None:
 # Config loading
 # ---------------------------------------------------------------------------
 
+
 def _load_config(path: Path) -> Any:
     from huey.banana_brain.config import load_config
 
@@ -197,7 +200,7 @@ def _load_config(path: Path) -> Any:
         raise StartupError(f"failed to load config {path}: {exc}") from exc
 
 
-def _resolve_grace(cli_value: Optional[float], config: Any) -> float:
+def _resolve_grace(cli_value: float | None, config: Any) -> float:
     if cli_value is not None:
         return float(cli_value)
     for attr in ("shutdown_grace_seconds", "shutdown_grace", "grace_seconds"):
@@ -219,6 +222,7 @@ def _describe_device(config: Any) -> str:
 # Component construction (composition root)
 # ---------------------------------------------------------------------------
 
+
 def _construct_components(config: Any) -> dict[str, Any]:
     """
     Instantiate all P0 components without starting them.
@@ -227,15 +231,15 @@ def _construct_components(config: Any) -> dict[str, Any]:
     component needs a new dependency, thread it through here rather than
     reaching into globals elsewhere.
     """
-    from huey.banana_brain.job_store import JobStore
-    from huey.banana_brain.gpu_monitor import GPUMonitor
-    from huey.banana_brain.vram_manager import VRAMManager
-    from huey.banana_brain.priority_manager import PriorityManager
-    from huey.banana_brain.ollama_adapter import OllamaAdapter
     from huey.banana_brain.comfyui_adapter import ComfyUIAdapter
+    from huey.banana_brain.gpu_monitor import GPUMonitor
+    from huey.banana_brain.job_store import JobStore
+    from huey.banana_brain.ollama_adapter import OllamaAdapter
+    from huey.banana_brain.priority_manager import PriorityManager
     from huey.banana_brain.scheduler import Scheduler
-    from huey.banana_brain.watchdog import Watchdog
     from huey.banana_brain.scheduler_api import SchedulerAPI
+    from huey.banana_brain.vram_manager import VRAMManager
+    from huey.banana_brain.watchdog import Watchdog
 
     job_store = JobStore(config)
     gpu_monitor = GPUMonitor(config)
@@ -272,6 +276,7 @@ def _construct_components(config: Any) -> dict[str, Any]:
 # Shutdown signalling
 # ---------------------------------------------------------------------------
 
+
 class ShutdownController:
     """
     Turns SIGINT/SIGTERM into an awaitable event.
@@ -282,7 +287,7 @@ class ShutdownController:
     """
 
     def __init__(self) -> None:
-        self._event: Optional[asyncio.Event] = None
+        self._event: asyncio.Event | None = None
         self._signal_count = 0
 
     def install(self) -> None:
@@ -304,7 +309,8 @@ class ShutdownController:
         if self._signal_count == 1:
             LOG.warning(
                 "received %s; beginning graceful shutdown "
-                "(send again to force immediate exit)", sig.name,
+                "(send again to force immediate exit)",
+                sig.name,
             )
             if self._event is not None:
                 self._event.set()
@@ -322,6 +328,7 @@ class ShutdownController:
 # ---------------------------------------------------------------------------
 # Application lifecycle
 # ---------------------------------------------------------------------------
+
 
 class Application:
     """Owns startup, the block-until-shutdown loop, and ordered teardown."""
@@ -377,7 +384,8 @@ class Application:
 
         LOG.info(
             "shutting down %d component(s), grace %.1fs",
-            len(self._started), self._grace,
+            len(self._started),
+            self._grace,
         )
 
         for name in SHUTDOWN_ORDER:
@@ -408,7 +416,7 @@ class Application:
         try:
             await asyncio.wait_for(wait(), timeout=self._grace)
             LOG.info("scheduler drained cleanly")
-        except asyncio.TimeoutError:
+        except TimeoutError:
             LOG.warning(
                 "scheduler did not drain within %.1fs; "
                 "pending jobs will be persisted for recovery on next start",
@@ -421,7 +429,7 @@ class Application:
         timeout = self._grace + COMPONENT_STOP_GRACE
         try:
             await asyncio.wait_for(component.stop(), timeout=timeout)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             LOG.warning("component %s did not stop within %.1fs", name, timeout)
         except Exception:
             LOG.exception("component %s raised during stop", name)
@@ -430,6 +438,7 @@ class Application:
 # ---------------------------------------------------------------------------
 # Entrypoint
 # ---------------------------------------------------------------------------
+
 
 async def _async_main(args: argparse.Namespace) -> int:
     config = _load_config(args.config)
@@ -449,7 +458,7 @@ async def _async_main(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
-def main(argv: Optional[list[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
     _configure_logging(args.log_level)
     _ensure_package_on_path()

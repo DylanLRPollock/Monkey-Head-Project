@@ -86,6 +86,7 @@ Dependencies:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
 import shutil
@@ -94,15 +95,15 @@ import uuid
 from dataclasses import dataclass, field
 from enum import IntEnum
 from pathlib import Path
-from typing import Any, Optional, Protocol
+from typing import Any, ClassVar, Protocol
 
 import aiohttp
 
 __all__ = [
-    "Notifier",
+    "Kinds",
     "Notification",
     "NotificationLevel",
-    "Kinds",
+    "Notifier",
 ]
 
 LOG = logging.getLogger("banana_brain.notifications")
@@ -111,6 +112,7 @@ LOG = logging.getLogger("banana_brain.notifications")
 # ---------------------------------------------------------------------------
 # Levels and kind constants
 # ---------------------------------------------------------------------------
+
 
 class NotificationLevel(IntEnum):
     INFO = 10
@@ -165,6 +167,7 @@ def _parse_level(value: Any) -> NotificationLevel:
 # Notification record
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class Notification:
     id: str
@@ -173,8 +176,8 @@ class Notification:
     title: str
     message: str
     details: dict[str, Any] = field(default_factory=dict)
-    kind: Optional[str] = None
-    key: Optional[str] = None
+    kind: str | None = None
+    key: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -193,6 +196,7 @@ class Notification:
 # Backend protocol
 # ---------------------------------------------------------------------------
 
+
 class Backend(Protocol):
     name: str
     min_level: NotificationLevel
@@ -204,6 +208,7 @@ class Backend(Protocol):
 # ---------------------------------------------------------------------------
 # Log backend (always on)
 # ---------------------------------------------------------------------------
+
 
 class LogBackend:
     name = "log"
@@ -234,6 +239,7 @@ class LogBackend:
 # Desktop backend (notify-send)
 # ---------------------------------------------------------------------------
 
+
 class DesktopBackend:
     """
     Sends notifications via ``notify-send`` on Linux.
@@ -245,7 +251,7 @@ class DesktopBackend:
 
     name = "desktop"
 
-    _URGENCY = {
+    _URGENCY: ClassVar[dict[NotificationLevel, str]] = {
         NotificationLevel.INFO: "low",
         NotificationLevel.WARN: "normal",
         NotificationLevel.ERROR: "critical",
@@ -275,15 +281,17 @@ class DesktopBackend:
         if notification.details:
             # A single line of key=value detail, kept short.
             detail_line = " ".join(
-                f"{k}={v}"
-                for k, v in list(notification.details.items())[:4]
+                f"{k}={v}" for k, v in list(notification.details.items())[:4]
             )
             body = f"{body}\n{detail_line}"[:512]
         argv = [
             self._binary,
-            "-u", urgency,
-            "-a", "Banana Brain",
-            "-t", str(self._timeout_ms),
+            "-u",
+            urgency,
+            "-a",
+            "Banana Brain",
+            "-t",
+            str(self._timeout_ms),
             notification.title,
             body,
         ]
@@ -294,11 +302,9 @@ class DesktopBackend:
                 stderr=asyncio.subprocess.PIPE,
             )
             _, stderr = await asyncio.wait_for(proc.communicate(), timeout=3.0)
-        except asyncio.TimeoutError:
-            try:
+        except TimeoutError:
+            with contextlib.suppress(Exception):
                 proc.kill()
-            except Exception:
-                pass
             LOG.debug("desktop notification timed out")
             return
         except FileNotFoundError:
@@ -327,6 +333,7 @@ class DesktopBackend:
 # Webhook backend
 # ---------------------------------------------------------------------------
 
+
 class WebhookBackend:
     """
     POSTs each notification as JSON to an operator-configured URL.
@@ -343,7 +350,7 @@ class WebhookBackend:
         self,
         url: str,
         *,
-        token: Optional[str],
+        token: str | None,
         min_level: NotificationLevel,
         timeout_s: float = 5.0,
     ) -> None:
@@ -351,7 +358,7 @@ class WebhookBackend:
         self._url = url
         self._token = token
         self._timeout_s = float(timeout_s)
-        self._session: Optional[aiohttp.ClientSession] = None
+        self._session: aiohttp.ClientSession | None = None
         self._auth_failure_warned = False
 
     async def _ensure_session(self) -> aiohttp.ClientSession:
@@ -381,17 +388,21 @@ class WebhookBackend:
                         LOG.warning(
                             "webhook rejected the notification (HTTP %d): "
                             "check notifications_webhook_token; %s",
-                            resp.status, text[:200],
+                            resp.status,
+                            text[:200],
                         )
                     else:
                         LOG.warning(
                             "webhook returned HTTP %d for notification %s: %s",
-                            resp.status, notification.id, text[:200],
+                            resp.status,
+                            notification.id,
+                            text[:200],
                         )
-        except asyncio.TimeoutError:
+        except TimeoutError:
             LOG.warning(
                 "webhook timed out after %.1fs for notification %s",
-                self._timeout_s, notification.id,
+                self._timeout_s,
+                notification.id,
             )
         except Exception:
             LOG.exception(
@@ -408,6 +419,7 @@ class WebhookBackend:
 # ---------------------------------------------------------------------------
 # File backend
 # ---------------------------------------------------------------------------
+
 
 class FileBackend:
     """
@@ -433,7 +445,9 @@ class FileBackend:
         try:
             if self._handle is None:
                 self._path.parent.mkdir(parents=True, exist_ok=True)
-                self._handle = open(self._path, "a", encoding="utf-8")
+                # This handle intentionally stays open until close() so each
+                # notification appends through one lifecycle-managed stream.
+                self._handle = open(self._path, "a", encoding="utf-8")  # noqa: SIM115
             self._handle.write(
                 json.dumps(notification.to_dict(), ensure_ascii=False) + "\n"
             )
@@ -458,6 +472,7 @@ class FileBackend:
 # Notifier
 # ---------------------------------------------------------------------------
 
+
 class Notifier:
     """
     Dispatches notifications to one or more backends.
@@ -477,26 +492,22 @@ class Notifier:
         self._enabled = _cfg_bool(config, "notifications_enabled", True)
         self._cooldown = float(
             _cfg_num(
-                config, "notifications_cooldown_seconds",
+                config,
+                "notifications_cooldown_seconds",
                 self.DEFAULT_COOLDOWN_S,
-            )
-        )
-        maxsize = int(
-            _cfg_num(
-                config, "notifications_queue_maxsize",
-                self.DEFAULT_QUEUE_MAXSIZE,
             )
         )
         self._shutdown_grace = float(
             _cfg_num(
-                config, "notifications_shutdown_grace_seconds",
+                config,
+                "notifications_shutdown_grace_seconds",
                 self.DEFAULT_SHUTDOWN_GRACE_S,
             )
         )
 
         self._backends: list[Backend] = []
-        self._queue: Optional[asyncio.Queue[Notification]] = None
-        self._worker: Optional[asyncio.Task[None]] = None
+        self._queue: asyncio.Queue[Notification] | None = None
+        self._worker: asyncio.Task[None] | None = None
         self._stop_event = asyncio.Event()
 
         # Dedup: last emission time per (kind, key) or (kind, title).
@@ -528,7 +539,8 @@ class Notifier:
             raise RuntimeError("notifications already started")
         maxsize = int(
             _cfg_num(
-                self._config, "notifications_queue_maxsize",
+                self._config,
+                "notifications_queue_maxsize",
                 self.DEFAULT_QUEUE_MAXSIZE,
             )
         )
@@ -540,7 +552,8 @@ class Notifier:
         LOG.info(
             "notifications ready (backends=%s, cooldown=%.0fs, queue=%d)",
             ", ".join(b.name for b in self._backends),
-            self._cooldown, maxsize,
+            self._cooldown,
+            maxsize,
         )
 
     async def stop(self) -> None:
@@ -550,12 +563,10 @@ class Notifier:
         if worker is not None:
             try:
                 await asyncio.wait_for(worker, timeout=self._shutdown_grace)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 worker.cancel()
-                try:
+                with contextlib.suppress(asyncio.CancelledError):
                     await worker
-                except asyncio.CancelledError:
-                    pass
                 LOG.warning(
                     "notifications: delivery worker did not stop within "
                     "%.1fs; pending notifications may be lost",
@@ -565,13 +576,12 @@ class Notifier:
             try:
                 await backend.close()
             except Exception:
-                LOG.exception(
-                    "notifications: backend %s close failed", backend.name
-                )
+                LOG.exception("notifications: backend %s close failed", backend.name)
         self._backends.clear()
         self._queue = None
         LOG.info(
-            "notifications stopped (stats=%s)", self._stats,
+            "notifications stopped (stats=%s)",
+            self._stats,
         )
 
     # ------------------------------------------------------------------
@@ -583,10 +593,10 @@ class Notifier:
         level: Any,
         title: str,
         message: str,
-        details: Optional[dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
         *,
-        kind: Optional[str] = None,
-        key: Optional[str] = None,
+        kind: str | None = None,
+        key: str | None = None,
     ) -> None:
         """
         Enqueue a notification for delivery. Returns immediately.
@@ -605,9 +615,7 @@ class Notifier:
 
         # Dedup: same (kind, key) or (kind, title) within cooldown.
         cooldown_key = (
-            f"{kind or ''}::{(key or title).lower()}"
-            if kind or key
-            else None
+            f"{kind or ''}::{(key or title).lower()}" if kind or key else None
         )
         now = time.monotonic()
         if cooldown_key is not None and self._cooldown > 0:
@@ -652,7 +660,8 @@ class Notifier:
                 LOG.warning(
                     "notifications: queue full (%d) and could not drop; "
                     "discarding notification %r",
-                    queue.maxsize, notification.title,
+                    queue.maxsize,
+                    notification.title,
                 )
 
     def get_stats(self) -> dict[str, Any]:
@@ -671,10 +680,8 @@ class Notifier:
         assert self._queue is not None
         while not self._stop_event.is_set():
             try:
-                notification = await asyncio.wait_for(
-                    self._queue.get(), timeout=0.5
-                )
-            except asyncio.TimeoutError:
+                notification = await asyncio.wait_for(self._queue.get(), timeout=0.5)
+            except TimeoutError:
                 continue
             except asyncio.CancelledError:
                 raise
@@ -683,14 +690,10 @@ class Notifier:
             except asyncio.CancelledError:
                 raise
             except Exception:
-                LOG.exception(
-                    "notifications: delivery failed for %s", notification.id
-                )
+                LOG.exception("notifications: delivery failed for %s", notification.id)
             finally:
-                try:
+                with contextlib.suppress(Exception):
                     self._queue.task_done()
-                except Exception:
-                    pass
 
     async def _deliver(self, notification: Notification) -> None:
         delivered_anywhere = False
@@ -700,17 +703,19 @@ class Notifier:
             try:
                 await asyncio.wait_for(backend.send(notification), timeout=10.0)
                 delivered_anywhere = True
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 self._stats["backend_failures"] += 1
                 LOG.warning(
                     "notifications: backend %s timed out for %s",
-                    backend.name, notification.id,
+                    backend.name,
+                    notification.id,
                 )
             except Exception:
                 self._stats["backend_failures"] += 1
                 LOG.exception(
                     "notifications: backend %s raised for %s",
-                    backend.name, notification.id,
+                    backend.name,
+                    notification.id,
                 )
         if delivered_anywhere:
             self._stats["delivered"] += 1
@@ -732,7 +737,8 @@ class Notifier:
             )
             desktop_timeout = int(
                 _cfg_num(
-                    config, "notifications_desktop_timeout_ms",
+                    config,
+                    "notifications_desktop_timeout_ms",
                     self.DEFAULT_DESKTOP_TIMEOUT_MS,
                 )
             )
@@ -750,7 +756,8 @@ class Notifier:
             )
             webhook_timeout = float(
                 _cfg_num(
-                    config, "notifications_webhook_timeout_seconds",
+                    config,
+                    "notifications_webhook_timeout_seconds",
                     self.DEFAULT_WEBHOOK_TIMEOUT_S,
                 )
             )
@@ -777,13 +784,14 @@ class Notifier:
 # Config helpers
 # ---------------------------------------------------------------------------
 
+
 def _cfg_get(config: Any, name: str) -> Any:
     if isinstance(config, dict):
         return config.get(name)
     return getattr(config, name, None)
 
 
-def _cfg_str(config: Any, name: str) -> Optional[str]:
+def _cfg_str(config: Any, name: str) -> str | None:
     value = _cfg_get(config, name)
     return str(value) if value else None
 

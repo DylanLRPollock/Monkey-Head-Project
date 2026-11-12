@@ -72,11 +72,11 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import aiohttp
 
-__all__ = ["main", "ExitCode"]
+__all__ = ["ExitCode", "main"]
 
 
 LOG = logging.getLogger("banana_brain.cli")
@@ -84,9 +84,7 @@ LOG = logging.getLogger("banana_brain.cli")
 #: Terminal job states (kept local so the CLI does not need job_models on
 #: the import path when invoked as a standalone script from a checkout).
 _TERMINAL_STATES = frozenset({"completed", "failed", "cancelled"})
-_VALID_STATES = frozenset(
-    {"pending", "running", "completed", "failed", "cancelled"}
-)
+_VALID_STATES = frozenset({"pending", "running", "completed", "failed", "cancelled"})
 _VALID_MODES = ("ai", "image", "mixed", "maintenance", "gaming")
 
 #: Priorities accepted by 'jobs priority' beyond plain integers.
@@ -106,6 +104,7 @@ _PRIORITY_NAMES = {
 # Exit codes
 # ---------------------------------------------------------------------------
 
+
 class ExitCode:
     OK = 0
     APP_ERROR = 1
@@ -116,6 +115,7 @@ class ExitCode:
 # ---------------------------------------------------------------------------
 # API client
 # ---------------------------------------------------------------------------
+
 
 class APIError(Exception):
     """Application-level error returned by the API or produced by the CLI."""
@@ -132,9 +132,9 @@ class Client:
     def __init__(
         self,
         *,
-        socket_path: Optional[str] = None,
-        base_url: Optional[str] = None,
-        token: Optional[str] = None,
+        socket_path: str | None = None,
+        base_url: str | None = None,
+        token: str | None = None,
         timeout_s: float = 30.0,
     ) -> None:
         if not socket_path and not base_url:
@@ -143,7 +143,7 @@ class Client:
         self._base_url = base_url
         self._token = token
         self._timeout_s = timeout_s
-        self._session: Optional[aiohttp.ClientSession] = None
+        self._session: aiohttp.ClientSession | None = None
 
     @property
     def endpoint(self) -> str:
@@ -151,7 +151,7 @@ class Client:
             return self._base_url
         return f"unix:{self._socket_path}"
 
-    async def __aenter__(self) -> "Client":
+    async def __aenter__(self) -> Client:
         headers = {"Accept": "application/json"}
         if self._token:
             headers["Authorization"] = f"Bearer {self._token}"
@@ -164,7 +164,9 @@ class Client:
             assert self._socket_path is not None
             connector = aiohttp.UnixConnector(path=self._socket_path)
             self._session = aiohttp.ClientSession(
-                connector=connector, headers=headers, timeout=timeout,
+                connector=connector,
+                headers=headers,
+                timeout=timeout,
                 trust_env=False,
             )
         return self
@@ -178,16 +180,14 @@ class Client:
         self,
         method: str,
         path: str,
-        json_body: Optional[dict[str, Any]] = None,
+        json_body: dict[str, Any] | None = None,
     ) -> tuple[int, Any]:
         if self._session is None:
             raise RuntimeError("Client used outside of async with")
         base = self._base_url or "http://localhost"
         url = f"{base}{path}"
         try:
-            async with self._session.request(
-                method, url, json=json_body
-            ) as resp:
+            async with self._session.request(method, url, json=json_body) as resp:
                 text = await resp.text()
                 if not text:
                     return resp.status, None
@@ -205,7 +205,7 @@ class Client:
         self,
         method: str,
         path: str,
-        json_body: Optional[dict[str, Any]] = None,
+        json_body: dict[str, Any] | None = None,
     ) -> Any:
         status, data = await self.request(method, path, json_body)
         if 200 <= status < 300:
@@ -232,18 +232,19 @@ def _extract_error_message(data: Any) -> str:
 # Endpoint resolution
 # ---------------------------------------------------------------------------
 
-def _resolve_config_path(raw: Optional[str]) -> Optional[Path]:
+
+def _resolve_config_path(raw: str | None) -> Path | None:
     if not raw:
         return None
     p = Path(raw).expanduser()
     return p if p.exists() else None
 
 
-def _load_config_safe(path: Optional[Path]) -> Any:
+def _load_config_safe(path: Path | None) -> Any:
     if path is None:
         return None
     try:
-        from huey.banana_brain.config import load_config, ConfigError
+        from huey.banana_brain.config import ConfigError, load_config
     except ImportError:
         LOG.debug("huey.banana_brain.config not importable; skipping")
         return None
@@ -296,11 +297,12 @@ def _build_client(args: argparse.Namespace) -> Client:
 # Formatting helpers
 # ---------------------------------------------------------------------------
 
-def _fmt_duration(seconds: Optional[float]) -> str:
+
+def _fmt_duration(seconds: float | None) -> str:
     if seconds is None:
         return "-"
     try:
-        s = max(0, int(round(float(seconds))))
+        s = max(0, round(float(seconds)))
     except (TypeError, ValueError):
         return "-"
     if s < 60:
@@ -312,7 +314,7 @@ def _fmt_duration(seconds: Optional[float]) -> str:
     return f"{s // 86400}d{(s % 86400) // 3600:02d}h"
 
 
-def _fmt_bytes(n: Optional[int]) -> str:
+def _fmt_bytes(n: int | None) -> str:
     if n is None:
         return "-"
     try:
@@ -328,13 +330,11 @@ def _fmt_bytes(n: Optional[int]) -> str:
     return f"{b:.1f} TiB"
 
 
-def _fmt_ts(ts: Optional[float]) -> str:
+def _fmt_ts(ts: float | None) -> str:
     if ts is None:
         return "-"
     try:
-        return time.strftime(
-            "%Y-%m-%dT%H:%M:%SZ", time.gmtime(float(ts))
-        )
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(float(ts)))
     except (TypeError, ValueError, OverflowError):
         return "-"
 
@@ -350,9 +350,7 @@ def _print_json(data: Any, stream: Any = None) -> None:
     print(json.dumps(data, indent=2, default=str), file=stream or sys.stdout)
 
 
-def _print_table(
-    rows: list[list[str]], headers: list[str], stream: Any = None
-) -> None:
+def _print_table(rows: list[list[str]], headers: list[str], stream: Any = None) -> None:
     widths = [len(h) for h in headers]
     for row in rows:
         for i, cell in enumerate(row):
@@ -367,6 +365,7 @@ def _print_table(
 # ---------------------------------------------------------------------------
 # Commands — health/status
 # ---------------------------------------------------------------------------
+
 
 async def _cmd_health(args: argparse.Namespace, client: Client) -> int:
     status, data = await client.request("GET", "/health")
@@ -440,6 +439,7 @@ async def _cmd_status(args: argparse.Namespace, client: Client) -> int:
 # Commands — jobs
 # ---------------------------------------------------------------------------
 
+
 async def _cmd_jobs_list(args: argparse.Namespace, client: Client) -> int:
     params = f"?limit={args.limit}"
     if args.state:
@@ -462,17 +462,13 @@ async def _cmd_jobs_list(args: argparse.Namespace, client: Client) -> int:
             str(j.get("state") or "-"),
             str(j.get("priority", "-")),
             _fmt_duration(
-                (time.time() - j["submitted_at"])
-                if j.get("submitted_at")
-                else None
+                (time.time() - j["submitted_at"]) if j.get("submitted_at") else None
             ),
             _fmt_ts(j.get("submitted_at")),
         ]
         for j in jobs
     ]
-    _print_table(
-        rows, ["ID", "ADAPTER", "STATE", "PRI", "AGE", "SUBMITTED"]
-    )
+    _print_table(rows, ["ID", "ADAPTER", "STATE", "PRI", "AGE", "SUBMITTED"])
     return ExitCode.OK
 
 
@@ -491,15 +487,9 @@ async def _cmd_jobs_show(args: argparse.Namespace, client: Client) -> int:
     print(f"submitted:       {_fmt_ts(job.get('submitted_at'))}")
     print(f"started:         {_fmt_ts(job.get('started_at'))}")
     print(f"finished:        {_fmt_ts(job.get('finished_at'))}")
-    print(
-        f"attempts:        "
-        f"{job.get('attempts')}/{job.get('max_attempts')}"
-    )
+    print(f"attempts:        " f"{job.get('attempts')}/{job.get('max_attempts')}")
     if job.get("estimated_vram_bytes"):
-        print(
-            f"est. vram:       "
-            f"{_fmt_bytes(job['estimated_vram_bytes'])}"
-        )
+        print(f"est. vram:       " f"{_fmt_bytes(job['estimated_vram_bytes'])}")
     if job.get("deadline"):
         print(
             f"deadline:        {_fmt_ts(job['deadline'])} "
@@ -555,7 +545,7 @@ async def _cmd_jobs_cancel(args: argparse.Namespace, client: Client) -> int:
 
 async def _cmd_jobs_watch(args: argparse.Namespace, client: Client) -> int:
     deadline = time.time() + args.timeout
-    last_state: Optional[str] = None
+    last_state: str | None = None
     while True:
         job = await client.request_ok("GET", f"/jobs/{args.id}")
         state = str(job.get("state") or "")
@@ -582,9 +572,7 @@ async def _cmd_jobs_watch(args: argparse.Namespace, client: Client) -> int:
 
 
 async def _cmd_jobs_events(args: argparse.Namespace, client: Client) -> int:
-    data = await client.request_ok(
-        "GET", f"/jobs/{args.id}/events?limit={args.limit}"
-    )
+    data = await client.request_ok("GET", f"/jobs/{args.id}/events?limit={args.limit}")
     events = data.get("events") or []
     if args.json:
         _print_json(data)
@@ -596,9 +584,11 @@ async def _cmd_jobs_events(args: argparse.Namespace, client: Client) -> int:
         [
             _fmt_ts(e.get("at")),
             str(e.get("kind") or "-"),
-            f"{e.get('from_state') or '-'} -> {e.get('to_state') or '-'}"
-            if e.get("kind") == "transition"
-            else "-",
+            (
+                f"{e.get('from_state') or '-'} -> {e.get('to_state') or '-'}"
+                if e.get("kind") == "transition"
+                else "-"
+            ),
             json.dumps(e.get("detail")) if e.get("detail") else "-",
         ]
         for e in events
@@ -607,9 +597,7 @@ async def _cmd_jobs_events(args: argparse.Namespace, client: Client) -> int:
     return ExitCode.OK
 
 
-async def _cmd_jobs_priority(
-    args: argparse.Namespace, client: Client
-) -> int:
+async def _cmd_jobs_priority(args: argparse.Namespace, client: Client) -> int:
     """
     Change a job's priority.
 
@@ -629,9 +617,7 @@ async def _cmd_jobs_priority(
     job = await client.request_ok("GET", f"/jobs/{args.id}")
     state = str(job.get("state") or "")
     if state in _TERMINAL_STATES:
-        raise APIError(
-            409, f"job {args.id} is already {state}; nothing to do"
-        )
+        raise APIError(409, f"job {args.id} is already {state}; nothing to do")
     if state == "running":
         raise APIError(
             409,
@@ -642,9 +628,7 @@ async def _cmd_jobs_priority(
 
     new_priority = _parse_priority_arg(args.priority)
 
-    await client.request_ok(
-        "POST", f"/jobs/{args.id}/cancel", {"force": False}
-    )
+    await client.request_ok("POST", f"/jobs/{args.id}/cancel", {"force": False})
 
     body: dict[str, Any] = {
         "adapter": job.get("adapter"),
@@ -692,15 +676,14 @@ def _parse_priority_arg(raw: str) -> int:
             f"{', '.join(_PRIORITY_NAMES)}",
         ) from None
     if not (0 <= value <= 100):
-        raise APIError(
-            2, f"priority must be in [0, 100], got {value}"
-        )
+        raise APIError(2, f"priority must be in [0, 100], got {value}")
     return value
 
 
 # ---------------------------------------------------------------------------
 # Commands — queue, suspended
 # ---------------------------------------------------------------------------
+
 
 async def _cmd_queue(args: argparse.Namespace, client: Client) -> int:
     path = "/queue"
@@ -736,9 +719,7 @@ async def _cmd_queue(args: argparse.Namespace, client: Client) -> int:
     return ExitCode.OK
 
 
-async def _cmd_suspended_list(
-    args: argparse.Namespace, client: Client
-) -> int:
+async def _cmd_suspended_list(args: argparse.Namespace, client: Client) -> int:
     data = await client.request_ok("GET", "/suspended")
     jobs = data.get("jobs") or []
     if args.json:
@@ -760,12 +741,8 @@ async def _cmd_suspended_list(
     return ExitCode.OK
 
 
-async def _cmd_suspended_cancel(
-    args: argparse.Namespace, client: Client
-) -> int:
-    data = await client.request_ok(
-        "POST", f"/suspended/{args.id}/cancel", {}
-    )
+async def _cmd_suspended_cancel(args: argparse.Namespace, client: Client) -> int:
+    data = await client.request_ok("POST", f"/suspended/{args.id}/cancel", {})
     if args.json:
         _print_json(data)
     else:
@@ -776,6 +753,7 @@ async def _cmd_suspended_cancel(
 # ---------------------------------------------------------------------------
 # Commands — mode
 # ---------------------------------------------------------------------------
+
 
 async def _cmd_mode_get(args: argparse.Namespace, client: Client) -> int:
     data = await client.request_ok("GET", "/mode")
@@ -829,9 +807,7 @@ async def _cmd_mode_set(args: argparse.Namespace, client: Client) -> int:
 
 
 async def _cmd_mode_resume(args: argparse.Namespace, client: Client) -> int:
-    data = await client.request_ok(
-        "POST", "/mode/resume", {"reason": args.reason}
-    )
+    data = await client.request_ok("POST", "/mode/resume", {"reason": args.reason})
     if args.json:
         _print_json(data)
     else:
@@ -842,9 +818,7 @@ async def _cmd_mode_resume(args: argparse.Namespace, client: Client) -> int:
     return ExitCode.OK if data.get("success") else ExitCode.APP_ERROR
 
 
-async def _cmd_mode_clear_halt(
-    args: argparse.Namespace, client: Client
-) -> int:
+async def _cmd_mode_clear_halt(args: argparse.Namespace, client: Client) -> int:
     body = {"reason": args.reason, "cleared_by": args.cleared_by}
     data = await client.request_ok("POST", "/mode/clear-halt", body)
     if args.json:
@@ -868,9 +842,7 @@ async def _cmd_pause(args: argparse.Namespace, client: Client) -> int:
     if args.json:
         _print_json(data)
     else:
-        print(
-            f"paused (mode: {data.get('from_mode')} -> {data.get('to_mode')})"
-        )
+        print(f"paused (mode: {data.get('from_mode')} -> {data.get('to_mode')})")
         print(
             "note: 'pause' is a mode transition; use 'resume' to return to "
             "the previous non-exclusive mode",
@@ -893,6 +865,7 @@ async def _cmd_resume(args: argparse.Namespace, client: Client) -> int:
 # ---------------------------------------------------------------------------
 # Commands — vram, watchdog, adapters
 # ---------------------------------------------------------------------------
+
 
 async def _cmd_vram(args: argparse.Namespace, client: Client) -> int:
     data = await client.request_ok("GET", "/vram")
@@ -948,9 +921,7 @@ async def _cmd_watchdog(args: argparse.Namespace, client: Client) -> int:
             print(f"service_failures:  {data['service_failures']}")
         return ExitCode.OK
     if sub == "ack":
-        data = await client.request_ok(
-            "POST", "/watchdog/ack", {"key": args.key}
-        )
+        data = await client.request_ok("POST", "/watchdog/ack", {"key": args.key})
         if args.json:
             _print_json(data)
         else:
@@ -972,7 +943,7 @@ async def _cmd_adapters(args: argparse.Namespace, client: Client) -> int:
     return ExitCode.OK
 
 
-def _now_minus(ts: Optional[float]) -> Optional[float]:
+def _now_minus(ts: float | None) -> float | None:
     if ts is None:
         return None
     return time.time() - float(ts)
@@ -981,6 +952,7 @@ def _now_minus(ts: Optional[float]) -> Optional[float]:
 # ---------------------------------------------------------------------------
 # Dispatch
 # ---------------------------------------------------------------------------
+
 
 async def _dispatch(args: argparse.Namespace, client: Client) -> int:
     handler = _HANDLERS.get(_route_key(args))
@@ -1032,6 +1004,7 @@ _HANDLERS: dict[tuple[str, ...], Any] = {
 # Argument parsing
 # ---------------------------------------------------------------------------
 
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="banana-brain",
@@ -1039,29 +1012,34 @@ def _build_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "--config", default="config/banana-brain.yaml",
-        help="config file used to discover the API "
-             "(default: %(default)s)",
+        "--config",
+        default="config/banana-brain.yaml",
+        help="config file used to discover the API " "(default: %(default)s)",
     )
     parser.add_argument(
-        "--socket", default=None,
+        "--socket",
+        default=None,
         help="explicit Unix socket path (overrides config)",
     )
     parser.add_argument(
-        "--url", default=None,
+        "--url",
+        default=None,
         help="explicit TCP base URL (overrides config); requires --token "
-             "or BANANA_BRAIN_TOKEN",
+        "or BANANA_BRAIN_TOKEN",
     )
     parser.add_argument(
-        "--token", default=None,
+        "--token",
+        default=None,
         help="bearer token for TCP (or env BANANA_BRAIN_TOKEN)",
     )
     parser.add_argument(
-        "--json", action="store_true",
+        "--json",
+        action="store_true",
         help="emit machine-readable JSON instead of human-readable text",
     )
     parser.add_argument(
-        "--log-level", default="WARNING",
+        "--log-level",
+        default="WARNING",
         choices=("DEBUG", "INFO", "WARNING", "ERROR"),
         help="CLI log level (default: %(default)s)",
     )
@@ -1076,8 +1054,7 @@ def _build_parser() -> argparse.ArgumentParser:
     jobs_subs = jobs.add_subparsers(dest="jobs_command", required=True)
 
     p = jobs_subs.add_parser("list", help="list recent jobs")
-    p.add_argument("--state", default=None,
-                   help="comma-separated states to filter on")
+    p.add_argument("--state", default=None, help="comma-separated states to filter on")
     p.add_argument("--limit", type=int, default=50)
 
     p = jobs_subs.add_parser("show", help="show one job")
@@ -1088,8 +1065,9 @@ def _build_parser() -> argparse.ArgumentParser:
 
     p = jobs_subs.add_parser("cancel", help="cancel a job")
     p.add_argument("id")
-    p.add_argument("--force", action="store_true",
-                   help="request cancellation of a running job")
+    p.add_argument(
+        "--force", action="store_true", help="request cancellation of a running job"
+    )
 
     p = jobs_subs.add_parser("watch", help="poll a job until it terminates")
     p.add_argument("id")
@@ -1116,9 +1094,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     # suspended
     suspended = subs.add_parser("suspended", help="jobs suspended by exclusive modes")
-    suspended_subs = suspended.add_subparsers(
-        dest="suspended_command", required=True
-    )
+    suspended_subs = suspended.add_subparsers(dest="suspended_command", required=True)
     suspended_subs.add_parser("list", help="list suspended jobs")
     p = suspended_subs.add_parser("cancel", help="cancel a suspended job")
     p.add_argument("id")
@@ -1130,9 +1106,11 @@ def _build_parser() -> argparse.ArgumentParser:
     p = mode_subs.add_parser("set", help="transition to a different mode")
     p.add_argument("mode", choices=_VALID_MODES)
     p.add_argument("--reason", default="cli")
-    p.add_argument("--force", action="store_true",
-                   help="request cancellation of the current job before "
-                        "waiting")
+    p.add_argument(
+        "--force",
+        action="store_true",
+        help="request cancellation of the current job before " "waiting",
+    )
     p = mode_subs.add_parser("resume", help="leave an exclusive mode")
     p.add_argument("--reason", default="cli resume")
     p = mode_subs.add_parser("clear-halt", help="clear the safety overlay")
@@ -1155,9 +1133,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     # watchdog
     watchdog = subs.add_parser("watchdog", help="watchdog snapshot and ack")
-    watchdog_subs = watchdog.add_subparsers(
-        dest="watchdog_command", required=False
-    )
+    watchdog_subs = watchdog.add_subparsers(dest="watchdog_command", required=False)
     watchdog_subs.add_parser("snapshot", help="show watchdog state")
     p = watchdog_subs.add_parser("ack", help="acknowledge a signal by key")
     p.add_argument("key")
@@ -1171,6 +1147,7 @@ def _build_parser() -> argparse.ArgumentParser:
 # ---------------------------------------------------------------------------
 # Entrypoint
 # ---------------------------------------------------------------------------
+
 
 async def _async_main(args: argparse.Namespace) -> int:
     client = _build_client(args)
@@ -1190,7 +1167,7 @@ async def _async_main(args: argparse.Namespace) -> int:
         return ExitCode.TRANSPORT
 
 
-def main(argv: Optional[list[str]] = None) -> int:
+def main(argv: list[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
     logging.basicConfig(
         level=getattr(logging, args.log_level),

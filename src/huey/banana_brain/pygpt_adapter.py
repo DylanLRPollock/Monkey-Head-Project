@@ -70,11 +70,9 @@ import json
 import logging
 import time
 import uuid
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-import aiohttp
 from aiohttp import web
 
 from .job_models import Job, JobResult, JobState, Priority
@@ -83,12 +81,13 @@ __all__ = ["PyGPTAdapter"]
 
 LOG = logging.getLogger("banana_brain.pygpt_adapter")
 
-GIB = 1024 ** 3
+GIB = 1024**3
 
 
 # ---------------------------------------------------------------------------
 # Adapter
 # ---------------------------------------------------------------------------
+
 
 class PyGPTAdapter:
     """
@@ -123,20 +122,22 @@ class PyGPTAdapter:
         self._model_aliases = _cfg_dict(config, "pygpt_model_aliases") or {}
         self._request_timeout = float(
             _cfg_num(
-                config, "pygpt_request_timeout_seconds",
+                config,
+                "pygpt_request_timeout_seconds",
                 self.DEFAULT_REQUEST_TIMEOUT_S,
             )
         )
         self._poll_interval = float(
             _cfg_num(
-                config, "pygpt_poll_interval_seconds",
+                config,
+                "pygpt_poll_interval_seconds",
                 self.DEFAULT_POLL_INTERVAL_S,
             )
         )
 
-        self._runner: Optional[web.AppRunner] = None
-        self._site: Optional[web.BaseSite] = None
-        self._app: Optional[web.Application] = None
+        self._runner: web.AppRunner | None = None
+        self._site: web.BaseSite | None = None
+        self._app: web.Application | None = None
         self._inflight: set[asyncio.Task[Any]] = set()
         self._inflight_lock = asyncio.Lock()
         self._stopping = False
@@ -159,11 +160,7 @@ class PyGPTAdapter:
             # Drain in-flight HTTP tasks for a bounded time before closing
             # the listener, so PyGPT's in-progress generations are not
             # abruptly truncated.
-            grace = float(
-                _cfg_num(
-                    self._config, "shutdown_grace_seconds", 30.0
-                )
-            )
+            grace = float(_cfg_num(self._config, "shutdown_grace_seconds", 30.0))
             await self._drain_inflight(grace)
             await self._runner.cleanup()
             self._runner = None
@@ -181,9 +178,7 @@ class PyGPTAdapter:
             self._proxy_socket = str(self._default_socket_path())
 
         self._app = web.Application()
-        self._app.router.add_post(
-            "/v1/chat/completions", self._handle_chat_completions
-        )
+        self._app.router.add_post("/v1/chat/completions", self._handle_chat_completions)
         self._app.router.add_post("/v1/completions", self._handle_completions)
         self._app.router.add_get("/v1/models", self._handle_models)
         self._app.router.add_get("/health", self._handle_health)
@@ -219,13 +214,14 @@ class PyGPTAdapter:
         if not tasks:
             return
         LOG.info("pygpt_adapter draining %d in-flight request(s)", len(tasks))
-        done, pending = await asyncio.wait(tasks, timeout=grace)
+        _, pending = await asyncio.wait(tasks, timeout=grace)
         for task in pending:
             task.cancel()
         if pending:
             LOG.warning(
                 "pygpt_adapter cancelled %d request(s) after %.0fs",
-                len(pending), grace,
+                len(pending),
+                grace,
             )
 
     def _default_socket_path(self) -> Path:
@@ -304,13 +300,9 @@ class PyGPTAdapter:
         if not isinstance(body, dict):
             return _openai_error(400, "body must be a JSON object")
 
-        return await self._serve_completion(
-            request, body, kind="chat"
-        )
+        return await self._serve_completion(request, body, kind="chat")
 
-    async def _handle_completions(
-        self, request: web.Request
-    ) -> web.StreamResponse:
+    async def _handle_completions(self, request: web.Request) -> web.StreamResponse:
         try:
             body = await request.json()
         except Exception as exc:
@@ -319,9 +311,7 @@ class PyGPTAdapter:
             return _openai_error(400, "body must be a JSON object")
         return await self._serve_completion(request, body, kind="completion")
 
-    async def _handle_models(
-        self, request: web.Request
-    ) -> web.Response:
+    async def _handle_models(self, request: web.Request) -> web.Response:
         """
         Advertise the models PyGPT may request.
 
@@ -331,7 +321,7 @@ class PyGPTAdapter:
         """
         loaded = []
         try:
-            loaded = await self._ollama._list_loaded()  # noqa: SLF001
+            loaded = await self._ollama._list_loaded()
         except Exception:
             LOG.debug("could not list loaded models for /v1/models", exc_info=True)
 
@@ -414,10 +404,12 @@ class PyGPTAdapter:
 
         try:
             return await asyncio.wait_for(task, timeout=self._request_timeout)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             LOG.warning(
                 "pygpt request %s timed out after %.0fs (job %s)",
-                request_id, self._request_timeout, job.id,
+                request_id,
+                self._request_timeout,
+                job.id,
             )
             await self._best_effort_cancel(job.id)
             return _openai_error(504, "request timed out")
@@ -426,13 +418,9 @@ class PyGPTAdapter:
             return _openai_error(500, f"{type(exc).__name__}: {exc}")
 
     def _forget_inflight(self, task: asyncio.Task[Any]) -> None:
-        # Callback runs in the event loop; schedule removal as a task to
-        # avoid awaiting inside the callback.
-        async def _remove() -> None:
-            async with self._inflight_lock:
-                self._inflight.discard(task)
-
-        asyncio.create_task(_remove())
+        # All set access happens on the event loop. A done callback is
+        # synchronous, so no lock or fire-and-forget cleanup task is needed.
+        self._inflight.discard(task)
 
     async def _submit_and_await(
         self,
@@ -447,9 +435,7 @@ class PyGPTAdapter:
         if result.state is JobState.CANCELLED:
             return _openai_error(499, "request cancelled by operator")
         if result.state is JobState.FAILED:
-            return _openai_error(
-                502, result.last_error or "job failed in scheduler"
-            )
+            return _openai_error(502, result.last_error or "job failed in scheduler")
         if result.state is not JobState.COMPLETED:
             return _openai_error(
                 502, f"job ended in unexpected state {result.state.value}"
@@ -501,9 +487,7 @@ class PyGPTAdapter:
     # Request translation
     # ------------------------------------------------------------------
 
-    def _build_job(
-        self, body: dict[str, Any], *, model: str, kind: str
-    ) -> Job:
+    def _build_job(self, body: dict[str, Any], *, model: str, kind: str) -> Job:
         if kind == "chat":
             messages = body.get("messages")
             if not isinstance(messages, list) or not messages:
@@ -530,7 +514,7 @@ class PyGPTAdapter:
             payload["options"] = options
         if "stop" in body:
             payload.setdefault("options", {})["stop"] = body["stop"]
-        if "tools" in body and body["tools"]:
+        if body.get("tools"):
             payload["tools"] = body["tools"]
 
         return Job(
@@ -562,13 +546,12 @@ class PyGPTAdapter:
 
         loaded = []
         try:
-            loaded = await self._ollama._list_loaded()  # noqa: SLF001
+            loaded = await self._ollama._list_loaded()
         except Exception:
             LOG.exception("could not list loaded models during resolution")
 
         loaded_names = [
-            str(entry.get("name") or entry.get("model") or "")
-            for entry in loaded
+            str(entry.get("name") or entry.get("model") or "") for entry in loaded
         ]
         loaded_names = [n for n in loaded_names if n]
 
@@ -580,14 +563,16 @@ class PyGPTAdapter:
         if len(loaded_names) == 1:
             LOG.info(
                 "pygpt model %r not loaded; reusing the only loaded model %r",
-                requested_str or "<none>", loaded_names[0],
+                requested_str or "<none>",
+                loaded_names[0],
             )
             return loaded_names[0]
 
         if self._default_model:
             LOG.info(
                 "pygpt model %r not loaded; using pygpt_default_model %r",
-                requested_str or "<none>", self._default_model,
+                requested_str or "<none>",
+                self._default_model,
             )
             return self._default_model
 
@@ -598,7 +583,7 @@ class PyGPTAdapter:
         )
 
     @staticmethod
-    def _payload_str(job: Job, key: str) -> Optional[str]:
+    def _payload_str(job: Job, key: str) -> str | None:
         value = (job.payload or {}).get(key)
         return str(value) if value else None
 
@@ -606,6 +591,7 @@ class PyGPTAdapter:
 # ---------------------------------------------------------------------------
 # OpenAI-compatible response shaping
 # ---------------------------------------------------------------------------
+
 
 def _openai_chat_response(
     *, request_id: str, model: str, result: dict[str, Any]
@@ -656,10 +642,7 @@ def _sse_single_chunk_response(
             }
         ],
     }
-    body = (
-        f"data: {json.dumps(chunk)}\n\n"
-        f"data: [DONE]\n\n"
-    )
+    body = f"data: {json.dumps(chunk)}\n\n" f"data: [DONE]\n\n"
     return web.Response(
         body=body,
         content_type="text/event-stream",
@@ -745,6 +728,7 @@ def _error_type_for(status: int) -> str:
 # Small helpers
 # ---------------------------------------------------------------------------
 
+
 def _split_bind(bind: str) -> tuple[str, int]:
     host, _, port = bind.rpartition(":")
     return host or "127.0.0.1", int(port)
@@ -754,13 +738,14 @@ def _split_bind(bind: str) -> tuple[str, int]:
 # Config helpers (tolerant of dataclass, mapping, or attribute access)
 # ---------------------------------------------------------------------------
 
+
 def _cfg_get(config: Any, name: str) -> Any:
     if isinstance(config, dict):
         return config.get(name)
     return getattr(config, name, None)
 
 
-def _cfg_str(config: Any, name: str) -> Optional[str]:
+def _cfg_str(config: Any, name: str) -> str | None:
     value = _cfg_get(config, name)
     return str(value) if value else None
 
@@ -781,6 +766,6 @@ def _cfg_bool(config: Any, name: str, default: bool) -> bool:
     return bool(value)
 
 
-def _cfg_dict(config: Any, name: str) -> Optional[dict[str, Any]]:
+def _cfg_dict(config: Any, name: str) -> dict[str, Any] | None:
     value = _cfg_get(config, name)
     return dict(value) if isinstance(value, dict) else None

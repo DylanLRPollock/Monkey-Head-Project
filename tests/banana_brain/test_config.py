@@ -138,9 +138,19 @@ def test_validation_collects_all_policy_violations():
         "priority_aging_cap",
         "ollama_base_url",
         "api_token is required",
-        "must not be 0.0.0.0",
+        "must not use wildcard address 0.0.0.0",
     ]:
         assert expected in details
+
+
+def test_ipv6_wildcard_bind_is_rejected():
+    with pytest.raises(ConfigError, match="wildcard address ::"):
+        BananaBrainConfig.from_dict(
+            {
+                "api_bind": "[::]:8080",
+                "api_token": "0123456789abcdef",
+            }
+        )
 
 
 def test_bind_and_url_validation_variants():

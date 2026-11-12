@@ -83,6 +83,7 @@ validation error, so a missing secret fails at startup, not at first use.
 
 from __future__ import annotations
 
+import ipaddress
 import logging
 import os
 import re
@@ -617,9 +618,15 @@ def _validate(cfg: BananaBrainConfig) -> list[str]:
             problems.append(
                 "api_token must be at least 16 characters when " "api_bind is set"
             )
-        if cfg.api_bind.startswith("0.0.0.0"):
+        bind_host = cfg.api_bind.rpartition(":")[0].strip("[]")
+        try:
+            wildcard_bind = ipaddress.ip_address(bind_host).is_unspecified
+        except ValueError:
+            wildcard_bind = False
+        if wildcard_bind:
             problems.append(
-                "api_bind must not be 0.0.0.0 without an explicit "
+                f"api_bind must not use wildcard address {bind_host} without "
+                "an explicit "
                 "reverse-proxy in front; use 127.0.0.1 or a specific "
                 "interface address"
             )

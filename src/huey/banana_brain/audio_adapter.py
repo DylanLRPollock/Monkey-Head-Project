@@ -86,17 +86,17 @@ import logging
 import shlex
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import aiohttp
 
-from .job_models import Job, JobResult
+from .job_models import Job
 
 __all__ = ["AudioAdapter"]
 
 LOG = logging.getLogger("banana_brain.audio_adapter")
 
-GIB = 1024 ** 3
+GIB = 1024**3
 
 #: VRAM estimates by backend and model, in GiB.
 #:
@@ -153,12 +153,13 @@ class AudioAdapter:
             _cfg_str(config, "audio_stt_backend") or "disabled"
         ).lower()
         self._stt_url = (_cfg_str(config, "audio_stt_base_url") or "").rstrip("/")
-        self._stt_default_model = _cfg_str(
-            config, "audio_stt_default_model"
-        ) or "large-v3"
+        self._stt_default_model = (
+            _cfg_str(config, "audio_stt_default_model") or "large-v3"
+        )
         self._stt_timeout = float(
             _cfg_num(
-                config, "audio_stt_timeout_seconds",
+                config,
+                "audio_stt_timeout_seconds",
                 self.DEFAULT_STT_TIMEOUT_S,
             )
         )
@@ -167,26 +168,25 @@ class AudioAdapter:
             _cfg_str(config, "audio_tts_backend") or "disabled"
         ).lower()
         self._tts_url = (_cfg_str(config, "audio_tts_base_url") or "").rstrip("/")
-        self._tts_default_model = _cfg_str(
-            config, "audio_tts_default_model"
-        ) or "xtts_v2"
+        self._tts_default_model = (
+            _cfg_str(config, "audio_tts_default_model") or "xtts_v2"
+        )
         self._tts_default_voice = _cfg_str(config, "audio_tts_default_voice")
         self._tts_timeout = float(
             _cfg_num(
-                config, "audio_tts_timeout_seconds",
+                config,
+                "audio_tts_timeout_seconds",
                 self.DEFAULT_TTS_TIMEOUT_S,
             )
         )
 
         self._unload_command = _cfg_str(config, "audio_unload_command")
         self._unload_wait = float(
-            _cfg_num(
-                config, "audio_unload_wait_seconds", self.DEFAULT_UNLOAD_WAIT_S
-            )
+            _cfg_num(config, "audio_unload_wait_seconds", self.DEFAULT_UNLOAD_WAIT_S)
         )
         self._vram_overrides = _cfg_dict(config, "audio_model_vram_gib") or {}
 
-        self._session: Optional[aiohttp.ClientSession] = None
+        self._session: aiohttp.ClientSession | None = None
         self._busy = 0
         self._busy_lock = asyncio.Lock()
         self._cancellation_requested: set[str] = set()
@@ -225,8 +225,10 @@ class AudioAdapter:
             raise
         LOG.info(
             "audio_adapter ready (stt=%s @ %s, tts=%s @ %s, unload=%s)",
-            self._stt_backend, self._stt_url or "-",
-            self._tts_backend, self._tts_url or "-",
+            self._stt_backend,
+            self._stt_url or "-",
+            self._tts_backend,
+            self._tts_url or "-",
             "configured" if self._unload_command else "none",
         )
 
@@ -257,16 +259,12 @@ class AudioAdapter:
         if task == "transcribe":
             if self._stt_backend == "disabled":
                 raise RuntimeError("transcription is not configured")
-            model = (
-                self._payload_str(job, "model") or self._stt_default_model
-            )
+            model = self._payload_str(job, "model") or self._stt_default_model
             gib = self._lookup_vram("stt", model, _DEFAULT_STT_GIB)
         elif task == "synthesize":
             if self._tts_backend == "disabled":
                 raise RuntimeError("speech synthesis is not configured")
-            model = (
-                self._payload_str(job, "model") or self._tts_default_model
-            )
+            model = self._payload_str(job, "model") or self._tts_default_model
             # Piper's ONNX voices are the "piper" entry regardless of voice.
             key = "piper" if self._tts_backend == "piper" else model
             gib = self._lookup_vram("tts", key, _DEFAULT_TTS_GIB)
@@ -276,7 +274,11 @@ class AudioAdapter:
         estimate = int((gib + _ACTIVATION_OVERHEAD_GIB) * GIB)
         LOG.debug(
             "audio estimate_vram(%s): task=%s model=%s gib=%.2f -> %d bytes",
-            job.id, task, model, gib, estimate,
+            job.id,
+            task,
+            model,
+            gib,
+            estimate,
         )
         return estimate
 
@@ -305,7 +307,8 @@ class AudioAdapter:
         if not self._unload_command:
             LOG.info(
                 "audio unload_idle_models: no audio_unload_command configured; "
-                "cannot free %d bytes", needed_bytes,
+                "cannot free %d bytes",
+                needed_bytes,
             )
             return 0
 
@@ -322,10 +325,10 @@ class AudioAdapter:
                 stderr=asyncio.subprocess.PIPE,
             )
             try:
-                stdout, stderr = await asyncio.wait_for(
+                _stdout, stderr = await asyncio.wait_for(
                     proc.communicate(), timeout=self._unload_wait
                 )
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 proc.kill()
                 await proc.wait()
                 LOG.warning(
@@ -347,7 +350,8 @@ class AudioAdapter:
 
         LOG.info(
             "audio unload command succeeded; claiming up to %d bytes freed "
-            "(scheduler will confirm via gpu_monitor)", needed_bytes,
+            "(scheduler will confirm via gpu_monitor)",
+            needed_bytes,
         )
         return needed_bytes
 
@@ -365,7 +369,8 @@ class AudioAdapter:
         self._cancellation_requested.add(job.id)
         LOG.info(
             "audio cancellation requested for job %s; "
-            "the in-flight request cannot be interrupted", job.id,
+            "the in-flight request cannot be interrupted",
+            job.id,
         )
         return False
 
@@ -398,15 +403,23 @@ class AudioAdapter:
         try:
             if self._stt_backend == "faster-whisper-server":
                 return await self._transcribe_faster_whisper(
-                    session, job, model, audio_path, audio_url, started,
+                    session,
+                    job,
+                    model,
+                    audio_path,
+                    audio_url,
+                    started,
                 )
             if self._stt_backend == "whisper-cpp":
                 return await self._transcribe_whisper_cpp(
-                    session, job, model, audio_path, audio_url, started,
+                    session,
+                    job,
+                    model,
+                    audio_path,
+                    audio_url,
+                    started,
                 )
-            raise RuntimeError(
-                f"unsupported audio_stt_backend: {self._stt_backend!r}"
-            )
+            raise RuntimeError(f"unsupported audio_stt_backend: {self._stt_backend!r}")
         finally:
             async with self._busy_lock:
                 self._busy -= 1
@@ -417,8 +430,8 @@ class AudioAdapter:
         session: aiohttp.ClientSession,
         job: Job,
         model: str,
-        audio_path: Optional[str],
-        audio_url: Optional[str],
+        audio_path: str | None,
+        audio_url: str | None,
         started: float,
     ) -> dict[str, Any]:
         # faster-whisper-server accepts OpenAI-compatible multipart:
@@ -446,7 +459,8 @@ class AudioAdapter:
         else:
             audio_bytes, filename = await self._fetch_audio(audio_url or "")
             form.add_field(
-                "file", audio_bytes,
+                "file",
+                audio_bytes,
                 filename=filename,
                 content_type="application/octet-stream",
             )
@@ -488,8 +502,8 @@ class AudioAdapter:
         session: aiohttp.ClientSession,
         job: Job,
         model: str,
-        audio_path: Optional[str],
-        audio_url: Optional[str],
+        audio_path: str | None,
+        audio_url: str | None,
         started: float,
     ) -> dict[str, Any]:
         # whisper.cpp server exposes /inference with a multipart upload.
@@ -509,7 +523,9 @@ class AudioAdapter:
         else:
             audio_bytes, filename = await self._fetch_audio(audio_url or "")
             form.add_field(
-                "file", audio_bytes, filename=filename,
+                "file",
+                audio_bytes,
+                filename=filename,
                 content_type="application/octet-stream",
             )
 
@@ -548,9 +564,7 @@ class AudioAdapter:
             raise ValueError("synthesis requires job.payload['text']")
 
         model = self._payload_str(job, "model") or self._tts_default_model
-        voice = (
-            self._payload_str(job, "voice") or self._tts_default_voice
-        )
+        voice = self._payload_str(job, "voice") or self._tts_default_voice
         output_path = self._payload_str(job, "output_path")
         fmt = self._payload_str(job, "format") or "wav"
         speed = _payload_num(job, "speed")
@@ -561,16 +575,28 @@ class AudioAdapter:
         try:
             if self._tts_backend == "coqui":
                 return await self._synthesize_coqui(
-                    session, job, text, voice, model,
-                    output_path, fmt, speed, started,
+                    session,
+                    job,
+                    text,
+                    voice,
+                    model,
+                    output_path,
+                    fmt,
+                    speed,
+                    started,
                 )
             if self._tts_backend == "piper":
                 return await self._synthesize_piper(
-                    session, job, text, voice, output_path, fmt, speed, started,
+                    session,
+                    job,
+                    text,
+                    voice,
+                    output_path,
+                    fmt,
+                    speed,
+                    started,
                 )
-            raise RuntimeError(
-                f"unsupported audio_tts_backend: {self._tts_backend!r}"
-            )
+            raise RuntimeError(f"unsupported audio_tts_backend: {self._tts_backend!r}")
         finally:
             async with self._busy_lock:
                 self._busy -= 1
@@ -581,11 +607,11 @@ class AudioAdapter:
         session: aiohttp.ClientSession,
         job: Job,
         text: str,
-        voice: Optional[str],
+        voice: str | None,
         model: str,
-        output_path: Optional[str],
+        output_path: str | None,
         fmt: str,
-        speed: Optional[float],
+        speed: float | None,
         started: float,
     ) -> dict[str, Any]:
         # Coqui's TTS server exposes POST /tts_to_audio with JSON body.
@@ -604,9 +630,7 @@ class AudioAdapter:
         ) as resp:
             if resp.status >= 400:
                 detail = await _safe_text(resp)
-                raise RuntimeError(
-                    f"coqui TTS returned {resp.status}: {detail[:500]}"
-                )
+                raise RuntimeError(f"coqui TTS returned {resp.status}: {detail[:500]}")
             audio_bytes = await resp.read()
 
         written = self._write_output(audio_bytes, output_path, fmt)
@@ -625,10 +649,10 @@ class AudioAdapter:
         session: aiohttp.ClientSession,
         job: Job,
         text: str,
-        voice: Optional[str],
-        output_path: Optional[str],
+        voice: str | None,
+        output_path: str | None,
         fmt: str,
-        speed: Optional[float],
+        speed: float | None,
         started: float,
     ) -> dict[str, Any]:
         # Piper's HTTP server accepts POST with form fields: text, voice,
@@ -647,9 +671,7 @@ class AudioAdapter:
         ) as resp:
             if resp.status >= 400:
                 detail = await _safe_text(resp)
-                raise RuntimeError(
-                    f"piper returned {resp.status}: {detail[:500]}"
-                )
+                raise RuntimeError(f"piper returned {resp.status}: {detail[:500]}")
             audio_bytes = await resp.read()
 
         written = self._write_output(audio_bytes, output_path, fmt)
@@ -668,8 +690,8 @@ class AudioAdapter:
     # ------------------------------------------------------------------
 
     def _write_output(
-        self, audio_bytes: bytes, output_path: Optional[str], fmt: str
-    ) -> Optional[Path]:
+        self, audio_bytes: bytes, output_path: str | None, fmt: str
+    ) -> Path | None:
         if not output_path:
             return None
         path = Path(output_path)
@@ -681,7 +703,9 @@ class AudioAdapter:
         path.write_bytes(audio_bytes)
         LOG.info(
             "audio synthesis wrote %d bytes to %s (format=%s)",
-            len(audio_bytes), path, fmt,
+            len(audio_bytes),
+            path,
+            fmt,
         )
         return path
 
@@ -690,9 +714,7 @@ class AudioAdapter:
         if not url:
             raise ValueError("empty audio_url")
         session = self._require_session()
-        async with session.get(
-            url, timeout=aiohttp.ClientTimeout(total=60.0)
-        ) as resp:
+        async with session.get(url, timeout=aiohttp.ClientTimeout(total=60.0)) as resp:
             if resp.status >= 400:
                 raise RuntimeError(
                     f"failed to fetch audio_url {url!r}: HTTP {resp.status}"
@@ -721,7 +743,7 @@ class AudioAdapter:
         return self._session
 
     @staticmethod
-    def _payload_str(job: Job, key: str) -> Optional[str]:
+    def _payload_str(job: Job, key: str) -> str | None:
         value = (job.payload or {}).get(key)
         return str(value) if value else None
 
@@ -741,7 +763,8 @@ class AudioAdapter:
                 continue
         LOG.warning(
             "audio STT probe: %s did not respond to /health or /v1/models; "
-            "transcription may fail at first use", self._stt_url,
+            "transcription may fail at first use",
+            self._stt_url,
         )
 
     async def _probe_tts(self) -> None:
@@ -763,7 +786,8 @@ class AudioAdapter:
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _payload_num(job: Job, key: str) -> Optional[float]:
+
+def _payload_num(job: Job, key: str) -> float | None:
     value = (job.payload or {}).get(key)
     if value is None:
         return None
@@ -784,13 +808,14 @@ async def _safe_text(resp: aiohttp.ClientResponse) -> str:
 # Config helpers (tolerant of dataclass, mapping, or attribute access)
 # ---------------------------------------------------------------------------
 
+
 def _cfg_get(config: Any, name: str) -> Any:
     if isinstance(config, dict):
         return config.get(name)
     return getattr(config, name, None)
 
 
-def _cfg_str(config: Any, name: str) -> Optional[str]:
+def _cfg_str(config: Any, name: str) -> str | None:
     value = _cfg_get(config, name)
     return str(value) if value else None
 
@@ -800,6 +825,6 @@ def _cfg_num(config: Any, name: str, default: float) -> float:
     return float(value) if isinstance(value, (int, float)) else default
 
 
-def _cfg_dict(config: Any, name: str) -> Optional[dict[str, Any]]:
+def _cfg_dict(config: Any, name: str) -> dict[str, Any] | None:
     value = _cfg_get(config, name)
     return dict(value) if isinstance(value, dict) else None

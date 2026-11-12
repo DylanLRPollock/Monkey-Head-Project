@@ -23,7 +23,7 @@ as a function, not eagerly called.
 from __future__ import annotations
 
 __version__ = "0.1.0"
-__all__ = ["__version__", "BananaBrainConfig", "load_config"]
+__all__ = ["BananaBrainConfig", "__version__", "load_config"]
 
 
 def __getattr__(name: str):
@@ -35,8 +35,10 @@ def __getattr__(name: str):
     """
     if name == "BananaBrainConfig":
         from .config import BananaBrainConfig as _cfg
+
         return _cfg
     if name == "load_config":
         from .config import load_config as _load
+
         return _load
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

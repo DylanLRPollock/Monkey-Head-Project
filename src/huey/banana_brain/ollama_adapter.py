@@ -61,17 +61,18 @@ import asyncio
 import logging
 import re
 import time
-from typing import Any, Optional
+from datetime import UTC
+from typing import Any
 
 import aiohttp
 
-from .job_models import Job, JobResult
+from .job_models import Job
 
 __all__ = ["OllamaAdapter"]
 
 LOG = logging.getLogger("banana_brain.ollama_adapter")
 
-GIB = 1024 ** 3
+GIB = 1024**3
 
 #: Rough bytes-per-parameter by quantization level. Deliberately
 #: pessimistic: overestimating costs a wait, underestimating costs an OOM.
@@ -91,9 +92,7 @@ _QUANT_BYTES_PER_PARAM: dict[str, float] = {
 }
 _DEFAULT_BYTES_PER_PARAM = 0.65  # between Q4_K_M and Q5_K_M
 
-_PARAM_RE = re.compile(
-    r"(?P<num>\d+(?:\.\d+)?)\s*(?P<unit>[BbMm])\b"
-)
+_PARAM_RE = re.compile(r"(?P<num>\d+(?:\.\d+)?)\s*(?P<unit>[BbMm])\b")
 
 
 class OllamaAdapter:
@@ -118,21 +117,22 @@ class OllamaAdapter:
         self._vram_manager = vram_manager  # accepted per the design's wiring
 
         self._base_url = str(
-            _cfg_str(config, "ollama_base_url", "ollama_url")
-            or self.DEFAULT_BASE_URL
+            _cfg_str(config, "ollama_base_url", "ollama_url") or self.DEFAULT_BASE_URL
         ).rstrip("/")
-        self._default_keep_alive = _cfg_str(
-            config, "ollama_keep_alive"
-        ) or self.DEFAULT_KEEP_ALIVE
+        self._default_keep_alive = (
+            _cfg_str(config, "ollama_keep_alive") or self.DEFAULT_KEEP_ALIVE
+        )
         self._default_timeout_s = float(
             _cfg_num(
-                config, "ollama_request_timeout_seconds",
+                config,
+                "ollama_request_timeout_seconds",
                 self.DEFAULT_REQUEST_TIMEOUT_S,
             )
         )
         self._connect_timeout_s = float(
             _cfg_num(
-                config, "ollama_connect_timeout_seconds",
+                config,
+                "ollama_connect_timeout_seconds",
                 self.DEFAULT_CONNECT_TIMEOUT_S,
             )
         )
@@ -141,7 +141,7 @@ class OllamaAdapter:
             _cfg_bool(config, "ollama_unload_lru_first", True)
         )
 
-        self._session: Optional[aiohttp.ClientSession] = None
+        self._session: aiohttp.ClientSession | None = None
         self._active_models: set[str] = set()
         self._active_lock = asyncio.Lock()
         self._cancellation_requested: set[str] = set()
@@ -170,7 +170,8 @@ class OllamaAdapter:
             raise
         LOG.info(
             "ollama_adapter ready at %s (keep_alive=%s)",
-            self._base_url, self._default_keep_alive,
+            self._base_url,
+            self._default_keep_alive,
         )
 
     async def stop(self) -> None:
@@ -261,26 +262,26 @@ class OllamaAdapter:
             LOG.exception("ollama /api/show failed for %s", model)
             details = {}
 
-        params = _parse_parameter_size(
-            str(details.get("parameter_size") or "")
-        )
+        params = _parse_parameter_size(str(details.get("parameter_size") or ""))
         quant = str(details.get("quantization_level") or "").upper()
-        bytes_per_param = _QUANT_BYTES_PER_PARAM.get(
-            quant, _DEFAULT_BYTES_PER_PARAM
-        )
+        bytes_per_param = _QUANT_BYTES_PER_PARAM.get(quant, _DEFAULT_BYTES_PER_PARAM)
         if params:
             estimate = int(params * 1_000_000_000 * bytes_per_param)
             # 25% overhead for KV cache, CUDA context, fragmentation.
             estimate = int(estimate * 1.25)
             LOG.debug(
                 "estimate_vram(%s): %s params * %.2f B/param * 1.25 = %d",
-                model, params, bytes_per_param, estimate,
+                model,
+                params,
+                bytes_per_param,
+                estimate,
             )
             return max(estimate, 1 * GIB)
 
         LOG.warning(
             "estimate_vram(%s): no parameter_size; using %d GiB default",
-            model, 8,
+            model,
+            8,
         )
         return 8 * GIB
 
@@ -330,7 +331,10 @@ class OllamaAdapter:
                 freed += size_vram
                 LOG.info(
                     "unloaded model %s (%d bytes, freed total=%d/%d)",
-                    name, size_vram, freed, needed_bytes,
+                    name,
+                    size_vram,
+                    freed,
+                    needed_bytes,
                 )
             except Exception:
                 LOG.exception("failed to unload model %s", name)
@@ -383,7 +387,8 @@ class OllamaAdapter:
                 if resp.status >= 400:
                     LOG.warning(
                         "ollama /api/ps returned %d: %s",
-                        resp.status, (await _safe_text(resp))[:200],
+                        resp.status,
+                        (await _safe_text(resp))[:200],
                     )
                     return []
                 data = await resp.json(content_type=None)
@@ -409,9 +414,7 @@ class OllamaAdapter:
         # Some Ollama versions put the fields at the top level.
         return data if isinstance(data, dict) else {}
 
-    async def _unload_model(
-        self, session: aiohttp.ClientSession, model: str
-    ) -> None:
+    async def _unload_model(self, session: aiohttp.ClientSession, model: str) -> None:
         # Ollama documents /api/generate with an empty prompt and
         # keep_alive=0 as the unload signal. /api/chat with empty
         # messages and keep_alive=0 is equivalent.
@@ -431,17 +434,13 @@ class OllamaAdapter:
     # Request construction
     # ------------------------------------------------------------------
 
-    def _build_request(
-        self, job: Job
-    ) -> tuple[str, str, dict[str, Any]]:
+    def _build_request(self, job: Job) -> tuple[str, str, dict[str, Any]]:
         payload = job.payload or {}
         model = self._payload_str(job, "model")
         if not model:
             raise ValueError("job.payload['model'] is required")
 
-        has_messages = isinstance(payload.get("messages"), list) and payload[
-            "messages"
-        ]
+        has_messages = isinstance(payload.get("messages"), list) and payload["messages"]
         has_prompt = isinstance(payload.get("prompt"), str) and payload["prompt"]
 
         if has_messages and has_prompt:
@@ -501,6 +500,7 @@ class OllamaAdapter:
                 continue
             try:
                 import json
+
                 chunk = json.loads(line)
             except Exception:
                 LOG.warning("ollama stream: dropping non-JSON line %r", line[:120])
@@ -523,7 +523,7 @@ class OllamaAdapter:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _payload_str(job: Job, key: str) -> Optional[str]:
+    def _payload_str(job: Job, key: str) -> str | None:
         value = (job.payload or {}).get(key)
         return str(value) if value else None
 
@@ -532,10 +532,13 @@ class OllamaAdapter:
 # Result shaping
 # ---------------------------------------------------------------------------
 
+
 def _summarise_nonstream(data: dict[str, Any]) -> dict[str, Any]:
     return {
         "response": str(data.get("response") or ""),
-        "message": data.get("message") if isinstance(data.get("message"), dict) else None,
+        "message": (
+            data.get("message") if isinstance(data.get("message"), dict) else None
+        ),
         "done": bool(data.get("done", True)),
         "done_reason": data.get("done_reason"),
         "eval_count": _int_or_none(data.get("eval_count")),
@@ -545,7 +548,7 @@ def _summarise_nonstream(data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _int_or_none(value: Any) -> Optional[int]:
+def _int_or_none(value: Any) -> int | None:
     try:
         return int(value) if value is not None else None
     except (TypeError, ValueError):
@@ -555,6 +558,7 @@ def _int_or_none(value: Any) -> Optional[int]:
 # ---------------------------------------------------------------------------
 # /api/ps helpers
 # ---------------------------------------------------------------------------
+
 
 def _model_name(entry: dict[str, Any]) -> str:
     return str(entry.get("name") or entry.get("model") or "")
@@ -578,11 +582,12 @@ def _is_pinned(entry: dict[str, Any]) -> bool:
     # Ollama reports far-future timestamps for pinned models. Treat any
     # expiry more than one year out as "pinned".
     try:
-        from datetime import datetime, timezone
+        from datetime import datetime
+
         dt = datetime.fromisoformat(expires.replace("Z", "+00:00"))
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
-        delta = (dt - datetime.now(tz=timezone.utc)).total_seconds()
+            dt = dt.replace(tzinfo=UTC)
+        delta = (dt - datetime.now(tz=UTC)).total_seconds()
         return delta > 365 * 24 * 3600
     except Exception:
         return False
@@ -594,16 +599,17 @@ def _expires_sort_key(entry: dict[str, Any]) -> float:
     if not isinstance(expires, str) or not expires:
         return float("inf")
     try:
-        from datetime import datetime, timezone
+        from datetime import datetime
+
         dt = datetime.fromisoformat(expires.replace("Z", "+00:00"))
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
+            dt = dt.replace(tzinfo=UTC)
         return dt.timestamp()
     except Exception:
         return float("inf")
 
 
-def _parse_parameter_size(text: str) -> Optional[float]:
+def _parse_parameter_size(text: str) -> float | None:
     if not text:
         return None
     match = _PARAM_RE.search(text)
@@ -621,13 +627,14 @@ def _parse_parameter_size(text: str) -> Optional[float]:
 # Config helpers
 # ---------------------------------------------------------------------------
 
+
 def _cfg_get(config: Any, name: str) -> Any:
     if isinstance(config, dict):
         return config.get(name)
     return getattr(config, name, None)
 
 
-def _cfg_str(config: Any, name: str, *fallback_names: str) -> Optional[str]:
+def _cfg_str(config: Any, name: str, *fallback_names: str) -> str | None:
     for candidate in (name, *fallback_names):
         value = _cfg_get(config, candidate)
         if value:
