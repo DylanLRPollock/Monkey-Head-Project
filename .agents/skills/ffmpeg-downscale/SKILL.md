@@ -79,14 +79,7 @@ Use exactly these labels in this order:
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- 1280x720 target
-- lanczos scaler
-- padding rather than stretching
-- progressive-only processing unless clearly interlaced
-- FLAC audio in MKV
-- preserve color metadata
+Check display aspect ratio and whether the requested output would enlarge any source detail. Preserve framing with fit-and-pad, do not stretch or crop by default, and do not silently reduce bit depth/chroma or transcode audio.
 
 ## Practical command patterns
 
