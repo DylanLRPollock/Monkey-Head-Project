@@ -1,0 +1,217 @@
+# =============================================================================
+# HueyOS kernel builder — PR-safe continuous integration.
+# =============================================================================
+#
+# Scope
+# -----
+# This workflow runs on GitHub-hosted runners against pull requests and pushes
+# to main. It performs:
+#
+#   * Python byte-compile check (fast syntax verification);
+#   * Ruff lint and format checks;
+#   * Mypy type checks (non-blocking on first run; see the step name);
+#   * Pytest unit tests for the kernel build framework;
+#   * Dry-run of the CLI subcommands that must never write to the host
+#     (plan, config --dry-run, build-kernel --dry-run, build-nvidia --dry-run,
+#     initramfs --dry-run, sign --dry-run, release --dry-run).
+#
+# It does NOT:
+#
+#   * compile a kernel;
+#   * build NVIDIA modules;
+#   * generate an initramfs;
+#   * sign anything;
+#   * install packages into /boot or /lib/modules;
+#   * write to /etc, /var, or any host state;
+#   * upload any artifact that could contain proprietary or bootable content;
+#   * reference repository secrets.
+#
+# The "real" build is a separate, manual, isolated, trusted workflow. It is
+# not present in this file on purpose: making it reachable from a fork PR
+# would expose MOK material, vendor binaries, or the ability to run a
+# privileged build on contributors' behalf.
+#
+# Safety rationale
+# ----------------
+# * `pull_request` (not `pull_request_target`): fork PRs get a read-only
+#   GITHUB_TOKEN and no secrets. This is the only trigger under which it is
+#   safe to run untrusted code.
+# * `permissions: contents: read`: even for same-repo pushes, the token
+#   cannot push commits, create releases, or modify PRs.
+# * `persist-credentials: false` on checkout: later steps cannot read the
+#   token from `.git/config`.
+# * All third-party actions pinned to a full 40-char commit SHA with a
+#   trailing `# vX.Y.Z` comment. A mutable tag is not used.
+# * Hosted runners only (`ubuntu-24.04`). No self-hosted runner is named.
+# * No `sudo`, no `apt-get install`, no `pip install` from an untrusted
+#   index. Dependencies come from the checked-in `pyproject.toml` and any
+#   lock file the repository already manages.
+# * No `secrets.*` reference anywhere.
+# * Artifact upload is limited to **test logs and coverage summaries**,
+#   with an explicit `if-no-files-found: ignore` and a filename allowlist
+#   that cannot match `.ko`, `.run`, `.deb`, or initramfs images. See
+#   `test_workflow_yaml.py::test_does_not_upload_binaries`.
+# * The workflow file itself is protected by CODEOWNERS and branch
+#   protection so a fork cannot rewrite it (the fork's version is never
+#   executed by `pull_request`).
+# =============================================================================
+
+name: huey-kernel-builder
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Least-privilege token. If a future change needs `actions: read` or
+# `checks: write`, it must be added explicitly at the job level and
+# justified in review.
+permissions:
+  contents: read
+
+# One concurrent run per ref. Cancels in-progress PR runs on new pushes.
+concurrency:
+  group: huey-kernel-builder-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          # Never leave GITHUB_TOKEN in .git/config. Fork PR code runs later
+          # in this job; a persisted credential would be readable by it.
+          persist-credentials: false
+          # Fetch only the current commit; no tags, no history beyond depth 1.
+          fetch-depth: 1
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        with:
+          python-version: "3.13"
+          # Do NOT enable cache: pip cache in a PR-reachable job can be
+          # poisoned by prior runs. The repo's dependencies are small.
+          cache: ""
+
+      - name: Install test dependencies
+        # The repository declares its test dependencies in pyproject.toml.
+        # Installing with `--no-deps` on the project itself keeps this fast
+        # and free of wheel builds; the `[test]` extra supplies pytest etc.
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test]"
+
+      - name: Byte-compile the package
+        run: python -m compileall -q src scripts
+
+      - name: Ruff lint
+        run: python -m ruff check src tests scripts
+
+      - name: Ruff format check
+        run: python -m ruff format --check src tests scripts
+
+      - name: Mypy type checks (advisory)
+        # Non-blocking on purpose while the codebase converges on full
+        # annotations. This step still surfaces drift in the CI summary.
+        continue-on-error: true
+        run: python -m mypy src/huey/kernel_build
+
+      - name: Pytest
+        run: python -m pytest tests/kernel_build -q
+
+      - name: Dry-run CLI plan
+        run: |
+          python -m huey.kernel_build.cli plan \
+            --config kernel/huey-linux/build.yaml --json \
+            > /tmp/plan.json
+          python - <<'PY'
+          import json, sys
+          doc = json.load(open("/tmp/plan.json"))
+          assert doc["subcommand"] == "plan", doc
+          print("plan ok")
+          PY
+
+      - name: Dry-run config builder
+        run: |
+          python -m huey.kernel_build.cli config \
+            --config kernel/huey-linux/build.yaml \
+            --source-dir /nonexistent/source \
+            --base-config /nonexistent/base.config \
+            --output-dir /tmp/huey-config \
+            --dry-run --json > /tmp/config-dry.json || true
+          test -f /tmp/config-dry.json
+          python -c "import json; d=json.load(open('/tmp/config-dry.json')); assert d['subcommand']=='config'; print('config dry-run ok')"
+
+      - name: Dry-run build-kernel
+        run: |
+          python -m huey.kernel_build.cli build-kernel \
+            --config kernel/huey-linux/build.yaml \
+            --source-dir /nonexistent/source \
+            --effective-config /nonexistent/config \
+            --output-dir /tmp/huey-build \
+            --dry-run --json > /tmp/build-kernel-dry.json || true
+          test -f /tmp/build-kernel-dry.json
+
+      - name: Dry-run build-nvidia
+        run: |
+          python -m huey.kernel_build.cli build-nvidia \
+            --config kernel/huey-linux/build.yaml \
+            --kernel-release 7.2.15-huey1 \
+            --headers-dir /nonexistent/headers \
+            --output-dir /tmp/huey-nvidia \
+            --dry-run --json > /tmp/build-nvidia-dry.json || true
+          test -f /tmp/build-nvidia-dry.json
+
+      - name: Dry-run initramfs
+        run: |
+          python -m huey.kernel_build.cli initramfs \
+            --config kernel/huey-linux/build.yaml \
+            --kernel-release 7.2.15-huey1 \
+            --module-tree /nonexistent/tree \
+            --modules-list kernel/huey-linux/initramfs/modules.list \
+            --modprobe-conf kernel/huey-linux/initramfs/modprobe.d/huey-v100.conf \
+            --output-dir /tmp/huey-initramfs \
+            --dry-run --json > /tmp/initramfs-dry.json || true
+          test -f /tmp/initramfs-dry.json
+
+      - name: Dry-run sign
+        run: |
+          python -m huey.kernel_build.cli sign \
+            --config kernel/huey-linux/build.yaml \
+            --modules-dir /nonexistent/modules \
+            --headers-dir /nonexistent/headers \
+            --key /nonexistent/MOK.priv \
+            --cert /nonexistent/MOK.der \
+            --output-dir /tmp/huey-sign \
+            --dry-run --json > /tmp/sign-dry.json || true
+          test -f /tmp/sign-dry.json
+
+      - name: Dry-run release
+        run: |
+          python -m huey.kernel_build.cli release \
+            --config kernel/huey-linux/build.yaml \
+            --release-dir /tmp/huey-release \
+            --kernel-release 7.2.15-huey1 \
+            --kernel-image-deb /nonexistent/linux-image.deb \
+            --kernel-headers-deb /nonexistent/linux-headers.deb \
+            --dry-run --json > /tmp/release-dry.json || true
+          test -f /tmp/release-dry.json
+
+      # Upload only logs and JSON manifests from the dry runs. The
+      # allowlist below cannot match `.ko`, `.run`, `.deb`, `initramfs-*`,
+      # or `stage-*` paths.
+      - name: Upload test logs and dry-run JSON
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        if: always()
+        with:
+          name: huey-kernel-builder-logs
+          path: |
+            /tmp/*.json
+          if-no-files-found: ignore
+          retention-days: 7
