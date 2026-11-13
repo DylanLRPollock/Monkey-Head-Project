@@ -14,7 +14,6 @@ from aiohttp.test_utils import TestClient, TestServer, make_mocked_request
 
 from huey.banana_brain import scheduler_api as api_module
 from huey.banana_brain import scheduler_cli as cli
-
 from huey.banana_brain.audio_adapter import AudioAdapter
 from huey.banana_brain.comfyui_adapter import ComfyUIAdapter
 from huey.banana_brain.config import BananaBrainConfig, ConfigError, _to_bool
