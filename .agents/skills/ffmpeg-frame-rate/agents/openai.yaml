@@ -1,0 +1,3 @@
+interface:
+  display_name: "FFmpeg Frame Rate"
+  short_description: "Audit CFR/VFR and change cadence carefully"
