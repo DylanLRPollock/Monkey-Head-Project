@@ -160,7 +160,7 @@ def test_remaining_state_tags_and_positive_integer_paths():
 
     assert JobState.RUNNING.is_active is True
     assert JobState.COMPLETED.is_active is False
-    job = make_job()
+    job = Job(adapter="audio", payload={})
     job.tags = []
     with pytest.raises(JobValidationError, match="tags must be a dict"):
         job.validate()
