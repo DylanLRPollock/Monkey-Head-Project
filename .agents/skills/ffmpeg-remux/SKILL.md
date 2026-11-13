@@ -82,13 +82,7 @@ Use exactly these labels in this order:
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- choose mkv as the target
-- keep all supported streams
-- preserve metadata and chapters
-- never silently re-encode
-- verify with ffprobe after remuxing
+Map only streams known to be supported by the requested container. Preserve metadata and chapters where supported. Do not re-encode under the label remux; verify stream list and playback.
 
 ## Practical command patterns
 
