@@ -492,7 +492,9 @@ async def test_uncovered_audio_transcription_synthesis_and_probe_branches(
     await probe.stop()
 
     created = Session()
-    monkeypatch.setattr(audio_module.aiohttp, "ClientSession", lambda **_kwargs: created)
+    monkeypatch.setattr(
+        audio_module.aiohttp, "ClientSession", lambda **_kwargs: created
+    )
     failing_probe = AudioAdapter(
         {"audio_tts_backend": "piper", "audio_tts_base_url": "http://tts"},
         object(),
