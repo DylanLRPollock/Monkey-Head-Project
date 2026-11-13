@@ -464,6 +464,11 @@ async def test_completion_body_poll_failure_and_helper_fallbacks(monkeypatch):
         raise RuntimeError("scheduler unavailable")
 
     monkeypatch.setattr(item, "_submit_and_await", fail_submission)
+
+    async def resolve_local(_model):
+        return "local"
+
+    monkeypatch.setattr(item, "_resolve_model", resolve_local)
     response = await item._serve_completion(
         None, {"model": "local", "prompt": "hello"}, kind="completion"
     )
