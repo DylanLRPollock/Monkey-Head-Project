@@ -7,6 +7,7 @@ from collections.abc import Callable
 
 from .commands import (
     register_memory_commands,
+    register_ollama_commands,
     register_runtime_commands,
     register_system_commands,
 )
@@ -27,5 +28,6 @@ def build_parser(*, prog: str = "huey") -> argparse.ArgumentParser:
     register_runtime_commands(sub)
     register_system_commands(sub)
     register_memory_commands(sub)
+    register_ollama_commands(sub)
 
     return parser
