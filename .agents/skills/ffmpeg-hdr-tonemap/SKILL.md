@@ -75,14 +75,7 @@ Use exactly these labels in this order:
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- refuse to tone map without color metadata
-- use `zscale` with explicit transfer and primaries
-- `tonemap=hable`
-- reset output tags to bt709
-- FLAC or copy for audio
-- MKV output
+Do not tone-map with missing or conflicting HDR evidence. Keep the original HDR source, test a representative sample, set output SDR tags only after pixel conversion, and verify output tags and playback.
 
 ## Practical command patterns
 
