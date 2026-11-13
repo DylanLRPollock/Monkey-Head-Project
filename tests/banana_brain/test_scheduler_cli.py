@@ -792,3 +792,16 @@ async def test_priority_plain_output_and_remaining_cli_fallbacks(capsys, monkeyp
 
     monkeypatch.setattr("huey.banana_brain.config.load_config", fail_config_load)
     assert cli._load_config_safe("bad.yaml") is None
+
+
+@pytest.mark.asyncio
+async def test_client_request_reraises_connector_errors():
+    class Session:
+        def request(self, *_args, **_kwargs):
+            key = argparse.Namespace(host="localhost", port=80, ssl=False)
+            raise aiohttp.ClientConnectorError(key, OSError("offline"))
+
+    client = cli.Client(base_url="http://localhost")
+    client._session = Session()
+    with pytest.raises(aiohttp.ClientConnectorError):
+        await client.request("GET", "/health")
