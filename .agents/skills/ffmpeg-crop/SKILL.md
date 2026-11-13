@@ -7,7 +7,7 @@ description: recommend preservation-first ffmpeg commands for users who paste cr
 
 ## Overview
 
-Crop only when the user explicitly wants it and only when the evidence is trustworthy. cropdetect is suggestive, not definitive. Cropping always requires re-encoding.
+Crop only when the user explicitly wants it and only when the evidence is trustworthy. cropdetect is suggestive, not definitive. Cropping requires video re-encoding; a typical lossy encode reduces quality, while lossless encoding still changes the frame geometry.
 
 ## Workflow
 
@@ -72,20 +72,13 @@ Use exactly these labels in this order:
 ### Warnings
 - Always warn against blind cropping when cropdetect is absent or weak.
 - Warn that visual confirmation is mandatory.
-- Warn that cropping always requires re-encoding and is lossy.
+- Warn that cropping requires video re-encoding and changes framing; explain encoding loss when using a lossy codec.
 - Warn that over-cropping removes picture content.
 - Warn against stretching after cropping.
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- do not crop
-- require multi-sample cropdetect before recommending
-- use even dimensions
-- `setsar=1` after cropping
-- no scaling unless asked
-- copy audio
+Do not crop unless requested and supported by stable multi-sample evidence plus visual confirmation. Use source-specific crop values, check display aspect ratio and codec alignment, and explain video re-encoding.
 
 ## Practical command patterns
 
