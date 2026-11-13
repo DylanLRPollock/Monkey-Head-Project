@@ -263,3 +263,15 @@ async def test_sampling_loop_continues_after_sample_error(monkeypatch):
     monkeypatch.setattr(metrics, "sample_once", flaky)
     await metrics._sample_loop()
     assert calls == 2
+
+
+def test_metrics_optional_integer_and_config_helper_paths():
+    from huey.banana_brain.metrics import _cfg_bool, _cfg_get, _opt_int
+
+    assert _opt_int(None) is None
+    assert _opt_int("invalid") is None
+    assert _cfg_get(SimpleNamespace(value="x"), "value") == "x"
+    assert _cfg_get({}, "missing") is None
+    assert _cfg_bool({"enabled": True}, "enabled", False) is True
+    assert _cfg_bool({"enabled": " true "}, "enabled", False) is True
+    assert _cfg_bool({"enabled": 1}, "enabled", False) is True
