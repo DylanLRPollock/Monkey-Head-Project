@@ -1,0 +1,3 @@
+interface:
+  display_name: "FFmpeg Concat"
+  short_description: "Join clips with compatible streams"
