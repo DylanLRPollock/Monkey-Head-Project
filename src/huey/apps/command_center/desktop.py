@@ -14,7 +14,11 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from typing import Any
 
-from huey.gui.defaults import default_migration_phases, default_operator_panel_state, default_repositories
+from huey.gui.defaults import (
+    default_migration_phases,
+    default_operator_panel_state,
+    default_repositories,
+)
 from huey.gui.models import MigrationPhase, dataclass_list_to_dicts, dataclass_to_dict
 from huey.gui.prompts import generate_next_best_task_prompt, generate_phase_prompt
 from huey.gui.safety import safety_banner
@@ -166,7 +170,10 @@ class CommandCenterDesktop(tk.Tk):
         self._refresh_v1_runs()
         self.protocol("WM_DELETE_WINDOW", self._close)
         if self.load_warning:
-            self.after(250, lambda: messagebox.showwarning("Command Center", self.load_warning))
+            self.after(
+                250,
+                lambda: messagebox.showwarning("Command Center", self.load_warning),
+            )
 
     def _configure_style(self) -> None:
         style = ttk.Style(self)
@@ -198,7 +205,9 @@ class CommandCenterDesktop(tk.Tk):
         ttk.Label(heading, text="COMMAND CENTER", style="Title.TLabel").pack(anchor="w")
         ttk.Label(
             heading,
-            text="Monkey-Head-Project ecosystem dashboard · local planning and mock data",
+            text=(
+                "Monkey-Head-Project ecosystem dashboard · local planning and mock data"
+            ),
             style="Muted.TLabel",
         ).pack(anchor="w", pady=(4, 0))
 
@@ -292,7 +301,9 @@ class CommandCenterDesktop(tk.Tk):
         self.phase_notes.pack(fill="x")
         self.phase_notes.bind("<KeyRelease>", self._schedule_save_phase_notes)
 
-        ttk.Label(tab, text="Global notes").grid(row=3, column=0, sticky="w", pady=(12, 4))
+        ttk.Label(tab, text="Global notes").grid(
+            row=3, column=0, sticky="w", pady=(12, 4)
+        )
         self.global_notes = tk.Text(tab, height=4, wrap="word",
                                     background="#211d2c", foreground="#f2eef8",
                                     insertbackground="#f2eef8", relief="flat")
@@ -325,7 +336,9 @@ class CommandCenterDesktop(tk.Tk):
         )
         ttk.Label(
             tab,
-            text="Commands are displayed and copied only; this app never executes them.",
+            text=(
+                "Commands are displayed and copied only; this app never executes them."
+            ),
             style="Muted.TLabel",
         ).pack(anchor="w", pady=(0, 10))
         self.validation_tree = ttk.Treeview(
@@ -357,7 +370,9 @@ class CommandCenterDesktop(tk.Tk):
         )
         ttk.Label(
             tab,
-            text="Generate reviewable task prompts from the migration plan. Nothing is sent.",
+            text=(
+                "Generate reviewable task prompts from the migration plan. Nothing is sent."
+            ),
             style="Muted.TLabel",
         ).pack(anchor="w", pady=(0, 12))
         controls = ttk.Frame(tab)
@@ -389,7 +404,9 @@ class CommandCenterDesktop(tk.Tk):
                   style="Title.TLabel").pack(anchor="w", pady=(0, 8))
         ttk.Label(
             tab,
-            text="Sample/mock run records. Import local JSONL or export the visible records.",
+            text=(
+                "Sample/mock run records. Import local JSONL or export the visible records."
+            ),
             style="Muted.TLabel",
         ).pack(anchor="w", pady=(0, 10))
         split = ttk.Panedwindow(tab, orient="horizontal")
@@ -412,7 +429,9 @@ class CommandCenterDesktop(tk.Tk):
         self.run_detail.pack(fill="both", expand=True)
         buttons = ttk.Frame(tab)
         buttons.pack(fill="x", pady=(10, 0))
-        ttk.Button(buttons, text="Import JSONL", command=self._import_v1_jsonl).pack(side="left")
+        ttk.Button(
+            buttons, text="Import JSONL", command=self._import_v1_jsonl
+        ).pack(side="left")
         ttk.Button(buttons, text="Export runs", command=self._export_v1_runs).pack(
             side="left", padx=8
         )
@@ -455,7 +474,8 @@ class CommandCenterDesktop(tk.Tk):
             ("Network changes allowed", str(policy["allow_network_mutation"])),
             ("Command execution allowed", str(policy["allow_command_execution"])),
             ("Memory/governance mutation allowed",
-             f'{policy["allow_memory_mutation"]} / {policy["allow_governance_mutation"]}'),
+             f'{policy["allow_memory_mutation"]} / '
+             f'{policy["allow_governance_mutation"]}'),
         )
         for label, value in facts:
             row = ttk.Frame(tab)
@@ -541,7 +561,9 @@ class CommandCenterDesktop(tk.Tk):
             self.phase_tree.selection_set(selected)
             self._render_phase(selected)
         elif phases:
-            current = next((p for p in phases if p["status"] == "in_progress"), phases[0])
+            current = next(
+                (p for p in phases if p["status"] == "in_progress"), phases[0]
+            )
             self.phase_tree.selection_set(current["id"])
             self._render_phase(current["id"])
 
@@ -603,7 +625,9 @@ class CommandCenterDesktop(tk.Tk):
         phase = self.phase_lookup.get(getattr(self, "selected_phase_id", ""))
         if phase is not None:
             phase["notes"] = self.phase_notes.get("1.0", "end-1c")
-        self.snapshot["migration"]["global_notes"] = self.global_notes.get("1.0", "end-1c")
+        self.snapshot["migration"]["global_notes"] = self.global_notes.get(
+            "1.0", "end-1c"
+        )
         self._save_state()
 
     def _close(self) -> None:
@@ -671,7 +695,10 @@ class CommandCenterDesktop(tk.Tk):
             self.run_lookup[iid] = run
             self.run_tree.insert(
                 "", "end", iid=iid,
-                values=(run.get("fixture", "unknown fixture"), run.get("status", "unknown")),
+                values=(
+                    run.get("fixture", "unknown fixture"),
+                    run.get("status", "unknown"),
+                ),
             )
         children = self.run_tree.get_children()
         if children:
@@ -690,7 +717,8 @@ class CommandCenterDesktop(tk.Tk):
 
     def _import_v1_jsonl(self) -> None:
         path = filedialog.askopenfilename(
-            title="Import V1 JSONL", filetypes=(("JSON Lines", "*.jsonl"), ("All files", "*"))
+            title="Import V1 JSONL",
+            filetypes=(("JSON Lines", "*.jsonl"), ("All files", "*")),
         )
         if not path:
             return
@@ -713,7 +741,8 @@ class CommandCenterDesktop(tk.Tk):
             return
         try:
             Path(path).write_text(
-                json.dumps(self.snapshot["v1_runs"], indent=2, ensure_ascii=False) + "\n",
+                json.dumps(self.snapshot["v1_runs"], indent=2, ensure_ascii=False)
+                + "\n",
                 encoding="utf-8",
             )
         except OSError as exc:
