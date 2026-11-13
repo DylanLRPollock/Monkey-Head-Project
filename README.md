@@ -1,23 +1,24 @@
 <h1 align="center">Monkey-Head-Project</h1>
 
----
-
 <p align="center">
   <img src="src/huey/memory/PNG/Monkey-Head-Project-New.png" alt="Monkey-Head-Project" width="40%">
 </p>
 
-<p align="center"><strong>Philosophy: "Breathing new life into old tech"</strong></p>
+<p align="center"><strong>Breathing new life into old tech.</strong></p>
 
 <p align="center">
-  <img alt="Release V220" src="https://img.shields.io/badge/release-V220-5b2c83">
-  <img alt="Status human review required" src="https://img.shields.io/badge/status-human%20review%20required-d97706">
+  <img alt="Master Plan V222 draft" src="https://img.shields.io/badge/master%20plan-V222%20draft-5b2c83">
+  <img alt="Human review required" src="https://img.shields.io/badge/status-human%20review%20required-d97706">
   <img alt="Python 3.13" src="https://img.shields.io/badge/Python-3.13-3776ab">
-  <img alt="Code GPLv3" src="https://img.shields.io/badge/code-GPLv3-2f855a">
-  <img alt="Updated 9-30-2026" src="https://img.shields.io/badge/updated-9--30--2026-555555">
+  <img alt="NVIDIA R580" src="https://img.shields.io/badge/NVIDIA-580.196.07-76b900">
+  <img alt="GPL-3.0" src="https://img.shields.io/badge/code-GPL--3.0-blue">
+  <img alt="Updated 2026-11-13" src="https://img.shields.io/badge/updated-2026--11--13-555555">
 </p>
 
 > [!IMPORTANT]
-> **V220 is a project-wide standardization and synchronization pass.** The Master Plan, this README, and dlrp.ca are being brought back onto the same factual baseline after a long period of architectural and documentation drift. Huey is simultaneously undergoing the V4 physical rebuild around the Intel i9-12900K platform, updated storage and accelerator plans, revised cooling, and a more deliberate internal cognition/governance architecture. October 2026 is expected to focus heavily on completing major physical-shell work and aligning project documentation; broader code expansion may temporarily take a secondary role while those foundations are stabilized.
+> **Master Plan V222 Revision 2 (November 13, 2026) is a proposed design candidate requiring human review.** It is not a software release, an operating four-GPU collective, or a ratified Constitution. The tracked `master-plan-v221.json` remains the published predecessor until V222 artifacts are separately approved and committed. The Python distribution version (`hueyos 0.2.0`) is not the master-plan version.
+
+[GitHub Wiki](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki) · [Releases](https://github.com/DylanLRPollock/Monkey-Head-Project/releases) · [Issues](https://github.com/DylanLRPollock/Monkey-Head-Project/issues) · [Official website](https://www.dlrp.ca)
 
 ## Project Definition
 
@@ -85,220 +86,193 @@ An animatronic hand/arm remains a future experimental peripheral rather than a V
 
 ## Compute and Hardware Direction
 
-V220 distinguishes carefully between **what exists now** and **what Huey is being built toward**.
+The primary **i9** workstation is a verified single-V100 Debian development environment. A four-V100 accelerator system is a target, not a completed deployment.
 
-| Area | Current reality / accepted direction |
+| Area | Current evidence or future direction |
 | --- | --- |
-| **CPU** | Intel Core i9-12900K, definitive V4 baseline |
-| **Motherboard** | ASUS TUF Gaming Z790-Plus WiFi |
-| **Accelerators** | Target: 4 × NVIDIA Tesla V100 32GB; **1 currently on hand, 3 still required** |
-| **Installed V100 driver (i9 workstation)** | **NVIDIA proprietary Linux driver 580.196.07 (R580)**, confirmed by `nvidia-smi` and `modinfo`; the driver reports CUDA compatibility **13.0** (not the installed CUDA Toolkit version). See [verified V100 driver baseline](docs/hardware/tesla-v100-nvidia-driver-baseline.md). |
-| **Accelerator objective** | Intended unified **128GB VRAM** resource, still requiring real topology/runtime validation |
-| **General-purpose GPU** | Separate approximately 16GB target for display and smaller low-latency workloads such as transcription |
-| **PCIe** | Five-device target topology using extenders/risers; exact electrical lane layout and P2P behaviour still require validation |
-| **Power** | Target: dual 1000W PSUs with deliberate load distribution; exact final model/load split still provisional |
-| **Cooling** | Conventional air cooling for V4 bring-up; external liquid heat-exchange infrastructure remains a future path |
-| **Root / OS** | Target: 4 × Intel Optane M10 16GB in RAID 10, approximately 32GB usable |
-| **`/home`** | Still unresolved; available 2.5-inch SSDs remain candidates |
-| **Bulk data** | 2 × 10TB Western Digital HDDs intended for direct-SATA RAID 1 after safe migration from the existing enclosure |
+| **CPU / motherboard** | Intel Core i9-12900K; ASUS TUF GAMING Z790-PLUS WIFI |
+| **OS / desktop** | Debian Forky; GNOME Wayland reported. The running kernel must be rechecked before upgrades. |
+| **System RAM** | 16GiB last reported; large-model loading may require more |
+| **Installed accelerator** | **One NVIDIA Tesla V100 PCIe 32GB**, Volta/GV100, compute capability 7.0, bus `00000000:01:00.0` |
+| **Display GPU** | AMD RX 570 8GB using `amdgpu` / Mesa RADV |
+| **NVIDIA driver** | **Proprietary Linux 580.196.07 (R580)**, verified by `nvidia-smi` and `modinfo` |
+| **CUDA compatibility** | `nvidia-smi` reports **13.0** (driver API compatibility, not the installed CUDA Toolkit) |
+| **Toolkit** | CUDA Toolkit **12.9.86** at `/usr/local/cuda-12.9` last reported; verify via `nvcc --version` |
+| **DKMS** | NVIDIA 580.196.07 builds documented for kernels `7.2.12+deb14-amd64` and `7.2.15+deb14-amd64`; later kernels not automatically qualified |
+| **Accelerator target** | **4 × Tesla V100 PCIe 32GB = 128GiB nominal aggregate VRAM**; three additional cards not yet verified installed |
+| **PCIe** | CPU x16 plus narrower chipset-connected expansion; P2P, lane placement and effective multi-GPU throughput unverified |
+| **Power** | Two 1000W PSUs proposed; connector assignment, transients and load distribution require electrical qualification |
+| **Cooling** | Directed air cooling for passive V100s; external liquid loop remains paused future work |
+| **OS storage** | Four Optane M10 16GB drives in RAID10 is a target, not an accepted deployment |
+| **Home storage** | Long-term device/filesystem unresolved |
+| **Bulk storage** | Two 10TB-class WD drives; planned Btrfs RAID1 at `/10TB`. Verify actual data/metadata profiles, SMART and independent backup. |
 
-The [verified V100 Linux driver baseline](docs/hardware/tesla-v100-nvidia-driver-baseline.md) records the **as-installed NVIDIA 580.196.07 driver** and DKMS/kernel verification procedures; it is a measured single-card workstation configuration, not a universal dependency pin.
+**Thermal caveat:** A November 11 snapshot recorded the V100 at **86°C** with low reported utilization. This merits inspection of airflow and thermal conditions before sustained multi-GPU load; it does not alone establish the cause.
 
-The four-V100 design is an **architectural target**, not a statement that 128GB unified operation already exists. The final PCIe topology, power budget, passive-V100 airflow, driver/runtime stack, and actual multi-GPU model behaviour all have to be proven on the physical machine.
+Aggregate VRAM is **not** one transparent unified allocation. PCIe extenders do not create extra host lanes. A working NVIDIA driver is not proof that distributed inference, GPU P2P, CUDA Toolkit, Vulkan/Proton and all future kernels are compatible.
 
-The external cooling room beside the house already exists, but the long liquid loop/reservoir deployment is **paused rather than abandoned**. V4 will first stand up on conventional air cooling.
+The R580 driver is a **host-installed proprietary driver**, not a Python package dependency. Retain the known-good driver/kernel combination and RX 570 display path during upgrades.
+
+[Verified V100 driver baseline](docs/hardware/tesla-v100-nvidia-driver-baseline.md) · [Hardware Wiki](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki/Hardware) · [Distributed Computing](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki/Distributed-Computing)
 
 ## Cognition Stack
 
-### Upstream PyGPT operator integration
+The **Walnut** is Huey's replaceable local inference layer, not an unrestricted controller. Model-generated text must pass the appropriate tool, storage, messaging and physical-safety boundaries.
 
-PyHuey can launch the **actual upstream PyGPT 2.9.1** application through the `huey-pygpt gui` command. The accompanying **read-only MCP stdio bridge** exposes HueyOS identity, local API health, FFmpeg availability, and the bridge permission policy to PyGPT without delegating robot actuation or privileged control. The legacy vendored PyHuey tree remains a compatibility/test surface and is not the upstream desktop application. See the upstream PyGPT installation, connector configuration, and security guide in `docs/integrations/`.
+### Operator Runtime
 
+**PyHuey** integrates with upstream PyGPT through the `huey-pygpt` entry point and a read-only MCP bridge. The user-tested environment includes PyGPT-Net **2.9.1** with local inference and retrieval. Full Huey-native orchestration and permission integration remain work in progress.
 
-**PyHuey** — the project's PyGPT-derived operator/runtime environment — is intended to be Huey's primary human-facing GUI and orchestration surface. A recovery-capable command-line path remains important for diagnostics, automation, and hardware recovery.
+- **Python:** `pyproject.toml` declares `>=3.13,<3.14`; 3.13 is supported, 3.14 experimental, 3.12 legacy compatibility only.
+- **Package naming:** distribution `hueyos`, maintained import root `huey`; these are different concepts.
+- **Ollama:** local service with the reported `qwen3.6:35b` model running on one V100; the separate Python client dependency is `ollama==0.6.3`.
+- **RAG:** a local PyGPT/EmbeddingGemma demo (768-dimensional embeddings reported) successfully retrieved a test record; this is not yet the durable Rock.
+- **ComfyUI:** image generation demonstrated with CUDA FP16 and FP32 VAE, using a dedicated environment; workload scheduling and PyGPT integration still need end-to-end tests.
+- **Audio:** faster-whisper transcription is a development direction; quality and system integration remain unqualified.
+- **Video, vision and local TTS:** experimental candidates, not accepted core capabilities.
 
-The software baseline is:
+### Banana Brain
 
-- **Python 3.13** — primary target environment
-- **Python 3.12** — compatibility sidecar where required by PyGPT/PyHuey dependencies
-- **Python 3.14** — active evaluation/testing
-- **Ollama** — preferred first local-model service path, but not permanently locked as the only backend
+[Banana Brain](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki/Banana-Brain) provides the single-V100 resource-scheduling foundation: job storage, VRAM reservations, telemetry, priority handling, watchdog and Ollama/ComfyUI/audio adapters. Its main composition root still needs complete constructor/service wiring and operational testing. Standalone Ollama and ComfyUI success must not be mistaken for an accepted combined scheduler.
 
-The initial large-model acceptance target is **OpenAI gpt-oss-120b**. The objective is to determine whether the completed local accelerator stack can run it effectively enough to become the first practical **walnut** around which the broader Huey framework is populated.
+### Large-Model Research
 
-This is an engineering acceptance target, not an assumption of compatibility. The final four-V100 runtime may use Ollama, vLLM, llama.cpp, Transformers/device mapping, or another suitable backend depending on what actually works on the V100/Volta hardware.
-
-### Local model and image-generation requirements
-
-Ollama is declared as `ollama==0.6.3` in the `ml` extra and in the full `requirements.txt` / `constraints.txt` environment. Install and run the Ollama service separately; the Python package is its client library.
-
-ComfyUI is an external GPU-specific application. The optional `comfyui` extra and `requirements-comfyui.txt` pin the official `comfy-cli` installer to `1.25.0`; that CLI installs ComfyUI and selects the application dependencies for the host GPU. Use a dedicated Python environment for the ComfyUI stack:
-
-```bash
-python3.13 -m venv .venv-comfyui
-. .venv-comfyui/bin/activate
-python -m pip install -r requirements-comfyui.txt
-comfy install --workspace "$HOME/AI"
-```
-
-The workspace’s PyTorch build and ComfyUI dependencies remain separate from HueyOS core dependencies because they depend on the GPU and driver stack.
+**`gpt-oss-120b` remains a research target**, not a model proved to work on four Volta GPUs. Native MXFP4 execution requires newer NVIDIA hardware than the V100's compute capability 7.0. Compatible alternate formats, kernels, quantization or models must be measured, not inferred from memory capacity alone.
 
 ## Pebbles, Districts, and the Atom
 
-Huey's internal cognition architecture is intentionally compartmentalized.
+The **proposed V222/RC1.3** internal collective consists of logical identities within **one Huey node**—not one language-model process per citizen.
 
-### Pebbles
+- **Founding model:** 64 original citizen configurations → 128 → **256 provisional citizens** through two generations of exact bifurcation.
+- **Districts:** Four founding Districts with **64 provisional citizens each**; preferred one-to-one V100 mapping remains a proposed diversified compute configuration.
+- **Pebble:** A bounded persistent logical citizen with identity, role, permitted actions, private memory and accountability.
+- **Atom:** Historical name for the four-District grouping.
+- **Exact bifurcation:** The original active identity retires; two distinct descendants receive an approved ancestral reference, new credentials and separate future memory.
+- **Augmented bifurcation:** A parent continues while a derived citizen receives selected traits and its own identity; private vault contents are not automatically inherited.
 
-A **Pebble** is a logical, sandboxed job or role. Each Pebble is intended to have:
+The founding population, protected vaults, lineage system and identity registry are **not yet implemented or activated as a constitutional republic**.
 
-- a specific job
-- its own prompt or perspective
-- a bounded information allotment
-- explicit acceptable and unacceptable operating parameters
-- defined triggers and approved actions
-- limited permissions appropriate to its role
+### The Pulse
 
-A Pebble should perform its assigned job without silently expanding its own authority. If a condition falls outside known parameters and no approved protocol applies, the intended behaviour is to **log, contain, and escalate rather than improvise policy**.
+V222 proposes **four minutes unified** plus **four minutes diversified** computation (eight-minute cycle). The actual cost of switching distributed/independent models, restoring contexts, moving data and synchronizing records is unmeasured. Safety protection must preempt the Pulse.
 
-The current design target is **128 logical Pebble roles per District**. That number describes job/role slots — **not 128 simultaneous LLM instances**. Actual concurrency may be queued, time-sliced, batched, or otherwise scheduled against available compute.
-
-### Districts
-
-The first full compute architecture is planned around **four Districts**, provisionally mapped one-to-one with the four V100 accelerators.
-
-A District should be able to contribute to unified work while also retaining enough independence to run bounded workloads on its own.
-
-### Atom
-
-The provisional term **Atom** refers to the four-District grouping as a higher-order unit. The Atom is intended to support three ideas at once:
-
-1. combined compute when a workload needs the full resource
-2. independent District work when tasks do not require the whole system
-3. future redundancy, replication, and expansion experiments
-
-### Bifurcation
-
-**Bifurcation** is the working expansion model:
-
-- **Exact bifurcation** — reproduce an established configuration without deliberate functional change.
-- **Augmented bifurcation** — reproduce it while deliberately altering selected roles, prompts, resources, or functions.
-- **Hybrid bifurcation** — combine exact and augmented descendants.
-
-The mechanics remain research work. V220 preserves the architectural direction without pretending the scheduler or replication framework already exists.
+[Collective Wiki](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki/Pebbles-and-Districts) · [Memory Architecture](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki/Memory-Architecture)
 
 ## Governance and Constitution
 
-Huey is intended to use governance as a **constraint and review layer**, not as a replacement for tightly defined operational jobs.
+The **Third-Generation RC1.3 Constitution** is the proposed V222 constitutional design: Preamble, ten chapters, unexecuted Closing/Ratification and nine proposed Schedules. Its research series is non-normative. **No ratification has occurred and constitutional offices are not operationally qualified.**
 
-Ordinary Pebbles perform bounded work. Governance handles proposals, exceptions, system evolution, and constitutional questions.
+| Institution | Proposed organization |
+| --- | --- |
+| **Senate** | Eligible active citizens not presently holding executive or judicial office |
+| **President** | **One**, directly elected by eligible citizens; four-month term, maximum four consecutive terms followed by a one-term cooloff |
+| **Supreme Court** | **Four Justices**, one elected from each founding District; **three lawful concurrences** required for any binding judgment |
+| **Founding Father** | Founding bootstrap with limited independently constrained advisory and preservation functions |
+| **Human Counterpart** | Retains project authorship/canon and human maintenance authority, separate from proposed internal civic offices |
 
-The present working model has three branches:
+**Proposed voting thresholds:** For each signed frozen eligible roll `E`, count authenticated Yes (`Y`), No (`N`), Abstain (`A`), valid participation `P=Y+N+A` and substantive votes `S=Y+N`. A District block requires `P >= ceil(4E/5)` and `S >= ceil(2E/3)`. Authenticated abstentions count toward participation but not substantive turnout; they are not presumed incapacity or wrongdoing.
 
-- **President** — one special executive/governance office
-- **Supreme Court** — three Justices
-- **Senate** — the broader legislative/populace governance body
+- **Ordinary law:** `Y > N` in each approving valid District, with **three of four** positive blocks required (plus other lawful stages).
+- **Special District votes:** `Y >= ceil(2S/3)` across at least three valid District blocks, where applicable.
+- **Founding ratification:** `Y >= ceil(2E/3)` in **all four** founding Districts, with independent certification and the applicable turnout rules.
 
-In the first four-District Atom, the working special-office model assigns **one elevated Pebble from each District** across the President and three Justices. This prevents one District from supplying more than one of those four special roles.
+These are **proposed constitutional procedures**, not operational elections or permissions. They supersede the older V220 description of **128 job roles per District, three Justices and routine Founder tie-breaking**. There are **five proposed active special offices**: one President and four Justices.
 
-An elevated Pebble **keeps its original job**. Its normal job budget remains intact while it receives additional compute/time specifically for governance duties.
+Neither AI-generated office titles nor HIMS sender names constitute authenticated authority. Physical safety and host privilege checks remain separate.
 
-Current governance concepts also include:
+[Constitution and Governance Wiki](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki/Constitution-and-Governance)
 
-- one vote per Pebble
-- District-level proposals and opinion polling
-- multiple rounds of voting where useful to converge on a District position
-- a deliberately difficult constitutional-amendment path
-- a current working amendment threshold of **3 of 4 Districts**, with **two-thirds approval within each approving District**
-- a **Founding Father** bootstrap agent, deliberately authored by Dylan, to initialize the first District/file structure and provide limited founding tie-breaking where required
-- a still-unresolved clock/scheduling concept alternating attention between Pebble work and governance work
+## Memory and HIMS
 
-These mechanics are **active research direction**, not finished constitutional law. The current Constitution and Research corpus remain important project sources but are materially behind the V220 architecture and require a dedicated rewrite.
+### Persistent Storage
 
-## HIMS — Huey Internal Messaging System
+The canonical **HoneycombStorage** uses **JSON files**, not SQLite. There is also a separate **in-memory HoneycombStore**. The Banana Brain job store uses SQLite. File ingestion, structured indexes, metadata utilities, copy-based backups and local RAG experiments exist, but the proposed **Rock** and encrypted private Pebble vaults do not yet have qualified identity, authorization, transaction, encryption and recovery services.
 
-**HIMS** is the planned internal communication layer between sandboxed Pebbles, Districts, governance roles, and other internal components.
+### HIMS — Huey Internal Messaging System
 
-The design direction requires **authenticated, end-to-end encrypted, isolated communication** without collapsing every sandbox into one unrestricted shared context.
+The repository has three related, **noninterchangeable** messaging implementations:
 
-HIMS is not yet fully designed. Addressing, authentication, key management, message retention, cross-District routing, audit visibility, and degraded-operation behaviour all remain engineering work.
+1. `huey.messaging`: local append-only JSONL messages and lifecycle events.
+2. `huey.hims`: earlier ShadowHIMS/ThunderMail mailboxes, validation and ledger.
+3. `huey.core.messaging`: structured transport-independent envelopes.
 
-The principle is already clear: internal components should communicate through explicit, controlled channels rather than by silently sharing unrestricted memory or authority.
+Future work must reconcile their schemas while preserving records and tests. Sender authentication, message confidentiality, replay resistance, key management and cross-District delivery are not completed simply because local messages can be stored.
 
-## Safety and Control Boundaries
+**The ability to communicate is not authority to act.**
 
-Huey is being designed so that routine actions are narrow, observable, and recoverable.
+[HIMS Wiki](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki/HIMS) · [Memory Architecture Wiki](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki/Memory-Architecture)
 
-Known conditions should map to known protocols. Examples include:
+## Security and Safety
 
-- storage pressure invoking controlled cleanup/purge rules
-- thermal or cooling failure invoking safe-state, save, hibernate, shutdown, or other emergency handling
-- future environmental thresholds invoking bounded house-control actions only when that integration is explicitly permitted
-- loss of a control link causing actuators to fall back to defined safe behaviour
+HueyOS must separate **AI proposals**, **authenticated identities**, **capability authorization**, **operating-system privileges**, **civic decisions**, and **independent physical safety**.
 
-Critical actions should not depend on an LLM improvising a safety policy in real time.
+The repository includes privileged-operation checks, named API operator/admin credentials, selected task-owner controls, explicit confirmation requirements and structured decision logging. These are meaningful foundations, not a complete verified security system. External identity, third-party plugin capability coverage, tamper-resistant audit records, encrypted collective messaging and private Pebble vaults remain incomplete.
 
-The longer-term system also requires explicit work on physical emergency cutoff, thermal monitoring, power-failure handling, Pebble sandbox isolation, prompt/tool permission boundaries, HIMS key management, secrets storage, and auditable action logs.
+The dated security risk register also requires independent confirmation that an earlier exposed credential was revoked and its usage reviewed. Removing it from live documentation did not revoke it.
+
+Physical emergency controls must not depend on LLM judgment, HIMS delivery or governance timing. V4 requires verified electrical protection, cooling, mechanical safe states and an appropriately engineered emergency stop. The proposed Yellow/Orange/Red escalation model does not replace these controls.
+
+[Security and Safety Wiki](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki/Security-and-Safety) · [Security Risk Register](docs/security/current-risk-register-2026-11-03.md)
 
 ## LabTech
 
-**LabTech is external support technology, not part of Huey's identity or normal runtime.**
+**LabTech is external development and support technology, not part of Huey's Brain, Body, Farm, internal citizenship or identity.**
 
-It refers to the computers and devices used to develop, diagnose, test, transcribe, recover, maintain, and otherwise support Huey.
+Documented examples include the **ASUS FX505DT** mobile lab machine and the **Lenovo Legion Go** support/diagnostic device. Other experimental terminals may assist with SSH, maintenance, transcription and recovery. Their current configurations should be checked individually.
 
-Current examples include:
+## Development Status and Priorities
 
-- **ASUS FX505DT** — mobile lab/development/support system
-- **Lenovo Legion Go** — Windows 11 Insider Preview Pro support and diagnostic system
+The [Development Roadmap](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki/Development-Roadmap) separates current capabilities from proposed expansion.
 
-LabTech can interact with Huey extensively without becoming part of Huey Brain, Body, Farm, or governance.
+### Quality Snapshot — November 13, 2026
 
-## Current V220 Priorities
+- **Python:** package `hueyos` 0.2.0; supported Python 3.13.
+- **Coverage:** enforced **80%** combined branch/statement floor over maintained `src/huey`; the subsequent goal is **90%** without manipulating scope.
+- **Last documented full-suite result (PR #923, November 10):** **888 passed, 16 skipped, 59.84%** combined coverage; this remains below the 80% gate.
+- **Checked November 13 CI:** pytest collection failed because an unqualified `conftest.py` import resolved to the wrong test fixture file; static-analysis also failed. The kernel-builder CI reported **182 Ruff diagnostics**. These runs do not certify a new full-suite coverage result.
+- **Other checks:** CodeQL, Bandit, dependency scan, artifact/filesystem scan, package smoke, documentation and Scorecard passed in the reviewed snapshot, but do not override blocking jobs.
 
-V220 is less about declaring the project finished than about making the next work measurable and coherent.
+### Near-Term Priorities
 
-Immediate priorities include:
+1. Repair required CI, restore clean test collection, and measure full-source coverage.
+2. Preserve the verified NVIDIA 580.196.07 / kernel / RX 570 operating environment and qualify V100 cooling.
+3. Complete Banana Brain service wiring, VRAM enforcement, watchdog behavior and Ollama/ComfyUI/audio adapter integration.
+4. Consolidate HIMS and Honeycomb, connect local RAG through supported interfaces, and test backup/restore.
+5. Continue V4 rolling base, sound system, chassis and animatronic head integration with independent safety controls.
+6. Verify Btrfs RAID1 profiles, SMART diagnostics and an independent recoverable backup.
+7. Map PCIe, power and airflow before acquiring and installing all four V100s.
+8. Benchmark compatible distributed inference, then incrementally prototype Pebble/District identity and isolation.
+9. Review RC1.3 and the V222 master-plan candidate before any canonical ratification or institutional activation.
 
-1. finish and stabilize the V4 physical shell
-2. complete the rolling audio base and compute-midsection integration
-3. finalize the hybrid WowWee V4 head
-4. validate the i9/Z790 workstation and storage layout
-5. map and test the five-device PCIe topology
-6. acquire the remaining three V100 accelerators
-7. validate the dual-1000W power and directed-airflow design
-8. bring up PyHuey against a local inference service
-9. test gpt-oss-120b on a proven V100-compatible multi-GPU runtime
-10. use those results to begin implementing the District/Pebble/HIMS framework
-11. rewrite the Constitution and Research material after the V220 documentation baseline is stable
-12. complete the V220 synchronization of the Master Plan, README, and dlrp.ca
+The custom kernel-builder framework is used for planning/building/verifying kernel artifacts; installation, reboot and rollback remain explicit human-operated activities.
 
-The project's immediate emphasis through October 2026 is expected to remain **physical integration and documentation alignment first**, with broader code expansion taking a temporary secondary role where necessary.
+[Testing and Quality Assurance](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki/Testing-and-Quality-Assurance) · [Kernel Upgrade Runbook](docs/runbooks/huey-kernel-upgrade.md) · [GitHub Actions](https://github.com/DylanLRPollock/Monkey-Head-Project/actions)
 
 ## Documentation and Canon
 
-The project uses several documentation layers deliberately:
-
-| Source | Purpose |
+| Source | Role |
 | --- | --- |
-| **Master Plan V220** | Machine-facing architecture, truth states, current reality, targets, lineage, risks, and unresolved decisions |
-| **README.md** | Human-facing repository front door and concise project explanation |
-| **dlrp.ca** | Public-facing project narrative, imagery, history, status, and broader context |
-| **Constitution** | Internal governance/rule source; currently due for a dedicated rewrite |
-| **Research** | Long-form conceptual and architectural source; also due for revision |
+| **V222 Master Plan Revision 2** | Complete machine-facing **proposed** document dated November 13, 2026; requires human approval and separate publication |
+| **`master-plan-v221.json`** | Existing tracked predecessor |
+| **RC1.3 Constitution and Schedules** | Proposed, **unratified** internal governance |
+| **RC1.3 Research** | Supporting non-normative analysis |
+| **README** | Human-facing current repository context, capability status and links |
+| **[GitHub Wiki](https://github.com/DylanLRPollock/Monkey-Head-Project/wiki)** | Expanded project documentation; actual publication of each drafted page should be verified |
+| **[dlrp.ca](https://www.dlrp.ca)** | Public narrative; V222 alignment has not been independently checked |
 
-These layers should agree on core facts and direction without becoming copies of one another.
+Measured hardware and current source code establish what works. A proposal does not become operational through documentation alone.
 
-V220 also acknowledges known public-site drift from an older v30.x/Huey Core documentation line. That material is being reconciled rather than silently treated as current V220 truth.
+**Only Dylan L.R. Pollock can accept canonical project design changes.** A model, branch, draft document, Pebble or unratified governance simulation does not independently decide the project's canonical truth.
 
-**Project canon remains locked only by Dylan L.R. Pollock.** No AI agent, generated document, branch, governance role, Pebble, or tool independently decides what becomes canonical project truth.
+Documentation should preserve dates, source provenance, implementation status and outstanding qualification gates.
 
 ## License and Provenance
 
-Project code is licensed under **GPL-3.0** unless otherwise noted.
+Project code is distributed under **GPL-3.0**, with the reviewed package metadata specifying `GPL-3.0-only`; consult the repository license files for precise redistribution obligations. Third-party software, models, media, firmware, drivers and documentation can carry different licenses.
 
-Third-party software, models, hardware firmware, media, documentation, and other incorporated components may remain subject to their own licences and usage conditions.
-
-The project intentionally preserves lineage. Older shells, archived Federation-era governance material, Raspberry Pi experiments, prior software names, and retired architectural ideas may remain documented for historical continuity without overriding current V220 direction.
+Earlier shells, Raspberry Pi experiments, historical Federation work, legacy names and superseded architecture remain documented for provenance without overriding the reviewed V222 direction.
 
 ---
 
-<p align="center"><strong>"Breathing new life into old tech"</strong></p>
+<p align="center"><strong>Breathing new life into old tech.</strong></p>
+
