@@ -501,3 +501,59 @@ def test_persistence_rejects_non_object_state_and_ignores_write_errors(tmp_path)
     blocked_parent.write_text("file", encoding="utf-8")
     modes._state_path = blocked_parent / "mode.json"
     modes._save_persisted_state()
+
+
+@pytest.mark.asyncio
+async def test_mode_fallback_queue_and_housekeeping_branches():
+    from types import SimpleNamespace
+
+    from huey.banana_brain.gpu_modes import GPUMode, GPUModeManager
+    from huey.banana_brain.job_models import Job
+
+    manager = GPUModeManager(
+        {"mode_persistence_enabled": False, "mode_drain_interval_s": 0.001},
+        scheduler=SimpleNamespace(),
+        priority_manager=SimpleNamespace(),
+        job_store=SimpleNamespace(),
+        adapters={},
+    )
+    assert manager._install_admission_check() is False
+
+    manager._safety_halted = True
+    result = await manager.set_mode(GPUMode.IMAGE, reason="test overlay")
+    assert result.success is True
+    assert manager.safety_halted is True
+
+    class Queue:
+        def __init__(self):
+            self.jobs = [Job(adapter="ollama", payload={}), Job(adapter="ollama", payload={})]
+            self.remove_calls = 0
+
+        async def peek(self):
+            return self.jobs[0] if self.jobs else None
+
+        async def remove(self, job_id):
+            self.remove_calls += 1
+            if self.remove_calls == 1:
+                self.jobs.pop(0)
+                return None
+            return self.jobs.pop(0)
+
+        async def push(self, _job):
+            raise RuntimeError("queue restore failed")
+
+    manager._priority_manager = Queue()
+    manager.is_admission_allowed = lambda _job: True
+    assert await manager._suspend_non_matching() == 0
+
+    class Unloader:
+        async def unload_idle_models(self, _amount):
+            return 1024
+
+    manager._adapters = {"test": Unloader()}
+    await manager._unload_all_adapters()
+
+    manager._current_mode = GPUMode.AI
+    await manager._housekeeping_loop()
+    manager._housekeeping_stop.set()
+    await manager._housekeeping_loop()
