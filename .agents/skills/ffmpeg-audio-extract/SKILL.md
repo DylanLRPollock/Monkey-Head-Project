@@ -74,13 +74,7 @@ Use exactly these labels in this order:
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- stream copy when the codec is acceptable
-- convert only to the requested or required format; FLAC is not a default for lossy sources
-- preserve sample rate and channel layout
-- extract one track per file
-- mka or flac as output
+Copy the requested audio stream when its codec is acceptable. Convert only to a format the user requests or the target requires. Do not imply FLAC restores a lossy source; preserve rate and channel layout.
 
 ## Practical command patterns
 
