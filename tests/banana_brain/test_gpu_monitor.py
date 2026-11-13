@@ -429,7 +429,9 @@ async def test_unavailable_poll_refresh_shutdown_and_config_edges(
     await monitor._poll_loop()
 
     monitor._stopping = False
-    monkeypatch.setattr("huey.banana_brain.gpu_monitor.asyncio.to_thread", cancelled_to_thread)
+    monkeypatch.setattr(
+        "huey.banana_brain.gpu_monitor.asyncio.to_thread", cancelled_to_thread
+    )
     with pytest.raises(asyncio.CancelledError):
         await monitor._poll_loop()
 
