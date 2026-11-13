@@ -541,9 +541,12 @@ async def test_remaining_ollama_response_and_helper_branches(
         raise OSError("show unavailable")
 
     monkeypatch.setattr(adapter, "_show_details", fail_show)
-    assert await adapter.estimate_vram(
-        make_job(adapter="ollama", payload={"model": "missing"})
-    ) == 8 * 1024**3
+    assert (
+        await adapter.estimate_vram(
+            make_job(adapter="ollama", payload={"model": "missing"})
+        )
+        == 8 * 1024**3
+    )
 
     server_state.loaded = [
         {
