@@ -530,3 +530,104 @@ def test_refuse_release_artifact_symlink(tmp_path: Path) -> None:
     result = ReleaseAssembler().build_release(ctx)
     assert "ARTIFACT_SYMLINK_REFUSED" in {f.code for f in result.findings}
     assert not ctx.release_dir.exists()
+
+
+# Step 44: additional canonical release-assembler adversarial checks.
+
+def test_release_refuses_unknown_source_lock(tmp_path: Path) -> None:
+    ctx = _context(tmp_path)
+    lock = ctx.source_lock_path
+    assert lock is not None
+    lock.write_text("not json", encoding="utf-8")
+    result = ReleaseAssembler().build_release(ctx)
+    assert result.has_errors()
+    assert "SOURCE_LOCK_INVALID" in {f.code for f in result.findings}
+    assert not ctx.release_dir.exists()
+
+
+def test_release_requires_source_lock(tmp_path: Path) -> None:
+    ctx = _context(tmp_path, source_lock_path=None)
+    result = ReleaseAssembler().build_release(ctx)
+    assert result.has_errors()
+    assert "SOURCE_LOCK_REQUIRED" in {f.code for f in result.findings}
+    assert not ctx.release_dir.exists()
+
+
+def test_release_rejects_zero_hash_as_pinned_source(tmp_path: Path) -> None:
+    ctx = _context(tmp_path)
+    doc = json.loads(ctx.source_lock_path.read_text())
+    doc["checksum_sha256"] = "0" * 64
+    ctx.source_lock_path.write_text(json.dumps(doc))
+    result = ReleaseAssembler().build_release(ctx)
+    assert "SOURCE_LOCK_UNRESOLVED" in {f.code for f in result.findings}
+    assert not ctx.release_dir.exists()
+
+
+def test_release_refuses_symlinked_extra_file(tmp_path: Path) -> None:
+    ctx = _context(tmp_path)
+    link = tmp_path / "extra.txt"
+    link.symlink_to(ctx.config_path)
+    result = ReleaseAssembler().build_release(replace(ctx, extra_text_files=(link,)))
+    assert "ARTIFACT_SYMLINK_REFUSED" in {f.code for f in result.findings}
+    assert not ctx.release_dir.exists()
+
+
+def test_release_dry_run_is_no_write_with_nonempty_release(tmp_path: Path) -> None:
+    ctx = _context(tmp_path)
+    ctx.release_dir.mkdir()
+    marker = ctx.release_dir / "operator-data.txt"
+    marker.write_bytes(b"preserve")
+    result = ReleaseAssembler().build_release(ctx, force=True, dry_run=True)
+    assert result.dry_run
+    assert marker.read_bytes() == b"preserve"
+    assert not (ctx.release_dir / "MANIFEST.json").exists()
+
+
+def test_release_hashes_cover_every_declared_artifact(tmp_path: Path) -> None:
+    ctx = _context(tmp_path)
+    result = ReleaseAssembler().build_release(ctx)
+    assert not result.has_errors(), result.findings
+    manifest = json.loads(result.manifest_path.read_text())
+    entries = manifest["artifacts"]
+    assert entries
+    assert len({a["path"] for a in entries}) == len(entries)
+    for item in entries:
+        assert not Path(item["path"]).is_absolute()
+        assert ".." not in Path(item["path"]).parts
+        actual = ctx.release_dir / item["path"]
+        assert actual.is_file()
+        assert hashlib.sha256(actual.read_bytes()).hexdigest() == item["sha256"]
+
+
+def test_release_refuses_critical_verification_even_if_boot_ready_flag(tmp_path: Path) -> None:
+    critical = ValidationFinding(
+        severity=Severity.CRITICAL, code="WRONG_KERNEL", message="bad ABI",
+    )
+    ctx = _context(tmp_path, verification=_verification(
+        boot_ready=True, findings=(critical,),
+    ))
+    result = ReleaseAssembler().build_release(ctx)
+    assert result.has_errors()
+    assert not ctx.release_dir.exists()
+
+
+def test_release_never_mutates_staging_inputs(tmp_path: Path) -> None:
+    ctx = _context(tmp_path)
+    source_files = (
+        ctx.kernel_image_deb, ctx.kernel_headers_deb, ctx.initramfs,
+        ctx.config_path, ctx.source_lock_path,
+    )
+    before = {p: (p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())
+              for p in source_files}
+    result = ReleaseAssembler().build_release(ctx)
+    assert not result.has_errors(), result.findings
+    after = {p: (p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())
+             for p in source_files}
+    assert after == before
+
+
+def test_release_disallows_protected_host_mutation_under_etc(tmp_path: Path) -> None:
+    ctx = _context(tmp_path, release_dir=Path("/etc/huey-kernel-release"))
+    result = ReleaseAssembler().build_release(ctx)
+    assert result.has_errors()
+    assert "RELEASE_DIR_PROTECTED" in {f.code for f in result.findings}

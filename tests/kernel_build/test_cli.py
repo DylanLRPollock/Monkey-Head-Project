@@ -434,3 +434,190 @@ def test_json_output_is_parseable_for_every_readonly_command(tmp_path: Path, mon
         data = json.loads(out)  # will raise if not valid JSON
         assert data["subcommand"] == argv[0]
         assert isinstance(data["exit_code"], int)
+
+
+# Step 45: full CLI acceptance coverage beyond the initial Step 21 tests.
+
+def _assert_cli_contract(doc: dict, subcommand: str, exit_code: int) -> None:
+    assert set(doc) >= {"subcommand", "status", "exit_code", "message", "payload", "findings"}
+    assert doc["subcommand"] == subcommand
+    assert doc["exit_code"] == exit_code
+    assert doc["status"] in {"ok", "dry_run", "error"}
+    assert isinstance(doc["payload"], dict)
+    assert isinstance(doc["findings"], list)
+
+
+@pytest.mark.parametrize("argv", [
+    [], ["unrecognized"], ["--instal"], ["plan"],
+    ["plan", "--config", "x", "--not-a-real-option"],
+])
+def test_argparse_errors_do_not_write_stdout(monkeypatch, capsys, argv: list[str]) -> None:
+    code, out, err = _run_cli(argv, monkeypatch, capsys)
+    assert code == 2
+    assert out == ""
+    assert err
+
+
+def test_no_host_mutating_commands_are_registered() -> None:
+    import argparse
+    parser = cli_module._build_parser()
+    action = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
+    forbidden = {"install", "reboot", "uninstall", "reset", "setup", "upgrade"}
+    assert forbidden.isdisjoint(action.choices)
+
+
+def test_exit_code_is_int_enum() -> None:
+    import enum
+    assert issubclass(ExitCode, enum.IntEnum)
+
+
+def test_top_help_excludes_host_mutating_command_names(monkeypatch, capsys) -> None:
+    code, stdout, _ = _run_cli(["--help"], monkeypatch, capsys)
+    assert code == 0
+    # Argparse may refer to the word "install" in a description; what matters
+    # is the registered subcommand list, which must not contain these names.
+    parser = cli_module._build_parser()
+    import argparse
+    action = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
+    assert "install" not in action.choices and "reboot" not in action.choices
+    assert "huey-kernel" in stdout
+
+
+def test_plan_does_not_construct_runner_without_inventory(tmp_path: Path, monkeypatch, capsys) -> None:
+    calls = []
+    monkeypatch.setattr(cli_module, "_make_runner", lambda: calls.append(True) or FakeRunner())
+    yamlfile = _write_build_yaml(tmp_path / "build.yaml")
+    code, stdout, _ = _run_cli(["plan", "--config", str(yamlfile), "--json"], monkeypatch, capsys)
+    assert code == 0
+    _assert_cli_contract(json.loads(stdout), "plan", code)
+    assert calls == []
+
+
+def test_inventory_constructs_runner_once(monkeypatch, capsys) -> None:
+    calls = []
+    runner = _inventory_runner(monkeypatch)
+    monkeypatch.setattr(cli_module, "_make_runner", lambda: calls.append(True) or runner)
+    code, stdout, _ = _run_cli(["inventory", "--json"], monkeypatch, capsys)
+    assert code == 0
+    _assert_cli_contract(json.loads(stdout), "inventory", code)
+    assert calls == [True]
+
+
+def test_plan_accepts_yaml_filename_with_spaces(tmp_path: Path, monkeypatch, capsys) -> None:
+    _noop_runner(monkeypatch)
+    folder = tmp_path / "path with spaces"
+    folder.mkdir()
+    file = _write_build_yaml(folder / "build.yaml")
+    code, stdout, _ = _run_cli(["plan", "--config", str(file), "--json"], monkeypatch, capsys)
+    assert code == 0
+    _assert_cli_contract(json.loads(stdout), "plan", code)
+
+
+def test_plan_does_not_execute_metacharacters_in_path(tmp_path: Path, monkeypatch, capsys) -> None:
+    _noop_runner(monkeypatch)
+    marker = tmp_path / "unexpected"
+    payload = f"fake ; touch {marker} ; done"
+    code, stdout, _ = _run_cli(["plan", "--config", payload, "--json"], monkeypatch, capsys)
+    assert code in (2, 3)
+    assert not marker.exists()
+    _assert_cli_contract(json.loads(stdout), "plan", code)
+
+
+def test_module_invocation_preserves_sys_argv(tmp_path: Path, monkeypatch, capsys) -> None:
+    _noop_runner(monkeypatch)
+    original = ["huey-kernel", "plan", "--config", str(_write_build_yaml(tmp_path / "build.yaml")), "--json"]
+    monkeypatch.setattr(sys, "argv", original)
+    assert main() == 0
+    assert sys.argv is original
+    _assert_cli_contract(json.loads(capsys.readouterr().out), "plan", 0)
+
+
+@pytest.mark.parametrize("cmd,args,expected", [
+    ("plan", ["--config", "missing.yaml"], 3),
+    ("verify", ["--release-dir", "missing-release"], 3),
+])
+def test_json_error_result_shape(cmd: str, args: list[str], expected: int,
+                                 tmp_path: Path, monkeypatch, capsys) -> None:
+    _noop_runner(monkeypatch)
+    argv = [str(tmp_path / x) if x.startswith("missing") else x for x in args]
+    code, stdout, _ = _run_cli([cmd, *argv, "--json"], monkeypatch, capsys)
+    assert code == expected
+    _assert_cli_contract(json.loads(stdout), cmd, code)
+
+
+def test_kernel_builder_dry_run_reports_stable_json(tmp_path: Path, monkeypatch, capsys) -> None:
+    _noop_runner(monkeypatch)
+    source = tmp_path / "src"; source.mkdir()
+    (source / "Makefile").write_text("# fake kernel", encoding="utf-8")
+    config = tmp_path / "config"; config.write_text("CONFIG_MODULES=y\n", encoding="utf-8")
+    yamlfile = _write_build_yaml(tmp_path / "build.yaml")
+    output = tmp_path / "output"
+    code, stdout, _ = _run_cli([
+        "build-kernel", "--config", str(yamlfile), "--source-dir", str(source),
+        "--effective-config", str(config), "--output-dir", str(output),
+        "--dry-run", "--json",
+    ], monkeypatch, capsys)
+    _assert_cli_contract(json.loads(stdout), "build-kernel", code)
+    assert code == 0
+    assert json.loads(stdout)["status"] == "dry_run"
+    assert not output.exists()
+
+
+def test_nvidia_missing_headers_is_build_failure(tmp_path: Path, monkeypatch, capsys) -> None:
+    _noop_runner(monkeypatch)
+    yml = _write_build_yaml(tmp_path / "build.yaml")
+    code, stdout, _ = _run_cli([
+        "build-nvidia", "--config", str(yml), "--kernel-release", "7.2.15-huey1",
+        "--headers-dir", str(tmp_path / "absent"), "--output-dir", str(tmp_path / "out"),
+        "--json",
+    ], monkeypatch, capsys)
+    assert code == ExitCode.BUILD_FAILURE
+    _assert_cli_contract(json.loads(stdout), "build-nvidia", code)
+
+
+def test_initramfs_missing_tree_is_build_failure(tmp_path: Path, monkeypatch, capsys) -> None:
+    _noop_runner(monkeypatch)
+    yml = _write_build_yaml(tmp_path / "build.yaml")
+    code, stdout, _ = _run_cli([
+        "initramfs", "--config", str(yml), "--kernel-release", "7.2.15-huey1",
+        "--module-tree", str(tmp_path / "missing"),
+        "--modules-list", str(tmp_path / "no-list"),
+        "--modprobe-conf", str(tmp_path / "no-modprobe"),
+        "--output-dir", str(tmp_path / "out"), "--json",
+    ], monkeypatch, capsys)
+    assert code == ExitCode.BUILD_FAILURE
+    _assert_cli_contract(json.loads(stdout), "initramfs", code)
+
+
+def test_sign_dry_run_is_json_and_does_not_write(tmp_path: Path, monkeypatch, capsys) -> None:
+    _noop_runner(monkeypatch)
+    yml = _write_build_yaml(tmp_path / "build.yaml")
+    mods = tmp_path / "modules"; mods.mkdir()
+    (mods / "nvidia.ko").write_bytes(b"fake")
+    key = tmp_path / "MOK.priv"; key.write_bytes(b"fake")
+    cert = tmp_path / "MOK.der"; cert.write_bytes(b"fake")
+    headers = tmp_path / "headers"; (headers / "scripts").mkdir(parents=True)
+    (headers / "scripts" / "sign-file").write_text("#!/bin/sh\n")
+    out = tmp_path / "out"
+    code, stdout, _ = _run_cli([
+        "sign", "--config", str(yml), "--modules-dir", str(mods),
+        "--headers-dir", str(headers), "--key", str(key), "--cert", str(cert),
+        "--output-dir", str(out), "--dry-run", "--json",
+    ], monkeypatch, capsys)
+    _assert_cli_contract(json.loads(stdout), "sign", code)
+    assert not out.exists()
+
+
+def test_release_dry_run_fails_closed(tmp_path: Path, monkeypatch, capsys) -> None:
+    _noop_runner(monkeypatch)
+    yml = _write_build_yaml(tmp_path / "build.yaml")
+    rd = _make_release_dir(tmp_path)
+    code, stdout, _ = _run_cli([
+        "release", "--config", str(yml), "--release-dir", str(rd),
+        "--kernel-release", "7.2.15-huey1",
+        "--kernel-image-deb", str(next(rd.glob("linux-image-*.deb"))),
+        "--kernel-headers-deb", str(next(rd.glob("linux-headers-*.deb"))),
+        "--dry-run", "--json",
+    ], monkeypatch, capsys)
+    _assert_cli_contract(json.loads(stdout), "release", code)
+    assert not (rd / "MANIFEST.json").exists()

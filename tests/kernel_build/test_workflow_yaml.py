@@ -441,3 +441,30 @@ def test_does_not_interpolate_untrusted_event_data_into_run() -> None:
                 "attacker-controlled. Pass it through an env: variable or "
                 "use actions/github-script instead."
             )
+
+
+# The CI must actively assert fail-closed JSON results; an unresolved source
+# pin is an expected policy refusal, not a command that can silently fail.
+def test_plan_handles_unresolved_source_lock_explicitly() -> None:
+    workflow = _parse()
+    steps = workflow['jobs']['ci']['steps']
+    plan = next(step['run'] for step in steps if step['name'] == 'Dry-run CLI plan')
+    assert 'SOURCE_UNRESOLVED' in plan
+    assert 'doc["exit_code"] == rc' in plan
+    assert '|| true' not in plan
+
+
+@pytest.mark.parametrize('subcommand', [
+    'config', 'build-kernel', 'build-nvidia', 'initramfs', 'sign', 'release',
+])
+def test_invalid_prereq_dry_runs_validate_exit_code(subcommand: str) -> None:
+    workflow = _parse()
+    steps = workflow['jobs']['ci']['steps']
+    step = next(step for step in steps if step.get('name', '').startswith('Dry-run '+subcommand)
+                and step['name'] != 'Dry-run CLI plan')
+    block = step['run']
+    assert '|| true' not in block
+    assert '--dry-run --json' in block
+    assert 'rc=0' in block and '|| rc=$?' in block
+    assert "d['exit_code']==int(sys.argv[1])" in block
+    assert "d['exit_code'] in (2,3,4)" in block

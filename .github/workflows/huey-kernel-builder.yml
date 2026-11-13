@@ -127,49 +127,64 @@ jobs:
 
       - name: Dry-run CLI plan
         run: |
+          # The checked-in source.lock.json is intentionally unresolved.
+          # Exit 2 is expected only when SOURCE_UNRESOLVED is reported;
+          # a future pinned lock may instead yield a successful plan.
+          rc=0
           python -m huey.kernel_build.cli plan \
             --config kernel/huey-linux/build.yaml --json \
-            > /tmp/plan.json
-          python - <<'PY'
+            > /tmp/plan.json || rc=$?
+          python - "$rc" <<'PY'
           import json, sys
-          doc = json.load(open("/tmp/plan.json"))
+          from pathlib import Path
+          doc = json.loads(Path("/tmp/plan.json").read_text())
+          rc = int(sys.argv[1])
           assert doc["subcommand"] == "plan", doc
-          print("plan ok")
+          assert doc["exit_code"] == rc, (doc, rc)
+          if rc:
+              assert rc == 2 and any(
+                  f.get("code") == "SOURCE_UNRESOLVED"
+                  for f in doc.get("findings", [])
+              ), doc
+          print("plan verified", rc)
           PY
 
       - name: Dry-run config builder
         run: |
+          rc=0
           python -m huey.kernel_build.cli config \
             --config kernel/huey-linux/build.yaml \
             --source-dir /nonexistent/source \
             --base-config /nonexistent/base.config \
             --output-dir /tmp/huey-config \
-            --dry-run --json > /tmp/config-dry.json || true
-          test -f /tmp/config-dry.json
-          python -c "import json; d=json.load(open('/tmp/config-dry.json')); assert d['subcommand']=='config'; print('config dry-run ok')"
+            --dry-run --json > /tmp/config-dry.json || rc=$?
+          python -c "import json,sys; d=json.load(open('/tmp/config-dry.json')); assert d['subcommand']=='config' and d['exit_code']==int(sys.argv[1]); assert d['exit_code'] in (2,3,4), d" "$rc"
 
       - name: Dry-run build-kernel
         run: |
+          rc=0
           python -m huey.kernel_build.cli build-kernel \
             --config kernel/huey-linux/build.yaml \
             --source-dir /nonexistent/source \
             --effective-config /nonexistent/config \
             --output-dir /tmp/huey-build \
-            --dry-run --json > /tmp/build-kernel-dry.json || true
-          test -f /tmp/build-kernel-dry.json
+            --dry-run --json > /tmp/build-kernel-dry.json || rc=$?
+          python -c "import json,sys; d=json.load(open('/tmp/build-kernel-dry.json')); assert d['subcommand']=='build-kernel' and d['exit_code']==int(sys.argv[1]); assert d['exit_code'] in (2,3,4), d" "$rc"
 
       - name: Dry-run build-nvidia
         run: |
+          rc=0
           python -m huey.kernel_build.cli build-nvidia \
             --config kernel/huey-linux/build.yaml \
             --kernel-release 7.2.15-huey1 \
             --headers-dir /nonexistent/headers \
             --output-dir /tmp/huey-nvidia \
-            --dry-run --json > /tmp/build-nvidia-dry.json || true
-          test -f /tmp/build-nvidia-dry.json
+            --dry-run --json > /tmp/build-nvidia-dry.json || rc=$?
+          python -c "import json,sys; d=json.load(open('/tmp/build-nvidia-dry.json')); assert d['subcommand']=='build-nvidia' and d['exit_code']==int(sys.argv[1]); assert d['exit_code'] in (2,3,4), d" "$rc"
 
       - name: Dry-run initramfs
         run: |
+          rc=0
           python -m huey.kernel_build.cli initramfs \
             --config kernel/huey-linux/build.yaml \
             --kernel-release 7.2.15-huey1 \
@@ -177,11 +192,12 @@ jobs:
             --modules-list kernel/huey-linux/initramfs/modules.list \
             --modprobe-conf kernel/huey-linux/initramfs/modprobe.d/huey-v100.conf \
             --output-dir /tmp/huey-initramfs \
-            --dry-run --json > /tmp/initramfs-dry.json || true
-          test -f /tmp/initramfs-dry.json
+            --dry-run --json > /tmp/initramfs-dry.json || rc=$?
+          python -c "import json,sys; d=json.load(open('/tmp/initramfs-dry.json')); assert d['subcommand']=='initramfs' and d['exit_code']==int(sys.argv[1]); assert d['exit_code'] in (2,3,4), d" "$rc"
 
       - name: Dry-run sign
         run: |
+          rc=0
           python -m huey.kernel_build.cli sign \
             --config kernel/huey-linux/build.yaml \
             --modules-dir /nonexistent/modules \
@@ -189,19 +205,20 @@ jobs:
             --key /nonexistent/MOK.priv \
             --cert /nonexistent/MOK.der \
             --output-dir /tmp/huey-sign \
-            --dry-run --json > /tmp/sign-dry.json || true
-          test -f /tmp/sign-dry.json
+            --dry-run --json > /tmp/sign-dry.json || rc=$?
+          python -c "import json,sys; d=json.load(open('/tmp/sign-dry.json')); assert d['subcommand']=='sign' and d['exit_code']==int(sys.argv[1]); assert d['exit_code'] in (2,3,4), d" "$rc"
 
       - name: Dry-run release
         run: |
+          rc=0
           python -m huey.kernel_build.cli release \
             --config kernel/huey-linux/build.yaml \
             --release-dir /tmp/huey-release \
             --kernel-release 7.2.15-huey1 \
             --kernel-image-deb /nonexistent/linux-image.deb \
             --kernel-headers-deb /nonexistent/linux-headers.deb \
-            --dry-run --json > /tmp/release-dry.json || true
-          test -f /tmp/release-dry.json
+            --dry-run --json > /tmp/release-dry.json || rc=$?
+          python -c "import json,sys; d=json.load(open('/tmp/release-dry.json')); assert d['subcommand']=='release' and d['exit_code']==int(sys.argv[1]); assert d['exit_code'] in (2,3,4), d" "$rc"
 
       # Upload only logs and JSON manifests from the dry runs. The
       # allowlist below cannot match `.ko`, `.run`, `.deb`, `initramfs-*`,

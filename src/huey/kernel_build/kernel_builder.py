@@ -717,8 +717,10 @@ class KernelBuilder:
             line = line.strip()
             if line.startswith("Package:"):
                 value = line.split(":", 1)[1].strip()
-                return value or None
-        return None
+                return value if re.fullmatch(r"[a-z0-9][a-z0-9+.-]*", value) else None
+        # Real dpkg-deb --field <deb> Package prints the value alone.
+        bare = text.strip()
+        return bare if re.fullmatch(r"[a-z0-9][a-z0-9+.-]*", bare) else None
 
     @staticmethod
     def _sha256_file(path: Path) -> str:
