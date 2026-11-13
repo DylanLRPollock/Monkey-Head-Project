@@ -102,6 +102,13 @@ Issues = "https://github.com/DylanLRPollock/Monkey-Head-Project/issues"
 # constrained hardware. `make install-dev` pulls `[dev]`; the rest are opt-in.
 
 [project.optional-dependencies]
+# Tests for the HueyOS kernel build framework; preserve the repository's
+# strict Python 3.13 dependency pins from the existing dev extra.
+test = [
+  "pytest==9.2.0",
+  "ruff==0.17.4",
+  "mypy==2.4.1",
+]
 ml = [
   "accelerate==1.15.0",
   "aiohappyeyeballs==2.7.1",

@@ -1,0 +1,54 @@
+# =============================================================================
+# HueyOS initramfs early-load module list
+# =============================================================================
+#
+# Consumed by:
+#   src/huey/kernel_build/initramfs_builder.py   (Step 17)
+#   kernel/huey-linux/initramfs/modprobe.d/huey-v100.conf  (Step 16, for
+#   binding policy, NOT for module selection)
+#
+# Format (initramfs-tools compatible):
+#   - one module per line
+#   - blank lines and lines beginning with '#' are ignored
+#   - module options may follow the module name, space-separated
+#     (e.g. "my_module opt=value"); the initramfs builder treats them as
+#     positional modprobe arguments
+#
+# This file lists ONLY modules we deliberately want present in the
+# initramfs. It is additive: Debian's initramfs-tools already autodetects
+# the root filesystem driver, storage controllers, and most display
+# drivers. If a module is already pulled in by initramfs-tools' own hooks,
+# listing it here is redundant and should be avoided.
+#
+# Dependency resolution:
+#   'modprobe' (and initramfs-tools' copy_modules_dir machinery) resolves
+#   each module's 'modinfo -F depends' automatically. Do NOT add a module
+#   here solely to satisfy another module's dependency: amdgpu, nvidia,
+#   and nvidia-uvm each declare their own dependencies.
+#
+# Blacklist directives:
+#   These belong in modprobe.d/huey-v100.conf (Step 16), NOT here. This
+#   file never negates a driver; it only requests inclusion.
+#
+# Profile:  v100-workstation
+# Target:   HueyOS custom kernel (LOCALVERSION=-huey1)
+# =============================================================================
+
+# --- Display path (AMD RX 570) -----------------------------------------------
+# amdgpu drives the RX 570 display. Include it early so early KMS and
+# Wayland bring-up can proceed from the initramfs. Do NOT blacklist or
+# override amdgpu here; overrides belong in modprobe.d.
+amdgpu
+
+# --- Compute path (Tesla V100, proprietary 580.196.07) -----------------------
+# nvidia and nvidia-uvm are the compute path. Including them in the
+# initramfs ensures CUDA / NVML are ready as soon as userspace starts,
+# without waiting for the udev cycle to load them.
+#
+# nvidia-modeset and nvidia-drm are intentionally NOT listed:
+# the Tesla V100 has no display output, so neither is needed in the
+# initramfs for the v100-workstation profile. If a future profile uses
+# an NVIDIA GPU for display, add them there in that profile's
+# modules.list.
+nvidia
+nvidia-uvm

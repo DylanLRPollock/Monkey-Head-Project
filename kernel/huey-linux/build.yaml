@@ -1,0 +1,84 @@
+# =============================================================================
+# HueyOS custom kernel — build intent
+# =============================================================================
+#
+# WHAT this file is:
+#   Human-edited intent for the HueyOS kernel builder. Describes the pinned
+#   source, the proprietary NVIDIA driver flavor, the output layout, and the
+#   safety gates. It does NOT contain a complete kernel .config, secrets,
+#   vendor binaries, MOK keys, GPU UUIDs, or anything that can mutate the host
+#   on its own.
+#
+# CONSUMED BY:
+#   python -m huey.kernel_build.cli {plan,config,build-kernel,build-nvidia,
+#                                    initramfs,sign,verify,release}
+#
+# VALIDATED BY:
+#   src/huey/kernel_build/models.py  (schema and safe-default enforcement)
+#   src/huey/kernel_build/policy.py  (risk gates; rejects unsafe overrides)
+#
+# DO NOT add:
+#   - PEM private keys, MOK keys, or signing PINs
+#   - NVIDIA .run archives, .ko files, or vendor installers
+#   - GPU UUIDs, PCI BDFs, or other machine-specific identifiers
+#   - Credentials, API tokens, or auth URLs
+#   - A full kernel .config (generate into build output; review the delta)
+#   - Any field that triggers `nvidia-installer` or a `runfile` autoinstall
+# =============================================================================
+
+schema_version: 1
+
+# Target profile. Must match a fragment under profiles/.
+# See profiles/v100-workstation.config (Step 10).
+profile: v100-workstation
+
+kernel:
+  # Debian linux-source package or an explicitly approved upstream source.
+  # Until an official source is pinned and verified in source.lock.json,
+  # these stay null and build-kernel refuses to proceed.
+  #
+  # source_type:
+  #   debian-linux-source  -> Debian linux-source-<version> .deb
+  #   upstream             -> explicitly approved upstream tarball
+  source_type: debian-linux-source
+  source: null                     # e.g. "linux-source-7.2"
+  version: null                    # e.g. "7.2.15-1"
+  checksum: null                   # SHA-256 hex; never invent this value
+  localversion: "-huey1"           # distinct suffix so the custom kernel is identifiable
+  baseline_config: null            # optional path to a known-good /boot/config-*; null -> resolve read-only from host
+
+nvidia:
+  # Tesla V100 (Volta, sm_70) requires the PROPRIETARY module flavor.
+  # The open GPU kernel modules are Turing+ only and are rejected for this profile.
+  version: "580.196.07"
+  module_flavor: proprietary       # allowed: proprietary (only)
+  #
+  # source_kind:
+  #   dkms-local       -> pre-obtained DKMS source tree under source_path
+  #   vendor-archive   -> an operator-supplied vendor archive unpacked under source_path
+  # `runfile` and `autoinstall` are invalid values and must be rejected.
+  source_kind: dkms-local
+  source_path: null                # operator-supplied local path; never committed
+
+build:
+  jobs: 4                          # conservative for a 16 GiB RAM workstation; never "all CPUs"
+
+paths:
+  workspace: build/huey-kernel/workspace
+  output: build/huey-kernel/
+
+signing:
+  # Secure Boot state is detected read-only. Keys live OUTSIDE the repository.
+  # allowed policy values: required_if_secureboot | required
+  # `disabled` is rejected when Secure Boot is enabled; see policy.py.
+  required_policy: required_if_secureboot
+  key_path: null                   # operator-supplied local path; never committed
+  cert_path: null                  # operator-supplied local path; never committed
+
+safety:
+  # These gates are enforced by policy.py. Editing this file alone is NOT
+  # sufficient to relax them: the validator rejects `true` for
+  # allow_host_mutation and allow_root_build.
+  allow_host_mutation: false
+  allow_root_build: false
+  allow_network_fetch: false       # offline by default; source prep is a separate explicit step
