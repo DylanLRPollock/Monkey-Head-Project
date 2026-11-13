@@ -189,7 +189,6 @@ class AgreementApp(tk.Tk):
         )
         self.card.grid(row=1, column=0, sticky="nsew", padx=30, pady=(0, 30))
         self.card.columnconfigure(0, weight=1)
-        self.card.rowconfigure(2, weight=1)
 
         self.header = tk.Frame(self.card, background=CARD)
         self.header.grid(row=0, column=0, sticky="ew")
@@ -267,7 +266,6 @@ class AgreementApp(tk.Tk):
             style="Agreement.TCheckbutton",
             variable=self._accepted,
             command=self._update_continue_state,
-            wraplength=650,
         )
         self.accept_check.grid(row=4, column=0, sticky="ew", pady=(16, 12))
 
