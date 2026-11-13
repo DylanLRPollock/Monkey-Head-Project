@@ -77,19 +77,12 @@ Use exactly these labels in this order:
 ### Warnings
 - Always warn against deinterlacing progressive or uncertain sources.
 - Warn that IVTC can break on mixed content.
-- Warn that deinterlacing is lossy and irreversible.
+- Warn that deinterlacing changes frame representation and removes/combines field information; it cannot be undone from the output.
 - Warn that `send_field` changes frame rate.
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- no deinterlace
-- run idet first when evidence is missing
-- `bwdif` over other filters for true interlaced
-- `parity=auto` over hardcoded field order
-- preserve frame rate
-- copy audio
+If evidence is weak, recommend no deinterlacing and request representative idet/field-order data. Distinguish true interlace from telecine and mixed content. Preserve audio and explain that deinterlacing changes the picture.
 
 ## Practical command patterns
 
