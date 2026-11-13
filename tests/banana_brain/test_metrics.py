@@ -289,9 +289,7 @@ async def test_metrics_initial_failure_malformed_sample_and_stop_paths(monkeypat
     await metrics.start()
     await metrics.stop()
 
-    malformed = make_metrics(
-        status_value=SimpleNamespace(timestamp="not-a-timestamp")
-    )
+    malformed = make_metrics(status_value=SimpleNamespace(timestamp="not-a-timestamp"))
     await malformed.sample_once()
     assert malformed._sample_count == 0
 
