@@ -66,13 +66,7 @@ Use exactly these labels in this order:
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- carry existing tags through
-- do not add missing tags without labeling the assumption
-- do not transform color
-- stream copy when possible
-- MKV output
+Carry verified tags through when possible. Never guess missing tags or confuse metadata signaling with pixel transforms. Correct tags only with evidence and verify the output at both stream and container levels.
 
 ## Practical command patterns
 
