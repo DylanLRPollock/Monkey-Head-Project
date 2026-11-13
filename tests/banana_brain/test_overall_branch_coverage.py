@@ -26,7 +26,6 @@ from huey.banana_brain.notifications import (
 )
 from huey.banana_brain.ollama_adapter import OllamaAdapter
 from huey.banana_brain.priority_manager import PriorityManager
-from huey.banana_brain.scheduler import Scheduler
 from huey.banana_brain import scheduler_api as api_module
 from huey.banana_brain import scheduler_cli as cli
 
@@ -50,8 +49,11 @@ async def test_audio_optional_stop_synthesis_and_probe_branches():
         },
         AudioResponse(audio=b"wave"),
     )
+    coqui._tts_default_model = ""
     result = await coqui.execute(
-        make_job(payload={"task": "synthesize", "text": "hello", "voice": "", "model": ""})
+        make_job(
+            payload={"task": "synthesize", "text": "hello", "voice": "", "model": ""}
+        )
     )
     body = coqui._session.calls[0][2]["json"]
     assert result["backend"] == "coqui"
@@ -295,9 +297,12 @@ def test_priority_aging_cap_at_safety_does_not_log():
 async def test_scheduler_without_optional_vram_methods(scheduler):
     sched, _adapter, _monitor = scheduler
     sched._adapters["no-estimator"] = object()
-    assert await sched._estimate_vram(
-        make_job(adapter="no-estimator", estimated_vram_bytes=None)
-    ) == Scheduler.DEFAULT_VRAM_ESTIMATE_BYTES
+    assert (
+        await sched._estimate_vram(
+            make_job(adapter="no-estimator", estimated_vram_bytes=None)
+        )
+        == 8 * 1024**3
+    )
 
     sched._vram_manager = SimpleNamespace()
     await sched._run_job(make_job(adapter="fake"))
@@ -347,10 +352,11 @@ async def test_cli_health_and_vram_without_optional_fields(capsys):
 
     client = Client()
     assert (
-        await cli._cmd_health(argparse.Namespace(json=False), client)
-        == cli.ExitCode.OK
+        await cli._cmd_health(argparse.Namespace(json=False), client) == cli.ExitCode.OK
     )
-    assert await cli._cmd_vram(argparse.Namespace(json=False), client) == cli.ExitCode.OK
+    assert (
+        await cli._cmd_vram(argparse.Namespace(json=False), client) == cli.ExitCode.OK
+    )
     assert "status:" in capsys.readouterr().out
 
 
