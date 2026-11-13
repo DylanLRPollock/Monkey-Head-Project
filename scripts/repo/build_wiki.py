@@ -183,7 +183,7 @@ def render(name, spec):
     return f"""# {spec['title']}
 
 > [!IMPORTANT]
-> **Status date:** {DATE} · **Framework:** {FRAMEWORK} ·
+> **Status date:** {spec.get('status_date', DATE)} · **Framework:** {spec.get('framework', FRAMEWORK)} ·
 > **Classification:** {spec['classification']} · **Authority:** explanatory
 > wiki; accepted plans, merged implementation evidence, and tests determine
 > current implementation status.
@@ -192,7 +192,7 @@ def render(name, spec):
 
 {spec['body'].strip()}
 
-{SOURCES}"""
+{spec.get('source_links', SOURCES)}"""
 
 
 def _expected_pages(nav, specs):
@@ -311,7 +311,7 @@ def _page_content_errors(output, names, expected):
     errors = []
     for page in output.glob("*.md"):
         text = page.read_text()
-        if page.stem in expected and DATE not in text:
+        if page.stem in expected and not re.search(r"\*\*Status date:\*\* \d{4}-\d{2}-\d{2}", text):
             errors.append(f"{page.name}: missing status date")
         errors.extend(
             f"{page.name}: unresolved [[{target}]]"
