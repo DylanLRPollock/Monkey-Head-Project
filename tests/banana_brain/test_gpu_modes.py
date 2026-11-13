@@ -504,7 +504,7 @@ def test_persistence_rejects_non_object_state_and_ignores_write_errors(tmp_path)
 
 
 @pytest.mark.asyncio
-async def test_mode_fallback_queue_and_housekeeping_branches():
+async def test_mode_fallback_queue_and_housekeeping_branches(monkeypatch):
     from types import SimpleNamespace
 
     from huey.banana_brain.gpu_modes import GPUMode, GPUModeManager
@@ -556,22 +556,26 @@ async def test_mode_fallback_queue_and_housekeeping_branches():
     manager._adapters = {"test": Unloader()}
     await manager._unload_all_adapters()
 
-    async def stop_housekeeping():
-        await asyncio.sleep(0.005)
-        manager._housekeeping_stop.set()
+    calls = 0
 
-    stop_task = asyncio.create_task(stop_housekeeping())
+    async def controlled_wait(awaitable, _timeout):
+        nonlocal calls
+        calls += 1
+        if calls % 2:
+            awaitable.close()
+            raise TimeoutError
+        manager._housekeeping_stop.set()
+        return await awaitable
+
+    monkeypatch.setattr(asyncio, "wait_for", controlled_wait)
     manager._current_mode = GPUMode.AI
     await manager._housekeeping_loop()
-    await stop_task
 
     async def fail_drain():
         raise RuntimeError("drain unavailable")
 
     manager._housekeeping_stop.clear()
+    calls = 0
     manager._current_mode = GPUMode.MAINTENANCE
     manager._suspend_non_matching = fail_drain
-    stop_task = asyncio.create_task(stop_housekeeping())
-    await manager._housekeeping_loop()
-    await stop_task
     await manager._housekeeping_loop()
