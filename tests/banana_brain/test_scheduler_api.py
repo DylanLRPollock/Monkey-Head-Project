@@ -760,6 +760,16 @@ async def test_api_socket_chmod_fallback_tcp_start_and_middleware_cancel(
     assert tcp_api.listening_on == "http://127.0.0.1:0"
     await tcp_api.stop()
 
+    request = make_mocked_request("GET", "/status")
+
+    async def allowed(_request):
+        return api_module.web.Response(text="ok")
+
+    assert (await api._auth_middleware(request, allowed)).status == 200
+    api._bind = "127.0.0.1:8080"
+    api._token = None
+    assert (await api._auth_middleware(request, allowed)).status == 503
+
     request = make_mocked_request("GET", "/cancelled")
 
     async def cancelled(_request):
