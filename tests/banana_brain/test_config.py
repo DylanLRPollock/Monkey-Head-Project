@@ -237,12 +237,15 @@ def test_remaining_config_edges_and_audio_validation(tmp_path, monkeypatch):
         with pytest.raises(ConfigError, match=expected):
             BananaBrainConfig.from_dict(values)
 
-    assert BananaBrainConfig.from_dict(
-        {
-            "api_bind": "localhost:8080",
-            "api_token": "0123456789abcdef",
-        }
-    ).api_bind == "localhost:8080"
+    assert (
+        BananaBrainConfig.from_dict(
+            {
+                "api_bind": "localhost:8080",
+                "api_token": "0123456789abcdef",
+            }
+        ).api_bind
+        == "localhost:8080"
+    )
     assert "invalid URL" in _validate_url("http://[invalid")
     assert "invalid port" in _validate_url("http://localhost:0")
 
