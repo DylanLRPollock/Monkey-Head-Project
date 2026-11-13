@@ -611,7 +611,7 @@ async def test_unload_skipped_when_busy(adapter, fake_comfy):
 
 
 @pytest.mark.asyncio
-async def test_remaining_comfyui_adapter_error_paths(
+async def test_remaining_comfyui_adapter_error_paths(  # noqa: C901,RUF100
     adapter, fake_comfy, test_config, monkeypatch
 ):
     import aiohttp
