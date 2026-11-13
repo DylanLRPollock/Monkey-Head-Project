@@ -183,7 +183,10 @@ def _run(args: argparse.Namespace) -> int:
         return 1
     except ConnectionError as exc:
         print(f"Cannot connect to Ollama: {exc}", file=sys.stderr)
-        print("Check that Ollama is running and that --host is correct.", file=sys.stderr)
+        print(
+            "Check that Ollama is running and that --host is correct.",
+            file=sys.stderr,
+        )
         return 1
     except Exception as exc:
         print(f"Ollama command failed: {exc}", file=sys.stderr)
