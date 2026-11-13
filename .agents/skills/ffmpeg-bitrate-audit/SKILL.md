@@ -85,13 +85,7 @@ Use exactly these labels in this order:
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- compute bpp before recommending anything
-- CRF over fixed bitrate
-- copy audio when practical
-- MKV output
-- no denoise, sharpening, or resolution changes
+Treat bpp as a rough screening metric, not a quality verdict or universal threshold. Recommend no re-encode unless there is a stated size or compatibility goal. If encoding is requested, choose codec and pixel format from source metadata and retain compatible streams.
 
 ## Practical command patterns
 
