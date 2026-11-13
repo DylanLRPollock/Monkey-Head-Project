@@ -608,18 +608,20 @@ async def test_remaining_ollama_response_and_helper_branches(
 
 
 @pytest.mark.asyncio
-async def test_streaming_skips_empty_lines(adapter, fake_ollama):
-    _, server_state = fake_ollama
-    server_state.stream_body = b'\n{"response":"after blank","done":true}\n'
-    result = await adapter.execute(
+async def test_streaming_skips_empty_lines(adapter):
+    class EmptyChunkContent:
+        async def __aiter__(self):
+            yield b""
+            yield b'{"response":"after blank","done":true}'
+
+    class Response:
+        content = EmptyChunkContent()
+
+    result = await adapter._consume_stream(
+        Response(),
         make_job(
             adapter="ollama",
-            payload={
-                "model": "qwen2.5:32b",
-                "prompt": "x",
-                "stream": True,
-            },
-        )
+            payload={"model": "qwen2.5:32b", "prompt": "x"},
+        ),
     )
     assert result["response"] == "after blank"
-    server_state.stream_body = None
