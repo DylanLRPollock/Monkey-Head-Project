@@ -236,6 +236,7 @@ comfyui = [
 
 [project.scripts]
 huey = "huey.cli:main"
+huey-kernel = "huey.kernel_build.cli:main"
 huey-api = "huey.api:main"
 huey-command-center = "huey.apps.command_center.cli:main"
 huey-pygpt = "huey.integrations.pygpt_cli:main"
