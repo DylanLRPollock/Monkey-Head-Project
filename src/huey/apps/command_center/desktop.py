@@ -575,6 +575,14 @@ class CommandCenterDesktop(tk.Tk):
             self._render_phase(selection[0])
 
     def _render_phase(self, phase_id: str) -> None:
+        previous_id = getattr(self, "selected_phase_id", None)
+        if previous_id in self.phase_lookup and hasattr(self, "phase_notes"):
+            self.phase_lookup[previous_id]["notes"] = self.phase_notes.get(
+                "1.0", "end-1c"
+            )
+            self.snapshot["migration"]["global_notes"] = self.global_notes.get(
+                "1.0", "end-1c"
+            )
         self.selected_phase_id = phase_id
         phase = self.phase_lookup[phase_id]
         self.phase_title.configure(text=phase["title"])
