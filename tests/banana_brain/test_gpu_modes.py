@@ -526,7 +526,10 @@ async def test_mode_fallback_queue_and_housekeeping_branches():
 
     class Queue:
         def __init__(self):
-            self.jobs = [Job(adapter="ollama", payload={}), Job(adapter="ollama", payload={})]
+            self.jobs = [
+                Job(adapter="ollama", payload={}),
+                Job(adapter="ollama", payload={}),
+            ]
             self.remove_calls = 0
 
         async def peek(self):
