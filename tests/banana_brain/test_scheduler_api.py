@@ -779,3 +779,31 @@ async def test_api_socket_chmod_fallback_tcp_start_and_middleware_cancel(
 
     with pytest.raises(asyncio.CancelledError):
         await api._error_middleware(request, cancelled)
+
+
+@pytest.mark.asyncio
+async def test_health_warns_from_watchdog_and_submission_guard(monkeypatch):
+    class WarningWatchdog:
+        async def snapshot(self):
+            return {"signals": [{"severity": "warn"}]}
+
+    api = make_api(token="secret", watchdog=WarningWatchdog())
+    app = api_module.web.Application(
+        middlewares=[
+            api._error_middleware,
+            api._auth_middleware,
+            api._inflight_middleware,
+        ]
+    )
+    api._install_routes(app)
+    async with TestClient(TestServer(app)) as client:
+        health = await client.get("/health")
+        assert health.status == 200
+        assert (await health.json())["severity"] == "warn"
+
+    async def non_object(_request, *, optional=False):
+        return []
+
+    monkeypatch.setattr(api_module, "_read_json", non_object)
+    with pytest.raises(APIError, match="body must be a JSON object"):
+        await api._handle_submit_job(None)
