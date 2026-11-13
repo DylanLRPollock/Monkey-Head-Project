@@ -400,3 +400,55 @@ def test_backend_configuration_parsing(tmp_path, monkeypatch):
     assert notifier._backends[1].min_level is NotificationLevel.ERROR
     assert notifier._backends[2].min_level is NotificationLevel.CRITICAL
     assert notifier._backends[3].min_level is NotificationLevel.INFO
+
+
+@pytest.mark.asyncio
+async def test_overflow_delivery_failures_and_config_helper_edges(monkeypatch):
+    from huey.banana_brain.notifications import (
+        _cfg_bool,
+        _cfg_get,
+        _cfg_str,
+    )
+
+    notifier = Notifier({"notifications_enabled": True})
+    assert _cfg_get(object(), "missing") is None
+    assert _cfg_str({"value": "ready"}, "value") == "ready"
+    assert _cfg_bool({"value": " YES "}, "value", False) is True
+    assert _cfg_bool({"value": 0}, "value", True) is False
+
+    class ContendedQueue:
+        maxsize = 1
+
+        def put_nowait(self, _notification):
+            raise asyncio.QueueFull
+
+        def get_nowait(self):
+            raise asyncio.QueueEmpty
+
+    notifier._queue = ContendedQueue()
+    await notifier.notify("info", "overflow", "message")
+    assert notifier.get_stats()["dropped_overflow"] == 1
+
+    notifier._queue = asyncio.Queue()
+    note_item = note()
+    notifier._queue.put_nowait(note_item)
+
+    async def fail_delivery(_notification):
+        notifier._stop_event.set()
+        raise RuntimeError("backend orchestration failed")
+
+    monkeypatch.setattr(notifier, "_deliver", fail_delivery)
+    await notifier._delivery_loop()
+    assert notifier._queue._unfinished_tasks == 0
+
+    notifier._stop_event.clear()
+    notifier._queue = asyncio.Queue()
+    notifier._queue.put_nowait(note())
+
+    async def cancel_delivery(_notification):
+        raise asyncio.CancelledError
+
+    monkeypatch.setattr(notifier, "_deliver", cancel_delivery)
+    with pytest.raises(asyncio.CancelledError):
+        await notifier._delivery_loop()
+    assert notifier._queue._unfinished_tasks == 0
