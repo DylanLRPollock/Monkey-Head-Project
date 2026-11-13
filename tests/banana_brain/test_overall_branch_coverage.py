@@ -18,7 +18,6 @@ from huey.banana_brain.config import BananaBrainConfig, ConfigError, _to_bool
 from huey.banana_brain.gpu_modes import GPUMode, GPUModeManager
 from huey.banana_brain.gpu_monitor import GPUMonitor
 from huey.banana_brain.job_models import Job, Priority
-from huey.banana_brain.job_store import JobStore
 from huey.banana_brain.metrics import JobMetric, Metrics, _job_to_metric
 from huey.banana_brain.notifications import (
     NotificationLevel,
