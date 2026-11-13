@@ -450,7 +450,7 @@ async def test_uncovered_audio_transcription_synthesis_and_probe_branches(
         },
         Response(status=503, text="backend unavailable"),
     )
-    with pytest.raises(RuntimeError, match="whisper.cpp /inference returned 503"):
+    with pytest.raises(RuntimeError, match=r"whisper\.cpp /inference returned 503"):
         await failing_stt.execute(
             make_job(payload={"task": "transcribe", "audio_path": str(source)})
         )
