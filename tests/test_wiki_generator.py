@@ -86,3 +86,13 @@ def test_home_uses_current_review_metadata_and_truth_boundaries(tmp_path: Path) 
     assert "not yet ratified or operational" in text
     assert "One NVIDIA Tesla V100" in text
     assert "[[Governance-and-Constitution]]" in text
+
+
+def test_wiki_publishing_is_scoped_to_reviewed_pages() -> None:
+    root = Path(__file__).resolve().parents[1]
+    script = (root / "scripts/repo/publish_wiki.sh").read_text()
+    workflow = (root / ".github/workflows/publish-wiki.yml").read_text()
+    assert 'WIKI_PUBLISH_PAGES: Home' in workflow
+    assert 'WIKI_PUBLISH_PAGES:-' in script
+    assert 'git add -- "${published_files[@]}"' in script
+    assert 'find "$wiki_dir" -mindepth 1' not in script
