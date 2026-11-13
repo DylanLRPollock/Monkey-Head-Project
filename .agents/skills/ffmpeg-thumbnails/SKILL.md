@@ -84,13 +84,7 @@ Use exactly these labels in this order:
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- sample every 60 seconds
-- skip the first 5 seconds
-- preserve aspect ratio
-- PNG for contact sheets, high-quality JPEG for stills
-- do not upscale
+Choose samples using clip duration and desired coverage. Preserve aspect ratio, avoid unnecessary upscaling, and make sure the tile count can cover the intended interval. Place seek after input for accurate still timestamps.
 
 ## Practical command patterns
 
