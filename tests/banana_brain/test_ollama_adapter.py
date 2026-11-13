@@ -610,9 +610,7 @@ async def test_remaining_ollama_response_and_helper_branches(
 @pytest.mark.asyncio
 async def test_streaming_skips_empty_lines(adapter, fake_ollama):
     _, server_state = fake_ollama
-    server_state.stream_body = (
-        b'\n{"response":"after blank","done":true}\n'
-    )
+    server_state.stream_body = b'\n{"response":"after blank","done":true}\n'
     result = await adapter.execute(
         make_job(
             adapter="ollama",
