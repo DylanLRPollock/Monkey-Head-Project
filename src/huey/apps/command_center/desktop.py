@@ -371,7 +371,8 @@ class CommandCenterDesktop(tk.Tk):
         ttk.Label(
             tab,
             text=(
-                "Generate reviewable task prompts from the migration plan. Nothing is sent."
+                "Generate reviewable task prompts from the migration plan. "
+                "Nothing is sent."
             ),
             style="Muted.TLabel",
         ).pack(anchor="w", pady=(0, 12))
@@ -405,7 +406,8 @@ class CommandCenterDesktop(tk.Tk):
         ttk.Label(
             tab,
             text=(
-                "Sample/mock run records. Import local JSONL or export the visible records."
+                "Sample/mock run records. Import local JSONL or export the visible "
+                "records."
             ),
             style="Muted.TLabel",
         ).pack(anchor="w", pady=(0, 10))
