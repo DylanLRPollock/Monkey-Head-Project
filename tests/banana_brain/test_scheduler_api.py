@@ -10,7 +10,7 @@ import pytest
 from aiohttp.test_utils import TestClient, TestServer
 
 from huey.banana_brain import scheduler_api as api_module
-from huey.banana_brain.job_models import JobState, Priority
+from huey.banana_brain.job_models import Job, JobState, Priority
 from huey.banana_brain.scheduler import (
     JobNotCancellable,
     SchedulerError,
@@ -647,3 +647,86 @@ async def test_error_middleware_normalizes_http_and_unexpected_errors():
         broken_response = await client.get("/broken")
         assert broken_response.status == 500
         assert "endpoint broke" in (await broken_response.json())["error"]["message"]
+
+
+@pytest.mark.asyncio
+async def test_remaining_api_error_and_optional_component_paths():
+    assert str(APIError(400, "bad request")) == "bad request"
+
+    class BrokenModes:
+        async def get_state(self):
+            raise RuntimeError("mode status failed")
+
+        async def set_mode(self, *_args, **_kwargs):
+            raise RuntimeError("transition failed")
+
+        async def cancel_suspended(self, _job_id):
+            raise RuntimeError("suspended cancellation failed")
+
+    class BrokenWatchdog:
+        async def snapshot(self):
+            raise RuntimeError("watchdog status failed")
+
+    api = make_api(token="secret", modes=BrokenModes(), watchdog=BrokenWatchdog())
+    async def not_cancelled(*_args, **_kwargs):
+        return False
+
+    api._scheduler.cancel = not_cancelled
+    app = api_module.web.Application(
+        middlewares=[
+            api._error_middleware,
+            api._auth_middleware,
+            api._inflight_middleware,
+        ]
+    )
+    api._install_routes(app)
+    headers = {"Authorization": "Bearer secret"}
+    async with TestClient(TestServer(app)) as client:
+        health = await client.get("/health")
+        assert health.status == 200
+        status = await client.get("/status", headers=headers)
+        assert status.status == 200
+        assert "watchdog" in await status.json()
+
+        transition = await client.post(
+            "/mode", headers=headers, json={"mode": "image", "reason": "test"}
+        )
+        assert transition.status == 400
+
+        bad_shape = await client.post("/jobs", headers=headers, json=[])
+        assert bad_shape.status == 400
+        invalid_job = await client.post(
+            "/jobs",
+            headers=headers,
+            json={"adapter": "ollama", "payload": [], "id": "invalid"},
+        )
+        assert invalid_job.status == 400
+
+        suspended = await client.post(
+            "/jobs/suspended/cancel", headers=headers, json={}
+        )
+        assert suspended.status == 404
+
+    class ExistingStore:
+        async def get(self, _job_id):
+            return Job(adapter="ollama", payload={}, id="active")
+
+    scheduler = Scheduler()
+    async def cannot_cancel(*_args, **_kwargs):
+        return False
+
+    scheduler.cancel = cannot_cancel
+    api2 = make_api(token="secret", scheduler=scheduler, store=ExistingStore())
+    app2 = api_module.web.Application(
+        middlewares=[
+            api2._error_middleware,
+            api2._auth_middleware,
+            api2._inflight_middleware,
+        ]
+    )
+    api2._install_routes(app2)
+    async with TestClient(TestServer(app2)) as client:
+        response = await client.post(
+            "/jobs/active/cancel", headers=headers, json={}
+        )
+        assert response.status == 409
