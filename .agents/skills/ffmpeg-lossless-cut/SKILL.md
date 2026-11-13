@@ -89,14 +89,7 @@ Use exactly these labels in this order:
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- prefer stream copy
-- place `-ss` before `-i` for speed unless exactness is required
-- keep all streams unless the user names specific ones
-- choose mkv output
-- avoid re-encoding unless exactness or compatibility demands it
-- preserve timestamps only when the user asks
+When uncertain, ask whether a keyframe-aligned cut is acceptable. Use stream copy only for tolerant boundaries; re-encode video for frame-accurate boundaries. Verify start/end timestamps and A/V sync.
 
 ## Practical command patterns
 
