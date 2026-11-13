@@ -558,7 +558,7 @@ async def test_mode_fallback_queue_and_housekeeping_branches(monkeypatch):
 
     calls = 0
 
-    async def controlled_wait(awaitable, _timeout):
+    async def controlled_wait(awaitable, timeout):
         nonlocal calls
         calls += 1
         if calls % 2:

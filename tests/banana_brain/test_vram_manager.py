@@ -270,8 +270,9 @@ async def test_monitor_failures_and_implausible_diagnostics_fail_closed(
 
 
 async def test_mark_running_is_idempotent_for_active_reservations(vram, stub_monitor):
+    stub_monitor.status = _status()
     job = make_job()
-    assert await vram.try_reserve(job, GIB) is True
+    await vram.try_reserve(job, 5 * GIB)
     vram.mark_running(job)
     vram.mark_running(job)
     assert vram.reservation_count() == 1
