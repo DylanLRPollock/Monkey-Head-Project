@@ -240,224 +240,54 @@ def test_script_help_or_usage() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Behavioral: missing fragment
+# Behavioral checks against the actual positional interface:
+# assemble_config.sh <role> <output-config> [kernel-config-dir]
 # ---------------------------------------------------------------------------
+
+
+def _fixture_config_dir(tmp_path: Path, role_text: str) -> Path:
+    cfg = tmp_path / "configs"
+    cfg.mkdir()
+    (cfg / "base.config").write_text(
+        "CONFIG_MODULES=y\nCONFIG_X=first\n", encoding="utf-8",
+    )
+    (cfg / "core.config").write_text(role_text, encoding="utf-8")
+    return cfg
 
 
 def test_missing_fragment_produces_nonzero_exit(tmp_path: Path) -> None:
-    """A nonexistent fragment must produce a nonzero exit and a clear message."""
-    caps = _capabilities_or_skip("has_positional_profile")
-
-    fake_kernel = tmp_path / "kernel"
-    (fake_kernel / "scripts" / "kconfig").mkdir(parents=True)
-    (fake_kernel / "scripts" / "kconfig" / "merge_config.sh").write_text(
-        "#!/bin/sh\nexit 0\n", encoding="utf-8"
-    )
-    os.chmod(fake_kernel / "scripts" / "kconfig" / "merge_config.sh", 0o755)
-    (fake_kernel / "Makefile").write_text("# fake\n", encoding="utf-8")
-
-    # Point the script at a nonexistent fragment file via its most plausible
-    # interface. The .env-style variable is the safest guess when positional
-    # args are supported: assign FRAGMENTS to a nonexistent path.
-    env = dict(os.environ)
-    env["HUY_FRAGMENTS"] = str(tmp_path / "does-not-exist.config")
-    env["HUY_KERNEL_SOURCE"] = str(fake_kernel)
-    env["HUY_BASE_CONFIG"] = str(tmp_path / "base.config")
-    (tmp_path / "base.config").write_text("CONFIG_X=y\n", encoding="utf-8")
-
-    try:
-        result = subprocess.run(
-            [str(SCRIPT), "core"],
-            capture_output=True,
-            text=True,
-            cwd=str(tmp_path),
-            env=env,
-            timeout=20.0,
-            check=False,
-        )
-    except subprocess.TimeoutExpired:
-        pytest.fail("assemble_config.sh hung on missing fragment")
-
-    if result.returncode == 0:
-        pytest.skip(
-            "assemble_config.sh returned 0 for a nonexistent fragment via "
-            "HUY_FRAGMENTS. Interface assumptions did not match; confirm the "
-            "script's actual fragment-passing mechanism and update this test."
-        )
-    combined = (result.stdout + result.stderr).lower()
-    assert (
-        "not found" in combined
-        or "missing" in combined
-        or "cannot" in combined
-        or "no such" in combined
-    ), (
-        "assemble_config.sh must print a clear message when a fragment is "
-        f"missing; got stdout={result.stdout!r} stderr={result.stderr!r}"
-    )
-
-
-# ---------------------------------------------------------------------------
-# Behavioral: conflicting symbols
-# ---------------------------------------------------------------------------
+    cfg = _fixture_config_dir(tmp_path, "# include fragments/absent.config\n")
+    result = _run_script("core", str(tmp_path / "output.config"), str(cfg), cwd=tmp_path)
+    assert result.returncode != 0
+    assert "missing included fragment" in (result.stdout + result.stderr).lower()
+    assert not (tmp_path / "output.config").exists()
 
 
 def test_conflicting_symbols_resolves_deterministically(tmp_path: Path) -> None:
-    """Later fragments must win over earlier ones (merge_config.sh semantics)."""
-    caps = _capabilities_or_skip("mentions_merge_config")
-
-    # Build a minimal tree that supports invoking merge_config.sh directly,
-    # then exercise the script's conflict resolution by supplying two
-    # fragments that set the same symbol to different values.
-    fake_kernel = tmp_path / "kernel"
-    (fake_kernel / "scripts" / "kconfig").mkdir(parents=True)
-    merge_script = fake_kernel / "scripts" / "kconfig" / "merge_config.sh"
-    merge_script.write_text(
-        "#!/bin/sh\n# Fake merge_config.sh for the test.\n"
-        "OUT=\"\"\n"
-        "while [ $# -gt 0 ]; do\n"
-        "  case \"$1\" in\n"
-        "    -m) shift ;;\n"
-        "    -O) OUT=\"$2\"; shift 2 ;;\n"
-        "    *) BASE=\"${BASE:-$1}\"; shift ;;\n"
-        "  esac\n"
-        "done\n"
-        "mkdir -p \"$OUT\"\n"
-        "# Later files win: overwrite in order.\n"
-        "OUTPUT=\"$OUT/.config\"\n"
-        ": > \"$OUTPUT\"\n"
-        "for f in \"$BASE\" \"$FRAGMENTS_ONE\" \"$FRAGMENTS_TWO\"; do\n"
-        "  [ -f \"$f\" ] || continue\n"
-        "  cat \"$f\" >> \"$OUTPUT\"\n"
-        "done\n",
-        encoding="utf-8",
-    )
-    os.chmod(merge_script, 0o755)
-    (fake_kernel / "Makefile").write_text("# fake\n", encoding="utf-8")
-
-    base = tmp_path / "base.config"
-    base.write_text("CONFIG_MODULES=y\n", encoding="utf-8")
-    frag_a = tmp_path / "a.config"
-    frag_a.write_text("CONFIG_X=first\n", encoding="utf-8")
-    frag_b = tmp_path / "b.config"
-    frag_b.write_text("CONFIG_X=second\n", encoding="utf-8")
-
-    env = dict(os.environ)
-    env["HUY_KERNEL_SOURCE"] = str(fake_kernel)
-    env["HUY_BASE_CONFIG"] = str(base)
-    env["HUY_FRAGMENTS_ONE"] = str(frag_a)
-    env["HUY_FRAGMENTS_TWO"] = str(frag_b)
-    env["HUY_OUTPUT"] = str(tmp_path / "out")
-
-    try:
-        result = subprocess.run(
-            [str(SCRIPT), "core"],
-            capture_output=True,
-            text=True,
-            cwd=str(tmp_path),
-            env=env,
-            timeout=20.0,
-            check=False,
-        )
-    except subprocess.TimeoutExpired:
-        pytest.fail("assemble_config.sh hung on conflicting symbols")
-
-    effective = tmp_path / "out" / ".config"
-    if result.returncode != 0 or not effective.is_file():
-        pytest.skip(
-            "assemble_config.sh did not produce an effective .config via the "
-            "HUY_* interface assumptions in this test. Confirm the script's "
-            "actual interface and adjust this test. "
-            f"returncode={result.returncode} stdout={result.stdout!r} "
-            f"stderr={result.stderr!r}"
-        )
-
-    text = effective.read_text(encoding="utf-8")
-    # The last assignment must be the winning one.
-    winners = [line for line in text.splitlines() if line.startswith("CONFIG_X=")]
-    assert winners, "no CONFIG_X assignment produced"
-    assert winners[-1] == "CONFIG_X=second", (
-        f"conflict resolution produced {winners!r}; expected last assignment "
-        "to be CONFIG_X=second"
-    )
-
-
-# ---------------------------------------------------------------------------
-# Behavioral: recursive include
-# ---------------------------------------------------------------------------
+    cfg = _fixture_config_dir(tmp_path, "CONFIG_X=second\nCONFIG_EXTRA=y\n")
+    out = tmp_path / "output.config"
+    first = _run_script("core", str(out), str(cfg), cwd=tmp_path)
+    assert first.returncode == 0, first.stderr
+    data = out.read_bytes()
+    x_assignments = [line for line in data.decode().splitlines() if line.startswith("CONFIG_X=")]
+    assert x_assignments == ["CONFIG_X=second"]
+    second = _run_script("core", str(out), str(cfg), cwd=tmp_path)
+    assert second.returncode == 0, second.stderr
+    assert out.read_bytes() == data, "kernel config merging must be deterministic"
 
 
 def test_recursive_include_is_detected_or_rejected(tmp_path: Path) -> None:
-    """Recursion via include/`source` must be handled (detected or rejected)."""
-    caps = _capabilities_or_skip("mentions_merge_config")
-
-    # Create two fragments that 'include' each other via a hand-rolled
-    # directive. We do not assume the script supports include syntax; the
-    # test accepts either (a) the script rejects the input with an error, or
-    # (b) the script completes with a finite, deterministic output.
-    fake_kernel = tmp_path / "kernel"
-    (fake_kernel / "scripts" / "kconfig").mkdir(parents=True)
-    merge_script = fake_kernel / "scripts" / "kconfig" / "merge_config.sh"
-    merge_script.write_text(
-        "#!/bin/sh\nmkdir -p \"$2\" || true\nexit 0\n", encoding="utf-8"
+    cfg = _fixture_config_dir(tmp_path, "# include fragments/a.config\n")
+    fragments = cfg / "fragments"
+    fragments.mkdir()
+    (fragments / "a.config").write_text(
+        "CONFIG_A=y\n# include fragments/b.config\n", encoding="utf-8",
     )
-    os.chmod(merge_script, 0o755)
-    (fake_kernel / "Makefile").write_text("# fake\n", encoding="utf-8")
-
-    base = tmp_path / "base.config"
-    base.write_text("CONFIG_MODULES=y\n", encoding="utf-8")
-
-    # Two fragments that each mention the other via an INCLUDE directive.
-    frag_a = tmp_path / "a.config"
-    frag_a.write_text("INCLUDE b.config\nCONFIG_A=y\n", encoding="utf-8")
-    frag_b = tmp_path / "b.config"
-    frag_b.write_text("INCLUDE a.config\nCONFIG_B=y\n", encoding="utf-8")
-
-    env = dict(os.environ)
-    env["HUY_KERNEL_SOURCE"] = str(fake_kernel)
-    env["HUY_BASE_CONFIG"] = str(base)
-    env["HUY_FRAGMENTS_ONE"] = str(frag_a)
-    env["HUY_FRAGMENTS_TWO"] = str(frag_b)
-
-    try:
-        result = subprocess.run(
-            [str(SCRIPT), "core"],
-            capture_output=True,
-            text=True,
-            cwd=str(tmp_path),
-            env=env,
-            timeout=20.0,
-            check=False,
-        )
-    except subprocess.TimeoutExpired:
-        pytest.fail("assemble_config.sh hung on recursive include")
-
-    combined = (result.stdout + result.stderr).lower()
-    if result.returncode != 0:
-        # Rejection is acceptable and expected; the script must say why.
-        assert (
-            "include" in combined
-            or "recursive" in combined
-            or "cycle" in combined
-        ), (
-            "assemble_config.sh rejected recursive input but did not explain "
-            f"why. stdout={result.stdout!r} stderr={result.stderr!r}"
-        )
-        return
-
-    # If the script returned 0, confirm it produced a finite, deterministic
-    # result rather than looping or silently ignoring the INCLUDE line.
-    out_dir = tmp_path / "out"
-    effective = out_dir / ".config"
-    if not effective.is_file():
-        pytest.skip(
-            "assemble_config.sh returned 0 but did not produce an effective "
-            ".config via the HUY_* interface assumptions. Confirm the script's "
-            "actual interface and adjust this test. "
-            f"stdout={result.stdout!r} stderr={result.stderr!r}"
-        )
-    # If it accepts INCLUDE, it must produce finite output; if it ignores
-    # INCLUDE, that's also acceptable per the current interface (documented
-    # in the skip path). We only fail on obvious problems.
-    assert effective.stat().st_size < 1_000_000, (
-        "effective .config exceeded 1 MB; possible infinite include expansion"
+    (fragments / "b.config").write_text(
+        "CONFIG_B=y\n# include fragments/a.config\n", encoding="utf-8",
     )
+    out = tmp_path / "output.config"
+    result = _run_script("core", str(out), str(cfg), cwd=tmp_path, timeout=10)
+    assert result.returncode != 0, "include cycle must be rejected"
+    assert "recursive include" in (result.stdout + result.stderr).lower()
+    assert not out.exists()
