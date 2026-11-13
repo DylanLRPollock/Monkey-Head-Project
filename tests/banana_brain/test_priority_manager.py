@@ -268,6 +268,8 @@ async def test_nonpositive_aging_step_disables_bonus(test_config):
 
 
 def test_config_number_helper_accepts_mapping_and_attribute_defaults():
+    from types import SimpleNamespace
+
     from huey.banana_brain.priority_manager import _cfg_num
 
     assert _cfg_num({}, "missing", 4.0) == 4.0
