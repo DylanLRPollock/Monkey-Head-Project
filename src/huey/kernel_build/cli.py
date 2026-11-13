@@ -1093,11 +1093,11 @@ def _build_parser() -> argparse.ArgumentParser:
 # ---------------------------------------------------------------------------
 
 
-def main() -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     """Parse argv, dispatch, print, and return the exit code."""
     parser = _build_parser()
     try:
-        args = parser.parse_args()
+        args = parser.parse_args(argv)
     except SystemExit as exc:
         # argparse --help -> 0; parse errors -> 2.
         return int(exc.code) if exc.code is not None else 0
