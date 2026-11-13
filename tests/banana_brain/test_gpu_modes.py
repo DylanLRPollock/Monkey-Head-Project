@@ -568,6 +568,7 @@ async def test_mode_fallback_queue_and_housekeeping_branches(monkeypatch):
         return await awaitable
 
     monkeypatch.setattr(asyncio, "wait_for", controlled_wait)
+    manager._safety_halted = False
     manager._current_mode = GPUMode.AI
     await manager._housekeeping_loop()
 

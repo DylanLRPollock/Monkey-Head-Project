@@ -737,14 +737,15 @@ class GPUModeManager:
         """
         while not self._housekeeping_stop.is_set():
             try:
-                await asyncio.wait_for(
+                stopped = await asyncio.wait_for(
                     self._housekeeping_stop.wait(),
                     timeout=self._drain_interval,
                 )
+            except TimeoutError:
+                stopped = False
+            if stopped:
                 # stop event was set; exit
                 return
-            except TimeoutError:
-                pass
             if not (self._current_mode.is_exclusive() or self._safety_halted):
                 continue
             try:
