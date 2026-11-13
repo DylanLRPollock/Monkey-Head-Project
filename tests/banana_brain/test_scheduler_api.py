@@ -667,7 +667,10 @@ async def test_remaining_api_error_and_optional_component_paths():
         async def snapshot(self):
             raise RuntimeError("watchdog status failed")
 
-    api = make_api(token="secret", modes=BrokenModes(), watchdog=BrokenWatchdog())
+    api = make_api(
+        token="secret", modes=BrokenModes(), watchdog=BrokenWatchdog()
+    )
+
     async def not_cancelled(*_args, **_kwargs):
         return False
 
@@ -712,6 +715,7 @@ async def test_remaining_api_error_and_optional_component_paths():
             return Job(adapter="ollama", payload={}, id="active")
 
     scheduler = Scheduler()
+
     async def cannot_cancel(*_args, **_kwargs):
         return False
 
@@ -726,9 +730,7 @@ async def test_remaining_api_error_and_optional_component_paths():
     )
     api2._install_routes(app2)
     async with TestClient(TestServer(app2)) as client:
-        response = await client.post(
-            "/jobs/active/cancel", headers=headers, json={}
-        )
+        response = await client.post("/jobs/active/cancel", headers=headers, json={})
         assert response.status == 409
 
 
