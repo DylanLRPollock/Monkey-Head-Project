@@ -611,7 +611,9 @@ async def test_unload_skipped_when_busy(adapter, fake_comfy):
 
 
 @pytest.mark.asyncio
-async def test_remaining_comfyui_adapter_error_paths(adapter, fake_comfy, test_config, monkeypatch):
+async def test_remaining_comfyui_adapter_error_paths(
+    adapter, fake_comfy, test_config, monkeypatch
+):
     import aiohttp
 
     from huey.banana_brain.comfyui_adapter import _safe_text
@@ -626,11 +628,12 @@ async def test_remaining_comfyui_adapter_error_paths(adapter, fake_comfy, test_c
             make_job(adapter="comfyui", payload={"workflow": {"4": {"class_type": "x"}}})
         )
 
-    async def fail_post(*_args, **_kwargs):
+    def fail_post(*_args, **_kwargs):
         raise OSError("offline")
 
     monkeypatch.setattr(aiohttp.ClientSession, "post", fail_post)
     assert await adapter.unload_idle_models(1024) == 0
+    monkeypatch.undo()
 
     class Response:
         def __init__(self, status=200, data=None, fail_text=False):
