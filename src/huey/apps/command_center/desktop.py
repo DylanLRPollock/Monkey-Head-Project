@@ -164,6 +164,7 @@ class CommandCenterDesktop(tk.Tk):
         self._build_ui()
         self._refresh_phase_list()
         self._refresh_v1_runs()
+        self.protocol("WM_DELETE_WINDOW", self._close)
         if self.load_warning:
             self.after(250, lambda: messagebox.showwarning("Command Center", self.load_warning))
 
@@ -587,26 +588,30 @@ class CommandCenterDesktop(tk.Tk):
         self._refresh_phase_list()
 
     def _schedule_save_phase_notes(self, _event: object = None) -> None:
+        self._schedule_notes_save()
+
+    def _schedule_save_global_notes(self, _event: object = None) -> None:
+        self._schedule_notes_save()
+
+    def _schedule_notes_save(self) -> None:
         if self.save_job:
             self.after_cancel(self.save_job)
-        self.save_job = self.after(500, self._save_phase_notes)
+        self.save_job = self.after(500, self._flush_notes)
 
-    def _save_phase_notes(self) -> None:
+    def _flush_notes(self) -> None:
         self.save_job = None
         phase = self.phase_lookup.get(getattr(self, "selected_phase_id", ""))
         if phase is not None:
             phase["notes"] = self.phase_notes.get("1.0", "end-1c")
-            self._save_state()
-
-    def _schedule_save_global_notes(self, _event: object = None) -> None:
-        if self.save_job:
-            self.after_cancel(self.save_job)
-        self.save_job = self.after(500, self._save_global_notes)
-
-    def _save_global_notes(self) -> None:
-        self.save_job = None
         self.snapshot["migration"]["global_notes"] = self.global_notes.get("1.0", "end-1c")
         self._save_state()
+
+    def _close(self) -> None:
+        if self.save_job:
+            self.after_cancel(self.save_job)
+            self.save_job = None
+        self._flush_notes()
+        self.destroy()
 
     def _save_state(self) -> None:
         try:
@@ -639,11 +644,9 @@ class CommandCenterDesktop(tk.Tk):
         phase_id = self.prompt_ids.get(self.prompt_phase.get())
         if phase_id is None:
             return
-        phase = next(
-            (item for item in default_migration_phases() if item.id == phase_id), None
-        )
-        if phase is not None:
-            self._set_prompt(generate_phase_prompt(phase))
+        phase_data = self.phase_lookup.get(phase_id)
+        if phase_data is not None:
+            self._set_prompt(generate_phase_prompt(MigrationPhase(**phase_data)))
 
     def _generate_next_prompt(self) -> None:
         phases = [
