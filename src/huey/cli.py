@@ -92,6 +92,10 @@ def main(argv: Argv = None) -> int:
     args = list(argv) if argv is not None else sys.argv[1:]
     if args and args[0] in {"command-center", "command_center"}:
         return run_command_center(args[1:])
+    if args and args[0] in {"kernel", "kernel-build"}:
+        from huey.kernel_build.cli import main as kernel_build_main
+
+        return kernel_build_main(args[1:])
     if args and args[0] == "gui":
         return run_gui(args[1:])
     return _cli.main(args)
