@@ -223,6 +223,7 @@ async def test_stop_without_reservations_is_quiet(vram, caplog):
 
 async def test_reservation_resize_preserves_active_state(vram, stub_monitor):
     stub_monitor.status = _status()
+    stub_monitor.status = _status()
     job = make_job()
     assert await vram.try_reserve(job, GIB) is True
     vram.mark_running(job)
