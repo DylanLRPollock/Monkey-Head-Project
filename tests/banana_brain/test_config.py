@@ -287,11 +287,9 @@ def test_flat_duplicate_key_error():
     assert config.to_dict()["api_token"] == "***redacted***"
     assert config.to_dict(redact_secrets=False)["api_token"] == "secret"
 
+    class DuplicateItems(dict):
+        def items(self):
+            return [("poll_interval_seconds", 1), ("poll_interval_seconds", 2)]
+
     with pytest.raises(ConfigError, match="duplicate key"):
-        _flatten(
-            {
-                "poll-interval-seconds": 1,
-                "poll_interval_seconds": 2,
-            },
-            source="duplicate",
-        )
+        _flatten(DuplicateItems(), source="duplicate")
