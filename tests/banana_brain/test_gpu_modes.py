@@ -553,7 +553,22 @@ async def test_mode_fallback_queue_and_housekeeping_branches():
     manager._adapters = {"test": Unloader()}
     await manager._unload_all_adapters()
 
+    async def stop_housekeeping():
+        await asyncio.sleep(0.005)
+        manager._housekeeping_stop.set()
+
+    stop_task = asyncio.create_task(stop_housekeeping())
     manager._current_mode = GPUMode.AI
     await manager._housekeeping_loop()
-    manager._housekeeping_stop.set()
+    await stop_task
+
+    async def fail_drain():
+        raise RuntimeError("drain unavailable")
+
+    manager._housekeeping_stop.clear()
+    manager._current_mode = GPUMode.MAINTENANCE
+    manager._suspend_non_matching = fail_drain
+    stop_task = asyncio.create_task(stop_housekeeping())
+    await manager._housekeeping_loop()
+    await stop_task
     await manager._housekeeping_loop()
