@@ -1,0 +1,3 @@
+interface:
+  display_name: "FFmpeg Color Audit"
+  short_description: "Inspect color tags without changing pixels"
