@@ -12,6 +12,9 @@ import pytest
 from aiohttp import web
 from aiohttp.test_utils import TestClient, TestServer, make_mocked_request
 
+from huey.banana_brain import scheduler_api as api_module
+from huey.banana_brain import scheduler_cli as cli
+
 from huey.banana_brain.audio_adapter import AudioAdapter
 from huey.banana_brain.comfyui_adapter import ComfyUIAdapter
 from huey.banana_brain.config import BananaBrainConfig, ConfigError, _to_bool
@@ -25,8 +28,6 @@ from huey.banana_brain.notifications import (
 )
 from huey.banana_brain.ollama_adapter import OllamaAdapter
 from huey.banana_brain.priority_manager import PriorityManager
-from huey.banana_brain import scheduler_api as api_module
-from huey.banana_brain import scheduler_cli as cli
 
 from .conftest import make_job
 from .test_audio_adapter import Response as AudioResponse
