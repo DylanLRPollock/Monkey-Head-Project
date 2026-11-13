@@ -276,3 +276,10 @@ async def test_mark_running_is_idempotent_for_active_reservations(
     vram.mark_running(job)
     vram.mark_running(job)
     assert vram.reservation_count() == 1
+
+
+def test_config_get_supports_mapping_values():
+    from huey.banana_brain.vram_manager import _cfg_get
+
+    assert _cfg_get({"memory": 12}, "memory") == 12
+    assert _cfg_get({}, "missing") is None
