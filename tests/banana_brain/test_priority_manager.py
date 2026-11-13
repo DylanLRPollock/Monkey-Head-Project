@@ -265,3 +265,10 @@ async def test_nonpositive_aging_step_disables_bonus(test_config):
     pm = PriorityManager(cfg)
     old = _submit(pm, priority=20, submitted_at=0)
     assert pm._aging_bonus(old, time.time()) == 0
+
+
+def test_config_number_helper_accepts_mapping_and_attribute_defaults():
+    from huey.banana_brain.priority_manager import _cfg_num
+
+    assert _cfg_num({}, "missing", 4.0) == 4.0
+    assert _cfg_num(SimpleNamespace(value=2), "value", 4.0) == 2.0
