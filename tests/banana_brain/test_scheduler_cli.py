@@ -750,3 +750,45 @@ async def test_cli_json_submit_priority_and_config_socket_fallback(
     )
     assert sock_client.endpoint == "unix:/run/test.sock"
     assert "replacement" in capsys.readouterr().out
+
+
+@pytest.mark.asyncio
+async def test_priority_plain_output_and_remaining_cli_fallbacks(capsys, monkeypatch):
+    class PriorityClient:
+        async def request_ok(self, method, path, body=None):
+            if method == "GET" and path == "/jobs/old":
+                return {
+                    "id": "old",
+                    "state": "pending",
+                    "adapter": "ollama",
+                    "payload": {"prompt": "x"},
+                }
+            if method == "POST" and path == "/jobs":
+                return {"id": "new"}
+            return {"ok": True}
+
+    args = args_for("jobs", "priority", "old", "90")
+    assert await cli._dispatch(args, PriorityClient()) == cli.ExitCode.OK
+    out, err = capsys.readouterr()
+    assert "replaced old with new at priority 90" in out
+    assert "fresh id" in err
+    assert cli._fmt_bytes(1024**4 * 1024) == "1024.0 TiB"
+
+    original_import = __import__
+
+    def fail_config_import(name, *args, **kwargs):
+        if name == "huey.banana_brain.config":
+            raise ImportError("optional config unavailable")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr("builtins.__import__", fail_config_import)
+    assert cli._load_config_safe("ignored.yaml") is None
+    monkeypatch.undo()
+
+    from huey.banana_brain.config import ConfigError
+
+    def fail_config_load(_path):
+        raise ConfigError("invalid settings")
+
+    monkeypatch.setattr("huey.banana_brain.config.load_config", fail_config_load)
+    assert cli._load_config_safe("bad.yaml") is None
