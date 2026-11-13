@@ -797,7 +797,7 @@ async def test_health_warns_from_watchdog_and_submission_guard(monkeypatch):
     async with TestClient(TestServer(app)) as client:
         health = await client.get("/health")
         assert health.status == 200
-        assert (await health.json())["severity"] == "warn"
+        assert (await health.json())["watchdog_severity"] == "warn"
 
     async def non_object(_request, *, optional=False):
         return []
