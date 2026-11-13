@@ -625,7 +625,9 @@ async def test_remaining_comfyui_adapter_error_paths(
     }
     with pytest.raises(RuntimeError, match="invalid graph"):
         await adapter.execute(
-            make_job(adapter="comfyui", payload={"workflow": {"4": {"class_type": "x"}}})
+            make_job(
+                adapter="comfyui", payload={"workflow": {"4": {"class_type": "x"}}}
+            )
         )
 
     def fail_post(*_args, **_kwargs):
