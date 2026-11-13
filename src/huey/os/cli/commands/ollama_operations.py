@@ -112,6 +112,17 @@ def _parse_parameters(values: list[str]) -> dict[str, Any]:
 
 def cmd_create(client: Any, args: Any) -> int:
     if args.modelfile is not None:
+        inline_options = (
+            args.base_model,
+            args.system,
+            args.template,
+            args.quantize,
+            args.parameter,
+        )
+        if any(value is not None and value != [] for value in inline_options):
+            raise ValueError(
+                "Use either --modelfile or inline creation options, not both."
+            )
         path = args.modelfile.expanduser()
         if not path.is_file():
             raise ValueError(f"Modelfile not found: {path}")
