@@ -1,3 +1,0 @@
-interface:
-  display_name: "FFmpeg Audio Extract"
-  short_description: "Extract audio while preserving original streams"

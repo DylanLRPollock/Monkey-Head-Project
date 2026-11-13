@@ -1,3 +1,0 @@
-interface:
-  display_name: "FFmpeg Lossless Cut"
-  short_description: "Trim clips with keyframe-aware stream copy"
