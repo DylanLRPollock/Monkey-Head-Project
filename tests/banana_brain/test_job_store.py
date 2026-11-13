@@ -232,3 +232,64 @@ async def test_write_and_prune_transactions_roll_back_on_sqlite_errors(
         assert store._conn.in_transaction is False
     finally:
         await store.stop()
+
+
+@pytest.mark.asyncio
+async def test_initial_and_periodic_prune_logs_and_sqlite_cleanup(
+    tmp_path, job_store, monkeypatch
+):
+    initial = JobStore({"database_path": tmp_path / "initial-prune.db"})
+
+    async def initial_prune():
+        return {"expired": 1}
+
+    monkeypatch.setattr(initial, "prune", initial_prune)
+    await initial.start()
+    await initial.stop()
+
+    calls = 0
+
+    async def periodic_prune():
+        nonlocal calls
+        calls += 1
+        return {"expired": 1}
+
+    monkeypatch.setattr(job_store, "prune", periodic_prune)
+    job_store._prune_interval_s = 0.001
+    task = asyncio.create_task(job_store._prune_loop())
+    while calls == 0:
+        await asyncio.sleep(0)
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    assert job_store._count_sync(job_store._require_conn(), "pending") == 0
+
+    class BadClose:
+        def close(self):
+            raise RuntimeError("close failed")
+
+    job_store._close_sync(BadClose())
+
+    class BadSchema:
+        in_transaction = True
+
+        def __init__(self):
+            self.rolled_back = False
+
+        def execute(self, statement, *_args):
+            if statement == "PRAGMA user_version":
+                return SimpleNamespace(fetchone=lambda: (0,))
+            if statement == "ROLLBACK":
+                self.rolled_back = True
+                self.in_transaction = False
+                return None
+            raise AssertionError(statement)
+
+        def executescript(self, _script):
+            raise RuntimeError("schema failed")
+
+    connection = BadSchema()
+    with pytest.raises(RuntimeError, match="schema failed"):
+        job_store._init_schema(connection)
+    assert connection.rolled_back is True
