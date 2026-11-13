@@ -278,3 +278,16 @@ def test_remaining_config_edges_and_audio_validation(tmp_path, monkeypatch):
     monkeypatch.setattr(BananaBrainConfig, "__init__", fail_constructor)
     with pytest.raises(ConfigError, match="forced construction failure"):
         BananaBrainConfig.from_dict({})
+
+
+def test_flat_duplicate_key_error():
+    from huey.banana_brain.config import _flatten
+
+    with pytest.raises(ConfigError, match="duplicate key"):
+        _flatten(
+            {
+                "poll-interval-seconds": 1,
+                "poll_interval_seconds": 2,
+            },
+            source="duplicate",
+        )
