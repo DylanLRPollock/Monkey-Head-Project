@@ -76,14 +76,7 @@ Use exactly these labels in this order:
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- verify all fields before recommending stream copy
-- prefer the concat demuxer when fields match
-- prefer the concat filter when any field is unknown
-- choose mkv output
-- choose flac for audio when re-encoding
-- preserve the majority frame rate
+Check the actual stream parameters in every input before stream-copy concatenation. Normalize only the streams and properties that differ, using a user-requested common target. Preserve compatible audio; do not transcode it to FLAC by default. Inspect FFmpeg logs and verify the result.
 
 ## Practical command patterns
 
