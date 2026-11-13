@@ -283,6 +283,10 @@ def test_remaining_config_edges_and_audio_validation(tmp_path, monkeypatch):
 def test_flat_duplicate_key_error():
     from huey.banana_brain.config import _flatten
 
+    config = BananaBrainConfig.from_dict({"api_token": "secret"})
+    assert config.to_dict()["api_token"] == "***redacted***"
+    assert config.to_dict(redact_secrets=False)["api_token"] == "secret"
+
     with pytest.raises(ConfigError, match="duplicate key"):
         _flatten(
             {
