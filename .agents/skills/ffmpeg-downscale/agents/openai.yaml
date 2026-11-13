@@ -1,0 +1,3 @@
+interface:
+  display_name: "FFmpeg Downscale"
+  short_description: "Create a smaller video without stretching"
