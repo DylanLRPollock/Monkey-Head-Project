@@ -608,3 +608,88 @@ async def test_unload_skipped_when_busy(adapter, fake_comfy):
     freed = await adapter.unload_idle_models(5 * 1024**3)
     assert freed == 0
     assert server.free_calls == 0
+
+
+@pytest.mark.asyncio
+async def test_remaining_comfyui_adapter_error_paths(adapter, fake_comfy, test_config, monkeypatch):
+    import aiohttp
+
+    from huey.banana_brain.comfyui_adapter import _safe_text
+
+    _, server = fake_comfy
+    server.submit_response_override = {
+        "error": "invalid graph",
+        "node_errors": {"4": {"errors": ["missing input"]}},
+    }
+    with pytest.raises(RuntimeError, match="invalid graph"):
+        await adapter.execute(
+            make_job(adapter="comfyui", payload={"workflow": {"4": {"class_type": "x"}}})
+        )
+
+    async def fail_post(*_args, **_kwargs):
+        raise OSError("offline")
+
+    monkeypatch.setattr(aiohttp.ClientSession, "post", fail_post)
+    assert await adapter.unload_idle_models(1024) == 0
+
+    class Response:
+        def __init__(self, status=200, data=None, fail_text=False):
+            self.status = status
+            self.data = data
+            self.fail_text = fail_text
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_args):
+            return False
+
+        async def json(self, **_kwargs):
+            return self.data
+
+        async def text(self):
+            if self.fail_text:
+                raise RuntimeError("unreadable")
+            return "body"
+
+    class Session:
+        closed = False
+
+        def __init__(self, status=200, data=None, error=None):
+            self.status = status
+            self.data = data
+            self.error = error
+            self.calls = []
+
+        def get(self, url, **_kwargs):
+            self.calls.append(url)
+            if self.error:
+                raise self.error
+            return Response(self.status, self.data)
+
+        def post(self, *_args, **_kwargs):
+            if self.error:
+                raise self.error
+            return Response(self.status, self.data)
+
+        async def close(self):
+            self.closed = True
+
+    adapter._session = Session(status=404)
+    assert await adapter._get_history_entry(adapter._session, "missing") is None
+    assert await adapter._checkpoint_size_bytes("model.safetensors") is None
+    assert len(adapter._session.calls) == 5
+    assert await adapter._get_queue(adapter._session) == {}
+
+    adapter._session = Session(status=500)
+    assert await adapter._get_history_entry(adapter._session, "failed") is None
+    assert await adapter._get_queue(adapter._session) == {}
+
+    adapter._session = Session(error=OSError("offline"))
+    assert await adapter._get_history_entry(adapter._session, "offline") is None
+    assert await adapter._get_queue(adapter._session) == {}
+    assert await adapter._checkpoint_size_bytes("model.safetensors") is None
+
+    with pytest.raises(RuntimeError, match="session is not open"):
+        ComfyUIAdapter(test_config, vram_manager=None)._require_session()
+    assert await _safe_text(Response(fail_text=True)) == "<unreadable body>"
