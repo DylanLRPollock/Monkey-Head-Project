@@ -419,6 +419,9 @@ async def test_overflow_delivery_failures_and_config_helper_edges(monkeypatch):
     class ContendedQueue:
         maxsize = 1
 
+        def qsize(self):
+            return 0
+
         def put_nowait(self, _notification):
             raise asyncio.QueueFull
 
