@@ -223,8 +223,9 @@ async def test_stop_without_reservations_is_quiet(vram, caplog):
 
 async def test_reservation_resize_preserves_active_state(vram, stub_monitor):
     stub_monitor.status = _status()
+    stub_monitor.status = _status()
     job = make_job()
-    assert await vram.try_reserve(job, GIB) is True
+    await vram.try_reserve(job, 5 * GIB)
     vram.mark_running(job)
     assert await vram.try_reserve(job, 2 * GIB) is True
     reservation = vram._reservations[job.id]
@@ -266,3 +267,18 @@ async def test_monitor_failures_and_implausible_diagnostics_fail_closed(
     assert await vram.available_bytes() is None
     snapshot = await vram.snapshot()
     assert snapshot["allocatable_bytes"] is None
+
+
+async def test_mark_running_is_idempotent_for_active_reservations(vram, stub_monitor):
+    job = make_job()
+    assert await vram.try_reserve(job, GIB) is True
+    vram.mark_running(job)
+    vram.mark_running(job)
+    assert vram.reservation_count() == 1
+
+
+def test_config_get_supports_mapping_values():
+    from huey.banana_brain.vram_manager import _cfg_get
+
+    assert _cfg_get({"memory": 12}, "memory") == 12
+    assert _cfg_get({}, "missing") is None

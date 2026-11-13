@@ -10,7 +10,7 @@ import pytest
 from aiohttp.test_utils import TestClient, TestServer
 
 from huey.banana_brain import scheduler_api as api_module
-from huey.banana_brain.job_models import JobState, Priority
+from huey.banana_brain.job_models import Job, JobState, Priority
 from huey.banana_brain.scheduler import (
     JobNotCancellable,
     SchedulerError,
@@ -647,3 +647,161 @@ async def test_error_middleware_normalizes_http_and_unexpected_errors():
         broken_response = await client.get("/broken")
         assert broken_response.status == 500
         assert "endpoint broke" in (await broken_response.json())["error"]["message"]
+
+
+@pytest.mark.asyncio
+async def test_remaining_api_error_and_optional_component_paths():
+    assert str(APIError(400, "bad request")) == "bad request"
+
+    class BrokenModes:
+        async def get_state(self):
+            raise RuntimeError("mode status failed")
+
+        async def set_mode(self, *_args, **_kwargs):
+            raise RuntimeError("transition failed")
+
+        async def cancel_suspended(self, _job_id):
+            raise RuntimeError("suspended cancellation failed")
+
+    class BrokenWatchdog:
+        async def snapshot(self):
+            raise RuntimeError("watchdog status failed")
+
+    api = make_api(token="secret", modes=BrokenModes(), watchdog=BrokenWatchdog())
+
+    async def not_cancelled(*_args, **_kwargs):
+        return False
+
+    api._scheduler.cancel = not_cancelled
+    app = api_module.web.Application(
+        middlewares=[
+            api._error_middleware,
+            api._auth_middleware,
+            api._inflight_middleware,
+        ]
+    )
+    api._install_routes(app)
+    headers = {"Authorization": "Bearer secret"}
+    async with TestClient(TestServer(app)) as client:
+        health = await client.get("/health")
+        assert health.status == 200
+        status = await client.get("/status", headers=headers)
+        assert status.status == 200
+        assert "watchdog" in await status.json()
+
+        transition = await client.post(
+            "/mode", headers=headers, json={"mode": "image", "reason": "test"}
+        )
+        assert transition.status == 400
+
+        bad_shape = await client.post("/jobs", headers=headers, json=[])
+        assert bad_shape.status == 400
+        invalid_job = await client.post(
+            "/jobs",
+            headers=headers,
+            json={"adapter": "ollama", "payload": [], "id": "invalid"},
+        )
+        assert invalid_job.status == 400
+
+        suspended = await client.post(
+            "/jobs/suspended/cancel", headers=headers, json={}
+        )
+        assert suspended.status == 404
+
+    class ExistingStore:
+        async def get(self, _job_id):
+            return Job(adapter="ollama", payload={}, id="active")
+
+    scheduler = Scheduler()
+
+    async def cannot_cancel(*_args, **_kwargs):
+        return False
+
+    scheduler.cancel = cannot_cancel
+    api2 = make_api(token="secret", scheduler=scheduler, store=ExistingStore())
+    app2 = api_module.web.Application(
+        middlewares=[
+            api2._error_middleware,
+            api2._auth_middleware,
+            api2._inflight_middleware,
+        ]
+    )
+    api2._install_routes(app2)
+    async with TestClient(TestServer(app2)) as client:
+        response = await client.post("/jobs/active/cancel", headers=headers, json={})
+        assert response.status == 409
+
+
+@pytest.mark.asyncio
+async def test_api_socket_chmod_fallback_tcp_start_and_middleware_cancel(
+    tmp_path, monkeypatch
+):
+    from pathlib import Path
+
+    from aiohttp.test_utils import make_mocked_request
+
+    api = make_api(token="secret")
+    api._bind = None
+    api._socket_path = str(tmp_path / "api.sock")
+
+    def fail_chmod(_path, _mode):
+        raise OSError("permissions unavailable")
+
+    monkeypatch.setattr(Path, "chmod", fail_chmod)
+    await api.start()
+    assert api.listening_on.startswith("unix:")
+    await api.stop()
+    monkeypatch.undo()
+
+    tcp_api = make_api(token="secret")
+    tcp_api._socket_path = None
+    tcp_api._bind = "127.0.0.1:0"
+    await tcp_api.start()
+    assert tcp_api.listening_on == "http://127.0.0.1:0"
+    await tcp_api.stop()
+
+    request = make_mocked_request("GET", "/status")
+
+    async def allowed(_request):
+        return api_module.web.Response(text="ok")
+
+    assert (await api._auth_middleware(request, allowed)).status == 200
+    api._bind = "127.0.0.1:8080"
+    api._token = None
+    assert (await api._auth_middleware(request, allowed)).status == 503
+
+    request = make_mocked_request("GET", "/cancelled")
+
+    async def cancelled(_request):
+        raise asyncio.CancelledError
+
+    with pytest.raises(asyncio.CancelledError):
+        await api._error_middleware(request, cancelled)
+
+
+@pytest.mark.asyncio
+async def test_health_warns_from_watchdog_and_submission_guard(monkeypatch):
+    class WarningWatchdog:
+        async def snapshot(self):
+            return {"signals": [{"severity": "warn"}]}
+
+    api = make_api(token="secret", watchdog=WarningWatchdog())
+    app = api_module.web.Application(
+        middlewares=[
+            api._error_middleware,
+            api._auth_middleware,
+            api._inflight_middleware,
+        ]
+    )
+    api._install_routes(app)
+    async with TestClient(TestServer(app)) as client:
+        health = await client.get("/health")
+        assert health.status == 200
+        assert (await health.json())["watchdog_severity"] == "warn"
+
+    async def non_object(_request, *, optional=False):
+        return []
+
+    monkeypatch.setattr(api_module, "_read_json", non_object)
+    with pytest.raises(APIError, match="body must be a JSON object"):
+        await api._handle_submit_job(None)

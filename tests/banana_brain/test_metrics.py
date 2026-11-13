@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import math
 import time
 from types import SimpleNamespace
@@ -263,3 +264,60 @@ async def test_sampling_loop_continues_after_sample_error(monkeypatch):
     monkeypatch.setattr(metrics, "sample_once", flaky)
     await metrics._sample_loop()
     assert calls == 2
+
+
+def test_metrics_optional_integer_and_config_helper_paths():
+    from huey.banana_brain.metrics import _cfg_bool, _cfg_get, _opt_int
+
+    assert _opt_int(None) is None
+    assert _opt_int("invalid") is None
+    assert _cfg_get(SimpleNamespace(value="x"), "value") == "x"
+    assert _cfg_get({}, "missing") is None
+    assert _cfg_bool({"enabled": True}, "enabled", False) is True
+    assert _cfg_bool({"enabled": " true "}, "enabled", False) is True
+    assert _cfg_bool({"enabled": 1}, "enabled", False) is True
+
+
+@pytest.mark.asyncio
+async def test_metrics_initial_failure_malformed_sample_and_stop_paths(monkeypatch):
+    metrics = make_metrics({"metrics_sample_interval_seconds": 60})
+
+    async def fail_initial():
+        raise RuntimeError("initial sample unavailable")
+
+    monkeypatch.setattr(metrics, "sample_once", fail_initial)
+    await metrics.start()
+    await metrics.stop()
+
+    malformed = make_metrics(status_value=SimpleNamespace(timestamp="not-a-timestamp"))
+    await malformed.sample_once()
+    assert malformed._sample_count == 0
+
+    class EmptyBuffer:
+        def __len__(self):
+            return 0
+
+    recorder = make_metrics()
+    recorder._gpu_samples = EmptyBuffer()
+    recorder.record_model_load("audio", "voice", 1.0)
+    assert recorder._explicit_loads["audio:voice"] == [1.0]
+
+    stopping = make_metrics({"metrics_sample_interval_seconds": 60})
+    task = asyncio.create_task(stopping._sample_loop())
+    await asyncio.sleep(0)
+    stopping._stop_event.set()
+    await task
+
+    cancelling = make_metrics({"metrics_sample_interval_seconds": 0.001})
+    entered = asyncio.Event()
+
+    async def wait_for_cancel():
+        entered.set()
+        await asyncio.Event().wait()
+
+    monkeypatch.setattr(cancelling, "sample_once", wait_for_cancel)
+    task = asyncio.create_task(cancelling._sample_loop())
+    await entered.wait()
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task

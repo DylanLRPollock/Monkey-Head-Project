@@ -409,3 +409,102 @@ async def test_probe_stt_falls_back_after_connection_error_and_config_object():
     item._session.get = get
     await item._probe_stt()
     assert calls == 2
+
+
+@pytest.mark.asyncio
+async def test_uncovered_audio_transcription_synthesis_and_probe_branches(
+    tmp_path, monkeypatch
+):
+    import huey.banana_brain.audio_adapter as audio_module
+
+    disabled = adapter()
+    with pytest.raises(RuntimeError, match="transcription is not configured"):
+        await disabled.estimate_vram(make_job(payload={"task": "transcribe"}))
+    with pytest.raises(RuntimeError, match="transcription is not configured"):
+        await disabled._execute_transcribe(make_job(payload={"task": "transcribe"}))
+
+    source = tmp_path / "whisper.wav"
+    source.write_bytes(b"audio")
+    stt = adapter(
+        {
+            "audio_stt_backend": "whisper-cpp",
+            "audio_stt_base_url": "http://stt",
+        },
+        Response(data={"text": " transcript ", "language": "en", "segments": []}),
+    )
+    result = await stt.execute(
+        make_job(
+            payload={
+                "task": "transcribe",
+                "audio_path": str(source),
+                "language": "en",
+            }
+        )
+    )
+    assert result["text"] == "transcript"
+
+    failing_stt = adapter(
+        {
+            "audio_stt_backend": "whisper-cpp",
+            "audio_stt_base_url": "http://stt",
+        },
+        Response(status=503, text="backend unavailable"),
+    )
+    with pytest.raises(RuntimeError, match=r"whisper\.cpp /inference returned 503"):
+        await failing_stt.execute(
+            make_job(payload={"task": "transcribe", "audio_path": str(source)})
+        )
+
+    piper = adapter(
+        {
+            "audio_tts_backend": "piper",
+            "audio_tts_base_url": "http://tts",
+        }
+    )
+    result = await piper.execute(
+        make_job(
+            payload={
+                "task": "synthesize",
+                "text": "hello",
+                "voice": "test-voice",
+                "speed": 1.25,
+            }
+        )
+    )
+    assert result["backend"] == "piper"
+
+    class ConnectorError(Exception):
+        pass
+
+    class ConnectorFailingSession(Session):
+        def get(self, url, **kwargs):
+            self.calls.append(("GET", url, kwargs))
+            raise ConnectorError("offline")
+
+    monkeypatch.setattr(audio_module.aiohttp, "ClientConnectorError", ConnectorError)
+    probe = AudioAdapter(
+        {"audio_tts_backend": "piper", "audio_tts_base_url": "http://tts"},
+        object(),
+    )
+    probe._session = ConnectorFailingSession()
+    with pytest.raises(RuntimeError, match="cannot reach audio_tts_base_url"):
+        await probe._probe_tts()
+    await probe.stop()
+
+    created = Session()
+    monkeypatch.setattr(
+        audio_module.aiohttp, "ClientSession", lambda **_kwargs: created
+    )
+    failing_probe = AudioAdapter(
+        {"audio_tts_backend": "piper", "audio_tts_base_url": "http://tts"},
+        object(),
+    )
+
+    async def reject_probe():
+        raise RuntimeError("probe failed")
+
+    monkeypatch.setattr(failing_probe, "_probe_tts", reject_probe)
+    with pytest.raises(RuntimeError, match="probe failed"):
+        await failing_probe.start()
+    assert created.closed is True
+    assert failing_probe._session is None

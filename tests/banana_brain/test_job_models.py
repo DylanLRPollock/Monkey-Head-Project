@@ -153,3 +153,16 @@ def test_from_dict_tolerates_legacy_bad_scalars_and_extra_fields():
 def test_malformed_embedded_job_result_is_left_as_data():
     encoded = {"__bb_class__": "JobResult", "metrics": ["not-a-mapping"]}
     assert Job.from_dict({"adapter": "audio", "result": encoded}).result == encoded
+
+
+def test_remaining_state_tags_and_positive_integer_paths():
+    from huey.banana_brain.job_models import JobState, _maybe_positive_int
+
+    assert JobState.RUNNING.is_active is True
+    assert JobState.COMPLETED.is_active is False
+    job = Job(adapter="audio", payload={})
+    job.tags = []
+    with pytest.raises(JobValidationError, match="tags must be a dict"):
+        job.validate()
+    assert _maybe_positive_int("not-an-integer") is None
+    assert _maybe_positive_int(0) is None

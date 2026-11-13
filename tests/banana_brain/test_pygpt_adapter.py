@@ -449,3 +449,52 @@ async def test_await_completion_reports_vanished_and_timed_out_jobs():
     item._job_store = MissingStore()
     with pytest.raises(RuntimeError, match="vanished"):
         await item._await_completion("missing")
+
+
+@pytest.mark.asyncio
+async def test_completion_body_poll_failure_and_helper_fallbacks(monkeypatch):
+    item, scheduler, _ollama = make_adapter()
+    app = web.Application()
+    app.router.add_post("/v1/completions", item._handle_completions)
+    async with TestClient(TestServer(app)) as client:
+        assert (await client.post("/v1/completions", data="bad")).status == 400
+        assert (await client.post("/v1/completions", json=[])).status == 400
+
+    async def fail_submission(*_args, **_kwargs):
+        raise RuntimeError("scheduler unavailable")
+
+    monkeypatch.setattr(item, "_submit_and_await", fail_submission)
+
+    async def resolve_local(_model):
+        return "local"
+
+    monkeypatch.setattr(item, "_resolve_model", resolve_local)
+    response = await item._serve_completion(
+        None, {"model": "local", "prompt": "hello"}, kind="completion"
+    )
+    assert response.status == 500
+
+    pending = Job(adapter="ollama", payload={}, state=JobState.PENDING)
+    completed = Job(adapter="ollama", payload={}, state=JobState.COMPLETED)
+
+    class ChangingStore:
+        def __init__(self):
+            self.calls = 0
+
+        async def get(self, _job_id):
+            self.calls += 1
+            return pending if self.calls == 1 else completed
+
+    item._job_store = ChangingStore()
+    item._request_timeout = 1
+    item._poll_interval = 0
+    assert await item._await_completion("job") is completed
+
+    async def fail_cancel(*_args, **_kwargs):
+        raise RuntimeError("cancel unavailable")
+
+    scheduler.cancel = fail_cancel
+    await item._best_effort_cancel("job")
+    assert module._usage_from_result(
+        {"eval_count": "bad", "prompt_eval_count": "bad"}
+    ) == {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}

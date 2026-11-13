@@ -387,3 +387,87 @@ def test_safe_and_optional_string_helpers():
     assert GPUMonitor._optional_str(lambda: b"hello") == "hello"
     assert GPUMonitor._optional_str(lambda: "") is None
     assert GPUMonitor._optional_str(lambda: (_ for _ in ()).throw(OSError())) is None
+
+
+@pytest.mark.asyncio
+async def test_unavailable_poll_refresh_shutdown_and_config_edges(
+    test_config, monkeypatch
+):
+    from types import SimpleNamespace
+
+    from huey.banana_brain.gpu_monitor import _cfg_get
+
+    monitor = GPUMonitor(test_config)
+    assert await monitor.get_status() is None
+    assert await monitor.get_device_identity() is None
+    monitor.request_refresh()
+    assert monitor._wake.is_set()
+    assert monitor._poll_once() is None
+    assert _cfg_get({"fallback": 2}, "primary", "fallback") == 2
+    assert _cfg_get(SimpleNamespace(value=3), "value") == 3
+
+    class BrokenNVML:
+        def nvmlShutdown(self):
+            raise RuntimeError("shutdown failed")
+
+    monitor._nvml = BrokenNVML()
+    monitor._handle = object()
+    monitor._shutdown_nvml()
+    assert monitor._handle is None
+
+    async def cancelled_to_thread(*_args, **_kwargs):
+        raise asyncio.CancelledError
+
+    async def no_status_to_thread(*_args, **_kwargs):
+        monitor._stopping = True
+        return None
+
+    monkeypatch.setattr(
+        "huey.banana_brain.gpu_monitor.asyncio.to_thread", no_status_to_thread
+    )
+    monitor._poll_interval = 0
+    await monitor._poll_loop()
+
+    monitor._stopping = False
+    monkeypatch.setattr(
+        "huey.banana_brain.gpu_monitor.asyncio.to_thread", cancelled_to_thread
+    )
+    with pytest.raises(asyncio.CancelledError):
+        await monitor._poll_loop()
+
+
+def test_multi_gpu_listing_handles_unqueryable_device_and_decodes_pci(test_config):
+    from types import SimpleNamespace
+
+    monitor = GPUMonitor(test_config)
+
+    class MultipleNVML:
+        def nvmlDeviceGetCount_v2(self):
+            return 2
+
+        def nvmlDeviceGetHandleByIndex_v2(self, index):
+            if index == 0:
+                raise RuntimeError("device disappeared")
+            return object()
+
+        def nvmlDeviceGetName(self, _handle):
+            return "Tesla V100"
+
+        def nvmlDeviceGetUUID(self, _handle):
+            return "GPU-123"
+
+        def nvmlDeviceGetPciInfo_v3(self, _handle):
+            return SimpleNamespace(busId=b"0000:01:00.0")
+
+        def nvmlDeviceGetIndex(self, _handle):
+            return 1
+
+        def nvmlDeviceGetSerial(self, _handle):
+            return "serial"
+
+    monitor._nvml = MultipleNVML()
+    with pytest.raises(NVMLUnavailable, match="unqueryable"):
+        monitor._select_device()
+
+    identity = monitor._read_identity(object())
+    assert identity.pci_bus_id == "0000:01:00.0"

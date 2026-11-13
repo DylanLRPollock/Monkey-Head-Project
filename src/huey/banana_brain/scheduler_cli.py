@@ -327,7 +327,7 @@ def _fmt_bytes(n: int | None) -> str:
         return f"{int(b)} B"
     for unit in ("KiB", "MiB", "GiB", "TiB"):
         b /= 1024
-        if b < 1024 or unit == "TiB":
+        if b < 1024:
             return f"{b:.1f} {unit}"
     return f"{b:.1f} TiB"
 

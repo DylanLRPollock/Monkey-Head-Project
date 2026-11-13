@@ -575,3 +575,43 @@ async def test_dispatch_loop_recovers_from_iteration_error_and_timeout(scheduler
     await sched._dispatch_loop()
     assert attempts == 2
     assert sched._idle.is_set()
+
+
+@pytest.mark.asyncio
+async def test_remaining_scheduler_lifecycle_branches(scheduler, monkeypatch):
+    sched, adapter, _ = scheduler
+
+    current = make_job(id="busy", state=JobState.RUNNING)
+    sched._current_job = current
+    assert await sched.wait_until_empty(timeout=0.01) is False
+    assert sched.is_shutting_down is False
+
+    monkeypatch.setattr(adapter, "request_cancel", None, raising=False)
+    assert await sched.cancel("busy", force=True) is True
+    sched._current_job = None
+
+    def fail_mark_running(_job):
+        raise RuntimeError("reservation state unavailable")
+
+    monkeypatch.setattr(sched._vram_manager, "mark_running", fail_mark_running)
+    await sched._run_job(make_job())
+    monkeypatch.undo()
+
+    async def cancelled_dispatch():
+        raise asyncio.CancelledError
+
+    monkeypatch.setattr(sched, "_try_dispatch_next", cancelled_dispatch)
+    with pytest.raises(asyncio.CancelledError):
+        await sched._dispatch_loop()
+    monkeypatch.undo()
+
+    before = SimpleNamespace(free_vram_bytes=100)
+
+    status_values = iter((before, None))
+
+    async def get_status():
+        return next(status_values)
+
+    monkeypatch.setattr(sched._gpu_monitor, "get_status", get_status)
+    sched._adapters["without-unloader"] = object()
+    assert await sched._free_memory_for(make_job(), 10) is False
