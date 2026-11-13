@@ -1,0 +1,3 @@
+interface:
+  display_name: "FFmpeg Audio Normalize"
+  short_description: "Normalize loudness with measured targets"

@@ -1,0 +1,3 @@
+interface:
+  display_name: "FFmpeg Crop"
+  short_description: "Validate cropdetect before cropping"

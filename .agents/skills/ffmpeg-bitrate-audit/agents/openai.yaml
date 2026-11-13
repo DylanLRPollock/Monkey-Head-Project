@@ -1,0 +1,3 @@
+interface:
+  display_name: "FFmpeg Bitrate Audit"
+  short_description: "Contextualize bitrate without fixed thresholds"

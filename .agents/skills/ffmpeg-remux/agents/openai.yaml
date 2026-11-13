@@ -1,0 +1,3 @@
+interface:
+  display_name: "FFmpeg Remux"
+  short_description: "Change containers without re-encoding"
