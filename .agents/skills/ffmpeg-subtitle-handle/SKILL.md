@@ -80,13 +80,7 @@ Use exactly these labels in this order:
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- extract rather than burn in
-- stream copy when format-compatible
-- MKV output
-- never OCR without an explicit request
-- never burn in without confirmation
+Prefer extraction or compatible stream copy. Convert text formats only when requested and explain styling loss. Burn in only on explicit request; it re-encodes video and permanently alters pixels. Do not assume image-based subtitle extraction format support.
 
 ## Practical command patterns
 
