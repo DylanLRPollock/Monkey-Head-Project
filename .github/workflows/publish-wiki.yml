@@ -8,8 +8,8 @@
 # ---------------------------------------------------------------------------
 #
 # Regenerates the GitHub wiki from source files under `scripts/repo/`,
-# validates that the output matches what is committed, and -- on push to
-# `main` only -- publishes it.
+# validates it on PRs and pushes, and publishes only explicitly reviewed
+# pages on a push to `main`. Unreviewed wiki pages must remain untouched.
 #
 # Two jobs:
 #
@@ -185,4 +185,7 @@ jobs:
           WIKI_TOKEN: ${{ secrets.WIKI_DEPLOY_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_ACTOR: ${{ github.actor }}
+          # Only Home has been modernized in this page-by-page review.
+          # Add page names here only after their own review PRs have merged.
+          WIKI_PUBLISH_PAGES: Home
         run: scripts/repo/publish_wiki.sh

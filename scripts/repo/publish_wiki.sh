@@ -25,18 +25,37 @@ if ! git clone "$remote" "$wiki_dir"; then
   exit 3
 fi
 
-find "$wiki_dir" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-find "$BUILD_DIR" -maxdepth 1 -type f -name '*.md' -exec cp {} "$wiki_dir"/ \;
+# Publish only specifically reviewed pages. Never delete unrelated wiki pages.
+# Example: WIKI_PUBLISH_PAGES=Home,Architecture
+PUBLISH_PAGES="${WIKI_PUBLISH_PAGES:-}"
+if [[ -z "$PUBLISH_PAGES" ]]; then
+  echo "WIKI_PUBLISH_PAGES must explicitly name reviewed pages; refusing full wiki replacement." >&2
+  exit 4
+fi
+IFS=',' read -r -a pages <<< "$PUBLISH_PAGES"
+published_files=()
+for page in "${pages[@]}"; do
+  if [[ ! "$page" =~ ^[A-Za-z0-9_-]+$ ]]; then
+    echo "Invalid wiki page name: $page" >&2
+    exit 4
+  fi
+  if [[ ! -f "$BUILD_DIR/$page.md" ]]; then
+    echo "Missing generated wiki page: $page.md" >&2
+    exit 4
+  fi
+  cp -- "$BUILD_DIR/$page.md" "$wiki_dir/$page.md"
+  published_files+=("$page.md")
+done
 
 cd "$wiki_dir"
 git config user.name "$ACTOR"
 git config user.email "${ACTOR}@users.noreply.github.com"
-git add -A
+git add -- "${published_files[@]}"
 
 if git diff --cached --quiet; then
   echo "GitHub Wiki is already synchronized."
   exit 0
 fi
 
-git commit -m "Publish v201.x wiki overhaul"
+git commit -m "Publish reviewed HueyOS wiki pages"
 git push origin HEAD:master
