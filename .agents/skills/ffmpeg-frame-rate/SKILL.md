@@ -84,13 +84,7 @@ Use exactly these labels in this order:
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- preserve the source frame rate
-- do not interpolate
-- use fractional frame-rate notation
-- copy audio
-- use MKV output
+Preserve timestamps unless a target rate is requested. Classify CFR/VFR from timestamp evidence rather than nominal rate fields alone. Do not interpolate by default; explain duplicates/drops and verify A/V sync after conversion.
 
 ## Practical command patterns
 
