@@ -730,3 +730,40 @@ async def test_remaining_api_error_and_optional_component_paths():
             "/jobs/active/cancel", headers=headers, json={}
         )
         assert response.status == 409
+
+
+@pytest.mark.asyncio
+async def test_api_socket_chmod_fallback_tcp_start_and_middleware_cancel(
+    tmp_path, monkeypatch
+):
+    from pathlib import Path
+
+    from aiohttp.test_utils import make_mocked_request
+
+    api = make_api(token="secret")
+    api._bind = None
+    api._socket_path = str(tmp_path / "api.sock")
+
+    def fail_chmod(_path, _mode):
+        raise OSError("permissions unavailable")
+
+    monkeypatch.setattr(Path, "chmod", fail_chmod)
+    await api.start()
+    assert api.listening_on.startswith("unix:")
+    await api.stop()
+    monkeypatch.undo()
+
+    tcp_api = make_api(token="secret")
+    tcp_api._socket_path = None
+    tcp_api._bind = "127.0.0.1:0"
+    await tcp_api.start()
+    assert tcp_api.listening_on == "http://127.0.0.1:0"
+    await tcp_api.stop()
+
+    request = make_mocked_request("GET", "/cancelled")
+
+    async def cancelled(_request):
+        raise asyncio.CancelledError
+
+    with pytest.raises(asyncio.CancelledError):
+        await api._error_middleware(request, cancelled)
