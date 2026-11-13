@@ -500,7 +500,7 @@ async def test_remaining_ollama_response_and_helper_branches(
     import huey.banana_brain.ollama_adapter as ollama_module
     from huey.banana_brain.ollama_adapter import _int_or_none, _safe_text
 
-    server, server_state = fake_ollama
+    _, server_state = fake_ollama
     job = make_job(
         adapter="ollama",
         payload={
@@ -558,6 +558,7 @@ async def test_remaining_ollama_response_and_helper_branches(
 
     monkeypatch.setattr(adapter, "_unload_model", fail_unload)
     assert await adapter.unload_idle_models(2048) == 0
+    monkeypatch.undo()
 
     class BrokenSession:
         closed = False
