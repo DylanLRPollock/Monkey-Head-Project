@@ -1,0 +1,3 @@
+interface:
+  display_name: "FFmpeg Thumbnails"
+  short_description: "Create representative stills and contact sheets"
