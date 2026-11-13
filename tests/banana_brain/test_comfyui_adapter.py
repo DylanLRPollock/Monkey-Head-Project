@@ -680,6 +680,7 @@ async def test_remaining_comfyui_adapter_error_paths(
         async def close(self):
             self.closed = True
 
+    await adapter._session.close()
     adapter._session = Session(status=404)
     assert await adapter._get_history_entry(adapter._session, "missing") is None
     assert await adapter._checkpoint_size_bytes("model.safetensors") is None
