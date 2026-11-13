@@ -147,34 +147,38 @@ qualification runbook has been completed.
 
 ## 6. Exact commands (dry-run first)
 
+After installing HueyOS, invoke the builder through the main CLI as
+`huey kernel <subcommand>`. The standalone `huey-kernel <subcommand>`
+entry point is also available for scripts and focused workflows.
+
 All example commands are run from the repository root.
 
 ```bash
 # 1. Read-only baseline of the host
-python -m huey.kernel_build.cli inventory --json
-python -m huey.kernel_build.cli doctor --json
+huey kernel inventory --json
+huey kernel doctor --json
 
 # 2. Build plan (no host mutation)
-python -m huey.kernel_build.cli plan \
+huey kernel plan \
   --config kernel/huey-linux/build.yaml --json
 
 # 3. Generate the effective kernel .config into the build output (dry-run first)
-python -m huey.kernel_build.cli config \
+huey kernel config \
   --config kernel/huey-linux/build.yaml \
   --output-dir build/huey-kernel/config --dry-run
 
 # 4. Build subcommands (each supports --dry-run)
-python -m huey.kernel_build.cli build-kernel  --config kernel/huey-linux/build.yaml --dry-run
-python -m huey.kernel_build.cli build-nvidia  --config kernel/huey-linux/build.yaml --dry-run
-python -m huey.kernel_build.cli initramfs     --config kernel/huey-linux/build.yaml --dry-run
-python -m huey.kernel_build.cli sign          --config kernel/huey-linux/build.yaml --dry-run
+huey kernel build-kernel  --config kernel/huey-linux/build.yaml --dry-run
+huey kernel build-nvidia  --config kernel/huey-linux/build.yaml --dry-run
+huey kernel initramfs     --config kernel/huey-linux/build.yaml --dry-run
+huey kernel sign          --config kernel/huey-linux/build.yaml --dry-run
 
 # 5. Offline verification of a release directory
-python -m huey.kernel_build.cli verify \
+huey kernel verify \
   --release-dir build/huey-kernel/release/<KERNELRELEASE> --json
 
 # 6. Assemble the release manifest
-python -m huey.kernel_build.cli release \
+huey kernel release \
   --config kernel/huey-linux/build.yaml --dry-run
 ```
 
