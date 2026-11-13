@@ -1,0 +1,3 @@
+interface:
+  display_name: "FFmpeg Video Upscale"
+  short_description: "Recommend careful, source-aware 1080p FFmpeg commands"
