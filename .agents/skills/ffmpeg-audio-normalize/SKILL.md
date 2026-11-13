@@ -83,14 +83,7 @@ Use exactly these labels in this order:
 
 ## Decision defaults
 
-When uncertain, prefer the safer path:
-
-- two-pass loudnorm over one-pass
-- `linear=true` to preserve dynamics
-- `I=-16`, `TP=-1.5`, `LRA=11`
-- FLAC audio in MKV
-- `-c:v copy` for video
-- preserve sample rate and channel layout
+Ask or use the stated loudness target. Measure first and use measured values for two-pass loudnorm. Preserve video and unrelated streams where compatible; choose audio output format for the stated delivery and explain that normalization re-encodes audio.
 
 ## Practical command patterns
 
