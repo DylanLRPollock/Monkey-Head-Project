@@ -1,0 +1,3 @@
+interface:
+  display_name: "FFmpeg HDR Tonemap"
+  short_description: "Convert confirmed HDR to SDR carefully"
