@@ -491,3 +491,113 @@ async def test_cancel_without_model_returns_false(adapter):
         )
         is False
     )
+
+
+@pytest.mark.asyncio
+async def test_remaining_ollama_response_and_helper_branches(
+    adapter, fake_ollama, test_config, monkeypatch
+):
+    import huey.banana_brain.ollama_adapter as ollama_module
+    from huey.banana_brain.ollama_adapter import _int_or_none, _safe_text
+
+    server, server_state = fake_ollama
+    job = make_job(
+        adapter="ollama",
+        payload={
+            "model": "qwen2.5:32b",
+            "prompt": "hello",
+            "system": "be concise",
+            "template": "{{ .Prompt }}",
+        },
+    )
+    await adapter.execute(job)
+    assert server_state.generate_calls[-1]["system"] == "be concise"
+    assert server_state.generate_calls[-1]["template"] == "{{ .Prompt }}"
+
+    server_state.generate_response_override = {"error": "generation failed"}
+    with pytest.raises(RuntimeError, match="ollama error: generation failed"):
+        await adapter.execute(
+            make_job(adapter="ollama", payload={"model": "qwen2.5:32b", "prompt": "x"})
+        )
+    server_state.generate_response_override = None
+
+    server_state.stream_body = (
+        b'{"message":{"role":"assistant","content":"reply"},"done":true}\n'
+    )
+    result = await adapter.execute(
+        make_job(
+            adapter="ollama",
+            payload={
+                "model": "qwen2.5:32b",
+                "prompt": "x",
+                "stream": True,
+            },
+        )
+    )
+    assert result["response"] == "reply"
+    server_state.stream_body = None
+
+    async def fail_show(_model):
+        raise OSError("show unavailable")
+
+    monkeypatch.setattr(adapter, "_show_details", fail_show)
+    assert await adapter.estimate_vram(
+        make_job(adapter="ollama", payload={"model": "missing"})
+    ) == 8 * 1024**3
+
+    server_state.loaded = [
+        {
+            "name": "idle",
+            "size_vram": 1024,
+            "expires_at": "2024-01-01T00:00:00Z",
+        }
+    ]
+
+    async def fail_unload(_session, _model):
+        raise OSError("unload unavailable")
+
+    monkeypatch.setattr(adapter, "_unload_model", fail_unload)
+    assert await adapter.unload_idle_models(2048) == 0
+
+    class BrokenSession:
+        closed = False
+
+        def get(self, *_args, **_kwargs):
+            raise OSError("request failed")
+
+        async def close(self):
+            self.closed = True
+
+    old_session = adapter._session
+    adapter._session = BrokenSession()
+    assert await adapter._list_loaded() == []
+    await adapter._session.close()
+    adapter._session = old_session
+
+    server_state.loaded = [{"name": "idle", "size_vram": 1024}]
+    server_state.generate_http_error = 500
+    assert await adapter.unload_idle_models(2048) == 0
+    server_state.generate_http_error = None
+
+    with pytest.raises(RuntimeError, match="session is not open"):
+        OllamaAdapter(test_config, vram_manager=None)._require_session()
+
+    class Match:
+        def group(self, name):
+            return "not-a-number" if name == "num" else "b"
+
+    class Regex:
+        def search(self, _text):
+            return Match()
+
+    monkeypatch.setattr(ollama_module, "_PARAM_RE", Regex())
+    assert _parse_parameter_size("custom") is None
+    assert _int_or_none("invalid") is None
+    assert _is_pinned({"expires_at": "2999-01-01T00:00:00"}) is True
+    assert _expires_sort_key({"expires_at": "2024-01-01T00:00:00"}) > 0
+
+    class UnreadableResponse:
+        async def text(self):
+            raise RuntimeError("unreadable")
+
+    assert await _safe_text(UnreadableResponse()) == "<unreadable body>"
