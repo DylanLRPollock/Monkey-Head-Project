@@ -607,9 +607,6 @@ async def test_remaining_scheduler_lifecycle_branches(scheduler, monkeypatch):
 
     before = SimpleNamespace(free_vram_bytes=100)
 
-    async def statuses():
-        return before, None
-
     status_values = iter((before, None))
 
     async def get_status():
