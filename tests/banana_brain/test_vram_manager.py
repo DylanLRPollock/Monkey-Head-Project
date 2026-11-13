@@ -269,9 +269,7 @@ async def test_monitor_failures_and_implausible_diagnostics_fail_closed(
     assert snapshot["allocatable_bytes"] is None
 
 
-async def test_mark_running_is_idempotent_for_active_reservations(
-    vram, stub_monitor
-):
+async def test_mark_running_is_idempotent_for_active_reservations(vram, stub_monitor):
     job = make_job()
     assert await vram.try_reserve(job, GIB) is True
     vram.mark_running(job)
