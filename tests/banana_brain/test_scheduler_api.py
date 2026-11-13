@@ -667,9 +667,7 @@ async def test_remaining_api_error_and_optional_component_paths():
         async def snapshot(self):
             raise RuntimeError("watchdog status failed")
 
-    api = make_api(
-        token="secret", modes=BrokenModes(), watchdog=BrokenWatchdog()
-    )
+    api = make_api(token="secret", modes=BrokenModes(), watchdog=BrokenWatchdog())
 
     async def not_cancelled(*_args, **_kwargs):
         return False
