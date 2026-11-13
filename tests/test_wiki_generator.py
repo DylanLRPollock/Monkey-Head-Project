@@ -52,7 +52,7 @@ def test_every_current_page_has_status_and_sources(tmp_path: Path) -> None:
         if "Historical or compatibility page" in text:
             continue
         current += 1
-        assert wiki.DATE in text
+        assert "**Status date:**" in text
         assert "## Repository sources" in text
         assert "[...]" not in text
     assert current == manifest["current_pages"]
@@ -75,3 +75,14 @@ def test_topic_classification_preserves_priority_and_fallback() -> None:
     assert "restore" in wiki.topic_text("recovery-backup").lower()
     assert "release" in wiki.topic_text("release-checklist").lower()
     assert "run/transaction" in wiki.topic_text("unclassified-topic").lower()
+
+
+def test_home_uses_current_review_metadata_and_truth_boundaries(tmp_path: Path) -> None:
+    wiki = load_generator()
+    wiki.build(tmp_path)
+    text = (tmp_path / "Home.md").read_text()
+    assert "**Status date:** 2026-11-12" in text
+    assert "V221 proposed research" in text
+    assert "not yet ratified or operational" in text
+    assert "One NVIDIA Tesla V100" in text
+    assert "[[Governance-and-Constitution]]" in text
