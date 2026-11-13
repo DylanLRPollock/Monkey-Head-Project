@@ -309,7 +309,7 @@ async def test_metrics_initial_failure_malformed_sample_and_stop_paths(monkeypat
     stopping._stop_event.set()
     await task
 
-    cancelling = make_metrics({"metrics_sample_interval_seconds": 60})
+    cancelling = make_metrics({"metrics_sample_interval_seconds": 0.001})
     entered = asyncio.Event()
 
     async def wait_for_cancel():
@@ -318,7 +318,7 @@ async def test_metrics_initial_failure_malformed_sample_and_stop_paths(monkeypat
 
     monkeypatch.setattr(cancelling, "sample_once", wait_for_cancel)
     task = asyncio.create_task(cancelling._sample_loop())
-    await asyncio.sleep(0)
+    await entered.wait()
     task.cancel()
     with pytest.raises(asyncio.CancelledError):
         await task
