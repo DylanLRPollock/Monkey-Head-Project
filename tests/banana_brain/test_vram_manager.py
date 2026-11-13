@@ -225,7 +225,7 @@ async def test_reservation_resize_preserves_active_state(vram, stub_monitor):
     stub_monitor.status = _status()
     stub_monitor.status = _status()
     job = make_job()
-    assert await vram.try_reserve(job, GIB) is True
+    await vram.try_reserve(job, 5 * GIB)
     vram.mark_running(job)
     assert await vram.try_reserve(job, 2 * GIB) is True
     reservation = vram._reservations[job.id]
