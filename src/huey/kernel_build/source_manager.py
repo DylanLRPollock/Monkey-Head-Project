@@ -523,10 +523,14 @@ class SourceManager:
         try:
             result = self._runner.run(spec)
         except RunnerTimeout as exc:
+            # curl may already have written partial bytes before the timeout.
+            # This path was absent before the download and belongs to us.
+            dest.unlink(missing_ok=True)
             raise SourceDownloadError(
                 f"curl timed out downloading {url}: {exc}"
             ) from exc
         except RunnerError as exc:
+            dest.unlink(missing_ok=True)
             raise SourceDownloadError(
                 f"curl failed to launch for {url}: {exc}"
             ) from exc

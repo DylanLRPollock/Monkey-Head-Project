@@ -1,9 +1,10 @@
-"""Tests for huey.kernel_build.source_manager (Step 8; Step 37 expands)."""
+"""Canonical offline source-manager regression suite (Steps 8 and 37)."""
 
 from __future__ import annotations
 
 import hashlib
 import io
+import json
 import tarfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -597,3 +598,219 @@ def test_source_lock_rejects_numeric_coercion(tmp_path: Path) -> None:
     data["schema_version"] = "1"
     with pytest.raises(ValueError, match="schema_version"):
         SourceLock.from_dict(data)
+
+
+# ---------------------------------------------------------------------------
+# Step 37: further canonical contract coverage
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("checksum", ["a" * 63, "A" * 64, "a" * 63 + "B", "g" * 64])
+def test_source_lock_rejects_malformed_sha256(checksum: str) -> None:
+    with pytest.raises(ValueError, match="SHA-256"):
+        SourceLock(
+            schema_version=1, status="pinned", source_type=SourceType.UPSTREAM,
+            package_name="linux", version="7.2.15", archive_filename="linux.tar.gz",
+            origin_url="https://deb.debian.org/linux.tar.gz", checksum_sha256=checksum,
+        )
+
+
+def test_source_lock_rejects_unknown_status() -> None:
+    with pytest.raises(ValueError, match="status"):
+        SourceLock(
+            schema_version=1, status="maybe", source_type=SourceType.UPSTREAM,
+            package_name="linux", version="7.2.15", archive_filename="linux.tar.gz",
+            origin_url="https://deb.debian.org/linux.tar.gz", checksum_sha256="a" * 64,
+        )
+
+
+def test_source_lock_missing_required_from_dict() -> None:
+    with pytest.raises(ValueError, match="missing required fields"):
+        SourceLock.from_dict({"status": "pinned", "schema_version": 1})
+
+
+def test_source_lock_rejects_non_dict_from_dict() -> None:
+    with pytest.raises(TypeError, match="dict"):
+        SourceLock.from_dict(["not", "a", "dict"])  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize("bad_content", ["invalid JSON", "[1, 2, 3]"])
+def test_source_lock_load_from_path_bad_json_or_type(tmp_path: Path, bad_content: str) -> None:
+    p = tmp_path / "source.lock.json"
+    p.write_text(bad_content, encoding="utf-8")
+    with pytest.raises((SourceManagerError, TypeError)):
+        SourceLock.load_from_path(p)
+
+
+def test_source_lock_load_from_path_missing_file(tmp_path: Path) -> None:
+    with pytest.raises(SourceManagerError, match="Failed to load"):
+        SourceLock.load_from_path(tmp_path / "missing.json")
+
+
+@pytest.mark.parametrize("url", [
+    "ftp://deb.debian.org/linux.tar.gz",
+    "https:///missing-host.tar.gz",
+])
+def test_source_url_extra_schemes_refused_before_subprocess(tmp_path: Path, url: str) -> None:
+    tar = tmp_path / "linux.tar.gz"
+    _write_valid_tar(tar)
+    runner = FakeRunner()
+    mgr = SourceManager(runner, cache_dir=tmp_path / "cache", workspace_dir=tmp_path / "ws")
+    with pytest.raises(SourceManagerError, match="URL rejected"):
+        mgr.prepare(_lock(tar, url=url), allow_network=False)
+    assert runner.calls == ()
+    assert not (tmp_path / "cache").exists()
+    assert not (tmp_path / "ws").exists()
+
+
+def test_cached_checksum_failure_preserves_operator_cache(tmp_path: Path) -> None:
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    tar = cache / "linux.tar.gz"
+    tar.write_bytes(b"cache supplied by operator")
+    data = _lock(tar).to_dict()
+    data["checksum_sha256"] = "a" * 64
+    with pytest.raises(SourceChecksumMismatchError):
+        SourceManager(FakeRunner(), cache_dir=cache, workspace_dir=tmp_path / "ws").prepare(
+            SourceLock.from_dict(data)
+        )
+    assert tar.read_bytes() == b"cache supplied by operator"
+
+
+def test_download_timeout_cleans_partial_cache(tmp_path: Path) -> None:
+    tar = tmp_path / "valid.tar.gz"
+    sha = _write_valid_tar(tar)
+    data = _lock(tar, filename="linux.tar.gz").to_dict()
+    data["checksum_sha256"] = sha
+
+    def interrupt(spec: CommandSpec) -> RunnerResult:
+        dest = Path(spec.argv[spec.argv.index("-o") + 1])
+        dest.write_bytes(b"partial data")
+        raise RunnerTimeout("curl exceeded deadline")
+
+    runner = FakeRunner().on(("curl",), interrupt)
+    cache = tmp_path / "cache"
+    mgr = SourceManager(runner, cache_dir=cache, workspace_dir=tmp_path / "ws")
+    with pytest.raises(SourceDownloadError, match="timed out"):
+        mgr.prepare(SourceLock.from_dict(data), allow_network=True)
+    assert not (cache / "linux.tar.gz").exists()
+    assert len(runner.calls) == 1
+
+
+def test_download_runner_failure_cleans_partial_cache(tmp_path: Path) -> None:
+    tar = tmp_path / "valid.tar.gz"
+    _write_valid_tar(tar)
+    data = _lock(tar, filename="linux.tar.gz").to_dict()
+
+    def interrupt(spec: CommandSpec) -> RunnerResult:
+        Path(spec.argv[spec.argv.index("-o") + 1]).write_bytes(b"partial data")
+        raise RunnerError("curl failed to execute")
+
+    runner = FakeRunner().on(("curl",), interrupt)
+    cache = tmp_path / "cache"
+    with pytest.raises(SourceDownloadError, match="failed to launch"):
+        SourceManager(runner, cache_dir=cache, workspace_dir=tmp_path / "ws").prepare(
+            SourceLock.from_dict(data), allow_network=True,
+        )
+    assert not (cache / "linux.tar.gz").exists()
+
+
+@pytest.mark.parametrize("ext,compression", [("xz", "xz"), ("bz2", "bz2")])
+def test_multiple_tar_compressions(tmp_path: Path, ext: str, compression: str) -> None:
+    tar = tmp_path / f"linux.tar.{ext}"
+    _write_valid_tar(tar, compression=compression)
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / tar.name).write_bytes(tar.read_bytes())
+    output = SourceManager(
+        FakeRunner(), cache_dir=cache, workspace_dir=tmp_path / "ws",
+    ).prepare(_lock(tar), allow_network=False)
+    assert output.extracted and output.kernel_source_dir is not None
+    assert (output.kernel_source_dir / "Makefile").is_file()
+
+
+def test_stale_marker_refuses_to_erase_existing_tree_without_force(tmp_path: Path) -> None:
+    tar = tmp_path / "linux.tar.gz"
+    _write_valid_tar(tar)
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / tar.name).write_bytes(tar.read_bytes())
+    mgr = SourceManager(FakeRunner(), cache_dir=cache, workspace_dir=tmp_path / "ws")
+    lock = _lock(tar)
+    first = mgr.prepare(lock)
+    marker = first.workspace_dir / ".huey-source.marker"
+    marker.write_text("0" * 64, encoding="utf-8")
+    # Do not silently delete an operator-modified directory: require force.
+    with pytest.raises(SourceManagerError, match="matching marker"):
+        mgr.prepare(lock)
+    assert (first.kernel_source_dir / "Makefile").is_file()
+    repaired = mgr.prepare(lock, force=True)
+    assert repaired.extracted
+    assert marker.read_text(encoding="utf-8") == lock.checksum_sha256
+
+
+def test_dry_run_offline_missing_cache_does_not_read_filesystem(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    tar = tmp_path / "linux.tar.gz"
+    _write_valid_tar(tar)
+    lock = _lock(tar)
+    runner = FakeRunner()
+    mgr = SourceManager(runner, cache_dir=tmp_path / "cache", workspace_dir=tmp_path / "ws")
+    # Step 8's stronger contract: dry_run is pure planning, no stat(), even
+    # when offline cache is missing. A later real run will reject the cache.
+    def forbid_exists(_self: Path) -> bool:
+        raise AssertionError("dry run must not inspect cache")
+    monkeypatch.setattr(Path, "exists", forbid_exists)
+    result = mgr.prepare(lock, dry_run=True, allow_network=False)
+    assert result.dry_run and not result.extracted
+    assert result.archive_path is None and result.kernel_source_dir is None
+    assert runner.calls == ()
+
+
+def test_absolute_tar_member_rejected(tmp_path: Path) -> None:
+    tar = tmp_path / "evil.tar.gz"
+    with tarfile.open(tar, "w:gz") as tf:
+        data = b"unsafe"
+        member = tarfile.TarInfo("/etc/evil")
+        member.size = len(data)
+        tf.addfile(member, io.BytesIO(data))
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / tar.name).write_bytes(tar.read_bytes())
+    with pytest.raises(SourceArchiveTraversalError):
+        SourceManager(FakeRunner(), cache_dir=cache, workspace_dir=tmp_path / "ws").prepare(
+            _lock(tar), allow_network=False,
+        )
+    assert not (tmp_path / "ws" / "linux-7.2.15").exists()
+
+
+def test_deb_extractor_is_never_called_for_tarball(tmp_path: Path) -> None:
+    tar = tmp_path / "linux.tar.gz"
+    _write_valid_tar(tar)
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / tar.name).write_bytes(tar.read_bytes())
+    called = []
+
+    def forbidden_extractor(_archive: Path, _target: Path) -> None:
+        called.append(_archive)
+        raise AssertionError("deb extractor invoked on tarball")
+
+    mgr = SourceManager(
+        FakeRunner(), cache_dir=cache, workspace_dir=tmp_path / "ws",
+        deb_extractor=forbidden_extractor,
+    )
+    assert mgr.prepare(_lock(tar), allow_network=False).extracted
+    assert called == []
+
+
+def test_unresolved_lock_has_zero_side_effects(tmp_path: Path) -> None:
+    lock = SourceLock(
+        schema_version=1, status="unresolved", source_type=SourceType.UPSTREAM,
+        package_name="linux", version="7.2.15", archive_filename="linux.tar.gz",
+        origin_url="https://deb.debian.org/linux.tar.gz", checksum_sha256="0" * 64,
+    )
+    runner = FakeRunner()
+    mgr = SourceManager(runner, cache_dir=tmp_path / "cache", workspace_dir=tmp_path / "ws")
+    with pytest.raises(SourceLockUnresolvedError):
+        mgr.prepare(lock)
+    assert runner.calls == ()
+    assert list(tmp_path.iterdir()) == []
