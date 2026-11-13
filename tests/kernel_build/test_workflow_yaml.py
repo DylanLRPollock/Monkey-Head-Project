@@ -13,7 +13,7 @@ commitments are checked textually and structurally:
 * the checkout step sets `persist-credentials: false`;
 * `runs-on` names a GitHub-hosted runner, not `self-hosted`;
 * no `sudo`, no `apt-get install`, no `pip install` from an untrusted index;
-* no artifact upload matches `.ko`, `.run`, `.deb`, or `initramfs-*`;
+* no artifacts are uploaded from the PR runner;
 * the workflow does not run any build that produces real artifacts.
 """
 
@@ -366,39 +366,16 @@ def _run_blocks() -> list[str]:
 # ---------------------------------------------------------------------------
 
 
-def test_does_not_upload_binaries() -> None:
-    """Artifact uploads must not match bootable or proprietary file types."""
-    text = _read()
-    # Only one upload step is expected; its path must be JSON/logs.
-    for block in _run_blocks():
-        assert "upload-artifact" not in block  # upload is a `uses:`, not `run:`
-    # Check the upload-artifact step's `with:` inputs.
-    m = re.search(
-        r"upload-artifact.*?with:\s*\n((?:[ \t]+.*\n)+)",
-        text,
-        flags=re.DOTALL,
-    )
-    if m is None:
-        pytest.skip("no upload-artifact step found; artifact policy is moot")
-    inputs = m.group(1)
-    for forbidden in (".ko", ".run", ".deb", "initramfs", "stage-", "vmlinuz"):
-        assert forbidden not in inputs, (
-            f"upload-artifact path or name matches {forbidden!r}; the PR CI "
-            "must not publish build outputs"
-        )
-
-
-def test_upload_paths_are_only_json_and_logs() -> None:
+def test_no_artifacts_are_uploaded() -> None:
+    """PR-controlled files must not be collected from the runner."""
     workflow = _parse()
     steps = workflow["jobs"]["ci"]["steps"]
-    uploads = [step for step in steps if "upload-artifact@" in step.get("uses", "")]
-    assert uploads, "Expected upload-artifact for dry-run logs"
-    for step in uploads:
-        paths = step.get("with", {}).get("path", "").splitlines()
-        paths = [path.strip() for path in paths if path.strip()]
-        assert paths, "upload-artifact has no path entries"
-        assert all(any(pat in path for pat in (".json", ".log", ".txt")) for path in paths)
-        assert all(not any(ext in path for ext in (".ko", ".run", ".deb", "initramfs", "vmlinuz")) for path in paths)
+    uploads = [
+        step for step in steps
+        if step.get("uses", "").startswith("actions/upload-artifact@")
+    ]
+    assert not uploads, f"PR CI must not upload runner files: {uploads!r}"
+    assert "upload-artifact" not in _read()
 
 
 # ---------------------------------------------------------------------------

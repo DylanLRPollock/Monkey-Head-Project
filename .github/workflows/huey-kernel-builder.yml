@@ -47,10 +47,8 @@
 #   index. Dependencies come from the checked-in `pyproject.toml` and any
 #   lock file the repository already manages.
 # * No `secrets.*` reference anywhere.
-# * Artifact upload is limited to **test logs and coverage summaries**,
-#   with an explicit `if-no-files-found: ignore` and a filename allowlist
-#   that cannot match `.ko`, `.run`, `.deb`, or initramfs images. See
-#   `test_workflow_yaml.py::test_does_not_upload_binaries`.
+# * No artifacts are uploaded. Dry-run JSON is printed to the Actions log,
+#   avoiding broad file collection from the shared `/tmp` directory.
 # * The workflow file itself is protected by CODEOWNERS and branch
 #   protection so a fork cannot rewrite it (the fork's version is never
 #   executed by `pull_request`).
@@ -148,7 +146,7 @@ jobs:
               ), doc
           print("plan verified", rc)
           PY
-
+          cat /tmp/plan.json
       - name: Dry-run config builder
         run: |
           rc=0
@@ -159,6 +157,7 @@ jobs:
             --output-dir /tmp/huey-config \
             --dry-run --json > /tmp/config-dry.json || rc=$?
           python -c "import json,sys; d=json.load(open('/tmp/config-dry.json')); assert d['subcommand']=='config' and d['exit_code']==int(sys.argv[1]); assert d['exit_code'] in (2,3,4), d" "$rc"
+          cat /tmp/config-dry.json
 
       - name: Dry-run build-kernel
         run: |
@@ -170,6 +169,7 @@ jobs:
             --output-dir /tmp/huey-build \
             --dry-run --json > /tmp/build-kernel-dry.json || rc=$?
           python -c "import json,sys; d=json.load(open('/tmp/build-kernel-dry.json')); assert d['subcommand']=='build-kernel' and d['exit_code']==int(sys.argv[1]); assert d['exit_code'] in (2,3,4), d" "$rc"
+          cat /tmp/build-kernel-dry.json
 
       - name: Dry-run build-nvidia
         run: |
@@ -181,6 +181,7 @@ jobs:
             --output-dir /tmp/huey-nvidia \
             --dry-run --json > /tmp/build-nvidia-dry.json || rc=$?
           python -c "import json,sys; d=json.load(open('/tmp/build-nvidia-dry.json')); assert d['subcommand']=='build-nvidia' and d['exit_code']==int(sys.argv[1]); assert d['exit_code'] in (2,3,4), d" "$rc"
+          cat /tmp/build-nvidia-dry.json
 
       - name: Dry-run initramfs
         run: |
@@ -194,6 +195,7 @@ jobs:
             --output-dir /tmp/huey-initramfs \
             --dry-run --json > /tmp/initramfs-dry.json || rc=$?
           python -c "import json,sys; d=json.load(open('/tmp/initramfs-dry.json')); assert d['subcommand']=='initramfs' and d['exit_code']==int(sys.argv[1]); assert d['exit_code'] in (2,3,4), d" "$rc"
+          cat /tmp/initramfs-dry.json
 
       - name: Dry-run sign
         run: |
@@ -207,6 +209,7 @@ jobs:
             --output-dir /tmp/huey-sign \
             --dry-run --json > /tmp/sign-dry.json || rc=$?
           python -c "import json,sys; d=json.load(open('/tmp/sign-dry.json')); assert d['subcommand']=='sign' and d['exit_code']==int(sys.argv[1]); assert d['exit_code'] in (2,3,4), d" "$rc"
+          cat /tmp/sign-dry.json
 
       - name: Dry-run release
         run: |
@@ -219,16 +222,4 @@ jobs:
             --kernel-headers-deb /nonexistent/linux-headers.deb \
             --dry-run --json > /tmp/release-dry.json || rc=$?
           python -c "import json,sys; d=json.load(open('/tmp/release-dry.json')); assert d['subcommand']=='release' and d['exit_code']==int(sys.argv[1]); assert d['exit_code'] in (2,3,4), d" "$rc"
-
-      # Upload only logs and JSON manifests from the dry runs. The
-      # allowlist below cannot match `.ko`, `.run`, `.deb`, `initramfs-*`,
-      # or `stage-*` paths.
-      - name: Upload test logs and dry-run JSON
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
-        if: always()
-        with:
-          name: huey-kernel-builder-logs
-          path: |
-            /tmp/*.json
-          if-no-files-found: ignore
-          retention-days: 7
+          cat /tmp/release-dry.json
