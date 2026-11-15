@@ -47,7 +47,9 @@ def test_package_names_are_verified() -> None:
     s = _source()
     assert '"linux-image-$KR"' in s
     assert '"linux-headers-$KR"' in s
-    assert "linux-libc-dev" in s
+    assert '"linux-image-$KR-dbg"' in s
+    assert 'linux-libc-dev) libc=' in s
+    assert '"$count" -eq 4' in s
     assert "Do not use sudo." in s
 
 
