@@ -59,7 +59,7 @@ for pkg in libssl-dev libelf-dev; do
 done
 if ((${#missing[@]})); then
   printf 'Missing build prerequisites: %s\n' "${missing[*]}"
-  warn 'Install only after reviewing the missing package list.'
+  fail 'Required build prerequisites are missing. Review and install them before approving compilation.'
 else
   pass 'Common kernel/headers/packaging prerequisites found.'
 fi
