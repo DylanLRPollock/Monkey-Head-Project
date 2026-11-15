@@ -15,8 +15,8 @@ ORIGINAL="$REPORT/kernel-compile-hashes.txt"
 RESULT="$REPORT/post-package-artifact-reconciliation.txt"
 KR="7.3.4-huey-testing2"
 VERSION="7.3.4-huey-testing2-1"
-IMAGE="$OUT/linux-image-\${KR}_\${VERSION}_amd64.deb"
-HEADERS="$OUT/linux-headers-\${KR}_\${VERSION}_amd64.deb"
+IMAGE="$OUT/linux-image-${KR}_${VERSION}_amd64.deb"
+HEADERS="$OUT/linux-headers-${KR}_${VERSION}_amd64.deb"
 
 for cmd in awk sha256sum dpkg-deb tar stat grep; do
   command -v "$cmd" >/dev/null 2>&1 || fail "Missing required tool $cmd"
