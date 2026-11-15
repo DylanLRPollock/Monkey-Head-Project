@@ -30,7 +30,9 @@ def test_only_offline_image_and_modules_build() -> None:
     s = _script()
     assert 'LOCALVERSION=-huey-testing2 bzImage modules' in s
     assert 'JOBS=4' in s
-    assert 'modinfo -F vermagic' in s
+    assert '"$MODINFO" -F vermagic' in s
+    assert '/usr/sbin/modinfo' in s
+    assert 'command -v modinfo' in s
     assert '"$OBJ/Module.symvers"' in s
     for line in s.splitlines():
         line = line.strip()
