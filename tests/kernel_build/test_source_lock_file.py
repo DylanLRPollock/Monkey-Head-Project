@@ -1,8 +1,4 @@
-"""Offline checks for the unresolved source lock checked into HueyOS (Step 9).
-
-The source lock is intentionally unresolved; both real and dry-run prepare()
-refuse it before any cache, workspace, or runner action.
-"""
+"""Check the signed pinned 7.3.4 source lock and fail-closed rejected variants."""
 from __future__ import annotations
 
 import json
@@ -14,12 +10,15 @@ import pytest
 from huey.kernel_build.models import SourceType
 from huey.kernel_build.runner import CommandSpec, RunnerError, RunnerResult
 from huey.kernel_build.source_manager import (
-    SourceLock, SourceLockUnresolvedError, SourceManager,
+    SourceLock,
+    SourceLockUnresolvedError,
+    SourceManager,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LOCK_PATH = REPO_ROOT / "kernel" / "huey-linux" / "source.lock.json"
 PLACEHOLDER_CHECKSUM = "0" * 64
+EXPECTED_SHA = "b11b6df8295e8e991ff040b71aaa4994a8b55caa23b6b092907f195b5840fd1f"
 
 
 class NeverCalledRunner:
@@ -28,7 +27,17 @@ class NeverCalledRunner:
 
     def run(self, spec: CommandSpec, *, dry_run: bool = False) -> RunnerResult:
         self.calls.append(spec)
-        raise RunnerError("No command should run for an unresolved source lock")
+        raise RunnerError("Unresolved source must not trigger a command")
+
+
+def _unresolved_lock() -> SourceLock:
+    """Synthetic unresolved variant, preserving verified repo metadata."""
+    return replace(
+        SourceLock.load_from_path(LOCK_PATH),
+        status="unresolved",
+        checksum_sha256=PLACEHOLDER_CHECKSUM,
+        retrieved_date=None,
+    )
 
 
 def test_lock_file_exists() -> None:
@@ -37,10 +46,6 @@ def test_lock_file_exists() -> None:
 
 def test_lock_file_is_valid_json() -> None:
     assert isinstance(json.loads(LOCK_PATH.read_text(encoding="utf-8")), dict)
-
-
-def test_lock_contains_unresolved_marker_in_text() -> None:
-    assert '"unresolved"' in LOCK_PATH.read_text(encoding="utf-8")
 
 
 def test_lock_loads_via_source_manager_model() -> None:
@@ -56,71 +61,69 @@ def test_lock_round_trips_through_to_dict() -> None:
     assert SourceLock.from_dict(lock.to_dict()) == lock
 
 
-def test_status_and_checksum_correlate() -> None:
+def test_source_is_pinned_to_verified_checksum() -> None:
     lock = SourceLock.load_from_path(LOCK_PATH)
-    assert lock.status in {"unresolved", "pinned"}
-    if lock.status == "unresolved":
-        assert lock.checksum_sha256 == PLACEHOLDER_CHECKSUM
-    else:
-        assert lock.checksum_sha256 != PLACEHOLDER_CHECKSUM
+    assert lock.status == "pinned"
+    assert lock.checksum_sha256 == EXPECTED_SHA
+    assert lock.checksum_sha256 != PLACEHOLDER_CHECKSUM
+    assert lock.retrieved_date == "2026-11-15"
+    assert lock.origin_url == (
+        "https://cdn.kernel.org/pub/linux/kernel/v7.x/linux-7.3.4.tar.xz"
+    )
 
 
-def test_status_and_retrieved_date_correlate() -> None:
-    lock = SourceLock.load_from_path(LOCK_PATH)
-    if lock.status == "unresolved":
-        assert lock.retrieved_date is None
+def test_provenance_preserves_release_signature_information() -> None:
+    notes = SourceLock.load_from_path(LOCK_PATH).notes
+    assert "signature" in notes.lower()
+    assert "647F28654894E3BD457199BE38DBBDC86092693E" in notes
 
 
-def test_pinned_lock_has_real_https_url() -> None:
-    lock = SourceLock.load_from_path(LOCK_PATH)
-    if lock.status == "pinned":
-        assert lock.origin_url.startswith("https://")
-
-
-def test_prepare_raises_source_lock_unresolved_error(tmp_path: Path) -> None:
-    lock = SourceLock.load_from_path(LOCK_PATH)
-    mgr = SourceManager(NeverCalledRunner(), cache_dir=tmp_path/"c", workspace_dir=tmp_path/"w")
+@pytest.mark.parametrize("dry_run", [False, True])
+def test_synthetic_unresolved_lock_rejected_before_io(
+    tmp_path: Path, dry_run: bool
+) -> None:
+    mgr = SourceManager(
+        NeverCalledRunner(), cache_dir=tmp_path / "c",
+        workspace_dir=tmp_path / "w",
+    )
     with pytest.raises(SourceLockUnresolvedError):
-        mgr.prepare(lock)
+        mgr.prepare(_unresolved_lock(), dry_run=dry_run)
+    assert list(tmp_path.iterdir()) == []
 
 
-def test_prepare_rejection_does_not_invoke_runner(tmp_path: Path) -> None:
-    lock = SourceLock.load_from_path(LOCK_PATH)
+def test_unresolved_source_does_not_invoke_runner(tmp_path: Path) -> None:
     runner = NeverCalledRunner()
-    mgr = SourceManager(runner, cache_dir=tmp_path/"c", workspace_dir=tmp_path/"w")
+    mgr = SourceManager(runner, cache_dir=tmp_path / "c",
+                        workspace_dir=tmp_path / "w")
     with pytest.raises(SourceLockUnresolvedError):
-        mgr.prepare(lock)
+        mgr.prepare(_unresolved_lock())
     assert runner.calls == []
 
 
-def test_prepare_rejection_does_not_touch_filesystem(tmp_path: Path) -> None:
-    lock = SourceLock.load_from_path(LOCK_PATH)
-    mgr = SourceManager(NeverCalledRunner(), cache_dir=tmp_path/"c", workspace_dir=tmp_path/"w")
-    with pytest.raises(SourceLockUnresolvedError):
-        mgr.prepare(lock)
-    assert list(tmp_path.iterdir()) == []
-
-
-def test_prepare_rejection_with_dry_run_still_raises(tmp_path: Path) -> None:
-    lock = SourceLock.load_from_path(LOCK_PATH)
-    mgr = SourceManager(NeverCalledRunner(), cache_dir=tmp_path/"c", workspace_dir=tmp_path/"w")
-    with pytest.raises(SourceLockUnresolvedError):
-        mgr.prepare(lock, dry_run=True)
-
-
 def test_status_flip_without_real_checksum_still_fails(tmp_path: Path) -> None:
-    lock = SourceLock.load_from_path(LOCK_PATH)
-    if lock.status == "pinned":
-        pytest.skip("source lock has been legitimately pinned")
-    # Stronger than the original handoff: reject sentinel before cache inspection.
-    mgr = SourceManager(NeverCalledRunner(), cache_dir=tmp_path/"c", workspace_dir=tmp_path/"w")
+    mgr = SourceManager(
+        NeverCalledRunner(), cache_dir=tmp_path / "c",
+        workspace_dir=tmp_path / "w",
+    )
     with pytest.raises(SourceLockUnresolvedError, match="verified SHA-256"):
-        mgr.prepare(replace(lock, status="pinned"), allow_network=False)
+        mgr.prepare(replace(_unresolved_lock(), status="pinned"), allow_network=False)
     assert list(tmp_path.iterdir()) == []
 
 
-def test_notes_explain_how_to_resolve_when_unresolved() -> None:
-    lock = SourceLock.load_from_path(LOCK_PATH)
-    if lock.status == "unresolved":
-        assert "unresolved" in lock.notes.lower()
-        assert "checksum" in lock.notes.lower()
+def test_pinned_source_is_plannable_offline_without_side_effects(
+    tmp_path: Path,
+) -> None:
+    runner = NeverCalledRunner()
+    mgr = SourceManager(
+        runner, cache_dir=tmp_path / "cache",
+        workspace_dir=tmp_path / "workspace",
+    )
+    result = mgr.prepare(
+        SourceLock.load_from_path(LOCK_PATH),
+        allow_network=False,
+        dry_run=True,
+    )
+    assert result.dry_run is True
+    assert result.archive_sha256 == EXPECTED_SHA
+    assert runner.calls == []
+    assert list(tmp_path.iterdir()) == []
