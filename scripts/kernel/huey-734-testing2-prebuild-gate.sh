@@ -50,7 +50,8 @@ warn 'Actual initramfs mdadm hooks and V100 R580 module compatibility are not ye
 
 missing=()
 for cmd in gcc-16 make flex bison bc openssl pahole cpio rsync fakeroot \
-           dpkg-deb rustc bindgen pkg-config; do
+           dpkg-deb dpkg-buildpackage dpkg-checkbuilddeps dh \
+           rustc bindgen pkg-config; do
   command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
 done
 # Debian places modinfo in /usr/sbin; allow normal-user shells to omit it
@@ -59,7 +60,7 @@ if ! command -v modinfo >/dev/null 2>&1 &&
    [[ ! -x /usr/sbin/modinfo && ! -x /sbin/modinfo ]]; then
   missing+=("kmod (provides modinfo)")
 fi
-for pkg in libssl-dev libelf-dev; do
+for pkg in libssl-dev libelf-dev libdw-dev debhelper; do
   status="$(dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null || true)"
   [[ "$status" == 'install ok installed' ]] || missing+=("$pkg")
 done
