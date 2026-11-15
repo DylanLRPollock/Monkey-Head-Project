@@ -57,3 +57,8 @@ def test_modinfo_checked_even_without_sbin_on_path() -> None:
     assert "command -v modinfo" in script
     assert "/usr/sbin/modinfo" in script
     assert "kmod (provides modinfo)" in script
+
+def test_debian_packaging_dependencies_checked_upfront() -> None:
+    source = _script()
+    assert "for pkg in libssl-dev libelf-dev libdw-dev debhelper" in source
+    assert "dpkg-buildpackage dpkg-checkbuilddeps dh" in source
