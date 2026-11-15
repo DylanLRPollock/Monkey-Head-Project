@@ -145,6 +145,7 @@ class KernelBuilder:
         jobs: int = 4,
         kdeb_pkgversion: str | None = None,
         source_date_epoch: int = 0,
+        expected_kernel_release: str | None = None,
         dry_run: bool = False,
         workspace_root: Path | None = None,
     ) -> KernelBuildResult:
@@ -170,6 +171,9 @@ class KernelBuilder:
             uses its default derived from ``KERNELRELEASE``.
         source_date_epoch:
             Reproducible-build timestamp. ``0`` produces the Unix epoch.
+        expected_kernel_release:
+            Exact KERNELRELEASE expected by the operator (e.g.,
+            ``7.3.4-huey-testing1``). Mismatches are fatal before bindeb-pkg.
         dry_run:
             When ``True``, performs no I/O and launches no subprocess.
 
@@ -301,12 +305,33 @@ class KernelBuilder:
         if isinstance(kr_outcome, KernelBuildResult):
             return kr_outcome
         kernel_release = kr_outcome
+        # Fail closed BEFORE the expensive kernel compile: Kbuild can append
+        # CONFIG_LOCALVERSION, localversion* files or SCM metadata, even when
+        # LOCALVERSION was explicitly supplied.
+        if expected_kernel_release is not None and kernel_release != expected_kernel_release:
+            return self._error_result(
+                localversion=localversion, jobs=jobs,
+                kdeb_pkgversion=kdeb_pkgversion,
+                source_date_epoch=source_date_epoch,
+                code="KERNELRELEASE_MISMATCH",
+                message=(
+                    f"Expected KERNELRELEASE {expected_kernel_release!r}, "
+                    f"but Kbuild returned {kernel_release!r}. "
+                    "Check CONFIG_LOCALVERSION, CONFIG_LOCALVERSION_AUTO, "
+                    "localversion* files, and source Makefile EXTRAVERSION."
+                ),
+            )
         if localversion and not kernel_release.endswith(localversion):
-            # Not fatal: kernelrelease may not reflect LOCALVERSION if the
-            # caller passed a value that the Makefile rejected. Record it as
-            # a WARNING; the mismatch will also surface when matching .deb
-            # package names against the reported release.
-            pass  # downgraded to a finding added after successful build
+            return self._error_result(
+                localversion=localversion, jobs=jobs,
+                kdeb_pkgversion=kdeb_pkgversion,
+                source_date_epoch=source_date_epoch,
+                code="LOCALVERSION_NOT_IN_KERNELRELEASE",
+                message=(
+                    f"Requested suffix {localversion!r} missing from "
+                    f"KERNELRELEASE {kernel_release!r}; refusing to compile."
+                ),
+            )
 
         # ---- make -jN bindeb-pkg -------------------------------------------
         bindeb_outcome = self._run_bindeb(source_dir, objtree, env, jobs)
@@ -424,24 +449,6 @@ class KernelBuilder:
                     context={
                         "expected_package": expected_headers_pkg,
                         "candidates": [c.name for c in candidates],
-                    },
-                )
-            )
-
-        if localversion and not kernel_release.endswith(localversion):
-            findings.append(
-                ValidationFinding(
-                    severity=Severity.WARNING,
-                    code="LOCALVERSION_NOT_IN_KERNELRELEASE",
-                    message=(
-                        f"Requested LOCALVERSION={localversion!r} does not "
-                        f"appear as a suffix of kernel_release="
-                        f"{kernel_release!r}. Verify the Makefile accepts the "
-                        "value; module version matching may be affected."
-                    ),
-                    context={
-                        "localversion": localversion,
-                        "kernel_release": kernel_release,
                     },
                 )
             )
