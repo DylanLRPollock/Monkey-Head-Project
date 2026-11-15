@@ -105,8 +105,9 @@ The proprietary NVIDIA 580.196.07 source/module payload is a separate local
 operator requirement, never distributed through this public repository.
 
 Intel UHD 770 is the target primary Wayland desktop via `i915`;
-RX 570/`amdgpu` becomes an auxiliary GPU only after an actual BIOS,
-monitor-cabling, firmware and Wayland integration test. Do **not** change
+RX 570 is to be physically retired after the iGPU successfully handles the
+motherboard display outputs, GNOME/Wayland and recovery. `amdgpu` remains
+modular in testing1 as a fallback and is optional afterward. Do **not** change
 the live display routing or early-initramfs behavior during the build.
 Read the full [pre-build and qualification contract](7.3.4-prebuild.md).
 
