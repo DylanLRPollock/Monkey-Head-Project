@@ -46,7 +46,9 @@ def test_lock_contains_unresolved_marker_in_text() -> None:
 def test_lock_loads_via_source_manager_model() -> None:
     lock = SourceLock.load_from_path(LOCK_PATH)
     assert lock.schema_version == 1
-    assert lock.source_type is SourceType.DEBIAN_LINUX_SOURCE
+    assert lock.source_type is SourceType.UPSTREAM
+    assert lock.version == "7.3.4"
+    assert lock.archive_filename == "linux-7.3.4.tar.xz"
 
 
 def test_lock_round_trips_through_to_dict() -> None:
