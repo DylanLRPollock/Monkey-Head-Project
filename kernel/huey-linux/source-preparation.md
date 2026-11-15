@@ -44,6 +44,41 @@ merges the reviewed V100 profile, executes `make olddefconfig` (not a
 kernel build), checks exact `KERNELRELEASE`, runs the Kconfig boot guard,
 and produces a full symbol delta and audit hashes.
 
+## Recovery if `make olddefconfig` stopped because `flex` was missing
+
+The verified 7.3.4 source tarball, GPG signature and profile merge were
+already successful. The interrupted run leaves
+`~/huey-kernel-734/output/testing1/.config` on disk, so **do not rerun
+the original prepare script**: it intentionally rejects overwriting the
+existing config. Do not delete it.
+
+On Debian Forky, install the two lexer/parser generators:
+
+```bash
+sudo apt install flex bison
+```
+
+Then fetch the separate, read-only-to-host resume script and run it as
+a normal user:
+
+```bash
+cd ~/huey-kernel-audit
+curl -fL https://raw.githubusercontent.com/DylanLRPollock/Monkey-Head-Project/feature/huey-kernel-7.3.4/scripts/kernel/huey-734-resume-config.sh -o huey-734-resume-config.sh
+bash -n huey-734-resume-config.sh
+bash huey-734-resume-config.sh
+```
+
+The resume script verifies the pinned source archive and Greg
+Kroah-Hartman's detached release signature again, checks the original
+baseline config hash, re-runs only `olddefconfig`, verifies the exact
+kernel release, runs the VMD/NVMe/RAID10/Btrfs + GPU safety guard, then
+generates a Kconfig symbol delta. It preserves the original failed
+`olddefconfig` log as `olddefconfig.first-attempt.log`.
+
+An unsuccessful attempt may reveal another missing host-side dependency.
+Report the error or upload the new `olddefconfig.log`; do not disable a
+required Kconfig feature to mask a tool problem.
+
 **Do not use sudo.** Errors are intentionally blocking. For example,
 a missing PGP key, fingerprint mismatch, wrong SHA-256, unsupported
 toolchain, missing VMD/RAID10/Btrfs symbol, unexpected release suffix
