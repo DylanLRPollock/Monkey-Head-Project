@@ -329,7 +329,8 @@ def test_modules_missing_is_error(tmp_path: Path) -> None:
     assert "MODULES_NOT_ENABLED" in codes
 
 
-def test_modversions_missing_is_error(tmp_path: Path) -> None:
+def test_modversions_missing_is_nonblocking(tmp_path: Path) -> None:
+    """NVIDIA's proven V100 baseline supports out-of-tree modules without CRCs."""
     src = _make_source(tmp_path)
     base = _write_config(
         tmp_path / "base.config",
@@ -343,9 +344,9 @@ def test_modversions_missing_is_error(tmp_path: Path) -> None:
         source_dir=src, base_config_path=base, fragments=[frag],
         output_dir=tmp_path / "out", profile="v100-workstation",
     )
-    assert result.has_errors() is True
-    codes = {f.code for f in result.findings}
-    assert "MODVERSIONS_NOT_ENABLED" in codes
+    assert not result.has_errors(), result.findings
+    assert any(f.code == "MODVERSIONS_DISABLED" and f.severity == Severity.INFO
+               for f in result.findings)
 
 
 def test_nouveau_forced_by_fragment_is_critical(tmp_path: Path) -> None:
