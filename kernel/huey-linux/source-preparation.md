@@ -95,10 +95,10 @@ Also share `config-merge.log` and `tar-signature.log` if a gate fails.
 The complete candidate `~/huey-kernel-734/output/testing1/.config`
 should be reviewed privately before the first compile.
 
-The source lock in `source.lock.json` deliberately remains unresolved
-until the user's local source has actually been authenticated. A hash
-observed on a public web page is a useful expected value, not a substitute
-for validating downloaded bytes and a cryptographic signature.
+The user has now independently downloaded and authenticated the Linux
+7.3.4 source archive. `source.lock.json` is **pinned** to the SHA-256
+recorded above, with kernel.org detached release-signature provenance.
+This proves source authenticity, not build compatibility or approval.
 
 **Important system constraints:** Do not touch Intel VMD, Optane RAID10,
 Btrfs root `@rootfs`, existing GRUB/kernel entries, AMD RX 570 display
