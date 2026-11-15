@@ -8,7 +8,7 @@ as `current-kernel.config`. Never commit the whole machine-derived
 configuration to the public repository.
 
 - Lines: **11,982**
-- Distinct Kconfig symbols: **9,884**, no duplicate assignments
+- Distinct Kconfig symbols: **9,844**, no duplicate assignments
 - Enabled `=y`: **2,784**; modules `=m`: **4,036**;
   explicitly disabled `=n`: **2,849**
 - SHA-256 of decompressed configuration:
