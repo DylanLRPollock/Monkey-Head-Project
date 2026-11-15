@@ -44,3 +44,9 @@ def test_module_signing_is_explicit_not_silent() -> None:
     assert 'CONFIG_MODULE_SIG_ALL=y' in contents
     assert 'CONFIG_MODULE_SIG_KEY="certs/signing_key.pem"' in contents
     assert "signing" in contents.lower()
+
+
+def test_missing_build_dependencies_fail_closed() -> None:
+    contents = _script()
+    assert "Missing build prerequisites:" in contents
+    assert "fail 'Required build prerequisites are missing." in contents
