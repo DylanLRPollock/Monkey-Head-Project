@@ -15,7 +15,7 @@ The builder:
    (added / removed / changed / overrides) against the base config.
 7. Validates critical symbols:
    - ``CONFIG_MODULES=y``
-   - ``CONFIG_MODVERSIONS=y``
+   - ``CONFIG_MODVERSIONS`` is optional; report its state
    - for the ``v100-workstation`` profile, ``CONFIG_DRM_NOUVEAU`` must not
      be ``y`` or ``m``.
 8. Returns a :class:`ConfigBuildResult`; any blocking finding is recorded and
@@ -614,12 +614,14 @@ class ConfigBuilder:
         if modversions_val != "y":
             findings.append(
                 ValidationFinding(
-                    severity=Severity.ERROR,
-                    code="MODVERSIONS_NOT_ENABLED",
+                    severity=Severity.INFO,
+                    code="MODVERSIONS_DISABLED",
                     message=(
-                        "CONFIG_MODVERSIONS=y is required for the proprietary "
-                        "NVIDIA external module build; effective value is "
-                        f"{'unset' if modversions_val is None else repr(modversions_val)}."
+                        "CONFIG_MODVERSIONS is disabled (or unset); this matches "
+                        "the verified Debian 7.2.15 V100/NVIDIA baseline. "
+                        "External kernel modules remain supported without "
+                        "modversion CRC checking; use the matching full kernel "
+                        "build and Module.symvers for reliable NVIDIA builds."
                     ),
                     context={"actual": modversions_val},
                 )
