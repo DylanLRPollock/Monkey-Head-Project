@@ -50,6 +50,7 @@ def test_package_names_are_verified() -> None:
     assert "linux-libc-dev" in s
     assert "Do not use sudo." in s
 
+
 def test_forky_packaging_dependency_preflight() -> None:
     source = _source()
     assert "for pkg in debhelper libdw-dev" in source
