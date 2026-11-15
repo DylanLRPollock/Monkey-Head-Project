@@ -34,9 +34,10 @@ profile: v100-workstation
 
 kernel:
   # Debian linux-source package or an explicitly approved upstream source.
-  # A source/archive SHA-256 is deliberately NOT pinned yet. The build plan
-  # remains blocked until source.lock.json has a verified SHA-256. The version
-  # is an exact-name validation target, not proof of downloaded source.
+  # Upstream Linux 7.3.4 has now been cryptographically verified and pinned
+  # in source.lock.json. This build intent deliberately retains source=null:
+  # candidate configuration review and external NVIDIA compilation are
+  # still incomplete; do not auto-download, compile or install.
   #
   # source_type:
   #   debian-linux-source  -> Debian linux-source-<version> .deb
@@ -44,7 +45,7 @@ kernel:
   source_type: upstream
   source: null                     # Pin only after source verification; no auto-download
   version: "7.3.4"                 # Exact expected upstream base version
-  checksum: null                   # Verified SHA-256 required before a real build
+  checksum: null                   # Deferred in build intent until build approval; see pinned source.lock.json
   localversion: "-huey-testing1"   # Exact target: 7.3.4-huey-testing1
   baseline_config: null            # optional path to a known-good /boot/config-*; null -> resolve read-only from host
 
