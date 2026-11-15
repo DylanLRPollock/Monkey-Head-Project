@@ -91,6 +91,8 @@ printf '%s\n' 'STEP 2 — Verify package names and screen for private-key paths'
 : >"$HASHES"
 image=0
 headers=0
+debug=0
+libc=0
 count=0
 for pkg in "$OUTPUT"/*.deb; do
   [[ -f "$pkg" ]] || continue
@@ -99,7 +101,8 @@ for pkg in "$OUTPUT"/*.deb; do
   case "$package_name" in
     "linux-image-$KR") image=$((image+1)) ;;
     "linux-headers-$KR") headers=$((headers+1)) ;;
-    linux-libc-dev) : ;;
+    "linux-image-$KR-dbg") debug=$((debug+1)) ;;
+    linux-libc-dev) libc=$((libc+1)) ;;
     *) fail "Unexpected binary package $package_name at $pkg" ;;
   esac
   printf '%s\n' "--- $pkg ---" >>"$MANIFEST"
@@ -112,8 +115,8 @@ for pkg in "$OUTPUT"/*.deb; do
   fi
   sha256sum "$pkg" >>"$HASHES"
 done
-[[ "$count" -gt 0 && "$image" -eq 1 && "$headers" -eq 1 ]] || \
-  fail "Missing or duplicate expected image/headers packages (image=$image, headers=$headers)."
+[[ "$count" -eq 4 && "$image" -eq 1 && "$headers" -eq 1 && "$debug" -eq 1 && "$libc" -eq 1 ]] || \
+  fail "Expected exactly image, headers, debug and libc-dev packages (found $count)."
 hash_is "$OBJ/.config" "$CAND_SHA"
 if ! sha256sum --status -c "$REPORT/kernel-compile-hashes.txt"; then
   printf '%s\n' 'WARN: Compiled artifact hashes changed during packaging; re-review required.'
