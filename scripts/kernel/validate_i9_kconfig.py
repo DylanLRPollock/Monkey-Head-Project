@@ -69,10 +69,15 @@ def check_config(text: str, stage: str = "baseline") -> dict:
     warnings: list[str] = []
     for name, accepted in {**_ALWAYS_ENABLED, **_BOOT_DRIVERS}.items():
         if c.get(name, "n") not in accepted:
-            errors.append(f"{name}={c.get(name, 'not found')} (must be {'/'.join(accepted)})")
+            expected = "/".join(accepted)
+            errors.append(
+                f"{name}={c.get(name, 'not found')} (must be {expected})"
+            )
 
     if c.get("CONFIG_LOCALVERSION") != '""':
-        errors.append("CONFIG_LOCALVERSION must be empty; set one suffix via build LOCALVERSION")
+        errors.append(
+            "CONFIG_LOCALVERSION must be empty; use one build LOCALVERSION suffix"
+        )
     if c.get("CONFIG_LOCALVERSION_AUTO", "n") != "n":
         errors.append("CONFIG_LOCALVERSION_AUTO must be disabled")
     if c.get("CONFIG_MODVERSIONS", "n") != "n":
@@ -84,7 +89,9 @@ def check_config(text: str, stage: str = "baseline") -> dict:
     if c.get("CONFIG_DRM_I915", "n") not in {"m", "y"}:
         errors.append("CONFIG_DRM_I915 must support Intel UHD 770")
     if stage in {"baseline", "testing1"} and c.get("CONFIG_DRM_AMDGPU", "n") != "m":
-        errors.append("Initial testing1/baseline must retain AMDGPU=m as display fallback")
+        errors.append(
+            "Initial testing1/baseline must retain AMDGPU=m as display fallback"
+        )
     if c.get("CONFIG_DRM_NOUVEAU", "n") != "n":
         msg = "CONFIG_DRM_NOUVEAU must be disabled for proprietary V100 profile"
         (warnings if stage == "baseline" else errors).append(msg)
