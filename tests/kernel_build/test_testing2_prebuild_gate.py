@@ -50,3 +50,10 @@ def test_missing_build_dependencies_fail_closed() -> None:
     contents = _script()
     assert "Missing build prerequisites:" in contents
     assert "fail 'Required build prerequisites are missing." in contents
+
+
+def test_modinfo_checked_even_without_sbin_on_path() -> None:
+    script = _script()
+    assert "command -v modinfo" in script
+    assert "/usr/sbin/modinfo" in script
+    assert "kmod (provides modinfo)" in script
