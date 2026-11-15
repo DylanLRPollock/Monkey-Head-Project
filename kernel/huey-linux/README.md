@@ -96,8 +96,10 @@ The approved initial build identity is `7.3.4-huey-testing1`, followed
 by numbered testing builds as needed and the separately rebuilt/qualified
 `7.3.4-huey-stable`. The builder fails closed if `make kernelrelease`
 does not produce the expected upstream version + exactly one suffix.
-The source lock remains deliberately unresolved pending an authenticated
-kernel.org checksum/signature verification.
+The upstream Linux 7.3.4 source lock is now pinned following
+operator-provided SHA-256 and release-signature verification.
+Kconfig migration has passed its initial Optane/V100 checks; separate
+Rust/Android Binder/signing decisions and hardware qualification remain.
 
 Keep the workstation on Debian Forky; compile V100-targeted CUDA projects
 with CUDA 12.9 and GCC/G++ 14 (without replacing the host default compiler).
@@ -286,7 +288,7 @@ vendor binaries by default.
 | NVIDIA driver | Proprietary **580.196.07** (R580) | Observed working on `7.2.12+deb14-amd64` and `7.2.15+deb14-amd64` |
 | Driver-advertised CUDA API | `13.0` as shown by `nvidia-smi` | **Not** proof that CUDA Toolkit 13 is installed or that the V100 can execute arbitrary Toolkit 13 workloads |
 | Local CUDA Toolkit | CUDA 12.9 (verify on the machine) | Not assumed by the framework |
-| Kernel source | Upstream Linux 7.3.4, declared in `source.lock.json` | **Unresolved SHA-256 pin blocks source preparation** |
+| Kernel source | Upstream Linux 7.3.4, declared in `source.lock.json` | **Source SHA-256 pinned; build and hardware compatibility not yet qualified** |
 | Secure Boot | Unknown until `inventory` is run | Unsigned required modules mark `not boot-ready` |
 
 > **Thermal gate.** A prior `nvidia-smi` snapshot reported **86 °C at 0 %
