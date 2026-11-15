@@ -49,3 +49,11 @@ def test_package_names_are_verified() -> None:
     assert '"linux-headers-$KR"' in s
     assert "linux-libc-dev" in s
     assert "Do not use sudo." in s
+
+def test_forky_packaging_dependency_preflight() -> None:
+    source = _source()
+    assert "for pkg in debhelper libdw-dev" in source
+    assert "dpkg-checkbuilddeps dh" in source
+    assert "-f='${Status}'" in source
+    assert "dpkg-buildpackage" in source
+    assert "bypass dpkg-checkbuilddeps" in source
