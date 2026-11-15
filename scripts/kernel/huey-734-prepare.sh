@@ -28,7 +28,7 @@ fail() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
 trap 'printf "Stopped at line %s. Existing Debian boot configuration was NOT modified.\n" "$LINENO" >&2' ERR
 [[ "$(id -u)" != 0 ]] || fail 'Do not run as root or via sudo.'
 [[ -r "$BASE" ]] || fail "Missing verified base config at $BASE"
-for tool in bash curl gpg sha256sum xz tar make gcc-16 python3 awk; do
+for tool in bash curl gpg sha256sum xz tar make gcc-16 python3 awk flex bison; do
   command -v "$tool" >/dev/null 2>&1 || fail "Missing tool: $tool (report this; do not install random packages)"
 done
 [[ "$(sha256sum "$BASE" | awk '{print $1}')" == "$EXPECTED_BASE_SHA" ]] || \
@@ -91,9 +91,10 @@ fi
   fail 'Missing expected files in extracted source.'
 
 printf '%s\n' 'STEP 5 — Resolve actual 7.3.4 config (does NOT compile the kernel)'
-# Fail closed on a previously resolved configuration rather than overwrite.
+# Fail closed on an existing .config; an interrupted run is recoverable
+# using scripts/kernel/huey-734-resume-config.sh, never by deleting it.
 [[ ! -e "$OUT/.config" ]] || \
-  fail "Candidate .config already exists at $OUT/.config; do not overwrite it."
+  fail "Candidate .config exists at $OUT/.config. Use huey-734-resume-config.sh; do not delete or overwrite it."
 export ARCH=x86_64
 bash "$SRC/scripts/kconfig/merge_config.sh" -m -O "$OUT" "$BASE" "$PROFILE" \
   >"$REPORT/config-merge.log" 2>&1 || \
