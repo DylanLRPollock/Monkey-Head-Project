@@ -48,3 +48,11 @@ def test_read_only_and_prevents_report_overwrites() -> None:
                 "update-grub", "grub-install", "reboot", "modprobe",
             )
         )
+
+
+def test_debian_package_filenames_expand_in_bash() -> None:
+    source = _script()
+    assert 'IMAGE="$OUT/linux-image-${KR}_${VERSION}_amd64.deb"' in source
+    assert 'HEADERS="$OUT/linux-headers-${KR}_${VERSION}_amd64.deb"' in source
+    assert "\\${KR}" not in source
+    assert "\\${VERSION}" not in source
