@@ -6,7 +6,8 @@ release framework** for the `DylanLRPollock/Monkey-Head-Project` repository.
 The framework produces a **version-matched kernel/driver bundle** for a
 Debian-compatible kernel that supports the project's workstation hardware:
 
-- AMD RX 570 as the **display** GPU (must remain untouched)
+- AMD RX 570 as the **known-working display** GPU until the UHD 770 transition is qualified; afterward, retain as **auxiliary**
+- Intel UHD 770 (`i915`) as the **target primary display**, after a staged firmware/Wayland test
 - NVIDIA Tesla V100-PCIE-32GB (`sm_70`, Volta) as the **compute** GPU
 - Proprietary NVIDIA driver **580.196.07** (R580 branch)
 
@@ -86,6 +87,28 @@ are handled by a separate, human-approved runbook
    source, missing GPU identity, or invalid artifacts block promotion.
 10. **Reproducibility.** Source package identity and SHA-256 are pinned;
     compiler, tool versions, config delta, and output hashes are recorded.
+
+---
+
+## HueyOS 7.3.4 candidate
+
+The approved initial build identity is `7.3.4-huey-testing1`, followed
+by numbered testing builds as needed and the separately rebuilt/qualified
+`7.3.4-huey-stable`. The builder fails closed if `make kernelrelease`
+does not produce the expected upstream version + exactly one suffix.
+The source lock remains deliberately unresolved pending an authenticated
+kernel.org checksum/signature verification.
+
+Keep the workstation on Debian Forky; compile V100-targeted CUDA projects
+with CUDA 12.9 and GCC/G++ 14 (without replacing the host default compiler).
+The proprietary NVIDIA 580.196.07 source/module payload is a separate local
+operator requirement, never distributed through this public repository.
+
+Intel UHD 770 is the target primary Wayland desktop via `i915`;
+RX 570/`amdgpu` becomes an auxiliary GPU only after an actual BIOS,
+monitor-cabling, firmware and Wayland integration test. Do **not** change
+the live display routing or early-initramfs behavior during the build.
+Read the full [pre-build and qualification contract](7.3.4-prebuild.md).
 
 ---
 
@@ -262,7 +285,7 @@ vendor binaries by default.
 | NVIDIA driver | Proprietary **580.196.07** (R580) | Observed working on `7.2.12+deb14-amd64` and `7.2.15+deb14-amd64` |
 | Driver-advertised CUDA API | `13.0` as shown by `nvidia-smi` | **Not** proof that CUDA Toolkit 13 is installed or that the V100 can execute arbitrary Toolkit 13 workloads |
 | Local CUDA Toolkit | CUDA 12.9 (verify on the machine) | Not assumed by the framework |
-| Kernel source | Debian `linux-source`, pinned in `source.lock.json` | Unresolved pin blocks `build-kernel` |
+| Kernel source | Upstream Linux 7.3.4, declared in `source.lock.json` | **Unresolved SHA-256 pin blocks source preparation** |
 | Secure Boot | Unknown until `inventory` is run | Unsigned required modules mark `not boot-ready` |
 
 > **Thermal gate.** A prior `nvidia-smi` snapshot reported **86 °C at 0 %
@@ -342,7 +365,7 @@ run and reported with measured results, not assumptions.
 
 ## 16. Status
 
-**Framework status:** implementation in progress (Step 1 of 45).
+**Framework status:** 45-step builder merged in PR #997; the 7.3.4 testing1 compatibility and acceptance plan is in [7.3.4-prebuild.md](7.3.4-prebuild.md). Unit tests and dry-runs do **not** qualify real hardware.
 
 **Workstation status:** unchanged. No kernel, driver, DKMS, bootloader,
 Secure Boot, CUDA, Ollama, ComfyUI, Steam, or RX 570 display configuration has
