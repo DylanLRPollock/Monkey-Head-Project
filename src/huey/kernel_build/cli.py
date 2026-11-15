@@ -511,6 +511,9 @@ def _cmd_build_kernel(args: argparse.Namespace) -> CliResult:
         localversion=localversion,
         jobs=jobs,
         source_date_epoch=args.source_date_epoch,
+        expected_kernel_release=(
+            f"{intent.version}{localversion}" if intent.version else None
+        ),
         dry_run=args.dry_run,
     )
 
