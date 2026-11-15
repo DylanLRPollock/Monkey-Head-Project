@@ -23,9 +23,19 @@ SOURCE_SHA='b11b6df8295e8e991ff040b71aaa4994a8b55caa23b6b092907f195b5840fd1f'
 TEST1_SHA='1c72bf3f45c2dac5318d80ec373fcb04b8e2a423b005f8a12a6da18e2c614762'
 CAND_SHA='db6a1f168766546b2e5e612657d928c737cf5561f2319bf069fdad2a1312a6d3'
 
-for cmd in sha256sum awk df find dpkg-buildpackage dpkg-deb gcc-16 \
+for cmd in sha256sum awk df find dpkg-buildpackage dpkg-deb \
+           dpkg-query dpkg-checkbuilddeps dh gcc-16 \
            make rustc bindgen fakeroot rsync tar; do
   command -v "$cmd" >/dev/null 2>&1 || fail "Missing tool $cmd"
+done
+# The upstream mkdebian-generated control file requires
+# debhelper-compat (= 12) and libdw-dev:native on Debian Forky.
+# debhelper's virtual Provides satisfies compat 12; do not modify
+# generated metadata or bypass dpkg-checkbuilddeps.
+for pkg in debhelper libdw-dev; do
+  installed="$(dpkg-query -W -f='\${Status}' "$pkg" 2>/dev/null || true)"
+  [[ "$installed" == 'install ok installed' ]] || \
+    fail "Missing Debian packaging dependency $pkg (sudo apt install debhelper libdw-dev)"
 done
 for file in "$SRC/Makefile" "$OBJ/.config" "$CAND" "$TEST1" \
             "$ARCHIVE" "$OBJ/vmlinux" "$OBJ/Module.symvers" \
