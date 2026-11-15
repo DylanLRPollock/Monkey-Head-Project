@@ -13,7 +13,7 @@ assert SPEC and SPEC.loader
 guard = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(guard)
 
-_BASE = """\\
+_BASE = """
 CONFIG_X86_64=y
 CONFIG_PCI=y
 CONFIG_EFI=y
