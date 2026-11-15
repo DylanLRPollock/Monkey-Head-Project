@@ -116,6 +116,13 @@ def test_amdgpu_is_not_built_in() -> None:
     )
 
 
+def test_intel_igpu_module_present() -> None:
+    assert _assigned().get("CONFIG_DRM_I915") == "m", (
+        "UHD 770 must remain available via i915, even before the firmware "
+        "and motherboard HDMI transition is validated."
+    )
+
+
 # ---------------------------------------------------------------------------
 # External module support
 # ---------------------------------------------------------------------------
@@ -128,12 +135,9 @@ def test_modules_enabled() -> None:
     )
 
 
-def test_modversions_enabled() -> None:
-    assert _assigned().get("CONFIG_MODVERSIONS") == "y", (
-        "CONFIG_MODVERSIONS=y is required for the proprietary NVIDIA external "
-        "module build (the kernel must be fully built to produce "
-        "Module.symvers CRCs)."
-    )
+def test_modversions_preserves_working_baseline() -> None:
+    assert "CONFIG_MODVERSIONS" in _unset()
+    assert "CONFIG_MODVERSIONS" not in _assigned()
 
 
 # ---------------------------------------------------------------------------
@@ -157,7 +161,6 @@ def test_modversions_enabled() -> None:
         "CONFIG_USB_XHCI_HCD",
         "CONFIG_E1000E",
         "CONFIG_IGC",
-        "CONFIG_DRM_I915",
     ],
 )
 def test_unrelated_subsystems_not_assigned(forbidden_symbol: str) -> None:
