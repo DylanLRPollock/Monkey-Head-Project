@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "status": "unresolved",
+  "status": "pinned",
   "source_type": "upstream",
   "package_name": "linux-7.3.4",
   "version": "7.3.4",
   "archive_filename": "linux-7.3.4.tar.xz",
   "origin_url": "https://cdn.kernel.org/pub/linux/kernel/v7.x/linux-7.3.4.tar.xz",
-  "checksum_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-  "retrieved_date": null,
+  "checksum_sha256": "b11b6df8295e8e991ff040b71aaa4994a8b55caa23b6b092907f195b5840fd1f",
+  "retrieved_date": "2026-11-15",
   "license": "GPL-2.0-only",
   "profile_revision": 2,
-  "notes": "UNRESOLVED BY DESIGN. Upstream 7.3.4 archive location is verified, but the 64-zero checksum is a sentinel and NOT a real hash. Do not set status=pinned without independently downloading the tarball, checking its SHA-256 against kernel.org's signed sha256sums.asc (or checking its detached signature using the official release signing key), recording provenance, and verifying the content. This record does not grant build readiness or driver compatibility."
+  "notes": "Verified on the i9 Debian Forky workstation: SHA-256 of downloaded Linux 7.3.4 tar.xz matched the published kernel.org sha256sums.asc entry; the xz-decompressed tar validated against kernel.org detached linux-7.3.4.tar.sign, signed 2026-11-10 by Greg Kroah-Hartman. The signer primary key fingerprint was pinned and compared: 647F28654894E3BD457199BE38DBBDC86092693E. Verification reports and archive digest were supplied by operator. PINNED refers only to source provenance, not to successful compilation, R580 compatibility or hardware boot qualification."
 }
