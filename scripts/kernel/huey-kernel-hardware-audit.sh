@@ -46,6 +46,7 @@ run grep -m1 -E '^microcode[[:space:]]*:' /proc/cpuinfo
 
 section "PCI controllers, GPUs and bound drivers"
 run lspci -nnk
+run lspci -tv
 for status in /sys/class/drm/card*/status /sys/class/drm/card*-*/status; do
   [[ -r "$status" ]] && read_optional "$status"
 done
@@ -83,6 +84,20 @@ if [[ -r "$config" ]]; then
 else
   printf 'Missing /boot/config for running kernel; investigate /proc/config.gz\n'
 fi
+
+section "PCIe GPU link widths and maximum capability"
+for dev in /sys/bus/pci/devices/*; do
+  [[ -r "$dev/class" ]] || continue
+  class=$(cat "$dev/class" 2>/dev/null || true)
+  case "$class" in
+    0x0300*|0x0302*)
+      printf "PCI device: %s\n" "${dev##*/}"
+      for info in current_link_speed current_link_width max_link_speed max_link_width; do
+        read_optional "$dev/$info"
+      done
+    ;;
+  esac
+done
 
 section "Summary"
 printf 'This script has not changed any host state.\n'
