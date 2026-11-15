@@ -33,7 +33,7 @@ done
 # debhelper's virtual Provides satisfies compat 12; do not modify
 # generated metadata or bypass dpkg-checkbuilddeps.
 for pkg in debhelper libdw-dev; do
-  installed="$(dpkg-query -W -f='\${Status}' "$pkg" 2>/dev/null || true)"
+  installed="$(dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null || true)"
   [[ "$installed" == 'install ok installed' ]] || \
     fail "Missing Debian packaging dependency $pkg (sudo apt install debhelper libdw-dev)"
 done
