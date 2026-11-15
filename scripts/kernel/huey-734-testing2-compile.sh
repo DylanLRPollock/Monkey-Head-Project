@@ -27,9 +27,20 @@ TEST2_SHA='db6a1f168766546b2e5e612657d928c737cf5561f2319bf069fdad2a1312a6d3'
 KR='7.3.4-huey-testing2'
 JOBS=4
 
-for cmd in make gcc-16 rustc bindgen sha256sum awk df find wc modinfo; do
+for cmd in make gcc-16 rustc bindgen sha256sum awk df find wc; do
   command -v "$cmd" >/dev/null 2>&1 || fail "Missing tool $cmd"
 done
+# On Debian, kmod installs modinfo in /usr/sbin; some unprivileged shells
+# omit that directory from PATH. Use the known package path if necessary.
+if command -v modinfo >/dev/null 2>&1; then
+  MODINFO="$(command -v modinfo)"
+elif [[ -x /usr/sbin/modinfo ]]; then
+  MODINFO=/usr/sbin/modinfo
+elif [[ -x /sbin/modinfo ]]; then
+  MODINFO=/sbin/modinfo
+else
+  fail 'Missing modinfo; on Debian install the kmod package (sudo apt install kmod).'
+fi
 for f in "$SRC/Makefile" "$ARCHIVE" "$CAND" "$TEST1" "$RELEASE_FILE"; do
   [[ -f "$f" ]] || fail "Missing preverified input $f"
 done
@@ -96,7 +107,7 @@ check_hash "$OBJ/.config" "$TEST2_SHA"
 for name in vmd nvme raid10 btrfs amdgpu i915; do
   result="$(find "$OBJ" -type f -name "$name.ko" -print -quit)"
   [[ -n "$result" ]] || fail "Boot/display module missing: $name.ko"
-  vermagic="$(modinfo -F vermagic "$result")"
+  vermagic="$("$MODINFO" -F vermagic "$result")"
   [[ "$vermagic" == "$KR "* ]] || fail "Unexpected $name.ko vermagic: $vermagic"
 done
 modules="$(find "$OBJ" -type f -name '*.ko' | wc -l)"
