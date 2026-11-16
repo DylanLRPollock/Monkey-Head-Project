@@ -45,6 +45,7 @@ check_sha() {
   [[ "$actual" == "$2" ]] || fail "SHA-256 mismatch for $1"
 }
 check_sha "$PKG" 25a047a9ab044dce4fad765476c51f1c4aa0b37ffcb6c9b759143f0a887692e0
+check_sha "$BASE/output/testing2-compile/.config" db6a1f168766546b2e5e612657d928c737cf5561f2319bf069fdad2a1312a6d3
 for mod in nvidia nvidia-uvm nvidia-modeset nvidia-drm; do
   [[ -s "$VENDOR/$mod.ko" ]] || fail "NVIDIA module missing: $mod.ko"
 done
@@ -57,10 +58,13 @@ free_kib="$(df -Pk "$BASE/output" | awk 'NR==2 {print $4}')"
 [[ "$free_kib" =~ ^[0-9]+$ ]] && (( free_kib > 8 * 1024 * 1024 )) || \
   fail 'Require over 8 GiB free in the output filesystem.'
 printf '%s\n' 'STEP 1 — Extract already-audited image into private staging.'
-install -d -m 0700 "$EXTRACT" "$CONF/conf.d" "$CONF/hooks" "$WORK/tmp"
+install -d -m 0700 "$EXTRACT" "$CONF/conf.d" "$CONF/hooks" "$CONF/scripts" "$WORK/tmp"
 dpkg-deb --extract "$PKG" "$EXTRACT"
 [[ -d "$MODTREE/kernel" && -s "$MODTREE/modules.builtin" ]] || \
   fail 'Extracted package lacks full kernel module tree.'
+# initramfs-tools 0.151 checks config-$KR in the module directory;
+# give it the exact pinned testing2 config to verify gzip support.
+install -m 0644 "$BASE/output/testing2-compile/.config" "$MODTREE/config-$KR"
 install -d -m 0700 "$MODTREE/updates"
 for mod in nvidia nvidia-uvm nvidia-modeset nvidia-drm; do
   install -m 0644 "$VENDOR/$mod.ko" "$MODTREE/updates/$mod.ko"
