@@ -50,18 +50,27 @@ done
     dpkg-query -W -f='${Package} ${Status} ${Version}\n' "$pkg" 2>/dev/null || \
       printf '%s: not installed/unknown\n' "$pkg"
   done
+  mkinitramfs_bin=""
   for cmd in mkinitramfs lsinitramfs depmod bwrap unshare fakeroot; do
     if command -v "$cmd" >/dev/null 2>&1; then
-      printf '%s: %s\n' "$cmd" "$(command -v "$cmd")"
-    elif [[ "$cmd" == depmod && -x /usr/sbin/depmod ]]; then
-      printf 'depmod: /usr/sbin/depmod\n'
+      found="$(command -v "$cmd")"
+    elif [[ -x "/usr/sbin/$cmd" ]]; then
+      found="/usr/sbin/$cmd"
+    elif [[ -x "/sbin/$cmd" ]]; then
+      found="/sbin/$cmd"
     else
-      printf '%s: NOT FOUND\n' "$cmd"
+      found=""
+    fi
+    if [[ -n "$found" ]]; then
+      printf '%s: %s\n' "$cmd" "$found"
+      if [[ "$cmd" == mkinitramfs ]]; then mkinitramfs_bin="$found"; fi
+    else
+      printf '%s: NOT FOUND (including sbin)\n' "$cmd"
     fi
   done
-  if command -v mkinitramfs >/dev/null 2>&1; then
+  if [[ -n "$mkinitramfs_bin" ]]; then
     printf '\nTarget-version support reported by mkinitramfs:\n'
-    mkinitramfs --supported-target-version="$KR" 2>&1 || true
+    "$mkinitramfs_bin" --supported-target-version="$KR" 2>&1 || true
   fi
 
   printf '\n=== Unprivileged mount-namespace support ===\n'
@@ -105,7 +114,7 @@ done
     if [[ -e "$path" ]]; then
       stat -c 'PRESENT %n (%s bytes) %y' "$path"
     else
-      printf 'MISSING %s\n' "$path"
+      printf 'NOT VISIBLE TO USER OR ABSENT %s (confirm with privileged stat)\n' "$path"
     fi
   done
 
