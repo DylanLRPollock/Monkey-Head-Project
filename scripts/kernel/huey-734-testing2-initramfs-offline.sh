@@ -115,7 +115,7 @@ done
 for p in usr/sbin/mdadm etc/mdadm/mdadm.conf scripts/local-block/mdadm; do
   grep -Eq "(^|/)$p$" "$LIST" || fail "Missing RAID assembly file: $p"
 done
-grep -Fq "/lib/modules/$KR/" "$LIST" || fail 'Wrong or missing kernel module release.'
+grep -Eq "(^|/)(usr/)?lib/modules/$KR/" "$LIST" || fail 'Wrong or missing kernel module release.'
 if grep -Eq '(^|/)nouveau[.]ko([.](xz|zst|gz))?$' "$LIST"; then
   fail 'Nouveau unexpectedly included in initramfs.'
 fi
