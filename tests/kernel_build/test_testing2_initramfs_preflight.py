@@ -42,3 +42,11 @@ def test_does_not_build_or_modify_live_host() -> None:
             "reboot", "modprobe ", "insmod ", "rmmod ", "mdadm --assemble",
             "mdadm --create", "mount ", "umount ", "rm -rf",
         ))
+
+
+def test_sbin_tools_and_efi_permissions_not_misclassified() -> None:
+    source = _script()
+    assert 'elif [[ -x "/usr/sbin/$cmd" ]]' in source
+    assert 'mkinitramfs_bin="$found"' in source
+    assert '"$mkinitramfs_bin" --supported-target-version=' in source
+    assert "NOT VISIBLE TO USER OR ABSENT" in source
