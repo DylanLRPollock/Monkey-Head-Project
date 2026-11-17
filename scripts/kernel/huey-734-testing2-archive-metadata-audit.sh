@@ -43,11 +43,8 @@ fi
            "usr/lib/modules/$KR/updates/nvidia.ko" \
            "usr/lib/modules/$KR/updates/nvidia-uvm.ko"; do
     # Debian's long format ends in the filename.
-    if ! awk -v p="$p" '$NF==p || $NF=="./"p {found=1; print}' "$VERBOSE" | \
-      grep -q .; then
+    if ! awk -v p="$p" '$NF==p || $NF=="./"p {print; found=1} END {exit !found}' "$VERBOSE"; then
       printf 'MISSING metadata row for: %s\n' "$p"
-    else
-      awk -v p="$p" '$NF==p || $NF=="./"p {print}' "$VERBOSE"
     fi
   done
   printf '\n=== Fakeroot and boot-hook diagnostics (original build log) ===\n'
