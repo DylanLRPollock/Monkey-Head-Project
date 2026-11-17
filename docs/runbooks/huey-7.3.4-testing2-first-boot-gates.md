@@ -319,3 +319,50 @@ Official Debian rescue-mode documentation:
 https://www.debian.org/releases/trixie/amd64/ch08s06.en.html
 
 Testing2 remains uninstalled and first-boot status is **NO-GO**.
+
+## First USB rescue boot completed — partial recovery qualification (2026-11-16)
+
+The USB has now been **booted successfully** through the physical
+UEFI boot picker. Debian 13.7 Rescue Mode reached the BusyBox 1.37
+shell after selecting **Do not use a root file system**.
+In the rescue shell:
+
+- `ls /dev/nvme*n1p1` returned all four Intel Optane
+  member partitions.
+- `cat /proc/mdstat` showed supported RAID personalities
+  but **no active MD arrays**. The rescue session deliberately
+  **did not assemble md0**, mount Btrfs root, or repair anything.
+- `exit` returned from the rescue shell. Following the
+  reboot, `uname -r` confirmed the known-good
+  `7.2.15+deb14-amd64` kernel.
+- All three internal arrays came up in the running Debian
+  system: `md0` RAID10 `[4/4] [UUUU]`,
+  `md1` RAID1 `[2/2] [UU]`, `md2` active RAID0.
+  `nvidia-smi` confirms the V100 32 GB is operating with
+  the original proprietary driver `580.196.07`.
+
+**Gate changes:** the independent USB firmware boot, BusyBox
+rescue shell and VMD/Optane device detection are now VERIFIED.
+The ability to assemble `md0` and access
+`@rootfs` read-only from rescue has **not** been tested.
+A successful normal boot does not substitute for full rescue
+readiness if a future kernel/GRUB problem affects the host.
+No further rescue intervention is warranted just to get a
+green checklist; the remaining uncertainty must be
+acknowledged in the first-boot risk decision.
+
+The operator also ran `sudo update-grub` on the recovered
+working kernel. GRUB configuration was regenerated and
+both known-good kernel/initrd pairs were discovered.
+`os-prober` was disabled, which does not prevent these
+Debian entries. Before a test boot, confirm the current
+generated GRUB entries still use expected Btrfs
+`root=UUID=dddebb01-4f58-4782-82b3-0e77209afc8c`
+and `rootflags=subvol=@rootfs`. Do **not** automatically
+regenerate or change GRUB again while offline qualifications
+continue.
+
+No kernel-package install, module insertion, or boot into
+`7.3.4-huey-testing2` has been carried out. First test boot
+is still on HOLD pending NVIDIA ret-thunk review and
+explicit operator approval of the rollback plan.
