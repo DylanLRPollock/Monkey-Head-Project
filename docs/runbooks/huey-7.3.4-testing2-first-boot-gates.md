@@ -494,3 +494,40 @@ entry, do read-only checks of:
 No installation, host driver changes, GRUB writes, reboot or
 CUDA testing is currently authorized. Next stage is
 **pre-install review**, not a first-boot GO decision.
+
+## Root and EFI pre-install space / mount verification (2026-11-16)
+
+Operator ran `df -h / /boot/efi`, `findmnt /`,
+`findmnt /boot/efi`, and `ls -lh /boot/vmlinuz-*
+/boot/initrd.img-*` on working Debian
+`7.2.15+deb14-amd64`:
+
+- `/`: `/dev/md0`, Btrfs `@rootfs`,
+  **27G size / 15G used / 12G available (55%)**;
+  `rw,noatime,ssd,discard=async,space_cache=v2,subvolid=256,subvol=/@rootfs`.
+- `/boot/efi`: currently `/dev/sdc1`, VFAT,
+  **976M size / 9.7M used / 966M available (1%)**.
+  Do not rely on the variable SATA device name; use
+  persistent PARTUUID `58fae902-4199-444f-93b8-e845b62d8b95`
+  when identifying the verified working ESP.
+- `/boot` is **inside the Btrfs `@rootfs` subvolume**,
+  not its own partition, and not on the EFI filesystem.
+- Both Debian fallback kernel/initrd pairs remain present:
+  `7.2.15+deb14-amd64` vmlinuz **14M**, initrd **310M**;
+  `7.2.12+deb14-amd64` vmlinuz **14M**, initrd **314M**.
+
+**Gate status:** mount consistency and reported free-space
+inventory **PASS**; this is not yet confirmation of sufficient
+unallocated Btrfs metadata/data chunks or total candidate
+installation footprint. Check the actual private
+`no-nvidia-test1` initrd size, Linux image .deb size and
+read-only `btrfs filesystem usage` before planning a
+controlled install.
+
+The no-NVIDIA third archive remains pinned at SHA-256
+`fb2c4985f64c2a77f4cc2f175665311f179ac632d261a150ea7c58f673f4a3df`.
+It is uninstalled. Both fallback Debian kernels and EFI
+must be preserved. No change to the default boot entry,
+modprobe configuration, GRUB, system packages or RAID is
+authorized by this space inspection. First boot stays
+**NO-GO** pending controlled isolation/rollback review.
