@@ -128,3 +128,31 @@ The `/dev/sdX` enumeration **changed** since the previous audit:
 Names in the table are inventory snapshots, **not stable hardware identifiers**. The currently mounted ESP must be resolved by the historical PARTUUID and `findmnt` before any EFI work. Do not infer that the GPT partition GUID was rechecked by the current basic `lsblk` output, which did not print PARTUUID.
 
 **No-go continues**: a USB device must be identified, and a bootable rescue environment with VMD/Optane/MD RAID10/Btrfs capability must be independently tested under explicit operator approval before installing or booting HueyOS testing2.
+
+## EFI PARTUUID resolution verified (2026-11-16, later read-only report)
+
+Operator reran `findmnt -n -M /boot/efi -o SOURCE,FSTYPE,TARGET`,
+`readlink -f /dev/disk/by-partuuid/58fae902-4199-444f-93b8-e845b62d8b95`,
+and `lsblk` with PARTUUID, TRAN, RM, HOTPLUG and FSTYPE.
+
+**The mounted ESP is now positively matched by three checks:**
+- `findmnt`: `/dev/sdd1 vfat /boot/efi`.
+- The persistent `/dev/disk/by-partuuid/58fae902-4199-444f-93b8-e845b62d8b95` symlink resolves to `/dev/sdd1`.
+- `lsblk` shows Kingston `/dev/sdd1` as VFAT with the *same* PARTUUID.
+
+The previous UEFI `Boot0004` entry referenced this exact PARTUUID,
+so the existing working EFI partition's identity is now reconciled
+despite SATA enumeration changes. `Boot0005` references PARTUUID
+`910477d6-ef14-4b2e-bd49-f08c1d42a7c7`, which current `lsblk`
+identifies on **`/dev/nvme3n1p1`**, an Optane md0 RAID10 member,
+**not** an EFI System Partition. The other Kingston SSD's
+`/dev/sdb1` is still non-filesystem/unformatted, PARTUUID
+`0626d8aa-7175-4a4b-80fd-1779040e8d37`.
+
+No `TRAN=usb` devices or removable/hotplug storage were observed;
+every physical internal disk had `RM=0`, `HOTPLUG=0`.
+The USB recovery medium remains **absent and untested**.
+
+**Recovery rule:** Continue to use the PARTUUID rather than any
+historical `/dev/sdc1` or `/dev/sdd1` name. No disk, firmware
+entry, or bootloader change was performed. Testing2 is still NO-GO.
