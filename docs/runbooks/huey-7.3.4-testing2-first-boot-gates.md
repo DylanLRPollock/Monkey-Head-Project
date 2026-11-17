@@ -948,3 +948,61 @@ boot under a text console only, with known-good
 fallback and no unattended boot-choice changes.
 The rescue USB's RAID10 assembly/Btrfs root access
 remains untested; account for this residual risk.
+
+## Final pre-boot verification — passed; controlled manual boot candidate (2026-11-17)
+
+Operator independently inspected the **installed** files and the
+active GRUB configuration after successful side-by-side manual
+staging. Output:
+- `/boot/huey-testing2/` contains kernel
+  `vmlinuz-7.3.4-huey-testing2` (~15M), initrd
+  `initrd.img-7.3.4-huey-testing2` (~59M),
+  `System.map-7.3.4-huey-testing2` (~8.9M), and
+  `config-7.3.4-huey-testing2` (~293K).
+  `/usr/lib/modules/7.3.4-huey-testing2/modules.dep.bin`
+  exists (~821K).
+- **Installed** no-NVIDIA initramfs SHA-256:
+  `fb2c4985f64c2a77f4cc2f175665311f179ac632d261a150ea7c58f673f4a3df`,
+  exactly matching the previously audited private archive.
+- `/boot/grub/custom.cfg` contains a complete
+  `menuentry 'HueyOS 7.3.4 testing2 (no NVIDIA; text console)'`
+  with id `huey-734-testing2-no-nvidia`; sets
+  `insmod part_gpt`, `diskfilter`, `mdraid1x`, `btrfs`,
+  searches filesystem UUID
+  `dddebb01-4f58-4782-82b3-0e77209afc8c`,
+  loads
+  `/@rootfs/boot/huey-testing2/vmlinuz-7.3.4-huey-testing2`
+  with `root=UUID=dddebb01-4f58-4782-82b3-0e77209afc8c`,
+  `rootflags=subvol=@rootfs`,
+  `module_blacklist=nvidia,nvidia_uvm,nvidia_modeset,nvidia_drm,nvidia_peermem`,
+  `systemd.unit=multi-user.target`; loads
+  `/@rootfs/boot/huey-testing2/initrd.img-7.3.4-huey-testing2`.
+- Generated `/boot/grub/grub.cfg` includes the
+  `41_custom` loader that sources
+  `$config_directory/custom.cfg` or
+  `$prefix/custom.cfg`, so the installed manual menu
+  entry will be available in GRUB.
+- `/etc/default/grub`: `GRUB_DEFAULT=0`.
+  `sudo grub-editenv list` produced no output;
+  no pending `next_entry` was reported.
+  Running kernel remains Debian
+  `7.2.15+deb14-amd64`.
+
+**Gate decision:** static/install/hash/config and GRUB
+menu wiring **PASS** for a **manually selected**, NVIDIA-free,
+text-console first boot. Do not change Debian default or
+use `grub-reboot`/automatic boot selection. In GRUB,
+choose the HueyOS entry manually; if unsuccessful
+or hangs, return to the known-good Debian 7.2.15
+entry on reboot. If it succeeds, verify live
+`uname -r`, `/proc/mdstat` (`md0 [UUUU]`),
+Btrfs root mount, no proprietary NVIDIA loaded,
+and failed services/errors. The test boot itself
+has **not yet happened**.
+
+**Residual risk:** Debian 7.2.15 is the only installed
+known-good kernel since removal of 7.2.12; independent
+rescue USB RAID10 assembly and Btrfs root access have
+not been demonstrated. A black display or root mount
+failure may require hard reset or independent rescue.
+Preserve 7.2.15 without package or bootloader changes.
