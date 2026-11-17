@@ -454,3 +454,43 @@ alone does not establish post-root isolation.
 No build rerun, kernel installation, driver loading or
 GRUB change should be performed to correct this metadata
 false positive. First-boot status remains NO-GO.
+
+## No-NVIDIA third archive validated; next gate is pre-install inventory (2026-11-16)
+
+The previously built no-NVIDIA test1 archive has now **passed**
+the separate read-only postcheck. SHA-256:
+`fb2c4985f64c2a77f4cc2f175665311f179ac632d261a150ea7c58f673f4a3df`.
+Verified: essential Intel VMD, NVMe, md RAID10/1/0,
+Btrfs and AMDGPU modules and early hooks; zero proprietary
+R580/Nouveau modules in the initramfs; active md0/md1/md2
+UUID configuration and no md3; `RESUME=none`; root-owned
+executable `/init`. Previous `modules.order`
+NVIDIA-named in-tree module false positive is resolved.
+
+The artifact remains in a private, **uninstalled** directory.
+Preserve this file and digest. Do not rebuild it or overwrite
+it in place. The standard policy2 image remains separately
+pinned and is **not** the NVIDIA-isolated alternative.
+
+Before authorizing first-boot packaging and one-time GRUB
+entry, do read-only checks of:
+1. Btrfs `/` free space (because `/boot` resides in
+   `@rootfs`), EFI free space and mounts; note EFI has
+   only one verified functioning Kingston FAT ESP.
+2. Confirmation installed fallback Debian kernels
+   `7.2.15+deb14-amd64` and
+   `7.2.12+deb14-amd64` remain intact and that no
+   testing2 kernel is installed.
+3. Exact test-only GRUB kernel parameter
+   `module_blacklist=nvidia,nvidia_uvm,nvidia_modeset,nvidia_drm`,
+   plus `root=UUID=dddebb01-4f58-4782-82b3-0e77209afc8c`
+   and `rootflags=subvol=@rootfs`. Avoid global
+   `GRUB_CMDLINE_LINUX` changes or default boot switch.
+4. Ability to select known-good Debian boot and rescue USB
+   manually after a failure. Rescue USB has booted,
+   though independent md0 assembly/Btrfs root recovery
+   remains untested and must appear in the risk assessment.
+
+No installation, host driver changes, GRUB writes, reboot or
+CUDA testing is currently authorized. Next stage is
+**pre-install review**, not a first-boot GO decision.
