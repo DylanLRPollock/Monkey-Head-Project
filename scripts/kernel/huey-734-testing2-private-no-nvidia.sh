@@ -51,6 +51,11 @@ for p in "$WORK" "$LOG" "$UNPACKLOG" "$PROBELOG" "$LIST" "$VERBOSE" "$AUDIT" "$H
 done
 actual="$(sha256sum "$POLICY2/initrd.img-$KR" | awk '{print $1}')"
 [[ "$actual" == "$POLICY2_SHA" ]] || fail "Verified policy2 SHA-256 mismatch: $actual"
+# Preserve provenance of the exact audited Linux image and Kconfig.
+[[ "$(sha256sum "$ROOT/output/linux-image-7.3.4-huey-testing2_7.3.4-huey-testing2-1_amd64.deb" | awk '{print $1}')" == 25a047a9ab044dce4fad765476c51f1c4aa0b37ffcb6c9b759143f0a887692e0 ]] ||
+  fail "Original testing2 kernel package checksum mismatch."
+[[ "$(sha256sum "$ROOT/output/testing2-compile/.config" | awk '{print $1}')" == db6a1f168766546b2e5e612657d928c737cf5561f2319bf069fdad2a1312a6d3 ]] ||
+  fail "Original testing2 kernel configuration checksum mismatch."
 space="$(df -Pk "$ROOT/output" | awk 'NR==2 {print $4}')"
 [[ "$space" =~ ^[0-9]+$ ]] && (( space >= 3 * 1024 * 1024 )) ||
   fail "At least 3 GiB free required in output filesystem."
@@ -182,7 +187,7 @@ fi
 if grep -Ei '^[[:space:]]*nvidia([_-]|[[:space:]]|$)' "$PRELOAD"; then
   fail "NVIDIA early preload still configured."
 fi
-if grep -REi '(^|/)(nvidia([-_][^/]*)?)[.]ko([.](xz|gz|zst))?$' "$MAIN/usr/lib/modules/$KR" \
+if grep -REi '(nvidia([-_][^/:[:space:]]*)?)[.]ko([.](xz|gz|zst))?' "$MAIN/usr/lib/modules/$KR" \
    --include='modules.dep' --include='modules.load' --include='modules.order' \
    --include='modules.alias' --include='modules.softdep'; then
   fail "NVIDIA module dependency or alias leaked into extracted image."
