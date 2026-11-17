@@ -156,3 +156,38 @@ The USB recovery medium remains **absent and untested**.
 **Recovery rule:** Continue to use the PARTUUID rather than any
 historical `/dev/sdc1` or `/dev/sdd1` name. No disk, firmware
 entry, or bootloader change was performed. Testing2 is still NO-GO.
+
+## Recovery USB connected — offline inventory pass (2026-11-16)
+
+The operator captured `lsblk` **before and after** physically connecting
+a new USB drive. Before: no external USB storage device. After:
+`/dev/sde` (generic "Storage Device", `14.8G`, `TRAN=usb`,
+`RM=1`, `HOTPLUG=1`) appeared without changing existing mounts.
+
+The newly observed USB contains:
+- `/dev/sde1`: `756M` `iso9660`, mounted at
+  `/run/media/dlrp/Debian 13.7.0 amd64 n...` (label truncated
+  by terminal output; consistent with a Debian 13.7 amd64 netinst ISO).
+  Partition UUID `2ca9630d-01`.
+- `/dev/sde2`: `3.6M` FAT (`vfat`), partition UUID
+  `2ca9630d-02`. Small EFI partition layout is consistent
+  with an isohybrid installer stick.
+
+**Evidence level:** removable Debian 13.7 installer USB presence and
+partition signatures are CONFIRMED. UEFI boot from it, rescue menu,
+installer kernel Intel VMD support, MD RAID10 activation, Btrfs root
+visibility, and usable shell are **NOT YET VERIFIED**. Do not confuse
+a mounted installer ISO with a successfully boot-tested rescue system.
+Debian's official installer manual documents rescue mode:
+https://www.debian.org/releases/trixie/amd64/
+
+**Safe next review:** use read-only `lsblk`, `blkid`,
+`findmnt` and inspection of the already-mounted ISO contents.
+Never issue `dd`, `mkfs`, `wipefs`, installer partitioning,
+GRUB reinstall, or a firmware boot-variable update for this check.
+
+A physical firmware boot-menu USB boot and rescue-shell verification
+is a **separate future explicit-approval step**, not yet performed.
+For boot qualification choose the installer **rescue** option,
+never partition/format/install, and use non-modifying storage detection.
+Recovery from an unverified medium is not yet adequate rollback.
