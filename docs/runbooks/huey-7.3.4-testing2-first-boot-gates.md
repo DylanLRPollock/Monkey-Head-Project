@@ -531,3 +531,40 @@ must be preserved. No change to the default boot entry,
 modprobe configuration, GRUB, system packages or RAID is
 authorized by this space inspection. First boot stays
 **NO-GO** pending controlled isolation/rollback review.
+
+## Btrfs allocation and compressed artifact size gate — PASS (2026-11-17)
+
+Read-only `btrfs filesystem usage -T /` confirms on
+`/dev/md0` **26.81 GiB** total,
+**17.52 GiB** allocated and **9.28 GiB**
+unallocated, with **11.73 GiB** estimated free
+(minimum estimate **7.09 GiB**), and no missing
+Btrfs device. Root remains Btrfs `@rootfs`.
+The kernel `.deb` package is **115 MiB
+compressed**, and verified third no-NVIDIA
+initramfs is **59 MiB**, SHA-256
+`fb2c4985f64c2a77f4cc2f175665311f179ac632d261a150ea7c58f673f4a3df`.
+These measurements indicate adequate planning headroom,
+but cannot guarantee installation space without checking
+the decompressed package footprint.
+
+Uploaded historical image logs and listings confirm:
+the original fakeroot image had stale md3 and
+resume-from-md1; policy2 removed these but
+included NVIDIA; the third no-NVIDIA image keeps
+active RAID config and resume fix and removes
+the only proprietary modules and firmware in the
+policy2 archive. The third image also includes
+`amdgpu/polaris10_*` firmware, required by the
+RX 570 family. None has been runtime booted.
+
+**Next required hold:** inspect Linux image `.deb`
+control metadata, `Installed-Size`, maintainer
+scripts and kernel hook invocation paths read-only,
+because `dpkg -i` can alter `/boot`, GRUB,
+initramfs and DKMS (including proprietary NVIDIA
+builds). A controlled isolated first boot requires
+not inadvertently invoking any of those hooks
+or replacing the tested no-NVIDIA archive.
+Do not install the package or change GRUB
+before the full rollback plan is reviewed.
