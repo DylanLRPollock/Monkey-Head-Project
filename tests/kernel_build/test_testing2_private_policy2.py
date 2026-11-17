@@ -31,7 +31,8 @@ def test_expected_arrays_only_with_private_overlay() -> None:
     assert '--ro-bind "$PRIVATEMD" /etc/mdadm/mdadm.conf' in source
     assert "'RESUME=none" in source
     assert 'grep -Exq \'RESUME=none\' "$RESUME"' in source
-    assert "Embedded" not in source or "mdadm" in source
+    assert "New image still contains stale md3 ARRAY UUID." in source
+    assert "Unexpected embedded ARRAY count." in source
 
 
 def test_private_namespace_fakeroot_and_integrity() -> None:
