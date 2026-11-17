@@ -775,3 +775,56 @@ Do not automatically install or boot `7.3.4-huey-testing2`
 or change the default GRUB entry. Preserve working
 `7.2.15`; use only a reviewed, manually selected test
 entry and explicit failure/recovery procedure in future.
+
+## Debian 7.2.12 purge fully completed; V100 re-verified (2026-11-17 02:18 EST)
+
+The operator performed a simulated purge of the six residual
+7.2.12 packages, confirmed the proposed changes were limited
+to exactly those six, and then approved/executed the purge:
+
+- `linux-base-7.2.12+deb14-amd64`
+- `linux-binary-7.2.12+deb14-amd64`
+- `linux-headers-7.2.12+deb14-amd64`
+- `linux-headers-7.2.12+deb14-common`
+- `linux-kbuild-7.2.12+deb14`
+- `linux-modules-7.2.12+deb14-amd64`
+
+The purge reported **203 MB freed**. Read-only postchecks:
+
+```text
+dpkg -l | grep '7.2.12' || echo "No 7.2.12 packages remain"
+No 7.2.12 packages remain
+uname -r
+7.2.15+deb14-amd64
+nvidia-smi: 580.196.07, CUDA 13.0, Tesla V100-PCIE-32GB,
+            46 C, 38 W, 0 MiB allocated; no processes
+```
+
+This completes the operator-authorized removal of **all**
+7.2.12 packages. The 7.2.15 kernel and its initramfs remain
+the **only known installed and working boot pair**. The
+proprietary NVIDIA R580 driver is demonstrably intact on
+7.2.15; prior DKMS removal was specific to 7.2.12.
+Previous GRUB verification showed only correct 7.2.15
+Btrfs `/@rootfs` entries after the image purge.
+
+**Current first-boot risk status:** the independent Debian
+13.7 rescue USB boots and sees all four Optane partitions,
+but has **not** demonstrated assembly of the md0 RAID10
+or read-only access to `@rootfs` from recovery. The one
+working boot pair must not be removed or overwritten.
+The SHA-pinned no-NVIDIA 7.3.4 testing2 initrd
+`fb2c4985f64c2a77f4cc2f175665311f179ac632d261a150ea7c58f673f4a3df`
+remains uninstalled, and there is no 7.3.4 GRUB entry.
+No reboot or installation was performed as part of the
+remaining-six-packages purge.
+
+**Next engineering milestone:** prepare an auditable,
+version-isolated, side-by-side manual boot staging and
+rollback plan rather than running the candidate `.deb`
+package's DKMS, initramfs-tools, and update-grub hooks.
+Require a test-only kernel parameter
+`module_blacklist=nvidia,nvidia_uvm,nvidia_modeset,nvidia_drm`,
+known-good Debian default, and a clearly validated way to
+reselect 7.2.15 in GRUB if testing2 fails. A recovery USB
+root-array assembly test would reduce residual rollback risk.
