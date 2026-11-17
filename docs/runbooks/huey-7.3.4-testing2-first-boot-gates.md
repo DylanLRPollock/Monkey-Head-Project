@@ -259,3 +259,63 @@ fsck or a write operation on this recovery candidate during
 qualification. The official signed Debian ISO SHA256SUMS can
 authenticate an original download but cannot be expected to
 match a previously modified hybrid USB image.
+
+## Debian USB FAT partition — read-only consistency check (2026-11-16)
+
+After the Debian installer USB's internal md5sum check found only
+`boot/grub/efi.img` changed, the operator used its persistent
+PARTUUID `2ca9630d-02` to select the 3.6 MiB VFAT partition
+(currently `/dev/sde2`). `findmnt` showed it unmounted,
+and `sudo /usr/sbin/fsck.vfat -n` emitted:
+
+```
+fsck.fat 4.2 (2021-01-31)
+/dev/sde2: 6 files, 1821/1828 clusters
+```
+
+**Result:** No FAT errors or repair recommendations appeared.
+The command's exit status was not separately recorded. The EFI FAT
+filesystem is almost completely allocated (1821/1828 clusters),
+which is not by itself a filesystem integrity failure on this
+small prebuilt EFI volume. Debian's fsck.fat `-n` means
+a non-writing/no-operation check.
+
+This supports **FAT structural consistency only**. It does **not**
+prove that `efi.img` is identical to the Debian release's original
+contents, that Secure Boot accepts the EFI loaders, or that the
+firmware can boot this USB. Do not modify/repair/rewrite the
+stick solely for the embedded EFI image checksum mismatch.
+
+**Recovery-media status:** identified USB + installer files + no
+reported FAT filesystem errors = positive offline checks;
+an actual UEFI rescue-mode boot and Optane/VMD/RAID10/Btrfs
+visibility test are still REQUIRED before this becomes a
+qualified independent recovery route.
+
+### Controlled USB rescue-boot gate (not yet authorized)
+
+Require the operator's explicit approval for a reboot and
+verified local physical access to keyboard/monitor. Use the
+motherboard's **one-time boot device picker** to choose the
+removable Debian UEFI USB, leaving firmware BootOrder,
+`Boot0004`, the host ESP, and installed GRUB unchanged.
+At the Debian installer boot menu, choose **Advanced options >
+Rescue mode** (or equivalent). Never select ordinary Install or
+Graphical install; do not partition or repair any disk.
+
+In the installer rescue shell, inspect devices using non-destructive
+commands such as `cat /proc/mdstat`,
+`lsblk -f`, `cat /proc/cmdline` and, if available,
+`mdadm --detail --scan`. Do not manually force-assemble,
+mount read-write, reshape, resync, create filesystems, or run
+`grub-install`. The rescue environment may assemble arrays or
+offer to mount a root volume automatically; these actions require
+careful inspection of prompts, and the operator should avoid
+any step with unclear write semantics. The next phase is
+**observation**, not repair. Any necessary mount/assembly
+must be separately assessed for read-only safety.
+
+Official Debian rescue-mode documentation:
+https://www.debian.org/releases/trixie/amd64/ch08s06.en.html
+
+Testing2 remains uninstalled and first-boot status is **NO-GO**.
