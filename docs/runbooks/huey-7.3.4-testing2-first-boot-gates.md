@@ -387,3 +387,38 @@ assembly/Btrfs root access in the rescue environment is **not yet
 qualified**. NVIDIA proprietary R580 580.196.07 return-thunk
 objtool warnings and controlled rollback/first-boot risk acceptance
 remain open. No more GRUB or host bootloader modifications are needed.
+
+## Staged first test without proprietary NVIDIA modules (2026-11-16)
+
+The proprietary R580 modules had `47,484` objtool
+`naked return` warnings with `CONFIG_MITIGATION_RETHUNK=y`.
+Although `.return_sites` and thunk-relocation metadata are
+present, vendor binary returns remain unverified.
+
+To reduce the initial test scope, a **third distinct offline
+initramfs** can be built using
+`scripts/kernel/huey-734-testing2-private-no-nvidia.sh`.
+Its required boot modules are VMD/NVMe, md RAID10/1/0,
+Btrfs and AMDGPU. It verifies **absence** of both
+`nvidia*.ko` and `nouveau.ko` in the finished archive
+and validates the same md0/md1/md2, md3-absent and
+`RESUME=none` policies as the prior verified policy2 image.
+Do **not** use the older policy2 image as an NVIDIA-free
+test candidate; it still contains NVIDIA and UVM.
+
+**A NVIDIA-free initrd is not by itself full isolation:**
+the installed root filesystem could still contain driver
+modules and udev rules. Linux supports the kernel parameter
+`module_blacklist=nvidia,nvidia_uvm,nvidia_modeset,nvidia_drm`
+to prevent the proprietary modules being loaded in the
+future one-time test boot. Ensure this parameter is applied
+**only** to an explicitly selected testing2 entry, never
+the working Debian boot. No GRUB or modprobe settings are
+to be changed until a separate installation and first-boot
+rollback procedure is formally reviewed and approved.
+Source: https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html
+
+This image build workflow remains **offline and rootless**,
+and its new image is neither built nor validated until
+the operator runs it and sends results. The live Debian
+environment is not modified. **First-boot remains NO-GO.**
