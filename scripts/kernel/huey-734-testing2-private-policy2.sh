@@ -184,7 +184,8 @@ sha256sum "$ARCHIVE" >"$HASHES"
   printf 'Artifact: %s\n' "$ARCHIVE"
   cat "$HASHES"
   printf 'PASS: requested early modules, RAID metadata/hooks and versioned modules present.\n'
-  printf 'PASS: /init ownership=root:root mode=0755.\n'\n  printf 'PASS: embedded md0/md1/md2, md3 absent, RESUME=none.\n'
+  printf 'PASS: /init ownership=root:root mode=0755.\n'
+  printf 'PASS: embedded md0/md1/md2, md3 absent, RESUME=none.\n'
   printf 'NOTE: archive listing does not prove bootability or NVIDIA runtime behavior.\n'
   printf 'No host driver/kernel installation, EFI/GRUB/RAID changes or reboot occurred.\n'
 } >"$AUDIT"
