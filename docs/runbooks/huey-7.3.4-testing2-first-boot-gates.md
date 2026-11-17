@@ -366,3 +366,24 @@ No kernel-package install, module insertion, or boot into
 `7.3.4-huey-testing2` has been carried out. First test boot
 is still on HOLD pending NVIDIA ret-thunk review and
 explicit operator approval of the rollback plan.
+
+## GRUB root parameters re-verified after successful host update-grub (2026-11-16)
+
+After exiting Debian 13.7 rescue mode and successfully booting the working
+Debian `7.2.15+deb14-amd64` kernel, the operator ran a **read-only**
+`sudo grep` over the regenerated `/boot/grub/grub.cfg`. The five
+reported Linux menu lines (regular, advanced and recovery options) target
+`/@rootfs/boot/vmlinuz-7.2.15+deb14-amd64` or
+`/@rootfs/boot/vmlinuz-7.2.12+deb14-amd64`, and each includes
+`root=UUID=dddebb01-4f58-4782-82b3-0e77209afc8c` and
+`rootflags=subvol=@rootfs`. Both installed Debian kernels therefore
+retain the documented correct boot root and subvolume.
+
+This **closes the post-update-grub root-parameter verification gate**,
+not overall first-boot authorization. Both Debian kernels remain
+installed, and no testing2 GRUB entry exists. Rescue USB boot and
+all four Optane node discovery succeeded; independent MD RAID10
+assembly/Btrfs root access in the rescue environment is **not yet
+qualified**. NVIDIA proprietary R580 580.196.07 return-thunk
+objtool warnings and controlled rollback/first-boot risk acceptance
+remain open. No more GRUB or host bootloader modifications are needed.
