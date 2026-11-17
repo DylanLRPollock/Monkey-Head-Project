@@ -615,3 +615,80 @@ Debian image/initrd pairs are retained.
 First-boot remains **NO-GO** until package side-effect
 path, manual test boot entry, NVIDIA kernel-level
 blacklist and rollback risks are documented and accepted.
+
+## Actual package preinst/postinst and host postinstall hook review (2026-11-17)
+
+The operator **read**, but did not execute, the `preinst`
+and `postinst` scripts from the staged image `.deb`,
+plus these exact installed hook files:
+`/etc/kernel/postinst.d/{dkms,initramfs-tools,unattended-upgrades,zz-update-grub}`.
+
+**Observed scripts and effects if a normal dpkg install/configure occurs:**
+
+- Both package `preinst` and `postinst` export `INITRD=Yes`,
+  set `DEB_MAINT_PARAMS="$*"`, then use `run-parts`
+  to invoke any existing hook directories in **both**
+  `/etc/kernel/{preinst,postinst}.d` and
+  `/usr/share/kernel/{preinst,postinst}.d`, passing
+  `7.3.4-huey-testing2` and
+  `/boot/vmlinuz-7.3.4-huey-testing2`.
+  Listing local postinst hooks alone is not the complete
+  hook inventory; check `/usr/share/kernel` and preinst hooks too.
+- `dkms` postinst hook invokes
+  `/usr/lib/dkms/dkms_autoinstaller start "$inst_kern"`
+  **if** the autoinstaller executable exists. This
+  may rebuild any registered NVIDIA module; whether the
+  current proprietary 580.196.07 install is registered
+  with DKMS needs read-only `dkms status` inspection.
+- `initramfs-tools` hook checks version and runs
+  `update-initramfs -c -k "$version" -b "$bootdir"`
+  for a `configure` invocation with `INITRD=Yes`.
+  Therefore a normal kernel package install will create
+  a **host-generated initramfs** for testing2 under
+  `/boot`. It does *not* overwrite our separately pinned
+  private 59 MiB image in the user's workspace; it
+  **does create a different, unqualified image** that
+  GRUB could point at, potentially including proprietary
+  NVIDIA and old live resume/mdadm policy.
+- `zz-update-grub` runs `update-grub` when the
+  configure postinst phase applies, the bootloader
+  config exists, and the system is not detected as
+  a container. This regenerates host `grub.cfg`
+  and can alter the default selected entry when
+  `GRUB_DEFAULT=0`; do not assume that the old Debian
+  kernel remains the automatic boot selection.
+- `unattended-upgrades` hook only touches
+  `/var/run/reboot-required` and appends the
+  package to `reboot-required.pkgs` under its normal
+  conditions; it **does not itself reboot**.
+
+**Decision:** a direct `sudo dpkg -i
+linux-image-7.3.4-huey-testing2_...amd64.deb`
+is **NO-GO** for the proposed initial NVIDIA-free
+boot qualification. Its maintainer/hook chain can
+regenerate the initramfs, run DKMS and refresh the
+bootloader, defeating controlled artifact identity
+and one-time boot isolation.
+
+**Approach for future design (not yet authorized):**
+Prefer a *side-by-side*, auditable staging of the
+verified kernel image, versioned modules and the exact
+SHA-pinned no-NVIDIA initrd, plus a manually selectable
+test-only GRUB entry with
+`root=UUID=dddebb01-4f58-4782-82b3-0e77209afc8c`,
+`rootflags=subvol=@rootfs` and
+`module_blacklist=nvidia,nvidia_uvm,nvidia_modeset,nvidia_drm`.
+This needs a tested dry-run/rollback and independent
+versioned `/lib/modules` tree before any privileged
+filesystem change. Manual staging avoids postinst
+hooks but also bypasses package-manager ownership and
+must have a clear cleanup/removal procedure. An
+alternative managed install would need a proven,
+non-disruptive hook policy and explicit approval;
+do not mask host hooks ad hoc.
+
+**Next minimal read-only gate:** inspect the active
+DKMS registration and remaining `/etc/kernel/preinst.d`,
+`/usr/share/kernel/postinst.d` hooks, and the package's
+`prerm`/`postrm` for safe eventual removal. No
+boot/install commands are authorized by this result.
