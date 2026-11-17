@@ -45,12 +45,20 @@ must be preserved.
    `dddebb01-4f58-4782-82b3-0e77209afc8c`, with
    `rootflags=subvol=@rootfs`. Root lives on `/dev/md0`; `/boot`
    is *inside the Btrfs root*, not on the ESP.
-5. **EFI recovery:** The only verified ESP is VFAT on `/dev/sdc1`
-   (PARTUUID `58fae902-4199-444f-93b8-e845b62d8b95`).
-   Firmware entry `Boot0004` points to it and works with the current
-   Debian kernel. `Boot0005` instead points to an MD RAID10 member's
-   PARTUUID and **must not** be treated as a fallback. `/dev/sdd1`
-   is labeled `NO-BOOT` and is not a populated ESP.
+5. **EFI recovery:** The confirmed ESP is the mounted FAT32
+   partition previously identified by PARTUUID
+   `58fae902-4199-444f-93b8-e845b62d8b95`. Its Linux device
+   name is **not stable**: it appeared as `/dev/sdc1` in the earlier
+   audit but is currently shown at `/dev/sdd1` in the latest
+   `lsblk` output. Verify its PARTUUID afresh before any action.
+   Firmware entry `Boot0004` points to that partition and is the
+   current known-working UEFI route. `Boot0005` points to an
+   Optane MD RAID10 member PARTUUID and **must not** be treated
+   as fallback. The second Kingston SSD's first partition was
+   previously identified as `NO-BOOT`, not a populated ESP;
+   in the latest scan it appears as `/dev/sdb1`. Resolve using
+   PARTUUID or `/dev/disk/by-id/`, never by a historical
+   `/dev/sdX` label.
 6. **Rollback path:** Before any testing2 installation, write and
    review exact steps to select *Debian 7.2.15* from GRUB Advanced
    Options with the working `Boot0004` EFI route. If it cannot be
@@ -78,8 +86,9 @@ connected, this read-only inventory helps identify it without
 guessing device names:
 
 ```bash
-lsblk -o NAME,PATH,MODEL,SIZE,TRAN,TYPE,FSTYPE,LABEL,PARTUUID,MOUNTPOINTS
+lsblk -o NAME,PATH,MODEL,SIZE,TRAN,RM,HOTPLUG,TYPE,FSTYPE,LABEL,PARTUUID,MOUNTPOINTS
 findmnt -n -M /boot/efi -o SOURCE,FSTYPE,TARGET
+readlink -f /dev/disk/by-partuuid/58fae902-4199-444f-93b8-e845b62d8b95
 cat /proc/mdstat
 cat /proc/cmdline
 ```
@@ -103,3 +112,19 @@ informational, not a substitute for a tested rescue boot.
 
 **Gate conclusion:** the policy2 archive is prepared for consideration
 as a test artifact, **not** yet authorized for installation or boot.
+
+## Recovery-medium inventory update — 2026-11-16
+
+The operator's latest `lsblk -o NAME,PATH,MODEL,SIZE,TRAN,TYPE,FSTYPE,LABEL,MOUNTPOINTS` output shows **no USB storage device**: only two SATA WDC 10 TB disks, two SATA Kingston 240 GB SSDs, four NVMe Intel Optane modules, and zram. The USB rescue gate has therefore **not yet been met**. Do not infer that a rescue flash drive is already connected or bootable.
+
+The `/dev/sdX` enumeration **changed** since the previous audit:
+
+| Physical device | Previously observed | Current observation |
+| --- | --- | --- |
+| Kingston 240 GB SSD containing mounted FAT32 `/boot/efi` | `/dev/sdc` with ESP `/dev/sdc1` | `/dev/sdd` with ESP `/dev/sdd1` |
+| Kingston 240 GB SSD containing unformatted `NO-BOOT` first partition | `/dev/sdd` with `/dev/sdd1` | `/dev/sdb` with `/dev/sdb1` |
+| WDC 10 TB native Btrfs members | `/dev/sda`, `/dev/sdb` | `/dev/sda`, `/dev/sdc` |
+
+Names in the table are inventory snapshots, **not stable hardware identifiers**. The currently mounted ESP must be resolved by the historical PARTUUID and `findmnt` before any EFI work. Do not infer that the GPT partition GUID was rechecked by the current basic `lsblk` output, which did not print PARTUUID.
+
+**No-go continues**: a USB device must be identified, and a bootable rescue environment with VMD/Optane/MD RAID10/Btrfs capability must be independently tested under explicit operator approval before installing or booting HueyOS testing2.
