@@ -46,8 +46,8 @@ printf '%s\n' 'STEP 1 — Extract private initramfs content without root or host
 # Archive is trusted only after its pinned digest passes. Do not execute
 # extracted programs/scripts; inspect files as data.
 if bwrap --unshare-net --die-with-parent \
-    --ro-bind / / --proc /proc --dev /dev \
-    --bind "$EXTRACT" "$EXTRACT" \
+    --ro-bind / / --proc /proc --dev /dev --tmpfs /tmp \
+    --bind "$EXTRACT" "$EXTRACT" --setenv TMPDIR /tmp \
     -- "$UNPACK" "$IMAGE" "$EXTRACT" >"$LOG" 2>&1; then
   printf '%s\n' 'PASS: private extraction completed.'
 else
@@ -73,7 +73,7 @@ fi
   printf 'HueyOS %s — private initramfs content inspection\n' "$KR"
   printf 'Source archive SHA-256: %s\n' "$actual"
   printf 'Source archive: %s\n' "$IMAGE"
-  printf 'Read-only extraction destination: %s\n' "$MAIN"
+  printf 'Private extraction destination: %s\n' "$MAIN"
 
   printf '\n=== MD RAID assembly configuration embedded inside initramfs ===\n'
   grep -E '^[[:space:]]*(ARRAY|HOMEHOST|DEVICE|AUTO)[[:space:]]' \
