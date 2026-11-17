@@ -828,3 +828,70 @@ Require a test-only kernel parameter
 known-good Debian default, and a clearly validated way to
 reselect 7.2.15 in GRUB if testing2 fails. A recovery USB
 root-array assembly test would reduce residual rollback risk.
+
+## Operator authorized side-by-side installation preparation (2026-11-17)
+
+The operator said **"Let's install"** after the successful
+purge of Debian 7.2.12, confirmation of a healthy running
+Debian 7.2.15, NVIDIA 580.196.07 and pinned third no-NVIDIA
+initrd. A new guarded **manual test-staging shell artifact**
+was authored in the chat container (not executed on the host):
+`huey-734-testing2-stage-manual-boot.sh`.
+SHA-256 of the authored shell script:
+`24925c869545a04a92e0edd7afa5ece5737196aea129e21fae1dd22b800c771d`.
+`bash -n` and static no-hook checks passed on that artifact;
+host-specific execution and safety checks are **still untested**.
+
+**Critical design decision:** the test kernel is intended to
+reside under `/boot/huey-testing2/vmlinuz-7.3.4-huey-testing2`
+with the pinned initrd in the same dedicated directory,
+**not** a top-level `/boot/vmlinuz-*` file. Thus normal
+GRUB `10_linux` kernel discovery should not promote the
+unqualified 7.3.4 test image on a future host
+`update-grub`. In-tree Linux modules would be copied to a
+new `/usr/lib/modules/7.3.4-huey-testing2` directory and
+`depmod` run for **that version only**.
+The staged test is intentionally **unmanaged by dpkg**, so
+its eventual cleanup is separate from `apt purge`.
+
+**Strict prereqs:** running Debian
+`7.2.15+deb14-amd64`, healthy
+`/dev/md0` RAID10, Btrfs `@rootfs` UUID
+`dddebb01-4f58-4782-82b3-0e77209afc8c`,
+`GRUB_DEFAULT=0`, intact primary kernel/initrd,
+and an already-generated GRUB `41_custom` dynamic
+`custom.cfg` loader. Abort if any unique test path
+is already present. Validate `grub-script-check`
+before exposing the manual boot entry.
+
+**Pinned install sources:**
+- Kernel package SHA:
+  `25a047a9ab044dce4fad765476c51f1c4aa0b37ffcb6c9b759143f0a887692e0`.
+- Build `.config` SHA:
+  `db6a1f168766546b2e5e612657d928c737cf5561f2319bf069fdad2a1312a6d3`.
+- Offline no-NVIDIA initrd SHA:
+  `fb2c4985f64c2a77f4cc2f175665311f179ac632d261a150ea7c58f673f4a3df`.
+
+The separate, manually selectable GRUB entry targets
+`/@rootfs/boot/huey-testing2/` with the expected
+root UUID/subvolume, and parameters:
+`module_blacklist=nvidia,nvidia_uvm,nvidia_modeset,nvidia_drm,nvidia_peermem`
+and `systemd.unit=multi-user.target`.
+It uses GRUB's dynamic `custom.cfg` include and does
+**not** call `update-grub`, `dpkg -i`,
+`update-initramfs`, NVIDIA/DKMS hooks,
+`grub-install`, or a reboot command.
+Source docs: Debian GRUB `41_custom` and
+https://wiki.archlinux.org/title/GRUB;
+Linux kernel
+https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html
+
+**Status:** script authored and static-checked, **NOT
+EXECUTED ON THE WORKSTATION**. On operator execution,
+the script must print a post-stage report and stop.
+Before first reboot, verify its staged paths, digest,
+GRUB entry/default, and the status of Debian 7.2.15.
+Recovery USB RAID assembly is still untested. If a
+test boot fails or hangs, restart and select/default
+to known-good 7.2.15; avoid trying to purge the
+unmanaged 7.3.4 kernel using apt.
