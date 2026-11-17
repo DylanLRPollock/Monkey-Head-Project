@@ -223,3 +223,39 @@ The bootable-rescue gate stays OPEN until an **explicitly approved**
 USB-only recovery boot reaches a shell and verifies Intel VMD,
 four NVMe/Optane RAID10 member visibility, `md0` UUID,
 and Btrfs root access without writes.
+
+## USB checksum check — efi.img mismatch, documented Debian case (2026-11-16)
+
+The operator ran the read-only mounted-ISO integrity check with
+`md5sum --check --quiet md5sum.txt`.
+**Result: exactly one file mismatch**:
+
+```
+./boot/grub/efi.img: FAILED
+md5sum: WARNING: 1 computed checksum did NOT match
+```
+
+This **must not be silently marked PASS**; the USB's internal manifest
+does not completely match. However, Debian's official
+[VerifyISOImage](https://wiki.debian.org/VerifyISOImage) and
+[XorrisoDdTarget](https://wiki.debian.org/XorrisoDdTarget)
+documentation describe **this exact `efi.img` checksum mismatch**.
+On a hybrid ISO, `boot/grub/efi.img` is the FAT ESP image also
+exposed as a writable partition on the USB. A previous OS or
+firmware/installer session can alter FAT metadata or add files,
+producing a checksum mismatch without damaging the rest of the
+installer. Debian bug [#1056998](https://bugs.debian.org/1056998)
+documents an example and the overlap mechanism.
+
+**Evidence-based interpretation:** no other file was reported
+mismatching by the command, but a single failure does not prove
+the EFI image is harmless or that it can boot on this host. The
+first-boot recovery gate remains UNMET. Do **not** rewrite the
+stick just for this finding until a safe, non-destructive
+`fsck.vfat -n` check of its partition GUID
+`2ca9630d-02` and, if useful, comparison against a separately
+downloaded and officially verified ISO. Never run repair-mode
+fsck or a write operation on this recovery candidate during
+qualification. The official signed Debian ISO SHA256SUMS can
+authenticate an original download but cannot be expected to
+match a previously modified hybrid USB image.
