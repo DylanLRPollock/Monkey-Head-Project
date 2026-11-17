@@ -191,3 +191,35 @@ is a **separate future explicit-approval step**, not yet performed.
 For boot qualification choose the installer **rescue** option,
 never partition/format/install, and use non-modifying storage detection.
 Recovery from an unverified medium is not yet adequate rollback.
+
+## Debian 13.7 USB installer file check — positive (2026-11-16)
+
+The operator confirmed `/dev/sde` is a 14.8 GiB removable
+USB device containing an ISO9660 Debian 13.7.0 amd64 installer
+volume and a 3.6 MiB VFAT EFI partition. The physical `sde1`
+volume UUID is `2026-09-12-09-39-25-00`, partition UUID
+`2ca9630d-01`; `sde2` has FAT UUID `DEB0-0001`,
+partition UUID `2ca9630d-02`.
+
+Read-only file listing of the **mounted** installer filesystem:
+- `EFI/boot/bootx64.efi` (about 1012 KiB)
+- `EFI/boot/grubx64.efi` (about 2.6 MiB)
+- `install.amd/vmlinuz` (about 12 MiB)
+- `install.amd/initrd.gz` (about 24 MiB)
+- `md5sum.txt` (approximately 82 KiB)
+- `boot/`, `isolinux/`, `.disk/`, `pool/`, and `firmware/`
+
+This establishes the presence of plausible **UEFI installer files**
+and an installer kernel/initrd, but says nothing definitive about
+firmware boot behavior, the rescue menu, signature trust, ISO
+content-integrity verification or storage access from the
+installer. Before any recovery reboot, a non-destructive
+`md5sum -c md5sum.txt` on the mounted ISO can check against
+its embedded file manifest. This is useful for accidental file
+corruption, **not** authentication against an independent trusted
+official SHA-256 digest. Use rootless read-only checks.
+
+The bootable-rescue gate stays OPEN until an **explicitly approved**
+USB-only recovery boot reaches a shell and verifies Intel VMD,
+four NVMe/Optane RAID10 member visibility, `md0` UUID,
+and Btrfs root access without writes.
