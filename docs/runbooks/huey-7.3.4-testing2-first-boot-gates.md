@@ -422,3 +422,35 @@ This image build workflow remains **offline and rootless**,
 and its new image is neither built nor validated until
 the operator runs it and sends results. The live Debian
 environment is not modified. **First-boot remains NO-GO.**
+
+## NVIDIA-free test initramfs: builder false positive and reuse-only postcheck
+
+The third private no-NVIDIA initramfs **built and extracted**
+successfully. Its final audit failed not due to an actual
+proprietary NVIDIA module but because a name-match against
+`modules.order` flagged unrelated in-tree Linux modules
+`typec_nvidia.ko` and `nvidia-wmi-ec-backlight.ko`.
+Kernel Kbuild's `modules.order` is an alias-resolution ordering
+file, not a record of which actual module binaries have
+been packed into the initramfs.
+
+After the failure, use the new, rootless and read-only
+`scripts/kernel/huey-734-testing2-no-nvidia-postcheck.sh`
+to verify the **already-produced** image in
+`work/no-nvidia-test1`. It reports a SHA-256 only if
+the embedded private RAID/resume policy and the actual
+archive module inventory pass checks. It must refuse to
+overwrite an existing report. The builder has also been
+fixed so future uses don't conflate the in-tree drivers
+with proprietary NVIDIA R580 modules.
+
+The new image must still be prepared for an explicitly
+approved one-time boot with
+`module_blacklist=nvidia,nvidia_uvm,nvidia_modeset,nvidia_drm`
+to keep the proprietary code isolated even after the root
+filesystem mounts. The absence of vendor files in initramfs
+alone does not establish post-root isolation.
+
+No build rerun, kernel installation, driver loading or
+GRUB change should be performed to correct this metadata
+false positive. First-boot status remains NO-GO.
