@@ -187,10 +187,14 @@ fi
 if grep -Ei '^[[:space:]]*nvidia([_-]|[[:space:]]|$)' "$PRELOAD"; then
   fail "NVIDIA early preload still configured."
 fi
-if grep -REi '(nvidia([-_][^/:[:space:]]*)?)[.]ko([.](xz|gz|zst))?' "$MAIN/usr/lib/modules/$KR" \
-   --include='modules.dep' --include='modules.load' --include='modules.order' \
-   --include='modules.alias' --include='modules.softdep'; then
-  fail "NVIDIA module dependency or alias leaked into extracted image."
+# modules.order is a kernel-build ordering index, not an archive file list.
+# The Linux tree contains unrelated names like typec_nvidia.ko and
+# nvidia-wmi-ec-backlight.ko. Reject only proprietary R580 module
+# filenames; first-boot post-root isolation requires module_blacklist.
+if grep -Ei '(^|/)(nvidia|nvidia-uvm|nvidia-modeset|nvidia-drm)[.]ko([.](xz|gz|zst))?([:[:space:]]|$)' \
+   "$MAIN/usr/lib/modules/$KR/modules.dep" \
+   "$MAIN/usr/lib/modules/$KR/modules.order"; then
+  fail "Proprietary NVIDIA kernel module referenced in archived metadata."
 fi
 
 sha256sum "$ARCHIVE" >"$HASHES"
