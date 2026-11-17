@@ -1,6 +1,6 @@
 """Guard the third, NVIDIA-free, strictly offline testing2 initramfs."""
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 SCRIPT = (
     Path(__file__).resolve().parents[2]
@@ -22,6 +22,8 @@ def test_bash_syntax() -> None:
 def test_input_pinned_and_output_is_distinct() -> None:
     s = source()
     assert "8bce591f673c74d3eeadfc53f8563aa7d20c6f22af2ac7adff4744bcfc6a05b7" in s
+    assert "25a047a9ab044dce4fad765476c51f1c4aa0b37ffcb6c9b759143f0a887692e0" in s
+    assert "db6a1f168766546b2e5e612657d928c737cf5561f2319bf069fdad2a1312a6d3" in s
     assert 'WORK="$STAGE/work/no-nvidia-test1"' in s
     assert 'POLICY2="$STAGE/work/fakeroot-policy2"' in s
     assert '[[ ! -e "$p" ]]' in s
