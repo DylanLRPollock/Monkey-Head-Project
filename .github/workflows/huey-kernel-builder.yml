@@ -60,7 +60,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main]
+    branches: [main, "feature/huey-kernel-*"]
 
 # Least-privilege token. If a future change needs `actions: read` or
 # `checks: write`, it must be added explicitly at the job level and
@@ -176,7 +176,7 @@ jobs:
           rc=0
           python -m huey.kernel_build.cli build-nvidia \
             --config kernel/huey-linux/build.yaml \
-            --kernel-release 7.2.15-huey1 \
+            --kernel-release 7.3.4-huey-testing1 \
             --headers-dir /nonexistent/headers \
             --output-dir /tmp/huey-nvidia \
             --dry-run --json > /tmp/build-nvidia-dry.json || rc=$?
@@ -188,7 +188,7 @@ jobs:
           rc=0
           python -m huey.kernel_build.cli initramfs \
             --config kernel/huey-linux/build.yaml \
-            --kernel-release 7.2.15-huey1 \
+            --kernel-release 7.3.4-huey-testing1 \
             --module-tree /nonexistent/tree \
             --modules-list kernel/huey-linux/initramfs/modules.list \
             --modprobe-conf kernel/huey-linux/initramfs/modprobe.d/huey-v100.conf \
@@ -217,7 +217,7 @@ jobs:
           python -m huey.kernel_build.cli release \
             --config kernel/huey-linux/build.yaml \
             --release-dir /tmp/huey-release \
-            --kernel-release 7.2.15-huey1 \
+            --kernel-release 7.3.4-huey-testing1 \
             --kernel-image-deb /nonexistent/linux-image.deb \
             --kernel-headers-deb /nonexistent/linux-headers.deb \
             --dry-run --json > /tmp/release-dry.json || rc=$?

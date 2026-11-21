@@ -31,8 +31,19 @@
 #   file never negates a driver; it only requests inclusion.
 #
 # Profile:  v100-workstation
-# Target:   HueyOS custom kernel (LOCALVERSION=-huey1)
+# Target:   HueyOS Linux 7.3.4 (initial LOCALVERSION=-huey-testing1)
 # =============================================================================
+
+# --- Boot-critical Intel VMD / Optane MD RAID10 / Btrfs root -------------------
+# The tested Debian 7.2.15 initramfs includes these drivers for /dev/md0.
+# Preserve them explicitly in the HueyOS target initramfs. nvme_core and
+# md_mod are resolved as module dependencies. Modules alone are not enough:
+# mkinitramfs MUST also carry mdadm executable/config + early assembly hooks,
+# and must honor rootflags=subvol=@rootfs.
+vmd
+nvme
+raid10
+btrfs
 
 # --- Display path (AMD RX 570) -----------------------------------------------
 # amdgpu drives the RX 570 display. Include it early so early KMS and

@@ -18,7 +18,7 @@ to the full contract required by the handoff:
 * dry run performs no I/O and launches no subprocess;
 * stale .deb cleanup;
 * other .debs recorded as INFO and not promoted;
-* LOCALVERSION warning when the requested suffix is not in kernelrelease;
+* fail-closed LOCALVERSION and exact KERNELRELEASE checks before compiling;
 * KDEB_PKGVERSION and SOURCE_DATE_EPOCH propagate to make;
 * to_dict() is JSON-serializable;
 * path escape is rejected in artifact discovery.
@@ -711,21 +711,49 @@ def test_bindeb_timeout_errors(tmp_path: Path) -> None:
 # ===========================================================================
 
 
-def test_localversion_not_in_kernelrelease_warns(tmp_path: Path) -> None:
-    """If make ignores LOCALVERSION, the result carries a WARNING."""
+def test_localversion_not_in_kernelrelease_blocks_before_compile(tmp_path: Path) -> None:
+    """Missing suffix must fail before bindeb-pkg, not warn after it."""
     src, cfg, out = _setup(tmp_path)
-    runner = _build_runner(kernel_release="7.2.15")  # no suffix
-
-    # The runner creates packages for "7.2.15" (matching the returned
-    # kernelrelease), so artifact discovery succeeds; only the localversion
-    # suffix warning fires.
+    runner = _build_runner(kernel_release="7.2.15")
     result = KernelBuilder(runner).build(
         source_dir=src, config_path=cfg, output_dir=out, localversion="-huey1",
     )
-    warning_codes = {f.code for f in result.findings if f.severity == Severity.WARNING}
-    assert "LOCALVERSION_NOT_IN_KERNELRELEASE" in warning_codes
-    # Not blocking: artifacts still match.
-    assert result.has_errors() is False
+    assert result.has_errors()
+    assert "LOCALVERSION_NOT_IN_KERNELRELEASE" in {f.code for f in result.findings}
+    assert not any(_is_bindeb(call) for call in runner.calls)
+
+
+def test_exact_release_accepts_testing1(tmp_path: Path) -> None:
+    src, cfg, out = _setup(tmp_path)
+    runner = _build_runner(kernel_release="7.3.4-huey-testing1")
+    result = KernelBuilder(runner).build(
+        source_dir=src, config_path=cfg, output_dir=out,
+        localversion="-huey-testing1",
+        expected_kernel_release="7.3.4-huey-testing1",
+    )
+    assert not result.has_errors(), result.findings
+    assert any(_is_bindeb(call) for call in runner.calls)
+
+
+@pytest.mark.parametrize("actual", [
+    "7.3.4-huey-testing1+",
+    "7.3.4-huey-testing1-huey-testing1",
+    "7.3.4-extra-huey-testing1",
+    "7.3.5-huey-testing1",
+])
+def test_exact_release_rejects_unexpected_suffix_before_compile(
+    tmp_path: Path, actual: str
+) -> None:
+    src, cfg, out = _setup(tmp_path)
+    runner = _build_runner(kernel_release=actual)
+    result = KernelBuilder(runner).build(
+        source_dir=src, config_path=cfg, output_dir=out,
+        localversion="-huey-testing1",
+        expected_kernel_release="7.3.4-huey-testing1",
+    )
+    assert result.has_errors()
+    assert "KERNELRELEASE_MISMATCH" in {f.code for f in result.findings}
+    assert not any(_is_bindeb(call) for call in runner.calls)
 
 
 # ===========================================================================
@@ -874,15 +902,14 @@ def test_has_errors_true_when_blocking_present(tmp_path: Path) -> None:
     assert result.has_errors() is True
 
 
-def test_has_errors_false_when_only_warnings(tmp_path: Path) -> None:
+def test_has_errors_false_when_only_info(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
-    runner = _build_runner(kernel_release="7.2.15")
+    runner = _build_runner()
     result = KernelBuilder(runner).build(
         source_dir=src, config_path=cfg, output_dir=out, localversion="-huey1",
     )
-    # Only LOCALVERSION_NOT_IN_KERNELRELEASE (WARNING) — not blocking.
     assert result.has_errors() is False
-    assert any(f.severity == Severity.WARNING for f in result.findings)
+    assert any(f.severity == Severity.INFO for f in result.findings)
 
 
 def test_dpkg_deb_real_bare_field_is_accepted(tmp_path: Path) -> None:

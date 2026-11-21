@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "status": "unresolved",
-  "source_type": "debian-linux-source",
-  "package_name": "linux-source-7.2",
-  "version": "7.2.15-1",
-  "archive_filename": "linux-source-7.2_7.2.15-1_all.deb",
-  "origin_url": "https://deb.debian.org/debian/pool/main/l/linux/linux-source-7.2_7.2.15-1_all.deb",
-  "checksum_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-  "retrieved_date": null,
+  "status": "pinned",
+  "source_type": "upstream",
+  "package_name": "linux-7.3.4",
+  "version": "7.3.4",
+  "archive_filename": "linux-7.3.4.tar.xz",
+  "origin_url": "https://cdn.kernel.org/pub/linux/kernel/v7.x/linux-7.3.4.tar.xz",
+  "checksum_sha256": "b11b6df8295e8e991ff040b71aaa4994a8b55caa23b6b092907f195b5840fd1f",
+  "retrieved_date": "2026-11-15",
   "license": "GPL-2.0-only",
-  "profile_revision": 1,
-  "notes": "UNRESOLVED PLACEHOLDER. checksum_sha256 is the all-zeros sentinel (NOT a real SHA-256; it will never match any file). version, archive_filename, and origin_url are representative examples pending actual pinning and do not constitute a verified pin. SourceManager.prepare() refuses to proceed while status != 'pinned' via SourceLockUnresolvedError, so no build-kernel invocation can consume this lock until it is completed. To pin: (1) obtain the linux-source .deb for the intended kernel from a trusted Debian pool URL or an approved upstream source; (2) compute sha256sum of the retrieved archive; (3) set status to 'pinned' and replace checksum_sha256 with the verified hash; (4) set retrieved_date to today's ISO-8601 UTC date (e.g. 2026-11-12); (5) update version and archive_filename to match the obtained archive if they differ from the example values; (6) run 'huey-kernel plan --config kernel/huey-linux/build.yaml' to confirm the lock is consumed without warnings; (7) commit the updated lock in the same change set as the artifact that produced it."
+  "profile_revision": 2,
+  "notes": "Verified on the i9 Debian Forky workstation: SHA-256 of downloaded Linux 7.3.4 tar.xz matched the published kernel.org sha256sums.asc entry; the xz-decompressed tar validated against kernel.org detached linux-7.3.4.tar.sign, signed 2026-11-10 by Greg Kroah-Hartman. The signer primary key fingerprint was pinned and compared: 647F28654894E3BD457199BE38DBBDC86092693E. Verification reports and archive digest were supplied by operator. PINNED refers only to source provenance, not to successful compilation, R580 compatibility or hardware boot qualification."
 }

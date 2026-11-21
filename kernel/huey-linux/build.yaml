@@ -34,17 +34,19 @@ profile: v100-workstation
 
 kernel:
   # Debian linux-source package or an explicitly approved upstream source.
-  # Until an official source is pinned and verified in source.lock.json,
-  # these stay null and build-kernel refuses to proceed.
+  # Upstream Linux 7.3.4 has now been cryptographically verified and pinned
+  # in source.lock.json. This build intent deliberately retains source=null:
+  # candidate configuration review and external NVIDIA compilation are
+  # still incomplete; do not auto-download, compile or install.
   #
   # source_type:
   #   debian-linux-source  -> Debian linux-source-<version> .deb
   #   upstream             -> explicitly approved upstream tarball
-  source_type: debian-linux-source
-  source: null                     # e.g. "linux-source-7.2"
-  version: null                    # e.g. "7.2.15-1"
-  checksum: null                   # SHA-256 hex; never invent this value
-  localversion: "-huey1"           # distinct suffix so the custom kernel is identifiable
+  source_type: upstream
+  source: null                     # Pin only after source verification; no auto-download
+  version: "7.3.4"                 # Exact expected upstream base version
+  checksum: null                   # Deferred in build intent until build approval; see pinned source.lock.json
+  localversion: "-huey-testing1"   # Exact target: 7.3.4-huey-testing1
   baseline_config: null            # optional path to a known-good /boot/config-*; null -> resolve read-only from host
 
 nvidia:
