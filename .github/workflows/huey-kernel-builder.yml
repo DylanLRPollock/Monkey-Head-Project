@@ -81,7 +81,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Never leave GITHUB_TOKEN in .git/config. Fork PR code runs later
           # in this job; a persisted credential would be readable by it.
@@ -90,7 +90,7 @@ jobs:
           fetch-depth: 1
 
       - name: Set up Python 3.13
-        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.13"
           # Do NOT enable cache: pip cache in a PR-reachable job can be
