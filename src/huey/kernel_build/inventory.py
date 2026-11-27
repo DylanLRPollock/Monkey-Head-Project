@@ -32,10 +32,11 @@ from __future__ import annotations
 
 import logging
 import re
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable, Protocol, Sequence
+from typing import Any, Protocol
 
 from huey.kernel_build.models import (
     DriverBaseline,
@@ -90,13 +91,13 @@ class RealHostFs:
     def read_text(self, path: Path) -> str | None:
         try:
             return path.read_text(encoding="utf-8", errors="replace")
-        except (OSError, PermissionError):
+        except OSError:
             return None
 
     def list_dir(self, path: Path) -> tuple[Path, ...]:
         try:
             return tuple(sorted(path.iterdir()))
-        except (OSError, PermissionError):
+        except OSError:
             return ()
 
     def exists(self, path: Path) -> bool:
@@ -123,18 +124,15 @@ class FakeHostFs:
     def read_text(self, path: Path) -> str | None:
         try:
             return self._map(path).read_text(encoding="utf-8", errors="replace")
-        except (OSError, PermissionError):
+        except OSError:
             return None
 
     def list_dir(self, path: Path) -> tuple[Path, ...]:
         try:
             return tuple(
-                sorted(
-                    Path(str(child))
-                    for child in self._map(path).iterdir()
-                )
+                sorted(Path(str(child)) for child in self._map(path).iterdir())
             )
-        except (OSError, PermissionError):
+        except OSError:
             return ()
 
     def exists(self, path: Path) -> bool:
@@ -167,8 +165,14 @@ class InventoryReport:
     collected_at: str = ""
 
     def __post_init__(self) -> None:
-        for name in ("gpus", "dkms_status_lines", "dkms_kernel_releases_for_driver",
-                     "kernel_configs_available", "kernel_headers_available", "findings"):
+        for name in (
+            "gpus",
+            "dkms_status_lines",
+            "dkms_kernel_releases_for_driver",
+            "kernel_configs_available",
+            "kernel_headers_available",
+            "findings",
+        ):
             value = getattr(self, name)
             if isinstance(value, list):
                 object.__setattr__(self, name, tuple(value))
@@ -205,14 +209,20 @@ class InventoryReport:
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 _OS_RELEASE_LINE_RE = re.compile(r'^([A-Z0-9_]+)="?(.*?)"?\s*$')
 
-_PCI_FULL_RE = re.compile(r"^([0-9a-f]{1,8}):([0-9a-f]{2}):([0-9a-f]{2})\.([0-7])$", re.IGNORECASE)
-_PCI_LSPCI_FULL_RE = re.compile(r"^([0-9a-f]{4}):([0-9a-f]{2}):([0-9a-f]{2})\.([0-7])\s", re.IGNORECASE)
-_PCI_LSPCI_SHORT_RE = re.compile(r"^([0-9a-f]{2}):([0-9a-f]{2})\.([0-7])\s", re.IGNORECASE)
+_PCI_FULL_RE = re.compile(
+    r"^([0-9a-f]{1,8}):([0-9a-f]{2}):([0-9a-f]{2})\.([0-7])$", re.IGNORECASE
+)
+_PCI_LSPCI_FULL_RE = re.compile(
+    r"^([0-9a-f]{4}):([0-9a-f]{2}):([0-9a-f]{2})\.([0-7])\s", re.IGNORECASE
+)
+_PCI_LSPCI_SHORT_RE = re.compile(
+    r"^([0-9a-f]{2}):([0-9a-f]{2})\.([0-7])\s", re.IGNORECASE
+)
 _GPU_CONTROLLER_CLASSES = (
     "VGA compatible controller",
     "3D controller",
@@ -254,7 +264,9 @@ def _compute_cap_to_sm(value: str | None) -> str | None:
     return None
 
 
-def _parse_nvidia_smi_gpu_line(line: str) -> tuple[str, str | None, str | None, str | None] | None:
+def _parse_nvidia_smi_gpu_line(
+    line: str,
+) -> tuple[str, str | None, str | None, str | None] | None:
     """Parse a ``--format=csv,noheader`` row of ``name,uuid,pci.bus_id,compute_cap``.
 
     Fields are split from the right so a name containing ``, `` cannot corrupt
@@ -288,11 +300,11 @@ def _parse_lspci_line(line: str) -> GPUIdentity | None:
     if full:
         domain, bus, slot, fn = full.groups()
         pci = _normalize_pci(domain, bus, slot, fn)
-        rest = line[full.end():]
+        rest = line[full.end() :]
     elif short:
         bus, slot, fn = short.groups()
         pci = _normalize_pci("0000", bus, slot, fn)
-        rest = line[short.end():]
+        rest = line[short.end() :]
     else:
         return None
 
@@ -365,7 +377,7 @@ class HostInventory:
         self._fs = host_fs if host_fs is not None else RealHostFs()
         self._modinfo_paths = tuple(modinfo_fallback_paths)
         self._nvcc_paths = tuple(nvcc_fallback_paths)
-        self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._clock = clock or (lambda: datetime.now(UTC))
 
     # ---- public API ------------------------------------------------------
 
@@ -377,16 +389,20 @@ class HostInventory:
         running_kernel = self._read_running_kernel(findings)
         secure_boot = self._read_secure_boot(findings)
 
-        nvidia_gpus, nvidia_driver_version, nvidia_cuda_api = (
-            self._read_nvidia_smi(findings)
+        nvidia_gpus, nvidia_driver_version, nvidia_cuda_api = self._read_nvidia_smi(
+            findings
         )
         lspci_gpus = self._read_lspci_gpus(findings)
         gpus = self._merge_gpus(nvidia_gpus, lspci_gpus)
 
         modinfo_version = self._read_modinfo_version(findings)
-        dkms_lines, dkms_releases = self._read_dkms(findings)
+        dkms_lines, _dkms_releases = self._read_dkms(findings)
         driver_version = nvidia_driver_version or modinfo_version
-        if nvidia_driver_version and modinfo_version and nvidia_driver_version != modinfo_version:
+        if (
+            nvidia_driver_version
+            and modinfo_version
+            and nvidia_driver_version != modinfo_version
+        ):
             findings.append(
                 ValidationFinding(
                     severity=Severity.WARNING,
@@ -419,11 +435,7 @@ class HostInventory:
             findings=findings,
         )
 
-        if (
-            running_kernel
-            and kernel_headers
-            and running_kernel not in kernel_headers
-        ):
+        if running_kernel and kernel_headers and running_kernel not in kernel_headers:
             findings.append(
                 ValidationFinding(
                     severity=Severity.WARNING,
@@ -440,10 +452,13 @@ class HostInventory:
                 )
             )
 
-        if any(
-            g.vendor == GPUVendor.NVIDIA and g.compute_capability == "sm_70"
-            for g in gpus
-        ) and secure_boot == SecureBootState.UNKNOWN:
+        if (
+            any(
+                g.vendor == GPUVendor.NVIDIA and g.compute_capability == "sm_70"
+                for g in gpus
+            )
+            and secure_boot == SecureBootState.UNKNOWN
+        ):
             findings.append(
                 ValidationFinding(
                     severity=Severity.WARNING,
@@ -456,9 +471,7 @@ class HostInventory:
                 )
             )
 
-        collected_at = self._clock().astimezone(timezone.utc).strftime(
-            "%Y-%m-%dT%H:%M:%SZ"
-        )
+        collected_at = self._clock().astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
         return InventoryReport(
             running_kernel=running_kernel,
@@ -510,9 +523,7 @@ class HostInventory:
             return None, ValidationFinding(
                 severity=Severity.INFO,
                 code="COMMAND_FAILED",
-                message=(
-                    f"{argv[0]} exited with {result.command.returncode}"
-                ),
+                message=(f"{argv[0]} exited with {result.command.returncode}"),
                 context={
                     "argv": list(argv),
                     "returncode": result.command.returncode,
@@ -537,7 +548,11 @@ class HostInventory:
                 last = finding
         findings.append(
             ValidationFinding(
-                severity=Severity.INFO if last is None or last.severity == Severity.INFO else last.severity,
+                severity=(
+                    Severity.INFO
+                    if last is None or last.severity == Severity.INFO
+                    else last.severity
+                ),
                 code=absent_code,
                 message=(
                     f"Could not obtain output from any of: "
@@ -621,7 +636,7 @@ class HostInventory:
         )
         return SecureBootState.UNKNOWN
 
-    def _read_nvidia_smi(
+    def _read_nvidia_smi(  # noqa: C901
         self, findings: list[ValidationFinding]
     ) -> tuple[tuple[GPUIdentity, ...], str | None, str | None]:
         """Return (gpus, driver_version, cuda_api_version_from_banner)."""
@@ -729,9 +744,7 @@ class HostInventory:
                 gpus.append(gpu)
         return tuple(gpus)
 
-    def _read_modinfo_version(
-        self, findings: list[ValidationFinding]
-    ) -> str | None:
+    def _read_modinfo_version(self, findings: list[ValidationFinding]) -> str | None:
         candidates: list[tuple[str, ...]] = [("modinfo", "-F", "version", "nvidia")]
         for path in self._modinfo_paths:
             candidates.append((path, "-F", "version", "nvidia"))
@@ -786,9 +799,10 @@ class HostInventory:
             if not m:
                 continue
             version, kernel = m.groups()
-            if version == driver_version or version.startswith(f"{driver_version}-"):
-                if kernel not in matching:
-                    matching.append(kernel)
+            if (
+                version == driver_version or version.startswith(f"{driver_version}-")
+            ) and kernel not in matching:
+                matching.append(kernel)
         if not matching and dkms_lines:
             findings.append(
                 ValidationFinding(
@@ -803,9 +817,7 @@ class HostInventory:
             )
         return tuple(matching)
 
-    def _read_nvcc_version(
-        self, findings: list[ValidationFinding]
-    ) -> str | None:
+    def _read_nvcc_version(self, findings: list[ValidationFinding]) -> str | None:
         candidates: list[tuple[str, ...]] = [("nvcc", "--version")]
         for path in self._nvcc_paths:
             candidates.append((path, "--version"))
@@ -831,7 +843,7 @@ class HostInventory:
         for entry in entries:
             name = Path(str(entry)).name
             if name.startswith("config-"):
-                names.append(name[len("config-"):])
+                names.append(name[len("config-") :])
         return tuple(sorted(names))
 
     def _list_kernel_headers(self) -> tuple[str, ...]:

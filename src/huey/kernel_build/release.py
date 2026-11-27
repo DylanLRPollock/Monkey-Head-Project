@@ -28,6 +28,7 @@ GitHub release assets without license review.
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
 import logging
@@ -35,10 +36,11 @@ import os
 import re
 import shutil
 import tempfile
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field, replace
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Callable, Sequence
+from typing import Any
 
 from huey.kernel_build.models import (
     ApprovalState,
@@ -68,16 +70,18 @@ _SCHEMA_VERSION = 1
 # Secret guards
 # ---------------------------------------------------------------------------
 
-_FORBIDDEN_FILENAMES = frozenset({
-    "id_rsa",
-    "id_ed25519",
-    "id_ecdsa",
-    "id_dsa",
-    ".env",
-    ".netrc",
-    ".git-credentials",
-    "credentials.json",
-})
+_FORBIDDEN_FILENAMES = frozenset(
+    {
+        "id_rsa",
+        "id_ed25519",
+        "id_ecdsa",
+        "id_dsa",
+        ".env",
+        ".netrc",
+        ".git-credentials",
+        "credentials.json",
+    }
+)
 
 _FORBIDDEN_EXTENSIONS = frozenset({".priv", ".p12", ".pfx"})
 
@@ -138,7 +142,12 @@ class ReleaseContext:
         object.__setattr__(self, "release_dir", Path(self.release_dir))
         object.__setattr__(self, "kernel_image_deb", Path(self.kernel_image_deb))
         object.__setattr__(self, "kernel_headers_deb", Path(self.kernel_headers_deb))
-        for name in ("nvidia_modules_dir", "initramfs", "config_path", "source_lock_path"):
+        for name in (
+            "nvidia_modules_dir",
+            "initramfs",
+            "config_path",
+            "source_lock_path",
+        ):
             value = getattr(self, name)
             if value is not None:
                 object.__setattr__(self, name, Path(value))
@@ -217,11 +226,11 @@ class ReleaseAssembler:
     """Assemble a validated release directory."""
 
     def __init__(self, *, clock: Callable[[], datetime] | None = None) -> None:
-        self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._clock = clock or (lambda: datetime.now(UTC))
 
     # ---- public API ------------------------------------------------------
 
-    def build_release(
+    def build_release(  # noqa: C901
         self,
         ctx: ReleaseContext,
         *,
@@ -238,24 +247,34 @@ class ReleaseAssembler:
             return protected_check
         # Do not allow cleanup/force to erase the source staging inputs.
         release_root = ctx.release_dir.resolve(strict=False)
-        inputs = [ctx.kernel_image_deb, ctx.kernel_headers_deb,
-                  ctx.nvidia_modules_dir, ctx.initramfs, ctx.config_path,
-                  ctx.source_lock_path, *ctx.extra_text_files]
+        inputs = [
+            ctx.kernel_image_deb,
+            ctx.kernel_headers_deb,
+            ctx.nvidia_modules_dir,
+            ctx.initramfs,
+            ctx.config_path,
+            ctx.source_lock_path,
+            *ctx.extra_text_files,
+        ]
         for source in inputs:
             if source is None:
                 continue
             location = source.resolve(strict=False)
             if location == release_root or release_root in location.parents:
                 return self._error_result(
-                    code="RELEASE_OVERLAPS_INPUT", message="Release directory overlaps staged input files.",
-                    dry_run=dry_run, approval_state=ctx.approval_state,
+                    code="RELEASE_OVERLAPS_INPUT",
+                    message="Release directory overlaps staged input files.",
+                    dry_run=dry_run,
+                    approval_state=ctx.approval_state,
                 )
         # Build the plan without touching the filesystem yet.
         try:
             plan = self._build_plan(ctx)
         except ReleaseAssemblyError as exc:
             return self._error_result(
-                code=exc.code, message=str(exc), dry_run=dry_run,
+                code=exc.code,
+                message=str(exc),
+                dry_run=dry_run,
                 approval_state=ctx.approval_state,
             )
 
@@ -313,14 +332,12 @@ class ReleaseAssembler:
                     shutil.copy2(pending._source, dest)  # type: ignore[attr-defined]
                 else:
                     shutil.copy2(pending._source, dest)  # type: ignore[attr-defined]
-            except (OSError, FileNotFoundError) as exc:
+            except OSError as exc:
                 findings.append(
                     ValidationFinding(
                         severity=Severity.ERROR,
                         code="ARTIFACT_COPY_FAILED",
-                        message=(
-                            f"Could not copy {pending.name} to {dest}: {exc}"
-                        ),
+                        message=(f"Could not copy {pending.name} to {dest}: {exc}"),
                     )
                 )
                 return ReleaseResult(
@@ -442,9 +459,7 @@ class ReleaseAssembler:
             )
         checksums_path = ctx.release_dir / _CHECKSUMS_FILENAME
         try:
-            self._atomic_write_text(
-                checksums_path, "\n".join(checksums_lines) + "\n"
-            )
+            self._atomic_write_text(checksums_path, "\n".join(checksums_lines) + "\n")
         except OSError as exc:
             findings.append(
                 ValidationFinding(
@@ -522,21 +537,28 @@ class ReleaseAssembler:
         # unresolved source lock; promotion always requires a genuine pin.
         if ctx.source_lock_path is None:
             return self._error_result(
-                code="SOURCE_LOCK_REQUIRED", message="Source lock is required for release assembly.",
-                dry_run=False, approval_state=ctx.approval_state,
+                code="SOURCE_LOCK_REQUIRED",
+                message="Source lock is required for release assembly.",
+                dry_run=False,
+                approval_state=ctx.approval_state,
             )
         from huey.kernel_build.source_manager import SourceLock
+
         try:
             lock = SourceLock.load_from_path(ctx.source_lock_path)
         except (OSError, ValueError, TypeError, RuntimeError) as exc:
             return self._error_result(
-                code="SOURCE_LOCK_INVALID", message=f"Source lock cannot be loaded: {exc}",
-                dry_run=False, approval_state=ctx.approval_state,
+                code="SOURCE_LOCK_INVALID",
+                message=f"Source lock cannot be loaded: {exc}",
+                dry_run=False,
+                approval_state=ctx.approval_state,
             )
         if lock.status != "pinned" or lock.checksum_sha256 == "0" * 64:
             return self._error_result(
-                code="SOURCE_LOCK_UNRESOLVED", message="Source lock is not verified/pinned.",
-                dry_run=False, approval_state=ctx.approval_state,
+                code="SOURCE_LOCK_UNRESOLVED",
+                message="Source lock is not verified/pinned.",
+                dry_run=False,
+                approval_state=ctx.approval_state,
             )
         return None
 
@@ -568,7 +590,7 @@ class ReleaseAssembler:
             )
         return None
 
-    def _prepare_release_dir(
+    def _prepare_release_dir(  # noqa: C901
         self, release_dir: Path, *, force: bool
     ) -> ReleaseResult | None:
         if release_dir.exists():
@@ -621,7 +643,7 @@ class ReleaseAssembler:
 
     # ---- planning --------------------------------------------------------
 
-    def _build_plan(self, ctx: ReleaseContext) -> dict[str, Any]:
+    def _build_plan(self, ctx: ReleaseContext) -> dict[str, Any]:  # noqa: C901
         findings: list[ValidationFinding] = []
         artifacts: list[ReleaseArtifact] = []
         restricted = False
@@ -647,17 +669,29 @@ class ReleaseAssembler:
                 )
             if source.is_symlink():
                 raise ReleaseAssemblyError(
-                    "ARTIFACT_SYMLINK_REFUSED", "Release artifacts must not be symlinks.",
+                    "ARTIFACT_SYMLINK_REFUSED",
+                    "Release artifacts must not be symlinks.",
                 )
             if not source.is_file():
                 raise ReleaseAssemblyError(
                     "ARTIFACT_MISSING",
                     f"Required artifact not found: {source}",
                 )
-            if source.suffix.lower() in {
-                ".md", ".txt", ".json", ".yaml", ".yml", ".toml", ".cfg",
-                ".conf", ".ini",
-            } or source.suffix == "":
+            if (
+                source.suffix.lower()
+                in {
+                    ".md",
+                    ".txt",
+                    ".json",
+                    ".yaml",
+                    ".yml",
+                    ".toml",
+                    ".cfg",
+                    ".conf",
+                    ".ini",
+                }
+                or source.suffix == ""
+            ):
                 secret_findings = self._scan_text_file(source)
                 findings.extend(secret_findings)
             size = source.stat().st_size
@@ -676,13 +710,19 @@ class ReleaseAssembler:
                 provenance=provenance,
             )
             object.__setattr__(rec, "_source", source)  # for the copy step
-            if relpath in {_MANIFEST_FILENAME, _CHECKSUMS_FILENAME, _ROLLBACK_NOTES_FILENAME}:
+            if relpath in {
+                _MANIFEST_FILENAME,
+                _CHECKSUMS_FILENAME,
+                _ROLLBACK_NOTES_FILENAME,
+            }:
                 raise ReleaseAssemblyError(
-                    "RESERVED_RELEASE_NAME", f"Reserved release metadata filename: {relpath}",
+                    "RESERVED_RELEASE_NAME",
+                    f"Reserved release metadata filename: {relpath}",
                 )
             if any(existing.build_artifact.path == relpath for existing in artifacts):
                 raise ReleaseAssemblyError(
-                    "ARTIFACT_PATH_COLLISION", f"Duplicate release path: {relpath}",
+                    "ARTIFACT_PATH_COLLISION",
+                    f"Duplicate release path: {relpath}",
                 )
             if redistribution == "restricted":
                 restricted = True
@@ -815,7 +855,7 @@ class ReleaseAssembler:
         distribution_restricted: bool,
     ) -> dict[str, Any]:
         verification = ctx.verification
-        severities = {s: 0 for s in Severity}
+        severities = dict.fromkeys(Severity, 0)
         for f in verification.findings:
             severities[f.severity] += 1
 
@@ -827,18 +867,19 @@ class ReleaseAssembler:
             }
             try:
                 from huey.kernel_build.source_manager import SourceLock
+
                 lock = SourceLock.load_from_path(ctx.source_lock_path)
                 source_lock["status"] = lock.status
                 source_lock["version"] = lock.version
                 source_lock["checksum_sha256"] = lock.checksum_sha256
-            except Exception:  # noqa: BLE001
+            except Exception:
                 source_lock["status"] = "unknown"
 
         return {
             "schema_version": _SCHEMA_VERSION,
-            "generated_at": self._clock().astimezone(timezone.utc).strftime(
-                "%Y-%m-%dT%H:%M:%SZ"
-            ),
+            "generated_at": self._clock()
+            .astimezone(UTC)
+            .strftime("%Y-%m-%dT%H:%M:%SZ"),
             "kernel_release": ctx.kernel_release,
             "driver_version": ctx.driver_version,
             "profile": ctx.profile,
@@ -874,9 +915,7 @@ class ReleaseAssembler:
             return []
         return self._scan_text(text=text, source_label=path.name)
 
-    def _scan_text(
-        self, *, text: str, source_label: str
-    ) -> list[ValidationFinding]:
+    def _scan_text(self, *, text: str, source_label: str) -> list[ValidationFinding]:
         findings: list[ValidationFinding] = []
         for pattern, description in _SECRET_PATTERNS:
             m = pattern.search(text)
@@ -892,9 +931,11 @@ class ReleaseAssembler:
                         context={
                             "source": source_label,
                             "pattern": description,
-                            "snippet": m.group(0)[:12] + "…"
-                            if len(m.group(0)) > 12
-                            else m.group(0),
+                            "snippet": (
+                                m.group(0)[:12] + "…"
+                                if len(m.group(0)) > 12
+                                else m.group(0)
+                            ),
                         },
                     )
                 )
@@ -915,10 +956,8 @@ class ReleaseAssembler:
                 os.fsync(fh.fileno())
             os.replace(tmp, path)
         except BaseException:
-            try:
+            with contextlib.suppress(OSError):
                 os.unlink(tmp)
-            except OSError:
-                pass
             raise
 
     @staticmethod
@@ -945,9 +984,7 @@ class ReleaseAssembler:
             approval_state=approval_state,
             distribution_restricted=False,
             findings=(
-                ValidationFinding(
-                    severity=Severity.ERROR, code=code, message=message
-                ),
+                ValidationFinding(severity=Severity.ERROR, code=code, message=message),
             ),
             dry_run=dry_run,
         )
@@ -959,6 +996,6 @@ class ReleaseAssembler:
 
 
 class ReleaseAssemblyError(RuntimeError):
-    def __init__(self, code: str, message: str) -> None:
+    def __init__(self, code: str, message: str) -> None:  # noqa: B042
         super().__init__(message)
         self.code = code

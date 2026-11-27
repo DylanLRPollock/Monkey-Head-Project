@@ -1,4 +1,5 @@
 """Read-only preflight for privately staging the testing2 initramfs."""
+
 from pathlib import Path
 
 SCRIPT = (
@@ -25,7 +26,7 @@ def test_checks_mount_isolation_and_grub_bridge() -> None:
     script = _script()
     assert "unshare --user --map-root-user -- true" in script
     assert "bwrap --ro-bind / /" in script
-    assert "mkinitramfs --supported-target-version=" in script
+    assert '"$mkinitramfs_bin" --supported-target-version=' in script
     assert "/boot/efi/EFI/debian/grub.cfg" in script
     assert "/boot/grub/grub.cfg" in script
 
@@ -36,12 +37,28 @@ def test_does_not_build_or_modify_live_host() -> None:
         line = line.strip()
         if not line or line.startswith("#"):
             continue
-        assert not any(line.startswith(command) for command in (
-            "sudo ", "apt ", "dpkg -i", "make ", "mkinitramfs -o",
-            "update-initramfs ", "update-grub ", "grub-install ",
-            "reboot", "modprobe ", "insmod ", "rmmod ", "mdadm --assemble",
-            "mdadm --create", "mount ", "umount ", "rm -rf",
-        ))
+        assert not any(
+            line.startswith(command)
+            for command in (
+                "sudo ",
+                "apt ",
+                "dpkg -i",
+                "make ",
+                "mkinitramfs -o",
+                "update-initramfs ",
+                "update-grub ",
+                "grub-install ",
+                "reboot",
+                "modprobe ",
+                "insmod ",
+                "rmmod ",
+                "mdadm --assemble",
+                "mdadm --create",
+                "mount ",
+                "umount ",
+                "rm -rf",
+            )
+        )
 
 
 def test_sbin_tools_and_efi_permissions_not_misclassified() -> None:

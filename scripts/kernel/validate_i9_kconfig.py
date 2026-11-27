@@ -11,8 +11,8 @@ from __future__ import annotations
 import argparse
 import json
 import re
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 _SET = re.compile(r"^(CONFIG_[A-Z0-9_]+)=(.*)$")
 _UNSET = re.compile(r"^# (CONFIG_[A-Z0-9_]+) is not set$")
@@ -41,9 +41,14 @@ _BOOT_DRIVERS = {
     "CONFIG_VFAT_FS": ("y", "m"),
 }
 _USEFUL = (
-    "CONFIG_IGC", "CONFIG_IWLWIFI", "CONFIG_CPU_FREQ",
-    "CONFIG_X86_INTEL_PSTATE", "CONFIG_INTEL_IDLE",
-    "CONFIG_DEBUG_INFO_BTF", "CONFIG_DRM_XE", "CONFIG_RUST",
+    "CONFIG_IGC",
+    "CONFIG_IWLWIFI",
+    "CONFIG_CPU_FREQ",
+    "CONFIG_X86_INTEL_PSTATE",
+    "CONFIG_INTEL_IDLE",
+    "CONFIG_DEBUG_INFO_BTF",
+    "CONFIG_DRM_XE",
+    "CONFIG_RUST",
 )
 
 
@@ -61,7 +66,7 @@ def parse_config(text: str) -> dict[str, str]:
     return config
 
 
-def check_config(text: str, stage: str = "baseline") -> dict:
+def check_config(text: str, stage: str = "baseline") -> dict:  # noqa: C901
     if stage not in {"baseline", "testing1", "intel-only"}:
         raise ValueError("unsupported stage")
     c = parse_config(text)
@@ -70,9 +75,7 @@ def check_config(text: str, stage: str = "baseline") -> dict:
     for name, accepted in {**_ALWAYS_ENABLED, **_BOOT_DRIVERS}.items():
         if c.get(name, "n") not in accepted:
             expected = "/".join(accepted)
-            errors.append(
-                f"{name}={c.get(name, 'not found')} (must be {expected})"
-            )
+            errors.append(f"{name}={c.get(name, 'not found')} (must be {expected})")
 
     if c.get("CONFIG_LOCALVERSION") != '""':
         errors.append(
@@ -120,14 +123,15 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("config", type=Path, help="existing complete kernel .config")
     parser.add_argument(
-        "--stage", choices=("baseline", "testing1", "intel-only"),
+        "--stage",
+        choices=("baseline", "testing1", "intel-only"),
         default="baseline",
     )
     parser.add_argument("--json", action="store_true", help="machine-readable report")
     args = parser.parse_args(argv)
     try:
         result = check_config(args.config.read_text(encoding="utf-8"), args.stage)
-    except (OSError, UnicodeError, ValueError) as exc:
+    except (OSError, ValueError) as exc:
         parser.error(str(exc))
     if args.json:
         print(json.dumps(result, indent=2, sort_keys=True))

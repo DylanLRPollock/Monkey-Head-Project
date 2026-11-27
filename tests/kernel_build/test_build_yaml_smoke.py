@@ -36,8 +36,8 @@ REQUIRED_TOP_LEVEL_KEYS = {
 # Obvious secret markers we must never see in a checked-in intent file.
 _SECRET_PATTERNS = [
     re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----"),
-    re.compile(r"\bGPU-[0-9a-fA-F]{8,}\b"),          # nvidia-smi GPU UUIDs
-    re.compile(r"\bMIG-[0-9a-fA-F]{8,}\b"),          # MIG UUIDs
+    re.compile(r"\bGPU-[0-9a-fA-F]{8,}\b"),  # nvidia-smi GPU UUIDs
+    re.compile(r"\bMIG-[0-9a-fA-F]{8,}\b"),  # MIG UUIDs
 ]
 
 _FORBIDDEN_VALUES = {"runfile", "autoinstall"}
@@ -67,7 +67,9 @@ def test_no_obvious_secrets_in_text() -> None:
     text = _read_text()
     for pattern in _SECRET_PATTERNS:
         match = pattern.search(text)
-        assert match is None, f"build.yaml appears to contain secret material: {match.group(0)!r}"
+        assert (
+            match is None
+        ), f"build.yaml appears to contain secret material: {match.group(0)!r}"
 
 
 def test_parses_and_preserves_safe_defaults() -> None:
@@ -92,9 +94,9 @@ def test_parses_and_preserves_safe_defaults() -> None:
 
     assert data["signing"]["required_policy"] in {"required_if_secureboot", "required"}
 
-    # Source and signing paths remain unresolved until an operator pins them.
+    # The source release is pinned, while local paths remain operator supplied.
     assert data["kernel"]["source"] is None
-    assert data["kernel"]["version"] is None
+    assert data["kernel"]["version"] == "7.3.4"
     assert data["kernel"]["checksum"] is None
     assert data["nvidia"]["source_path"] is None
     assert data["signing"]["key_path"] is None

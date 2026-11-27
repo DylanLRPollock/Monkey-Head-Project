@@ -110,7 +110,7 @@ def _parse_parameters(values: list[str]) -> dict[str, Any]:
     return parameters
 
 
-def cmd_create(client: Any, args: Any) -> int:
+def cmd_create(client: Any, args: Any) -> int:  # noqa: C901
     if args.modelfile is not None:
         inline_options = (
             args.base_model,
@@ -185,7 +185,7 @@ def cmd_stop(client: Any, args: Any) -> int:
 def _cosine_similarity(left: list[float], right: list[float]) -> float:
     if len(left) != len(right):
         raise ValueError("Embedding vectors have different dimensions.")
-    dot = sum(a * b for a, b in zip(left, right))
+    dot = sum(a * b for a, b in zip(left, right, strict=False))
     norm_left = math.sqrt(sum(value * value for value in left))
     norm_right = math.sqrt(sum(value * value for value in right))
     if not norm_left or not norm_right:
@@ -250,10 +250,7 @@ def cmd_embed(client: Any, args: Any) -> int:
     if args.json:
         print(json.dumps(report, indent=2, ensure_ascii=False))
     else:
-        print(
-            f"Embedded query with {args.embed_model} "
-            f"({len(vectors[0])} dimensions)."
-        )
+        print(f"Embedded query with {args.embed_model} ({len(vectors[0])} dimensions).")
         for item in matches:
             print(f"[{item['score']:.4f}] {item['text']}")
         if answer is not None:
@@ -420,9 +417,7 @@ def cmd_health(client: Any, args: Any) -> int:
             "name": model.model,
             "size_bytes": _model_size(model, "size"),
             "modified_at": (
-                model.modified_at.isoformat()
-                if model.modified_at is not None
-                else None
+                model.modified_at.isoformat() if model.modified_at is not None else None
             ),
         }
         for model in installed
@@ -465,10 +460,7 @@ def cmd_health(client: Any, args: Any) -> int:
             print(f"  {model['name']}: {model['size_bytes'] / (1024**3):.2f} GiB")
         print(f"Loaded models: {len(loaded_rows)}")
         for model in loaded_rows:
-            print(
-                f"  {model['name']}: "
-                f"{model['vram_bytes'] / (1024**3):.2f} GiB VRAM"
-            )
+            print(f"  {model['name']}: {model['vram_bytes'] / (1024**3):.2f} GiB VRAM")
     return 0 if version["reachable"] and api_error is None else 1
 
 
@@ -582,7 +574,7 @@ def _chat_arguments(args: Any) -> dict[str, Any]:
     return kwargs
 
 
-def _chat_turn(client: Any, args: Any, messages: list[Any]) -> None:
+def _chat_turn(client: Any, args: Any, messages: list[Any]) -> None:  # noqa: C901
     base = {"model": args.model, "messages": messages, **_chat_arguments(args)}
     if args.tools:
         for _ in range(5):
@@ -627,7 +619,7 @@ def _chat_turn(client: Any, args: Any, messages: list[Any]) -> None:
     messages.append({"role": "assistant", "content": "".join(parts)})
 
 
-def cmd_chat(client: Any, args: Any) -> int:
+def cmd_chat(client: Any, args: Any) -> int:  # noqa: C901
     if args.resume and args.clear_history:
         raise ValueError("Use either --resume or --clear-history, not both.")
     path = _history_path(args)

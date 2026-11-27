@@ -39,9 +39,7 @@ from __future__ import annotations
 
 import os
 import re
-import shutil
 import subprocess
-import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -73,7 +71,9 @@ class Capabilities:
 
     @property
     def has_any_invocation(self) -> bool:
-        return self.supports_help or self.has_profile_flag or self.has_positional_profile
+        return (
+            self.supports_help or self.has_profile_flag or self.has_positional_profile
+        )
 
 
 def _read_script() -> str:
@@ -92,9 +92,7 @@ def _detect_capabilities() -> Capabilities:
         has_base_config_flag=bool(re.search(r"(--base-config\b|--base\b)", text)),
         mentions_merge_config="merge_config.sh" in text,
         mentions_fallback=(
-            "fallback" in lowered
-            or "cannot find" in lowered
-            or "not found" in lowered
+            "fallback" in lowered or "cannot find" in lowered or "not found" in lowered
         ),
     )
 
@@ -127,7 +125,9 @@ def script_path() -> Path:
     return SCRIPT
 
 
-def _run_script(*argv: str, cwd: Path | None = None, timeout: float = 30.0) -> subprocess.CompletedProcess[str]:
+def _run_script(
+    *argv: str, cwd: Path | None = None, timeout: float = 30.0
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [str(SCRIPT), *argv],
         capture_output=True,
@@ -188,9 +188,9 @@ def test_script_does_not_hardcode_credentials(script_path: Path) -> None:
         r"\bKBUILD_SIGN_PIN\s*=",
         r"\bGITHUB_TOKEN\s*=",
     ):
-        assert not re.search(pattern, text), (
-            f"assemble_config.sh must not contain {pattern!r}"
-        )
+        assert not re.search(
+            pattern, text
+        ), f"assemble_config.sh must not contain {pattern!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -249,7 +249,8 @@ def _fixture_config_dir(tmp_path: Path, role_text: str) -> Path:
     cfg = tmp_path / "configs"
     cfg.mkdir()
     (cfg / "base.config").write_text(
-        "CONFIG_MODULES=y\nCONFIG_X=first\n", encoding="utf-8",
+        "CONFIG_MODULES=y\nCONFIG_X=first\n",
+        encoding="utf-8",
     )
     (cfg / "core.config").write_text(role_text, encoding="utf-8")
     return cfg
@@ -257,7 +258,9 @@ def _fixture_config_dir(tmp_path: Path, role_text: str) -> Path:
 
 def test_missing_fragment_produces_nonzero_exit(tmp_path: Path) -> None:
     cfg = _fixture_config_dir(tmp_path, "# include fragments/absent.config\n")
-    result = _run_script("core", str(tmp_path / "output.config"), str(cfg), cwd=tmp_path)
+    result = _run_script(
+        "core", str(tmp_path / "output.config"), str(cfg), cwd=tmp_path
+    )
     assert result.returncode != 0
     assert "missing included fragment" in (result.stdout + result.stderr).lower()
     assert not (tmp_path / "output.config").exists()
@@ -269,7 +272,9 @@ def test_conflicting_symbols_resolves_deterministically(tmp_path: Path) -> None:
     first = _run_script("core", str(out), str(cfg), cwd=tmp_path)
     assert first.returncode == 0, first.stderr
     data = out.read_bytes()
-    x_assignments = [line for line in data.decode().splitlines() if line.startswith("CONFIG_X=")]
+    x_assignments = [
+        line for line in data.decode().splitlines() if line.startswith("CONFIG_X=")
+    ]
     assert x_assignments == ["CONFIG_X=second"]
     second = _run_script("core", str(out), str(cfg), cwd=tmp_path)
     assert second.returncode == 0, second.stderr
@@ -281,10 +286,12 @@ def test_recursive_include_is_detected_or_rejected(tmp_path: Path) -> None:
     fragments = cfg / "fragments"
     fragments.mkdir()
     (fragments / "a.config").write_text(
-        "CONFIG_A=y\n# include fragments/b.config\n", encoding="utf-8",
+        "CONFIG_A=y\n# include fragments/b.config\n",
+        encoding="utf-8",
     )
     (fragments / "b.config").write_text(
-        "CONFIG_B=y\n# include fragments/a.config\n", encoding="utf-8",
+        "CONFIG_B=y\n# include fragments/a.config\n",
+        encoding="utf-8",
     )
     out = tmp_path / "output.config"
     result = _run_script("core", str(out), str(cfg), cwd=tmp_path, timeout=10)

@@ -64,7 +64,7 @@ def _initial_snapshot() -> dict[str, Any]:
     }
 
 
-def _validated_snapshot(payload: object) -> dict[str, Any]:
+def _validated_snapshot(payload: object) -> dict[str, Any]:  # noqa: C901
     """Validate imported/local state before it is used by the UI."""
     if not isinstance(payload, dict) or payload.get("schema") != APP_SCHEMA:
         raise ValueError("Unsupported dashboard state schema.")
@@ -188,14 +188,20 @@ class CommandCenterDesktop(tk.Tk):
         style.configure("TNotebook", background="#15131d", borderwidth=0)
         style.configure("TNotebook.Tab", padding=(14, 9), background="#292438")
         style.map("TNotebook.Tab", background=[("selected", "#574276")])
-        style.configure("Treeview", rowheight=28, background="#211d2c",
-                        fieldbackground="#211d2c", foreground="#f2eef8")
+        style.configure(
+            "Treeview",
+            rowheight=28,
+            background="#211d2c",
+            fieldbackground="#211d2c",
+            foreground="#f2eef8",
+        )
         style.configure("Treeview.Heading", background="#342d43", foreground="#f2eef8")
         style.configure("TCombobox", fieldbackground="#211d2c", foreground="#f2eef8")
         style.configure("TButton", padding=(9, 6))
         style.configure("TCheckbutton", background="#211d2c", foreground="#f2eef8")
-        style.configure("Horizontal.TProgressbar", background="#54c997",
-                        troughcolor="#373141")
+        style.configure(
+            "Horizontal.TProgressbar", background="#54c997", troughcolor="#373141"
+        )
 
     def _build_ui(self) -> None:
         outer = ttk.Frame(self, padding=18)
@@ -255,19 +261,24 @@ class CommandCenterDesktop(tk.Tk):
         split.add(right, weight=3)
 
         self.phase_tree = ttk.Treeview(
-            left, columns=("status", "risk", "progress"), show="headings",
-            selectmode="browse"
+            left,
+            columns=("status", "risk", "progress"),
+            show="headings",
+            selectmode="browse",
         )
         for column, label, width in (
-            ("status", "Status", 110), ("risk", "Risk", 75), ("progress", "Tasks", 70)
+            ("status", "Status", 110),
+            ("risk", "Risk", 75),
+            ("progress", "Tasks", 70),
         ):
             self.phase_tree.heading(column, text=label)
             self.phase_tree.column(column, width=width, anchor="w")
         self.phase_tree.pack(fill="both", expand=True)
         self.phase_tree.bind("<<TreeviewSelect>>", self._select_phase)
 
-        self.phase_title = ttk.Label(right, text="Select a migration phase",
-                                     style="Title.TLabel", wraplength=620)
+        self.phase_title = ttk.Label(
+            right, text="Select a migration phase", style="Title.TLabel", wraplength=620
+        )
         self.phase_title.pack(anchor="w", pady=(0, 8))
         self.phase_repo = ttk.Label(right, text="", style="Muted.TLabel")
         self.phase_repo.pack(anchor="w", pady=(0, 10))
@@ -277,16 +288,22 @@ class CommandCenterDesktop(tk.Tk):
         ttk.Label(controls, text="Status").pack(side="left")
         self.phase_status = tk.StringVar()
         self.status_box = ttk.Combobox(
-            controls, textvariable=self.phase_status, state="readonly", width=18,
-            values=PHASE_STATUSES
+            controls,
+            textvariable=self.phase_status,
+            state="readonly",
+            width=18,
+            values=PHASE_STATUSES,
         )
         self.status_box.pack(side="left", padx=(6, 18))
         self.status_box.bind("<<ComboboxSelected>>", self._update_phase_field)
         ttk.Label(controls, text="Risk").pack(side="left")
         self.phase_risk = tk.StringVar()
         self.risk_box = ttk.Combobox(
-            controls, textvariable=self.phase_risk, state="readonly", width=12,
-            values=RISK_LEVELS
+            controls,
+            textvariable=self.phase_risk,
+            state="readonly",
+            width=12,
+            values=RISK_LEVELS,
         )
         self.risk_box.pack(side="left", padx=6)
         self.risk_box.bind("<<ComboboxSelected>>", self._update_phase_field)
@@ -295,18 +312,31 @@ class CommandCenterDesktop(tk.Tk):
         self.checklist_frame = ttk.Frame(right, style="Panel.TFrame")
         self.checklist_frame.pack(fill="x", anchor="n")
         ttk.Label(right, text="Phase notes").pack(anchor="w", pady=(10, 3))
-        self.phase_notes = tk.Text(right, height=5, wrap="word", undo=True,
-                                   background="#211d2c", foreground="#f2eef8",
-                                   insertbackground="#f2eef8", relief="flat")
+        self.phase_notes = tk.Text(
+            right,
+            height=5,
+            wrap="word",
+            undo=True,
+            background="#211d2c",
+            foreground="#f2eef8",
+            insertbackground="#f2eef8",
+            relief="flat",
+        )
         self.phase_notes.pack(fill="x")
         self.phase_notes.bind("<KeyRelease>", self._schedule_save_phase_notes)
 
         ttk.Label(tab, text="Global notes").grid(
             row=3, column=0, sticky="w", pady=(12, 4)
         )
-        self.global_notes = tk.Text(tab, height=4, wrap="word",
-                                    background="#211d2c", foreground="#f2eef8",
-                                    insertbackground="#f2eef8", relief="flat")
+        self.global_notes = tk.Text(
+            tab,
+            height=4,
+            wrap="word",
+            background="#211d2c",
+            foreground="#f2eef8",
+            insertbackground="#f2eef8",
+            relief="flat",
+        )
         self.global_notes.grid(row=4, column=0, sticky="ew")
         self.global_notes.insert("1.0", self.snapshot["migration"]["global_notes"])
         self.global_notes.bind("<KeyRelease>", self._schedule_save_global_notes)
@@ -324,10 +354,14 @@ class CommandCenterDesktop(tk.Tk):
         for repo in default_repositories():
             card = ttk.LabelFrame(tab, text=f"{repo.name} · {repo.role}", padding=12)
             card.pack(fill="x", pady=5)
-            ttk.Label(card, text=repo.description, style="Panel.TLabel",
-                      wraplength=900).pack(anchor="w")
-            ttk.Label(card, text=f"{repo.full_name}  |  Data: {repo.data_mode}",
-                      style="Muted.TLabel").pack(anchor="w", pady=(4, 0))
+            ttk.Label(
+                card, text=repo.description, style="Panel.TLabel", wraplength=900
+            ).pack(anchor="w")
+            ttk.Label(
+                card,
+                text=f"{repo.full_name}  |  Data: {repo.data_mode}",
+                style="Muted.TLabel",
+            ).pack(anchor="w", pady=(4, 0))
 
     def _build_validation_tab(self) -> None:
         tab = self._tab("Validation")
@@ -345,8 +379,10 @@ class CommandCenterDesktop(tk.Tk):
             tab, columns=("repo", "risk", "purpose", "command"), show="headings"
         )
         for column, label, width in (
-            ("repo", "Repository", 210), ("risk", "Risk", 80),
-            ("purpose", "Purpose", 310), ("command", "Command", 480)
+            ("repo", "Repository", 210),
+            ("risk", "Risk", 80),
+            ("purpose", "Purpose", 310),
+            ("command", "Command", 480),
         ):
             self.validation_tree.heading(column, text=label)
             self.validation_tree.column(column, width=width, anchor="w")
@@ -358,10 +394,14 @@ class CommandCenterDesktop(tk.Tk):
             self.validation_rows[row] = command.command
         buttons = ttk.Frame(tab)
         buttons.pack(fill="x", pady=(10, 0))
-        ttk.Button(buttons, text="Copy selected command",
-                   command=self._copy_validation_command).pack(side="left")
-        ttk.Button(buttons, text="Copy all commands",
-                   command=self._copy_all_validation_commands).pack(side="left", padx=8)
+        ttk.Button(
+            buttons, text="Copy selected command", command=self._copy_validation_command
+        ).pack(side="left")
+        ttk.Button(
+            buttons,
+            text="Copy all commands",
+            command=self._copy_all_validation_commands,
+        ).pack(side="left", padx=8)
 
     def _build_copilot_tab(self) -> None:
         tab = self._tab("Copilot")
@@ -379,19 +419,27 @@ class CommandCenterDesktop(tk.Tk):
         controls = ttk.Frame(tab)
         controls.pack(fill="x", pady=(0, 10))
         self.prompt_phase = tk.StringVar()
-        self.prompt_box = ttk.Combobox(controls, textvariable=self.prompt_phase,
-                                       state="readonly", width=54)
+        self.prompt_box = ttk.Combobox(
+            controls, textvariable=self.prompt_phase, state="readonly", width=54
+        )
         self.prompt_box.pack(side="left")
         self.prompt_box.bind("<<ComboboxSelected>>", self._generate_phase_prompt)
-        ttk.Button(controls, text="Next best task",
-                   command=self._generate_next_prompt).pack(side="left", padx=8)
-        ttk.Button(controls, text="Copy prompt",
-                   command=self._copy_prompt).pack(side="left")
-        self.prompt_text = tk.Text(tab, wrap="word", background="#211d2c",
-                                   foreground="#f2eef8", insertbackground="#f2eef8")
+        ttk.Button(
+            controls, text="Next best task", command=self._generate_next_prompt
+        ).pack(side="left", padx=8)
+        ttk.Button(controls, text="Copy prompt", command=self._copy_prompt).pack(
+            side="left"
+        )
+        self.prompt_text = tk.Text(
+            tab,
+            wrap="word",
+            background="#211d2c",
+            foreground="#f2eef8",
+            insertbackground="#f2eef8",
+        )
         self.prompt_text.pack(fill="both", expand=True)
         self.prompt_ids = {
-            f'{phase["title"]} [{phase["id"]}]': phase["id"]
+            f"{phase['title']} [{phase['id']}]": phase["id"]
             for phase in self.snapshot["migration"]["phases"]
         }
         self.prompt_box.configure(values=tuple(self.prompt_ids))
@@ -401,8 +449,9 @@ class CommandCenterDesktop(tk.Tk):
 
     def _build_v1_tab(self) -> None:
         tab = self._tab("V1 Runs")
-        ttk.Label(tab, text="Huey Brain V1 Proof Loop Runs",
-                  style="Title.TLabel").pack(anchor="w", pady=(0, 8))
+        ttk.Label(tab, text="Huey Brain V1 Proof Loop Runs", style="Title.TLabel").pack(
+            anchor="w", pady=(0, 8)
+        )
         ttk.Label(
             tab,
             text=(
@@ -426,14 +475,19 @@ class CommandCenterDesktop(tk.Tk):
         self.run_tree.column("status", width=90)
         self.run_tree.pack(fill="both", expand=True)
         self.run_tree.bind("<<TreeviewSelect>>", self._select_run)
-        self.run_detail = tk.Text(right, wrap="word", background="#211d2c",
-                                  foreground="#f2eef8", state="disabled")
+        self.run_detail = tk.Text(
+            right,
+            wrap="word",
+            background="#211d2c",
+            foreground="#f2eef8",
+            state="disabled",
+        )
         self.run_detail.pack(fill="both", expand=True)
         buttons = ttk.Frame(tab)
         buttons.pack(fill="x", pady=(10, 0))
-        ttk.Button(
-            buttons, text="Import JSONL", command=self._import_v1_jsonl
-        ).pack(side="left")
+        ttk.Button(buttons, text="Import JSONL", command=self._import_v1_jsonl).pack(
+            side="left"
+        )
         ttk.Button(buttons, text="Export runs", command=self._export_v1_runs).pack(
             side="left", padx=8
         )
@@ -448,7 +502,7 @@ class CommandCenterDesktop(tk.Tk):
         ttk.Label(
             warning,
             text="Mock-only status display. It cannot control Huey, execute commands, "
-                 "change memory or governance, or perform power actions.",
+            "change memory or governance, or perform power actions.",
             style="Panel.TLabel",
             wraplength=900,
         ).pack(anchor="w")
@@ -456,7 +510,8 @@ class CommandCenterDesktop(tk.Tk):
         self.operator_frame.pack(fill="x", anchor="n")
         self._render_operator_panel()
         ttk.Button(
-            tab, text="Refresh mock display",
+            tab,
+            text="Refresh mock display",
             command=lambda: messagebox.showinfo(
                 "Mock-only", "Sample display refreshed. No system action was performed."
             ),
@@ -475,9 +530,11 @@ class CommandCenterDesktop(tk.Tk):
             ("Data mode", "Local planning state and mock repository/run records"),
             ("Network changes allowed", str(policy["allow_network_mutation"])),
             ("Command execution allowed", str(policy["allow_command_execution"])),
-            ("Memory/governance mutation allowed",
-             f'{policy["allow_memory_mutation"]} / '
-             f'{policy["allow_governance_mutation"]}'),
+            (
+                "Memory/governance mutation allowed",
+                f"{policy['allow_memory_mutation']} / "
+                f"{policy['allow_governance_mutation']}",
+            ),
         )
         for label, value in facts:
             row = ttk.Frame(tab)
@@ -487,7 +544,7 @@ class CommandCenterDesktop(tk.Tk):
         ttk.Label(
             tab,
             text="Reference repositories and project links are listed as text only. "
-                 "This desktop port does not contact external services.",
+            "This desktop port does not contact external services.",
             style="Muted.TLabel",
             wraplength=900,
         ).pack(anchor="w", pady=(18, 0))
@@ -509,12 +566,15 @@ class CommandCenterDesktop(tk.Tk):
         ttk.Button(tab, text="Import full state…", command=self._import_state).pack(
             anchor="w", pady=4
         )
-        ttk.Button(tab, text="Reset migration progress to project defaults",
-                   command=self._reset_state).pack(anchor="w", pady=(16, 4))
+        ttk.Button(
+            tab,
+            text="Reset migration progress to project defaults",
+            command=self._reset_state,
+        ).pack(anchor="w", pady=(16, 4))
         ttk.Label(
             tab,
             text="Imports are validated before replacing the current state. "
-                 "Exports may contain your private notes; review them before sharing.",
+            "Exports may contain your private notes; review them before sharing.",
             style="Muted.TLabel",
             wraplength=900,
         ).pack(anchor="w", pady=(14, 0))
@@ -552,9 +612,14 @@ class CommandCenterDesktop(tk.Tk):
             done += completed
             total += count
             self.phase_tree.insert(
-                "", "end", iid=phase["id"],
-                values=(STATUS_LABELS.get(phase["status"], phase["status"]),
-                        phase["risk"], f"{completed}/{count}"),
+                "",
+                "end",
+                iid=phase["id"],
+                values=(
+                    STATUS_LABELS.get(phase["status"], phase["status"]),
+                    phase["risk"],
+                    f"{completed}/{count}",
+                ),
             )
         self.progress_var.set((done / total * 100) if total else 0)
         self.progress_text.configure(text=f"{done}/{total} tasks")
@@ -586,19 +651,24 @@ class CommandCenterDesktop(tk.Tk):
         self.selected_phase_id = phase_id
         phase = self.phase_lookup[phase_id]
         self.phase_title.configure(text=phase["title"])
-        self.phase_repo.configure(text=f'Target repository: {phase["target_repo"]}')
+        self.phase_repo.configure(text=f"Target repository: {phase['target_repo']}")
         self.phase_status.set(phase["status"])
         self.phase_risk.set(phase["risk"])
         for child in self.checklist_frame.winfo_children():
             child.destroy()
         flags = self.snapshot["migration"]["checklist_completed"][phase_id]
         if not phase.get("checklist"):
-            ttk.Label(self.checklist_frame, text="No checklist items recorded.",
-                      style="Muted.TLabel").pack(anchor="w", padx=8, pady=5)
+            ttk.Label(
+                self.checklist_frame,
+                text="No checklist items recorded.",
+                style="Muted.TLabel",
+            ).pack(anchor="w", padx=8, pady=5)
         for index, text in enumerate(phase.get("checklist", [])):
             variable = tk.BooleanVar(value=flags[index])
             ttk.Checkbutton(
-                self.checklist_frame, text=text, variable=variable,
+                self.checklist_frame,
+                text=text,
+                variable=variable,
                 command=lambda i=index, v=variable: self._toggle_checklist(i, v.get()),
             ).pack(anchor="w", padx=8, pady=3)
         self.phase_notes.delete("1.0", "end")
@@ -684,8 +754,7 @@ class CommandCenterDesktop(tk.Tk):
 
     def _generate_next_prompt(self) -> None:
         phases = [
-            MigrationPhase(**phase)
-            for phase in self.snapshot["migration"]["phases"]
+            MigrationPhase(**phase) for phase in self.snapshot["migration"]["phases"]
         ]
         self._set_prompt(generate_next_best_task_prompt(phases))
 
@@ -704,7 +773,9 @@ class CommandCenterDesktop(tk.Tk):
             iid = f"run-{index}"
             self.run_lookup[iid] = run
             self.run_tree.insert(
-                "", "end", iid=iid,
+                "",
+                "end",
+                iid=iid,
                 values=(
                     run.get("fixture", "unknown fixture"),
                     run.get("status", "unknown"),
@@ -734,6 +805,7 @@ class CommandCenterDesktop(tk.Tk):
             return
         try:
             from huey.gui.v1_runs import load_jsonl
+
             imported = [asdict(run) for run in load_jsonl(Path(path))]
         except (OSError, ValueError) as exc:
             messagebox.showerror("Import failed", str(exc))
@@ -744,8 +816,9 @@ class CommandCenterDesktop(tk.Tk):
 
     def _export_v1_runs(self) -> None:
         path = filedialog.asksaveasfilename(
-            title="Export V1 runs", defaultextension=".json",
-            filetypes=(("JSON", "*.json"),)
+            title="Export V1 runs",
+            defaultextension=".json",
+            filetypes=(("JSON", "*.json"),),
         )
         if not path:
             return
@@ -762,8 +835,9 @@ class CommandCenterDesktop(tk.Tk):
 
     def _export_state(self) -> None:
         path = filedialog.asksaveasfilename(
-            title="Export Command Center state", defaultextension=".json",
-            filetypes=(("JSON", "*.json"),)
+            title="Export Command Center state",
+            defaultextension=".json",
+            filetypes=(("JSON", "*.json"),),
         )
         if not path:
             return
@@ -797,7 +871,7 @@ class CommandCenterDesktop(tk.Tk):
         self.global_notes.insert("1.0", self.snapshot["migration"]["global_notes"])
         self._render_operator_panel()
         self.prompt_ids = {
-            f'{phase["title"]} [{phase["id"]}]': phase["id"]
+            f"{phase['title']} [{phase['id']}]": phase["id"]
             for phase in self.snapshot["migration"]["phases"]
         }
         self.prompt_box.configure(values=tuple(self.prompt_ids))

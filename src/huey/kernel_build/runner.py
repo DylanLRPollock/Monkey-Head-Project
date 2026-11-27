@@ -29,15 +29,17 @@ returns pre-seeded :class:`RunnerResult` values without touching the host.
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import subprocess
 import threading
 import time
 import uuid
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable, Mapping, Protocol
+from typing import Protocol
 
 from huey.kernel_build.models import CommandResult, redact_environment
 
@@ -67,8 +69,8 @@ _READ_CHUNK_BYTES = 64 * 1024
 _THREAD_JOIN_TIMEOUT = 5.0
 
 __all__ = [
-    "CommandSpec",
     "DRY_RUN_RETURNCODE",
+    "CommandSpec",
     "FakeRunner",
     "Runner",
     "RunnerError",
@@ -127,7 +129,7 @@ class CommandSpec:
     max_stdout_bytes: int = 16 * 1024 * 1024
     max_stderr_bytes: int = 16 * 1024 * 1024
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # noqa: C901
         argv = self.argv
         if isinstance(argv, list):
             argv = tuple(argv)
@@ -149,25 +151,17 @@ class CommandSpec:
         if not isinstance(self.timeout_seconds, (int, float)) or (
             self.timeout_seconds <= 0
         ):
-            raise ValueError(
-                "CommandSpec.timeout_seconds must be a positive number"
-            )
+            raise ValueError("CommandSpec.timeout_seconds must be a positive number")
         if not isinstance(self.max_stdout_bytes, int) or self.max_stdout_bytes < 1:
-            raise ValueError(
-                "CommandSpec.max_stdout_bytes must be a positive int"
-            )
+            raise ValueError("CommandSpec.max_stdout_bytes must be a positive int")
         if not isinstance(self.max_stderr_bytes, int) or self.max_stderr_bytes < 1:
-            raise ValueError(
-                "CommandSpec.max_stderr_bytes must be a positive int"
-            )
+            raise ValueError("CommandSpec.max_stderr_bytes must be a positive int")
 
         if not isinstance(self.env_overrides, Mapping):
             raise TypeError("CommandSpec.env_overrides must be a Mapping")
         for key, value in self.env_overrides.items():
             if not isinstance(key, str) or not isinstance(value, str):
-                raise TypeError(
-                    "CommandSpec.env_overrides keys and values must be str"
-                )
+                raise TypeError("CommandSpec.env_overrides keys and values must be str")
 
 
 # ---------------------------------------------------------------------------
@@ -211,10 +205,9 @@ class RunnerResult:
 class RunnerProtocol(Protocol):
     """Minimal interface consumed by higher-level builders."""
 
-    def run(
+    def run(  # noqa: E704
         self, spec: CommandSpec, *, dry_run: bool = False
-    ) -> RunnerResult:
-        ...
+    ) -> RunnerResult: ...
 
 
 # ---------------------------------------------------------------------------
@@ -295,7 +288,7 @@ class Runner:
         self._log_dir = Path(log_dir) if log_dir is not None else None
         self._log = log or logger
 
-    def run(
+    def run(  # noqa: C901
         self,
         spec: CommandSpec,
         *,
@@ -365,24 +358,22 @@ class Runner:
                 close_fds=True,
             )
         except FileNotFoundError as exc:
-            raise RunnerError(
-                f"executable not found: {spec.argv[0]!r}"
-            ) from exc
+            raise RunnerError(f"executable not found: {spec.argv[0]!r}") from exc
         except OSError as exc:
-            raise RunnerError(
-                f"failed to launch {spec.argv[0]!r}: {exc}"
-            ) from exc
+            raise RunnerError(f"failed to launch {spec.argv[0]!r}: {exc}") from exc
 
         stdout_box: list[tuple[bytes, bool]] = []
         stderr_box: list[tuple[bytes, bool]] = []
 
         def _read_stdout() -> None:
             assert proc.stdout is not None
-            stdout_box.append(_drain_bounded(proc.stdout, spec.max_stdout_bytes))
+            with contextlib.closing(proc.stdout):
+                stdout_box.append(_drain_bounded(proc.stdout, spec.max_stdout_bytes))
 
         def _read_stderr() -> None:
             assert proc.stderr is not None
-            stderr_box.append(_drain_bounded(proc.stderr, spec.max_stderr_bytes))
+            with contextlib.closing(proc.stderr):
+                stderr_box.append(_drain_bounded(proc.stderr, spec.max_stderr_bytes))
 
         t_out = threading.Thread(target=_read_stdout, daemon=True)
         t_err = threading.Thread(target=_read_stderr, daemon=True)
@@ -417,8 +408,7 @@ class Runner:
 
         if truncated:
             self._log.warning(
-                "command.output_truncated description=%r "
-                "stdout=%d/%d stderr=%d/%d",
+                "command.output_truncated description=%r stdout=%d/%d stderr=%d/%d",
                 description,
                 len(stdout),
                 spec.max_stdout_bytes,
@@ -508,12 +498,10 @@ class FakeRunner:
 
     def run(
         self, spec: CommandSpec, *, dry_run: bool = False
-    ) -> RunnerResult:
+    ) -> RunnerResult:  # noqa: C901
         self._calls.append((spec, dry_run))
         if not self._responses:
-            raise RunnerError(
-                f"FakeRunner: no queued response for argv={spec.argv!r}"
-            )
+            raise RunnerError(f"FakeRunner: no queued response for argv={spec.argv!r}")
         return self._responses.pop(0)
 
     def queue(self, result: RunnerResult) -> None:

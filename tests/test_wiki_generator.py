@@ -92,7 +92,7 @@ def test_wiki_publishing_is_scoped_to_reviewed_pages() -> None:
     root = Path(__file__).resolve().parents[1]
     script = (root / "scripts/repo/publish_wiki.sh").read_text()
     workflow = (root / ".github/workflows/publish-wiki.yml").read_text()
-    assert 'WIKI_PUBLISH_PAGES: Home' in workflow
-    assert 'WIKI_PUBLISH_PAGES:-' in script
+    assert "WIKI_PUBLISH_PAGES: Home" in workflow
+    assert "WIKI_PUBLISH_PAGES:-" in script
     assert 'git add -- "${published_files[@]}"' in script
     assert 'find "$wiki_dir" -mindepth 1' not in script

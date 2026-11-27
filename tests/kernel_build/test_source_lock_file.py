@@ -1,4 +1,5 @@
 """Check the signed pinned 7.3.4 source lock and fail-closed rejected variants."""
+
 from __future__ import annotations
 
 import json
@@ -74,7 +75,7 @@ def test_source_is_pinned_to_verified_checksum() -> None:
 
 def test_provenance_preserves_release_signature_information() -> None:
     notes = SourceLock.load_from_path(LOCK_PATH).notes
-    assert "signature" in notes.lower()
+    assert "detached linux-7.3.4.tar.sign" in notes.lower()
     assert "647F28654894E3BD457199BE38DBBDC86092693E" in notes
 
 
@@ -83,7 +84,8 @@ def test_synthetic_unresolved_lock_rejected_before_io(
     tmp_path: Path, dry_run: bool
 ) -> None:
     mgr = SourceManager(
-        NeverCalledRunner(), cache_dir=tmp_path / "c",
+        NeverCalledRunner(),
+        cache_dir=tmp_path / "c",
         workspace_dir=tmp_path / "w",
     )
     with pytest.raises(SourceLockUnresolvedError):
@@ -93,8 +95,7 @@ def test_synthetic_unresolved_lock_rejected_before_io(
 
 def test_unresolved_source_does_not_invoke_runner(tmp_path: Path) -> None:
     runner = NeverCalledRunner()
-    mgr = SourceManager(runner, cache_dir=tmp_path / "c",
-                        workspace_dir=tmp_path / "w")
+    mgr = SourceManager(runner, cache_dir=tmp_path / "c", workspace_dir=tmp_path / "w")
     with pytest.raises(SourceLockUnresolvedError):
         mgr.prepare(_unresolved_lock())
     assert runner.calls == []
@@ -102,7 +103,8 @@ def test_unresolved_source_does_not_invoke_runner(tmp_path: Path) -> None:
 
 def test_status_flip_without_real_checksum_still_fails(tmp_path: Path) -> None:
     mgr = SourceManager(
-        NeverCalledRunner(), cache_dir=tmp_path / "c",
+        NeverCalledRunner(),
+        cache_dir=tmp_path / "c",
         workspace_dir=tmp_path / "w",
     )
     with pytest.raises(SourceLockUnresolvedError, match="verified SHA-256"):
@@ -115,7 +117,8 @@ def test_pinned_source_is_plannable_offline_without_side_effects(
 ) -> None:
     runner = NeverCalledRunner()
     mgr = SourceManager(
-        runner, cache_dir=tmp_path / "cache",
+        runner,
+        cache_dir=tmp_path / "cache",
         workspace_dir=tmp_path / "workspace",
     )
     result = mgr.prepare(

@@ -27,10 +27,10 @@ import re
 import shutil
 import tarfile
 import uuid
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from collections.abc import Callable
+from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Callable
 
 from huey.kernel_build.models import Severity, SourceType
 from huey.kernel_build.policy import check_path_destination_safe, check_url
@@ -128,7 +128,7 @@ class SourceLock:
     profile_revision: int | None = None
     notes: str = ""
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # noqa: C901
         if isinstance(self.source_type, str):
             try:
                 object.__setattr__(self, "source_type", SourceType(self.source_type))
@@ -142,9 +142,11 @@ class SourceLock:
             raise TypeError("SourceLock.source_type must be a SourceType")
         for name in ("package_name", "version", "archive_filename"):
             value = getattr(self, name)
-            if not isinstance(value, str) or not re.fullmatch(
-                r"[A-Za-z0-9][A-Za-z0-9._+~-]*", value
-            ) or ".." in value:
+            if (
+                not isinstance(value, str)
+                or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._+~-]*", value)
+                or ".." in value
+            ):
                 raise ValueError(f"SourceLock.{name} must be a safe relative component")
         if not isinstance(self.origin_url, str) or not self.origin_url:
             raise ValueError("SourceLock.origin_url must be nonempty")
@@ -198,9 +200,18 @@ class SourceLock:
         if missing:
             raise ValueError(f"SourceLock missing required fields: {missing}")
         unexpected = set(data) - {
-            "schema_version", "status", "source_type", "package_name",
-            "version", "archive_filename", "origin_url", "checksum_sha256",
-            "retrieved_date", "license", "profile_revision", "notes",
+            "schema_version",
+            "status",
+            "source_type",
+            "package_name",
+            "version",
+            "archive_filename",
+            "origin_url",
+            "checksum_sha256",
+            "retrieved_date",
+            "license",
+            "profile_revision",
+            "notes",
         }
         if unexpected:
             raise ValueError(f"SourceLock unknown fields: {sorted(unexpected)!r}")
@@ -254,8 +265,10 @@ class SourceMaterial:
 
 
 def _is_sha256(value: object) -> bool:
-    return isinstance(value, str) and len(value) == 64 and all(
-        c in "0123456789abcdef" for c in value
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(c in "0123456789abcdef" for c in value)
     )
 
 
@@ -301,11 +314,11 @@ class SourceManager:
         self._cache_dir = Path(cache_dir)
         self._workspace_dir = Path(workspace_dir)
         self._deb_extractor: DebExtractor = deb_extractor or self._default_deb_extractor
-        self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._clock = clock or (lambda: datetime.now(UTC))
 
     # ---- public ---------------------------------------------------------
 
-    def prepare(
+    def prepare(  # noqa: C901
         self,
         lock: SourceLock,
         *,
@@ -341,17 +354,27 @@ class SourceManager:
         # Pure planning must not even inspect the cache, marker or filesystem.
         if dry_run:
             return SourceMaterial(
-                workspace_dir=extraction_root, kernel_source_dir=None,
-                archive_path=None, archive_sha256=lock.checksum_sha256,
-                lock=lock, extracted=False, dry_run=True,
+                workspace_dir=extraction_root,
+                kernel_source_dir=None,
+                archive_path=None,
+                archive_sha256=lock.checksum_sha256,
+                lock=lock,
+                extracted=False,
+                dry_run=True,
             )
 
         for destination in (self._cache_dir, self._workspace_dir, extraction_root):
             findings = check_path_destination_safe(destination)
             if any(f.severity in (Severity.ERROR, Severity.CRITICAL) for f in findings):
                 raise SourceManagerError(f"Unsafe source destination: {destination}")
-        if cache_path.is_symlink() or extraction_root.is_symlink() or marker_path.is_symlink():
-            raise SourceManagerError("Refusing symlinked cache/archive/extraction marker")
+        if (
+            cache_path.is_symlink()
+            or extraction_root.is_symlink()
+            or marker_path.is_symlink()
+        ):
+            raise SourceManagerError(
+                "Refusing symlinked cache/archive/extraction marker"
+            )
 
         # Idempotent return if a matching marker exists and force is off.
         if not force and marker_path.exists():
@@ -471,7 +494,7 @@ class SourceManager:
                 except ValueError:
                     raise SourceArchiveSymlinkError(
                         f"Symlink escapes extraction root: {entry} -> {target}"
-                    )
+                    ) from None
             elif not (entry.is_file() or entry.is_dir()):
                 raise SourceManagerError(
                     f"Special file (device, FIFO, or socket) in extraction: {entry}"
@@ -496,9 +519,7 @@ class SourceManager:
             f for f in findings if f.severity in (Severity.ERROR, Severity.CRITICAL)
         ]
         if blocking:
-            raise SourceManagerError(
-                f"Source URL rejected: {blocking[0].message}"
-            )
+            raise SourceManagerError(f"Source URL rejected: {blocking[0].message}")
 
     def _download(self, url: str, dest: Path) -> None:
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -552,10 +573,12 @@ class SourceManager:
             with tarfile.open(archive_path, "r:*") as tf:
                 for member in tf.getmembers():
                     member_path = Path(member.name)
-                    if (member_path.is_absolute() or ".." in member_path.parts
-                            or member.islnk() or not (
-                                member.isfile() or member.isdir() or member.issym()
-                            )):
+                    if (
+                        member_path.is_absolute()
+                        or ".." in member_path.parts
+                        or member.islnk()
+                        or not (member.isfile() or member.isdir() or member.issym())
+                    ):
                         raise SourceArchiveTraversalError(
                             f"Unsafe archive member: {member.name!r}"
                         )
@@ -610,10 +633,7 @@ class SourceManager:
 
     def _find_kernel_source_dir(self, root: Path) -> Path:
         entries = [e for e in root.iterdir() if e.name != _MARKER_NAME]
-        if len(entries) == 1 and entries[0].is_dir():
-            candidate = entries[0]
-        else:
-            candidate = root
+        candidate = entries[0] if len(entries) == 1 and entries[0].is_dir() else root
         if not (candidate / "Makefile").exists():
             raise SourceManagerError(
                 f"Extracted tree does not contain a kernel Makefile at {candidate}"

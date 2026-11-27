@@ -135,7 +135,7 @@ class KernelBuilder:
 
     # ---- public API ------------------------------------------------------
 
-    def build(
+    def build(  # noqa: C901
         self,
         source_dir: Path,
         config_path: Path,
@@ -195,15 +195,21 @@ class KernelBuilder:
         blocked = check_path_destination_safe(output_dir, workspace_root=workspace_root)
         if blocked:
             return self._error_result(
-                localversion=localversion, jobs=jobs if type(jobs) is int else 0,
+                localversion=localversion,
+                jobs=jobs if type(jobs) is int else 0,
                 kdeb_pkgversion=kdeb_pkgversion,
                 source_date_epoch=source_date_epoch,
-                code=blocked[0].code, message=blocked[0].message,
+                code=blocked[0].code,
+                message=blocked[0].message,
             )
-        if (output_dir == source_dir or output_dir in source_dir.parents
-                or source_dir in output_dir.parents):
+        if (
+            output_dir == source_dir
+            or output_dir in source_dir.parents
+            or source_dir in output_dir.parents
+        ):
             return self._error_result(
-                localversion=localversion, jobs=jobs if type(jobs) is int else 0,
+                localversion=localversion,
+                jobs=jobs if type(jobs) is int else 0,
                 kdeb_pkgversion=kdeb_pkgversion,
                 source_date_epoch=source_date_epoch,
                 code="UNSAFE_OUTPUT_OVERLAP",
@@ -211,17 +217,20 @@ class KernelBuilder:
             )
         if config_path == objtree / ".config" or config_path == build_dir / ".config":
             return self._error_result(
-                localversion=localversion, jobs=jobs if type(jobs) is int else 0,
+                localversion=localversion,
+                jobs=jobs if type(jobs) is int else 0,
                 kdeb_pkgversion=kdeb_pkgversion,
                 source_date_epoch=source_date_epoch,
                 code="OUTPUT_OVERWRITES_CONFIG",
                 message="Kernel output would overwrite the supplied config file.",
             )
         if kdeb_pkgversion is not None and not re.fullmatch(
-            r"[A-Za-z0-9][A-Za-z0-9.+~:-]*", kdeb_pkgversion,
+            r"[A-Za-z0-9][A-Za-z0-9.+~:-]*",
+            kdeb_pkgversion,
         ):
             return self._error_result(
-                localversion=localversion, jobs=jobs if type(jobs) is int else 0,
+                localversion=localversion,
+                jobs=jobs if type(jobs) is int else 0,
                 kdeb_pkgversion=kdeb_pkgversion,
                 source_date_epoch=source_date_epoch,
                 code="INVALID_KDEB_PKGVERSION",
@@ -250,10 +259,14 @@ class KernelBuilder:
             )
 
         # Never copy a config through a symlink outside the isolated objtree.
-        if (objtree.is_symlink() or (objtree / ".config").is_symlink()
-                or build_dir.is_symlink()):
+        if (
+            objtree.is_symlink()
+            or (objtree / ".config").is_symlink()
+            or build_dir.is_symlink()
+        ):
             return self._error_result(
-                localversion=localversion, jobs=jobs,
+                localversion=localversion,
+                jobs=jobs,
                 kdeb_pkgversion=kdeb_pkgversion,
                 source_date_epoch=source_date_epoch,
                 code="SYMLINKED_BUILD_OUTPUT",
@@ -308,9 +321,13 @@ class KernelBuilder:
         # Fail closed BEFORE the expensive kernel compile: Kbuild can append
         # CONFIG_LOCALVERSION, localversion* files or SCM metadata, even when
         # LOCALVERSION was explicitly supplied.
-        if expected_kernel_release is not None and kernel_release != expected_kernel_release:
+        if (
+            expected_kernel_release is not None
+            and kernel_release != expected_kernel_release
+        ):
             return self._error_result(
-                localversion=localversion, jobs=jobs,
+                localversion=localversion,
+                jobs=jobs,
                 kdeb_pkgversion=kdeb_pkgversion,
                 source_date_epoch=source_date_epoch,
                 code="KERNELRELEASE_MISMATCH",
@@ -323,7 +340,8 @@ class KernelBuilder:
             )
         if localversion and not kernel_release.endswith(localversion):
             return self._error_result(
-                localversion=localversion, jobs=jobs,
+                localversion=localversion,
+                jobs=jobs,
                 kdeb_pkgversion=kdeb_pkgversion,
                 source_date_epoch=source_date_epoch,
                 code="LOCALVERSION_NOT_IN_KERNELRELEASE",
@@ -380,7 +398,9 @@ class KernelBuilder:
 
             if package_name == expected_image_pkg:
                 artifact = self._artifact_from_deb(
-                    deb_path, output_dir, kernel_release,
+                    deb_path,
+                    output_dir,
+                    kernel_release,
                     ArtifactKind.KERNEL_IMAGE_DEB,
                 )
                 if artifact is None:
@@ -399,7 +419,9 @@ class KernelBuilder:
                     image_deb = artifact
             elif package_name == expected_headers_pkg:
                 artifact = self._artifact_from_deb(
-                    deb_path, output_dir, kernel_release,
+                    deb_path,
+                    output_dir,
+                    kernel_release,
                     ArtifactKind.KERNEL_HEADERS_DEB,
                 )
                 if artifact is None:
@@ -468,12 +490,13 @@ class KernelBuilder:
             )
 
         logger.info(
-            "kernel.build complete kernel_release=%s image=%s headers=%s "
-            "errors=%d",
+            "kernel.build complete kernel_release=%s image=%s headers=%s errors=%d",
             kernel_release,
             image_deb.path if image_deb else None,
             headers_deb.path if headers_deb else None,
-            sum(1 for f in findings if f.severity in (Severity.ERROR, Severity.CRITICAL)),
+            sum(
+                1 for f in findings if f.severity in (Severity.ERROR, Severity.CRITICAL)
+            ),
         )
 
         return KernelBuildResult(
@@ -501,29 +524,40 @@ class KernelBuilder:
     ) -> KernelBuildResult | None:
         if not (source_dir / "Makefile").is_file():
             return self._error_result(
-                localversion=localversion, jobs=jobs,
-                kdeb_pkgversion=None, source_date_epoch=source_date_epoch,
+                localversion=localversion,
+                jobs=jobs,
+                kdeb_pkgversion=None,
+                source_date_epoch=source_date_epoch,
                 code="SOURCE_MISSING_MAKEFILE",
                 message=f"Kernel source has no Makefile: {source_dir}",
             )
         if not config_path.is_file():
             return self._error_result(
-                localversion=localversion, jobs=jobs,
-                kdeb_pkgversion=None, source_date_epoch=source_date_epoch,
+                localversion=localversion,
+                jobs=jobs,
+                kdeb_pkgversion=None,
+                source_date_epoch=source_date_epoch,
                 code="CONFIG_MISSING",
                 message=f"Effective .config missing: {config_path}",
             )
         if type(jobs) is not int or jobs < _MIN_JOBS:
             return self._error_result(
-                localversion=localversion, jobs=jobs if type(jobs) is int else 0,
-                kdeb_pkgversion=None, source_date_epoch=source_date_epoch,
+                localversion=localversion,
+                jobs=jobs if type(jobs) is int else 0,
+                kdeb_pkgversion=None,
+                source_date_epoch=source_date_epoch,
                 code="INVALID_JOBS",
                 message=f"jobs must be an int >= {_MIN_JOBS}, got {jobs!r}",
             )
-        if not isinstance(localversion, str) or (localversion and not re.fullmatch(r"-[A-Za-z0-9][A-Za-z0-9._+~-]*", localversion)):
+        if not isinstance(localversion, str) or (
+            localversion
+            and not re.fullmatch(r"-[A-Za-z0-9][A-Za-z0-9._+~-]*", localversion)
+        ):
             return self._error_result(
-                localversion=localversion, jobs=jobs,
-                kdeb_pkgversion=None, source_date_epoch=source_date_epoch,
+                localversion=localversion,
+                jobs=jobs,
+                kdeb_pkgversion=None,
+                source_date_epoch=source_date_epoch,
                 code="INVALID_LOCALVERSION",
                 message=(
                     f"localversion must be empty or start with '-', got "
@@ -532,8 +566,10 @@ class KernelBuilder:
             )
         if type(source_date_epoch) is not int or source_date_epoch < 0:
             return self._error_result(
-                localversion=localversion, jobs=jobs,
-                kdeb_pkgversion=None, source_date_epoch=source_date_epoch,
+                localversion=localversion,
+                jobs=jobs,
+                kdeb_pkgversion=None,
+                source_date_epoch=source_date_epoch,
                 code="INVALID_SOURCE_DATE_EPOCH",
                 message=(
                     f"source_date_epoch must be a non-negative int, got "
@@ -574,7 +610,8 @@ class KernelBuilder:
             result = self._runner.run(spec)
         except RunnerTimeout as exc:
             return self._error_result(
-                localversion=env["LOCALVERSION"], jobs=1,
+                localversion=env["LOCALVERSION"],
+                jobs=1,
                 kdeb_pkgversion=env.get("KDEB_PKGVERSION"),
                 source_date_epoch=int(env["SOURCE_DATE_EPOCH"]),
                 code="OLDDEFCONFIG_TIMEOUT",
@@ -582,7 +619,8 @@ class KernelBuilder:
             )
         except RunnerError as exc:
             return self._error_result(
-                localversion=env["LOCALVERSION"], jobs=1,
+                localversion=env["LOCALVERSION"],
+                jobs=1,
                 kdeb_pkgversion=env.get("KDEB_PKGVERSION"),
                 source_date_epoch=int(env["SOURCE_DATE_EPOCH"]),
                 code="OLDDEFCONFIG_LAUNCH_FAILED",
@@ -590,14 +628,12 @@ class KernelBuilder:
             )
         if not result.succeeded:
             return self._error_result(
-                localversion=env["LOCALVERSION"], jobs=1,
+                localversion=env["LOCALVERSION"],
+                jobs=1,
                 kdeb_pkgversion=env.get("KDEB_PKGVERSION"),
                 source_date_epoch=int(env["SOURCE_DATE_EPOCH"]),
                 code="OLDDEFCONFIG_FAILED",
-                message=(
-                    f"make olddefconfig exited "
-                    f"{result.command.returncode}"
-                ),
+                message=(f"make olddefconfig exited {result.command.returncode}"),
             )
         return "ok"
 
@@ -615,7 +651,8 @@ class KernelBuilder:
             result = self._runner.run(spec)
         except RunnerTimeout as exc:
             return self._error_result(
-                localversion=env["LOCALVERSION"], jobs=1,
+                localversion=env["LOCALVERSION"],
+                jobs=1,
                 kdeb_pkgversion=env.get("KDEB_PKGVERSION"),
                 source_date_epoch=int(env["SOURCE_DATE_EPOCH"]),
                 code="KERNELRELEASE_TIMEOUT",
@@ -623,7 +660,8 @@ class KernelBuilder:
             )
         except RunnerError as exc:
             return self._error_result(
-                localversion=env["LOCALVERSION"], jobs=1,
+                localversion=env["LOCALVERSION"],
+                jobs=1,
                 kdeb_pkgversion=env.get("KDEB_PKGVERSION"),
                 source_date_epoch=int(env["SOURCE_DATE_EPOCH"]),
                 code="KERNELRELEASE_LAUNCH_FAILED",
@@ -631,20 +669,19 @@ class KernelBuilder:
             )
         if not result.succeeded:
             return self._error_result(
-                localversion=env["LOCALVERSION"], jobs=1,
+                localversion=env["LOCALVERSION"],
+                jobs=1,
                 kdeb_pkgversion=env.get("KDEB_PKGVERSION"),
                 source_date_epoch=int(env["SOURCE_DATE_EPOCH"]),
                 code="KERNELRELEASE_FAILED",
-                message=(
-                    f"make -s kernelrelease exited "
-                    f"{result.command.returncode}"
-                ),
+                message=(f"make -s kernelrelease exited {result.command.returncode}"),
             )
         stdout = (result.stdout or b"").decode("utf-8", errors="replace")
         lines = [line.strip() for line in stdout.splitlines() if line.strip()]
         if not lines:
             return self._error_result(
-                localversion=env["LOCALVERSION"], jobs=1,
+                localversion=env["LOCALVERSION"],
+                jobs=1,
                 kdeb_pkgversion=env.get("KDEB_PKGVERSION"),
                 source_date_epoch=int(env["SOURCE_DATE_EPOCH"]),
                 code="KERNELRELEASE_EMPTY",
@@ -654,9 +691,12 @@ class KernelBuilder:
                 ),
             )
         release = lines[-1]
-        if len(lines) != 1 or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._+~-]*", release):
+        if len(lines) != 1 or not re.fullmatch(
+            r"[A-Za-z0-9][A-Za-z0-9._+~-]*", release
+        ):
             return self._error_result(
-                localversion=env["LOCALVERSION"], jobs=1,
+                localversion=env["LOCALVERSION"],
+                jobs=1,
                 kdeb_pkgversion=env.get("KDEB_PKGVERSION"),
                 source_date_epoch=int(env["SOURCE_DATE_EPOCH"]),
                 code="KERNELRELEASE_INVALID",
@@ -678,7 +718,8 @@ class KernelBuilder:
             result = self._runner.run(spec)
         except RunnerTimeout as exc:
             return self._error_result(
-                localversion=env["LOCALVERSION"], jobs=jobs,
+                localversion=env["LOCALVERSION"],
+                jobs=jobs,
                 kdeb_pkgversion=env.get("KDEB_PKGVERSION"),
                 source_date_epoch=int(env["SOURCE_DATE_EPOCH"]),
                 code="BINDEB_TIMEOUT",
@@ -686,7 +727,8 @@ class KernelBuilder:
             )
         except RunnerError as exc:
             return self._error_result(
-                localversion=env["LOCALVERSION"], jobs=jobs,
+                localversion=env["LOCALVERSION"],
+                jobs=jobs,
                 kdeb_pkgversion=env.get("KDEB_PKGVERSION"),
                 source_date_epoch=int(env["SOURCE_DATE_EPOCH"]),
                 code="BINDEB_LAUNCH_FAILED",
@@ -694,14 +736,12 @@ class KernelBuilder:
             )
         if not result.succeeded:
             return self._error_result(
-                localversion=env["LOCALVERSION"], jobs=jobs,
+                localversion=env["LOCALVERSION"],
+                jobs=jobs,
                 kdeb_pkgversion=env.get("KDEB_PKGVERSION"),
                 source_date_epoch=int(env["SOURCE_DATE_EPOCH"]),
                 code="BINDEB_FAILED",
-                message=(
-                    f"make bindeb-pkg exited "
-                    f"{result.command.returncode}"
-                ),
+                message=(f"make bindeb-pkg exited {result.command.returncode}"),
             )
         return "ok"
 
@@ -782,9 +822,7 @@ class KernelBuilder:
             image_deb=None,
             headers_deb=None,
             findings=(
-                ValidationFinding(
-                    severity=Severity.ERROR, code=code, message=message
-                ),
+                ValidationFinding(severity=Severity.ERROR, code=code, message=message),
             ),
             dry_run=False,
         )

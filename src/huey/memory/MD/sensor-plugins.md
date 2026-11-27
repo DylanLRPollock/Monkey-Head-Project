@@ -23,6 +23,7 @@ honeycomb, and fan-outs to live subscribers.【F:huey/hardware/manager.py†L71-
 ```python
 from huey.hardware.plugins import SensorPlugin
 
+
 class WorkshopTemperature(SensorPlugin):
     """Reports ambient temperature from an attached microcontroller."""
 

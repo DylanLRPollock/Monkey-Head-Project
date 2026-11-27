@@ -45,7 +45,9 @@ _DENY_AS_DEPENDENCY_HACK = frozenset(
 )
 
 # The expected active module set for the v100-workstation profile.
-_EXPECTED_MODULES = frozenset({"amdgpu", "nvidia", "nvidia-uvm"})
+_EXPECTED_MODULES = frozenset(
+    {"amdgpu", "btrfs", "nvme", "raid10", "vmd", "nvidia", "nvidia-uvm"}
+)
 
 
 def _read() -> str:
@@ -96,9 +98,9 @@ def test_active_lines_have_plausible_module_names() -> None:
 
 def test_no_duplicate_modules() -> None:
     names = _active_module_names()
-    assert len(names) == len(set(names)), (
-        f"duplicate module entries in modules.list: {names}"
-    )
+    assert len(names) == len(
+        set(names)
+    ), f"duplicate module entries in modules.list: {names}"
 
 
 # ---------------------------------------------------------------------------
@@ -225,30 +227,26 @@ def test_active_set_matches_expected_profile_modules() -> None:
 def test_amdgpu_rationale_present() -> None:
     """The amdgpu entry must explain the display path."""
     comments = _comment_text().lower()
-    assert "amdgpu" in comments, (
-        "modules.list must explain why amdgpu is included "
-        "(RX 570 display path)"
-    )
-    assert "display" in comments or "rx 570" in comments, (
-        "the amdgpu rationale must mention the display/RX 570 role"
-    )
+    assert (
+        "amdgpu" in comments
+    ), "modules.list must explain why amdgpu is included (RX 570 display path)"
+    assert (
+        "display" in comments or "rx 570" in comments
+    ), "the amdgpu rationale must mention the display/RX 570 role"
 
 
 def test_nvidia_modeset_and_drm_exclusion_rationale_present() -> None:
     """The exclusions of modeset/drm must be documented with a reason."""
     comments = _comment_text().lower()
-    assert "nvidia-modeset" in comments, (
-        "modules.list must explain why nvidia-modeset is not included"
-    )
-    assert "nvidia-drm" in comments, (
-        "modules.list must explain why nvidia-drm is not included"
-    )
+    assert (
+        "nvidia-modeset" in comments
+    ), "modules.list must explain why nvidia-modeset is not included"
+    assert (
+        "nvidia-drm" in comments
+    ), "modules.list must explain why nvidia-drm is not included"
     # Combined rationale: both refer to the V100's lack of display output.
     assert (
         "no display" in comments
         or "no display output" in comments
         or "headless" in comments
-    ), (
-        "the exclusion rationale must state that the V100 has no display "
-        "output"
-    )
+    ), "the exclusion rationale must state that the V100 has no display output"

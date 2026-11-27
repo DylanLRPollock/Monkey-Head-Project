@@ -1,4 +1,5 @@
 """Static boot-chain tests for the HueyOS 7.3.4 VMD + Optane root."""
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -8,9 +9,8 @@ MODULE_LIST = ROOT / "kernel" / "huey-linux" / "initramfs" / "modules.list"
 def _requested() -> list[str]:
     assert MODULE_LIST.is_file()
     return [
-        line.split()[0] for line in MODULE_LIST.read_text(
-            encoding="utf-8"
-        ).splitlines()
+        line.split()[0]
+        for line in MODULE_LIST.read_text(encoding="utf-8").splitlines()
         if line.strip() and not line.lstrip().startswith("#")
     ]
 

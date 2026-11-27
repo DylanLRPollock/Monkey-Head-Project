@@ -50,7 +50,7 @@ V223 separates **physical nodes** from **logical HueyOS services** and from **co
 | **State / Storage Node role** | Serve authoritative Rock records, identity state, durable HIMS queues, checkpoints and tested backups | Requires an independent host before claiming i9-offline continuity |
 | **Body / Embodiment Node role** | Sensors, audio, animatronics and actuators with independent safety controls | Huey V4 physical work continues; safe autonomous operation unqualified |
 
-The **Huey Brain**, **Huey Farm** and **Huey Body** remain useful functional domains, not permanent assignments to one motherboard. The Brain comprises logical cognition, context boundaries, scheduling and authorized governance processes; the Farm supplies replaceable model/compute resources; the Body is the recoverable physical embodiment. The **Walnut** is the replaceable model-serving engine; the **Rock** is durable authorized records; **HIMS** is internal messaging; **Banana Brain** allocates and schedules work.
+The **Huey Brain** and **Huey Farm** describe functional domains, not permanent assignments to one motherboard. The Brain comprises logical cognition, context boundaries, scheduling and authorized governance processes; the Farm supplies replaceable model/compute resources. The separate **Body / Embodiment role** covers the recoverable physical form, sensors and actuators. The **Walnut** is the replaceable model-serving engine; the **Rock** is durable authorized records; **HIMS** is internal messaging; **Banana Brain** allocates and schedules work.
 
 ### Interface Node and Huey Console
 
@@ -125,7 +125,7 @@ The **Walnut** is Huey's replaceable local model service, not an unrestricted co
 - **Python:** `pyproject.toml` declares `>=3.13,<3.14`; Python 3.13 is the supported release target.
 - **Package identity:** the distribution is `hueyos` (last inspected release metadata `0.2.0`), while the import tree is `src/huey`.
 - **Ollama:** local model execution on the single V100 has been demonstrated with a reported Qwen-class model; not the distributed production Walnut.
-- **RAG:** PyGPT with EmbeddingGemma-based retrieval has passed a local test; this is **not** the durable, authorized Rock.
+- **RAG:** a local EmbeddingGemma retrieval test used PyGPT (implementation provenance only); PyHuey is the active cockpit name. This is **not** the durable, authorized Rock.
 - **ComfyUI:** CUDA FP16 image-generation testing succeeded; integration through resource-aware scheduling remains work.
 - **Audio:** Whisper/faster-whisper transcription is a useful candidate auxiliary task for the existing V100; live HueyOS integration remains unqualified.
 - **Video, vision, TTS and other model backends:** optional research, not core capabilities already proven.

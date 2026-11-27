@@ -78,8 +78,7 @@ AGREEMENTS: Final = (
     {
         "title": "Original Agreement",
         "description": (
-            "Please review and accept the following terms and conditions "
-            "to continue."
+            "Please review and accept the following terms and conditions to continue."
         ),
         "acceptance": (
             "I have read and agree to the terms and conditions outlined "
@@ -90,12 +89,9 @@ AGREEMENTS: Final = (
     },
     {
         "title": "Our Agreement",
-        "description": (
-            "One more agreement to review before we finalize everything."
-        ),
+        "description": ("One more agreement to review before we finalize everything."),
         "acceptance": (
-            "I have read and agree to the additional terms outlined "
-            "in Our Agreement."
+            "I have read and agree to the additional terms outlined in Our Agreement."
         ),
         "document": GPL_EXCERPT,
         "button": "Complete",

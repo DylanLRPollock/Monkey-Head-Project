@@ -172,9 +172,9 @@ def test_unrelated_subsystems_not_assigned(forbidden_symbol: str) -> None:
         "from the Debian base config. Changes require a separately reviewed "
         "fragment."
     )
-    assert forbidden_symbol not in unset, (
-        f"{forbidden_symbol} must not be unset in this fragment."
-    )
+    assert (
+        forbidden_symbol not in unset
+    ), f"{forbidden_symbol} must not be unset in this fragment."
 
 
 # ---------------------------------------------------------------------------

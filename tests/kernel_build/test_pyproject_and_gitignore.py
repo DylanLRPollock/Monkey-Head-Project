@@ -226,12 +226,8 @@ def test_gitignore_reincludes_config_fragments() -> None:
 
 def test_gitignore_does_not_ignore_pyproject_or_gitignore() -> None:
     for line in _gitignore_lines():
-        assert line != "pyproject.toml", (
-            ".gitignore must not ignore pyproject.toml"
-        )
-        assert line != ".gitignore", (
-            ".gitignore must not ignore itself"
-        )
+        assert line != "pyproject.toml", ".gitignore must not ignore pyproject.toml"
+        assert line != ".gitignore", ".gitignore must not ignore itself"
 
 
 # ---------------------------------------------------------------------------
@@ -244,7 +240,7 @@ def test_pyproject_declares_pyyaml() -> None:
     if not deps:
         _skip_unless_applied(
             "PyYAML in [project] dependencies",
-            "Add \"PyYAML>=6.0,<7\" to pyproject.toml so pip install -e . "
+            'Add "PyYAML>=6.0,<7" to pyproject.toml so pip install -e . '
             "installs it; the CLI's build.yaml loader requires it.",
         )
     assert any("pyyaml" in d.lower() for d in deps), (
@@ -259,14 +255,14 @@ def test_pyproject_pyyaml_constraint_is_reasonable() -> None:
     if not matching:
         _skip_unless_applied(
             "PyYAML in [project] dependencies",
-            "Add \"PyYAML>=6.0,<7\" to pyproject.toml.",
+            'Add "PyYAML>=6.0,<7" to pyproject.toml.',
         )
     spec = matching[0].lower()
     # Confirm the lower bound is at least 6.0 and no upper bound below 7.0.
     m = re.search(r"(?:>=?|==)\s*(\d+)", spec)
-    assert m is not None, (
-        f"PyYAML constraint {matching[0]!r} has no lower bound or exact pin"
-    )
+    assert (
+        m is not None
+    ), f"PyYAML constraint {matching[0]!r} has no lower bound or exact pin"
     assert int(m.group(1)) >= 6, (
         f"PyYAML constraint {matching[0]!r} requires < 6; the framework "
         "uses safe_load, which is available from 6.x and preferred from "
@@ -291,10 +287,9 @@ def test_pyproject_test_extra_exists() -> None:
         )
     joined = " ".join(deps).lower()
     for tool in ("pytest", "ruff", "mypy"):
-        assert tool in joined, (
-            f"the [test] extra must include {tool}; the CI workflow installs "
-            ".[test]"
-        )
+        assert (
+            tool in joined
+        ), f"the [test] extra must include {tool}; the CI workflow installs .[test]"
 
 
 # ---------------------------------------------------------------------------
@@ -337,6 +332,6 @@ def test_pyproject_has_no_private_secret_paths() -> None:
         r"\.priv",
         r"KBUILD_SIGN_PIN",
     ):
-        assert not re.search(pattern, text), (
-            f"pyproject.toml must not reference {pattern!r}"
-        )
+        assert not re.search(
+            pattern, text
+        ), f"pyproject.toml must not reference {pattern!r}"

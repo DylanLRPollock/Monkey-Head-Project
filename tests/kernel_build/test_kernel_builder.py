@@ -30,15 +30,12 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import replace
 from pathlib import Path
-from typing import Callable
 
 import pytest
 
 from huey.kernel_build.kernel_builder import (
     KernelBuilder,
-    KernelBuildResult,
 )
 from huey.kernel_build.models import (
     ArtifactKind,
@@ -52,7 +49,6 @@ from huey.kernel_build.runner import (
     RunnerTimeout,
 )
 
-
 # ===========================================================================
 # FixtureRunner
 # ===========================================================================
@@ -63,7 +59,7 @@ class FixtureRunner:
         self._handlers: list = []
         self._calls: list[CommandSpec] = []
 
-    def on(self, matcher, handler) -> "FixtureRunner":
+    def on(self, matcher, handler) -> FixtureRunner:
         self._handlers.append((matcher, handler))
         return self
 
@@ -82,20 +78,30 @@ class FixtureRunner:
 def _ok(spec, *, stdout: bytes = b"", stderr: bytes = b"") -> RunnerResult:
     return RunnerResult(
         command=CommandResult(
-            argv=spec.argv, cwd=str(spec.cwd),
-            returncode=0, elapsed_seconds=0.0,
+            argv=spec.argv,
+            cwd=str(spec.cwd),
+            returncode=0,
+            elapsed_seconds=0.0,
         ),
-        executed=True, dry_run=False, stdout=stdout, stderr=stderr,
+        executed=True,
+        dry_run=False,
+        stdout=stdout,
+        stderr=stderr,
     )
 
 
 def _fail(spec, returncode: int = 1) -> RunnerResult:
     return RunnerResult(
         command=CommandResult(
-            argv=spec.argv, cwd=str(spec.cwd),
-            returncode=returncode, elapsed_seconds=0.0,
+            argv=spec.argv,
+            cwd=str(spec.cwd),
+            returncode=returncode,
+            elapsed_seconds=0.0,
         ),
-        executed=True, dry_run=False, stdout=b"", stderr=b"",
+        executed=True,
+        dry_run=False,
+        stdout=b"",
+        stderr=b"",
     )
 
 
@@ -104,11 +110,7 @@ def _is_olddefconfig(spec: CommandSpec) -> bool:
 
 
 def _is_kernelrelease(spec: CommandSpec) -> bool:
-    return (
-        spec.argv[0] == "make"
-        and "-s" in spec.argv
-        and "kernelrelease" in spec.argv
-    )
+    return spec.argv[0] == "make" and "-s" in spec.argv and "kernelrelease" in spec.argv
 
 
 def _is_bindeb(spec: CommandSpec) -> bool:
@@ -161,8 +163,14 @@ def _fake_dpkg_deb_handler(spec: CommandSpec) -> RunnerResult:
     path = Path(spec.argv[2])
     if not path.is_file() or not path.name.endswith(".deb"):
         return _fail(spec, returncode=2)
-    pkg = next((line.split(":", 1)[1].strip() for line in
-                path.read_text().splitlines() if line.startswith("Package:")), None)
+    pkg = next(
+        (
+            line.split(":", 1)[1].strip()
+            for line in path.read_text().splitlines()
+            if line.startswith("Package:")
+        ),
+        None,
+    )
     if not pkg:
         return _fail(spec, returncode=2)
     return _ok(spec, stdout=f"Package: {pkg}\n".encode())
@@ -193,7 +201,11 @@ def _build_runner(
     r = FixtureRunner()
 
     def _odc(spec):
-        return _ok(spec) if olddefconfig_returncode == 0 else _fail(spec, olddefconfig_returncode)
+        return (
+            _ok(spec)
+            if olddefconfig_returncode == 0
+            else _fail(spec, olddefconfig_returncode)
+        )
 
     def _kr(spec):
         if kernelrelease_returncode != 0:
@@ -249,7 +261,9 @@ def _setup(tmp_path: Path) -> tuple[Path, Path, Path]:
 def test_happy_path_produces_image_and_headers(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     result = KernelBuilder(_build_runner()).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     assert result.has_errors() is False, result.findings
     assert result.kernel_release == KR
@@ -264,7 +278,9 @@ def test_happy_path_produces_image_and_headers(tmp_path: Path) -> None:
 def test_happy_path_sha_and_size_match_disk(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     result = KernelBuilder(_build_runner()).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     assert result.image_deb is not None
     on_disk = out / result.image_deb.path
@@ -276,7 +292,9 @@ def test_happy_path_sha_and_size_match_disk(tmp_path: Path) -> None:
 def test_result_is_json_serializable(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     result = KernelBuilder(_build_runner()).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     payload = json.dumps(result.to_dict())
     assert KR in payload
@@ -287,7 +305,9 @@ def test_result_is_json_serializable(tmp_path: Path) -> None:
 def test_other_debs_recorded_as_info(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     result = KernelBuilder(_build_runner()).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     info_codes = {f.code for f in result.findings if f.severity == Severity.INFO}
     assert "OTHER_DEBS_PRESENT" in info_codes
@@ -315,18 +335,21 @@ def test_make_argv_shapes(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     runner = _build_runner()
     KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out, jobs=4,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
+        jobs=4,
     )
     by_kind = {
-        "olddefconfig": [c for c in runner.calls if _is_olddefconfig(c)][0],
-        "kernelrelease": [c for c in runner.calls if _is_kernelrelease(c)][0],
-        "bindeb": [c for c in runner.calls if _is_bindeb(c)][0],
+        "olddefconfig": next(c for c in runner.calls if _is_olddefconfig(c)),
+        "kernelrelease": next(c for c in runner.calls if _is_kernelrelease(c)),
+        "bindeb": next(c for c in runner.calls if _is_bindeb(c)),
     }
     # Every call carries an O=<objtree> argument.
     for name, spec in by_kind.items():
-        assert any(a.startswith("O=") for a in spec.argv), (
-            f"{name} missing O=<objtree>: {spec.argv}"
-        )
+        assert any(
+            a.startswith("O=") for a in spec.argv
+        ), f"{name} missing O=<objtree>: {spec.argv}"
     # bindeb-pkg carries -jN.
     assert "-j4" in by_kind["bindeb"].argv
 
@@ -335,8 +358,11 @@ def test_make_env_carries_reproducibility_vars(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     runner = _build_runner()
     KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
-        localversion="-huey1", source_date_epoch=1700000000,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
+        localversion="-huey1",
+        source_date_epoch=1700000000,
     )
     for call in runner.calls:
         if call.argv[0] != "make":
@@ -353,7 +379,9 @@ def test_kdeb_pkgversion_propagates_when_set(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     runner = _build_runner(kdeb_version="7.2.15-huey1-1")
     KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
         kdeb_pkgversion="7.2.15-huey1-1",
     )
     for call in runner.calls:
@@ -366,7 +394,9 @@ def test_kdeb_pkgversion_absent_when_not_set(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     runner = _build_runner()
     KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     for call in runner.calls:
         if call.argv[0] != "make":
@@ -388,7 +418,9 @@ def test_discovery_by_field_not_filename(tmp_path: Path) -> None:
         headers_filename="linux-headers-7.2.15-huey1-renamed.deb",
     )
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     assert result.has_errors() is False, result.findings
     assert result.image_deb is not None
@@ -403,7 +435,9 @@ def test_mismatched_release_in_package_name_rejected(tmp_path: Path) -> None:
         headers_package_name="linux-headers-7.2.12-huey1",
     )
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "IMAGE_DEB_MISSING" in codes
@@ -423,9 +457,9 @@ def test_no_debs_produced_errors(tmp_path: Path) -> None:
 
 def test_missing_headers_errors(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
-    result = KernelBuilder(
-        _build_runner(create_headers=False)
-    ).build(source_dir=src, config_path=cfg, output_dir=out)
+    result = KernelBuilder(_build_runner(create_headers=False)).build(
+        source_dir=src, config_path=cfg, output_dir=out
+    )
     codes = {f.code for f in result.findings}
     assert "HEADERS_DEB_MISSING" in codes
     assert result.image_deb is not None
@@ -435,9 +469,9 @@ def test_missing_headers_errors(tmp_path: Path) -> None:
 
 def test_missing_image_errors(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
-    result = KernelBuilder(
-        _build_runner(create_image=False)
-    ).build(source_dir=src, config_path=cfg, output_dir=out)
+    result = KernelBuilder(_build_runner(create_image=False)).build(
+        source_dir=src, config_path=cfg, output_dir=out
+    )
     codes = {f.code for f in result.findings}
     assert "IMAGE_DEB_MISSING" in codes
     assert result.image_deb is None
@@ -459,7 +493,9 @@ def test_dpkg_deb_missing_warns_and_skips(tmp_path: Path) -> None:
 
     runner.on(_is_dpkg_deb, _raise)
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "DEB_PACKAGE_FIELD_UNAVAILABLE" in codes
@@ -473,7 +509,9 @@ def test_dpkg_deb_nonzero_warns_and_skips(tmp_path: Path) -> None:
     runner = _build_runner()
     runner.on(_is_dpkg_deb, lambda s: _fail(s, returncode=2))
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "DEB_PACKAGE_FIELD_UNAVAILABLE" in codes
@@ -485,7 +523,9 @@ def test_dpkg_deb_invalid_package_field_warns(tmp_path: Path) -> None:
     runner = _build_runner()
     runner.on(_is_dpkg_deb, lambda s: _ok(s, stdout=b"NotAPackageLine\n"))
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "DEB_PACKAGE_FIELD_UNAVAILABLE" in codes
@@ -502,7 +542,9 @@ def test_missing_makefile_errors(tmp_path: Path) -> None:
     cfg = _write_config(tmp_path / "config")
     out = tmp_path / "out"
     result = KernelBuilder(_build_runner()).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "SOURCE_MISSING_MAKEFILE" in codes
@@ -513,7 +555,9 @@ def test_missing_config_errors(tmp_path: Path) -> None:
     src = _make_source(tmp_path)
     out = tmp_path / "out"
     result = KernelBuilder(_build_runner()).build(
-        source_dir=src, config_path=tmp_path / "nonexistent", output_dir=out,
+        source_dir=src,
+        config_path=tmp_path / "nonexistent",
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "CONFIG_MISSING" in codes
@@ -523,7 +567,10 @@ def test_missing_config_errors(tmp_path: Path) -> None:
 def test_invalid_jobs_errors(tmp_path: Path, jobs: int) -> None:
     src, cfg, out = _setup(tmp_path)
     result = KernelBuilder(_build_runner()).build(
-        source_dir=src, config_path=cfg, output_dir=out, jobs=jobs,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
+        jobs=jobs,
     )
     codes = {f.code for f in result.findings}
     assert "INVALID_JOBS" in codes
@@ -533,7 +580,10 @@ def test_invalid_jobs_errors(tmp_path: Path, jobs: int) -> None:
 def test_invalid_localversion_errors(tmp_path: Path, localversion: str) -> None:
     src, cfg, out = _setup(tmp_path)
     result = KernelBuilder(_build_runner()).build(
-        source_dir=src, config_path=cfg, output_dir=out, localversion=localversion,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
+        localversion=localversion,
     )
     codes = {f.code for f in result.findings}
     assert "INVALID_LOCALVERSION" in codes
@@ -542,7 +592,10 @@ def test_invalid_localversion_errors(tmp_path: Path, localversion: str) -> None:
 def test_negative_source_date_epoch_errors(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     result = KernelBuilder(_build_runner()).build(
-        source_dir=src, config_path=cfg, output_dir=out, source_date_epoch=-1,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
+        source_date_epoch=-1,
     )
     codes = {f.code for f in result.findings}
     assert "INVALID_SOURCE_DATE_EPOCH" in codes
@@ -553,7 +606,10 @@ def test_empty_localversion_is_valid(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     runner = _build_runner(kernel_release="7.2.15")
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out, localversion="",
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
+        localversion="",
     )
     assert result.has_errors() is False, result.findings
     assert result.kernel_release == "7.2.15"
@@ -566,9 +622,9 @@ def test_empty_localversion_is_valid(tmp_path: Path) -> None:
 
 def test_olddefconfig_nonzero_errors(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
-    result = KernelBuilder(
-        _build_runner(olddefconfig_returncode=2)
-    ).build(source_dir=src, config_path=cfg, output_dir=out)
+    result = KernelBuilder(_build_runner(olddefconfig_returncode=2)).build(
+        source_dir=src, config_path=cfg, output_dir=out
+    )
     codes = {f.code for f in result.findings}
     assert "OLDDEFCONFIG_FAILED" in codes
 
@@ -582,7 +638,9 @@ def test_olddefconfig_launch_failure_errors(tmp_path: Path) -> None:
 
     runner.on(_is_olddefconfig, _raise)
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "OLDDEFCONFIG_LAUNCH_FAILED" in codes
@@ -597,7 +655,9 @@ def test_olddefconfig_timeout_errors(tmp_path: Path) -> None:
 
     runner.on(_is_olddefconfig, _timeout)
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "OLDDEFCONFIG_TIMEOUT" in codes
@@ -610,18 +670,18 @@ def test_olddefconfig_timeout_errors(tmp_path: Path) -> None:
 
 def test_kernelrelease_nonzero_errors(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
-    result = KernelBuilder(
-        _build_runner(kernelrelease_returncode=1)
-    ).build(source_dir=src, config_path=cfg, output_dir=out)
+    result = KernelBuilder(_build_runner(kernelrelease_returncode=1)).build(
+        source_dir=src, config_path=cfg, output_dir=out
+    )
     codes = {f.code for f in result.findings}
     assert "KERNELRELEASE_FAILED" in codes
 
 
 def test_kernelrelease_empty_errors(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
-    result = KernelBuilder(
-        _build_runner(kernelrelease_empty=True)
-    ).build(source_dir=src, config_path=cfg, output_dir=out)
+    result = KernelBuilder(_build_runner(kernelrelease_empty=True)).build(
+        source_dir=src, config_path=cfg, output_dir=out
+    )
     codes = {f.code for f in result.findings}
     assert "KERNELRELEASE_EMPTY" in codes
 
@@ -636,7 +696,9 @@ def test_kernelrelease_launch_failure_errors(tmp_path: Path) -> None:
 
     runner.on(_is_kernelrelease, _raise)
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "KERNELRELEASE_LAUNCH_FAILED" in codes
@@ -652,7 +714,9 @@ def test_kernelrelease_timeout_errors(tmp_path: Path) -> None:
 
     runner.on(_is_kernelrelease, _timeout)
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "KERNELRELEASE_TIMEOUT" in codes
@@ -665,9 +729,9 @@ def test_kernelrelease_timeout_errors(tmp_path: Path) -> None:
 
 def test_bindeb_nonzero_errors(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
-    result = KernelBuilder(
-        _build_runner(bindeb_returncode=2)
-    ).build(source_dir=src, config_path=cfg, output_dir=out)
+    result = KernelBuilder(_build_runner(bindeb_returncode=2)).build(
+        source_dir=src, config_path=cfg, output_dir=out
+    )
     codes = {f.code for f in result.findings}
     assert "BINDEB_FAILED" in codes
 
@@ -683,7 +747,9 @@ def test_bindeb_launch_failure_errors(tmp_path: Path) -> None:
 
     runner.on(_is_bindeb, _raise)
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "BINDEB_LAUNCH_FAILED" in codes
@@ -700,7 +766,9 @@ def test_bindeb_timeout_errors(tmp_path: Path) -> None:
 
     runner.on(_is_bindeb, _timeout)
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "BINDEB_TIMEOUT" in codes
@@ -711,12 +779,17 @@ def test_bindeb_timeout_errors(tmp_path: Path) -> None:
 # ===========================================================================
 
 
-def test_localversion_not_in_kernelrelease_blocks_before_compile(tmp_path: Path) -> None:
+def test_localversion_not_in_kernelrelease_blocks_before_compile(
+    tmp_path: Path,
+) -> None:
     """Missing suffix must fail before bindeb-pkg, not warn after it."""
     src, cfg, out = _setup(tmp_path)
     runner = _build_runner(kernel_release="7.2.15")
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out, localversion="-huey1",
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
+        localversion="-huey1",
     )
     assert result.has_errors()
     assert "LOCALVERSION_NOT_IN_KERNELRELEASE" in {f.code for f in result.findings}
@@ -727,7 +800,9 @@ def test_exact_release_accepts_testing1(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     runner = _build_runner(kernel_release="7.3.4-huey-testing1")
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
         localversion="-huey-testing1",
         expected_kernel_release="7.3.4-huey-testing1",
     )
@@ -735,19 +810,24 @@ def test_exact_release_accepts_testing1(tmp_path: Path) -> None:
     assert any(_is_bindeb(call) for call in runner.calls)
 
 
-@pytest.mark.parametrize("actual", [
-    "7.3.4-huey-testing1+",
-    "7.3.4-huey-testing1-huey-testing1",
-    "7.3.4-extra-huey-testing1",
-    "7.3.5-huey-testing1",
-])
+@pytest.mark.parametrize(
+    "actual",
+    [
+        "7.3.4-huey-testing1+",
+        "7.3.4-huey-testing1-huey-testing1",
+        "7.3.4-extra-huey-testing1",
+        "7.3.5-huey-testing1",
+    ],
+)
 def test_exact_release_rejects_unexpected_suffix_before_compile(
     tmp_path: Path, actual: str
 ) -> None:
     src, cfg, out = _setup(tmp_path)
     runner = _build_runner(kernel_release=actual)
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
         localversion="-huey-testing1",
         expected_kernel_release="7.3.4-huey-testing1",
     )
@@ -765,7 +845,10 @@ def test_dry_run_no_writes_no_subprocess(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     runner = FixtureRunner()  # zero handlers
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out, dry_run=True,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
+        dry_run=True,
     )
     assert result.dry_run is True
     assert result.kernel_release is None
@@ -791,7 +874,9 @@ def test_stale_deb_cleanup_before_build(tmp_path: Path) -> None:
     stale.write_bytes(b"stale package content")
 
     result = KernelBuilder(_build_runner()).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     assert result.has_errors() is False
     assert not stale.exists()
@@ -828,41 +913,43 @@ def test_no_host_mutation_commands_in_argv(
     src, cfg, out = _setup(tmp_path)
     runner = _build_runner()
     KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     for call in runner.calls:
         # `dpkg-deb` is allowed (read-only field query); bare `dpkg` is not.
         if forbidden_command == "dpkg":
             if call.argv[0] == "dpkg-deb":
                 continue
-            assert call.argv[0] != "dpkg", (
-                f"builder must not invoke 'dpkg': {call.argv}"
-            )
+            assert (
+                call.argv[0] != "dpkg"
+            ), f"builder must not invoke 'dpkg': {call.argv}"
             continue
         # No other forbidden command may appear as the executable.
-        assert call.argv[0] != forbidden_command, (
-            f"builder invoked forbidden command {forbidden_command!r}: {call.argv}"
-        )
+        assert (
+            call.argv[0] != forbidden_command
+        ), f"builder invoked forbidden command {forbidden_command!r}: {call.argv}"
 
 
 @pytest.mark.parametrize(
     "protected_path",
     ["/boot", "/lib/modules", "/etc/modprobe.d", "/etc/initramfs-tools"],
 )
-def test_no_protected_paths_in_argv(
-    protected_path: str, tmp_path: Path
-) -> None:
+def test_no_protected_paths_in_argv(protected_path: str, tmp_path: Path) -> None:
     """Structural proof: no protected host path appears in any argv."""
     src, cfg, out = _setup(tmp_path)
     runner = _build_runner()
     KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     for call in runner.calls:
         for arg in call.argv:
-            assert protected_path not in arg, (
-                f"builder passed protected path {protected_path!r}: {call.argv}"
-            )
+            assert (
+                protected_path not in arg
+            ), f"builder passed protected path {protected_path!r}: {call.argv}"
 
 
 # ===========================================================================
@@ -883,7 +970,9 @@ def test_deb_outside_output_dir_is_rejected(tmp_path: Path) -> None:
     # .deb is outside. Discovery globs build_dir, so it should not find
     # the outside one.
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out,
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
     )
     codes = {f.code for f in result.findings}
     assert "IMAGE_DEB_MISSING" in codes
@@ -896,9 +985,9 @@ def test_deb_outside_output_dir_is_rejected(tmp_path: Path) -> None:
 
 def test_has_errors_true_when_blocking_present(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
-    result = KernelBuilder(
-        _build_runner(create_image=False)
-    ).build(source_dir=src, config_path=cfg, output_dir=out)
+    result = KernelBuilder(_build_runner(create_image=False)).build(
+        source_dir=src, config_path=cfg, output_dir=out
+    )
     assert result.has_errors() is True
 
 
@@ -906,7 +995,10 @@ def test_has_errors_false_when_only_info(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     runner = _build_runner()
     result = KernelBuilder(runner).build(
-        source_dir=src, config_path=cfg, output_dir=out, localversion="-huey1",
+        source_dir=src,
+        config_path=cfg,
+        output_dir=out,
+        localversion="-huey1",
     )
     assert result.has_errors() is False
     assert any(f.severity == Severity.INFO for f in result.findings)
@@ -915,8 +1007,21 @@ def test_has_errors_false_when_only_info(tmp_path: Path) -> None:
 def test_dpkg_deb_real_bare_field_is_accepted(tmp_path: Path) -> None:
     src, cfg, out = _setup(tmp_path)
     runner = _build_runner()
-    runner.on(_is_dpkg_deb, lambda spec: _ok(spec, stdout=
-        Path(spec.argv[2]).read_text().splitlines()[0].split(":", 1)[1].strip().encode()+b"\n"))
-    result = KernelBuilder(runner).build(source_dir=src, config_path=cfg, output_dir=out)
+    runner.on(
+        _is_dpkg_deb,
+        lambda spec: _ok(
+            spec,
+            stdout=Path(spec.argv[2])
+            .read_text()
+            .splitlines()[0]
+            .split(":", 1)[1]
+            .strip()
+            .encode()
+            + b"\n",
+        ),
+    )
+    result = KernelBuilder(runner).build(
+        source_dir=src, config_path=cfg, output_dir=out
+    )
     assert not result.has_errors(), result.findings
     assert result.image_deb and result.headers_deb

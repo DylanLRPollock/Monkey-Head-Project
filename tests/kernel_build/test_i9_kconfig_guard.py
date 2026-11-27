@@ -1,4 +1,5 @@
 """Offline tests for the standalone 7.3.4 i9 Kconfig safety gate."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -47,9 +48,7 @@ def test_complete_staged_testing1_passes() -> None:
 
 
 def test_running_debian_nouveau_is_warning() -> None:
-    original = _BASE.replace(
-        "# CONFIG_DRM_NOUVEAU is not set", "CONFIG_DRM_NOUVEAU=m"
-    )
+    original = _BASE.replace("# CONFIG_DRM_NOUVEAU is not set", "CONFIG_DRM_NOUVEAU=m")
     result = guard.check_config(original, "baseline")
     assert result["ok"], result
     assert any("NOUVEAU" in finding for finding in result["warnings"])
@@ -57,9 +56,15 @@ def test_running_debian_nouveau_is_warning() -> None:
 
 @pytest.mark.parametrize(
     "symbol",
-    ("CONFIG_VMD", "CONFIG_BLK_DEV_NVME", "CONFIG_MD_RAID10",
-     "CONFIG_BTRFS_FS", "CONFIG_SATA_AHCI", "CONFIG_MD_RAID0",
-     "CONFIG_MD_RAID1"),
+    (
+        "CONFIG_VMD",
+        "CONFIG_BLK_DEV_NVME",
+        "CONFIG_MD_RAID10",
+        "CONFIG_BTRFS_FS",
+        "CONFIG_SATA_AHCI",
+        "CONFIG_MD_RAID0",
+        "CONFIG_MD_RAID1",
+    ),
 )
 def test_critical_boot_driver_missing_blocks(symbol: str) -> None:
     result = guard.check_config(_BASE.replace(f"{symbol}=m\n", ""), "testing1")
@@ -68,17 +73,13 @@ def test_critical_boot_driver_missing_blocks(symbol: str) -> None:
 
 
 def test_candidate_nouveau_blocks_build() -> None:
-    cfg = _BASE.replace(
-        "# CONFIG_DRM_NOUVEAU is not set", "CONFIG_DRM_NOUVEAU=m"
-    )
+    cfg = _BASE.replace("# CONFIG_DRM_NOUVEAU is not set", "CONFIG_DRM_NOUVEAU=m")
     result = guard.check_config(cfg, "testing1")
     assert not result["ok"]
 
 
 def test_intel_only_can_omit_amdgpu() -> None:
-    cfg = _BASE.replace(
-        "CONFIG_DRM_AMDGPU=m", "# CONFIG_DRM_AMDGPU is not set"
-    )
+    cfg = _BASE.replace("CONFIG_DRM_AMDGPU=m", "# CONFIG_DRM_AMDGPU is not set")
     assert guard.check_config(cfg, "intel-only")["ok"]
     assert not guard.check_config(cfg, "testing1")["ok"]
 
@@ -94,9 +95,7 @@ def test_unexpected_embedded_localversion_is_rejected() -> None:
 
 
 def test_modversions_y_warns_for_first_candidate() -> None:
-    cfg = _BASE.replace(
-        "# CONFIG_MODVERSIONS is not set", "CONFIG_MODVERSIONS=y"
-    )
+    cfg = _BASE.replace("# CONFIG_MODVERSIONS is not set", "CONFIG_MODVERSIONS=y")
     result = guard.check_config(cfg, "testing1")
     assert result["ok"]
     assert any("MODVERSIONS" in finding for finding in result["warnings"])

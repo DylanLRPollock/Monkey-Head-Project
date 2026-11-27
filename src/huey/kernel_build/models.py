@@ -125,8 +125,11 @@ _ISO8601_RE = re.compile(
 
 
 def _is_sha256_hex(value: Any) -> bool:
-    return (isinstance(value, str) and len(value) == 64
-            and all(c in _SHA256_CHARS for c in value))
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(c in _SHA256_CHARS for c in value)
+    )
 
 
 def _require_str(value: Any, field_name: str) -> str:
@@ -144,9 +147,7 @@ def _require_relative_no_escape(value: Any, field_name: str) -> Path:
             raise ValueError(f"{field_name} must be non-empty")
         path = Path(value)
     else:
-        raise TypeError(
-            f"{field_name} must be str or Path, got {type(value).__name__}"
-        )
+        raise TypeError(f"{field_name} must be str or Path, got {type(value).__name__}")
     if path == Path(".") or "\x00" in str(path):
         raise ValueError(f"{field_name} must identify a non-empty destination")
     if path.is_absolute():
@@ -194,14 +195,19 @@ def _require_known_fields(data: Any, cls: type) -> None:
         raise TypeError(f"{cls.__name__}.from_dict keys must be strings")
     unknown = set(data) - known
     if unknown:
-        raise ValueError(f"{cls.__name__}.from_dict unknown fields: {sorted(unknown)!r}")
+        raise ValueError(
+            f"{cls.__name__}.from_dict unknown fields: {sorted(unknown)!r}"
+        )
     required = {
-        f.name for f in fields(cls)
+        f.name
+        for f in fields(cls)
         if f.default is MISSING and f.default_factory is MISSING
     }
     missing = required - set(data)
     if missing:
-        raise ValueError(f"{cls.__name__}.from_dict missing fields: {sorted(missing)!r}")
+        raise ValueError(
+            f"{cls.__name__}.from_dict missing fields: {sorted(missing)!r}"
+        )
 
 
 def _redact_env(env: dict[str, str]) -> dict[str, str]:
@@ -237,7 +243,7 @@ class KernelSource:
     localversion: str = "-huey1"
     baseline_config: str | None = None
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # noqa: C901
         if isinstance(self.source_type, str):
             try:
                 object.__setattr__(self, "source_type", SourceType(self.source_type))
@@ -299,7 +305,7 @@ class GPUIdentity:
     uuid: str | None = None
     compute_capability: str | None = None
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # noqa: C901
         if isinstance(self.vendor, str):
             try:
                 object.__setattr__(self, "vendor", GPUVendor(self.vendor))
@@ -371,7 +377,7 @@ class DriverBaseline:
     cuda_toolkit_version: str | None = None
     dkms_builds: tuple[str, ...] = field(default_factory=tuple)
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # noqa: C901
         _require_str(self.driver_version, "DriverBaseline.driver_version")
         if isinstance(self.module_flavor, str):
             try:
@@ -393,7 +399,9 @@ class DriverBaseline:
         if isinstance(builds, list):
             builds = tuple(builds)
             object.__setattr__(self, "dkms_builds", builds)
-        if not isinstance(builds, tuple) or not all(isinstance(b, str) and b for b in builds):
+        if not isinstance(builds, tuple) or not all(
+            isinstance(b, str) and b for b in builds
+        ):
             raise TypeError("DriverBaseline.dkms_builds must be tuple[str, ...]")
 
     def to_dict(self) -> dict[str, Any]:
@@ -431,7 +439,7 @@ class KernelPlan:
     tool_versions: dict[str, str] = field(default_factory=dict)
     intended_artifacts: tuple[ArtifactKind, ...] = field(default_factory=tuple)
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # noqa: C901
         _require_str(self.profile, "KernelPlan.profile")
         if type(self.build_jobs) is not int or self.build_jobs < 1:
             raise ValueError(
@@ -492,7 +500,9 @@ class KernelPlan:
             workspace=Path(data["workspace"]),
             output_dir=Path(data["output_dir"]),
             build_jobs=data.get("build_jobs", 4),
-            signing_policy=data.get("signing_policy", SigningPolicy.REQUIRED_IF_SECUREBOOT),
+            signing_policy=data.get(
+                "signing_policy", SigningPolicy.REQUIRED_IF_SECUREBOOT
+            ),
             target_release=data.get("target_release"),
             tool_versions=dict(data.get("tool_versions", {})),
             intended_artifacts=tuple(
@@ -524,7 +534,7 @@ class CommandResult:
     stderr_path: str | None = None
     env_summary: dict[str, str] = field(default_factory=dict)
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # noqa: C901
         argv = self.argv
         if isinstance(argv, list):
             argv = tuple(argv)
@@ -539,7 +549,9 @@ class CommandResult:
         if type(self.elapsed_seconds) not in (int, float):
             raise TypeError("CommandResult.elapsed_seconds must be numeric")
         if not math.isfinite(self.elapsed_seconds) or self.elapsed_seconds < 0:
-            raise ValueError("CommandResult.elapsed_seconds must be finite and nonnegative")
+            raise ValueError(
+                "CommandResult.elapsed_seconds must be finite and nonnegative"
+            )
         for name in ("stdout_path", "stderr_path"):
             value = getattr(self, name)
             if value is not None:
@@ -588,7 +600,7 @@ class BuildArtifact:
     size_bytes: int
     kernel_release: str
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # noqa: C901
         if isinstance(self.kind, str):
             try:
                 object.__setattr__(self, "kind", ArtifactKind(self.kind))
@@ -641,7 +653,7 @@ class ValidationFinding:
     message: str
     context: dict[str, Any] = field(default_factory=dict)
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # noqa: C901
         if isinstance(self.severity, str):
             try:
                 object.__setattr__(self, "severity", Severity(self.severity))
@@ -690,7 +702,7 @@ class BuildReport:
     approval: ApprovalState
     generated_at: str  # ISO 8601
 
-    def __post_init__(self) -> None:
+    def __post_init__(self) -> None:  # noqa: C901
         if not isinstance(self.plan, KernelPlan):
             raise TypeError("BuildReport.plan must be a KernelPlan")
         arts = self.artifacts
@@ -715,12 +727,16 @@ class BuildReport:
             try:
                 object.__setattr__(self, "status", BuildStatus(self.status))
             except ValueError as exc:
-                raise ValueError(f"BuildReport.status is invalid: {self.status!r}") from exc
+                raise ValueError(
+                    f"BuildReport.status is invalid: {self.status!r}"
+                ) from exc
         if isinstance(self.approval, str):
             try:
                 object.__setattr__(self, "approval", ApprovalState(self.approval))
             except ValueError as exc:
-                raise ValueError(f"BuildReport.approval is invalid: {self.approval!r}") from exc
+                raise ValueError(
+                    f"BuildReport.approval is invalid: {self.approval!r}"
+                ) from exc
         if not isinstance(self.status, BuildStatus):
             raise TypeError("BuildReport.status must be a BuildStatus")
         if not isinstance(self.approval, ApprovalState):
@@ -734,7 +750,9 @@ class BuildReport:
         try:
             datetime.fromisoformat(self.generated_at.replace("Z", "+00:00"))
         except ValueError as exc:
-            raise ValueError("BuildReport.generated_at is not a valid ISO 8601 timestamp") from exc
+            raise ValueError(
+                "BuildReport.generated_at is not a valid ISO 8601 timestamp"
+            ) from exc
 
     def to_dict(self) -> dict[str, Any]:
         return _dataclass_to_dict(self)

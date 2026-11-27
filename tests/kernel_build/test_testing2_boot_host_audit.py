@@ -1,4 +1,5 @@
 """Host boot-readiness inventory must remain read-only and unprivileged."""
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -14,9 +15,12 @@ def test_pinned_config_and_recovery_inventory() -> None:
     s = _source()
     assert "db6a1f168766546b2e5e612657d928c737cf5561f2319bf069fdad2a1312a6d3" in s
     for term in (
-        "/proc/mdstat", "mdadm --detail --scan", "lsinitramfs",
+        "/proc/mdstat",
+        "mdadm --detail --scan",
+        "lsinitramfs",
         "vmd nvme nvme-core md-mod raid0 raid1 raid10 btrfs i915 amdgpu",
-        "/boot/vmlinuz-*", "/boot/initrd.img-*",
+        "/boot/vmlinuz-*",
+        "/boot/initrd.img-*",
     ):
         assert term in s
 
@@ -35,12 +39,25 @@ def test_no_host_changes() -> None:
     assert '[[ ! -e "$OUT" ]]' in s
     assert "No initramfs generated" in s
     forbidden = (
-        "sudo ", "apt ", "dpkg -i", "make ", "mkinitramfs ",
-        "update-initramfs ", "update-grub ", "grub-install ",
-        "reboot", "modprobe ", "insmod ", "rmmod ", "mdadm --assemble",
-        "mdadm --create", "mount ", "umount ",
+        "sudo ",
+        "apt ",
+        "dpkg -i",
+        "make ",
+        "mkinitramfs ",
+        "update-initramfs ",
+        "update-grub ",
+        "grub-install ",
+        "reboot",
+        "modprobe ",
+        "insmod ",
+        "rmmod ",
+        "mdadm --assemble",
+        "mdadm --create",
+        "mount ",
+        "umount ",
     )
     assert all(
         not line.lstrip().startswith(forbidden)
-        for line in s.splitlines() if not line.lstrip().startswith("#")
+        for line in s.splitlines()
+        if not line.lstrip().startswith("#")
     )

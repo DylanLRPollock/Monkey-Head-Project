@@ -1,4 +1,5 @@
 """Static invariants for a second private, rootless testing2 initramfs."""
+
 from pathlib import Path
 
 SCRIPT = (
@@ -30,7 +31,7 @@ def test_expected_arrays_only_with_private_overlay() -> None:
     assert 'awk -v md3="$MD3"' in source
     assert '--ro-bind "$PRIVATEMD" /etc/mdadm/mdadm.conf' in source
     assert "'RESUME=none" in source
-    assert 'grep -Exq \'RESUME=none\' "$RESUME"' in source
+    assert "grep -Exq 'RESUME=none' \"$RESUME\"" in source
     assert "New image still contains stale md3 ARRAY UUID." in source
     assert "Unexpected embedded ARRAY count." in source
 
@@ -52,10 +53,23 @@ def test_private_namespace_fakeroot_and_integrity() -> None:
 def test_never_touch_installed_kernel_grub_efi_or_mdadm() -> None:
     src = _source()
     forbidden = (
-        "sudo ", "apt ", "dpkg -i", "mkfs", "wipefs", "mdadm --assemble",
-        "mdadm --create", "modprobe ", "insmod ", "rmmod ",
-        "update-initramfs ", "update-grub ", "grub-install ",
-        "reboot", "mount ", "umount ", "rm -rf",
+        "sudo ",
+        "apt ",
+        "dpkg -i",
+        "mkfs",
+        "wipefs",
+        "mdadm --assemble",
+        "mdadm --create",
+        "modprobe ",
+        "insmod ",
+        "rmmod ",
+        "update-initramfs ",
+        "update-grub ",
+        "grub-install ",
+        "reboot",
+        "mount ",
+        "umount ",
+        "rm -rf",
     )
     for line in src.splitlines():
         line = line.lstrip()

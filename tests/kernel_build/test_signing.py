@@ -31,7 +31,6 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import Callable
 
 import pytest
 
@@ -50,7 +49,6 @@ from huey.kernel_build.runner import (
 )
 from huey.kernel_build.signing import (
     MokEnrollmentPlan,
-    SecureBootDetector,
     Signer,
     SigningMaterial,
     SigningResult,
@@ -58,7 +56,6 @@ from huey.kernel_build.signing import (
     evaluate_readiness,
     plan_mok_enrollment,
 )
-
 
 # ===========================================================================
 # FixtureRunner
@@ -70,7 +67,7 @@ class FixtureRunner:
         self._handlers: list = []
         self._calls: list[CommandSpec] = []
 
-    def on(self, matcher, handler) -> "FixtureRunner":
+    def on(self, matcher, handler) -> FixtureRunner:
         self._handlers.append((matcher, handler))
         return self
 
@@ -89,29 +86,55 @@ class FixtureRunner:
 def _ok(spec, *, stdout: bytes = b"", stderr: bytes = b"") -> RunnerResult:
     return RunnerResult(
         command=CommandResult(
-            argv=spec.argv, cwd=str(spec.cwd),
-            returncode=0, elapsed_seconds=0.0,
+            argv=spec.argv,
+            cwd=str(spec.cwd),
+            returncode=0,
+            elapsed_seconds=0.0,
         ),
-        executed=True, dry_run=False, stdout=stdout, stderr=stderr,
+        executed=True,
+        dry_run=False,
+        stdout=stdout,
+        stderr=stderr,
     )
 
 
 def _fail(spec, returncode: int = 1) -> RunnerResult:
     return RunnerResult(
         command=CommandResult(
-            argv=spec.argv, cwd=str(spec.cwd),
-            returncode=returncode, elapsed_seconds=0.0,
+            argv=spec.argv,
+            cwd=str(spec.cwd),
+            returncode=returncode,
+            elapsed_seconds=0.0,
         ),
-        executed=True, dry_run=False, stdout=b"", stderr=b"",
+        executed=True,
+        dry_run=False,
+        stdout=b"",
+        stderr=b"",
     )
 
 
-def _is_mokutil(spec): return spec.argv[0] == "mokutil"
-def _is_sign_file(spec): return str(spec.argv[0]).endswith("sign-file")
-def _is_modinfo(spec): return spec.argv[0] == "modinfo"
-def _is_openssl(spec): return spec.argv[0] == "openssl"
-def _is_sbsign(spec): return spec.argv[0] == "sbsign"
-def _is_sbverify(spec): return spec.argv[0] == "sbverify"
+def _is_mokutil(spec):
+    return spec.argv[0] == "mokutil"
+
+
+def _is_sign_file(spec):
+    return str(spec.argv[0]).endswith("sign-file")
+
+
+def _is_modinfo(spec):
+    return spec.argv[0] == "modinfo"
+
+
+def _is_openssl(spec):
+    return spec.argv[0] == "openssl"
+
+
+def _is_sbsign(spec):
+    return spec.argv[0] == "sbsign"
+
+
+def _is_sbverify(spec):
+    return spec.argv[0] == "sbverify"
 
 
 # ===========================================================================
@@ -186,20 +209,14 @@ def _make_modinfo_handler(mode: str):
 
     Modes: signed, unsigned, wrong_key, malformed_sig_key, missing_sig_key.
     """
+
     def handler(spec: CommandSpec) -> RunnerResult:
         name = Path(spec.argv[1]).name
-        base = (
-            f"filename: {spec.argv[1]}\n"
-            "license: Dual MIT/GPL\n"
-            f"name: {name[:-3]}\n"
-        )
+        base = f"filename: {spec.argv[1]}\nlicense: Dual MIT/GPL\nname: {name[:-3]}\n"
         if mode == "unsigned":
             return _ok(spec, stdout=base.encode())
         if mode == "wrong_key":
-            body = base + (
-                "sig_id: PKCS#7\nsigner: Attacker\n"
-                f"sig_key: {WRONG_FP}\n"
-            )
+            body = base + (f"sig_id: PKCS#7\nsigner: Attacker\nsig_key: {WRONG_FP}\n")
             return _ok(spec, stdout=body.encode())
         if mode == "malformed_sig_key":
             body = base + "sig_id: PKCS#7\nsigner: X\nsig_key: not-a-fingerprint\n"
@@ -213,6 +230,7 @@ def _make_modinfo_handler(mode: str):
             f"sig_key: {EXPECTED_FP}\nsig_hashalgo: sha256\n"
         )
         return _ok(spec, stdout=body.encode())
+
     return handler
 
 
@@ -225,7 +243,7 @@ def _sign_file_appends_signature(spec: CommandSpec) -> RunnerResult:
     return _ok(spec)
 
 
-def _build_runner(
+def _build_runner(  # noqa: C901
     *,
     sb_state: str = "SecureBoot enabled",
     sign_file_mode: str = "ok",  # ok, launch_fails, timeout, nonzero
@@ -252,9 +270,7 @@ def _build_runner(
     def _openssl(spec):
         if openssl_mode != "ok":
             return _fail(spec, returncode=1)
-        return _ok(
-            spec, stdout=f"SHA256 Fingerprint={cert_fingerprint}\n".encode()
-        )
+        return _ok(spec, stdout=f"SHA256 Fingerprint={cert_fingerprint}\n".encode())
 
     def _sbsign(spec):
         if sbsign_mode == "launch_fails":
@@ -284,19 +300,17 @@ def _build_runner(
     return r
 
 
-def _setup_signing(tmp_path: Path, *, n_modules: int = 2) -> tuple[
-    Path, Path, dict, Path
-]:
+def _setup_signing(
+    tmp_path: Path, *, n_modules: int = 2
+) -> tuple[Path, Path, dict, Path]:
     """Return (headers, stage_dir, artifacts, output_dir)."""
-    material = _make_material(tmp_path)
+    _make_material(tmp_path)
     headers = _make_headers(tmp_path)
     output_dir = tmp_path / "out"
     stage = output_dir / "nvidia-580.196.07-7.2.15-huey1"
     stage.mkdir(parents=True)
     modules = ("nvidia", "nvidia-uvm")[:n_modules]
-    artifacts = {
-        name: _make_module_artifact(stage, name) for name in modules
-    }
+    artifacts = {name: _make_module_artifact(stage, name) for name in modules}
     return headers, stage, artifacts, output_dir
 
 
@@ -317,12 +331,8 @@ def _setup_signing(tmp_path: Path, *, n_modules: int = 2) -> tuple[
         (b"weird output\n", SecureBootState.UNKNOWN),
     ],
 )
-def test_detect_secure_boot_states(
-    stdout: bytes, expected: SecureBootState
-) -> None:
-    runner = FixtureRunner().on(
-        _is_mokutil, lambda s: _ok(s, stdout=stdout)
-    )
+def test_detect_secure_boot_states(stdout: bytes, expected: SecureBootState) -> None:
+    runner = FixtureRunner().on(_is_mokutil, lambda s: _ok(s, stdout=stdout))
     state, finding = detect_secure_boot(runner)
     assert state == expected
     if expected == SecureBootState.UNKNOWN:
@@ -396,8 +406,11 @@ def test_missing_key_errors(tmp_path: Path) -> None:
     out = tmp_path / "out"
     out.mkdir()
     signed, findings, ok = Signer(_build_runner()).sign_modules(
-        modules={}, module_dir=out, material=material,
-        headers_dir=headers, output_dir=out,
+        modules={},
+        module_dir=out,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
     )
     assert ok is False
     assert signed == {}
@@ -409,9 +422,12 @@ def test_missing_cert_errors(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
     out = tmp_path / "out"
     out.mkdir()
-    signed, findings, ok = Signer(_build_runner()).sign_modules(
-        modules={}, module_dir=out, material=material,
-        headers_dir=headers, output_dir=out,
+    _signed, findings, ok = Signer(_build_runner()).sign_modules(
+        modules={},
+        module_dir=out,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
     )
     assert ok is False
     assert any(f.code == "SIGNING_CERT_MISSING" for f in findings)
@@ -422,9 +438,12 @@ def test_both_missing_errors(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
     out = tmp_path / "out"
     out.mkdir()
-    signed, findings, ok = Signer(_build_runner()).sign_modules(
-        modules={}, module_dir=out, material=material,
-        headers_dir=headers, output_dir=out,
+    _signed, findings, ok = Signer(_build_runner()).sign_modules(
+        modules={},
+        module_dir=out,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
     )
     assert ok is False
     codes = {f.code for f in findings}
@@ -441,8 +460,12 @@ def test_sign_file_argv_shape(tmp_path: Path) -> None:
     material = _make_material(tmp_path)
     runner = _build_runner()
     Signer(runner).sign_modules(
-        modules=artifacts, module_dir=stage, material=material,
-        headers_dir=headers, output_dir=out, pin="pin-1234",
+        modules=artifacts,
+        module_dir=stage,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
+        pin="pin-1234",
         hash_algo="sha256",
     )
     sign_calls = [c for c in runner.calls if _is_sign_file(c)]
@@ -463,8 +486,12 @@ def test_sign_file_pin_passed_via_env(tmp_path: Path) -> None:
     material = _make_material(tmp_path)
     runner = _build_runner()
     Signer(runner).sign_modules(
-        modules=artifacts, module_dir=stage, material=material,
-        headers_dir=headers, output_dir=out, pin="pin-1234",
+        modules=artifacts,
+        module_dir=stage,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
+        pin="pin-1234",
     )
     sign_calls = [c for c in runner.calls if _is_sign_file(c)]
     assert sign_calls
@@ -476,8 +503,12 @@ def test_sign_file_pin_absent_when_not_supplied(tmp_path: Path) -> None:
     material = _make_material(tmp_path)
     runner = _build_runner()
     Signer(runner).sign_modules(
-        modules=artifacts, module_dir=stage, material=material,
-        headers_dir=headers, output_dir=out, pin=None,
+        modules=artifacts,
+        module_dir=stage,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
+        pin=None,
     )
     sign_calls = [c for c in runner.calls if _is_sign_file(c)]
     assert sign_calls
@@ -497,16 +528,15 @@ def test_sign_file_pin_absent_when_not_supplied(tmp_path: Path) -> None:
         ("nonzero", "SIGN_FILE_FAILED"),
     ],
 )
-def test_sign_file_failure_modes(
-    tmp_path: Path, mode: str, expected_code: str
-) -> None:
+def test_sign_file_failure_modes(tmp_path: Path, mode: str, expected_code: str) -> None:
     headers, stage, artifacts, out = _setup_signing(tmp_path)
     material = _make_material(tmp_path)
-    signed, findings, ok = Signer(
-        _build_runner(sign_file_mode=mode)
-    ).sign_modules(
-        modules=artifacts, module_dir=stage, material=material,
-        headers_dir=headers, output_dir=out,
+    signed, findings, ok = Signer(_build_runner(sign_file_mode=mode)).sign_modules(
+        modules=artifacts,
+        module_dir=stage,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
     )
     assert ok is False
     codes = {f.code for f in findings}
@@ -524,12 +554,15 @@ def test_happy_path_signs_and_verifies(tmp_path: Path) -> None:
     headers, stage, artifacts, out = _setup_signing(tmp_path)
     material = _make_material(tmp_path)
     signed, findings, ok = Signer(_build_runner()).sign_modules(
-        modules=artifacts, module_dir=stage, material=material,
-        headers_dir=headers, output_dir=out,
+        modules=artifacts,
+        module_dir=stage,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
     )
     assert ok is True, findings
     assert set(signed) == set(artifacts)
-    for name, art in signed.items():
+    for _name, art in signed.items():
         assert art.kernel_release == "7.2.15-huey1"
         assert len(art.sha256) == 64
         assert not Path(art.path).is_absolute()
@@ -542,14 +575,17 @@ def test_signed_module_sha_updated(tmp_path: Path) -> None:
     original_shas = {n: a.sha256 for n, a in artifacts.items()}
 
     signed, _, ok = Signer(_build_runner()).sign_modules(
-        modules=artifacts, module_dir=stage, material=material,
-        headers_dir=headers, output_dir=out,
+        modules=artifacts,
+        module_dir=stage,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
     )
     assert ok is True
     for name, art in signed.items():
-        assert art.sha256 != original_shas[name], (
-            f"{name}: SHA did not change after signing"
-        )
+        assert (
+            art.sha256 != original_shas[name]
+        ), f"{name}: SHA did not change after signing"
         # And matches the file on disk after signing.
         original = stage / Path(art.path).name
         on_disk = out / art.path
@@ -560,11 +596,12 @@ def test_signed_module_sha_updated(tmp_path: Path) -> None:
 def test_unsigned_module_rejected(tmp_path: Path) -> None:
     headers, stage, artifacts, out = _setup_signing(tmp_path)
     material = _make_material(tmp_path)
-    signed, findings, ok = Signer(
-        _build_runner(modinfo_mode="unsigned")
-    ).sign_modules(
-        modules=artifacts, module_dir=stage, material=material,
-        headers_dir=headers, output_dir=out,
+    signed, findings, ok = Signer(_build_runner(modinfo_mode="unsigned")).sign_modules(
+        modules=artifacts,
+        module_dir=stage,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
     )
     assert ok is False
     assert any(f.code == "MODULE_UNSIGNED" for f in findings)
@@ -574,11 +611,14 @@ def test_unsigned_module_rejected(tmp_path: Path) -> None:
 def test_missing_sig_key_rejected(tmp_path: Path) -> None:
     headers, stage, artifacts, out = _setup_signing(tmp_path)
     material = _make_material(tmp_path)
-    signed, findings, ok = Signer(
+    _signed, findings, ok = Signer(
         _build_runner(modinfo_mode="missing_sig_key")
     ).sign_modules(
-        modules=artifacts, module_dir=stage, material=material,
-        headers_dir=headers, output_dir=out,
+        modules=artifacts,
+        module_dir=stage,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
     )
     assert ok is False
     assert any(f.code == "MODULE_SIG_KEY_MISSING" for f in findings)
@@ -587,11 +627,14 @@ def test_missing_sig_key_rejected(tmp_path: Path) -> None:
 def test_malformed_sig_key_rejected(tmp_path: Path) -> None:
     headers, stage, artifacts, out = _setup_signing(tmp_path)
     material = _make_material(tmp_path)
-    signed, findings, ok = Signer(
+    _signed, findings, ok = Signer(
         _build_runner(modinfo_mode="malformed_sig_key")
     ).sign_modules(
-        modules=artifacts, module_dir=stage, material=material,
-        headers_dir=headers, output_dir=out,
+        modules=artifacts,
+        module_dir=stage,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
     )
     assert ok is False
     assert any(f.code == "MODULE_SIG_KEY_MALFORMED" for f in findings)
@@ -600,11 +643,14 @@ def test_malformed_sig_key_rejected(tmp_path: Path) -> None:
 def test_wrong_key_signature_is_critical(tmp_path: Path) -> None:
     headers, stage, artifacts, out = _setup_signing(tmp_path)
     material = _make_material(tmp_path)
-    signed, findings, ok = Signer(
+    _signed, findings, ok = Signer(
         _build_runner(modinfo_mode="wrong_key")
     ).sign_modules(
-        modules=artifacts, module_dir=stage, material=material,
-        headers_dir=headers, output_dir=out,
+        modules=artifacts,
+        module_dir=stage,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
     )
     assert ok is False
     critical = [f for f in findings if f.code == "MODULE_SIGNED_BY_WRONG_KEY"]
@@ -615,11 +661,12 @@ def test_wrong_key_signature_is_critical(tmp_path: Path) -> None:
 def test_fingerprint_unavailable_rejected(tmp_path: Path) -> None:
     headers, stage, artifacts, out = _setup_signing(tmp_path)
     material = _make_material(tmp_path)
-    signed, findings, ok = Signer(
-        _build_runner(openssl_mode="fail")
-    ).sign_modules(
-        modules=artifacts, module_dir=stage, material=material,
-        headers_dir=headers, output_dir=out,
+    signed, findings, ok = Signer(_build_runner(openssl_mode="fail")).sign_modules(
+        modules=artifacts,
+        module_dir=stage,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
     )
     assert ok is False
     assert any(f.code == "CERT_FINGERPRINT_UNAVAILABLE" for f in findings)
@@ -638,7 +685,9 @@ def test_sign_kernel_image_happy_path(tmp_path: Path) -> None:
     out = tmp_path / "out"
     out.mkdir()
     artifact, finding = Signer(_build_runner()).sign_kernel_image(
-        kernel_image=kernel, material=material, output_dir=out,
+        kernel_image=kernel,
+        material=material,
+        output_dir=out,
     )
     assert artifact is not None, finding
     assert finding is None
@@ -653,18 +702,16 @@ def test_sign_kernel_image_happy_path(tmp_path: Path) -> None:
         ("nonzero", "SBSIGN_FAILED"),
     ],
 )
-def test_sbsign_failure_modes(
-    tmp_path: Path, mode: str, expected_code: str
-) -> None:
+def test_sbsign_failure_modes(tmp_path: Path, mode: str, expected_code: str) -> None:
     material = _make_material(tmp_path)
     kernel = tmp_path / "vmlinuz"
     kernel.write_bytes(b"k")
     out = tmp_path / "out"
     out.mkdir()
-    artifact, finding = Signer(
-        _build_runner(sbsign_mode=mode)
-    ).sign_kernel_image(
-        kernel_image=kernel, material=material, output_dir=out,
+    artifact, finding = Signer(_build_runner(sbsign_mode=mode)).sign_kernel_image(
+        kernel_image=kernel,
+        material=material,
+        output_dir=out,
     )
     assert artifact is None
     assert finding is not None
@@ -680,7 +727,9 @@ def test_sbverify_failure_errors(tmp_path: Path) -> None:
     artifact, finding = Signer(
         _build_runner(sbverify_mode="failure")
     ).sign_kernel_image(
-        kernel_image=kernel, material=material, output_dir=out,
+        kernel_image=kernel,
+        material=material,
+        output_dir=out,
     )
     assert artifact is None
     assert finding is not None
@@ -697,7 +746,9 @@ def test_sbverify_unavailable_warns_but_keeps_artifact(tmp_path: Path) -> None:
     artifact, finding = Signer(
         _build_runner(sbverify_mode="unavailable")
     ).sign_kernel_image(
-        kernel_image=kernel, material=material, output_dir=out,
+        kernel_image=kernel,
+        material=material,
+        output_dir=out,
     )
     assert artifact is not None
     assert finding is not None
@@ -711,7 +762,8 @@ def test_sign_kernel_image_missing_file(tmp_path: Path) -> None:
     out.mkdir()
     artifact, finding = Signer(_build_runner()).sign_kernel_image(
         kernel_image=tmp_path / "nonexistent",
-        material=material, output_dir=out,
+        material=material,
+        output_dir=out,
     )
     assert artifact is None
     assert finding is not None
@@ -725,7 +777,9 @@ def test_sign_kernel_image_missing_material(tmp_path: Path) -> None:
     out = tmp_path / "out"
     out.mkdir()
     artifact, finding = Signer(_build_runner()).sign_kernel_image(
-        kernel_image=kernel, material=material, output_dir=out,
+        kernel_image=kernel,
+        material=material,
+        output_dir=out,
     )
     assert artifact is None
     assert finding is not None
@@ -739,8 +793,11 @@ def test_sign_kernel_image_missing_material(tmp_path: Path) -> None:
 
 def _signed_artifact(name: str = "nvidia") -> BuildArtifact:
     return BuildArtifact(
-        kind=ArtifactKind.NVIDIA_MODULE, path=f"stage/{name}.ko",
-        sha256="a" * 64, size_bytes=100, kernel_release="7.2.15-huey1",
+        kind=ArtifactKind.NVIDIA_MODULE,
+        path=f"stage/{name}.ko",
+        sha256="a" * 64,
+        size_bytes=100,
+        kernel_release="7.2.15-huey1",
     )
 
 
@@ -775,7 +832,9 @@ def test_readiness_disabled_without_requirement_passes() -> None:
         module_findings=[],
     )
     assert ready is True
-    blocking = [f for f in findings if f.severity in (Severity.ERROR, Severity.CRITICAL)]
+    blocking = [
+        f for f in findings if f.severity in (Severity.ERROR, Severity.CRITICAL)
+    ]
     assert not blocking
 
 
@@ -872,9 +931,13 @@ def test_dry_run_no_io_no_subprocess(tmp_path: Path) -> None:
     headers, stage, artifacts, out = _setup_signing(tmp_path)
     material = _make_material(tmp_path)
     runner = FixtureRunner()  # zero handlers
-    signed, findings, ok = Signer(runner).sign_modules(
-        modules=artifacts, module_dir=stage, material=material,
-        headers_dir=headers, output_dir=out, dry_run=True,
+    _signed, findings, _ok = Signer(runner).sign_modules(
+        modules=artifacts,
+        module_dir=stage,
+        material=material,
+        headers_dir=headers,
+        output_dir=out,
+        dry_run=True,
     )
     assert runner.calls == ()
     assert any(f.code == "SIGNING_DRY_RUN" for f in findings)

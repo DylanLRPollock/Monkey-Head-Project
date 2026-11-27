@@ -32,9 +32,9 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 from huey.kernel_build.models import (
     BuildArtifact,
@@ -76,17 +76,17 @@ _FORBIDDEN_INITRAMFS_MODULES: tuple[str, ...] = ("nouveau",)
 #: runbook). Returned in ``VerificationResult.host_checks_required`` when
 #: ``boot_ready=True`` so the operator sees exactly what remains.
 HOST_CHECKS: tuple[str, ...] = (
-    "boot_and_storage",       # custom kernel boots, root fs mounted
-    "grub_entry",             # bootloader entry present, rollback possible
-    "secure_boot_trust",      # signed modules load under Secure Boot / MOK
-    "amdgpu_display",         # RX 570 display path intact
-    "nvidia_module_load",     # proprietary nvidia / nvidia-uvm loaded
-    "nvidia_nvml",            # nvidia-smi reports the V100 by PCI/UUID
-    "cuda_smoke",             # small CUDA workload runs on the V100
-    "ollama",                 # Ollama selects the V100
-    "comfyui",                # ComfyUI selects the V100
-    "steam_proton_vulkan",    # opt-in Vulkan wrapper still works
-    "thermal",                # idle and load temperatures within limits
+    "boot_and_storage",  # custom kernel boots, root fs mounted
+    "grub_entry",  # bootloader entry present, rollback possible
+    "secure_boot_trust",  # signed modules load under Secure Boot / MOK
+    "amdgpu_display",  # RX 570 display path intact
+    "nvidia_module_load",  # proprietary nvidia / nvidia-uvm loaded
+    "nvidia_nvml",  # nvidia-smi reports the V100 by PCI/UUID
+    "cuda_smoke",  # small CUDA workload runs on the V100
+    "ollama",  # Ollama selects the V100
+    "comfyui",  # ComfyUI selects the V100
+    "steam_proton_vulkan",  # opt-in Vulkan wrapper still works
+    "thermal",  # idle and load temperatures within limits
 )
 
 
@@ -217,8 +217,7 @@ class ReleaseVerifier:
             findings.extend(self._verify_hashes(ctx))
             findings.extend(self._verify_lockfile(ctx))
             blocking = [
-                f for f in findings
-                if f.severity in (Severity.ERROR, Severity.CRITICAL)
+                f for f in findings if f.severity in (Severity.ERROR, Severity.CRITICAL)
             ]
             return VerificationResult(
                 findings=tuple(findings),
@@ -242,10 +241,13 @@ class ReleaseVerifier:
 
         # 2. Module metadata (vermagic for all, version for nvidia)
         if not ctx.required_modules:
-            findings.append(ValidationFinding(
-                severity=Severity.ERROR, code="REQUIRED_MODULES_MISSING",
-                message="At least one required module must be verified.",
-            ))
+            findings.append(
+                ValidationFinding(
+                    severity=Severity.ERROR,
+                    code="REQUIRED_MODULES_MISSING",
+                    message="At least one required module must be verified.",
+                )
+            )
         findings.extend(self._verify_module_metadata(ctx))
 
         # 3. Dependency closure
@@ -279,7 +281,10 @@ class ReleaseVerifier:
         findings.extend(self._verify_secure_boot_compat(ctx))
 
         # 6. Signing
-        if ctx.require_signed_modules or ctx.secure_boot_state == SecureBootState.ENABLED:
+        if (
+            ctx.require_signed_modules
+            or ctx.secure_boot_state == SecureBootState.ENABLED
+        ):
             findings.extend(self._verify_signing(ctx))
 
         # 7. Manifest hashes
@@ -289,8 +294,7 @@ class ReleaseVerifier:
         findings.extend(self._verify_lockfile(ctx))
 
         blocking = [
-            f for f in findings
-            if f.severity in (Severity.ERROR, Severity.CRITICAL)
+            f for f in findings if f.severity in (Severity.ERROR, Severity.CRITICAL)
         ]
         static_ok = not blocking
         boot_ready = static_ok
@@ -314,9 +318,7 @@ class ReleaseVerifier:
 
     # ---- package verification -------------------------------------------
 
-    def _verify_packages(
-        self, ctx: VerificationContext
-    ) -> list[ValidationFinding]:
+    def _verify_packages(self, ctx: VerificationContext) -> list[ValidationFinding]:
         findings: list[ValidationFinding] = []
         debs = sorted(ctx.release_dir.rglob("*.deb"))
         if not debs:
@@ -429,7 +431,7 @@ class ReleaseVerifier:
 
     # ---- dependency closure ---------------------------------------------
 
-    def _verify_module_dependencies(
+    def _verify_module_dependencies(  # noqa: C901
         self, ctx: VerificationContext
     ) -> list[ValidationFinding]:
         findings: list[ValidationFinding] = []
@@ -501,9 +503,7 @@ class ReleaseVerifier:
 
     # ---- initramfs -------------------------------------------------------
 
-    def _verify_initramfs(
-        self, ctx: VerificationContext
-    ) -> list[ValidationFinding]:
+    def _verify_initramfs(self, ctx: VerificationContext) -> list[ValidationFinding]:
         findings: list[ValidationFinding] = []
         archive = Path(ctx.initramfs_path)
         if not archive.is_file():
@@ -552,8 +552,7 @@ class ReleaseVerifier:
                         severity=Severity.ERROR,
                         code="INITRAMFS_REQUIRED_MODULE_MISSING",
                         message=(
-                            f"Required module {mod!r} not present in "
-                            f"{archive.name}."
+                            f"Required module {mod!r} not present in {archive.name}."
                         ),
                         context={"module": mod},
                     )
@@ -580,7 +579,10 @@ class ReleaseVerifier:
         self, ctx: VerificationContext
     ) -> list[ValidationFinding]:
         findings: list[ValidationFinding] = []
-        if ctx.secure_boot_state == SecureBootState.ENABLED and not ctx.require_signed_modules:
+        if (
+            ctx.secure_boot_state == SecureBootState.ENABLED
+            and not ctx.require_signed_modules
+        ):
             findings.append(
                 ValidationFinding(
                     severity=Severity.ERROR,
@@ -607,9 +609,7 @@ class ReleaseVerifier:
 
     # ---- signing ---------------------------------------------------------
 
-    def _verify_signing(
-        self, ctx: VerificationContext
-    ) -> list[ValidationFinding]:
+    def _verify_signing(self, ctx: VerificationContext) -> list[ValidationFinding]:
         findings: list[ValidationFinding] = []
         if not ctx.expected_cert_fingerprint:
             findings.append(
@@ -675,31 +675,35 @@ class ReleaseVerifier:
 
     # ---- hash verification ----------------------------------------------
 
-    def _verify_hashes(
-        self, ctx: VerificationContext
-    ) -> list[ValidationFinding]:
+    def _verify_hashes(self, ctx: VerificationContext) -> list[ValidationFinding]:
         findings: list[ValidationFinding] = []
         if not ctx.manifest_artifacts:
-            findings.append(ValidationFinding(
-                severity=Severity.ERROR, code="MANIFEST_ARTIFACTS_MISSING",
-                message="No hashes were provided; artifact verification is incomplete.",
-            ))
+            findings.append(
+                ValidationFinding(
+                    severity=Severity.ERROR,
+                    code="MANIFEST_ARTIFACTS_MISSING",
+                    message="No hashes were provided; artifact verification is incomplete.",
+                )
+            )
         for art in ctx.manifest_artifacts:
             full = ctx.release_dir / art.path
-            if full.is_symlink() or not full.resolve().is_relative_to(ctx.release_dir.resolve()):
-                findings.append(ValidationFinding(
-                    severity=Severity.ERROR, code="ARTIFACT_PATH_UNSAFE",
-                    message=f"Artifact path escapes release directory: {art.path}",
-                ))
+            if full.is_symlink() or not full.resolve().is_relative_to(
+                ctx.release_dir.resolve()
+            ):
+                findings.append(
+                    ValidationFinding(
+                        severity=Severity.ERROR,
+                        code="ARTIFACT_PATH_UNSAFE",
+                        message=f"Artifact path escapes release directory: {art.path}",
+                    )
+                )
                 continue
             if not full.is_file():
                 findings.append(
                     ValidationFinding(
                         severity=Severity.ERROR,
                         code="ARTIFACT_FILE_MISSING",
-                        message=(
-                            f"Artifact {art.path} not found at {full}."
-                        ),
+                        message=(f"Artifact {art.path} not found at {full}."),
                         context={"path": str(art.path)},
                     )
                 )
@@ -721,8 +725,7 @@ class ReleaseVerifier:
                         severity=Severity.CRITICAL,
                         code="ARTIFACT_SHA256_MISMATCH",
                         message=(
-                            f"{art.path}: SHA-256 {actual} != expected "
-                            f"{art.sha256}."
+                            f"{art.path}: SHA-256 {actual} != expected {art.sha256}."
                         ),
                         context={
                             "path": str(art.path),
@@ -735,9 +738,7 @@ class ReleaseVerifier:
 
     # ---- lockfile --------------------------------------------------------
 
-    def _verify_lockfile(
-        self, ctx: VerificationContext
-    ) -> list[ValidationFinding]:
+    def _verify_lockfile(self, ctx: VerificationContext) -> list[ValidationFinding]:
         findings: list[ValidationFinding] = []
         if ctx.lockfile_path is None:
             findings.append(
@@ -753,15 +754,14 @@ class ReleaseVerifier:
             return findings
         try:
             from huey.kernel_build.source_manager import SourceLock
+
             lock = SourceLock.load_from_path(Path(ctx.lockfile_path))
-        except Exception as exc:  # noqa: BLE001 - any load failure is a finding
+        except Exception as exc:
             findings.append(
                 ValidationFinding(
                     severity=Severity.ERROR,
                     code="LOCKFILE_INVALID",
-                    message=(
-                        f"Could not load {ctx.lockfile_path}: {exc}"
-                    ),
+                    message=(f"Could not load {ctx.lockfile_path}: {exc}"),
                 )
             )
             return findings
@@ -799,7 +799,7 @@ class ReleaseVerifier:
         for line in text.splitlines():
             stripped = line.strip()
             if stripped.startswith(prefix):
-                value = stripped[len(prefix):].strip()
+                value = stripped[len(prefix) :].strip()
                 return value or None
         # `dpkg-deb --field package.deb Package` normally prints only the
         # value, not `Package: value` (which fake runners sometimes emit).
@@ -867,14 +867,10 @@ class ReleaseVerifier:
         return h.hexdigest()
 
     @staticmethod
-    def _early_error(
-        *, code: str, message: str, dry_run: bool
-    ) -> VerificationResult:
+    def _early_error(*, code: str, message: str, dry_run: bool) -> VerificationResult:
         return VerificationResult(
             findings=(
-                ValidationFinding(
-                    severity=Severity.ERROR, code=code, message=message
-                ),
+                ValidationFinding(severity=Severity.ERROR, code=code, message=message),
             ),
             boot_ready=False,
             static_checks_passed=False,

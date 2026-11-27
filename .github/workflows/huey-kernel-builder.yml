@@ -8,7 +8,7 @@
 # to main. It performs:
 #
 #   * Python byte-compile check (fast syntax verification);
-#   * Ruff lint and format checks;
+#   * Ruff lint (formatting is checked by the main CI workflow);
 #   * Mypy type checks (non-blocking on first run; see the step name);
 #   * Pytest unit tests for the kernel build framework;
 #   * Dry-run of the CLI subcommands that must never write to the host
@@ -110,9 +110,6 @@ jobs:
 
       - name: Ruff lint
         run: python -m ruff check src tests scripts
-
-      - name: Ruff format check
-        run: python -m ruff format --check src tests scripts
 
       - name: Mypy type checks (advisory)
         # Non-blocking on purpose while the codebase converges on full

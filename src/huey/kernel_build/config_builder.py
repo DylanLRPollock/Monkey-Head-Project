@@ -31,9 +31,9 @@ from __future__ import annotations
 
 import logging
 import re
-from dataclasses import dataclass, field
+from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
 
 from huey.kernel_build.models import Severity, ValidationFinding
 from huey.kernel_build.policy import check_path_destination_safe
@@ -141,7 +141,7 @@ class ConfigBuilder:
 
     # ---- public API ------------------------------------------------------
 
-    def build(
+    def build(  # noqa: C901
         self,
         source_dir: Path,
         base_config_path: Path,
@@ -183,7 +183,8 @@ class ConfigBuilder:
         # A separate policy gate must approve any privileged host installation.
         output_dir = Path(output_dir)
         destination_findings = check_path_destination_safe(
-            output_dir, workspace_root=workspace_root,
+            output_dir,
+            workspace_root=workspace_root,
         )
         if destination_findings:
             return self._error_result(
@@ -257,8 +258,13 @@ class ConfigBuilder:
             fragment_paths.append(frag_path)
 
         # Input config files must never overlap either generated output file.
-        output_files = {output_resolved / ".config", output_resolved / "config-delta.txt"}
-        if base_config_path in output_files or any(f in output_files for f in fragment_paths):
+        output_files = {
+            output_resolved / ".config",
+            output_resolved / "config-delta.txt",
+        }
+        if base_config_path in output_files or any(
+            f in output_files for f in fragment_paths
+        ):
             return self._error_result(
                 code="OUTPUT_OVERWRITES_INPUT",
                 message="Configuration output would overwrite a base or fragment input.",
@@ -402,20 +408,14 @@ class ConfigBuilder:
         if not make_result.succeeded:
             return self._error_result(
                 code="OLDDEFCONFIG_FAILED",
-                message=(
-                    f"make olddefconfig exited "
-                    f"{make_result.command.returncode}"
-                ),
+                message=(f"make olddefconfig exited {make_result.command.returncode}"),
             )
 
         # 10. Parse effective config.
         if not effective_path.is_file():
             return self._error_result(
                 code="EFFECTIVE_CONFIG_MISSING",
-                message=(
-                    "olddefconfig finished but did not produce "
-                    f"{effective_path}"
-                ),
+                message=(f"olddefconfig finished but did not produce {effective_path}"),
             )
         if effective_path.is_symlink() or delta_path.is_symlink():
             return self._error_result(
@@ -487,9 +487,7 @@ class ConfigBuilder:
             delta=ConfigDelta(added=(), removed=(), changed=()),
             overrides=(),
             findings=(
-                ValidationFinding(
-                    severity=Severity.ERROR, code=code, message=message
-                ),
+                ValidationFinding(severity=Severity.ERROR, code=code, message=message),
             ),
             dry_run=False,
         )
@@ -510,17 +508,13 @@ class ConfigBuilder:
                 symbols[m.group(1)] = None
         return ParsedConfig(symbols=symbols)
 
-    def _parse_override_warnings(
-        self, text: str
-    ) -> tuple[ConfigOverride, ...]:
+    def _parse_override_warnings(self, text: str) -> tuple[ConfigOverride, ...]:
         overrides: list[ConfigOverride] = []
         for raw in text.splitlines():
             m = _OVERRIDE_WARN_RE.match(raw.strip())
             if m:
                 overrides.append(
-                    ConfigOverride(
-                        symbol=m.group(1), fragment=m.group(2).strip()
-                    )
+                    ConfigOverride(symbol=m.group(1), fragment=m.group(2).strip())
                 )
         return tuple(overrides)
 
@@ -530,12 +524,8 @@ class ConfigBuilder:
         base_set = base.set_symbols
         eff_set = effective.set_symbols
 
-        added = tuple(
-            sorted((k, v) for k, v in eff_set.items() if k not in base_set)
-        )
-        removed = tuple(
-            sorted((k, v) for k, v in base_set.items() if k not in eff_set)
-        )
+        added = tuple(sorted((k, v) for k, v in eff_set.items() if k not in base_set))
+        removed = tuple(sorted((k, v) for k, v in base_set.items() if k not in eff_set))
         changed = tuple(
             sorted(
                 (k, base_set[k], eff_set[k])

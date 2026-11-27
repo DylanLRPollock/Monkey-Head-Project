@@ -24,10 +24,10 @@ Design rules
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
-from typing import Sequence
 from urllib.parse import urlparse
 
 from huey.kernel_build.models import (
@@ -44,15 +44,15 @@ from huey.kernel_build.models import (
 )
 
 __all__ = [
-    "ApprovalRequiredError",
-    "OperationKind",
     "POLICY_V100_WORKSTATION",
-    "PolicyDecision",
-    "PolicyViolation",
     "PROTECTED_HOST_PATHS",
-    "SecureBootState",
     "TRUSTED_SOURCE_HOSTS",
     "VOLTA_COMPUTE_CAPABILITY",
+    "ApprovalRequiredError",
+    "OperationKind",
+    "PolicyDecision",
+    "PolicyViolation",
+    "SecureBootState",
     "assert_allowed",
     "check_cuda_compatibility_claim",
     "check_kernel_release",
@@ -334,7 +334,7 @@ def check_kernel_release(
     return findings
 
 
-def check_path_destination_safe(
+def check_path_destination_safe(  # noqa: C901
     path: str | Path,
     *,
     workspace_root: str | Path | None = None,
@@ -352,12 +352,14 @@ def check_path_destination_safe(
     findings: list[ValidationFinding] = []
     p = Path(path)
     if not str(path).strip() or ".." in p.parts or "\x00" in str(p):
-        return [ValidationFinding(
-            severity=Severity.ERROR,
-            code="PATH_ESCAPES_WORKSPACE",
-            message=f"Unsafe destination path: {redact_path(p)}",
-            context={"path": redact_path(p)},
-        )]
+        return [
+            ValidationFinding(
+                severity=Severity.ERROR,
+                code="PATH_ESCAPES_WORKSPACE",
+                message=f"Unsafe destination path: {redact_path(p)}",
+                context={"path": redact_path(p)},
+            )
+        ]
     # All relative locations are rooted in the selected workspace, never in
     # the process working directory (which may be unrelated, e.g. under CI).
     base = Path(workspace_root) if workspace_root is not None else Path.cwd()
@@ -374,7 +376,9 @@ def check_path_destination_safe(
             )
         ]
 
-    protected = tuple(protected_paths) if protected_paths is not None else PROTECTED_HOST_PATHS
+    protected = (
+        tuple(protected_paths) if protected_paths is not None else PROTECTED_HOST_PATHS
+    )
     protected_roots: list[Path] = []
     for entry in protected:
         entry_path = Path(entry)
@@ -414,13 +418,14 @@ def check_path_destination_safe(
         try:
             root = Path(workspace_root).resolve(strict=False)
         except (OSError, RuntimeError) as exc:
-            return findings + [
+            return [
+                *findings,
                 ValidationFinding(
                     severity=Severity.ERROR,
                     code="WORKSPACE_UNRESOLVABLE",
                     message=f"Could not resolve workspace root {workspace_root}: {exc}",
                     context={"workspace": str(workspace_root)},
-                )
+                ),
             ]
         try:
             resolved.relative_to(root)
@@ -509,8 +514,7 @@ def check_signing_readiness(
     ):
         need_signing = True
         reason = (
-            "Secure Boot enabled and "
-            "signing.required_policy=required_if_secureboot"
+            "Secure Boot enabled and signing.required_policy=required_if_secureboot"
         )
 
     if need_signing:
@@ -657,7 +661,8 @@ def evaluate_operation(
     requires_approval = kind == OperationKind.PRIVILEGED_INSTALL
     blocking = any(_is_blocking(v) for v in violations)
     return PolicyDecision(
-        allowed=not blocking and (not requires_approval or approval_state == ApprovalState.APPROVED),
+        allowed=not blocking
+        and (not requires_approval or approval_state == ApprovalState.APPROVED),
         requires_approval=requires_approval,
         violations=tuple(violations),
         findings=tuple(findings),
@@ -713,9 +718,7 @@ def evaluate_build_plan(
 
     violations.extend(check_source_resolved(plan.source))
     violations.extend(
-        check_module_flavor_for_volta(
-            plan.driver, gpu_identities, profile=plan.profile
-        )
+        check_module_flavor_for_volta(plan.driver, gpu_identities, profile=plan.profile)
     )
     for finding in check_signing_readiness(
         plan,

@@ -22,8 +22,6 @@ import sys
 import textwrap
 from pathlib import Path
 
-import pytest
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LAUNCHER = REPO_ROOT / "scripts" / "kernel" / "huey_kernel.py"
 PYTHON = sys.executable
@@ -51,29 +49,26 @@ def _make_mini_repo(tmp_path: Path) -> Path:
     return repo
 
 
-def _install_fake_cli(
-    repo: Path,
-    body: str = textwrap.dedent(
-        """\
-        import sys
-
-        def main():
-            args = sys.argv[1:]
-            if not args:
-                return 0
-            if args[0] == "boom":
-                raise RuntimeError("boom")
-            if args[0] == "none":
-                return None
-            if args[0] == "argv":
-                print("argv[0]=" + sys.argv[0])
-                print("argv[1:]=" + ",".join(args))
-                return 0
-            return int(args[0])
-        """
-    ),
-) -> None:
+def _install_fake_cli(repo: Path, body: str | None = None) -> None:
     """Write a stub ``huey.kernel_build.cli`` into the mini-repo."""
+    if body is None:
+        body = textwrap.dedent("""\
+            import sys
+
+            def main():
+                args = sys.argv[1:]
+                if not args:
+                    return 0
+                if args[0] == "boom":
+                    raise RuntimeError("boom")
+                if args[0] == "none":
+                    return None
+                if args[0] == "argv":
+                    print("argv[0]=" + sys.argv[0])
+                    print("argv[1:]=" + ",".join(args))
+                    return 0
+                return int(args[0])
+            """)
     cli_path = repo / "src" / "huey" / "kernel_build" / "cli.py"
     cli_path.write_text(body, encoding="utf-8")
 
@@ -135,8 +130,8 @@ def test_launcher_import_does_not_execute_or_import_cli() -> None:
     spec.loader.exec_module(module)
 
     # Entry points exist and are callable.
-    assert callable(getattr(module, "_main"))
-    assert callable(getattr(module, "_repo_src_dir"))
+    assert callable(module._main)
+    assert callable(module._repo_src_dir)
     # The CLI was not imported as a side effect.
     assert "huey.kernel_build.cli" not in sys.modules
 
@@ -173,9 +168,9 @@ def test_missing_cli_exit_code_is_stable_regardless_of_argv(tmp_path: Path) -> N
     repo = _make_mini_repo(tmp_path)
     for args in ((), ("inventory",), ("--dry-run",), ("nonsense", "arg")):
         result = _run_launcher(repo, *args)
-        assert result.returncode == 3, (
-            f"argv={args!r}: expected exit 3, got {result.returncode}"
-        )
+        assert (
+            result.returncode == 3
+        ), f"argv={args!r}: expected exit 3, got {result.returncode}"
 
 
 # ---------------------------------------------------------------------------
@@ -222,16 +217,14 @@ def test_launcher_restores_sys_argv_after_call(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     _install_fake_cli(
         repo,
-        body=textwrap.dedent(
-            """\
+        body=textwrap.dedent("""\
             import sys
 
             def main():
                 before = sys.argv[:]
                 sys.argv = ["corrupted", "argv"]
                 raise RuntimeError(f"argv before raise: {before}")
-            """
-        ),
+            """),
     )
     result = _run_launcher(repo, "anything")
     # The CLI raises, Python exits 1 with a traceback, but the launcher
@@ -247,8 +240,7 @@ def test_launcher_does_not_inject_cli_into_its_own_argv(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     _install_fake_cli(
         repo,
-        body=textwrap.dedent(
-            """\
+        body=textwrap.dedent("""\
             import sys
 
             def main():
@@ -257,8 +249,7 @@ def test_launcher_does_not_inject_cli_into_its_own_argv(tmp_path: Path) -> None:
                 for i, a in enumerate(sys.argv[1:], start=1):
                     print(f"arg[{i}]={a}")
                 return 0
-            """
-        ),
+            """),
     )
     result = _run_launcher(repo, "alpha", "beta", "gamma")
     assert result.returncode == 0, result.stderr
@@ -340,6 +331,6 @@ def test_launcher_does_not_import_optional_heavy_modules() -> None:
         "import tensorflow",
         "import requests",
     ):
-        assert forbidden not in text, (
-            f"launcher must not import {forbidden!r}; keep it a thin bootstrap"
-        )
+        assert (
+            forbidden not in text
+        ), f"launcher must not import {forbidden!r}; keep it a thin bootstrap"

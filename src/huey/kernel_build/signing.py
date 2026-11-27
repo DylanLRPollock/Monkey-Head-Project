@@ -40,9 +40,10 @@ import hashlib
 import logging
 import re
 import shutil
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 from huey.kernel_build.models import (
     ArtifactKind,
@@ -63,13 +64,12 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "MokEnrollmentPlan",
     "SecureBootDetector",
+    "Signer",
     "SigningMaterial",
     "SigningResult",
-    "Signer",
     "detect_secure_boot",
     "evaluate_readiness",
     "plan_mok_enrollment",
-    "verify_module_signature",
 ]
 
 _MOKUTIL_TIMEOUT_SECONDS: float = 15.0
@@ -162,9 +162,7 @@ def plan_mok_enrollment(cert_path: Path) -> MokEnrollmentPlan:
     # expect for the certificate path, and what the Debian wiki uses.
     return MokEnrollmentPlan(
         cert_path=cert_path,
-        commands=(
-            ("mokutil", "--import", str(cert_path)),
-        ),
+        commands=(("mokutil", "--import", str(cert_path)),),
         notes=(
             "mokutil --import only queues the request; it does not enroll "
             "the key immediately.",
@@ -214,9 +212,7 @@ class SigningResult:
                 name: art.to_dict() for name, art in self.signed_modules.items()
             },
             "signed_kernel_image": (
-                self.signed_kernel_image.to_dict()
-                if self.signed_kernel_image
-                else None
+                self.signed_kernel_image.to_dict() if self.signed_kernel_image else None
             ),
             "cert_fingerprint": self.cert_fingerprint,
             "boot_ready": self.boot_ready,
@@ -312,7 +308,7 @@ class Signer:
 
     # ---- public API ------------------------------------------------------
 
-    def sign_modules(
+    def sign_modules(  # noqa: C901
         self,
         *,
         modules: dict[str, BuildArtifact],
@@ -340,10 +336,17 @@ class Signer:
         if destination_findings:
             return {}, destination_findings, False
         if Path(output_dir).is_symlink() or Path(module_dir).is_symlink():
-            return {}, [ValidationFinding(
-                severity=Severity.ERROR, code="SIGNING_DIRECTORY_SYMLINK_REFUSED",
-                message="Signing may not use symlinked staging directories.",
-            )], False
+            return (
+                {},
+                [
+                    ValidationFinding(
+                        severity=Severity.ERROR,
+                        code="SIGNING_DIRECTORY_SYMLINK_REFUSED",
+                        message="Signing may not use symlinked staging directories.",
+                    )
+                ],
+                False,
+            )
 
         material_findings, material_ok = self._validate_material(material)
         findings.extend(material_findings)
@@ -368,18 +371,24 @@ class Signer:
         signed: dict[str, BuildArtifact] = {}
         all_ok = True
         if dry_run and not modules:
-            findings.append(ValidationFinding(
-                severity=Severity.INFO, code="SIGNING_DRY_RUN",
-                message="No modules supplied; dry run performed no signing.",
-            ))
+            findings.append(
+                ValidationFinding(
+                    severity=Severity.INFO,
+                    code="SIGNING_DRY_RUN",
+                    message="No modules supplied; dry run performed no signing.",
+                )
+            )
 
         for name, artifact in sorted(modules.items()):
             original = module_dir / Path(artifact.path).name
             if original.is_symlink():
-                findings.append(ValidationFinding(
-                    severity=Severity.ERROR, code="MODULE_SYMLINK_REFUSED",
-                    message=f"Refusing to sign symlinked module {name!r}.",
-                ))
+                findings.append(
+                    ValidationFinding(
+                        severity=Severity.ERROR,
+                        code="MODULE_SYMLINK_REFUSED",
+                        message=f"Refusing to sign symlinked module {name!r}.",
+                    )
+                )
                 all_ok = False
                 continue
             if not original.is_file():
@@ -416,10 +425,13 @@ class Signer:
                     raise OSError("signed module output is a symlink")
                 shutil.copy2(original, target)
             except OSError as exc:
-                findings.append(ValidationFinding(
-                    severity=Severity.ERROR, code="SIGNING_STAGE_FAILED",
-                    message=f"Cannot stage module {name!r} for signing: {exc}",
-                ))
+                findings.append(
+                    ValidationFinding(
+                        severity=Severity.ERROR,
+                        code="SIGNING_STAGE_FAILED",
+                        message=f"Cannot stage module {name!r} for signing: {exc}",
+                    )
+                )
                 all_ok = False
                 continue
 
@@ -472,7 +484,7 @@ class Signer:
 
         return signed, findings, all_ok
 
-    def sign_kernel_image(
+    def sign_kernel_image(  # noqa: C901
         self,
         *,
         kernel_image: Path,
@@ -533,8 +545,7 @@ class Signer:
                 severity=Severity.ERROR,
                 code="SBSIGN_FAILED",
                 message=(
-                    f"sbsign exited {result.command.returncode} for "
-                    f"{kernel_image.name}"
+                    f"sbsign exited {result.command.returncode} for {kernel_image.name}"
                 ),
             )
         if not signed_path.is_file():
@@ -617,8 +628,7 @@ class Signer:
                 severity=Severity.ERROR,
                 code="MODINFO_FAILED",
                 message=(
-                    f"modinfo exited {result.command.returncode} for "
-                    f"{module_path.name}"
+                    f"modinfo exited {result.command.returncode} for {module_path.name}"
                 ),
             )
 
@@ -682,7 +692,7 @@ class Signer:
                     severity=Severity.ERROR,
                     code="SIGNING_KEY_MISSING",
                     message=(
-                        f"Signing private key not found at the configured "
+                        "Signing private key not found at the configured "
                         "path. Keys live outside the repository; supply "
                         "signing.key_path in the operator environment."
                     ),
@@ -694,7 +704,7 @@ class Signer:
                     severity=Severity.ERROR,
                     code="SIGNING_CERT_MISSING",
                     message=(
-                        f"Signing certificate not found at the configured "
+                        "Signing certificate not found at the configured "
                         "path. Supply signing.cert_path."
                     ),
                 )
@@ -705,7 +715,9 @@ class Signer:
         self, headers_dir: Path, material: SigningMaterial
     ) -> Path | None:
         if material.sign_file_path is not None:
-            return material.sign_file_path if material.sign_file_path.is_file() else None
+            return (
+                material.sign_file_path if material.sign_file_path.is_file() else None
+            )
         candidate = headers_dir / "scripts" / "sign-file"
         return candidate if candidate.is_file() else None
 
@@ -820,8 +832,7 @@ class Signer:
                 severity=Severity.ERROR,
                 code="SBVERIFY_FAILED",
                 message=(
-                    f"sbverify rejected {signed_path.name} against "
-                    f"{cert_path.name}"
+                    f"sbverify rejected {signed_path.name} against {cert_path.name}"
                 ),
             )
         return None
@@ -893,9 +904,7 @@ def evaluate_readiness(
                     ValidationFinding(
                         severity=Severity.ERROR,
                         code="REQUIRED_MODULE_UNSIGNED",
-                        message=(
-                            f"Required module {required!r} is not signed."
-                        ),
+                        message=(f"Required module {required!r} is not signed."),
                     )
                 )
         if kernel_image_required and signed_kernel_image is None:

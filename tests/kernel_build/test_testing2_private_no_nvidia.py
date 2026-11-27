@@ -1,4 +1,5 @@
 """Guard the third, NVIDIA-free, strictly offline testing2 initramfs."""
+
 import subprocess
 from pathlib import Path
 
@@ -14,9 +15,12 @@ def source() -> str:
 
 
 def test_bash_syntax() -> None:
-    assert subprocess.run(
-        ["bash", "-n", str(SCRIPT)], check=False, capture_output=True
-    ).returncode == 0
+    assert (
+        subprocess.run(
+            ["bash", "-n", str(SCRIPT)], check=False, capture_output=True
+        ).returncode
+        == 0
+    )
 
 
 def test_input_pinned_and_output_is_distinct() -> None:
@@ -38,7 +42,9 @@ def test_no_nvidia_early_modules_and_fail_closed_inspection() -> None:
     assert "NVIDIA module is present in the supposed no-NVIDIA initramfs" in s
     assert "Nouveau unexpectedly present" in s
     assert "NVIDIA early preload still configured" in s
-    assert "NVIDIA module dependency or alias leaked into extracted image" in s
+    assert "Proprietary NVIDIA kernel module referenced in archived metadata." in s
+    assert '"$MAIN/usr/lib/modules/$KR/modules.dep"' in s
+    assert '"$MAIN/usr/lib/modules/$KR/modules.order"' in s
 
 
 def test_raid_and_resume_policies_verified_inside_new_archive() -> None:
@@ -50,7 +56,7 @@ def test_raid_and_resume_policies_verified_inside_new_archive() -> None:
         "38a8dd4b:f15c5eca:fafe213a:2962ac03",
     ):
         assert uuid in s
-    assert 'grep -Exq \'RESUME=none\' "$RESUME"' in s
+    assert "grep -Exq 'RESUME=none' \"$RESUME\"" in s
     assert "Embedded initrd contains stale md3" in s
     assert "Embedded initrd has wrong MD array count" in s
     assert "Root init cpio permissions or ownership are incorrect" in s
@@ -71,8 +77,22 @@ def test_bubblewrap_keeps_live_system_read_only() -> None:
         if not line or line.startswith("#"):
             continue
         assert not line.startswith(
-            ("sudo ", "dpkg -i", "apt ", "update-grub ", "grub-install ",
-             "update-initramfs ", "modprobe ", "insmod ", "reboot ",
-             "mount ", "umount ", "mdadm --assemble", "mdadm --create",
-             "mkfs", "wipefs", "rm -rf")
+            (
+                "sudo ",
+                "dpkg -i",
+                "apt ",
+                "update-grub ",
+                "grub-install ",
+                "update-initramfs ",
+                "modprobe ",
+                "insmod ",
+                "reboot ",
+                "mount ",
+                "umount ",
+                "mdadm --assemble",
+                "mdadm --create",
+                "mkfs",
+                "wipefs",
+                "rm -rf",
+            )
         )
