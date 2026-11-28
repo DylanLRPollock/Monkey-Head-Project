@@ -71,6 +71,7 @@ on:
     # nested manifests are introduced later.
     paths:
       - "pyproject.toml"
+      - ".github/workflows/dependency-review.yml"
       - "setup.py"
       - "setup.cfg"
       - "constraints.txt"
