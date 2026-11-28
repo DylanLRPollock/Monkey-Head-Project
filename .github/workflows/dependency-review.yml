@@ -71,6 +71,7 @@ on:
     # nested manifests are introduced later.
     paths:
       - "pyproject.toml"
+      - ".github/workflows/dependency-review.yml"
       - "setup.py"
       - "setup.cfg"
       - "constraints.txt"
@@ -110,6 +111,13 @@ jobs:
           # by this PR. MODERATE and LOW are reported in the comment
           # but do not block.
           fail-on-severity: high
+
+          # This GHSA is for ComfyUI-Manager, but GitHub maps it to the separate
+          # comfy-cli PyPI package and applies Manager's 3.39.x/4.0.x version line
+          # to the CLI's 1.x releases. The CLI installs ComfyUI-Manager separately.
+          # Ignore only this misattributed advisory in PR diff review; keep the
+          # resolved environment security scan enabled.
+          allow-ghsas: GHSA-562r-8445-54r2
 
           # Licenses incompatible with GPL-3.0-only. The action fails if
           # any introduced dependency carries one of these.
