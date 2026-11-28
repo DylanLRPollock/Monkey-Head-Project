@@ -1,10 +1,13 @@
 """Regression tests for the repository's pytest hooks."""
 
+import runpy
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
-from conftest import pytest_pyfunc_call
+_ROOT_CONFTST = Path(__file__).resolve().parents[1] / "conftest.py"
+pytest_pyfunc_call = runpy.run_path(str(_ROOT_CONFTST))["pytest_pyfunc_call"]
 
 
 @pytest.mark.parametrize("marker", [None, object()])

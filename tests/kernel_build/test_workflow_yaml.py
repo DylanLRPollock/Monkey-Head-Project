@@ -40,7 +40,9 @@ def _read() -> str:
 
 def _lower() -> str:
     """Inspect active YAML, excluding commentary and explanations."""
-    return "\n".join(line for line in _read().splitlines() if not line.lstrip().startswith("#")).lower()
+    return "\n".join(
+        line for line in _read().splitlines() if not line.lstrip().startswith("#")
+    ).lower()
 
 
 def _parse() -> dict:
@@ -148,10 +150,7 @@ _SHA40_RE = re.compile(r"^[0-9a-f]{40}$")
 
 
 def _uses_entries() -> list[tuple[str, str | None]]:
-    return [
-        (m.group(1), m.group(2))
-        for m in _USES_RE.finditer(_read())
-    ]
+    return [(m.group(1), m.group(2)) for m in _USES_RE.finditer(_read())]
 
 
 def test_all_uses_are_pinned_to_full_sha() -> None:
@@ -164,9 +163,9 @@ def test_all_uses_are_pinned_to_full_sha() -> None:
             continue
         assert "@" in ref, f"uses entry without ref: {ref!r}"
         _owner_repo, sha = ref.rsplit("@", 1)
-        assert _SHA40_RE.match(sha), (
-            f"uses entry {ref!r} is not pinned to a full 40-char commit SHA"
-        )
+        assert _SHA40_RE.match(
+            sha
+        ), f"uses entry {ref!r} is not pinned to a full 40-char commit SHA"
 
 
 def test_every_pinned_action_has_a_version_comment() -> None:
@@ -270,7 +269,7 @@ def test_no_direct_pip_install_from_untrusted_index() -> None:
 
 def test_no_real_build_commands() -> None:
     """`make`, `bindeb-pkg`, `mkinitramfs`, `sbsign`, `sign-file` must not run."""
-    text = _read()
+    _read()
     forbidden = [
         " bindeb-pkg",
         "make -j",
@@ -371,7 +370,8 @@ def test_no_artifacts_are_uploaded() -> None:
     workflow = _parse()
     steps = workflow["jobs"]["ci"]["steps"]
     uploads = [
-        step for step in steps
+        step
+        for step in steps
         if step.get("uses", "").startswith("actions/upload-artifact@")
     ]
     assert not uploads, f"PR CI must not upload runner files: {uploads!r}"
@@ -424,24 +424,36 @@ def test_does_not_interpolate_untrusted_event_data_into_run() -> None:
 # pin is an expected policy refusal, not a command that can silently fail.
 def test_plan_handles_unresolved_source_lock_explicitly() -> None:
     workflow = _parse()
-    steps = workflow['jobs']['ci']['steps']
-    plan = next(step['run'] for step in steps if step['name'] == 'Dry-run CLI plan')
-    assert 'SOURCE_UNRESOLVED' in plan
+    steps = workflow["jobs"]["ci"]["steps"]
+    plan = next(step["run"] for step in steps if step["name"] == "Dry-run CLI plan")
+    assert "SOURCE_UNRESOLVED" in plan
     assert 'doc["exit_code"] == rc' in plan
-    assert '|| true' not in plan
+    assert "|| true" not in plan
 
 
-@pytest.mark.parametrize('subcommand', [
-    'config', 'build-kernel', 'build-nvidia', 'initramfs', 'sign', 'release',
-])
+@pytest.mark.parametrize(
+    "subcommand",
+    [
+        "config",
+        "build-kernel",
+        "build-nvidia",
+        "initramfs",
+        "sign",
+        "release",
+    ],
+)
 def test_invalid_prereq_dry_runs_validate_exit_code(subcommand: str) -> None:
     workflow = _parse()
-    steps = workflow['jobs']['ci']['steps']
-    step = next(step for step in steps if step.get('name', '').startswith('Dry-run '+subcommand)
-                and step['name'] != 'Dry-run CLI plan')
-    block = step['run']
-    assert '|| true' not in block
-    assert '--dry-run --json' in block
-    assert 'rc=0' in block and '|| rc=$?' in block
+    steps = workflow["jobs"]["ci"]["steps"]
+    step = next(
+        step
+        for step in steps
+        if step.get("name", "").startswith("Dry-run " + subcommand)
+        and step["name"] != "Dry-run CLI plan"
+    )
+    block = step["run"]
+    assert "|| true" not in block
+    assert "--dry-run --json" in block
+    assert "rc=0" in block and "|| rc=$?" in block
     assert "d['exit_code']==int(sys.argv[1])" in block
     assert "d['exit_code'] in (2,3,4)" in block

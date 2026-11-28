@@ -106,6 +106,7 @@ Issues = "https://github.com/DylanLRPollock/Monkey-Head-Project/issues"
 # strict Python 3.13 dependency pins from the existing dev extra.
 test = [
   "pytest==9.2.0",
+  "pytest-asyncio==1.5.0",
   "ruff==0.17.6",
   "mypy==2.4.1",
 ]
@@ -310,6 +311,10 @@ extend-exclude = [
 ]
 
 [tool.ruff.lint]
+# C901 and B042 are enforced by the separate Flake8/mccabe/bugbear pass;
+# permit targeted per-function noqa annotations without treating them as
+# unknown Ruff rules.
+external = ["C901", "B042", "E704"]
 # Rule families selected for this project. See:
 # https://docs.astral.sh/ruff/rules/
 select = [

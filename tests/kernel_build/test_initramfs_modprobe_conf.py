@@ -20,12 +20,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONF = (
-    REPO_ROOT
-    / "kernel"
-    / "huey-linux"
-    / "initramfs"
-    / "modprobe.d"
-    / "huey-v100.conf"
+    REPO_ROOT / "kernel" / "huey-linux" / "initramfs" / "modprobe.d" / "huey-v100.conf"
 )
 
 _COMMENT_LINE = re.compile(r"^\s*#")
@@ -51,11 +46,7 @@ def _active_lines() -> list[str]:
 
 
 def _blacklisted_modules() -> set[str]:
-    return {
-        m.group(1)
-        for line in _active_lines()
-        if (m := _BLACKLIST_RE.match(line))
-    }
+    return {m.group(1) for line in _active_lines() if (m := _BLACKLIST_RE.match(line))}
 
 
 def _installed_modules() -> dict[str, str]:
@@ -67,18 +58,12 @@ def _installed_modules() -> dict[str, str]:
 
 
 def _modules_with_options() -> set[str]:
-    return {
-        m.group(1)
-        for line in _active_lines()
-        if (m := _OPTIONS_RE.match(line))
-    }
+    return {m.group(1) for line in _active_lines() if (m := _OPTIONS_RE.match(line))}
 
 
 def _comment_text() -> str:
     return "\n".join(
-        raw.strip()
-        for raw in _read().splitlines()
-        if _COMMENT_LINE.match(raw.strip())
+        raw.strip() for raw in _read().splitlines() if _COMMENT_LINE.match(raw.strip())
     )
 
 
@@ -140,9 +125,9 @@ def test_nouveau_modeset_disabled() -> None:
 
 
 def test_amdgpu_is_not_blacklisted() -> None:
-    assert "amdgpu" not in _blacklisted_modules(), (
-        "amdgpu must NOT be blacklisted: the AMD RX 570 is the display GPU"
-    )
+    assert (
+        "amdgpu" not in _blacklisted_modules()
+    ), "amdgpu must NOT be blacklisted: the AMD RX 570 is the display GPU"
 
 
 def test_amdgpu_is_not_blocked_by_install() -> None:
@@ -168,9 +153,9 @@ def test_nvidia_modules_are_not_blacklisted() -> None:
 def test_nvidia_modules_are_not_blocked_by_install() -> None:
     installed = _installed_modules()
     for mod in ("nvidia", "nvidia-uvm", "nvidia-modeset", "nvidia-drm"):
-        assert mod not in installed, (
-            f"{mod!r} must not have an 'install ... /bin/false' rule"
-        )
+        assert (
+            mod not in installed
+        ), f"{mod!r} must not have an 'install ... /bin/false' rule"
 
 
 # ---------------------------------------------------------------------------

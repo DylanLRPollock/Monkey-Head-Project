@@ -118,9 +118,7 @@ def test_spec_rejects_non_str_env_value(tmp_path: Path) -> None:
 
 def test_dry_run_does_not_execute(tmp_path: Path) -> None:
     """A nonexistent binary must not raise: dry run never launches anything."""
-    spec = _make_spec(
-        "huey-this-binary-does-not-exist-xyz", cwd=tmp_path
-    )
+    spec = _make_spec("huey-this-binary-does-not-exist-xyz", cwd=tmp_path)
     result = Runner().run(spec, dry_run=True)
     assert result.executed is False
     assert result.dry_run is True
@@ -143,9 +141,7 @@ def test_dry_run_records_argv_and_cwd(tmp_path: Path) -> None:
 
 def test_dry_run_does_not_validate_cwd(tmp_path: Path) -> None:
     """Planning does not require the cwd to exist yet."""
-    spec = _make_spec(
-        "make", cwd=tmp_path / "not-yet-created"
-    )
+    spec = _make_spec("make", cwd=tmp_path / "not-yet-created")
     result = Runner().run(spec, dry_run=True)
     assert result.dry_run is True
 
@@ -177,9 +173,7 @@ def test_real_run_captures_stdout(tmp_path: Path) -> None:
 
 
 def test_real_run_captures_stderr(tmp_path: Path) -> None:
-    spec = _make_spec(
-        *_py("import sys; sys.stderr.write('oops\\n')"), cwd=tmp_path
-    )
+    spec = _make_spec(*_py("import sys; sys.stderr.write('oops\\n')"), cwd=tmp_path)
     result = Runner().run(spec)
     assert result.stderr == b"oops\n"
 
@@ -216,9 +210,7 @@ def test_shell_metacharacters_are_inert(tmp_path: Path) -> None:
     )
     result = Runner().run(spec)
     assert result.command.returncode == 0
-    assert not marker.exists(), (
-        f"payload was interpreted by a shell: {payload!r}"
-    )
+    assert not marker.exists(), f"payload was interpreted by a shell: {payload!r}"
     assert payload.encode() in (result.stdout or b"")
 
 
@@ -240,9 +232,7 @@ def test_spaces_in_argv_preserved(tmp_path: Path) -> None:
 
 
 def test_missing_executable_raises_runner_error(tmp_path: Path) -> None:
-    spec = _make_spec(
-        "huey-this-binary-definitely-not-real-xyz", cwd=tmp_path
-    )
+    spec = _make_spec("huey-this-binary-definitely-not-real-xyz", cwd=tmp_path)
     with pytest.raises(RunnerError, match="executable not found"):
         Runner().run(spec)
 
@@ -338,9 +328,7 @@ def test_fake_runner_raises_when_empty(tmp_path: Path) -> None:
 
 def test_fake_runner_records_dry_run_flag(tmp_path: Path) -> None:
     spec = _make_spec("echo", "hi", cwd=tmp_path)
-    fake = FakeRunner(
-        [_fake_result(("echo",), executed=False, dry_run=True)]
-    )
+    fake = FakeRunner([_fake_result(("echo",), executed=False, dry_run=True)])
     fake.run(spec, dry_run=True)
     assert fake.calls[0][1] is True
 

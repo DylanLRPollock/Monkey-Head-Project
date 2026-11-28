@@ -1,4 +1,5 @@
 """Static safety contract for isolated NVIDIA 580.196.07 compatibility builds."""
+
 from pathlib import Path
 
 SCRIPT = (
@@ -36,7 +37,7 @@ def test_build_uses_explicit_source_and_output_for_uninstalled_kernel() -> None:
     assert "CC=gcc-16 HOSTCC=gcc-16 modules" in src
     for name in ("nvidia", "nvidia-uvm", "nvidia-modeset", "nvidia-drm"):
         assert name in src
-    assert 'modinfo' in src
+    assert "modinfo" in src
     assert '"$vermagic" == "$KR "*' in src
 
 
@@ -44,13 +45,24 @@ def test_never_installs_loads_or_reboots() -> None:
     src = _source()
     assert "No kernel or NVIDIA modules were installed" in src
     assert '[[ ! -e "$path" ]]' in src
-    assert 'umask 077' in src
+    assert "umask 077" in src
     forbidden = (
-        "sudo ", "apt ", "dpkg -i", "dkms install", "make modules_install",
-        "update-initramfs", "update-grub", "grub-install", "reboot",
-        "modprobe ", "insmod ", "rmmod ", "nvidia-installer ",
+        "sudo ",
+        "apt ",
+        "dpkg -i",
+        "dkms install",
+        "make modules_install",
+        "update-initramfs",
+        "update-grub",
+        "grub-install",
+        "reboot",
+        "modprobe ",
+        "insmod ",
+        "rmmod ",
+        "nvidia-installer ",
     )
     assert all(
         not line.strip().startswith(forbidden)
-        for line in src.splitlines() if not line.strip().startswith("#")
+        for line in src.splitlines()
+        if not line.strip().startswith("#")
     )

@@ -1,4 +1,5 @@
 """Ensure EFI and mdadm recovery inventory cannot change the live host."""
+
 from pathlib import Path
 
 SCRIPT = (
@@ -34,11 +35,21 @@ def test_no_mutations_or_reboots() -> None:
     assert '[[ ! -e "$REPORT" ]]' in source
     assert "Run as your normal user, not sudo." in source
     forbidden = (
-        "sudo wipefs -a", "sudo wipefs -o", "sudo mdadm --create",
-        "sudo mdadm --assemble", "sudo mdadm --stop", "sudo efibootmgr -c",
-        "sudo efibootmgr -b", "sudo grub-install", "sudo update-grub",
-        "sudo update-initramfs", "sudo dpkg -i", "sudo mount",
-        "sudo umount", "reboot", "sudo mkfs",
+        "sudo wipefs -a",
+        "sudo wipefs -o",
+        "sudo mdadm --create",
+        "sudo mdadm --assemble",
+        "sudo mdadm --stop",
+        "sudo efibootmgr -c",
+        "sudo efibootmgr -b",
+        "sudo grub-install",
+        "sudo update-grub",
+        "sudo update-initramfs",
+        "sudo dpkg -i",
+        "sudo mount",
+        "sudo umount",
+        "reboot",
+        "sudo mkfs",
     )
     for line in source.splitlines():
         line = line.strip()

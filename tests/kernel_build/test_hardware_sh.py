@@ -8,6 +8,7 @@ exercised without a real GPU, without root, and without touching the live
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import re
@@ -91,22 +92,32 @@ def _run_wrapper(
 
 def _make_path_without_python313(bin_dir: Path) -> str:
     bin_dir.mkdir(exist_ok=True)
-    for tool in ("sh", "env", "dirname", "pwd", "cd", "printf", "mktemp", "tr",
-                 "cut", "head", "sed", "ls", "rm", "cat"):
+    for tool in (
+        "sh",
+        "env",
+        "dirname",
+        "pwd",
+        "cd",
+        "printf",
+        "mktemp",
+        "tr",
+        "cut",
+        "head",
+        "sed",
+        "ls",
+        "rm",
+        "cat",
+    ):
         src = shutil.which(tool)
         if src is not None:
             dst = bin_dir / tool
             if not dst.exists():
-                try:
+                with contextlib.suppress(OSError):
                     os.symlink(src, dst)
-                except OSError:
-                    pass
     py = Path(sys.executable)
     if py.is_file():
-        try:
+        with contextlib.suppress(OSError):
             os.symlink(py, bin_dir / "python3")
-        except OSError:
-            pass
     return str(bin_dir)
 
 
@@ -132,6 +143,7 @@ def test_wrapper_has_sh_shebang() -> None:
 
 def test_wrapper_is_executable() -> None:
     import stat as _stat
+
     assert WRAPPER.stat().st_mode & _stat.S_IXUSR
 
 
@@ -198,11 +210,17 @@ def test_wrapper_does_not_write_live_boot_paths(forbidden_path: str) -> None:
         if forbidden_path not in line:
             continue
         assert not re.search(
-            r"(>\s*\"?" + re.escape(forbidden_path) + r"|touch\s+" +
-            re.escape(forbidden_path) + r"|mkdir\s+" +
-            re.escape(forbidden_path) + r"|cp\s+[^\n]*\s+" +
-            re.escape(forbidden_path) + r"|mv\s+[^\n]*\s+" +
-            re.escape(forbidden_path) + r")",
+            r"(>\s*\"?"
+            + re.escape(forbidden_path)
+            + r"|touch\s+"
+            + re.escape(forbidden_path)
+            + r"|mkdir\s+"
+            + re.escape(forbidden_path)
+            + r"|cp\s+[^\n]*\s+"
+            + re.escape(forbidden_path)
+            + r"|mv\s+[^\n]*\s+"
+            + re.escape(forbidden_path)
+            + r")",
             line,
         ), f"test-hardware.sh must not write to {forbidden_path}: {line!r}"
 
@@ -214,9 +232,13 @@ def test_wrapper_does_not_write_live_boot_paths(forbidden_path: str) -> None:
 
 def test_help_exit_zero(monkeypatch) -> None:
     import subprocess as _sp
+
     result = _sp.run(
         [str(WRAPPER), "--help"],
-        capture_output=True, text=True, timeout=10, check=False,
+        capture_output=True,
+        text=True,
+        timeout=10,
+        check=False,
     )
     assert result.returncode == 0
     assert "Usage:" in result.stdout
@@ -247,9 +269,9 @@ def test_missing_python313_exits_90(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     path_override = _make_path_without_python313(tmp_path / "bin")
     result = _run_wrapper(repo, path_override=path_override)
-    assert result.returncode == 90, (
-        f"expected 90, got {result.returncode}; stderr={result.stderr!r}"
-    )
+    assert (
+        result.returncode == 90
+    ), f"expected 90, got {result.returncode}; stderr={result.stderr!r}"
     assert "python3.13" in result.stderr
 
 
@@ -257,9 +279,9 @@ def test_missing_src_huey_exits_91(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     (repo / "src" / "huey").rmdir()
     result = _run_wrapper(repo)
-    assert result.returncode == 91, (
-        f"expected 91, got {result.returncode}; stderr={result.stderr!r}"
-    )
+    assert (
+        result.returncode == 91
+    ), f"expected 91, got {result.returncode}; stderr={result.stderr!r}"
     assert "src/huey" in result.stderr
 
 
@@ -272,7 +294,8 @@ def test_default_run_text_ok(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     boot = _make_boot_dir(tmp_path)
     result = _run_wrapper(
-        repo, extra_env={"HUEY_TEST_HARDWARE_BOOT_DIR": str(boot)},
+        repo,
+        extra_env={"HUEY_TEST_HARDWARE_BOOT_DIR": str(boot)},
     )
     assert result.returncode == 0, result.stderr
     assert "HueyOS host smoke report" in result.stdout
@@ -309,7 +332,8 @@ def test_default_json_schema(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     boot = _make_boot_dir(tmp_path)
     result = _run_wrapper(
-        repo, "--json",
+        repo,
+        "--json",
         extra_env={"HUEY_TEST_HARDWARE_BOOT_DIR": str(boot)},
     )
     assert result.returncode == 0, result.stderr
@@ -320,8 +344,12 @@ def test_default_json_schema(tmp_path: Path) -> None:
     assert "summary" in doc
     names = {c["name"] for c in doc["checks"]}
     assert names == {
-        "inventory", "boot_initramfs", "boot_config",
-        "gpu_smoke:cuda", "gpu_smoke:ollama", "gpu_smoke:comfyui",
+        "inventory",
+        "boot_initramfs",
+        "boot_config",
+        "gpu_smoke:cuda",
+        "gpu_smoke:ollama",
+        "gpu_smoke:comfyui",
     }
     statuses = {c["name"]: c["status"] for c in doc["checks"]}
     assert statuses["inventory"] == "pass"
@@ -336,7 +364,8 @@ def test_missing_initramfs_is_warn(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     boot = _make_boot_dir(tmp_path, initramfs=(), configs=("config-x",))
     result = _run_wrapper(
-        repo, "--json",
+        repo,
+        "--json",
         extra_env={"HUEY_TEST_HARDWARE_BOOT_DIR": str(boot)},
     )
     doc = json.loads(result.stdout)
@@ -355,15 +384,16 @@ def test_inventory_failure_is_fail(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     boot = _make_boot_dir(tmp_path)
     result = _run_wrapper(
-        repo, "--json",
+        repo,
+        "--json",
         extra_env={
             "HUEY_TEST_HARDWARE_BOOT_DIR": str(boot),
             "HUEY_TEST_HARDWARE_INVENTORY_CMD": "false",
         },
     )
-    assert result.returncode == 4, (
-        f"expected 4, got {result.returncode}; stdout={result.stdout!r}"
-    )
+    assert (
+        result.returncode == 4
+    ), f"expected 4, got {result.returncode}; stdout={result.stdout!r}"
     doc = json.loads(result.stdout)
     statuses = {c["name"]: c["status"] for c in doc["checks"]}
     assert statuses["inventory"] == "fail"
@@ -379,7 +409,9 @@ def test_gpu_smoke_without_yes_non_tty_skips(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     boot = _make_boot_dir(tmp_path)
     result = _run_wrapper(
-        repo, "--gpu-smoke", "--json",
+        repo,
+        "--gpu-smoke",
+        "--json",
         extra_env={
             "HUEY_TEST_HARDWARE_BOOT_DIR": str(boot),
             "HUEY_TEST_HARDWARE_CUDA_CMD": "false",
@@ -407,7 +439,10 @@ def test_gpu_smoke_with_yes_runs_commands(tmp_path: Path) -> None:
     marker_ollama = tmp_path / "ollama-ran"
     marker_comfyui = tmp_path / "comfyui-ran"
     result = _run_wrapper(
-        repo, "--gpu-smoke", "--yes", "--json",
+        repo,
+        "--gpu-smoke",
+        "--yes",
+        "--json",
         extra_env={
             "HUEY_TEST_HARDWARE_BOOT_DIR": str(boot),
             "HUEY_TEST_HARDWARE_CUDA_CMD": f"touch {marker_cuda} && echo nvidia-v100",
@@ -430,7 +465,10 @@ def test_gpu_smoke_failure_is_fail(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     boot = _make_boot_dir(tmp_path)
     result = _run_wrapper(
-        repo, "--gpu-smoke", "--yes", "--json",
+        repo,
+        "--gpu-smoke",
+        "--yes",
+        "--json",
         extra_env={
             "HUEY_TEST_HARDWARE_BOOT_DIR": str(boot),
             "HUEY_TEST_HARDWARE_CUDA_CMD": "false",
@@ -438,9 +476,9 @@ def test_gpu_smoke_failure_is_fail(tmp_path: Path) -> None:
             "HUEY_TEST_HARDWARE_COMFYUI_CMD": "echo fake-comfyui-process",
         },
     )
-    assert result.returncode == 4, (
-        f"expected 4, got {result.returncode}; stdout={result.stdout!r}"
-    )
+    assert (
+        result.returncode == 4
+    ), f"expected 4, got {result.returncode}; stdout={result.stdout!r}"
     doc = json.loads(result.stdout)
     statuses = {c["name"]: c["status"] for c in doc["checks"]}
     assert statuses["gpu_smoke:cuda"] == "fail"
@@ -452,7 +490,10 @@ def test_gpu_smoke_comfyui_not_running_is_warn(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     boot = _make_boot_dir(tmp_path)
     result = _run_wrapper(
-        repo, "--gpu-smoke", "--yes", "--json",
+        repo,
+        "--gpu-smoke",
+        "--yes",
+        "--json",
         extra_env={
             "HUEY_TEST_HARDWARE_BOOT_DIR": str(boot),
             "HUEY_TEST_HARDWARE_CUDA_CMD": "echo ok",
@@ -478,7 +519,9 @@ def test_log_file_captures_checks(tmp_path: Path) -> None:
     boot = _make_boot_dir(tmp_path)
     log = tmp_path / "hw.log"
     result = _run_wrapper(
-        repo, "--log", str(log),
+        repo,
+        "--log",
+        str(log),
         extra_env={"HUEY_TEST_HARDWARE_BOOT_DIR": str(boot)},
     )
     assert result.returncode == 0
@@ -497,12 +540,14 @@ def test_log_file_captures_checks(tmp_path: Path) -> None:
 def test_text_mode_shows_all_checks(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     boot = _make_boot_dir(tmp_path)
-    result = _run_wrapper(
-        repo, extra_env={"HUEY_TEST_HARDWARE_BOOT_DIR": str(boot)}
-    )
+    result = _run_wrapper(repo, extra_env={"HUEY_TEST_HARDWARE_BOOT_DIR": str(boot)})
     for name in (
-        "inventory", "boot_initramfs", "boot_config",
-        "gpu_smoke:cuda", "gpu_smoke:ollama", "gpu_smoke:comfyui",
+        "inventory",
+        "boot_initramfs",
+        "boot_config",
+        "gpu_smoke:cuda",
+        "gpu_smoke:ollama",
+        "gpu_smoke:comfyui",
     ):
         assert name in result.stdout
 

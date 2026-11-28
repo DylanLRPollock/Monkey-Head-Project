@@ -14,17 +14,14 @@ files, exercising the same code paths used in production.
 
 from __future__ import annotations
 
-import io
 import re
-import tarfile
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 import pytest
 
 from huey.kernel_build.config_builder import (
     ConfigBuilder,
-    ConfigBuildResult,
     ConfigDelta,
     ParsedConfig,
 )
@@ -35,7 +32,6 @@ from huey.kernel_build.runner import (
     RunnerResult,
     RunnerTimeout,
 )
-
 
 # ---------------------------------------------------------------------------
 # FixtureRunner
@@ -55,7 +51,7 @@ class FixtureRunner:
         self,
         matcher: Callable[[CommandSpec], bool],
         handler: Callable[[CommandSpec], RunnerResult],
-    ) -> "FixtureRunner":
+    ) -> FixtureRunner:
         self._handlers.append((matcher, handler))
         return self
 
@@ -94,7 +90,7 @@ _ASSIGN_RE = re.compile(r"^(CONFIG_[A-Za-z0-9_]+)=(.+)$")
 _UNSET_RE = re.compile(r"^#\s*(CONFIG_[A-Za-z0-9_]+) is not set$")
 
 
-def _fake_merge_config_handler(spec: CommandSpec) -> RunnerResult:
+def _fake_merge_config_handler(spec: CommandSpec) -> RunnerResult:  # noqa: C901
     argv = list(spec.argv)
     output_dir: Path | None = None
     files: list[Path] = []
@@ -189,10 +185,15 @@ def _make_runner(*, olddefconfig_returncode: int = 0) -> FixtureRunner:
         if olddefconfig_returncode != 0:
             return RunnerResult(
                 command=CommandResult(
-                    argv=spec.argv, cwd=str(spec.cwd),
-                    returncode=olddefconfig_returncode, elapsed_seconds=0.0,
+                    argv=spec.argv,
+                    cwd=str(spec.cwd),
+                    returncode=olddefconfig_returncode,
+                    elapsed_seconds=0.0,
                 ),
-                executed=True, dry_run=False, stdout=b"", stderr=b"",
+                executed=True,
+                dry_run=False,
+                stdout=b"",
+                stderr=b"",
             )
         return _fake_olddefconfig_handler(spec)
 
@@ -255,8 +256,11 @@ def _setup(tmp_path: Path) -> tuple[Path, Path, list[Path], Path]:
 def test_happy_path_produces_effective_config(tmp_path: Path) -> None:
     src, base, frags, out = _setup(tmp_path)
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=frags,
-        output_dir=out, profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=frags,
+        output_dir=out,
+        profile="v100-workstation",
     )
     assert result.has_errors() is False, result.findings
     assert result.effective_config_path is not None
@@ -270,8 +274,11 @@ def test_happy_path_produces_effective_config(tmp_path: Path) -> None:
 def test_delta_report_written(tmp_path: Path) -> None:
     src, base, frags, out = _setup(tmp_path)
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=frags,
-        output_dir=out, profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=frags,
+        output_dir=out,
+        profile="v100-workstation",
     )
     assert result.delta_report_path is not None
     assert result.delta_report_path.is_file()
@@ -283,8 +290,11 @@ def test_delta_report_written(tmp_path: Path) -> None:
 def test_delta_categorizes_correctly(tmp_path: Path) -> None:
     src, base, frags, out = _setup(tmp_path)
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=frags,
-        output_dir=out, profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=frags,
+        output_dir=out,
+        profile="v100-workstation",
     )
     assert isinstance(result.delta, ConfigDelta)
     # Nouveau was y in base, unset in effective -> removed
@@ -299,8 +309,11 @@ def test_delta_categorizes_correctly(tmp_path: Path) -> None:
 def test_override_recorded_for_nouveau(tmp_path: Path) -> None:
     src, base, frags, out = _setup(tmp_path)
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=frags,
-        output_dir=out, profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=frags,
+        output_dir=out,
+        profile="v100-workstation",
     )
     assert any(ov.symbol == "CONFIG_DRM_NOUVEAU" for ov in result.overrides)
 
@@ -321,8 +334,11 @@ def test_modules_missing_is_error(tmp_path: Path) -> None:
         "# CONFIG_DRM_NOUVEAU is not set\n",
     )
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=[frag],
-        output_dir=tmp_path / "out", profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=[frag],
+        output_dir=tmp_path / "out",
+        profile="v100-workstation",
     )
     assert result.has_errors() is True
     codes = {f.code for f in result.findings}
@@ -341,12 +357,17 @@ def test_modversions_missing_is_nonblocking(tmp_path: Path) -> None:
         "# CONFIG_DRM_NOUVEAU is not set\n",
     )
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=[frag],
-        output_dir=tmp_path / "out", profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=[frag],
+        output_dir=tmp_path / "out",
+        profile="v100-workstation",
     )
     assert not result.has_errors(), result.findings
-    assert any(f.code == "MODVERSIONS_DISABLED" and f.severity == Severity.INFO
-               for f in result.findings)
+    assert any(
+        f.code == "MODVERSIONS_DISABLED" and f.severity == Severity.INFO
+        for f in result.findings
+    )
 
 
 def test_nouveau_forced_by_fragment_is_critical(tmp_path: Path) -> None:
@@ -355,22 +376,22 @@ def test_nouveau_forced_by_fragment_is_critical(tmp_path: Path) -> None:
     src = _make_source(tmp_path)
     base = _write_config(
         tmp_path / "base.config",
-        "CONFIG_MODULES=y\nCONFIG_MODVERSIONS=y\n"
-        "# CONFIG_DRM_NOUVEAU is not set\n",
+        "CONFIG_MODULES=y\nCONFIG_MODVERSIONS=y\n# CONFIG_DRM_NOUVEAU is not set\n",
     )
     frag = _write_config(
         tmp_path / "frag.config",
         "CONFIG_DRM_NOUVEAU=y\n",
     )
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=[frag],
-        output_dir=tmp_path / "out", profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=[frag],
+        output_dir=tmp_path / "out",
+        profile="v100-workstation",
     )
     codes = {f.code for f in result.findings}
     assert "NOUVEAU_FORCED_FOR_V100" in codes
-    critical = [
-        f for f in result.findings if f.code == "NOUVEAU_FORCED_FOR_V100"
-    ]
+    critical = [f for f in result.findings if f.code == "NOUVEAU_FORCED_FOR_V100"]
     assert critical[0].severity == Severity.CRITICAL
 
 
@@ -378,8 +399,11 @@ def test_nouveau_override_works_when_fragment_wins(tmp_path: Path) -> None:
     """Base has Nouveau=y, fragment unsets it -> no error."""
     src, base, frags, out = _setup(tmp_path)
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=frags,
-        output_dir=out, profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=frags,
+        output_dir=out,
+        profile="v100-workstation",
     )
     codes = {f.code for f in result.findings}
     assert "NOUVEAU_FORCED_FOR_V100" not in codes
@@ -395,8 +419,11 @@ def test_non_v100_profile_does_not_check_nouveau(tmp_path: Path) -> None:
     )
     frag = _write_config(tmp_path / "frag.config", "# comment\n")
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=[frag],
-        output_dir=tmp_path / "out", profile="lab",
+        source_dir=src,
+        base_config_path=base,
+        fragments=[frag],
+        output_dir=tmp_path / "out",
+        profile="lab",
     )
     codes = {f.code for f in result.findings}
     assert "NOUVEAU_FORCED_FOR_V100" not in codes
@@ -416,8 +443,11 @@ def test_missing_makefile_is_error(tmp_path: Path) -> None:
     base = _write_config(tmp_path / "base.config", "CONFIG_MODULES=y\n")
     frag = _write_config(tmp_path / "frag.config", "# comment\n")
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=[frag],
-        output_dir=tmp_path / "out", profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=[frag],
+        output_dir=tmp_path / "out",
+        profile="v100-workstation",
     )
     codes = {f.code for f in result.findings}
     assert "SOURCE_MISSING_MAKEFILE" in codes
@@ -430,8 +460,11 @@ def test_missing_merge_script_is_error(tmp_path: Path) -> None:
     base = _write_config(tmp_path / "base.config", "CONFIG_MODULES=y\n")
     frag = _write_config(tmp_path / "frag.config", "# comment\n")
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=[frag],
-        output_dir=tmp_path / "out", profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=[frag],
+        output_dir=tmp_path / "out",
+        profile="v100-workstation",
     )
     codes = {f.code for f in result.findings}
     assert "SOURCE_MISSING_MERGE_SCRIPT" in codes
@@ -441,8 +474,10 @@ def test_missing_base_config_is_error(tmp_path: Path) -> None:
     src = _make_source(tmp_path)
     frag = _write_config(tmp_path / "frag.config", "# comment\n")
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=tmp_path / "nonexistent.config",
-        fragments=[frag], output_dir=tmp_path / "out",
+        source_dir=src,
+        base_config_path=tmp_path / "nonexistent.config",
+        fragments=[frag],
+        output_dir=tmp_path / "out",
         profile="v100-workstation",
     )
     codes = {f.code for f in result.findings}
@@ -453,9 +488,11 @@ def test_missing_fragment_is_error(tmp_path: Path) -> None:
     src = _make_source(tmp_path)
     base = _write_config(tmp_path / "base.config", "CONFIG_MODULES=y\n")
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base,
+        source_dir=src,
+        base_config_path=base,
         fragments=[tmp_path / "missing.config"],
-        output_dir=tmp_path / "out", profile="v100-workstation",
+        output_dir=tmp_path / "out",
+        profile="v100-workstation",
     )
     codes = {f.code for f in result.findings}
     assert "FRAGMENT_MISSING" in codes
@@ -467,8 +504,11 @@ def test_oversized_fragment_is_error(tmp_path: Path) -> None:
     huge = tmp_path / "huge.config"
     huge.write_text("CONFIG_X=y\n" * 1500, encoding="utf-8")
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=[huge],
-        output_dir=tmp_path / "out", profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=[huge],
+        output_dir=tmp_path / "out",
+        profile="v100-workstation",
     )
     codes = {f.code for f in result.findings}
     assert "FRAGMENT_TOO_LARGE" in codes
@@ -482,8 +522,11 @@ def test_oversized_fragment_is_error(tmp_path: Path) -> None:
 def test_olddefconfig_nonzero_is_error(tmp_path: Path) -> None:
     src, base, frags, out = _setup(tmp_path)
     result = ConfigBuilder(_make_runner(olddefconfig_returncode=2)).build(
-        source_dir=src, base_config_path=base, fragments=frags,
-        output_dir=out, profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=frags,
+        output_dir=out,
+        profile="v100-workstation",
     )
     codes = {f.code for f in result.findings}
     assert "OLDDEFCONFIG_FAILED" in codes
@@ -498,8 +541,11 @@ def test_merge_launch_failure_is_error(tmp_path: Path) -> None:
 
     runner.on(_is_merge_config, _raise_merge)
     result = ConfigBuilder(runner).build(
-        source_dir=src, base_config_path=base, fragments=frags,
-        output_dir=out, profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=frags,
+        output_dir=out,
+        profile="v100-workstation",
     )
     codes = {f.code for f in result.findings}
     assert "MERGE_CONFIG_LAUNCH_FAILED" in codes
@@ -514,8 +560,11 @@ def test_merge_timeout_is_error(tmp_path: Path) -> None:
 
     runner.on(_is_merge_config, _timeout)
     result = ConfigBuilder(runner).build(
-        source_dir=src, base_config_path=base, fragments=frags,
-        output_dir=out, profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=frags,
+        output_dir=out,
+        profile="v100-workstation",
     )
     codes = {f.code for f in result.findings}
     assert "MERGE_CONFIG_TIMEOUT" in codes
@@ -530,8 +579,12 @@ def test_dry_run_makes_no_writes_and_no_subprocesses(tmp_path: Path) -> None:
     src, base, frags, out = _setup(tmp_path)
     runner = FixtureRunner()  # no handlers -> any call raises
     result = ConfigBuilder(runner).build(
-        source_dir=src, base_config_path=base, fragments=frags,
-        output_dir=out, profile="v100-workstation", dry_run=True,
+        source_dir=src,
+        base_config_path=base,
+        fragments=frags,
+        output_dir=out,
+        profile="v100-workstation",
+        dry_run=True,
     )
     assert result.dry_run is True
     assert runner.calls == ()
@@ -549,13 +602,19 @@ def test_dry_run_makes_no_writes_and_no_subprocesses(tmp_path: Path) -> None:
 def test_two_runs_same_inputs_same_output(tmp_path: Path) -> None:
     src, base, frags, out = _setup(tmp_path)
     r1 = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=frags,
-        output_dir=out, profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=frags,
+        output_dir=out,
+        profile="v100-workstation",
     )
     text1 = r1.effective_config_path.read_text(encoding="utf-8")
     r2 = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=frags,
-        output_dir=out, profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=frags,
+        output_dir=out,
+        profile="v100-workstation",
     )
     text2 = r2.effective_config_path.read_text(encoding="utf-8")
     assert text1 == text2
@@ -567,8 +626,11 @@ def test_stale_config_in_output_is_replaced(tmp_path: Path) -> None:
     out.mkdir(parents=True)
     (out / ".config").write_text("CONFIG_STALE=y\n", encoding="utf-8")
     result = ConfigBuilder(_make_runner()).build(
-        source_dir=src, base_config_path=base, fragments=frags,
-        output_dir=out, profile="v100-workstation",
+        source_dir=src,
+        base_config_path=base,
+        fragments=frags,
+        output_dir=out,
+        profile="v100-workstation",
     )
     assert result.effective_config is not None
     assert result.effective_config.get("CONFIG_STALE") is None
@@ -590,11 +652,13 @@ def test_parsed_config_set_symbols_excludes_unset() -> None:
 
 # Additional output-path and host-safety checks for the kernel builder.
 
+
 def test_protected_host_output_rejected_before_runner(tmp_path: Path) -> None:
     src, base, frags, _ = _setup(tmp_path)
     runner = FixtureRunner()
-    result = ConfigBuilder(runner).build(src, base, frags, Path("/boot/huey-config"),
-                                         profile="v100-workstation")
+    result = ConfigBuilder(runner).build(
+        src, base, frags, Path("/boot/huey-config"), profile="v100-workstation"
+    )
     assert result.has_errors()
     assert {f.code for f in result.findings} == {"PROTECTED_HOST_PATH"}
     assert not runner.calls
@@ -603,9 +667,14 @@ def test_protected_host_output_rejected_before_runner(tmp_path: Path) -> None:
 def test_output_path_escape_denied_by_workspace_root(tmp_path: Path) -> None:
     src, base, frags, out = _setup(tmp_path)
     runner = FixtureRunner()
-    result = ConfigBuilder(runner).build(src, base, frags, out,
-                                         profile="v100-workstation",
-                                         workspace_root=tmp_path / "approved")
+    result = ConfigBuilder(runner).build(
+        src,
+        base,
+        frags,
+        out,
+        profile="v100-workstation",
+        workspace_root=tmp_path / "approved",
+    )
     assert "PATH_ESCAPES_WORKSPACE" in {f.code for f in result.findings}
     assert not runner.calls
     assert not out.exists()
@@ -617,8 +686,14 @@ def test_symlink_escape_from_workspace_denied(tmp_path: Path) -> None:
     ws.mkdir()
     (ws / "out").symlink_to(tmp_path)
     runner = FixtureRunner()
-    result = ConfigBuilder(runner).build(src, base, frags, ws / "out" / "build",
-                                         profile="v100-workstation", workspace_root=ws)
+    result = ConfigBuilder(runner).build(
+        src,
+        base,
+        frags,
+        ws / "out" / "build",
+        profile="v100-workstation",
+        workspace_root=ws,
+    )
     assert "PATH_ESCAPES_WORKSPACE" in {f.code for f in result.findings}
     assert not runner.calls
 
@@ -626,8 +701,9 @@ def test_symlink_escape_from_workspace_denied(tmp_path: Path) -> None:
 def test_parent_directory_traversal_is_rejected(tmp_path: Path) -> None:
     src, base, frags, _ = _setup(tmp_path)
     runner = FixtureRunner()
-    result = ConfigBuilder(runner).build(src, base, frags, Path("../out"),
-                                         profile="v100-workstation")
+    result = ConfigBuilder(runner).build(
+        src, base, frags, Path("../out"), profile="v100-workstation"
+    )
     assert "PATH_ESCAPES_WORKSPACE" in {f.code for f in result.findings}
     assert not runner.calls
 
@@ -635,8 +711,9 @@ def test_parent_directory_traversal_is_rejected(tmp_path: Path) -> None:
 def test_output_inside_kernel_source_rejected(tmp_path: Path) -> None:
     src, base, frags, _ = _setup(tmp_path)
     runner = FixtureRunner()
-    result = ConfigBuilder(runner).build(src, base, frags, src / "out",
-                                         profile="v100-workstation")
+    result = ConfigBuilder(runner).build(
+        src, base, frags, src / "out", profile="v100-workstation"
+    )
     assert "OUTPUT_INSIDE_SOURCE_TREE" in {f.code for f in result.findings}
     assert not runner.calls
 
@@ -645,8 +722,9 @@ def test_output_overwriting_base_config_rejected(tmp_path: Path) -> None:
     src, base, frags, _ = _setup(tmp_path)
     runner = FixtureRunner()
     base = _write_config(tmp_path / ".config", _BASE_CONFIG)
-    result = ConfigBuilder(runner).build(src, base, frags, tmp_path,
-                                         profile="v100-workstation")
+    result = ConfigBuilder(runner).build(
+        src, base, frags, tmp_path, profile="v100-workstation"
+    )
     assert "OUTPUT_OVERWRITES_INPUT" in {f.code for f in result.findings}
     assert base.is_file()
     assert not runner.calls
@@ -660,8 +738,9 @@ def test_symlinked_output_file_refused(tmp_path: Path, filename: str) -> None:
     guarded.write_text("must-not-change", encoding="utf-8")
     (out / filename).symlink_to(guarded)
     runner = FixtureRunner()
-    result = ConfigBuilder(runner).build(src, base, frags, out,
-                                         profile="v100-workstation")
+    result = ConfigBuilder(runner).build(
+        src, base, frags, out, profile="v100-workstation"
+    )
     assert "OUTPUT_SYMLINK_REFUSED" in {f.code for f in result.findings}
     assert guarded.read_text(encoding="utf-8") == "must-not-change"
     assert not runner.calls
@@ -675,8 +754,9 @@ def test_make_timeout_has_distinct_error(tmp_path: Path) -> None:
         raise RunnerTimeout("olddefconfig exceeded deadline")
 
     runner.on(_is_olddefconfig, timeout)
-    result = ConfigBuilder(runner).build(src, base, frags, out,
-                                         profile="v100-workstation")
+    result = ConfigBuilder(runner).build(
+        src, base, frags, out, profile="v100-workstation"
+    )
     assert "OLDDEFCONFIG_TIMEOUT" in {f.code for f in result.findings}
 
 
@@ -686,14 +766,19 @@ def test_amdgpu_removed_by_olddefconfig_blocks_profile(tmp_path: Path) -> None:
 
     def change_amd(spec: CommandSpec) -> RunnerResult:
         p = next(Path(x[2:]) for x in spec.argv if x.startswith("O=")) / ".config"
-        p.write_text(p.read_text(encoding="utf-8").replace(
-            "CONFIG_DRM_AMDGPU=m", "# CONFIG_DRM_AMDGPU is not set",
-        ), encoding="utf-8")
+        p.write_text(
+            p.read_text(encoding="utf-8").replace(
+                "CONFIG_DRM_AMDGPU=m",
+                "# CONFIG_DRM_AMDGPU is not set",
+            ),
+            encoding="utf-8",
+        )
         return _ok(spec)
 
     runner.on(_is_olddefconfig, change_amd)
-    result = ConfigBuilder(runner).build(src, base, frags, out,
-                                         profile="v100-workstation")
+    result = ConfigBuilder(runner).build(
+        src, base, frags, out, profile="v100-workstation"
+    )
     assert "AMDGPU_MODULE_REQUIRED" in {f.code for f in result.findings}
     assert result.has_errors()
 
@@ -702,9 +787,9 @@ def test_valid_workspace_scoped_output_passes(tmp_path: Path) -> None:
     src, base, frags, _ = _setup(tmp_path)
     ws = tmp_path / "approved"
     out = ws / "config"
-    result = ConfigBuilder(_make_runner()).build(src, base, frags, out,
-                                                 profile="v100-workstation",
-                                                 workspace_root=ws)
+    result = ConfigBuilder(_make_runner()).build(
+        src, base, frags, out, profile="v100-workstation", workspace_root=ws
+    )
     assert not result.has_errors()
     assert result.effective_config_path == out / ".config"
 
@@ -713,8 +798,12 @@ def test_relative_output_is_rooted_in_approved_workspace(tmp_path: Path) -> None
     src, base, frags, _ = _setup(tmp_path)
     root = tmp_path / "approved"
     result = ConfigBuilder(_make_runner()).build(
-        src, base, frags, Path("config"),
-        profile="v100-workstation", workspace_root=root,
+        src,
+        base,
+        frags,
+        Path("config"),
+        profile="v100-workstation",
+        workspace_root=root,
     )
     assert not result.has_errors(), result.findings
     assert result.effective_config_path == root / "config" / ".config"

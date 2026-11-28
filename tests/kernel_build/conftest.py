@@ -50,11 +50,12 @@ from __future__ import annotations
 
 import hashlib
 import shutil
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 import pytest
 
+from huey.kernel_build.runner import CommandSpec
 
 #: Repository root derived from this file's location. Do not touch the
 #: filesystem at import time; ``parents[2]`` is pure path arithmetic.
@@ -68,8 +69,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 #: ``nvidia-smi`` header line as printed by 580.196.07. The "CUDA Version"
 #: field is the driver-advertised API, not the installed toolkit.
 NVIDIA_SMI_BANNER = (
-    b"| NVIDIA-SMI 580.196.07   Driver Version: 580.196.07   "
-    b"CUDA Version: 13.0     |\n"
+    b"| NVIDIA-SMI 580.196.07   Driver Version: 580.196.07   CUDA Version: 13.0     |\n"
 )
 
 #: One V100 CSV row: name, uuid, pci.bus_id, compute_cap.
@@ -127,14 +127,14 @@ class FakeRunner:
 
     def __init__(self) -> None:
         self._handlers: list[tuple[Callable, Callable]] = []
-        self._records: list[tuple["CommandSpec", bool]] = []  # type: ignore[name-defined]
+        self._records: list[tuple[CommandSpec, bool]] = []  # type: ignore[name-defined]
 
-    def on(self, matcher: Callable, handler: Callable) -> "FakeRunner":
+    def on(self, matcher: Callable, handler: Callable) -> FakeRunner:
         """Register a handler; ``matcher(spec) -> bool``."""
         self._handlers.append((matcher, handler))
         return self
 
-    def on_argv(self, prefix: tuple[str, ...], handler: Callable) -> "FakeRunner":
+    def on_argv(self, prefix: tuple[str, ...], handler: Callable) -> FakeRunner:
         """Register a handler that fires when ``spec.argv`` starts with ``prefix``."""
         n = len(prefix)
 
@@ -143,7 +143,7 @@ class FakeRunner:
 
         return self.on(_matches, handler)
 
-    def on_first_arg(self, first: str, handler: Callable) -> "FakeRunner":
+    def on_first_arg(self, first: str, handler: Callable) -> FakeRunner:
         """Register a handler that fires when ``spec.argv[0] == first``."""
 
         def _matches(spec) -> bool:
@@ -151,7 +151,7 @@ class FakeRunner:
 
         return self.on(_matches, handler)
 
-    def run(self, spec, *, dry_run: bool = False, strict_output: bool = False):  # noqa: ARG002
+    def run(self, spec, *, dry_run: bool = False, strict_output: bool = False):
         self._records.append((spec, dry_run))
         for matcher, handler in self._handlers:
             if matcher(spec):
@@ -165,12 +165,12 @@ class FakeRunner:
         )
 
     @property
-    def calls(self) -> tuple["CommandSpec", ...]:  # type: ignore[name-defined]
+    def calls(self) -> tuple[CommandSpec, ...]:  # type: ignore[name-defined]
         """The ``CommandSpec`` objects passed to ``run()``, in order."""
         return tuple(spec for spec, _ in self._records)
 
     @property
-    def call_records(self) -> tuple[tuple["CommandSpec", bool], ...]:  # type: ignore[name-defined]
+    def call_records(self) -> tuple[tuple[CommandSpec, bool], ...]:  # type: ignore[name-defined]
         """The ``(CommandSpec, dry_run)`` pairs passed to ``run()``, in order."""
         return tuple(self._records)
 
@@ -281,9 +281,9 @@ def make_module_tree() -> Callable[..., Path]:
         (tree / "kernel" / "drivers" / "gpu" / "drm" / "amd" / "amdgpu").mkdir(
             parents=True, exist_ok=True
         )
-        (tree / "kernel" / "drivers" / "gpu" / "drm" / "amd" / "amdgpu" / "amdgpu.ko").write_bytes(
-            b"fake amdgpu.ko\n"
-        )
+        (
+            tree / "kernel" / "drivers" / "gpu" / "drm" / "amd" / "amdgpu" / "amdgpu.ko"
+        ).write_bytes(b"fake amdgpu.ko\n")
         (tree / "updates" / "nvidia").mkdir(parents=True, exist_ok=True)
         for mod in modules:
             (tree / "updates" / "nvidia" / f"{mod}.ko").write_bytes(

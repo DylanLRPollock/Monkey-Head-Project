@@ -1,4 +1,5 @@
 """Static safety and provenance checks for post-packaging reconciliation."""
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -27,7 +28,9 @@ def test_known_packages_and_configs_are_pinned() -> None:
 def test_image_and_headers_match_build_objects() -> None:
     source = _script()
     assert 'embedded_sha "$IMAGE" "./boot/vmlinuz-$KR"' in source
-    assert 'embedded_sha "$HEADERS" "./usr/src/linux-headers-$KR/Module.symvers"' in source
+    assert (
+        'embedded_sha "$HEADERS" "./usr/src/linux-headers-$KR/Module.symvers"' in source
+    )
     assert "current_image_sha" in source
     assert "current_symvers_sha" in source
     assert "Do NOT yet build or install NVIDIA" in source
@@ -44,8 +47,15 @@ def test_read_only_and_prevents_report_overwrites() -> None:
         assert not any(
             line.startswith(command)
             for command in (
-                "sudo ", "apt ", "make ", "dpkg -i", "update-initramfs",
-                "update-grub", "grub-install", "reboot", "modprobe",
+                "sudo ",
+                "apt ",
+                "make ",
+                "dpkg -i",
+                "update-initramfs",
+                "update-grub",
+                "grub-install",
+                "reboot",
+                "modprobe",
             )
         )
 

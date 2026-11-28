@@ -20,12 +20,12 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import sys
 import traceback
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from enum import IntEnum
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 from huey.kernel_build.models import (
     DriverBaseline,
@@ -40,7 +40,6 @@ from huey.kernel_build.models import (
 from huey.kernel_build.policy import (
     PolicyDecision,
     SecureBootState,
-    assert_allowed,
     evaluate_build_plan,
 )
 from huey.kernel_build.runner import RunnerProtocol
@@ -73,7 +72,7 @@ class ExitCode(IntEnum):
 class CliError(Exception):
     """Raised by subcommands to short-circuit with a specific exit code."""
 
-    def __init__(self, code: ExitCode, message: str) -> None:
+    def __init__(self, code: ExitCode, message: str) -> None:  # noqa: B042
         super().__init__(message)
         self.code = code
         self.message = message
@@ -164,7 +163,7 @@ class BuildIntent:
     allow_network_fetch: bool
 
 
-def _load_build_intent(path: Path) -> BuildIntent:
+def _load_build_intent(path: Path) -> BuildIntent:  # noqa: C901
     """Load and validate ``build.yaml`` into a :class:`BuildIntent`."""
     try:
         import yaml  # type: ignore[import-not-found]
@@ -364,7 +363,10 @@ def _doctor_advice(report: Any) -> list[str]:
             "Install 'mokutil' or ensure EFI variables are mounted to "
             "determine Secure Boot state before planning a build."
         )
-    if report.running_kernel and report.running_kernel not in report.kernel_headers_available:
+    if (
+        report.running_kernel
+        and report.running_kernel not in report.kernel_headers_available
+    ):
         advice.append(
             f"Install linux-headers-{report.running_kernel} to enable "
             "out-of-tree module builds for the running kernel."
@@ -428,7 +430,11 @@ def _cmd_plan(args: argparse.Namespace) -> CliResult:
         exit_code=exit_code,
         message=(
             f"Plan {'allowed' if decision.allowed else 'blocked'}"
-            + ("" if args.with_inventory else " (static; --with-inventory for deep check)")
+            + (
+                ""
+                if args.with_inventory
+                else " (static; --with-inventory for deep check)"
+            )
         ),
         payload={
             "allowed": decision.allowed,
@@ -627,7 +633,7 @@ def _cmd_build_nvidia(args: argparse.Namespace) -> CliResult:
 def _cmd_initramfs(args: argparse.Namespace) -> CliResult:
     from huey.kernel_build.initramfs_builder import InitramfsBuilder
 
-    intent = _load_build_intent(args.config)
+    _load_build_intent(args.config)
     result = InitramfsBuilder(_make_runner()).build(
         kernel_release=args.kernel_release,
         module_tree=args.module_tree,
@@ -648,7 +654,9 @@ def _cmd_initramfs(args: argparse.Namespace) -> CliResult:
     }
     if result.has_errors():
         return _component_error(
-            subcommand="initramfs", findings=result.findings, payload=payload,
+            subcommand="initramfs",
+            findings=result.findings,
+            payload=payload,
         )
     return CliResult(
         subcommand="initramfs",
@@ -790,7 +798,9 @@ def _cmd_verify(args: argparse.Namespace) -> CliResult:
         driver_version=drv,
         secure_boot_state=args.secure_boot_state,
     )
-    result = ReleaseVerifier(_make_runner()).verify_release(ctx, dry_run=args.verify_dry_run)
+    result = ReleaseVerifier(_make_runner()).verify_release(
+        ctx, dry_run=args.verify_dry_run
+    )
     status = "ok" if result.boot_ready else "error"
     exit_code = (
         int(ExitCode.SUCCESS) if result.boot_ready else int(ExitCode.BUILD_FAILURE)
@@ -870,7 +880,9 @@ def _cmd_release(args: argparse.Namespace) -> CliResult:
     }
     if result.has_errors():
         return _component_error(
-            subcommand="release", findings=result.findings, payload=payload,
+            subcommand="release",
+            findings=result.findings,
+            payload=payload,
         )
     return CliResult(
         subcommand="release",
@@ -1024,7 +1036,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--jobs", type=int, default=None)
     p.add_argument("--localversion", default=None)
     p.add_argument(
-        "--source-date-epoch", type=int, default=0,
+        "--source-date-epoch",
+        type=int,
+        default=0,
         help="Reproducible-build timestamp (default 0 = Unix epoch)",
     )
     p.add_argument("--dry-run", action="store_true")
@@ -1118,7 +1132,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             payload={"error": exc.message},
             findings=(),
         )
-    except Exception as exc:  # noqa: BLE001 - CLI must never leak a raw trace
+    except Exception as exc:
         traceback.print_exc()
         result = CliResult(
             subcommand=args.subcommand,

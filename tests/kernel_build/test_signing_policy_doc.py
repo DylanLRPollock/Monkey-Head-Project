@@ -51,13 +51,10 @@ def test_document_exists_and_is_nonempty() -> None:
 
 
 def test_document_has_a_title() -> None:
-    first_nonempty = next(
-        line for line in _read().splitlines() if line.strip()
-    )
-    assert first_nonempty.startswith("# "), (
-        f"signing-policy.md must start with a top-level heading, "
-        f"got {first_nonempty!r}"
-    )
+    first_nonempty = next(line for line in _read().splitlines() if line.strip())
+    assert first_nonempty.startswith(
+        "# "
+    ), f"signing-policy.md must start with a top-level heading, got {first_nonempty!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -208,9 +205,7 @@ def test_states_never_disable_secure_boot() -> None:
     text = _lower()
     # Either an explicit statement or clear absence of any procedure that
     # would disable it.
-    assert (
-        "never" in text and "disable secure boot" in text
-    ), (
+    assert "never" in text and "disable secure boot" in text, (
         "signing-policy.md must state explicitly that the framework never "
         "disables Secure Boot and does not provide a procedure to do so"
     )
@@ -240,16 +235,14 @@ def test_does_not_contain_a_disable_secure_boot_procedure() -> None:
 
 def test_documents_key_rotation() -> None:
     text = _lower()
-    assert "rotat" in text, (
-        "signing-policy.md must document key rotation"
-    )
+    assert "rotat" in text, "signing-policy.md must document key rotation"
 
 
 def test_documents_revocation() -> None:
     text = _lower()
-    assert "revoc" in text, (
-        "signing-policy.md must document key revocation in case of compromise"
-    )
+    assert (
+        "revoc" in text
+    ), "signing-policy.md must document key revocation in case of compromise"
 
 
 # ---------------------------------------------------------------------------

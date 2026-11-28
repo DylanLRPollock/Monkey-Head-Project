@@ -25,13 +25,11 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import Callable
 
 import pytest
 
 from huey.kernel_build.initramfs_builder import (
     InitramfsBuilder,
-    InitramfsBuildResult,
 )
 from huey.kernel_build.models import (
     CommandResult,
@@ -44,7 +42,6 @@ from huey.kernel_build.runner import (
     RunnerTimeout,
 )
 
-
 # ===========================================================================
 # FixtureRunner
 # ===========================================================================
@@ -55,7 +52,7 @@ class FixtureRunner:
         self._handlers: list = []
         self._calls: list[CommandSpec] = []
 
-    def on(self, matcher, handler) -> "FixtureRunner":
+    def on(self, matcher, handler) -> FixtureRunner:
         self._handlers.append((matcher, handler))
         return self
 
@@ -74,20 +71,30 @@ class FixtureRunner:
 def _ok(spec, *, stdout: bytes = b"", stderr: bytes = b"") -> RunnerResult:
     return RunnerResult(
         command=CommandResult(
-            argv=spec.argv, cwd=str(spec.cwd),
-            returncode=0, elapsed_seconds=0.0,
+            argv=spec.argv,
+            cwd=str(spec.cwd),
+            returncode=0,
+            elapsed_seconds=0.0,
         ),
-        executed=True, dry_run=False, stdout=stdout, stderr=stderr,
+        executed=True,
+        dry_run=False,
+        stdout=stdout,
+        stderr=stderr,
     )
 
 
 def _fail(spec, returncode: int = 1) -> RunnerResult:
     return RunnerResult(
         command=CommandResult(
-            argv=spec.argv, cwd=str(spec.cwd),
-            returncode=returncode, elapsed_seconds=0.0,
+            argv=spec.argv,
+            cwd=str(spec.cwd),
+            returncode=returncode,
+            elapsed_seconds=0.0,
         ),
-        executed=True, dry_run=False, stdout=b"", stderr=b"",
+        executed=True,
+        dry_run=False,
+        stdout=b"",
+        stderr=b"",
     )
 
 
@@ -114,9 +121,9 @@ KR = "7.2.15-huey1"
 def _make_module_tree(tmp_path: Path) -> Path:
     tree = tmp_path / "modules-tree"
     (tree / "kernel" / "drivers" / "gpu" / "drm" / "amd" / "amdgpu").mkdir(parents=True)
-    (tree / "kernel" / "drivers" / "gpu" / "drm" / "amd" / "amdgpu" / "amdgpu.ko").write_bytes(
-        b"fake amdgpu.ko\n"
-    )
+    (
+        tree / "kernel" / "drivers" / "gpu" / "drm" / "amd" / "amdgpu" / "amdgpu.ko"
+    ).write_bytes(b"fake amdgpu.ko\n")
     (tree / "updates" / "nvidia").mkdir(parents=True)
     (tree / "updates" / "nvidia" / "nvidia.ko").write_bytes(b"fake nvidia.ko\n")
     (tree / "updates" / "nvidia" / "nvidia-uvm.ko").write_bytes(b"fake nvidia-uvm.ko\n")
@@ -124,18 +131,16 @@ def _make_module_tree(tmp_path: Path) -> Path:
     return tree
 
 
-def _write_modules_list(path: Path, modules: tuple[str, ...] = ("amdgpu", "nvidia", "nvidia-uvm")) -> Path:
-    path.write_text(
-        "# Test modules\n" + "\n".join(modules) + "\n", encoding="utf-8"
-    )
+def _write_modules_list(
+    path: Path, modules: tuple[str, ...] = ("amdgpu", "nvidia", "nvidia-uvm")
+) -> Path:
+    path.write_text("# Test modules\n" + "\n".join(modules) + "\n", encoding="utf-8")
     return path
 
 
 def _write_modprobe_conf(path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        "blacklist nouveau\ninstall nouveau /bin/false\n", encoding="utf-8"
-    )
+    path.write_text("blacklist nouveau\ninstall nouveau /bin/false\n", encoding="utf-8")
     return path
 
 
@@ -151,7 +156,7 @@ _DEFAULT_LISTING = (
 )
 
 
-def _build_runner(
+def _build_runner(  # noqa: C901
     *,
     kernel_release: str = KR,
     listing_entries: tuple[str, ...] | None = None,
@@ -269,7 +274,12 @@ def test_depmod_argv_shape(tmp_path: Path) -> None:
     depmods = [c for c in runner.calls if _is_depmod(c)]
     assert len(depmods) == 1
     spec = depmods[0]
-    assert spec.argv == ("depmod", "-b", str((s["output_dir"] / f"stage-{KR}").resolve()), KR)
+    assert spec.argv == (
+        "depmod",
+        "-b",
+        str((s["output_dir"] / f"stage-{KR}").resolve()),
+        KR,
+    )
 
 
 def test_mkinitramfs_argv_shape(tmp_path: Path) -> None:
@@ -295,9 +305,7 @@ def test_mkinitramfs_env_vars(tmp_path: Path) -> None:
     runner = _build_runner()
     InitramfsBuilder(runner).build(kernel_release=KR, **s)
     spec = next(c for c in runner.calls if _is_mkinitramfs(c))
-    assert spec.env_overrides["MODULESDIR"].endswith(
-        f"stage-{KR}/lib/modules"
-    )
+    assert spec.env_overrides["MODULESDIR"].endswith(f"stage-{KR}/lib/modules")
     assert spec.env_overrides["SOURCE_DATE_EPOCH"] == "0"
 
 
@@ -311,7 +319,9 @@ def test_module_tree_staged_under_lib_modules(tmp_path: Path) -> None:
     InitramfsBuilder(_build_runner()).build(kernel_release=KR, **s)
     staged = s["output_dir"] / f"stage-{KR}" / "lib" / "modules" / KR
     assert staged.is_dir()
-    assert (staged / "kernel" / "drivers" / "gpu" / "drm" / "amd" / "amdgpu" / "amdgpu.ko").is_file()
+    assert (
+        staged / "kernel" / "drivers" / "gpu" / "drm" / "amd" / "amdgpu" / "amdgpu.ko"
+    ).is_file()
     assert (staged / "updates" / "nvidia" / "nvidia.ko").is_file()
     assert (staged / "updates" / "nvidia" / "nvidia-uvm.ko").is_file()
 
@@ -320,8 +330,7 @@ def test_initramfs_conf_has_modules_dep_and_modulesdir(tmp_path: Path) -> None:
     s = _setup(tmp_path)
     InitramfsBuilder(_build_runner()).build(kernel_release=KR, **s)
     conf = (
-        s["output_dir"]
-        / f"stage-{KR}" / "etc" / "initramfs-tools" / "initramfs.conf"
+        s["output_dir"] / f"stage-{KR}" / "etc" / "initramfs-tools" / "initramfs.conf"
     )
     text = conf.read_text(encoding="utf-8")
     assert "MODULES=dep" in text
@@ -334,8 +343,7 @@ def test_modules_file_has_requested_modules(tmp_path: Path) -> None:
     s = _setup(tmp_path)
     InitramfsBuilder(_build_runner()).build(kernel_release=KR, **s)
     modules_conf = (
-        s["output_dir"]
-        / f"stage-{KR}" / "etc" / "initramfs-tools" / "modules"
+        s["output_dir"] / f"stage-{KR}" / "etc" / "initramfs-tools" / "modules"
     )
     text = modules_conf.read_text(encoding="utf-8")
     assert "amdgpu" in text
@@ -350,11 +358,16 @@ def test_modprobe_hook_installed_and_executable(tmp_path: Path) -> None:
     InitramfsBuilder(_build_runner()).build(kernel_release=KR, **s)
     hook = (
         s["output_dir"]
-        / f"stage-{KR}" / "etc" / "initramfs-tools" / "hooks" / "huey-v100-modprobe"
+        / f"stage-{KR}"
+        / "etc"
+        / "initramfs-tools"
+        / "hooks"
+        / "huey-v100-modprobe"
     )
     assert hook.is_file()
     # Executable bit set (required by mkinitramfs).
     import os
+
     assert os.access(hook, os.X_OK)
     text = hook.read_text(encoding="utf-8")
     # Standard hook skeleton.
@@ -370,10 +383,7 @@ def test_modprobe_hook_installed_and_executable(tmp_path: Path) -> None:
 def test_staged_modprobe_conf_matches_input(tmp_path: Path) -> None:
     s = _setup(tmp_path)
     InitramfsBuilder(_build_runner()).build(kernel_release=KR, **s)
-    staged = (
-        s["output_dir"]
-        / f"stage-{KR}" / "etc" / "modprobe.d" / "huey-v100.conf"
-    )
+    staged = s["output_dir"] / f"stage-{KR}" / "etc" / "modprobe.d" / "huey-v100.conf"
     assert staged.is_file()
     assert staged.read_bytes() == s["modprobe_conf_path"].read_bytes()
 
@@ -389,9 +399,9 @@ def test_wrong_release_is_critical(tmp_path: Path) -> None:
         "lib/modules/7.2.12-huey1/kernel/x.ko",
         "etc/modprobe.d/huey-v100.conf",
     )
-    result = InitramfsBuilder(
-        _build_runner(listing_entries=listing)
-    ).build(kernel_release=KR, **s)
+    result = InitramfsBuilder(_build_runner(listing_entries=listing)).build(
+        kernel_release=KR, **s
+    )
     codes = {f.code for f in result.findings}
     assert "INITRAMFS_WRONG_RELEASE" in codes
     critical = [f for f in result.findings if f.code == "INITRAMFS_WRONG_RELEASE"]
@@ -407,9 +417,9 @@ def test_missing_required_module_errors(tmp_path: Path) -> None:
         # nvidia-uvm deliberately omitted
         "etc/modprobe.d/huey-v100.conf",
     )
-    result = InitramfsBuilder(
-        _build_runner(listing_entries=listing)
-    ).build(kernel_release=KR, **s)
+    result = InitramfsBuilder(_build_runner(listing_entries=listing)).build(
+        kernel_release=KR, **s
+    )
     codes = {f.code for f in result.findings}
     assert "INITRAMFS_REQUIRED_MODULE_MISSING" in codes
     assert "nvidia-uvm" in result.modules_missing
@@ -418,12 +428,13 @@ def test_missing_required_module_errors(tmp_path: Path) -> None:
 
 def test_forbidden_nouveau_is_critical(tmp_path: Path) -> None:
     s = _setup(tmp_path)
-    listing = tuple(e.format(kr=KR) for e in _DEFAULT_LISTING) + (
+    listing = (
+        *tuple(e.format(kr=KR) for e in _DEFAULT_LISTING),
         f"lib/modules/{KR}/kernel/drivers/gpu/drm/nouveau/nouveau.ko",
     )
-    result = InitramfsBuilder(
-        _build_runner(listing_entries=listing)
-    ).build(kernel_release=KR, **s)
+    result = InitramfsBuilder(_build_runner(listing_entries=listing)).build(
+        kernel_release=KR, **s
+    )
     codes = {f.code for f in result.findings}
     assert "INITRAMFS_FORBIDDEN_MODULE_PRESENT" in codes
     critical = [
@@ -446,12 +457,14 @@ def test_compressed_ko_recognized_as_present(tmp_path: Path) -> None:
         sub = tmp_path / f"iter_{suffix.replace('.', '_')}"
         sub.mkdir()
         s = _setup(sub)
-        result = InitramfsBuilder(
-            _build_runner(listing_entries=listing)
-        ).build(kernel_release=KR, **s)
-        assert set(result.modules_present) == {"amdgpu", "nvidia", "nvidia-uvm"}, (
-            f"suffix {suffix}: {result.findings}"
+        result = InitramfsBuilder(_build_runner(listing_entries=listing)).build(
+            kernel_release=KR, **s
         )
+        assert set(result.modules_present) == {
+            "amdgpu",
+            "nvidia",
+            "nvidia-uvm",
+        }, f"suffix {suffix}: {result.findings}"
         assert "INITRAMFS_REQUIRED_MODULE_MISSING" not in {
             f.code for f in result.findings
         }
@@ -465,9 +478,9 @@ def test_modprobe_conf_missing_warns(tmp_path: Path) -> None:
         f"lib/modules/{KR}/updates/nvidia/nvidia-uvm.ko",
         # no etc/modprobe.d entry
     )
-    result = InitramfsBuilder(
-        _build_runner(listing_entries=listing)
-    ).build(kernel_release=KR, **s)
+    result = InitramfsBuilder(_build_runner(listing_entries=listing)).build(
+        kernel_release=KR, **s
+    )
     warning_codes = {f.code for f in result.findings if f.severity == Severity.WARNING}
     assert "INITRAMFS_MODPROBE_CONF_MISSING" in warning_codes
     # Modprobe configuration absence is a warning at this build stage.
@@ -482,9 +495,7 @@ def test_modprobe_conf_not_asserted_when_hook_disabled(tmp_path: Path) -> None:
         f"lib/modules/{KR}/updates/nvidia/nvidia.ko",
         f"lib/modules/{KR}/updates/nvidia/nvidia-uvm.ko",
     )
-    result = InitramfsBuilder(
-        _build_runner(listing_entries=listing)
-    ).build(
+    result = InitramfsBuilder(_build_runner(listing_entries=listing)).build(
         kernel_release=KR,
         include_modprobe_hook=False,
         **s,
@@ -501,7 +512,11 @@ def test_hook_not_installed_when_disabled(tmp_path: Path) -> None:
     )
     hook = (
         s["output_dir"]
-        / f"stage-{KR}" / "etc" / "initramfs-tools" / "hooks" / "huey-v100-modprobe"
+        / f"stage-{KR}"
+        / "etc"
+        / "initramfs-tools"
+        / "hooks"
+        / "huey-v100-modprobe"
     )
     assert not hook.exists()
 
@@ -535,8 +550,10 @@ def test_lsinitramfs_unavailability_warns_but_keeps_archive(
     assert result.modules_present == ()
     # An unreadable initramfs must not be marked ready for promotion.
     assert result.has_errors() is True
-    assert any(f.code == "INITRAMFS_UNVERIFIED" and f.severity == Severity.ERROR
-               for f in result.findings)
+    assert any(
+        f.code == "INITRAMFS_UNVERIFIED" and f.severity == Severity.ERROR
+        for f in result.findings
+    )
 
 
 # ===========================================================================
@@ -600,27 +617,27 @@ def test_empty_kernel_release_errors(tmp_path: Path) -> None:
 
 def test_depmod_nonzero_errors(tmp_path: Path) -> None:
     s = _setup(tmp_path)
-    result = InitramfsBuilder(
-        _build_runner(depmod_returncode=2)
-    ).build(kernel_release=KR, **s)
+    result = InitramfsBuilder(_build_runner(depmod_returncode=2)).build(
+        kernel_release=KR, **s
+    )
     codes = {f.code for f in result.findings}
     assert "DEPMOD_FAILED" in codes
 
 
 def test_depmod_launch_failure_errors(tmp_path: Path) -> None:
     s = _setup(tmp_path)
-    result = InitramfsBuilder(
-        _build_runner(depmod_launch_fails=True)
-    ).build(kernel_release=KR, **s)
+    result = InitramfsBuilder(_build_runner(depmod_launch_fails=True)).build(
+        kernel_release=KR, **s
+    )
     codes = {f.code for f in result.findings}
     assert "DEPMOD_LAUNCH_FAILED" in codes
 
 
 def test_depmod_timeout_errors(tmp_path: Path) -> None:
     s = _setup(tmp_path)
-    result = InitramfsBuilder(
-        _build_runner(depmod_timeout=True)
-    ).build(kernel_release=KR, **s)
+    result = InitramfsBuilder(_build_runner(depmod_timeout=True)).build(
+        kernel_release=KR, **s
+    )
     codes = {f.code for f in result.findings}
     assert "DEPMOD_TIMEOUT" in codes
 
@@ -632,36 +649,36 @@ def test_depmod_timeout_errors(tmp_path: Path) -> None:
 
 def test_mkinitramfs_nonzero_errors(tmp_path: Path) -> None:
     s = _setup(tmp_path)
-    result = InitramfsBuilder(
-        _build_runner(mkinit_returncode=2)
-    ).build(kernel_release=KR, **s)
+    result = InitramfsBuilder(_build_runner(mkinit_returncode=2)).build(
+        kernel_release=KR, **s
+    )
     codes = {f.code for f in result.findings}
     assert "MKINITRAMFS_FAILED" in codes
 
 
 def test_mkinitramfs_launch_failure_errors(tmp_path: Path) -> None:
     s = _setup(tmp_path)
-    result = InitramfsBuilder(
-        _build_runner(mkinit_launch_fails=True)
-    ).build(kernel_release=KR, **s)
+    result = InitramfsBuilder(_build_runner(mkinit_launch_fails=True)).build(
+        kernel_release=KR, **s
+    )
     codes = {f.code for f in result.findings}
     assert "MKINITRAMFS_LAUNCH_FAILED" in codes
 
 
 def test_mkinitramfs_timeout_errors(tmp_path: Path) -> None:
     s = _setup(tmp_path)
-    result = InitramfsBuilder(
-        _build_runner(mkinit_timeout=True)
-    ).build(kernel_release=KR, **s)
+    result = InitramfsBuilder(_build_runner(mkinit_timeout=True)).build(
+        kernel_release=KR, **s
+    )
     codes = {f.code for f in result.findings}
     assert "MKINITRAMFS_TIMEOUT" in codes
 
 
 def test_mkinitramfs_no_output_errors(tmp_path: Path) -> None:
     s = _setup(tmp_path)
-    result = InitramfsBuilder(
-        _build_runner(include_archive_output=False)
-    ).build(kernel_release=KR, **s)
+    result = InitramfsBuilder(_build_runner(include_archive_output=False)).build(
+        kernel_release=KR, **s
+    )
     codes = {f.code for f in result.findings}
     assert "MKINITRAMFS_NO_OUTPUT" in codes
 
@@ -675,7 +692,9 @@ def test_dry_run_no_io_no_subprocess(tmp_path: Path) -> None:
     s = _setup(tmp_path)
     runner = FixtureRunner()  # zero handlers
     result = InitramfsBuilder(runner).build(
-        kernel_release=KR, dry_run=True, **s,
+        kernel_release=KR,
+        dry_run=True,
+        **s,
     )
     assert result.dry_run is True
     assert result.initramfs_path is None
@@ -708,7 +727,9 @@ def test_stale_archive_replaced(tmp_path: Path) -> None:
     result = InitramfsBuilder(_build_runner()).build(kernel_release=KR, **s)
     assert result.has_errors() is False
     # The archive was replaced; sha256 differs from the stale bytes.
-    assert hashlib.sha256(b"stale archive content").hexdigest() != result.initramfs_sha256
+    assert (
+        hashlib.sha256(b"stale archive content").hexdigest() != result.initramfs_sha256
+    )
 
 
 # ===========================================================================
@@ -741,10 +762,9 @@ def test_no_host_mutation_commands_in_argv(
     runner = _build_runner()
     InitramfsBuilder(runner).build(kernel_release=KR, **s)
     for call in runner.calls:
-        assert call.argv[0] != forbidden_command, (
-            f"builder invoked forbidden command {forbidden_command!r}: "
-            f"{call.argv}"
-        )
+        assert (
+            call.argv[0] != forbidden_command
+        ), f"builder invoked forbidden command {forbidden_command!r}: {call.argv}"
 
 
 def test_only_allowed_tools_invoked(tmp_path: Path) -> None:
@@ -754,18 +774,16 @@ def test_only_allowed_tools_invoked(tmp_path: Path) -> None:
     InitramfsBuilder(runner).build(kernel_release=KR, **s)
     allowed = {"depmod", "mkinitramfs", "lsinitramfs"}
     invoked = {call.argv[0] for call in runner.calls}
-    assert invoked <= allowed, (
-        f"builder invoked unexpected tools: {sorted(invoked - allowed)}"
-    )
+    assert (
+        invoked <= allowed
+    ), f"builder invoked unexpected tools: {sorted(invoked - allowed)}"
 
 
 @pytest.mark.parametrize(
     "protected_path",
     ["/boot", "/etc/modprobe.d", "/etc/initramfs-tools"],
 )
-def test_no_protected_paths_in_argv(
-    protected_path: str, tmp_path: Path
-) -> None:
+def test_no_protected_paths_in_argv(protected_path: str, tmp_path: Path) -> None:
     s = _setup(tmp_path)
     runner = _build_runner()
     InitramfsBuilder(runner).build(kernel_release=KR, **s)
@@ -773,9 +791,9 @@ def test_no_protected_paths_in_argv(
         for arg in call.argv:
             # Staging paths under tmp_path may contain /etc/initramfs-tools
             # as a path component without referring to the live /etc tree.
-            assert not (arg == protected_path or arg.startswith(protected_path + "/")), (
-                f"builder passed live protected path {protected_path!r}: {call.argv}"
-            )
+            assert not (
+                arg == protected_path or arg.startswith(protected_path + "/")
+            ), f"builder passed live protected path {protected_path!r}: {call.argv}"
 
 
 # Note: /lib/modules is deliberately NOT in the protected-path check for
@@ -794,12 +812,10 @@ def test_no_protected_paths_in_argv(
 
 def test_has_errors_true_when_blocking_present(tmp_path: Path) -> None:
     s = _setup(tmp_path)
-    listing = (
-        f"lib/modules/7.2.12-huey1/updates/nvidia/nvidia.ko",
+    listing = ("lib/modules/7.2.12-huey1/updates/nvidia/nvidia.ko",)
+    result = InitramfsBuilder(_build_runner(listing_entries=listing)).build(
+        kernel_release=KR, **s
     )
-    result = InitramfsBuilder(
-        _build_runner(listing_entries=listing)
-    ).build(kernel_release=KR, **s)
     assert result.has_errors() is True
 
 
@@ -811,8 +827,8 @@ def test_has_errors_false_when_only_warnings(tmp_path: Path) -> None:
         f"lib/modules/{KR}/updates/nvidia/nvidia.ko",
         f"lib/modules/{KR}/updates/nvidia/nvidia-uvm.ko",
     )
-    result = InitramfsBuilder(
-        _build_runner(listing_entries=listing)
-    ).build(kernel_release=KR, **s)
+    result = InitramfsBuilder(_build_runner(listing_entries=listing)).build(
+        kernel_release=KR, **s
+    )
     assert result.has_errors() is False
     assert any(f.severity == Severity.WARNING for f in result.findings)

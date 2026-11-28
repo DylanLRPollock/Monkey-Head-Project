@@ -1,4 +1,5 @@
 """Static, no-host-mutation safeguards for Rust-enabled testing2 preparation."""
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -15,7 +16,7 @@ def test_testing2_writes_to_separate_directory() -> None:
     assert 'OUT="$ROOT/output/testing2"' in source
     assert 'REPORT="$ROOT/reports/testing2"' in source
     assert 'TEST1="$ROOT/output/testing1/.config"' in source
-    assert "cp -- \"$TEST1\" \"$OUT/.config\"" in source
+    assert 'cp -- "$TEST1" "$OUT/.config"' in source
     assert '[[ ! -e "$OUT" ]]' in source
 
 
@@ -27,20 +28,28 @@ def test_testing1_baseline_digest_is_protected() -> None:
 
 def test_rust_reenabled_and_release_guarded() -> None:
     source = _read()
-    assert 'LOCALVERSION=-huey-testing2 olddefconfig' in source
-    assert '--enable RUST' in source
+    assert "LOCALVERSION=-huey-testing2 olddefconfig" in source
+    assert "--enable RUST" in source
     assert "CONFIG_RUST=y" in source
     assert "7.3.4-huey-testing2" in source
     assert "--stage testing1" in source  # Same strict Optane/V100 hardware policy.
-    assert 'CONFIG_MODVERSIONS is not set' in source
+    assert "CONFIG_MODVERSIONS is not set" in source
 
 
 def test_script_never_installs_or_reboots() -> None:
     # Check operative lines, not harmless safety comments/messages.
     code_lines = [
-        l.strip() for l in _read().splitlines()
-        if l.strip() and not l.lstrip().startswith("#")
+        line.strip()
+        for line in _read().splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
     ]
-    for forbidden in ("sudo ", "dpkg -i", "apt install", "reboot",
-                      "update-grub", "grub-install", "update-initramfs"):
+    for forbidden in (
+        "sudo ",
+        "dpkg -i",
+        "apt install",
+        "reboot",
+        "update-grub",
+        "grub-install",
+        "update-initramfs",
+    ):
         assert all(not line.startswith(forbidden) for line in code_lines)

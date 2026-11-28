@@ -20,13 +20,13 @@ from huey.kernel_build.models import (
     SourceType,
 )
 from huey.kernel_build.policy import (
+    POLICY_V100_WORKSTATION,
+    PROTECTED_HOST_PATHS,
+    VOLTA_COMPUTE_CAPABILITY,
     ApprovalRequiredError,
     OperationKind,
-    POLICY_V100_WORKSTATION,
     PolicyViolation,
-    PROTECTED_HOST_PATHS,
     SecureBootState,
-    VOLTA_COMPUTE_CAPABILITY,
     assert_allowed,
     check_cuda_compatibility_claim,
     check_kernel_release,
@@ -39,7 +39,6 @@ from huey.kernel_build.policy import (
     evaluate_operation,
     redact_path,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -96,8 +95,8 @@ def _driver_open() -> DriverBaseline:
 def _plan(
     *,
     driver: DriverBaseline | None = None,
-    workspace: Path = Path("build/huey-kernel/workspace"),
-    output_dir: Path = Path("build/huey-kernel/"),
+    workspace: Path | None = None,
+    output_dir: Path | None = None,
     profile: str = POLICY_V100_WORKSTATION,
     signing_policy: SigningPolicy = SigningPolicy.REQUIRED_IF_SECUREBOOT,
 ) -> KernelPlan:
@@ -105,8 +104,8 @@ def _plan(
         profile=profile,
         source=_source_resolved(),
         driver=driver or _driver_proprietary(),
-        workspace=workspace,
-        output_dir=output_dir,
+        workspace=workspace or Path("build/huey-kernel/workspace"),
+        output_dir=output_dir or Path("build/huey-kernel/"),
         build_jobs=4,
         signing_policy=signing_policy,
         target_release="7.2.15-huey1",
@@ -178,9 +177,7 @@ def test_module_flavor_open_for_v100_is_critical() -> None:
 
 def test_module_flavor_open_ignored_without_volta_or_profile() -> None:
     """No V100 in identities, profile is not v100-workstation -> no finding."""
-    findings = check_module_flavor_for_volta(
-        _driver_open(), [_rx570()], profile="lab"
-    )
+    findings = check_module_flavor_for_volta(_driver_open(), [_rx570()], profile="lab")
     assert findings == []
 
 
@@ -288,11 +285,16 @@ def test_symlink_into_protected_path_is_blocked(tmp_path: Path) -> None:
 
 
 def test_trusted_https_url_is_ok() -> None:
-    assert check_url("https://deb.debian.org/debian/pool/main/l/linux/linux.orig.tar.xz") == []
+    assert (
+        check_url("https://deb.debian.org/debian/pool/main/l/linux/linux.orig.tar.xz")
+        == []
+    )
 
 
 def test_http_url_is_rejected() -> None:
-    findings = check_url("http://deb.debian.org/debian/pool/main/l/linux/linux.orig.tar.xz")
+    findings = check_url(
+        "http://deb.debian.org/debian/pool/main/l/linux/linux.orig.tar.xz"
+    )
     assert "URL_SCHEME_NOT_TRUSTED" in _codes(findings)
 
 
@@ -492,23 +494,17 @@ def test_plan_with_unresolved_source_is_rejected(tmp_path: Path) -> None:
         output_dir=Path("build/huey-kernel/"),
         build_jobs=4,
     )
-    decision = evaluate_build_plan(
-        plan, gpu_identities=[_v100()], cwd=tmp_path
-    )
+    decision = evaluate_build_plan(plan, gpu_identities=[_v100()], cwd=tmp_path)
     assert decision.allowed is False
     assert "SOURCE_UNRESOLVED" in _codes(decision.violations)
 
 
 def test_plan_with_open_flavor_for_v100_is_rejected(tmp_path: Path) -> None:
     plan = _plan(driver=_driver_open())
-    decision = evaluate_build_plan(
-        plan, gpu_identities=[_v100()], cwd=tmp_path
-    )
+    decision = evaluate_build_plan(plan, gpu_identities=[_v100()], cwd=tmp_path)
     assert decision.allowed is False
     assert "OPEN_MODULE_FOR_VOLTA" in _codes(decision.violations)
-    assert any(
-        v.severity == Severity.CRITICAL for v in decision.violations
-    )
+    assert any(v.severity == Severity.CRITICAL for v in decision.violations)
 
 
 def test_plan_with_workspace_escaping_cwd_is_rejected(tmp_path: Path) -> None:
@@ -537,9 +533,7 @@ def test_plan_with_protected_output_dir_is_critical(tmp_path: Path) -> None:
     # Symlink resolution is still enforced independently at the policy layer.
     (tmp_path / "build").mkdir()
     (tmp_path / "build" / "huey-kernel").symlink_to("/boot")
-    decision = evaluate_build_plan(
-        _plan(), gpu_identities=[_v100()], cwd=tmp_path
-    )
+    decision = evaluate_build_plan(_plan(), gpu_identities=[_v100()], cwd=tmp_path)
     assert decision.allowed is False
     assert "PROTECTED_HOST_PATH" in _codes(decision.violations)
 

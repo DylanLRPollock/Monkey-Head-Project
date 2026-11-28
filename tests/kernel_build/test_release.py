@@ -5,7 +5,6 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import replace
-from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -18,10 +17,8 @@ from huey.kernel_build.models import (
 from huey.kernel_build.release import (
     ReleaseAssembler,
     ReleaseContext,
-    ReleaseResult,
 )
 from huey.kernel_build.verifier import VerificationResult
-
 
 KR = "7.2.15-huey1"
 DRV = "580.196.07"
@@ -38,7 +35,9 @@ def _verification(
         findings=findings,
         boot_ready=boot_ready,
         static_checks_passed=static_checks_passed,
-        host_checks_required=("boot_and_storage", "nvidia_module_load") if boot_ready else (),
+        host_checks_required=(
+            ("boot_and_storage", "nvidia_module_load") if boot_ready else ()
+        ),
         dry_run=dry_run,
     )
 
@@ -77,18 +76,22 @@ def _setup(tmp_path: Path) -> dict:
 
     lock = stage / "source.lock.json"
     lock.write_text(
-        json.dumps({
-            "schema_version": 1, "status": "pinned",
-            "source_type": "debian-linux-source",
-            "package_name": "linux-source-7.2",
-            "version": "7.2.15-1",
-            "archive_filename": "linux-source-7.2.deb",
-            "origin_url": "https://deb.debian.org/x",
-            "checksum_sha256": "a" * 64,
-            "retrieved_date": "2026-11-12",
-            "license": "GPL-2.0-only",
-            "profile_revision": 1, "notes": "",
-        }),
+        json.dumps(
+            {
+                "schema_version": 1,
+                "status": "pinned",
+                "source_type": "debian-linux-source",
+                "package_name": "linux-source-7.2",
+                "version": "7.2.15-1",
+                "archive_filename": "linux-source-7.2.deb",
+                "origin_url": "https://deb.debian.org/x",
+                "checksum_sha256": "a" * 64,
+                "retrieved_date": "2026-11-12",
+                "license": "GPL-2.0-only",
+                "profile_revision": 1,
+                "notes": "",
+            }
+        ),
         encoding="utf-8",
     )
 
@@ -156,7 +159,9 @@ def test_happy_path_assembles_release(tmp_path: Path) -> None:
     assert initramfs_rec.redistribution == "restricted"
     # Kernel .debs are public.
     image_rec = next(
-        a for a in result.artifacts if a.build_artifact.path == ctx.kernel_image_deb.name
+        a
+        for a in result.artifacts
+        if a.build_artifact.path == ctx.kernel_image_deb.name
     )
     assert image_rec.redistribution == "public"
 
@@ -176,7 +181,8 @@ def test_manifest_contains_expected_fields(tmp_path: Path) -> None:
     assert manifest["distribution_restricted"] is True
     assert "NVIDIA proprietary" in manifest["distribution_warning"]
     assert manifest["host_checks_required"] == [
-        "boot_and_storage", "nvidia_module_load",
+        "boot_and_storage",
+        "nvidia_module_load",
     ]
     assert manifest["checks_summary"]["boot_ready"] is True
     assert manifest["tool_versions"]["gcc"] == "14.2.0"
@@ -234,9 +240,7 @@ def test_result_json_serializable(tmp_path: Path) -> None:
 
 
 def test_refuses_when_verification_boot_ready_false(tmp_path: Path) -> None:
-    ctx = _context(
-        tmp_path, verification=_verification(boot_ready=False)
-    )
+    ctx = _context(tmp_path, verification=_verification(boot_ready=False))
     result = ReleaseAssembler().build_release(ctx)
     codes = {f.code for f in result.findings}
     assert "VERIFICATION_NOT_READY" in codes
@@ -253,9 +257,7 @@ def test_refuses_dry_run_verification(tmp_path: Path) -> None:
 
 def test_refuses_error_findings_in_verification(tmp_path: Path) -> None:
     finding = ValidationFinding(severity=Severity.ERROR, code="X", message="y")
-    ctx = _context(
-        tmp_path, verification=_verification(findings=(finding,))
-    )
+    ctx = _context(tmp_path, verification=_verification(findings=(finding,)))
     result = ReleaseAssembler().build_release(ctx)
     codes = {f.code for f in result.findings}
     assert "VERIFICATION_NOT_READY" in codes
@@ -318,7 +320,7 @@ def test_v100_profile_without_nvidia_modules_errors(tmp_path: Path) -> None:
 
 
 def test_empty_nvidia_modules_dir_errors(tmp_path: Path) -> None:
-    s = _setup(tmp_path)
+    _setup(tmp_path)
     empty = tmp_path / "empty-nvidia"
     empty.mkdir()
     ctx = _context(tmp_path, nvidia_modules_dir=empty)
@@ -344,7 +346,7 @@ def test_refuses_secret_in_rollback_notes(tmp_path: Path) -> None:
 
 
 def test_refuses_pem_private_key_in_extra_text(tmp_path: Path) -> None:
-    s = _setup(tmp_path)
+    _setup(tmp_path)
     secret = tmp_path / "leak.txt"
     secret.write_text(
         "-----BEGIN RSA PRIVATE KEY-----\nAAAA\n-----END RSA PRIVATE KEY-----\n",
@@ -357,7 +359,7 @@ def test_refuses_pem_private_key_in_extra_text(tmp_path: Path) -> None:
 
 
 def test_refuses_forbidden_priv_extension(tmp_path: Path) -> None:
-    s = _setup(tmp_path)
+    _setup(tmp_path)
     priv = tmp_path / "key.priv"
     priv.write_bytes(b"looks like a private key")
     ctx = _context(tmp_path, extra_text_files=(priv,))
@@ -367,7 +369,7 @@ def test_refuses_forbidden_priv_extension(tmp_path: Path) -> None:
 
 
 def test_refuses_id_rsa_filename(tmp_path: Path) -> None:
-    s = _setup(tmp_path)
+    _setup(tmp_path)
     key = tmp_path / "id_rsa"
     key.write_bytes(b"ssh key")
     ctx = _context(tmp_path, extra_text_files=(key,))
@@ -377,7 +379,7 @@ def test_refuses_id_rsa_filename(tmp_path: Path) -> None:
 
 
 def test_refuses_env_file(tmp_path: Path) -> None:
-    s = _setup(tmp_path)
+    _setup(tmp_path)
     env = tmp_path / ".env"
     env.write_text("GITHUB_TOKEN=xyz\n", encoding="utf-8")
     ctx = _context(tmp_path, extra_text_files=(env,))
@@ -515,7 +517,9 @@ def test_force_must_not_delete_source_staging_directory(tmp_path: Path) -> None:
 def test_refuse_duplicate_release_artifact_path(tmp_path: Path) -> None:
     ctx = _context(tmp_path)
     extra = tmp_path / ctx.kernel_image_deb.name
-    extra.write_bytes(b"not the image",)
+    extra.write_bytes(
+        b"not the image",
+    )
     ctx = replace(ctx, extra_text_files=(extra,))
     result = ReleaseAssembler().build_release(ctx)
     assert "ARTIFACT_PATH_COLLISION" in {f.code for f in result.findings}
@@ -533,6 +537,7 @@ def test_refuse_release_artifact_symlink(tmp_path: Path) -> None:
 
 
 # Step 44: additional canonical release-assembler adversarial checks.
+
 
 def test_release_refuses_unknown_source_lock(tmp_path: Path) -> None:
     ctx = _context(tmp_path)
@@ -599,13 +604,21 @@ def test_release_hashes_cover_every_declared_artifact(tmp_path: Path) -> None:
         assert hashlib.sha256(actual.read_bytes()).hexdigest() == item["sha256"]
 
 
-def test_release_refuses_critical_verification_even_if_boot_ready_flag(tmp_path: Path) -> None:
+def test_release_refuses_critical_verification_even_if_boot_ready_flag(
+    tmp_path: Path,
+) -> None:
     critical = ValidationFinding(
-        severity=Severity.CRITICAL, code="WRONG_KERNEL", message="bad ABI",
+        severity=Severity.CRITICAL,
+        code="WRONG_KERNEL",
+        message="bad ABI",
     )
-    ctx = _context(tmp_path, verification=_verification(
-        boot_ready=True, findings=(critical,),
-    ))
+    ctx = _context(
+        tmp_path,
+        verification=_verification(
+            boot_ready=True,
+            findings=(critical,),
+        ),
+    )
     result = ReleaseAssembler().build_release(ctx)
     assert result.has_errors()
     assert not ctx.release_dir.exists()
@@ -614,15 +627,22 @@ def test_release_refuses_critical_verification_even_if_boot_ready_flag(tmp_path:
 def test_release_never_mutates_staging_inputs(tmp_path: Path) -> None:
     ctx = _context(tmp_path)
     source_files = (
-        ctx.kernel_image_deb, ctx.kernel_headers_deb, ctx.initramfs,
-        ctx.config_path, ctx.source_lock_path,
+        ctx.kernel_image_deb,
+        ctx.kernel_headers_deb,
+        ctx.initramfs,
+        ctx.config_path,
+        ctx.source_lock_path,
     )
-    before = {p: (p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())
-              for p in source_files}
+    before = {
+        p: (p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())
+        for p in source_files
+    }
     result = ReleaseAssembler().build_release(ctx)
     assert not result.has_errors(), result.findings
-    after = {p: (p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())
-             for p in source_files}
+    after = {
+        p: (p.stat().st_size, hashlib.sha256(p.read_bytes()).hexdigest())
+        for p in source_files
+    }
     assert after == before
 
 

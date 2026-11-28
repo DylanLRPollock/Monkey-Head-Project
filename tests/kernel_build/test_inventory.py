@@ -8,34 +8,31 @@ pointed at a per-test ``tmp_path``.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
-from datetime import datetime, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Callable
 
 import pytest
 
-from huey.kernel_build.models import (
-    GPUVendor,
-    ModuleFlavor,
-    Severity,
-)
 from huey.kernel_build.inventory import (
     FakeHostFs,
     HostInventory,
     InventoryReport,
     collect_inventory,
 )
+from huey.kernel_build.models import (
+    CommandResult,
+    GPUVendor,
+    ModuleFlavor,
+    Severity,
+)
 from huey.kernel_build.policy import SecureBootState
 from huey.kernel_build.runner import (
     CommandSpec,
-    DRY_RUN_RETURNCODE,
     RunnerError,
     RunnerResult,
     RunnerTimeout,
 )
-from huey.kernel_build.models import CommandResult
-
 
 # ---------------------------------------------------------------------------
 # FixtureRunner: dispatch by argv prefix
@@ -68,12 +65,14 @@ class FixtureRunner:
     """Runner that matches commands by argv prefix."""
 
     def __init__(self) -> None:
-        self._handlers: dict[tuple[str, ...], Callable[[CommandSpec], RunnerResult]] = {}
+        self._handlers: dict[tuple[str, ...], Callable[[CommandSpec], RunnerResult]] = (
+            {}
+        )
         self._calls: list[CommandSpec] = []
 
     def on(
         self, prefix: tuple[str, ...], handler: Callable[[CommandSpec], RunnerResult]
-    ) -> "FixtureRunner":
+    ) -> FixtureRunner:
         self._handlers[prefix] = handler
         return self
 
@@ -95,7 +94,7 @@ class FixtureRunner:
 
 
 def _fixed_clock() -> datetime:
-    return datetime(2026, 11, 12, 8, 0, 0, tzinfo=timezone.utc)
+    return datetime(2026, 11, 12, 8, 0, 0, tzinfo=UTC)
 
 
 def _populate_fake_fs(
@@ -160,7 +159,10 @@ def _build_happy_path_runner() -> FixtureRunner:
     return (
         FixtureRunner()
         .on(("uname", "-r"), lambda s: _result(s.argv, stdout=b"7.2.15+deb14-amd64\n"))
-        .on(("mokutil", "--sb-state"), lambda s: _result(s.argv, stdout=b"SecureBoot disabled\n"))
+        .on(
+            ("mokutil", "--sb-state"),
+            lambda s: _result(s.argv, stdout=b"SecureBoot disabled\n"),
+        )
         .on(
             ("nvidia-smi", "--query-gpu=name,uuid,pci.bus_id,compute_cap"),
             lambda s: _result(s.argv, stdout=_nvidia_csv_two_gpus()),
@@ -171,7 +173,10 @@ def _build_happy_path_runner() -> FixtureRunner:
         )
         .on(("nvidia-smi",), lambda s: _result(s.argv, stdout=_nvidia_banner()))
         .on(("lspci", "-nnk"), lambda s: _result(s.argv, stdout=_lspci_full()))
-        .on(("modinfo", "-F", "version", "nvidia"), lambda s: _result(s.argv, stdout=b"580.196.07\n"))
+        .on(
+            ("modinfo", "-F", "version", "nvidia"),
+            lambda s: _result(s.argv, stdout=b"580.196.07\n"),
+        )
         .on(
             ("dkms", "status"),
             lambda s: _result(
@@ -182,10 +187,16 @@ def _build_happy_path_runner() -> FixtureRunner:
                 ),
             ),
         )
-        .on(("nvcc", "--version"), lambda s: _result(s.argv, stdout=(
-            b"nvcc: NVIDIA (R) Cuda compiler driver\n"
-            b"Cuda compilation tools, release 12.9, V12.9.86\n"
-        )))
+        .on(
+            ("nvcc", "--version"),
+            lambda s: _result(
+                s.argv,
+                stdout=(
+                    b"nvcc: NVIDIA (R) Cuda compiler driver\n"
+                    b"Cuda compilation tools, release 12.9, V12.9.86\n"
+                ),
+            ),
+        )
     )
 
 
@@ -300,7 +311,9 @@ def _all_missing_runner() -> FixtureRunner:
 def test_missing_tools_do_not_raise(tmp_path: Path) -> None:
     # No files created -> os-release, /boot, /lib/modules all absent
     fs = FakeHostFs(tmp_path)
-    report = HostInventory(_all_missing_runner(), host_fs=fs, clock=_fixed_clock).collect()
+    report = HostInventory(
+        _all_missing_runner(), host_fs=fs, clock=_fixed_clock
+    ).collect()
 
     assert report.running_kernel is None
     assert report.secure_boot == SecureBootState.UNKNOWN
@@ -339,7 +352,9 @@ def test_command_timeout_is_a_warning(tmp_path: Path) -> None:
     runner.on(("dkms",), _timeout)
     runner.on(("nvcc",), _timeout)
 
-    report = HostInventory(runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock).collect()
+    report = HostInventory(
+        runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock
+    ).collect()
     warning_codes = {f.code for f in report.findings if f.severity == Severity.WARNING}
     assert "UNAME_UNAVAILABLE" in warning_codes
 
@@ -353,8 +368,13 @@ def test_two_gpu_ordering_does_not_affect_identity(tmp_path: Path) -> None:
     """V100 at index 1 (second row) still has correct PCI/UUID."""
     _populate_fake_fs(tmp_path)
     runner = FixtureRunner()
-    runner.on(("uname", "-r"), lambda s: _result(s.argv, stdout=b"7.2.15+deb14-amd64\n"))
-    runner.on(("mokutil", "--sb-state"), lambda s: _result(s.argv, stdout=b"SecureBoot disabled\n"))
+    runner.on(
+        ("uname", "-r"), lambda s: _result(s.argv, stdout=b"7.2.15+deb14-amd64\n")
+    )
+    runner.on(
+        ("mokutil", "--sb-state"),
+        lambda s: _result(s.argv, stdout=b"SecureBoot disabled\n"),
+    )
     runner.on(
         ("nvidia-smi", "--query-gpu=name,uuid,pci.bus_id,compute_cap"),
         lambda s: _result(
@@ -373,11 +393,18 @@ def test_two_gpu_ordering_does_not_affect_identity(tmp_path: Path) -> None:
     )
     runner.on(("nvidia-smi",), lambda s: _result(s.argv, stdout=_nvidia_banner()))
     runner.on(("lspci", "-nnk"), lambda s: _result(s.argv, stdout=b""))
-    runner.on(("modinfo", "-F", "version", "nvidia"), lambda s: _result(s.argv, stdout=b"580.196.07\n"))
+    runner.on(
+        ("modinfo", "-F", "version", "nvidia"),
+        lambda s: _result(s.argv, stdout=b"580.196.07\n"),
+    )
     runner.on(("dkms", "status"), lambda s: _result(s.argv, stdout=b""))
-    runner.on(("nvcc", "--version"), lambda s: _result(s.argv, stdout=b"release 12.9\n"))
+    runner.on(
+        ("nvcc", "--version"), lambda s: _result(s.argv, stdout=b"release 12.9\n")
+    )
 
-    report = HostInventory(runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock).collect()
+    report = HostInventory(
+        runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock
+    ).collect()
     v100 = sorted(
         (g for g in report.gpus if g.compute_capability == "sm_70"),
         key=lambda g: g.pci_address,
@@ -405,17 +432,23 @@ def test_two_gpu_ordering_does_not_affect_identity(tmp_path: Path) -> None:
         (b"weird output\n", SecureBootState.UNKNOWN),
     ],
 )
-def test_secure_boot_states(stdout: bytes, expected: SecureBootState, tmp_path: Path) -> None:
+def test_secure_boot_states(
+    stdout: bytes, expected: SecureBootState, tmp_path: Path
+) -> None:
     _populate_fake_fs(tmp_path)
     runner = FixtureRunner()
-    runner.on(("uname", "-r"), lambda s: _result(s.argv, stdout=b"7.2.15+deb14-amd64\n"))
+    runner.on(
+        ("uname", "-r"), lambda s: _result(s.argv, stdout=b"7.2.15+deb14-amd64\n")
+    )
     runner.on(("mokutil", "--sb-state"), lambda s: _result(s.argv, stdout=stdout))
     runner.on(("nvidia-smi",), lambda s: _result(s.argv, stdout=b""))
     runner.on(("lspci",), lambda s: _result(s.argv, stdout=b""))
     runner.on(("modinfo",), lambda s: _result(s.argv, stdout=b""))
     runner.on(("dkms",), lambda s: _result(s.argv, stdout=b""))
     runner.on(("nvcc",), lambda s: _result(s.argv, stdout=b""))
-    report = HostInventory(runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock).collect()
+    report = HostInventory(
+        runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock
+    ).collect()
     assert report.secure_boot == expected
 
 
@@ -433,13 +466,18 @@ def test_running_kernel_no_headers_triggers_warning(tmp_path: Path) -> None:
     )
     runner = FixtureRunner()
     runner.on(("uname", "-r"), lambda s: _result(s.argv, stdout=b"7.2.99-huey1\n"))
-    runner.on(("mokutil", "--sb-state"), lambda s: _result(s.argv, stdout=b"SecureBoot disabled\n"))
+    runner.on(
+        ("mokutil", "--sb-state"),
+        lambda s: _result(s.argv, stdout=b"SecureBoot disabled\n"),
+    )
     runner.on(("nvidia-smi",), lambda s: _result(s.argv, stdout=b""))
     runner.on(("lspci",), lambda s: _result(s.argv, stdout=b""))
     runner.on(("modinfo",), lambda s: _result(s.argv, stdout=b""))
     runner.on(("dkms",), lambda s: _result(s.argv, stdout=b""))
     runner.on(("nvcc",), lambda s: _result(s.argv, stdout=b""))
-    report = HostInventory(runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock).collect()
+    report = HostInventory(
+        runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock
+    ).collect()
     codes = {f.code for f in report.findings}
     assert "RUNNING_KERNEL_NO_HEADERS" in codes
     assert not report.has_blocking_findings()  # warning only
@@ -453,16 +491,32 @@ def test_running_kernel_no_headers_triggers_warning(tmp_path: Path) -> None:
 def test_driver_version_mismatch_warns(tmp_path: Path) -> None:
     _populate_fake_fs(tmp_path)
     runner = FixtureRunner()
-    runner.on(("uname", "-r"), lambda s: _result(s.argv, stdout=b"7.2.15+deb14-amd64\n"))
-    runner.on(("mokutil", "--sb-state"), lambda s: _result(s.argv, stdout=b"SecureBoot disabled\n"))
-    runner.on(("nvidia-smi", "--query-gpu=name,uuid,pci.bus_id,compute_cap"), lambda s: _result(s.argv, stdout=b""))
-    runner.on(("nvidia-smi", "--query-gpu=driver_version"), lambda s: _result(s.argv, stdout=b"580.196.07\n"))
+    runner.on(
+        ("uname", "-r"), lambda s: _result(s.argv, stdout=b"7.2.15+deb14-amd64\n")
+    )
+    runner.on(
+        ("mokutil", "--sb-state"),
+        lambda s: _result(s.argv, stdout=b"SecureBoot disabled\n"),
+    )
+    runner.on(
+        ("nvidia-smi", "--query-gpu=name,uuid,pci.bus_id,compute_cap"),
+        lambda s: _result(s.argv, stdout=b""),
+    )
+    runner.on(
+        ("nvidia-smi", "--query-gpu=driver_version"),
+        lambda s: _result(s.argv, stdout=b"580.196.07\n"),
+    )
     runner.on(("nvidia-smi",), lambda s: _result(s.argv, stdout=_nvidia_banner()))
     runner.on(("lspci",), lambda s: _result(s.argv, stdout=b""))
-    runner.on(("modinfo", "-F", "version", "nvidia"), lambda s: _result(s.argv, stdout=b"580.100.00\n"))
+    runner.on(
+        ("modinfo", "-F", "version", "nvidia"),
+        lambda s: _result(s.argv, stdout=b"580.100.00\n"),
+    )
     runner.on(("dkms",), lambda s: _result(s.argv, stdout=b""))
     runner.on(("nvcc",), lambda s: _result(s.argv, stdout=b""))
-    report = HostInventory(runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock).collect()
+    report = HostInventory(
+        runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock
+    ).collect()
     codes = {f.code for f in report.findings}
     assert "DRIVER_VERSION_MISMATCH" in codes
 
@@ -486,7 +540,9 @@ def test_dkms_filters_by_driver_version(tmp_path: Path) -> None:
             ),
         ),
     )
-    report = HostInventory(runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock).collect()
+    report = HostInventory(
+        runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock
+    ).collect()
     assert report.dkms_kernel_releases_for_driver == ("7.2.15+deb14-amd64",)
     # But the raw lines still include both
     assert any("550.100.00" in line for line in report.dkms_status_lines)
@@ -502,7 +558,9 @@ def test_dkms_no_match_for_driver_version_warns(tmp_path: Path) -> None:
             stdout=b"nvidia/550.100.00, 7.2.12+deb14-amd64, x86_64: installed\n",
         ),
     )
-    report = HostInventory(runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock).collect()
+    report = HostInventory(
+        runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock
+    ).collect()
     codes = {f.code for f in report.findings}
     assert "DKMS_DRIVER_VERSION_MISMATCH" in codes
     assert report.dkms_kernel_releases_for_driver == ()
@@ -523,7 +581,9 @@ def test_open_module_in_dkms_is_flagged(tmp_path: Path) -> None:
             stdout=b"nvidia-open/580.196.07, 7.2.15+deb14-amd64, x86_64: installed\n",
         ),
     )
-    report = HostInventory(runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock).collect()
+    report = HostInventory(
+        runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock
+    ).collect()
     assert report.driver is not None
     assert report.driver.module_flavor == ModuleFlavor.OPEN
     codes = {f.code for f in report.findings}
@@ -549,9 +609,7 @@ def test_proprietary_inference_warns(tmp_path: Path) -> None:
 
 def test_collect_inventory_convenience(tmp_path: Path) -> None:
     _populate_fake_fs(tmp_path)
-    report = collect_inventory(
-        _build_happy_path_runner(), host_fs=FakeHostFs(tmp_path)
-    )
+    report = collect_inventory(_build_happy_path_runner(), host_fs=FakeHostFs(tmp_path))
     assert isinstance(report, InventoryReport)
     assert report.running_kernel == "7.2.15+deb14-amd64"
 
@@ -565,9 +623,9 @@ def test_inventory_makes_no_write_calls(tmp_path: Path) -> None:
     assert hasattr(fs, "exists")
     # No write / mkdir / unlink helpers on the injected FS.
     for forbidden in ("write_text", "write_bytes", "mkdir", "unlink"):
-        assert not hasattr(fs, forbidden), (
-            f"FakeHostFs must not expose {forbidden!r}: inventory must be read-only"
-        )
+        assert not hasattr(
+            fs, forbidden
+        ), f"FakeHostFs must not expose {forbidden!r}: inventory must be read-only"
 
 
 # ---------------------------------------------------------------------------
@@ -578,15 +636,28 @@ def test_inventory_makes_no_write_calls(tmp_path: Path) -> None:
 def test_modinfo_uses_fallback_path_when_path_missing(tmp_path: Path) -> None:
     _populate_fake_fs(tmp_path)
     runner = FixtureRunner()
-    runner.on(("uname", "-r"), lambda s: _result(s.argv, stdout=b"7.2.15+deb14-amd64\n"))
-    runner.on(("mokutil", "--sb-state"), lambda s: _result(s.argv, stdout=b"SecureBoot disabled\n"))
+    runner.on(
+        ("uname", "-r"), lambda s: _result(s.argv, stdout=b"7.2.15+deb14-amd64\n")
+    )
+    runner.on(
+        ("mokutil", "--sb-state"),
+        lambda s: _result(s.argv, stdout=b"SecureBoot disabled\n"),
+    )
     runner.on(("nvidia-smi",), lambda s: _result(s.argv, stdout=b""))
     runner.on(("lspci",), lambda s: _result(s.argv, stdout=b""))
-    runner.on(("modinfo", "-F", "version", "nvidia"), lambda s: (_ for _ in ()).throw(RunnerError("no modinfo")))
-    runner.on(("/usr/sbin/modinfo", "-F", "version", "nvidia"), lambda s: _result(s.argv, stdout=b"580.196.07\n"))
+    runner.on(
+        ("modinfo", "-F", "version", "nvidia"),
+        lambda s: (_ for _ in ()).throw(RunnerError("no modinfo")),
+    )
+    runner.on(
+        ("/usr/sbin/modinfo", "-F", "version", "nvidia"),
+        lambda s: _result(s.argv, stdout=b"580.196.07\n"),
+    )
     runner.on(("dkms",), lambda s: _result(s.argv, stdout=b""))
     runner.on(("nvcc",), lambda s: _result(s.argv, stdout=b""))
-    report = HostInventory(runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock).collect()
+    report = HostInventory(
+        runner, host_fs=FakeHostFs(tmp_path), clock=_fixed_clock
+    ).collect()
     # Driver baseline comes from modinfo because nvidia-smi was absent
     assert report.driver is not None
     assert report.driver.driver_version == "580.196.07"

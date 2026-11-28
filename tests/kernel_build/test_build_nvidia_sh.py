@@ -21,6 +21,7 @@ Structural coverage:
 
 from __future__ import annotations
 
+import contextlib
 import os
 import re
 import shutil
@@ -66,8 +67,7 @@ def _install_fake_cli(repo: Path, body: str) -> None:
     )
 
 
-_DEFAULT_CLI = textwrap.dedent(
-    """\
+_DEFAULT_CLI = textwrap.dedent("""\
     from __future__ import annotations
     import sys
 
@@ -96,8 +96,7 @@ _DEFAULT_CLI = textwrap.dedent(
             return int(first)
         except ValueError:
             return 99
-    """
-)
+    """)
 
 
 def _make_path_without_python313(bin_dir: Path) -> str:
@@ -107,16 +106,12 @@ def _make_path_without_python313(bin_dir: Path) -> str:
         if src is not None:
             dst = bin_dir / tool
             if not dst.exists():
-                try:
+                with contextlib.suppress(OSError):
                     os.symlink(src, dst)
-                except OSError:
-                    pass
     py = Path(sys.executable)
     if py.is_file():
-        try:
+        with contextlib.suppress(OSError):
             os.symlink(py, bin_dir / "python3")
-        except OSError:
-            pass
     return str(bin_dir)
 
 
@@ -161,16 +156,16 @@ def test_wrapper_has_sh_shebang() -> None:
 
 def test_wrapper_is_executable() -> None:
     mode = WRAPPER.stat().st_mode
-    assert mode & stat.S_IXUSR, (
-        "build-nvidia.sh must be committed executable (git mode 100755)"
-    )
+    assert (
+        mode & stat.S_IXUSR
+    ), "build-nvidia.sh must be committed executable (git mode 100755)"
 
 
 def test_wrapper_uses_strict_shell_options() -> None:
     text = WRAPPER.read_text(encoding="utf-8")
-    assert "set -eu" in text or "set -euo pipefail" in text or "set -e" in text, (
-        "build-nvidia.sh must use 'set -e' (and ideally 'set -eu')"
-    )
+    assert (
+        "set -eu" in text or "set -euo pipefail" in text or "set -e" in text
+    ), "build-nvidia.sh must use 'set -e' (and ideally 'set -eu')"
 
 
 def test_wrapper_uses_exec_for_python() -> None:
@@ -183,9 +178,7 @@ def test_wrapper_uses_exec_for_python() -> None:
 
 def test_wrapper_forwards_quoted_argv() -> None:
     text = WRAPPER.read_text(encoding="utf-8")
-    assert '"$@"' in text, (
-        "build-nvidia.sh must forward argv via '\"$@\"' (quoted)"
-    )
+    assert '"$@"' in text, "build-nvidia.sh must forward argv via '\"$@\"' (quoted)"
 
 
 def test_wrapper_references_only_cli_subcommand() -> None:
@@ -286,10 +279,9 @@ def test_exit_code_forwarded(tmp_path: Path, exit_code: int) -> None:
     repo = _make_mini_repo(tmp_path)
     _install_fake_cli(repo, _DEFAULT_CLI)
     result = _run_wrapper(repo, str(exit_code))
-    assert result.returncode == exit_code, (
-        f"expected exit {exit_code}, got {result.returncode}; "
-        f"stderr={result.stderr!r}"
-    )
+    assert (
+        result.returncode == exit_code
+    ), f"expected exit {exit_code}, got {result.returncode}; stderr={result.stderr!r}"
 
 
 def test_argv_forwarding_in_order(tmp_path: Path) -> None:
@@ -298,8 +290,10 @@ def test_argv_forwarding_in_order(tmp_path: Path) -> None:
     result = _run_wrapper(
         repo,
         "argc",
-        "--kernel-release", "7.2.15-huey1",
-        "--headers-dir", "/tmp/headers",
+        "--kernel-release",
+        "7.2.15-huey1",
+        "--headers-dir",
+        "/tmp/headers",
         "--dry-run",
     )
     assert result.returncode == 0, result.stderr
@@ -315,7 +309,11 @@ def test_spaces_in_argv_preserved(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     _install_fake_cli(repo, _DEFAULT_CLI)
     result = _run_wrapper(
-        repo, "echo-args", "path with spaces", "--dkms-source-dir", "/tmp/a b c",
+        repo,
+        "echo-args",
+        "path with spaces",
+        "--dkms-source-dir",
+        "/tmp/a b c",
     )
     assert result.returncode == 0, result.stderr
     assert "path with spaces" in result.stdout
@@ -329,12 +327,10 @@ def test_shell_metacharacters_inert(tmp_path: Path) -> None:
     payload = f"a b ; touch {marker} ; echo done"
     result = _run_wrapper(repo, "echo-args", payload)
     assert result.returncode == 0, result.stderr
-    assert payload in result.stdout, (
-        f"payload was mangled: stdout={result.stdout!r}"
-    )
-    assert not marker.exists(), (
-        "wrapper interpreted shell metacharacters from an argv element"
-    )
+    assert payload in result.stdout, f"payload was mangled: stdout={result.stdout!r}"
+    assert (
+        not marker.exists()
+    ), "wrapper interpreted shell metacharacters from an argv element"
 
 
 # ---------------------------------------------------------------------------
@@ -347,9 +343,9 @@ def test_pythonpath_contains_repo_src(tmp_path: Path) -> None:
     _install_fake_cli(repo, _DEFAULT_CLI)
     result = _run_wrapper(repo, "print-pp")
     assert result.returncode == 0, result.stderr
-    assert f"pp={repo}/src" in result.stdout, (
-        f"PYTHONPATH was not set to {repo}/src; got {result.stdout!r}"
-    )
+    assert (
+        f"pp={repo}/src" in result.stdout
+    ), f"PYTHONPATH was not set to {repo}/src; got {result.stdout!r}"
 
 
 def test_pythonpath_preserves_parent_value(tmp_path: Path) -> None:
@@ -368,9 +364,9 @@ def test_python_interpreter_is_used(tmp_path: Path) -> None:
     _install_fake_cli(repo, _DEFAULT_CLI)
     result = _run_wrapper(repo, "print-py3")
     assert result.returncode == 0, result.stderr
-    assert "python=3.13" in result.stdout, (
-        f"expected python 3.13, got {result.stdout!r}"
-    )
+    assert (
+        "python=3.13" in result.stdout
+    ), f"expected python 3.13, got {result.stdout!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -405,12 +401,10 @@ def test_cli_failure_passthrough(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     _install_fake_cli(
         repo,
-        textwrap.dedent(
-            """\
+        textwrap.dedent("""\
             def main() -> int:
                 raise RuntimeError("simulated failure")
-            """
-        ),
+            """),
     )
     result = _run_wrapper(repo, "boom")
     assert result.returncode != 0

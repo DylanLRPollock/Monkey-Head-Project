@@ -11,12 +11,9 @@ They run offline and use tmp_path only.
 
 from __future__ import annotations
 
-import hashlib
-import json
 from pathlib import Path
 
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # FakeRunner
@@ -35,7 +32,9 @@ def test_fake_runner_fails_closed_on_unhandled(fake_runner) -> None:
 def test_fake_runner_dispatches_by_matcher(fake_runner, ok_result) -> None:
     from huey.kernel_build.runner import CommandSpec
 
-    fake_runner.on(lambda s: s.argv[0] == "uname", lambda s: ok_result(s, stdout=b"7.2.15\n"))
+    fake_runner.on(
+        lambda s: s.argv[0] == "uname", lambda s: ok_result(s, stdout=b"7.2.15\n")
+    )
     spec = CommandSpec(argv=("uname", "-r"), cwd=Path("/tmp"))
     result = fake_runner.run(spec)
     assert result.command.returncode == 0
@@ -45,7 +44,10 @@ def test_fake_runner_dispatches_by_matcher(fake_runner, ok_result) -> None:
 def test_fake_runner_on_argv_matches_prefix(fake_runner, ok_result) -> None:
     from huey.kernel_build.runner import CommandSpec
 
-    fake_runner.on_argv(("modinfo", "-F", "version", "nvidia"), lambda s: ok_result(s, stdout=b"580.196.07\n"))
+    fake_runner.on_argv(
+        ("modinfo", "-F", "version", "nvidia"),
+        lambda s: ok_result(s, stdout=b"580.196.07\n"),
+    )
     spec = CommandSpec(
         argv=("modinfo", "-F", "version", "nvidia"),
         cwd=Path("/tmp"),
@@ -56,8 +58,13 @@ def test_fake_runner_on_argv_matches_prefix(fake_runner, ok_result) -> None:
 def test_fake_runner_on_first_arg(fake_runner, ok_result) -> None:
     from huey.kernel_build.runner import CommandSpec
 
-    fake_runner.on_first_arg("dpkg-deb", lambda s: ok_result(s, stdout=b"Package: linux-image-7.2.15-huey1\n"))
-    spec = CommandSpec(argv=("dpkg-deb", "--field", "/tmp/x.deb", "Package"), cwd=Path("/tmp"))
+    fake_runner.on_first_arg(
+        "dpkg-deb",
+        lambda s: ok_result(s, stdout=b"Package: linux-image-7.2.15-huey1\n"),
+    )
+    spec = CommandSpec(
+        argv=("dpkg-deb", "--field", "/tmp/x.deb", "Package"), cwd=Path("/tmp")
+    )
     assert b"linux-image" in fake_runner.run(spec).stdout
 
 
@@ -85,8 +92,14 @@ def test_fake_runner_reusable_across_matchers(fake_runner, ok_result) -> None:
         lambda s: s.argv[0] == "modinfo",
         lambda s: ok_result(s, stdout=b"modinfo-ok\n"),
     )
-    assert fake_runner.run(CommandSpec(argv=("make",), cwd=Path("/tmp"))).stdout == b"make-ok\n"
-    assert fake_runner.run(CommandSpec(argv=("modinfo",), cwd=Path("/tmp"))).stdout == b"modinfo-ok\n"
+    assert (
+        fake_runner.run(CommandSpec(argv=("make",), cwd=Path("/tmp"))).stdout
+        == b"make-ok\n"
+    )
+    assert (
+        fake_runner.run(CommandSpec(argv=("modinfo",), cwd=Path("/tmp"))).stdout
+        == b"modinfo-ok\n"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -119,13 +132,16 @@ def test_fail_result_produces_nonzero_exit(fail_result) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_make_kernel_source_creates_expected_structure(make_kernel_source, tmp_path: Path) -> None:
+def test_make_kernel_source_creates_expected_structure(
+    make_kernel_source, tmp_path: Path
+) -> None:
     src = make_kernel_source(tmp_path)
     assert (src / "Makefile").is_file()
     assert (src / "scripts" / "kconfig" / "merge_config.sh").is_file()
     assert (src / "include" / "generated").is_dir()
     # The merge script is executable.
     import os
+
     assert os.access(src / "scripts" / "kconfig" / "merge_config.sh", os.X_OK)
 
 
@@ -140,17 +156,23 @@ def test_make_kernel_source_is_idempotent(make_kernel_source, tmp_path: Path) ->
 # ---------------------------------------------------------------------------
 
 
-def test_make_module_tree_creates_expected_structure(make_module_tree, tmp_path: Path) -> None:
+def test_make_module_tree_creates_expected_structure(
+    make_module_tree, tmp_path: Path
+) -> None:
     tree = make_module_tree(tmp_path, "7.2.15-huey1")
     assert tree.is_dir()
-    assert (tree / "kernel" / "drivers" / "gpu" / "drm" / "amd" / "amdgpu" / "amdgpu.ko").is_file()
+    assert (
+        tree / "kernel" / "drivers" / "gpu" / "drm" / "amd" / "amdgpu" / "amdgpu.ko"
+    ).is_file()
     assert (tree / "updates" / "nvidia" / "nvidia.ko").is_file()
     assert (tree / "updates" / "nvidia" / "nvidia-uvm.ko").is_file()
     assert (tree / "modules.dep").is_file()
 
 
 def test_make_module_tree_custom_modules(make_module_tree, tmp_path: Path) -> None:
-    tree = make_module_tree(tmp_path, "7.2.15-huey1", modules=("nvidia", "nvidia-modeset"))
+    tree = make_module_tree(
+        tmp_path, "7.2.15-huey1", modules=("nvidia", "nvidia-modeset")
+    )
     assert (tree / "updates" / "nvidia" / "nvidia-modeset.ko").is_file()
     assert not (tree / "updates" / "nvidia" / "nvidia-uvm.ko").exists()
 
@@ -160,7 +182,9 @@ def test_make_module_tree_custom_modules(make_module_tree, tmp_path: Path) -> No
 # ---------------------------------------------------------------------------
 
 
-def test_make_release_dir_creates_expected_structure(make_release_dir, tmp_path: Path) -> None:
+def test_make_release_dir_creates_expected_structure(
+    make_release_dir, tmp_path: Path
+) -> None:
     rd = make_release_dir(tmp_path)
     assert rd.is_dir()
     assert any(rd.glob("linux-image-7.2.15-huey1*.deb"))
@@ -173,7 +197,9 @@ def test_make_release_dir_creates_expected_structure(make_release_dir, tmp_path:
 
 
 def test_make_release_dir_custom_versions(make_release_dir, tmp_path: Path) -> None:
-    rd = make_release_dir(tmp_path, kernel_release="7.2.12-huey1", driver_version="550.100.00")
+    rd = make_release_dir(
+        tmp_path, kernel_release="7.2.12-huey1", driver_version="550.100.00"
+    )
     assert any(rd.glob("linux-image-7.2.12-huey1*.deb"))
     assert (rd / "nvidia-550.100.00-7.2.12-huey1" / "nvidia.ko").is_file()
 
@@ -233,6 +259,7 @@ def test_make_mini_repo_copies_wrapper(make_mini_repo, tmp_path: Path) -> None:
     # The wrapper is either present (copied) or absent (repo did not have it).
     if wrapper.exists():
         import os
+
         assert os.access(wrapper, os.X_OK)
 
 

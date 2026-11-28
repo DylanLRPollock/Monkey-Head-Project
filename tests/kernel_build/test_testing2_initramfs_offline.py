@@ -1,4 +1,5 @@
 """Static invariants for safely creating an isolated testing2 initramfs."""
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -42,11 +43,19 @@ def test_required_configuration_and_md_raid_checks() -> None:
     assert '"$CONF/scripts"' in s
     assert '"$MODTREE/config-$KR"' in s
     assert "MODULES=list" in s
-    for module in ("vmd", "nvme", "nvme_core", "md_mod", "raid10",
-                   "btrfs", "amdgpu", "nvidia", "nvidia_uvm"):
+    for module in (
+        "vmd",
+        "nvme",
+        "nvme_core",
+        "md_mod",
+        "raid10",
+        "btrfs",
+        "amdgpu",
+        "nvidia",
+        "nvidia_uvm",
+    ):
         assert module in s
-    for path in ("usr/sbin/mdadm", "etc/mdadm/mdadm.conf",
-                 "scripts/local-block/mdadm"):
+    for path in ("usr/sbin/mdadm", "etc/mdadm/mdadm.conf", "scripts/local-block/mdadm"):
         assert path in s
     assert "nouveau" in s
 
@@ -56,9 +65,20 @@ def test_rejects_overwrites_and_privileged_installation() -> None:
     assert '[[ ! -e "$p" ]]' in s
     assert "Run without sudo." in s
     forbidden = (
-        "sudo ", "apt ", "dpkg -i", "dkms ", "make modules_install",
-        "update-initramfs ", "update-grub ", "grub-install ",
-        "reboot", "modprobe ", "insmod ", "rmmod ", "mount ", "umount ",
+        "sudo ",
+        "apt ",
+        "dpkg -i",
+        "dkms ",
+        "make modules_install",
+        "update-initramfs ",
+        "update-grub ",
+        "grub-install ",
+        "reboot",
+        "modprobe ",
+        "insmod ",
+        "rmmod ",
+        "mount ",
+        "umount ",
     )
     for line in s.splitlines():
         line = line.lstrip()

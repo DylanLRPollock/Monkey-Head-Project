@@ -1,4 +1,5 @@
 """Static safeguards for the unprivileged testing2 Debian packaging phase."""
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -25,13 +26,20 @@ def test_only_offline_binary_packaging_is_run() -> None:
     assert "KDEB_PKGVERSION=" in s
     assert 'current_kernel="$(uname -r)"' in s
     forbidden = (
-        "sudo ", "apt ", "dpkg -i", "make install",
-        "make modules_install", "update-initramfs",
-        "update-grub", "reboot", "grub-install",
+        "sudo ",
+        "apt ",
+        "dpkg -i",
+        "make install",
+        "make modules_install",
+        "update-initramfs",
+        "update-grub",
+        "reboot",
+        "grub-install",
     )
     assert all(
         not line.strip().startswith(forbidden)
-        for line in s.splitlines() if not line.strip().startswith("#")
+        for line in s.splitlines()
+        if not line.strip().startswith("#")
     )
 
 
@@ -48,7 +56,7 @@ def test_package_names_are_verified() -> None:
     assert '"linux-image-$KR"' in s
     assert '"linux-headers-$KR"' in s
     assert '"linux-image-$KR-dbg"' in s
-    assert 'linux-libc-dev) libc=' in s
+    assert "linux-libc-dev) libc=" in s
     assert '"$count" -eq 4' in s
     assert "Do not use sudo." in s
 

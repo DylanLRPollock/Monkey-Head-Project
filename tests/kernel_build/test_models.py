@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import FrozenInstanceError
 from pathlib import Path
 
 import pytest
@@ -37,48 +38,48 @@ def _sha(c: str = "a") -> str:
 
 
 def _source(**overrides) -> KernelSource:
-    base = dict(
-        source_type=SourceType.DEBIAN_LINUX_SOURCE,
-        source="linux-source-7.2",
-        version="7.2.15-1",
-        checksum=_sha("b"),
-        localversion="-huey1",
-        baseline_config=None,
-    )
+    base = {
+        "source_type": SourceType.DEBIAN_LINUX_SOURCE,
+        "source": "linux-source-7.2",
+        "version": "7.2.15-1",
+        "checksum": _sha("b"),
+        "localversion": "-huey1",
+        "baseline_config": None,
+    }
     base.update(overrides)
     return KernelSource(**base)
 
 
 def _driver(**overrides) -> DriverBaseline:
-    base = dict(
-        driver_version="580.196.07",
-        module_flavor=ModuleFlavor.PROPRIETARY,
-        cuda_api_version="13.0",
-        cuda_toolkit_version="12.9",
-        dkms_builds=("7.2.12+deb14-amd64", "7.2.15+deb14-amd64"),
-    )
+    base = {
+        "driver_version": "580.196.07",
+        "module_flavor": ModuleFlavor.PROPRIETARY,
+        "cuda_api_version": "13.0",
+        "cuda_toolkit_version": "12.9",
+        "dkms_builds": ("7.2.12+deb14-amd64", "7.2.15+deb14-amd64"),
+    }
     base.update(overrides)
     return DriverBaseline(**base)
 
 
 def _plan(**overrides) -> KernelPlan:
-    base = dict(
-        profile="v100-workstation",
-        source=_source(),
-        driver=_driver(),
-        workspace=Path("build/huey-kernel/workspace"),
-        output_dir=Path("build/huey-kernel/"),
-        build_jobs=4,
-        signing_policy=SigningPolicy.REQUIRED_IF_SECUREBOOT,
-        target_release="7.2.15-huey1",
-        tool_versions={"cc": "gcc-14.2.0", "make": "4.4.1"},
-        intended_artifacts=(
+    base = {
+        "profile": "v100-workstation",
+        "source": _source(),
+        "driver": _driver(),
+        "workspace": Path("build/huey-kernel/workspace"),
+        "output_dir": Path("build/huey-kernel/"),
+        "build_jobs": 4,
+        "signing_policy": SigningPolicy.REQUIRED_IF_SECUREBOOT,
+        "target_release": "7.2.15-huey1",
+        "tool_versions": {"cc": "gcc-14.2.0", "make": "4.4.1"},
+        "intended_artifacts": (
             ArtifactKind.KERNEL_IMAGE_DEB,
             ArtifactKind.KERNEL_HEADERS_DEB,
             ArtifactKind.NVIDIA_MODULE,
             ArtifactKind.INITRAMFS,
         ),
-    )
+    }
     base.update(overrides)
     return KernelPlan(**base)
 
@@ -470,7 +471,7 @@ def test_build_report_rejects_wrong_status_type() -> None:
 
 def test_all_models_are_frozen() -> None:
     src = _source()
-    with pytest.raises(Exception):
+    with pytest.raises(FrozenInstanceError):
         src.source = "mutated"  # type: ignore[misc]
 
 
@@ -489,7 +490,10 @@ def test_to_dict_output_is_deterministic() -> None:
 
 def test_command_result_redacts_environment_on_construction() -> None:
     result = CommandResult(
-        argv=("make",), cwd="/tmp", returncode=0, elapsed_seconds=0.1,
+        argv=("make",),
+        cwd="/tmp",
+        returncode=0,
+        elapsed_seconds=0.1,
         env_summary={"PATH": "/usr/bin", "API_TOKEN": "unsafe-value"},
     )
     assert result.env_summary["API_TOKEN"] == "<redacted>"
@@ -507,8 +511,11 @@ def test_kernel_plan_rejects_empty_or_null_destinations(key: str, path: str) -> 
 def test_build_artifact_rejects_project_root_as_output() -> None:
     with pytest.raises(ValueError):
         BuildArtifact(
-            kind=ArtifactKind.MANIFEST, path=".", sha256=_sha(),
-            size_bytes=1, kernel_release="7.2.15-huey1",
+            kind=ArtifactKind.MANIFEST,
+            path=".",
+            sha256=_sha(),
+            size_bytes=1,
+            kernel_release="7.2.15-huey1",
         )
 
 
@@ -520,15 +527,38 @@ def test_kernel_plan_rejects_bad_build_jobs(value: object) -> None:
 
 def test_build_artifact_rejects_bool_size() -> None:
     with pytest.raises(ValueError):
-        BuildArtifact(kind=ArtifactKind.MANIFEST, path="release/manifest.json",
-                      sha256=_sha(), size_bytes=True, kernel_release="7.2.15-huey1")
+        BuildArtifact(
+            kind=ArtifactKind.MANIFEST,
+            path="release/manifest.json",
+            sha256=_sha(),
+            size_bytes=True,
+            kernel_release="7.2.15-huey1",
+        )
 
 
-@pytest.mark.parametrize("model,payload", [
-    (KernelSource, {"source_type": "upstream", "unrecognized": "x"}),
-    (GPUIdentity, {"vendor": "nvidia", "model": "V100", "pci_address": "00000000:01:00.0", "unrecognized": "x"}),
-    (DriverBaseline, {"driver_version": "580.196.07", "module_flavor": "proprietary", "unrecognized": "x"}),
-])
+@pytest.mark.parametrize(
+    "model,payload",
+    [
+        (KernelSource, {"source_type": "upstream", "unrecognized": "x"}),
+        (
+            GPUIdentity,
+            {
+                "vendor": "nvidia",
+                "model": "V100",
+                "pci_address": "00000000:01:00.0",
+                "unrecognized": "x",
+            },
+        ),
+        (
+            DriverBaseline,
+            {
+                "driver_version": "580.196.07",
+                "module_flavor": "proprietary",
+                "unrecognized": "x",
+            },
+        ),
+    ],
+)
 def test_from_dict_rejects_unknown_fields(model: type, payload: dict) -> None:
     with pytest.raises(ValueError, match="unknown fields"):
         model.from_dict(payload)
@@ -541,11 +571,14 @@ def test_from_dict_rejects_coercion_of_build_jobs() -> None:
         KernelPlan.from_dict(data)
 
 
-@pytest.mark.parametrize("name,kwargs", [
-    ("source_type", {"source_type": 3}),
-    ("checksum", {"checksum": 42}),
-    ("version", {"version": 42}),
-])
+@pytest.mark.parametrize(
+    "name,kwargs",
+    [
+        ("source_type", {"source_type": 3}),
+        ("checksum", {"checksum": 42}),
+        ("version", {"version": 42}),
+    ],
+)
 def test_kernel_source_rejects_wrong_field_shapes(name: str, kwargs: dict) -> None:
     with pytest.raises((TypeError, ValueError), match=name):
         _source(**kwargs)
@@ -563,8 +596,13 @@ def test_driver_baseline_rejects_non_enum_flavor() -> None:
 
 def test_build_artifact_rejects_non_enum_kind() -> None:
     with pytest.raises(TypeError, match="kind"):
-        BuildArtifact(kind=42, path="release/file", sha256=_sha(),
-                      size_bytes=1, kernel_release="7.2.15-huey1")
+        BuildArtifact(
+            kind=42,
+            path="release/file",
+            sha256=_sha(),
+            size_bytes=1,
+            kernel_release="7.2.15-huey1",
+        )
 
 
 def test_validation_finding_rejects_non_enum_severity() -> None:
@@ -591,6 +629,10 @@ def test_command_result_rejects_nonfinite_or_negative_time(seconds: float) -> No
 def test_build_report_rejects_impossible_date() -> None:
     with pytest.raises(ValueError, match="ISO 8601"):
         BuildReport(
-            plan=_plan(), artifacts=(), findings=(), status=BuildStatus.BUILT,
-            approval=ApprovalState.PENDING, generated_at="2026-02-30T08:00:00Z",
+            plan=_plan(),
+            artifacts=(),
+            findings=(),
+            status=BuildStatus.BUILT,
+            approval=ApprovalState.PENDING,
+            generated_at="2026-02-30T08:00:00Z",
         )

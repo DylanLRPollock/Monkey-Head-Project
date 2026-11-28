@@ -45,7 +45,7 @@ import re
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 from huey.kernel_build.models import (
     ArtifactKind,
@@ -65,9 +65,9 @@ from huey.kernel_build.runner import (
 logger = logging.getLogger(__name__)
 
 __all__ = [
+    "REQUIRED_MODULES",
     "NvidiaBuildResult",
     "NvidiaBuilder",
-    "REQUIRED_MODULES",
 ]
 
 #: Modules staged by the builder. ``nvidia`` and ``nvidia-uvm`` are required
@@ -147,7 +147,7 @@ class NvidiaBuilder:
 
     # ---- public API ------------------------------------------------------
 
-    def build(
+    def build(  # noqa: C901
         self,
         *,
         kernel_release: str,
@@ -216,14 +216,21 @@ class NvidiaBuilder:
             bad = check_path_destination_safe(dest, workspace_root=workspace_root)
             if bad:
                 return self._error_result(
-                    kernel_release=kernel_release, driver_version=driver_version,
-                    module_flavor=module_flavor, source_dir=None,
-                    code=bad[0].code, message=bad[0].message,
+                    kernel_release=kernel_release,
+                    driver_version=driver_version,
+                    module_flavor=module_flavor,
+                    source_dir=None,
+                    code=bad[0].code,
+                    message=bad[0].message,
                 )
-        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._+~-]*", kernel_release) or not re.fullmatch(r"[0-9][0-9.]*", driver_version):
+        if not re.fullmatch(
+            r"[A-Za-z0-9][A-Za-z0-9._+~-]*", kernel_release
+        ) or not re.fullmatch(r"[0-9][0-9.]*", driver_version):
             return self._error_result(
-                kernel_release=kernel_release, driver_version=driver_version,
-                module_flavor=module_flavor, source_dir=None,
+                kernel_release=kernel_release,
+                driver_version=driver_version,
+                module_flavor=module_flavor,
+                source_dir=None,
                 code="UNSAFE_BUILD_IDENTIFIER",
                 message="Release and driver identifiers must be safe path components.",
             )
@@ -238,7 +245,11 @@ class NvidiaBuilder:
                 driver_version=driver_version,
                 module_flavor=module_flavor,
                 source_dir=None,
-                code=source_finding.code if source_finding and source_finding.severity == Severity.ERROR else "DKMS_SOURCE_NOT_FOUND",
+                code=(
+                    source_finding.code
+                    if source_finding and source_finding.severity == Severity.ERROR
+                    else "DKMS_SOURCE_NOT_FOUND"
+                ),
                 message=(
                     source_finding.message
                     if source_finding
@@ -250,11 +261,16 @@ class NvidiaBuilder:
                 ),
             )
 
-        if (output_dir == source_dir or output_dir in source_dir.parents
-                or source_dir in output_dir.parents):
+        if (
+            output_dir == source_dir
+            or output_dir in source_dir.parents
+            or source_dir in output_dir.parents
+        ):
             return self._error_result(
-                kernel_release=kernel_release, driver_version=driver_version,
-                module_flavor=module_flavor, source_dir=source_dir,
+                kernel_release=kernel_release,
+                driver_version=driver_version,
+                module_flavor=module_flavor,
+                source_dir=source_dir,
                 code="UNSAFE_OUTPUT_OVERLAP",
                 message="Staging cannot overlap the vendor source tree.",
             )
@@ -284,8 +300,7 @@ class NvidiaBuilder:
             )
 
         if not any(
-            (source_dir / name).is_file()
-            for name in ("Makefile", "Kbuild", "makefile")
+            (source_dir / name).is_file() for name in ("Makefile", "Kbuild", "makefile")
         ):
             return self._error_result(
                 kernel_release=kernel_release,
@@ -340,14 +355,13 @@ class NvidiaBuilder:
                 )
             )
 
-        staging_dir = (
-            output_dir
-            / f"nvidia-{driver_version}-{kernel_release}"
-        )
+        staging_dir = output_dir / f"nvidia-{driver_version}-{kernel_release}"
         if staging_dir.is_symlink():
             return self._error_result(
-                kernel_release=kernel_release, driver_version=driver_version,
-                module_flavor=module_flavor, source_dir=source_dir,
+                kernel_release=kernel_release,
+                driver_version=driver_version,
+                module_flavor=module_flavor,
+                source_dir=source_dir,
                 code="STAGING_SYMLINK_REFUSED",
                 message="Refusing symlinked NVIDIA staging directory.",
             )
@@ -389,8 +403,10 @@ class NvidiaBuilder:
                 stale_ko.unlink()
         except OSError as exc:
             return self._error_result(
-                kernel_release=kernel_release, driver_version=driver_version,
-                module_flavor=module_flavor, source_dir=source_dir,
+                kernel_release=kernel_release,
+                driver_version=driver_version,
+                module_flavor=module_flavor,
+                source_dir=source_dir,
                 code="SOURCE_STAGING_FAILED",
                 message=f"Cannot isolate vendor source for build: {exc}",
             )
@@ -431,30 +447,27 @@ class NvidiaBuilder:
                     ValidationFinding(
                         severity=Severity.ERROR,
                         code="STAGE_COPY_FAILED",
-                        message=(
-                            f"Could not copy {ko_path} to {staged_path}: {exc}"
-                        ),
+                        message=(f"Could not copy {ko_path} to {staged_path}: {exc}"),
                     )
                 )
                 continue
 
-            vermagic_finding = self._verify_vermagic(
-                staged_path, kernel_release
-            )
+            vermagic_finding = self._verify_vermagic(staged_path, kernel_release)
             if vermagic_finding is not None:
                 findings.append(vermagic_finding)
                 continue
 
-            version_finding = self._verify_module_version(
-                staged_path, driver_version
-            )
+            version_finding = self._verify_module_version(staged_path, driver_version)
             if version_finding is not None:
                 findings.append(version_finding)
                 continue
 
             artifact = self._artifact_from_path(
-                staged_path, output_dir, kernel_release,
-                ArtifactKind.NVIDIA_MODULE, module_name,
+                staged_path,
+                output_dir,
+                kernel_release,
+                ArtifactKind.NVIDIA_MODULE,
+                module_name,
             )
             if artifact is None:
                 findings.append(
@@ -490,14 +503,12 @@ class NvidiaBuilder:
                 )
 
         logger.info(
-            "nvidia.build complete driver=%s kernel_release=%s modules=%s "
-            "errors=%d",
+            "nvidia.build complete driver=%s kernel_release=%s modules=%s errors=%d",
             driver_version,
             kernel_release,
             sorted(artifacts),
             sum(
-                1 for f in findings
-                if f.severity in (Severity.ERROR, Severity.CRITICAL)
+                1 for f in findings if f.severity in (Severity.ERROR, Severity.CRITICAL)
             ),
         )
 
@@ -634,7 +645,8 @@ class NvidiaBuilder:
             code="DKMS_SOURCE_NOT_FOUND",
             message=(
                 f"No DKMS source found for nvidia {driver_version}. "
-                f"Searched: {[t.format(version=driver_version) for t in _DEFAULT_DKMS_SOURCE_ROOTS]}."
+                "Searched: "
+                f"{[t.format(version=driver_version) for t in _DEFAULT_DKMS_SOURCE_ROOTS]}."
             ),
         )
 
@@ -722,9 +734,10 @@ class NvidiaBuilder:
         for ko in source_dir.rglob("*.ko"):
             name = ko.stem  # strips ".ko"
             # Only accept modules we know how to stage.
-            if name in REQUIRED_MODULES or name in OPTIONAL_MODULES:
-                if name not in found:
-                    found[name] = ko
+            if (
+                name in REQUIRED_MODULES or name in OPTIONAL_MODULES
+            ) and name not in found:
+                found[name] = ko
         return found
 
     def _verify_vermagic(
@@ -742,9 +755,7 @@ class NvidiaBuilder:
             return ValidationFinding(
                 severity=Severity.ERROR,
                 code="VERMAGIC_UNAVAILABLE",
-                message=(
-                    f"Could not query vermagic of {module_path.name}: {exc}"
-                ),
+                message=(f"Could not query vermagic of {module_path.name}: {exc}"),
             )
         if not result.succeeded:
             return ValidationFinding(
@@ -792,9 +803,7 @@ class NvidiaBuilder:
             return ValidationFinding(
                 severity=Severity.ERROR,
                 code="MODULE_VERSION_UNAVAILABLE",
-                message=(
-                    f"Could not query version of {module_path.name}: {exc}"
-                ),
+                message=(f"Could not query version of {module_path.name}: {exc}"),
             )
         if not result.succeeded:
             return ValidationFinding(
@@ -927,9 +936,7 @@ class NvidiaBuilder:
             source_dir=source_dir,
             module_artifacts={},
             findings=(
-                ValidationFinding(
-                    severity=Severity.ERROR, code=code, message=message
-                ),
+                ValidationFinding(severity=Severity.ERROR, code=code, message=message),
             ),
             dry_run=False,
         )

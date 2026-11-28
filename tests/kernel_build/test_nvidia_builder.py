@@ -18,7 +18,6 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import Callable
 
 import pytest
 
@@ -29,10 +28,9 @@ from huey.kernel_build.models import (
     Severity,
 )
 from huey.kernel_build.nvidia_builder import (
-    NvidiaBuilder,
-    NvidiaBuildResult,
     OPTIONAL_MODULES,
     REQUIRED_MODULES,
+    NvidiaBuilder,
 )
 from huey.kernel_build.runner import (
     CommandSpec,
@@ -40,7 +38,6 @@ from huey.kernel_build.runner import (
     RunnerResult,
     RunnerTimeout,
 )
-
 
 # ===========================================================================
 # FixtureRunner
@@ -52,7 +49,7 @@ class FixtureRunner:
         self._handlers: list = []
         self._calls: list[CommandSpec] = []
 
-    def on(self, matcher, handler) -> "FixtureRunner":
+    def on(self, matcher, handler) -> FixtureRunner:
         self._handlers.append((matcher, handler))
         return self
 
@@ -71,20 +68,30 @@ class FixtureRunner:
 def _ok(spec, *, stdout: bytes = b"") -> RunnerResult:
     return RunnerResult(
         command=CommandResult(
-            argv=spec.argv, cwd=str(spec.cwd),
-            returncode=0, elapsed_seconds=0.0,
+            argv=spec.argv,
+            cwd=str(spec.cwd),
+            returncode=0,
+            elapsed_seconds=0.0,
         ),
-        executed=True, dry_run=False, stdout=stdout, stderr=b"",
+        executed=True,
+        dry_run=False,
+        stdout=stdout,
+        stderr=b"",
     )
 
 
 def _fail(spec, returncode: int = 1) -> RunnerResult:
     return RunnerResult(
         command=CommandResult(
-            argv=spec.argv, cwd=str(spec.cwd),
-            returncode=returncode, elapsed_seconds=0.0,
+            argv=spec.argv,
+            cwd=str(spec.cwd),
+            returncode=returncode,
+            elapsed_seconds=0.0,
         ),
-        executed=True, dry_run=False, stdout=b"", stderr=b"",
+        executed=True,
+        dry_run=False,
+        stdout=b"",
+        stderr=b"",
     )
 
 
@@ -93,19 +100,11 @@ def _is_make_modules(spec: CommandSpec) -> bool:
 
 
 def _is_modinfo_vermagic(spec: CommandSpec) -> bool:
-    return (
-        spec.argv[0] == "modinfo"
-        and "-F" in spec.argv
-        and "vermagic" in spec.argv
-    )
+    return spec.argv[0] == "modinfo" and "-F" in spec.argv and "vermagic" in spec.argv
 
 
 def _is_modinfo_version(spec: CommandSpec) -> bool:
-    return (
-        spec.argv[0] == "modinfo"
-        and "-F" in spec.argv
-        and "version" in spec.argv
-    )
+    return spec.argv[0] == "modinfo" and "-F" in spec.argv and "version" in spec.argv
 
 
 # ===========================================================================
@@ -117,7 +116,9 @@ KR = "7.2.15-huey1"
 DRV = "580.196.07"
 
 
-def _make_headers(tmp_path: Path, *, with_makefile: bool = True, with_generated: bool = True) -> Path:
+def _make_headers(
+    tmp_path: Path, *, with_makefile: bool = True, with_generated: bool = True
+) -> Path:
     headers = tmp_path / "headers"
     headers.mkdir(exist_ok=True)
     if with_generated:
@@ -153,7 +154,7 @@ def _make_dkms_source(
     return src
 
 
-def _build_runner(
+def _build_runner(  # noqa: C901
     *,
     kernel_release: str = KR,
     driver_version: str = DRV,
@@ -193,7 +194,9 @@ def _build_runner(
             return _fail(spec, modinfo_vermagic_returncode)
         if modinfo_vermagic_empty:
             return _ok(spec, stdout=b"\n")
-        return _ok(spec, stdout=f"{vermagic_value} SMP mod_unload modversions\n".encode())
+        return _ok(
+            spec, stdout=f"{vermagic_value} SMP mod_unload modversions\n".encode()
+        )
 
     def _mver(spec):
         if modinfo_version_returncode != 0:
@@ -296,7 +299,10 @@ def test_make_modules_invocation_shape(tmp_path: Path) -> None:
     assert len(make_calls) == 1
     spec = make_calls[0]
     assert spec.argv == ("make", "modules", "-j4")
-    assert spec.cwd == (tmp_path / "out" / f"nvidia-{DRV}-{KR}" / "vendor-source").resolve()
+    assert (
+        spec.cwd
+        == (tmp_path / "out" / f"nvidia-{DRV}-{KR}" / "vendor-source").resolve()
+    )
     assert spec.cwd != src.resolve()
     env = spec.env_overrides
     assert env["KERNELRELEASE"] == KR
@@ -526,12 +532,12 @@ def test_open_flavor_rejected(tmp_path: Path) -> None:
 def test_make_nonzero_errors(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
     src = _make_dkms_source(tmp_path)
-    result = NvidiaBuilder(
-        _build_runner(dkms_source=src, make_returncode=2)
-    ).build(
-        kernel_release=KR, driver_version=DRV,
+    result = NvidiaBuilder(_build_runner(dkms_source=src, make_returncode=2)).build(
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -544,9 +550,11 @@ def test_make_launch_failure_errors(tmp_path: Path) -> None:
     result = NvidiaBuilder(
         _build_runner(dkms_source=src, make_launch_fails=True)
     ).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -556,12 +564,12 @@ def test_make_launch_failure_errors(tmp_path: Path) -> None:
 def test_make_timeout_errors(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
     src = _make_dkms_source(tmp_path)
-    result = NvidiaBuilder(
-        _build_runner(dkms_source=src, make_timeout=True)
-    ).build(
-        kernel_release=KR, driver_version=DRV,
+    result = NvidiaBuilder(_build_runner(dkms_source=src, make_timeout=True)).build(
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -571,12 +579,12 @@ def test_make_timeout_errors(tmp_path: Path) -> None:
 def test_no_modules_built_errors(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
     src = _make_dkms_source(tmp_path, modules=())
-    result = NvidiaBuilder(
-        _build_runner(dkms_source=src, create_modules=())
-    ).build(
-        kernel_release=KR, driver_version=DRV,
+    result = NvidiaBuilder(_build_runner(dkms_source=src, create_modules=())).build(
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -592,9 +600,11 @@ def test_vermagic_match_passes(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
     src = _make_dkms_source(tmp_path)
     result = NvidiaBuilder(_build_runner(dkms_source=src)).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -607,9 +617,11 @@ def test_vermagic_mismatch_is_critical(tmp_path: Path) -> None:
     result = NvidiaBuilder(
         _build_runner(dkms_source=src, vermagic="7.2.12-huey1")
     ).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -626,9 +638,11 @@ def test_vermagic_query_failure_errors(tmp_path: Path) -> None:
     result = NvidiaBuilder(
         _build_runner(dkms_source=src, modinfo_vermagic_returncode=2)
     ).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -641,9 +655,11 @@ def test_vermagic_empty_errors(tmp_path: Path) -> None:
     result = NvidiaBuilder(
         _build_runner(dkms_source=src, modinfo_vermagic_empty=True)
     ).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -660,9 +676,11 @@ def test_module_version_match_passes(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
     src = _make_dkms_source(tmp_path)
     result = NvidiaBuilder(_build_runner(dkms_source=src)).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -675,9 +693,11 @@ def test_module_version_mismatch_errors(tmp_path: Path) -> None:
     result = NvidiaBuilder(
         _build_runner(dkms_source=src, module_version="550.100.00")
     ).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -690,9 +710,11 @@ def test_module_version_query_failure_errors(tmp_path: Path) -> None:
     result = NvidiaBuilder(
         _build_runner(dkms_source=src, modinfo_version_returncode=2)
     ).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -706,18 +728,18 @@ def test_module_version_query_failure_errors(tmp_path: Path) -> None:
 
 def test_missing_nvidia_module_errors(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
-    src = _make_dkms_source(
-        tmp_path, modules=("nvidia-uvm", "nvidia-modeset")
-    )
+    src = _make_dkms_source(tmp_path, modules=("nvidia-uvm", "nvidia-modeset"))
     result = NvidiaBuilder(
         _build_runner(
             dkms_source=src,
             create_modules=("nvidia-uvm", "nvidia-modeset"),
         )
     ).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -727,18 +749,18 @@ def test_missing_nvidia_module_errors(tmp_path: Path) -> None:
 
 def test_missing_nvidia_uvm_module_errors(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
-    src = _make_dkms_source(
-        tmp_path, modules=("nvidia", "nvidia-modeset")
-    )
+    src = _make_dkms_source(tmp_path, modules=("nvidia", "nvidia-modeset"))
     result = NvidiaBuilder(
         _build_runner(
             dkms_source=src,
             create_modules=("nvidia", "nvidia-modeset"),
         )
     ).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     codes = {f.code for f in result.findings}
@@ -755,9 +777,11 @@ def test_secure_boot_enabled_records_warning(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
     src = _make_dkms_source(tmp_path)
     result = NvidiaBuilder(_build_runner(dkms_source=src)).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
         secure_boot_enabled=True,
     )
@@ -765,7 +789,9 @@ def test_secure_boot_enabled_records_warning(tmp_path: Path) -> None:
     assert "SECUREBOOT_SIGNING_DEFERRED" in warning_codes
     # Not blocking.
     blocking_codes = {
-        f.code for f in result.findings if f.severity in (Severity.ERROR, Severity.CRITICAL)
+        f.code
+        for f in result.findings
+        if f.severity in (Severity.ERROR, Severity.CRITICAL)
     }
     assert "SECUREBOOT_SIGNING_DEFERRED" not in blocking_codes
 
@@ -774,9 +800,11 @@ def test_secure_boot_disabled_no_warning(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
     src = _make_dkms_source(tmp_path)
     result = NvidiaBuilder(_build_runner(dkms_source=src)).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
         secure_boot_enabled=False,
     )
@@ -798,9 +826,11 @@ def test_stale_staging_replaced(tmp_path: Path) -> None:
     (staging / "stale.ko").write_bytes(b"stale")
 
     result = NvidiaBuilder(_build_runner(dkms_source=src)).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=out,
+        headers_dir=headers,
+        output_dir=out,
         dkms_source_dir=src,
     )
     assert not (staging / "stale.ko").exists()
@@ -817,9 +847,11 @@ def test_dry_run_no_io_no_subprocess(tmp_path: Path) -> None:
     src = _make_dkms_source(tmp_path)
     runner = FixtureRunner()  # zero handlers: any run() raises
     result = NvidiaBuilder(runner).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
         dry_run=True,
     )
@@ -860,39 +892,40 @@ def test_no_host_mutation_commands_in_argv(
     src = _make_dkms_source(tmp_path)
     runner = _build_runner(dkms_source=src)
     NvidiaBuilder(runner).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     for call in runner.calls:
-        assert call.argv[0] != forbidden_command, (
-            f"builder invoked forbidden command {forbidden_command!r}: "
-            f"{call.argv}"
-        )
+        assert (
+            call.argv[0] != forbidden_command
+        ), f"builder invoked forbidden command {forbidden_command!r}: {call.argv}"
 
 
 @pytest.mark.parametrize(
     "protected_path",
     ["/boot", "/lib/modules", "/etc/modprobe.d"],
 )
-def test_no_protected_paths_in_argv(
-    protected_path: str, tmp_path: Path
-) -> None:
+def test_no_protected_paths_in_argv(protected_path: str, tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
     src = _make_dkms_source(tmp_path)
     runner = _build_runner(dkms_source=src)
     NvidiaBuilder(runner).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     for call in runner.calls:
         for arg in call.argv:
-            assert protected_path not in arg, (
-                f"builder passed protected path {protected_path!r}: {call.argv}"
-            )
+            assert (
+                protected_path not in arg
+            ), f"builder passed protected path {protected_path!r}: {call.argv}"
 
 
 # ===========================================================================
@@ -903,12 +936,12 @@ def test_no_protected_paths_in_argv(
 def test_has_errors_true_when_blocking_present(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
     src = _make_dkms_source(tmp_path)
-    result = NvidiaBuilder(
-        _build_runner(dkms_source=src, vermagic="wrong")
-    ).build(
-        kernel_release=KR, driver_version=DRV,
+    result = NvidiaBuilder(_build_runner(dkms_source=src, vermagic="wrong")).build(
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
     )
     assert result.has_errors() is True
@@ -919,9 +952,11 @@ def test_has_errors_false_with_secureboot_warning_only(tmp_path: Path) -> None:
     headers = _make_headers(tmp_path)
     src = _make_dkms_source(tmp_path)
     result = NvidiaBuilder(_build_runner(dkms_source=src)).build(
-        kernel_release=KR, driver_version=DRV,
+        kernel_release=KR,
+        driver_version=DRV,
         module_flavor=ModuleFlavor.PROPRIETARY,
-        headers_dir=headers, output_dir=tmp_path / "out",
+        headers_dir=headers,
+        output_dir=tmp_path / "out",
         dkms_source_dir=src,
         secure_boot_enabled=True,
     )

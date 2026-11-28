@@ -1,4 +1,5 @@
 """Ensure the first testing2 compilation never mutates the live Debian host."""
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -28,11 +29,11 @@ def test_no_overwrite_of_reviewed_configs() -> None:
 
 def test_only_offline_image_and_modules_build() -> None:
     s = _script()
-    assert 'LOCALVERSION=-huey-testing2 bzImage modules' in s
-    assert 'JOBS=4' in s
+    assert "LOCALVERSION=-huey-testing2 bzImage modules" in s
+    assert "JOBS=4" in s
     assert '"$MODINFO" -F vermagic' in s
-    assert '/usr/sbin/modinfo' in s
-    assert 'command -v modinfo' in s
+    assert "/usr/sbin/modinfo" in s
+    assert "command -v modinfo" in s
     assert '"$OBJ/Module.symvers"' in s
     for line in s.splitlines():
         line = line.strip()
@@ -41,8 +42,15 @@ def test_only_offline_image_and_modules_build() -> None:
         assert not any(
             line.startswith(command)
             for command in (
-                "sudo ", "apt ", "dpkg -i", "grub-install", "update-grub",
-                "update-initramfs", "reboot", "poweroff", "make modules_install",
+                "sudo ",
+                "apt ",
+                "dpkg -i",
+                "grub-install",
+                "update-grub",
+                "update-initramfs",
+                "reboot",
+                "poweroff",
+                "make modules_install",
             )
         )
 
@@ -51,4 +59,4 @@ def test_signing_material_never_collected() -> None:
     s = _script()
     assert "private signing key" in s
     assert "signing_key.pem" not in s
-    assert "sha256sum \"$OBJ/.config\"" in s
+    assert 'sha256sum "$OBJ/.config"' in s

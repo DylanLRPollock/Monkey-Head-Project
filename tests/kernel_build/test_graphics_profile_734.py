@@ -4,6 +4,7 @@ These assertions are not a substitute for hardware/firmware/Wayland
 qualification. They prevent accidental premature AMDGPU removal and Nouveau
 enablement in the initial V100 build profile.
 """
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -20,9 +21,7 @@ def test_testing1_keeps_recovery_gpu_drivers() -> None:
 
 
 def test_intel_only_fragment_is_explicitly_opt_in() -> None:
-    cfg = (PROFILES / "intel-primary-v100-only.config").read_text(
-        encoding="utf-8"
-    )
+    cfg = (PROFILES / "intel-primary-v100-only.config").read_text(encoding="utf-8")
     assert "Do NOT merge this into the first testing1 build" in cfg
     assert "CONFIG_DRM_I915=m" in cfg
     assert "# CONFIG_DRM_AMDGPU is not set" in cfg
@@ -30,9 +29,7 @@ def test_intel_only_fragment_is_explicitly_opt_in() -> None:
 
 
 def test_build_intent_uses_testing1_upstream_base() -> None:
-    cfg = (ROOT / "kernel" / "huey-linux" / "build.yaml").read_text(
-        encoding="utf-8"
-    )
+    cfg = (ROOT / "kernel" / "huey-linux" / "build.yaml").read_text(encoding="utf-8")
     assert "source_type: upstream" in cfg
     assert 'version: "7.3.4"' in cfg
     assert 'localversion: "-huey-testing1"' in cfg

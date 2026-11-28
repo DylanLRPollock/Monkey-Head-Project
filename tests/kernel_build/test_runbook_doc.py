@@ -100,7 +100,7 @@ def test_states_do_not_proceed_without_physical_access() -> None:
         (
             "do not proceed",
             "do not start",
-            "there is no \"remote-only\" path",
+            'there is no "remote-only" path',
             "there is no remote-only path",
         )
     ), "runbook must refuse to proceed without physical/console access"
@@ -116,9 +116,9 @@ def test_documents_baseline_capture() -> None:
     assert "baseline" in text
     # Specific baseline artifacts must be named.
     for needle in ("grub.cfg", "/etc/default/grub", "/etc/modprobe.d"):
-        assert needle in text, (
-            f"runbook must document capture of {needle!r} during preflight"
-        )
+        assert (
+            needle in text
+        ), f"runbook must document capture of {needle!r} during preflight"
 
 
 def test_documents_dkms_baseline() -> None:
@@ -181,9 +181,9 @@ def test_documents_vermagic_match_requirement() -> None:
 def test_documents_initramfs_inspection() -> None:
     text = _lower()
     assert "lsinitramfs" in text
-    assert "nouveau" in text, (
-        "runbook must check that nouveau is absent from the initramfs"
-    )
+    assert (
+        "nouveau" in text
+    ), "runbook must check that nouveau is absent from the initramfs"
 
 
 # ---------------------------------------------------------------------------
@@ -215,9 +215,9 @@ def test_documents_one_time_boot_selection() -> None:
 
 def test_explicitly_rejects_grub_reboot() -> None:
     text = _lower()
-    assert "grub-reboot" in text, (
-        "runbook must explicitly name grub-reboot as not used, with a reason"
-    )
+    assert (
+        "grub-reboot" in text
+    ), "runbook must explicitly name grub-reboot as not used, with a reason"
     assert _contains_any(
         (
             "not used by this runbook",
@@ -303,9 +303,9 @@ def test_documents_rollback_via_previous_kernel() -> None:
 def test_documents_failed_dkms_recovery() -> None:
     text = _lower()
     assert "failed dkms" in text or "dkms recovery" in text
-    assert "dkms install" in text, (
-        "runbook must document the dkms install retry for the new kernel"
-    )
+    assert (
+        "dkms install" in text
+    ), "runbook must document the dkms install retry for the new kernel"
 
 
 # ---------------------------------------------------------------------------
@@ -314,7 +314,7 @@ def test_documents_failed_dkms_recovery() -> None:
 
 
 def test_documents_independent_recovery() -> None:
-    text = _lower()
+    _lower()
     assert _contains_any(
         (
             "display and compute",
@@ -344,7 +344,7 @@ def test_preserves_steam_proton_wrapper() -> None:
 
 
 def test_does_not_switch_system_wide_icd() -> None:
-    text = _lower()
+    _lower()
     assert _contains_any(
         (
             "do not replace the system-wide vulkan icd",
@@ -413,6 +413,5 @@ def test_references_step_18_or_19_or_20() -> None:
     """The runbook must cross-link the modules whose behavior it documents."""
     text = _lower()
     assert any(
-        needle in text
-        for needle in ("signing.py", "verifier.py", "release.py")
+        needle in text for needle in ("signing.py", "verifier.py", "release.py")
     ), "runbook must cross-reference at least one of the enforcement modules"

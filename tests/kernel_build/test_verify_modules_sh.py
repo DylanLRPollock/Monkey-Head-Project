@@ -18,6 +18,7 @@ guards:
 
 from __future__ import annotations
 
+import contextlib
 import os
 import re
 import shutil
@@ -63,8 +64,7 @@ def _install_fake_cli(repo: Path, body: str) -> None:
 
 # Fake CLI that reports which subcommand it was invoked with, plus enough
 # behavior to test argv forwarding and exit-code propagation.
-_FAKE_CLI = textwrap.dedent(
-    """\
+_FAKE_CLI = textwrap.dedent("""\
     from __future__ import annotations
     import os
     import sys
@@ -88,8 +88,7 @@ _FAKE_CLI = textwrap.dedent(
             if a.isdigit():
                 return int(a)
         return 0
-    """
-)
+    """)
 
 
 def _make_path_without_python313(bin_dir: Path) -> str:
@@ -99,16 +98,12 @@ def _make_path_without_python313(bin_dir: Path) -> str:
         if src is not None:
             dst = bin_dir / tool
             if not dst.exists():
-                try:
+                with contextlib.suppress(OSError):
                     os.symlink(src, dst)
-                except OSError:
-                    pass
     py = Path(sys.executable)
     if py.is_file():
-        try:
+        with contextlib.suppress(OSError):
             os.symlink(py, bin_dir / "python3")
-        except OSError:
-            pass
     return str(bin_dir)
 
 
@@ -158,16 +153,16 @@ def test_wrapper_has_sh_shebang() -> None:
 
 def test_wrapper_is_executable() -> None:
     mode = WRAPPER.stat().st_mode
-    assert mode & stat.S_IXUSR, (
-        "verify-modules.sh must be committed executable (git mode 100755)"
-    )
+    assert (
+        mode & stat.S_IXUSR
+    ), "verify-modules.sh must be committed executable (git mode 100755)"
 
 
 def test_wrapper_uses_strict_shell_options() -> None:
     text = WRAPPER.read_text(encoding="utf-8")
-    assert "set -eu" in text or "set -euo pipefail" in text or "set -e" in text, (
-        "verify-modules.sh must use 'set -e' (and ideally 'set -eu')"
-    )
+    assert (
+        "set -eu" in text or "set -euo pipefail" in text or "set -e" in text
+    ), "verify-modules.sh must use 'set -e' (and ideally 'set -eu')"
 
 
 def test_wrapper_uses_exec_for_python() -> None:
@@ -180,9 +175,7 @@ def test_wrapper_uses_exec_for_python() -> None:
 
 def test_wrapper_forwards_quoted_argv() -> None:
     text = WRAPPER.read_text(encoding="utf-8")
-    assert '"$@"' in text, (
-        "verify-modules.sh must forward argv via '\"$@\"' (quoted)"
-    )
+    assert '"$@"' in text, "verify-modules.sh must forward argv via '\"$@\"' (quoted)"
 
 
 def test_wrapper_references_only_cli_subcommands() -> None:
@@ -209,18 +202,16 @@ def test_wrapper_references_only_cli_subcommands() -> None:
 
 def test_wrapper_routes_verify_by_default() -> None:
     text = WRAPPER.read_text(encoding="utf-8")
-    assert "cli verify" in text, (
-        "verify-modules.sh must invoke 'huey.kernel_build.cli verify' by "
-        "default"
-    )
+    assert (
+        "cli verify" in text
+    ), "verify-modules.sh must invoke 'huey.kernel_build.cli verify' by default"
 
 
 def test_wrapper_routes_host_read_only_to_inventory() -> None:
     text = WRAPPER.read_text(encoding="utf-8")
-    assert "--host-read-only" in text, (
-        "verify-modules.sh must document and support the --host-read-only "
-        "flag"
-    )
+    assert (
+        "--host-read-only" in text
+    ), "verify-modules.sh must document and support the --host-read-only flag"
     assert "cli inventory" in text, (
         "verify-modules.sh must route --host-read-only to the CLI's "
         "'inventory' subcommand, not to 'verify' (host read-only checks "
@@ -339,9 +330,9 @@ def test_host_read_only_strips_the_flag(tmp_path: Path) -> None:
     _install_fake_cli(repo, _FAKE_CLI)
     result = _run_wrapper(repo, "--host-read-only")
     assert result.returncode == 0
-    assert "argc=0" in result.stdout, (
-        f"--host-read-only must be consumed; got args: {result.stdout!r}"
-    )
+    assert (
+        "argc=0" in result.stdout
+    ), f"--host-read-only must be consumed; got args: {result.stdout!r}"
     assert "--host-read-only" not in result.stdout
 
 
@@ -375,10 +366,14 @@ def test_argv_forwarding_in_order(tmp_path: Path) -> None:
     _install_fake_cli(repo, _FAKE_CLI)
     result = _run_wrapper(
         repo,
-        "--release-dir", "/tmp/release",
-        "--kernel-release", "7.2.15-huey1",
-        "--driver-version", "580.196.07",
-        "--secure-boot-state", "enabled",
+        "--release-dir",
+        "/tmp/release",
+        "--kernel-release",
+        "7.2.15-huey1",
+        "--driver-version",
+        "580.196.07",
+        "--secure-boot-state",
+        "enabled",
     )
     assert result.returncode == 0
     assert "subcommand=verify" in result.stdout
@@ -402,12 +397,10 @@ def test_shell_metacharacters_inert(tmp_path: Path) -> None:
     payload = f"a b ; touch {marker} ; echo done"
     result = _run_wrapper(repo, payload)
     assert result.returncode == 0, result.stderr
-    assert payload in result.stdout, (
-        f"payload was mangled: stdout={result.stdout!r}"
-    )
-    assert not marker.exists(), (
-        "wrapper interpreted shell metacharacters from an argv element"
-    )
+    assert payload in result.stdout, f"payload was mangled: stdout={result.stdout!r}"
+    assert (
+        not marker.exists()
+    ), "wrapper interpreted shell metacharacters from an argv element"
 
 
 # ---------------------------------------------------------------------------
@@ -420,10 +413,9 @@ def test_exit_code_forwarded(tmp_path: Path, exit_code: int) -> None:
     repo = _make_mini_repo(tmp_path)
     _install_fake_cli(repo, _FAKE_CLI)
     result = _run_wrapper(repo, str(exit_code))
-    assert result.returncode == exit_code, (
-        f"expected exit {exit_code}, got {result.returncode}; "
-        f"stderr={result.stderr!r}"
-    )
+    assert (
+        result.returncode == exit_code
+    ), f"expected exit {exit_code}, got {result.returncode}; stderr={result.stderr!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -442,9 +434,7 @@ def test_pythonpath_contains_repo_src(tmp_path: Path) -> None:
 def test_pythonpath_preserves_parent_value(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     _install_fake_cli(repo, _FAKE_CLI)
-    result = _run_wrapper(
-        repo, extra_env={"PYTHONPATH": "/some/parent/path"}
-    )
+    result = _run_wrapper(repo, extra_env={"PYTHONPATH": "/some/parent/path"})
     assert result.returncode == 0
     assert f"{repo}/src" in result.stdout
     assert "/some/parent/path" in result.stdout
@@ -455,9 +445,9 @@ def test_python_interpreter_is_used(tmp_path: Path) -> None:
     _install_fake_cli(repo, _FAKE_CLI)
     result = _run_wrapper(repo)
     assert result.returncode == 0
-    assert "python=3.13" in result.stdout, (
-        f"expected python 3.13, got {result.stdout!r}"
-    )
+    assert (
+        "python=3.13" in result.stdout
+    ), f"expected python 3.13, got {result.stdout!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -491,12 +481,10 @@ def test_cli_failure_passthrough(tmp_path: Path) -> None:
     repo = _make_mini_repo(tmp_path)
     _install_fake_cli(
         repo,
-        textwrap.dedent(
-            """\
+        textwrap.dedent("""\
             def main() -> int:
                 raise RuntimeError("simulated verify failure")
-            """
-        ),
+            """),
     )
     result = _run_wrapper(repo, "boom")
     assert result.returncode != 0
@@ -512,13 +500,10 @@ def test_wrapper_matches_sibling_wrapper_shape() -> None:
     siblings = {
         "build-kernel": REPO_ROOT / "scripts" / "kernel" / "build-kernel.sh",
         "build-nvidia": REPO_ROOT / "scripts" / "kernel" / "build-nvidia.sh",
-        "build-initramfs": REPO_ROOT
-        / "scripts"
-        / "kernel"
-        / "build-initramfs.sh",
+        "build-initramfs": REPO_ROOT / "scripts" / "kernel" / "build-initramfs.sh",
     }
     a = WRAPPER.read_text(encoding="utf-8")
-    for name, path in siblings.items():
+    for _name, path in siblings.items():
         if not path.is_file():
             continue
         b = path.read_text(encoding="utf-8")

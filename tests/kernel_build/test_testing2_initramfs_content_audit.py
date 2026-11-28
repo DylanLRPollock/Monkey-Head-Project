@@ -1,4 +1,5 @@
 """Private extraction audit must not change the live kernel or RAID."""
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -48,10 +49,23 @@ def test_reads_embedded_mdadm_resume_and_btrfs_hooks() -> None:
 def test_no_privileged_system_changes() -> None:
     src = _script()
     banned = (
-        "sudo ", "dpkg -i", "mkinitramfs ", "update-initramfs ",
-        "update-grub ", "grub-install ", "reboot", "modprobe ",
-        "insmod ", "rmmod ", "mount ", "umount ", "mdadm --assemble",
-        "mdadm --create", "rm -rf", "mkfs", "wipefs",
+        "sudo ",
+        "dpkg -i",
+        "mkinitramfs ",
+        "update-initramfs ",
+        "update-grub ",
+        "grub-install ",
+        "reboot",
+        "modprobe ",
+        "insmod ",
+        "rmmod ",
+        "mount ",
+        "umount ",
+        "mdadm --assemble",
+        "mdadm --create",
+        "rm -rf",
+        "mkfs",
+        "wipefs",
     )
     for line in src.splitlines():
         line = line.lstrip()

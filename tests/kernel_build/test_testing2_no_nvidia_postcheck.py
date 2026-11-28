@@ -1,4 +1,5 @@
 """Regression tests for in-tree NVIDIA-named versus proprietary R580 modules."""
+
 import subprocess
 from pathlib import Path
 
@@ -9,9 +10,12 @@ AUDIT = ROOT / "scripts/kernel/huey-734-testing2-no-nvidia-postcheck.sh"
 
 def _text(path: Path) -> str:
     assert path.is_file()
-    assert subprocess.run(
-        ["bash", "-n", str(path)], capture_output=True, check=False
-    ).returncode == 0
+    assert (
+        subprocess.run(
+            ["bash", "-n", str(path)], capture_output=True, check=False
+        ).returncode
+        == 0
+    )
     return path.read_text(encoding="utf-8")
 
 
@@ -32,14 +36,27 @@ def test_both_scripts_syntax_and_postcheck_immutable_existing_archive() -> None:
         if not line or line.startswith("#"):
             continue
         assert not line.startswith(
-            ("sudo ", "reboot", "mount ", "umount ", "mdadm --assemble",
-             "mkfs", "wipefs", "grub-install", "update-initramfs", "rm -rf")
+            (
+                "sudo ",
+                "reboot",
+                "mount ",
+                "umount ",
+                "mdadm --assemble",
+                "mkfs",
+                "wipefs",
+                "grub-install",
+                "update-initramfs",
+                "rm -rf",
+            )
         )
 
 
 def test_only_exact_proprietary_filenames_match_metadata_gate() -> None:
     # modules.order is a Kbuild index, not the set of initrd files.
-    exact = r"(^|/)(nvidia|nvidia-uvm|nvidia-modeset|nvidia-drm)[.]ko([.](xz|gz|zst))?([:[:space:]]|$)"
+    exact = (
+        r"(^|/)(nvidia|nvidia-uvm|nvidia-modeset|nvidia-drm)"
+        r"[.]ko([.](xz|gz|zst))?([:[:space:]]|$)"
+    )
     benign = (
         "kernel/drivers/usb/typec/altmodes/typec_nvidia.ko\n"
         "kernel/drivers/platform/x86/nvidia-wmi-ec-backlight.ko\n"
@@ -50,11 +67,16 @@ def test_only_exact_proprietary_filenames_match_metadata_gate() -> None:
         "updates/nvidia-modeset.ko\n"
         "updates/nvidia-drm.ko\n"
     )
+
     def grep(src: str) -> int:
         return subprocess.run(
-            ["grep", "-Ei", exact], input=src, text=True,
-            capture_output=True, check=False
+            ["grep", "-Ei", exact],
+            input=src,
+            text=True,
+            capture_output=True,
+            check=False,
         ).returncode
+
     assert grep(benign) == 1
     assert grep(vendor) == 0
     for s in (_text(BUILDER), _text(AUDIT)):
